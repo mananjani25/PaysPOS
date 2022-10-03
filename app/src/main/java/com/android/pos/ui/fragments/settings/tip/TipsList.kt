@@ -18,6 +18,7 @@ import com.android.pos.data.model.responseModel.GetTipReponse
 import com.android.pos.databinding.FragmentTipsBinding
 import com.android.pos.ui.adapter.TipsListAdapter
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.SwipeHelper
 import com.android.pos.utils.callback.ItemCallback
@@ -83,7 +84,7 @@ class TipsList : Fragment(), ItemCallback {
 
                 val oldPos = viewHolder.bindingAdapterPosition
                 val newPos = target.bindingAdapterPosition
-                Log.e(
+                LogUtil.logE(
                     "reorder after", "" + ":::" + ":::" +
                             viewHolder.bindingAdapterPosition.toString() + " :::  " + target.bindingAdapterPosition.toString()
                 )
@@ -94,7 +95,7 @@ class TipsList : Fragment(), ItemCallback {
 
                 val a = tipListadapter.getItem(dragFrom).sort
                 val b = tipListadapter.getItem(dragTo).sort
-                Log.e("onItemMove", "$a:: $b")
+                LogUtil.logE("onItemMove", "$a:: $b")
 
 
 
@@ -121,7 +122,7 @@ class TipsList : Fragment(), ItemCallback {
 
                 if (dragFrom != -1 && dragTo != -1 && dragFrom != dragTo) {
 
-                    Log.e("clearView", "$dragFrom :: $dragTo")
+                    LogUtil.logE("clearView", "$dragFrom :: $dragTo")
                     reallyMoved(
                         tipListadapter.getItem(dragFrom).sort,
                         tipListadapter.getItem(dragTo).sort,
@@ -140,7 +141,7 @@ class TipsList : Fragment(), ItemCallback {
 
     private fun reallyMoved(oldPos: Int, newPos: Int, categoryIdOld: Int?) {
         if (categoryIdOld != null) {
-            Log.e("reallyMoved", "$oldPos :: $newPos")
+            LogUtil.logE("reallyMoved", "$oldPos :: $newPos")
             viewModel.reOrderItem(categoryIdOld, oldPos, newPos)
         }
 
@@ -154,7 +155,6 @@ class TipsList : Fragment(), ItemCallback {
                         ProgressUtils.dismissProgressDialog()
                         binding.rvTipList.visibility = View.VISIBLE
                         resource.data?.let { tipList ->
-                            Collections.reverse(tipList)
                             setTipData(tipList)
                         }
                     }

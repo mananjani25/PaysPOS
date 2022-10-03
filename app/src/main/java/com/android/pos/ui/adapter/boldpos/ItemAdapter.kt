@@ -13,6 +13,7 @@ import com.android.pos.data.entities.TbItem
 import com.android.pos.databinding.ViewCategoryItemBoldBinding
 import com.android.pos.ui.adapter.CategoryItemAdapter1
 import com.android.pos.ui.adapter.ItemListAdapter
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.callback.ItemListner
 import com.android.pos.utils.extensions.gone
@@ -60,7 +61,7 @@ class ItemAdapter(
             binding.root.setOnClickListener {
                 try {
                     list[position]?.let {
-                        Log.e("ITemAdapter", "onClickposition  ${position}")
+                        LogUtil.logE("ITemAdapter", "onClickposition  ${position}")
                         listener.onItemSelected(it)
                     }
                 } catch (e: Exception) {

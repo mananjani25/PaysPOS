@@ -54,9 +54,9 @@ object ProgressUtils {
         builder?.setContentView(dialogView)
 
         builder?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        builder?.window?.setBackgroundDrawable(
-            ColorDrawable(Color.WHITE)
-        )
+//        builder?.window?.setBackgroundDrawable(
+//            ColorDrawable(Color.WHITE)
+//        )
         builder?.setCanceledOnTouchOutside(false)
         builder?.setCancelable(false)
         builder?.window?.setLayout(
@@ -88,9 +88,9 @@ object ProgressUtils {
         dialogView.findViewById<AppCompatTextView>(R.id.txtMessage).text = message
         val imgClose = dialogView.findViewById<AppCompatImageView>(R.id.imgClose)
         builder?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        builder?.window?.setBackgroundDrawable(
-            ColorDrawable(Color.WHITE)
-        )
+//        builder?.window?.setBackgroundDrawable(
+//            ColorDrawable(Color.WHITE)
+//        )
         builder?.setCanceledOnTouchOutside(false)
         builder?.window?.setLayout(
             WindowManager.LayoutParams.WRAP_CONTENT,
@@ -116,6 +116,7 @@ object ProgressUtils {
         try {
             if (builder != null && builder?.isShowing == true) {
                 builder?.dismiss()
+                builder = null
             }
         } catch (e: Exception) {
             Log.d("pos", "dismissProgressDialog: " + e.message)

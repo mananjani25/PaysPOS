@@ -14,11 +14,13 @@ import com.android.pos.data.remote.Constants.DELETE
 import com.android.pos.data.remote.Constants.UPDATE
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.math.ceil
 
 @HiltViewModel
 class ManualSaleViewModel @Inject constructor(
@@ -173,12 +175,12 @@ class ManualSaleViewModel @Inject constructor(
                 if (tax.isActive) {
                     if (tax.taxType == "Percentage") {
                         val itemTaxPrice = (tax.rate * (item.price * item.itemQuantity)) / 100
-                        Log.e("itemTaxPrice", "" + itemTaxPrice)
+                        LogUtil.logE("itemTaxPrice", "" + itemTaxPrice)
                         totalTax += String.format("%.2f", itemTaxPrice)
                             .toDouble()
                     } else if (tax.taxType == "Dollar") {
                         val itemTaxPrice = tax.rate * item.itemQuantity
-                        Log.e("itemTaxPrice", "" + itemTaxPrice)
+                        LogUtil.logE("itemTaxPrice", "" + itemTaxPrice)
                         totalTax += String.format("%.2f", itemTaxPrice)
                             .toDouble()
                     }
@@ -191,13 +193,13 @@ class ManualSaleViewModel @Inject constructor(
         }
         subTotalPrice -= totalDiscount
         val serviceChargeList = serviceCharge.value?.data
-        Log.e(TAG, "serviceChargesList:  ${Gson().toJson(serviceChargeList)}")
+        LogUtil.logE(TAG, "serviceChargesList:  ${Gson().toJson(serviceChargeList)}")
         if (serviceChargeList != null && serviceChargeList.isNotEmpty()) {
 
             serviceChargeList.forEach {
                 if (it.isEnabled) {
                     totalServiceCharge = (subTotalPrice * it.percentage) / 100
-                    Log.e("totalServiceCharge", totalServiceCharge.toString())
+                    LogUtil.logE("totalServiceCharge", totalServiceCharge.toString())
                 }
             }
         }
@@ -227,32 +229,34 @@ class ManualSaleViewModel @Inject constructor(
         txtTotalAmount: TextView
     ) {
 
-        Log.e("Loyalty", "checkAppliedLoyaltyProgram..")
-        Log.e("Loyalty", "Active loyalty Program : ${Gson().toJson(activeLoyaltyProgram)}")
-
         redeemLoyaltyInfo.total = total
         val availablePoints = customer?.final_reward ?: 0
 
         if (customer == null) {
             //loyalty cant be applied if customer is not selected.
             redeemLoyaltyInfo.needToApplyLoyalty = false
-            Log.e("Loyalty", "needToApplyLoyalty == false")
         } else if (loyaltyPointCondition(customer)) {
             activeLoyaltyProgram?.let {
                 redeemLoyaltyInfo.loyaltyProgramsModel = activeLoyaltyProgram
 
                 //if customer has more points than required(minimum limit)
-                val availableLoyaltyAmount =
+                var availableLoyaltyAmount = 0.0
+                if (it.rewardPoint == 0) {
+                    it.rewardPoint = 1
+                }
+                availableLoyaltyAmount =
                     availablePoints * it.amount / it.rewardPoint
                 if (availableLoyaltyAmount > redeemLoyaltyInfo.total) {
-                    //if loyalty amount is more than total price
-
-                    redeemLoyaltyInfo.usedLoyaltyPoints =
-                        (redeemLoyaltyInfo.total * it.rewardPoint / it.amount).toInt()
-                    redeemLoyaltyInfo.usedLoyaltyAmount =
-                        (redeemLoyaltyInfo.usedLoyaltyPoints * it.amount / it.rewardPoint)
-                    redeemLoyaltyInfo.remainingAmount =
-                        redeemLoyaltyInfo.total - redeemLoyaltyInfo.usedLoyaltyAmount
+                    var pointDouble = (redeemLoyaltyInfo.total * it.rewardPoint) / it.amount
+                    redeemLoyaltyInfo.usedLoyaltyPoints = ceil(pointDouble).toInt()
+                    redeemLoyaltyInfo.usedLoyaltyAmount = pointDouble * it.amount / it.rewardPoint
+                    if (redeemLoyaltyInfo.usedLoyaltyAmount >= redeemLoyaltyInfo.total) {
+                        redeemLoyaltyInfo.remainingAmount =
+                            redeemLoyaltyInfo.usedLoyaltyAmount - redeemLoyaltyInfo.total
+                    } else {
+                        redeemLoyaltyInfo.remainingAmount =
+                            redeemLoyaltyInfo.total - redeemLoyaltyInfo.usedLoyaltyAmount
+                    }
                     redeemLoyaltyInfo.remainingLoyaltyPoints =
                         availablePoints - redeemLoyaltyInfo.usedLoyaltyPoints
                 } else {
@@ -260,14 +264,17 @@ class ManualSaleViewModel @Inject constructor(
                         (availablePoints * it.amount / it.rewardPoint)
                     redeemLoyaltyInfo.usedLoyaltyPoints = availablePoints
                     redeemLoyaltyInfo.remainingLoyaltyPoints = 0
-                    redeemLoyaltyInfo.remainingAmount =
-                        redeemLoyaltyInfo.total - redeemLoyaltyInfo.usedLoyaltyAmount
+                    if (redeemLoyaltyInfo.usedLoyaltyAmount >= redeemLoyaltyInfo.total) {
+                        redeemLoyaltyInfo.remainingAmount =
+                            redeemLoyaltyInfo.usedLoyaltyAmount - redeemLoyaltyInfo.total
+                    } else {
+                        redeemLoyaltyInfo.remainingAmount =
+                            redeemLoyaltyInfo.total - redeemLoyaltyInfo.usedLoyaltyAmount
+                    }
                 }
-                Log.e("Loyalty", "needToApplyLoyalty == true")
                 //redeemLoyaltyInfo.isLoyaltyApplied = true
             }
         } else {
-            Log.e("Loyalty", "else portion.")
             redeemLoyaltyInfo.remainingAmount = redeemLoyaltyInfo.total
             redeemLoyaltyInfo.remainingLoyaltyPoints = availablePoints
             redeemLoyaltyInfo.usedLoyaltyPoints = 0

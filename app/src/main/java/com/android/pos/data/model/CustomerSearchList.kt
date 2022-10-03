@@ -25,6 +25,7 @@ data class CustomerSearchList(
         @SerializedName("birth_date") val birth_date: String?,
         @SerializedName("email") val email: String?,
         @SerializedName("enroll_to_loyalty") var enroll_to_loyalty: Boolean? = false,
+        @SerializedName("same_as_billing_address") var same_as_billing_address: Boolean? = false,
         @SerializedName("final_reward") var final_reward: Int? = 0,
         @SerializedName("company") val company: String? = null,
         @TypeConverters(TypeConvertorPhone::class)

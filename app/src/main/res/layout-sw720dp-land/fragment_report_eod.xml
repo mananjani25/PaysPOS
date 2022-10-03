@@ -14,7 +14,6 @@
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-
         android:background="@color/bg_color"
         android:orientation="vertical">
 
@@ -86,7 +85,6 @@
                     android:layout_height="@dimen/_20sdp"
                     android:layout_gravity="center"
                     android:layout_marginEnd="@dimen/_8sdp"
-
                     android:background="?attr/selectableItemBackground"
                     android:padding="@dimen/_2sdp"
                     android:src="@drawable/print_all"
@@ -97,6 +95,8 @@
                     style="@style/CustomFontBold"
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/_23sdp"
+                    android:clickable="false"
+                    android:focusable="false"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
                     android:background="@drawable/button_action_hover"
@@ -115,9 +115,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/_10sdp"
+                    android:background="@drawable/button_action_hover"
                     android:padding="@dimen/_6sdp"
                     android:text="@string/tv_home"
-                    android:background="@drawable/button_action_hover"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_7mdpi"
                     android:visibility="gone" />
@@ -829,6 +829,60 @@
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvSaleCategorySummary"
                     style="@style/ReportRecyclerViewstyle"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:itemCount="2"
+                    tools:listitem="@layout/view_sales_report" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtClockInClockOut"
+                    style="@style/ReportTitleStyle"
+                    android:text="CLOCK IN-CLOCK OUT"
+                    app:textAllCaps="true" />
+
+                <LinearLayout
+                    android:id="@+id/linearClockInOut"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/_5sdp">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtEmpName"
+                        style="@style/ReportItemText"
+                        android:gravity="start"
+                        android:text="Employee" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtClockIn"
+                        style="@style/ReportItemText"
+                        android:gravity="start"
+                        android:text="Clock In" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtClockOutLabel"
+                        style="@style/ReportItemText"
+                        android:gravity="end"
+                        android:text="Clock Out" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtActTime"
+                        style="@style/ReportItemText"
+                        android:gravity="end"
+                        android:text="Actual In Time" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtTotalLabel"
+                        style="@style/ReportItemText"
+                        android:gravity="end"
+                        android:text="Total" />
+
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvClockInClockOut"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:itemCount="2"
                     tools:listitem="@layout/view_sales_report" />

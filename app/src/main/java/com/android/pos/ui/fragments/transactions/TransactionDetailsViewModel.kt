@@ -36,6 +36,12 @@ class TransactionDetailsViewModel @Inject constructor(
     val data: LiveData<Event<GetOrderDetailsResponse?>> = _data
 
 
+    private val _data1 = MutableLiveData<Event<BaseResponse?>>()
+    val data1: LiveData<Event<BaseResponse?>> = _data1
+
+    private val _data2 = MutableLiveData<Event<Double>>()
+    val data2: LiveData<Event<Double>> = _data2
+
     private val _datapayment = MutableLiveData<Event<GetPaymentOrderDetailsResponse?>>()
     val dataPayment: LiveData<Event<GetPaymentOrderDetailsResponse?>> = _datapayment
 
@@ -202,7 +208,37 @@ class TransactionDetailsViewModel @Inject constructor(
             }
         }
     }
+    fun orderUpdateTip(orderID: Int, tipAmount: Double) {
 
+        viewModelScope.launch {
+
+            val resource = posRepository.orderUpdateTip(orderID, tipAmount)
+
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    _showProgress.value = Event(false)
+                    resource.data.let { baseResponse ->
+                        if (baseResponse?.status == 200) {
+                            resource.data?.let { response ->
+                                _data1.value = Event(response)
+                            }
+                        } else {
+                            _snackbarText.value = Event(resource.message)
+                        }
+                    }
+                }
+
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message)
+                    _showProgress.value = Event(false)
+                }
+
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+                }
+            }
+        }
+    }
     private suspend fun cashOutApi(
         refundRequestModel: RefundRequestModel,
         amount: Double,

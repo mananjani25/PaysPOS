@@ -5,6 +5,7 @@ import android.graphics.*
 import android.util.Log
 import com.android.pos.ui.fragments.checkout.CheckoutDetailsFragmentNew
 import com.android.pos.ui.fragments.checkout.CheckoutDineInFragmentNew
+import com.android.pos.utils.LogUtil
 import com.magtek.mobile.android.mtcms.MTParser
 import com.magtek.mobile.android.mtusdk.*
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -48,7 +49,7 @@ open class SessionManager @Inject constructor(@ApplicationContext private val mC
     }
 
     fun sendToOutput(data: String?) {
-        data?.let { Log.e("sendToOutput", it) }
+        data?.let { LogUtil.logE("sendToOutput", it) }
     }
 
     private fun subscribeAll() {

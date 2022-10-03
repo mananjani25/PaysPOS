@@ -25,6 +25,7 @@ import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.DINE_IN_LIST_EDIT
 import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
 import com.android.pos.data.remote.Constants.DINE_IN_UPDATE_LIST
+import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER
 import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER
 import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER_ID
@@ -49,6 +50,7 @@ import com.android.pos.ui.fragments.checkout.CheckoutDineInPaymentViewModel
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.payment.PaymentViewModel
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.ItemClickListner
@@ -56,6 +58,7 @@ import com.android.pos.utils.callback.ItemListner
 import com.android.pos.utils.callback.MyCallback
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.gone
+import com.android.pos.utils.extensions.isVisible
 import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.statusUtils.Resource
 import com.google.gson.Gson
@@ -75,6 +78,7 @@ class CartFragment(
 ) :
     Fragment(), MyCallback,
     DineInAdapter.DineInCallback {
+    private var isSaveOrder: Boolean = false
     private lateinit var binding: FragmentCartBinding
     var fragmentId: Int? = null
     var checkoutHeaderId: Int = 0
@@ -127,7 +131,7 @@ class CartFragment(
     ): View? {
         binding = FragmentCartBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
-        Log.e("bundleData", arguments.toString())
+        LogUtil.logE("bundleData", arguments.toString())
 
         if (arguments?.getBundle("updateBundle") != null) {
             updateBundle = arguments?.getBundle("updateBundle")
@@ -156,7 +160,7 @@ class CartFragment(
                 if (it.getBundle("updateBundle") != null) {
                     updateBundle = it.getBundle("updateBundle")
                     isOrderUpdate = updateBundle?.getBoolean("update") ?: false
-                    Log.e(TAG, "isOrderUpdateReq:  $isOrderUpdate")
+                    LogUtil.logE(TAG, "isOrderUpdateReq:  $isOrderUpdate")
                     if (isOrderUpdate) {
                         orderId = updateBundle?.getInt("orderId")
                         paymentId = updateBundle?.getInt("paymentId")
@@ -174,7 +178,7 @@ class CartFragment(
                         )
                     } else {
                         //  prefProvider.setValue(ORDER_TYPE, TAKEOUT)
-                        Log.e("ORDER_TYPE", "Updated check")
+                        LogUtil.logE("ORDER_TYPE", "Updated check")
                         updateActiveOrderFlag()
                     }
                     uiSave()
@@ -194,7 +198,7 @@ class CartFragment(
 
 
         val name = prefProvider.getValue(Constants.CUSTOMER_NAME, "")
-        Log.e("Customer Name", name)
+        LogUtil.logE("Customer Name", name)
         if (name.isNotEmpty() && name != null) {
             binding.txtAddCustomer.text = name
         } else {
@@ -243,8 +247,13 @@ class CartFragment(
                             binding.liinearInfoLayout.layoutParams.height =
                                 resources.getDimension(R.dimen._70sdp).toInt()
                         } else {
-                            binding.liinearInfoLayout.layoutParams.height =
-                                resources.getDimension(R.dimen._60sdp).toInt()
+                            if (binding.relativeLoylatyPoints.isVisible()) {
+                                binding.liinearInfoLayout.layoutParams.height =
+                                    resources.getDimension(R.dimen._70sdp).toInt()
+                            } else {
+                                binding.liinearInfoLayout.layoutParams.height =
+                                    resources.getDimension(R.dimen._60sdp).toInt()
+                            }
                         }
                     } else if (taxBirfurcationAdapter.taxlist.size == 2) {
                         if (viewModel.order_note.isNotEmpty()) {
@@ -267,8 +276,13 @@ class CartFragment(
                     binding.imgDropdown.setImageResource(R.drawable.ic_solid_up_arrow)
                     binding.relativeDynamicTax.visible()
                 } else {
-                    binding.liinearInfoLayout.layoutParams.height =
-                        resources.getDimension(R.dimen._50sdp).toInt()
+                    if (binding.relativeLoylatyPoints.isVisible()) {
+                        binding.liinearInfoLayout.layoutParams.height =
+                            resources.getDimension(R.dimen._70sdp).toInt()
+                    } else {
+                        binding.liinearInfoLayout.layoutParams.height =
+                            resources.getDimension(R.dimen._50sdp).toInt()
+                    }
                     taxClickable = false
                     binding.imgDropdown.setImageResource(R.drawable.ic_arrow_drop_down)
                     binding.relativeDynamicTax.gone()
@@ -285,7 +299,7 @@ class CartFragment(
 
         if (updateBundle != null) {
             isOrderUpdate = requireArguments().getBoolean("update")
-            Log.e(TAG, "isOrderUpdateReq:  $isOrderUpdate")
+            LogUtil.logE(TAG, "isOrderUpdateReq:  $isOrderUpdate")
             if (isOrderUpdate) {
                 orderId = updateBundle?.getInt("orderId")
                 paymentId = updateBundle?.getInt("paymentId")
@@ -303,7 +317,7 @@ class CartFragment(
                 )
             } else {
                 //  prefProvider.setValue(ORDER_TYPE, TAKEOUT)
-                Log.e("ORDER_TYPE", "Updated check")
+                LogUtil.logE("ORDER_TYPE", "Updated check")
 
                 updateActiveOrderFlag()
 
@@ -326,7 +340,7 @@ class CartFragment(
                 }
             }
             //   prefProvider.setValue(ORDER_TYPE, TAKEOUT)
-            Log.e("ORDER_TYPE", "Updated check1")
+            LogUtil.logE("ORDER_TYPE", "Updated check1")
         }
 
         uiSave()
@@ -418,7 +432,7 @@ class CartFragment(
     private fun getDineInData() {
         if (updateBundle != null) {
             if (updateBundle?.getBoolean("isFromDineIn") == true) {
-                Log.e(TAG, "isFromDinein")
+                LogUtil.logE(TAG, "isFromDinein")
                 getDineInCartList()
             } else if (updateBundle?.getBoolean("is_dine_in_edit") == true) {
                 checkDineInEditOrder()
@@ -486,21 +500,33 @@ class CartFragment(
         if (orderDEtails != null) {
             orderFloorDetails = orderDEtails
         }
-        if (orderFloorDetails.id == null) {
+        if (orderDEtails != null) {
+            if (orderFloorDetails.id == null) {
+                orderFloorDetails.apply {
+                    id = dineInFloorTableModel?.id
+                    chairCount = dineInFloorTableModel?.chairCount
+                    floorPlanId = dineInFloorTableModel?.floorPlanId
+                    tableName = dineInFloorTableModel?.tableName.toString()
+                    status = dineInFloorTableModel?.status.toString()
+                    tableNumber = dineInFloorTableModel?.tableNumber
+
+                }
+
+            }
+        } else {
             orderFloorDetails.apply {
                 id = dineInFloorTableModel?.id
                 chairCount = dineInFloorTableModel?.chairCount
                 floorPlanId = dineInFloorTableModel?.floorPlanId
                 tableName = dineInFloorTableModel?.tableName.toString()
                 status = dineInFloorTableModel?.status.toString()
-
+                tableNumber = dineInFloorTableModel?.tableNumber
             }
-
         }
 
 
         val dineInList: ArrayList<DineInModel> = arrayListOf()
-        dineInList.add(DineInModel(0, true, 0, "Whole Table",))
+        dineInList.add(DineInModel(0, true, 0, "Whole Table", floorPlanTable = orderFloorDetails))
         for (i in 1..numOfGuest) {
             dineInList.add(
                 DineInModel(
@@ -611,8 +637,13 @@ class CartFragment(
                 binding.liinearInfoLayout.layoutParams.height =
                     resources.getDimension(R.dimen._70sdp).toInt()
             } else {
-                binding.liinearInfoLayout.layoutParams.height =
-                    resources.getDimension(R.dimen._50sdp).toInt()
+                if (binding.relativeLoylatyPoints.isVisible()) {
+                    binding.liinearInfoLayout.layoutParams.height =
+                        resources.getDimension(R.dimen._70sdp).toInt()
+                } else {
+                    binding.liinearInfoLayout.layoutParams.height =
+                        resources.getDimension(R.dimen._50sdp).toInt()
+                }
             }
             binding.imgDropdown.setImageResource(R.drawable.ic_arrow_drop_down)
             binding.imgDropdown.visible()
@@ -620,25 +651,39 @@ class CartFragment(
             binding.relativeDynamicTax.gone()
         } else {
             if (viewModel.order_note.isNotEmpty()) {
-                binding.liinearInfoLayout.layoutParams.height =
-                    resources.getDimension(R.dimen._60sdp).toInt()
+                if (binding.relativeLoylatyPoints.isVisible()) {
+                    binding.liinearInfoLayout.layoutParams.height =
+                        resources.getDimension(R.dimen._70sdp).toInt()
+                } else {
+                    binding.liinearInfoLayout.layoutParams.height =
+                        resources.getDimension(R.dimen._60sdp).toInt()
+                }
+
             } else {
-                binding.liinearInfoLayout.layoutParams.height =
-                    resources.getDimension(R.dimen._50sdp).toInt()
+                if (binding.relativeLoylatyPoints.isVisible()) {
+                    binding.liinearInfoLayout.layoutParams.height =
+                        resources.getDimension(R.dimen._70sdp).toInt()
+                } else {
+                    binding.liinearInfoLayout.layoutParams.height =
+                        resources.getDimension(R.dimen._50sdp).toInt()
+                }
             }
             binding.imgDropdown.setImageResource(R.drawable.ic_arrow_drop_down)
             binding.imgDropdown.gone()
             binding.relativeDynamicTax.gone()
-            binding.liinearInfoLayout.layoutParams.height =
-                resources.getDimension(R.dimen._50sdp).toInt()
             taxClickable = false
         }
     }
 
     fun reSetTaxBifurcationData() {
         taxBirfurcationAdapter.clearList()
-        binding.liinearInfoLayout.layoutParams.height =
-            resources.getDimension(R.dimen._50sdp).toInt()
+        if (binding.relativeLoylatyPoints.isVisible()) {
+            binding.liinearInfoLayout.layoutParams.height =
+                resources.getDimension(R.dimen._70sdp).toInt()
+        } else {
+            binding.liinearInfoLayout.layoutParams.height =
+                resources.getDimension(R.dimen._50sdp).toInt()
+        }
         taxClickable = false
         binding.imgDropdown.setImageResource(R.drawable.ic_arrow_drop_down)
         binding.imgDropdown.gone()
@@ -648,16 +693,19 @@ class CartFragment(
     private fun addObserver() {
 
 
-        Log.e("ORDER_TYPE", prefProvider.getValue(ORDER_TYPE, TAKEOUT))
+        LogUtil.logE("CreateCartEmpIdRecd", "" + prefProvider.getValueInt(EMPLOYEE_ID, 0))
 
         if (arguments?.getString(REDIRECT_FROM) == MANUAL_SALE) {
             viewModel.manualSaleItems(
                 prefProvider.getValue(ORDER_TYPE, TAKEOUT),
                 prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
             ).observe(requireActivity()) {
-                Log.e(TAG, "listSize  ${Gson().toJson(it)}")
+                LogUtil.logE(TAG, "listSize  ${Gson().toJson(it)}")
                 if (it.isNotEmpty()) {
                     if (isFromPayment) {
+                        viewModel.selectedCustomer = null
+                        viewModel.redeemLoyaltyInfo.isLoyaltyApplied = false
+                        viewModel.redeemLoyaltyInfo.needToApplyLoyalty = false
                         if (MethodUtils.isEnableCashDiscount(requireContext())) {
                             binding.linearCashDiscount.visible()
                             if (prefProvider.getValue(
@@ -717,35 +765,17 @@ class CartFragment(
                     if (data != null) {
                         if (viewModel.loyaltyPointCondition(data)) {
                             if (isFromPayment) {
-                                if (viewModel.redeemLoyaltyInfo.needToApplyLoyalty) {
-                                    binding.liinearInfoLayout.layoutParams.height =
-                                        resources.getDimension(R.dimen._70sdp).toInt()
-                                    binding.relativeLoylatyPoints.visibility = View.VISIBLE
-                                    binding.lblLoyaltyPoints.visibility = View.VISIBLE
-                                    binding.txtLabelLoyaltyAmounts.visibility = View.VISIBLE
-                                    binding.checkloylaty.visibility = View.GONE
-                                    binding.txtLoyaltyAmount.text =
-                                        "- $${
-                                            String.format(
-                                                "%.2f",
-                                                viewModel.redeemLoyaltyInfo.usedLoyaltyAmount
-                                            )
-                                        }"
-                                    binding.txtLoyaltyPoints.text =
-                                        "${viewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
-                                } else {
-                                    binding.liinearInfoLayout.layoutParams.height =
-                                        resources.getDimension(R.dimen._50sdp).toInt()
-                                    binding.relativeLoylatyPoints.visibility = View.GONE
-                                    binding.lblLoyaltyPoints.visibility = View.GONE
-                                }
+                                binding.liinearInfoLayout.layoutParams.height =
+                                    resources.getDimension(R.dimen._50sdp).toInt()
+                                binding.relativeLoylatyPoints.visibility = View.GONE
+                                binding.lblLoyaltyPoints.visibility = View.GONE
                             } else {
                                 binding.liinearInfoLayout.layoutParams.height =
                                     resources.getDimension(R.dimen._70sdp).toInt()
                                 binding.relativeLoylatyPoints.visibility = View.VISIBLE
                                 binding.lblLoyaltyPoints.visibility = View.VISIBLE
-                                Log.e(TAG, "InsideLoyalty")
-                                Log.e(TAG, Gson().toJson(viewModel.redeemLoyaltyInfo))
+                                LogUtil.logE(TAG, "InsideLoyalty")
+                                LogUtil.logE(TAG, Gson().toJson(viewModel.redeemLoyaltyInfo))
                                 binding.txtLoyaltyAmount.text =
                                     "- $${
                                         String.format(
@@ -809,14 +839,20 @@ class CartFragment(
                     prefProvider.getValue(ORDER_TYPE, TAKEOUT),
                     prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
                 ).observe(requireActivity()) {
-                    Log.e(TAG, "listSize  ${Gson().toJson(it)}")
-                    Log.e(TAG, "listSizeOrderType: ${prefProvider.getValue(ORDER_TYPE, TAKEOUT)}")
+
+                    LogUtil.logE("mAllWords :", "LIST SIZE :" + it.size.toString())
+                    LogUtil.logE(
+                        "mAllWords",
+                        "LIST EMPLOYEE :" + prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+                            .toString()
+                    )
+
 
                     if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
                         binding.rvCartDineIn.visible()
                         binding.rvCartList.gone()
                         if (it.isNotEmpty()) {
-                            Log.e(TAG, "cartListDine:  ${Gson().toJson(it)}")
+                            LogUtil.logE(TAG, "cartListDine:  ${Gson().toJson(it)}")
 
                             cartlist = it as ArrayList<CartModel>
                             if (isFromPayment) {
@@ -849,11 +885,11 @@ class CartFragment(
 
 
                             }
-                            Log.e(TAG, "getPAyment:  ${isFromPayment}")
-                            Log.e(TAG, "isGuestPayment:  ${isGuestPayment}")
+                            LogUtil.logE(TAG, "getPAyment:  ${isFromPayment}")
+                            LogUtil.logE(TAG, "isGuestPayment:  ${isGuestPayment}")
 
                             if (isFromPaymentDinein) {
-                                Log.e(TAG, "guestCalModel:  ${Gson().toJson(guestCalModel)}")
+                                LogUtil.logE(TAG, "guestCalModel:  ${Gson().toJson(guestCalModel)}")
                                 viewModel.itemCalculationForDineInPayment(
                                     it[0],
                                     binding.txtTotal,
@@ -862,25 +898,17 @@ class CartFragment(
                                     isGuestPayment
                                 )
                             } else {
-                                Log.e(TAG, "WithOutDineIn")
+                                LogUtil.logE(TAG, "WithOutDineIn")
                                 viewModel.itemCalculationCartModel(
                                     it[0],
                                     binding.txtTotal,
                                     requireContext()
                                 )
                             }
-                            /*  viewModel.itemCalculationCartModel(
-                              it[0],
-                              binding.txtTotal,
-                              requireContext()
-                          )*/
+
 
 
                             viewModel.setCartModel(it)
-                            Log.e(TAG,"${prefProvider.getValueboolean(
-                                Constants.DINE_IN_UPDATE,
-                                false
-                            )}")
                             if (prefProvider.getValueboolean(
                                     Constants.DINE_IN_UPDATE,
                                     false
@@ -889,12 +917,12 @@ class CartFragment(
                                 binding.txtDineInProceed.setText("Update and Proceed")
 
                                 var getOldList = prefProvider.getValue(DINE_IN_UPDATE_LIST, "")
-                                Log.e(TAG, "getOldList  ${Gson().toJson(getOldList)}")
+                                LogUtil.logE(TAG, "getOldList  ${Gson().toJson(getOldList)}")
                                 if (getOldList.isEmpty()) {
                                     var listItemDine: ArrayList<GetOrderDetailsResponse.Data.OrderItem> =
                                         arrayListOf()
                                     var data = it[0].dineInList
-                                    Log.e(TAG, "getDataSizeDin ${data?.size}")
+                                    LogUtil.logE(TAG, "getDataSizeDin ${data?.size}")
                                     data?.forEach {
                                         it.items.forEach { item ->
                                             var modifiers: ArrayList<GetOrderDetailsResponse.Data.OrderItem.OrderItemModifier> =
@@ -1035,7 +1063,9 @@ class CartFragment(
                     } else {
                         binding.rvCartDineIn.gone()
                         binding.rvCartList.visible()
+
                         if (it.isNotEmpty()) {
+                            Log.e("mAllWords", "listSize ITEM ${it.get(0).items?.size}")
                             viewModel.destroyedList.clear()
                             it[0].items?.filter { item -> item.isDestroy }?.let {
                                 viewModel.destroyedList.addAll(it)
@@ -1073,11 +1103,9 @@ class CartFragment(
                                 filterItems.addAll(it!!.toCollection(arrayListOf()))
                             }
 
+                            Log.e("mAllWords", "filterItems  ${filterItems.size}")
                             cartAdapter.setList(filterItems)
-                            /*it[0].items?.toCollection(arrayListOf())
-                            ?.let { it1 ->
-                                cartAdapter.setList(it1)
-                            }*/
+                            binding.rvCartList.smoothScrollToPosition(filterItems.size - 1)
 
                             cartlist = it as ArrayList<CartModel>
                             viewModel.itemCalculationCartModel(
@@ -1257,6 +1285,27 @@ class CartFragment(
         if (view != null) {
             viewModelPayment.showProgress.observe(viewLifecycleOwner) { event ->
                 event.getContentIfNotHandled()?.let {
+                    LogUtil.logE("observeShowProgress3", isSaveOrder.toString())
+                    if (it) {
+                        if (isSaveOrder) {
+                            ProgressUtils.showProgressDialog(requireActivity())
+                            isSaveOrder = false
+                        } else {
+                            ProgressUtils.showProgressDialog(
+                                "Please wait payment under process",
+                                requireActivity()
+                            )
+
+                        }
+                    } else {
+                        ProgressUtils.dismissProgressDialog()
+                    }
+                }
+            }
+
+            viewModelPayment.showProgressCash.observe(viewLifecycleOwner) { event ->
+                event.getContentIfNotHandled()?.let {
+                    LogUtil.logE("observeShowProgress3", isSaveOrder.toString())
                     if (it) {
                         ProgressUtils.showProgressDialog(requireActivity())
                     } else {
@@ -1284,7 +1333,7 @@ class CartFragment(
     }
 
     override fun onItemClickListener(view: View?, data: TbItem, position: Int) {
-        Log.e(TAG, "itemClicked  ${Gson().toJson(data)}")
+        LogUtil.logE(TAG, "itemClicked  ${Gson().toJson(data)}")
 
 
         itemClickListner?.onItemUpdate(data)
@@ -1299,7 +1348,7 @@ class CartFragment(
     }
 
     override fun onItemSelected(headerPosition: Int, position: Int, item: TbItem) {
-        Log.e(TAG, "onDineinItemClick ${position}")
+        LogUtil.logE(TAG, "onDineinItemClick ${position}")
 
         viewModel.selectedItemPositionDine = position
         // viewModel.dineInHeaderPosition = headerPosition
@@ -1316,7 +1365,7 @@ class CartFragment(
     }
 
     override fun onCustomerClicked(position: Int, isRemoved: Boolean) {
-        Log.e(TAG, "onCustomerClicked  ${isRemoved}")
+        LogUtil.logE(TAG, "onCustomerClicked  ${isRemoved}")
         if (isRemoved) {
             if (cartlist.get(0).dineInList?.size!! >= position) {
                 val dineIn = cartlist.get(0).dineInList
@@ -1436,7 +1485,7 @@ class CartFragment(
                     if (cartlist.size > 0) {
 
                         val dList = cartlist[0].dineInList ?: arrayListOf()
-                        Log.e(TAG, "dList:  ${Gson().toJson(dList)}")
+                        LogUtil.logE(TAG, "dList:  ${Gson().toJson(dList)}")
                         if (dList.isNotEmpty()) {
                             dList[0].floorPlanTable?.id?.let {
 
@@ -1676,7 +1725,6 @@ class CartFragment(
                         )
                     }
                     R.id.menu_discount -> {
-
                         val bundle = Bundle()
                         bundle.putBoolean("isOrderDiscount", true)
                         bundle.putDouble("totalPrice", viewModel.subTotalPrice)
@@ -1685,10 +1733,19 @@ class CartFragment(
                             bundle.putString("orderDiscountType", cartlist[0].discountType)
                             bundle.putDouble("selectedvalue", cartlist[0].discountSelectdValue)
                         }
-                        findNavController().navigate(
-                            R.id.action_dashboardCategoryBoldPOS_to_addDiscountDialog,
-                            bundle
-                        )
+                        bundle.putString("isFrom","orderDiscount")
+                        if (prefProvider.isAdmin() || prefProvider.isManager()){
+
+                            findNavController().navigate(
+                                R.id.action_dashboardCategoryBoldPOS_to_addDiscountDialog,
+                                bundle
+                            )
+                        }else{
+                            findNavController().navigate(
+                                R.id.actionboldpos_to_pascodeManagerDailog,bundle
+                            )
+                        }
+
 
                     }
                     /*R.id.menu_note -> {
@@ -1702,6 +1759,9 @@ class CartFragment(
         }
 
         binding.tvPayNow.setOnClickListener {
+
+            prefProvider.setValueboolean(Constants.TIP_ADDED, false)
+
             if (cartAdapter.cartList.isNotEmpty()) {
                 prefProvider.setValue(ORDER_TYPE, prefProvider.getValue(ORDER_TYPE, TAKEOUT))
                 prefProvider.setValue("PaidAmount", "")
@@ -1765,10 +1825,6 @@ class CartFragment(
                     }
 
                     if (viewModel.restrictedAmount(binding.txtTotal)) {
-                        val cartList = viewModel.generateCombinedItems(viewModel.cartModel!!)
-                        cartList.openOrderType = Constants.PICK_UP
-                        cartList.orderType = ordertype
-                        cartList.orderTypeId = ordertypeId
 
 
                         viewModelPayment.updateOrder(
@@ -1778,6 +1834,11 @@ class CartFragment(
                             paymentOfflineId,
                             orderOfflineId
                         )
+
+                        val cartList = viewModel.generateCombinedItems(viewModel.cartModel!!)
+                        cartList.openOrderType = Constants.PICK_UP
+                        cartList.orderType = ordertype
+                        cartList.orderTypeId = ordertypeId
 
                         val totalAmountTobeSave =
                             if (viewModel.redeemLoyaltyInfo.isLoyaltyApplied == true) {
@@ -1796,6 +1857,7 @@ class CartFragment(
                         future_delivery_date = formatterdate.format(date)
                         future_delivery_time = formattertime.format(date)
 
+                        LogUtil.logE(TAG, "UpdateOrderItemsList  ${cartList.items?.size}")
                         val request = viewModelPayment.createOpenOrderRequest(
                             cartList,
                             viewModel.subTotalPrice,
@@ -1820,8 +1882,11 @@ class CartFragment(
                             cashDiscountType
 
                         )
+                        isSaveOrder = true
                         viewModelPayment.saveOrder(true)
                         viewModelPayment.submit(request)
+
+
 
                         isOrderUpdate = false
                         binding.tvSave.text = getString(R.string.save)
@@ -1933,6 +1998,7 @@ class CartFragment(
             floorModel.tableType = cartlist.get(0).dineInList?.get(1)?.floorPlanTable?.tableType
             floorModel.tableNumber = cartlist.get(0).dineInList?.get(1)?.floorPlanTable?.tableNumber
             floorModel.chairCount = cartlist.get(0).dineInList?.get(1)?.floorPlanTable?.chairCount
+            floorModel.tableName = cartlist.get(0).dineInList?.get(1)?.floorPlanTable?.tableName
 
 
         }

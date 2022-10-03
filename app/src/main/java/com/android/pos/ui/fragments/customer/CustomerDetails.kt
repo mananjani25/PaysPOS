@@ -13,7 +13,6 @@ import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.*
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
-import com.android.pos.data.model.responseModel.OpenOrderResponse
 import com.android.pos.data.model.responseModel.orderhistory.Orders
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentCustomerDetailsBinding
@@ -22,6 +21,7 @@ import com.android.pos.ui.adapter.OrderHistoryAdapter
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.EventObserver
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.liveSnackBar
@@ -46,6 +46,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
     lateinit var prefProvider: PrefProvider
     lateinit var listOfTbItem: List<TbItem>
     lateinit var listOfItemsId: ArrayList<Int>
+    lateinit var listOfServiceCharge: ArrayList<TbServiceCharge>
 
     private val orderHistoryAdapter by lazy {
         OrderHistoryAdapter { view, order ->
@@ -91,6 +92,32 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
         viewModel.getReportSummary()
     }
 
+    private fun observerServiceCharge() {
+        viewModel.serviceCharges.observe(viewLifecycleOwner) {
+            if (prefProvider.getValueboolean(
+                    Constants.SERVICECHARGE_TAKEOUT_OPENORDER,
+                    false
+                )
+            ) {
+                Log.e(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
+                listOfServiceCharge = ArrayList()
+                it.data?.forEach { service ->
+                    if (service.order_type == Constants.SERVICECHARGE_TAKEOUT_OPENORDER) {
+                        listOfServiceCharge.add(service)
+                    }
+                }
+                Log.d(
+                    TAG,
+                    "getServiceCharges: finall " + Gson().toJson(listOfServiceCharge)
+                )
+
+            }else{
+                listOfServiceCharge = ArrayList()
+            }
+        }
+
+    }
+
     private fun initControls() {
         binding.nestedScrollView.isNestedScrollingEnabled = false
 
@@ -111,7 +138,6 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
 
         viewModel.customerId = customerModel.id.toString()
 
-        Log.e(TAG, "CustomerDetails:  ${Gson().toJson(customerModel)}")
         binding.txtEdit.setOnClickListener {
             val bundle: Bundle = bundleOf("isEdit" to true, "dataModel" to customerModel)
             findNavController().navigate(R.id.action_customer_to_addEditCustomer, bundle)
@@ -167,6 +193,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
                 itemlist.data.forEach { it ->
                     listOfItemsId.add(it.itemId)
                 }
+                listOfItemsId.add(1)
             }
         }
         viewModel.showProgress.observe(viewLifecycleOwner) { event ->
@@ -180,6 +207,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
         }
         viewModel.orderHistory.observe(viewLifecycleOwner, EventObserver { data ->
             if (data?.isNotEmpty() == true) {
+                observerServiceCharge()
                 binding.llOrderHistory.visible()
                 orderHistoryAdapter.add(data)
                 /*var point = 0.0
@@ -199,7 +227,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
         viewModel.orderResponse.observe(viewLifecycleOwner, EventObserver { order ->
             //reorder
             prefProvider.setValue(Constants.ORDER_TYPE, Constants.TAKEOUT)
-            Log.e("!_@_", "customer details ${order.orderType}")
+            LogUtil.logE("!_@_", "customer details ${order.orderType}")
             if (order.orderItems.size == 1) {
                 if (listOfItemsId.contains(order.orderItems[0].itemId)) {
                     if (order.customer != null) {
@@ -210,7 +238,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
                         prefProvider.setValueInt(Constants.CUSTOMER_ID, order.customer.id)
                         prefProvider.saveCustomerData(TbCustomer.customerMapping(order.customer))
                     }
-
+                    Log.e(TAG,"getOrderReOrder  ${Gson().toJson(order)}")
                     dashboardViewModel.addCart(
                         cartModel(order)
                     )
@@ -237,6 +265,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
                     prefProvider.saveCustomerData(TbCustomer.customerMapping(order.customer))
                 }
 
+                Log.e(TAG,"getOrderReOrder7  ${Gson().toJson(order)}")
                 dashboardViewModel.addCart(
                     cartModel(order)
                 )
@@ -262,7 +291,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
             orderTypeName = Constants.TAKEOUT
             futureDeliveryDate = order.date.toString()
             isOpenOrder = false
-            serviceCharge = serviceChargesList(order)
+            serviceCharge = listOfServiceCharge
             customer = assignCustomer(order)
             items = inventoryList(order)
             note = order.note
@@ -272,25 +301,26 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
                 itemDiscount += it.discountPrice
             }
             discountPrice = (order.totalDiscount - itemDiscount)
-            taxlistDynamic = getTaxBirfucationList(order.orderItems)
+            taxlistDynamic = getTaxBirfucationList(inventoryList(order)!!)
         }
     }
 
-    private fun getTaxBirfucationList(orderItems: List<GetOrderDetailsResponse.Data.OrderItem>): ArrayList<TaxData> {
+    private fun getTaxBirfucationList(orderItems: List<TbItem>): ArrayList<TaxData> {
         var taxListDynamic: ArrayList<TaxData> = arrayListOf()
         if (orderItems.isNotEmpty()) {
             orderItems.forEach { orderItem ->
-                var totalPrice = orderItem.price * orderItem.quantity
-                orderItem.orderItemModifiers.forEach { orderItemModifier ->
-                    totalPrice += orderItemModifier.price * orderItemModifier.quantity
+                var totalPrice =
+                    (orderItem.price * orderItem.itemQuantity) - orderItem.discountPrice
+                orderItem.modifiers.forEach { orderItemModifier ->
+                    totalPrice += orderItemModifier.price * orderItemModifier.itemQuantity
                 }
                 Log.d(TAG, "navigate: itemPrice : $totalPrice")
                 var totaltaxtemp = 0.0
-                orderItem.orderItemTaxes.forEach { orderItemTaxe ->
+                orderItem.taxes?.forEach { orderItemTaxe ->
                     if (taxListDynamic?.isNotEmpty() == true) {
                         var found = -1
                         taxListDynamic.forEachIndexed { index, taxData ->
-                            if (taxData.orderTaxId == orderItemTaxe.taxId) {
+                            if (taxData.id == orderItemTaxe.id) {
                                 found = index
                                 return@forEachIndexed
                             }
@@ -298,7 +328,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
                         if (found == -1) {
                             var taxData: TaxData = TaxData(
                                 orderItemTaxe.createdAt,
-                                orderItemTaxe.taxId,
+                                orderItemTaxe.id,
                                 0,
                                 orderItemTaxe.name,
                                 orderItemTaxe.rate,
@@ -308,8 +338,8 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
                                 orderItemTaxe.isDefault,
                                 false,
                                 "",
-                                listOf(orderItemTaxe.orderItemId),
-                                orderItemTaxe.taxId,
+                                orderItemTaxe.itemIds,
+                                orderItemTaxe.orderTaxId,
                                 false,
                                 getTaxFromTotalPrice(
                                     orderItemTaxe,
@@ -333,7 +363,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
                     } else {
                         var taxData: TaxData = TaxData(
                             orderItemTaxe.createdAt,
-                            orderItemTaxe.taxId,
+                            orderItemTaxe.id,
                             0,
                             orderItemTaxe.name,
                             orderItemTaxe.rate,
@@ -343,8 +373,8 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
                             orderItemTaxe.isDefault,
                             false,
                             "",
-                            listOf(orderItemTaxe.orderItemId),
-                            orderItemTaxe.taxId,
+                            orderItemTaxe.itemIds,
+                            orderItemTaxe.orderTaxId,
                             false,
                             getTaxFromTotalPrice(
                                 orderItemTaxe,
@@ -369,9 +399,9 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
 
 
     fun getTaxFromTotalPrice(
-        orderItemTaxe: GetOrderDetailsResponse.Data.OrderItem.OrderItemTaxe,
+        orderItemTaxe: TaxData,
         totalPrice: Double,
-        item: GetOrderDetailsResponse.Data.OrderItem
+        item: TbItem
     ): Double {
         var totaltaxtemp = 0.0
 
@@ -385,8 +415,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
                 val itemTaxPrice =
                     (orderItemTaxe.rate * totalPrice) / 100
                 Log.e("itemTaxPrice", "" + itemTaxPrice)
-                String.format("%.2f", itemTaxPrice)
-                    .toDouble()
+                itemTaxPrice
             }
 
         } else {
@@ -431,13 +460,13 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
     private fun assignCustomer(order: GetOrderDetailsResponse.Data): TbCustomer {
 
         val phoneList = ArrayList<TbPhones>()
-        order.customer?.phones?.forEach {
+        order.customer?.phones.forEach {
             val phone = TbPhones(it.id, it.phoneNumber)
             phoneList.add(phone)
         }
 
         val addressList = ArrayList<TbAddress>()
-        order.customer?.addresses?.forEach {
+        order.customer?.addresses.forEach {
             val address = TbAddress(
                 it.id,
                 it.address1,
@@ -457,11 +486,12 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
         }
 
         return TbCustomer(
-            order.customer?.id,
-            order.customer?.firstName?.toString(),
-            order.customer?.lastName?.toString(),
-            order.customer?.birthDate?.toString(),
-            order.customer?.email?.toString(),
+            order.customer.id,
+            order.customer.firstName?.toString(),
+            order.customer.lastName.toString(),
+            order.customer.birthDate?.toString(),
+            order.customer.email?.toString(),
+            false,
             false,
             0,
             order.customer?.company?.toString(),
@@ -475,43 +505,43 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
         val inventoryModelList = ArrayList<TbItem>()
 
         order.orderItems.forEach {
+            if (listOfItemsId.contains(it.itemId)){
+                val items = TbItem().apply {
+                    orderItemId = it.id
+                    itemId = it.itemId
+                    name = it.itemName
+                    cost = it.price
+                    price = it.price
+                    priceType = ""
+                    itemQuantity = it.quantity
+                    kitchenName = ""
+                    productCode = ""
+                    sku = ""
+                    isHide = false
+                    sort = 0
+                    imageUrl = ""
+                    thumbImageUrl = ""
+                    reorder = true
+                    categoryId = it.categoryId
+                    categoryName = ""
+                    taxes = taxes(it.orderItemTaxes, order.locationId, it.itemId)
+                    modifier_set_ids = modifiersIds(it.orderItemModifiers)
+                    modifiers = modifierSets(it.orderItemModifiers)
+                    discountPrice = it.discountAmount
+                    discountType = it.discountType.toString()
+                    if (it.discountId != null)
+                        discountId = it.discountId
+                    if (it.order_item_variation != null)
+                        variationsAttributes = variationAtt(it.order_item_variation)
+                    note = it.note
+                }
 
-            val items = TbItem().apply {
-                orderItemId = it.id
-                itemId = it.itemId
-                name = it.itemName
-                cost = it.price
-                price = it.price
-                priceType = ""
-                itemQuantity = it.quantity
-                kitchenName = ""
-                productCode = ""
-                sku = ""
-                isHide = false
-                sort = 0
-                imageUrl = ""
-                thumbImageUrl = ""
-                reorder = true
-                categoryId = it.categoryId
-                categoryName = ""
-                taxes = taxes(it.orderItemTaxes, order.locationId)
-                modifier_set_ids = modifiersIds(it.orderItemModifiers)
-                modifiers = modifierSets(it.orderItemModifiers)
-                discountPrice = it.discountAmount
-                discountType = it.discountType.toString()
-                if (it.discountId != null)
-                    discountId = it.discountId
-                if (it.order_item_variation != null)
-                    variationsAttributes = variationAtt(it.order_item_variation)
-                note = it.note
+                try {
+                    inventoryModelList.add(items)
+                } catch (e: Exception) {
+                    Log.d(TAG, "inventoryList: " + e.printStackTrace())
+                }
             }
-
-            try {
-                inventoryModelList.add(items)
-            } catch (e: Exception) {
-                Log.d(TAG, "inventoryList: " + e.printStackTrace())
-            }
-
         }
 
         return inventoryModelList
@@ -533,30 +563,31 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
 
     private fun taxes(
         taxs: List<GetOrderDetailsResponse.Data.OrderItem.OrderItemTaxe>,
-        locationId: Int
+        locationId: Int,
+        itemIdexist: Int
     ): List<TaxData>? {
-        val taxList = ArrayList<TaxData>()
-
-        taxs.forEach {
-            val tax = TaxData(
-                it.createdAt,
-                it.taxId,
-                locationId,
-                it.name,
-                it.rate,
-                it.taxType,
-                it.updatedAt,
-                true,
-                it.isDefault,
-                false,
-                "",
-                listOf(),
-                it.id
-            )
-            taxList.add(tax)
+        listOfTbItem.forEach { activeItems ->
+            if (activeItems.itemId == itemIdexist) {
+                var taxactive: ArrayList<TaxData> = arrayListOf()
+                activeItems.taxes?.forEach { taxData ->
+                    if (taxData.isActive) {
+                        taxData.locationId = locationId
+                        taxactive.add(taxData)
+                    }
+                }
+                return taxactive.toList()
+            } else if (itemIdexist == 1) {
+                var taxactive: ArrayList<TaxData> = arrayListOf()
+                activeItems.taxes?.forEach { taxData ->
+                    if (taxData.isActive) {
+                        taxData.locationId = locationId
+                        taxactive.add(taxData)
+                    }
+                }
+                return taxactive.toList()
+            }
         }
-
-        return taxList
+        return emptyList()
     }
 
     private fun modifierSets(orderItemModifiers: List<GetOrderDetailsResponse.Data.OrderItem.OrderItemModifier>): List<Modifier> {

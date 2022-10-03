@@ -19,6 +19,7 @@ import com.android.pos.data.remote.Constants.BUSINESS_UPDATE
 import com.android.pos.data.remote.Constants.CASH_EVENTS
 import com.android.pos.data.remote.Constants.CATEGORY
 import com.android.pos.data.remote.Constants.CATEGORY_UPDATE_DELETE
+import com.android.pos.data.remote.Constants.CHECK_PERMISSION_MANAGER
 import com.android.pos.data.remote.Constants.CLOCK_OUT
 import com.android.pos.data.remote.Constants.CREATE_QUEUE_PRINTER
 import com.android.pos.data.remote.Constants.CUSTOMERS
@@ -52,7 +53,6 @@ import com.android.pos.data.remote.Constants.ITEMS
 import com.android.pos.data.remote.Constants.ITEM_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.KITCHEN_RECEIPT_SETTINGS
 import com.android.pos.data.remote.Constants.KITCHEN_RECEIPT_UPDATE_SEETINGS
-import com.android.pos.data.remote.Constants.LOCK_SCREEN_TRANSACTION
 import com.android.pos.data.remote.Constants.LOGIN_TERMINAL
 import com.android.pos.data.remote.Constants.LOGOUT
 import com.android.pos.data.remote.Constants.LOYALTY_POINT
@@ -130,6 +130,11 @@ interface ApiService {
         @Query("device_token") device_token: String
     ): TerminalResponse
 
+    @GET(CHECK_PERMISSION_MANAGER)
+    suspend fun checkEmployeeRole(
+        @Query("passcode") passcode: String
+    ): PasscodeManagerModel
+
 
     @FormUrlEncoded
     @POST(EMPLOYEE_CLOCK_IN)
@@ -149,10 +154,16 @@ interface ApiService {
 
     @FormUrlEncoded
     @POST(LOGOUT)
-    suspend fun userLogOut(@FieldMap option: HashMap<String, String>): BaseResponse
+    suspend fun userLogOut(
+        @FieldMap option: HashMap<String, String>,
+        @Query("terminal_id") terminalId: String
+    ): BaseResponse
 
     @GET(SYNC_VENUE_DATA)
-    suspend fun syncVenueData(): VenueDataResponse
+    suspend fun syncVenueData(
+        @Query("terminal_id") terminalId: Int,
+        @Query("time_stamp") timeStamp: String = ""
+    ): VenueDataResponse
 
     @GET(GET_PRINTERS)
     suspend fun getPrinterList(@Query("terminal_id") terminalId: Int): PrinterResponse
@@ -209,7 +220,11 @@ interface ApiService {
     ): BaseResponse
 
     @GET(SYNC_VENUE_DETAILS)
-    suspend fun syncVenueDetails(@Query("terminal_id") terminalId: Int): VenueDetailsResponse
+    suspend fun syncVenueDetails(
+        @Query("terminal_id") terminalId: Int,
+        @Query("new_logic") newLogic: Boolean,
+        @Query("time_stamp") timeStamp: String = ""
+    ): VenueDetailsResponse
 
     @GET(ONLINE_ORDER_NOTIFICATION_COUNT)
     suspend fun getCountOnlineOrdering(): OnlineOrderNotificationCount
@@ -304,7 +319,7 @@ interface ApiService {
     suspend fun getServiceChargeList(): GetServiceChargeResponse
 
     @GET(SERVICE_CHARGE_WHOLE)
-    suspend fun getServiceChargeWholeList(): ServiceChargeListResponse
+    suspend fun getServiceChargeWholeList(@Query("terminal_id") terminalId: Int): ServiceChargeListResponse
 
     @GET(LOYALTY_POINT)
     suspend fun loyaltyPointList(): LoyaltyPointResponse
@@ -521,7 +536,13 @@ interface ApiService {
     @PUT(HIDE_ITEM)
     suspend fun hideItem(
         @Path("id") id: Int,
-        @Query("is_active") is_active: Boolean,
+        @Query("hide_status") hide_status: String,
+    ): BaseResponse
+
+    @PUT(HIDE_ITEM)
+    suspend fun hideItemWebsite(
+        @Path("id") id: Int,
+        @Query("website_hide_status") website_hide_status: String,
     ): BaseResponse
 
     @GET(ITEMS)

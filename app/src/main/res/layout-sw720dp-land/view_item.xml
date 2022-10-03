@@ -32,10 +32,11 @@
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_27sdp"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                >
 
 
-                <androidx.appcompat.widget.AppCompatImageView
+              <!--  <androidx.appcompat.widget.AppCompatImageView
                     profileImage="@{model.imageUrl != null ? model.imageUrl : null}"
                     android:layout_width="@dimen/_30sdp"
                     android:layout_height="@dimen/_27sdp"
@@ -43,7 +44,7 @@
                     thumbHolder="@{model.thumbImageUrl != null ? model.thumbImageUrl : null}"
                     android:scaleType="centerCrop"
                     android:src="@drawable/ic_item_placeholder"
-                    app:srcCompat="@drawable/ic_item_placeholder" />
+                    app:srcCompat="@drawable/ic_item_placeholder" />-->
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontSemiBold"

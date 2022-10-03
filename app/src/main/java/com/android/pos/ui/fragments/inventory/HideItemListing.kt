@@ -21,6 +21,7 @@ import com.android.pos.data.entities.TbItem
 import com.android.pos.databinding.FragmentItemsBinding
 import com.android.pos.ui.adapter.ItemListAdapter
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.extensions.alert
@@ -100,7 +101,7 @@ class HideItemListing(val clickedPosition: Int) : Fragment(), ItemCallback {
 
                 val oldPos = viewHolder.bindingAdapterPosition
                 val newPos = target.bindingAdapterPosition
-                Log.e(
+                LogUtil.logE(
                     "reorder after", "" + ":::" + ":::" +
                             viewHolder.bindingAdapterPosition.toString() + " :::  " + target.bindingAdapterPosition.toString()
                 )
@@ -111,7 +112,7 @@ class HideItemListing(val clickedPosition: Int) : Fragment(), ItemCallback {
 
                 val a = adapter.getItem(dragFrom).sort
                 val b = adapter.getItem(dragTo).sort
-                Log.e("onItemMove", "$a:: $b")
+                LogUtil.logE("onItemMove", "$a:: $b")
 
 
 
@@ -135,7 +136,7 @@ class HideItemListing(val clickedPosition: Int) : Fragment(), ItemCallback {
 
                 if (dragFrom != -1 && dragTo != -1 && dragFrom != dragTo) {
 
-                    Log.e("clearView", "$dragFrom :: $dragTo")
+                    LogUtil.logE("clearView", "$dragFrom :: $dragTo")
                     reallyMoved(
                         adapter.getItem(dragFrom).sort,
                         adapter.getItem(dragTo).sort,
@@ -161,7 +162,7 @@ class HideItemListing(val clickedPosition: Int) : Fragment(), ItemCallback {
 
     private fun itemsObserver() {
 
-        viewModel.showItemsList.observe(viewLifecycleOwner) {
+        viewModel.hideItemsListPos.observe(viewLifecycleOwner) {
 
             it?.let { resource ->
                 when (resource.status) {
@@ -253,7 +254,7 @@ class HideItemListing(val clickedPosition: Int) : Fragment(), ItemCallback {
     private fun reallyMoved(oldPos: Int, newPos: Int, categoryId: Int?, inventoryId: Int?) {
         if (categoryId != null) {
             isreOrder = true
-            Log.e("reallyMoved", "$oldPos :: $newPos")
+            LogUtil.logE("reallyMoved", "$oldPos :: $newPos")
             viewModel.reOrderItem(inventoryId!!, newPos, oldPos)
         }
 
@@ -264,7 +265,7 @@ class HideItemListing(val clickedPosition: Int) : Fragment(), ItemCallback {
         popupMenu?.menuInflater?.inflate(R.menu.edit_delete__hide_menu, popupMenu.menu)
         popupMenu?.menu?.findItem(R.id.menu_edit)?.isVisible = false
         popupMenu?.menu?.findItem(R.id.menu_delete)?.isVisible = false
-        popupMenu?.menu?.findItem(R.id.menu_hide)?.setTitle("Unhide")
+        popupMenu?.menu?.findItem(R.id.menu_hide)?.title = "Unhide For POS"
         popupMenu?.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.menu_hide -> {
@@ -273,9 +274,7 @@ class HideItemListing(val clickedPosition: Int) : Fragment(), ItemCallback {
                         getString(R.string.unhide_item_message)
                     ) {
                         positiveButton(getString(R.string.activate)) {
-                            deleteAndHide = true
-                            deleteObj = adapter.getItem(pos)
-                            viewModel.deleteAndHide(deleteObj!!.itemId, deleteAndHide, true)
+                            viewModel.unHideItems(adapter.getItem(pos).itemId,"pos")
                         }
                         negativeButton(R.string.tv_cancel) {
                             // Do negative stuff here

@@ -20,6 +20,7 @@ import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.databinding.CreateCategoryActivityBinding
 import com.android.pos.ui.adapter.CategoryListItemAdapter
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
@@ -134,7 +135,7 @@ class CreateCategory : Fragment() {
             Constants.DIALOG_IMAGE_PATH
         )?.observe(viewLifecycleOwner) { result ->
             // Do something with the result.
-            Log.e("!_@_ image path", result)
+            LogUtil.logE("!_@_ image path", result)
             viewProfile(result)
         }
     }
@@ -147,7 +148,7 @@ class CreateCategory : Fragment() {
 
     private fun navigationObserver() {
 
-        viewModel.data.observe(viewLifecycleOwner, { event ->
+        viewModel.data.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { createOptionResponse ->
 
                 activity?.let {
@@ -163,12 +164,12 @@ class CreateCategory : Fragment() {
                     }
                 }
             }
-        })
+        }
     }
 
     private fun observeShowProgress() {
 
-        viewModel.showProgress.observe(viewLifecycleOwner, { event ->
+        viewModel.showProgress.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
                     ProgressUtils.showProgressDialog(requireActivity())
@@ -176,7 +177,7 @@ class CreateCategory : Fragment() {
                     ProgressUtils.dismissProgressDialog()
                 }
             }
-        })
+        }
 
     }
 
@@ -190,7 +191,7 @@ class CreateCategory : Fragment() {
 
     private fun getInventoryListObserver() {
 
-        viewModel.items.observe(viewLifecycleOwner, {
+        viewModel.items.observe(viewLifecycleOwner) {
 
             it?.let { resource ->
                 when (resource.status) {
@@ -213,7 +214,7 @@ class CreateCategory : Fragment() {
             }
 
 
-        })
+        }
 
     }
 

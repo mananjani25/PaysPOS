@@ -1,5 +1,6 @@
 package com.android.pos.ui.dialog
 
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.graphics.Point
 import android.graphics.drawable.ColorDrawable
@@ -8,6 +9,8 @@ import android.os.Bundle
 import android.text.InputFilter
 import android.text.Spanned
 import android.view.*
+import androidx.appcompat.widget.AppCompatTextView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
@@ -15,10 +18,13 @@ import com.android.pos.R
 import com.android.pos.databinding.AddOnlineTimeDiialogBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.extensions.gone
+import com.android.pos.utils.extensions.visible
 
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
 class AddOnlineTimeDialog : DialogFragment() {
@@ -30,8 +36,11 @@ class AddOnlineTimeDialog : DialogFragment() {
     private var isFromTransaction = false
     lateinit var binding: AddOnlineTimeDiialogBinding
     var doneOnce = false
+    var finalstring = ""
     var timeFilter: InputFilter? = null
     var order_id: Int? = null
+    var isSelected = false
+    var listTextView: ArrayList<AppCompatTextView> = arrayListOf()
 
     companion object {
         fun newInstance() = AddOnlineTimeDialog()
@@ -46,15 +55,120 @@ class AddOnlineTimeDialog : DialogFragment() {
         }
         dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
         val back = ColorDrawable(Color.WHITE)
-        val inset = InsetDrawable(back, 150, 100, 150, 130)
+        val inset = InsetDrawable(back, 150, 300, 150, 300)
         dialog?.window?.setBackgroundDrawable(inset);
 
         binding.txtTitle?.text = getString(R.string.add_time_online)
         setupData()
         setKeyPad()
+        listTextView.add(binding.txt15)
+        listTextView.add(binding.txt30)
+        listTextView.add(binding.txt45)
+        listTextView.add(binding.txt60)
+        listTextView.add(binding.customMinutes)
+        setUpClickForMinutes()
 
     }
 
+
+    private fun setUpClickForMinutes() {
+        binding.txt15.setOnClickListener {
+            val back = ColorDrawable(Color.WHITE)
+            val inset = InsetDrawable(back, 150, 300, 150, 300)
+            dialog?.window?.setBackgroundDrawable(inset);
+            finalstring = "15"
+            isSelected = true
+            binding.linearCustom.gone()
+            listTextView = arrayListOf()
+            listTextView.add(binding.txt30)
+            listTextView.add(binding.txt45)
+            listTextView.add(binding.txt60)
+            listTextView.add(binding.customMinutes)
+            setBackGroundAndTextColor(listTextView, binding.txt15)
+
+        }
+        binding.txt30.setOnClickListener {
+            val back = ColorDrawable(Color.WHITE)
+            val inset = InsetDrawable(back, 150, 300, 150, 300)
+            dialog?.window?.setBackgroundDrawable(inset);
+            finalstring = "30"
+            isSelected = true
+            binding.linearCustom.gone()
+            listTextView = arrayListOf()
+            listTextView.add(binding.txt15)
+            listTextView.add(binding.txt45)
+            listTextView.add(binding.txt60)
+            listTextView.add(binding.customMinutes)
+            setBackGroundAndTextColor(listTextView, binding.txt30)
+
+        }
+        binding.txt45.setOnClickListener {
+            val back = ColorDrawable(Color.WHITE)
+            val inset = InsetDrawable(back, 150, 300, 150, 300)
+            dialog?.window?.setBackgroundDrawable(inset);
+            finalstring = "45"
+            isSelected = true
+            binding.linearCustom.gone()
+            listTextView = arrayListOf()
+            listTextView.add(binding.txt30)
+            listTextView.add(binding.txt15)
+            listTextView.add(binding.txt60)
+            listTextView.add(binding.customMinutes)
+            setBackGroundAndTextColor(listTextView, binding.txt45)
+        }
+        binding.txt60.setOnClickListener {
+            val back = ColorDrawable(Color.WHITE)
+            val inset = InsetDrawable(back, 150, 300, 150, 300)
+            dialog?.window?.setBackgroundDrawable(inset);
+            binding.linearCustom.gone()
+            finalstring = "60"
+            isSelected = true
+            listTextView = arrayListOf()
+            listTextView.add(binding.txt30)
+            listTextView.add(binding.txt45)
+            listTextView.add(binding.txt15)
+            listTextView.add(binding.customMinutes)
+            setBackGroundAndTextColor(listTextView, binding.txt60)
+
+        }
+        binding.customMinutes.setOnClickListener {
+
+            val back = ColorDrawable(Color.WHITE)
+            val inset = InsetDrawable(back, 150, 80, 150, 110)
+            dialog?.window?.setBackgroundDrawable(inset);
+            finalstring = ""
+            isSelected = false
+            binding.linearCustom.visible()
+            listTextView = arrayListOf()
+            listTextView.add(binding.txt30)
+            listTextView.add(binding.txt45)
+            listTextView.add(binding.txt60)
+            listTextView.add(binding.txt15)
+            setBackGroundAndTextColor(listTextView, binding.customMinutes)
+
+        }
+    }
+
+
+    @SuppressLint("ResourceType")
+    fun setBackGroundAndTextColor(
+        unselectedList: ArrayList<AppCompatTextView>,
+        selectedTextView: AppCompatTextView
+    ) {
+        for (i in unselectedList.indices) {
+            unselectedList[i].setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+            unselectedList[i].background =
+                ContextCompat.getDrawable(requireContext(), R.drawable.border_with_field)
+        }
+        selectedTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+        selectedTextView.setBackgroundColor(
+            ContextCompat.getColor(
+                requireContext(),
+                R.color.btnColor
+            )
+        )
+
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -128,15 +242,20 @@ class AddOnlineTimeDialog : DialogFragment() {
         }
 
         binding.txtSave.setOnClickListener {
-            var finalstring = binding.edtAmount.text.toString()
+            if (!isSelected) {
+                finalstring = binding.edtAmount.text.toString()
+            }
             if (finalstring.isEmpty()) {
-                AlertUtils.showCustomAlert(requireContext(), "Please enter Time")
+                AlertUtils.showCustomAlert(requireContext(), "Please Select Time Or Enter Custom Time.")
             } else {
                 val result = Bundle().apply {
                     putInt("time", finalstring.toInt())
                     order_id?.let { it1 -> putInt("order_id", it1) }
                 }
-                requireActivity().supportFragmentManager.setFragmentResult("request_key_time", result)
+                requireActivity().supportFragmentManager.setFragmentResult(
+                    "request_key_time",
+                    result
+                )
 
                 findNavController().navigateUp()
             }

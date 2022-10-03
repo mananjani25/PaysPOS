@@ -11,8 +11,8 @@ import android.app.DatePickerDialog
 import android.location.Geocoder
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
@@ -27,8 +27,10 @@ import com.android.pos.data.model.requestModel.CreateCustomerRequestModel
 import com.android.pos.databinding.FragmentAddEditCustomerBinding
 import com.android.pos.ui.adapter.AddressListAdapter
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
+import com.android.pos.utils.extensions.runOnUiThread
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
@@ -51,6 +53,7 @@ class AddEditCustomer : Fragment() {
     private var country = arrayOf("United States", "Canada")
 
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -68,6 +71,20 @@ class AddEditCustomer : Fragment() {
         showObserveProgress()
         navigate()
         setPhoneCountry()
+
+
+
+
+        binding.edtStreet?.setOnTouchListener { view, event ->
+                binding.nestedScrollView?.smoothScrollTo(500,500)
+            false
+        }
+
+        binding.edtStreetDel?.setOnTouchListener { view, event ->
+            binding.nestedScrollView?.smoothScrollTo(500,500)
+            false
+        }
+
 
         return binding.root
     }
@@ -107,9 +124,9 @@ class AddEditCustomer : Fragment() {
     private fun setAddress() {
 
         adapter = AddressListAdapter(refreshCallBack = { adapterPos ->
-            Log.e(TAG, "callback")
+            LogUtil.logE(TAG, "callback")
             if (::adapter.isInitialized) {
-                Log.e(TAG, "notify list")
+                LogUtil.logE(TAG, "notify list")
                 activity?.runOnUiThread {
                     adapter.notifyItemChanged(adapterPos)
                 }
@@ -120,7 +137,7 @@ class AddEditCustomer : Fragment() {
     }
 
     private fun showObserveProgress() {
-        viewModel.showProgress.observe(viewLifecycleOwner, { event ->
+        viewModel.showProgress.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
                     ProgressUtils.showProgressDialog(requireActivity())
@@ -129,7 +146,7 @@ class AddEditCustomer : Fragment() {
                 }
             }
 
-        })
+        }
     }
 
     private fun setUpSnackBar() {
@@ -138,24 +155,11 @@ class AddEditCustomer : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-//        modelAddress = CreateCustomerRequestModel.Customer.Addresses(
-//            null,
-//            "",
-//            "",
-//            "",
-//            "",
-//            "",
-//            "",
-//            "",
-//            0.0,
-//            0.0,
-//        )
 
-//        setAddress()
         onClick()
         setPlaceApi()
         isEdit = requireArguments().getBoolean("isEdit", false)
-        Log.e(TAG, "isEdit  $isEdit")
+        LogUtil.logE(TAG, "isEdit  $isEdit")
 
         binding.chkIsLoyalty.setOnClickListener {
             viewModel.enroll_to_loyalty.value = binding.chkIsLoyalty.isChecked
@@ -182,16 +186,22 @@ class AddEditCustomer : Fragment() {
             viewModel.addCustomerDetails.value?.data?.enroll_to_loyalty =
                 editModel?.enroll_to_loyalty
 
+            viewModel.addCustomerDetails.value?.data?.same_as_billing_address =
+                editModel?.same_as_billing_address
+
 
 
             viewModel.addCustomerDetails.value?.data?.enroll_to_loyalty?.let {
                 binding.chkIsLoyalty.isChecked = it
             }
+            viewModel.addCustomerDetails.value?.data?.same_as_billing_address?.let {
+                binding.chksameasbilling.isChecked = it
+            }
 
 
-            /*Log.e(TAG, "Date  ${getDay(editModel?.birth_date!!)}")
-            Log.e(TAG, "Month  ${getMonth(editModel?.birth_date!!)}")
-            Log.e(TAG, "Year  ${getYear(editModel?.birth_date!!)}")*/
+            /*LogUtil.logE(TAG, "Date  ${getDay(editModel?.birth_date!!)}")
+            LogUtil.logE(TAG, "Month  ${getMonth(editModel?.birth_date!!)}")
+            LogUtil.logE(TAG, "Year  ${getYear(editModel?.birth_date!!)}")*/
             viewModel.addCustomerDetails.value?.data?.birth_day =
                 if (editModel?.birth_date?.isNotEmpty() == true) {
                     editModel?.birth_date?.let {
@@ -282,6 +292,9 @@ class AddEditCustomer : Fragment() {
                 binding.edtBirthDay.text = formattedDate
             }
 
+        } else {
+            viewModel.enroll_to_loyalty.value = true
+            viewModel.same_as_billing_address.value = false
         }
 
         binding.header.imgBack.setOnClickListener {
@@ -289,7 +302,7 @@ class AddEditCustomer : Fragment() {
         }
 
         binding.edtBirthDay.setOnClickListener {
-            Log.e(TAG, "DatePicker  ")
+            LogUtil.logE(TAG, "DatePicker  ")
             showDatePicker()
 
         }
@@ -360,21 +373,23 @@ class AddEditCustomer : Fragment() {
 
                     if (placeDetails.address.isNotEmpty()) {
                         try {
-                            binding.edtStreet?.setText(street)
-                            binding.edtSuite?.setText(suite)
-                            binding.edtCity?.setText(city)
-                            binding.edtState?.setText(state)
-                            binding.edtZip?.setText(zip)
-                            binding.edtStreet?.dismissDropDown()
+                            runOnUiThread {
+                                binding.edtStreet?.setText(street)
+                                binding.edtSuite?.setText(suite)
+                                binding.edtCity?.setText(city)
+                                binding.edtState?.setText(state)
+                                binding.edtZip?.setText(zip)
+                                binding.edtStreet?.dismissDropDown()
+                            }
                         } catch (e: Exception) {
-                            Log.e(TAG, "exception in pplaces api")
+                            LogUtil.logE(TAG, "exception in pplaces api")
                         } finally {
                             binding.edtStreet?.dismissDropDown()
-                            Log.e(TAG, "notify callback")
+                            LogUtil.logE(TAG, "notify callback")
                         }
                     }
 
-                    Log.e(TAG, "placeDetails:  ${Gson().toJson(placeDetails.name)}")
+                    LogUtil.logE(TAG, "placeDetails:  ${Gson().toJson(placeDetails.name)}")
 
                 }
 
@@ -382,7 +397,7 @@ class AddEditCustomer : Fragment() {
         }
 
         binding.edtStreetDel?.setAdapter(PlacesAutoCompleteAdapter(binding.root.context, placesApi))
-        binding.edtStreetDel?.setOnItemClickListener { parent, view, position, id ->
+        binding.edtStreetDel.setOnItemClickListener { parent, view, position, id ->
             val place = parent.getItemAtPosition(position) as Place
 
             //binding.edtStreet.setText("${place.description}")
@@ -396,7 +411,7 @@ class AddEditCustomer : Fragment() {
 
                     val gcd = Geocoder(requireContext(), Locale.getDefault())
                     /* val address: List<Address> =
-                         gcd.getFromLocation(placeDetails.lat, placeDetails.lng, 1)*/
+                             gcd.getFromLocation(placeDetails.lat, placeDetails.lng, 1)*/
 
                     var street = ""
                     var suite = ""
@@ -435,21 +450,23 @@ class AddEditCustomer : Fragment() {
 
                     if (placeDetails.address.isNotEmpty()) {
                         try {
-                            binding.edtStreetDel?.setText(street)
-                            binding.edtSuiteDel?.setText(suite)
-                            binding.edtCityDel?.setText(city)
-                            binding.edtStateDel?.setText(state)
-                            binding.edtZipDel?.setText(zip)
-                            binding.edtStreetDel?.dismissDropDown()
+                            runOnUiThread {
+                                binding.edtStreetDel?.setText(street)
+                                binding.edtSuiteDel?.setText(suite)
+                                binding.edtCityDel?.setText(city)
+                                binding.edtStateDel?.setText(state)
+                                binding.edtZipDel?.setText(zip)
+                                binding.edtStreetDel?.dismissDropDown()
+                            }
                         } catch (e: Exception) {
-                            Log.e(TAG, "exception in pplaces api")
+                            LogUtil.logE(TAG, "exception in pplaces api")
                         } finally {
                             binding.edtStreetDel?.dismissDropDown()
-                            Log.e(TAG, "notify callback")
+                            LogUtil.logE(TAG, "notify callback")
                         }
                     }
 
-                    Log.e(TAG, "placeDetails:  ${Gson().toJson(placeDetails.name)}")
+                    LogUtil.logE(TAG, "placeDetails:  ${Gson().toJson(placeDetails.name)}")
 
                 }
 
@@ -523,78 +540,63 @@ class AddEditCustomer : Fragment() {
 
     @SuppressLint("NotifyDataSetChanged")
     private fun onClick() {
-//        binding.imgAddressAdd.setOnClickListener {
-//
-//            Log.e(TAG, "adapterGetAddress  ${Gson().toJson(adapter.getList())}")
-//            if (adapter.getList().isEmpty()) {
-//                modelAddress = CreateCustomerRequestModel.Customer.Addresses()
-//                modelAddress.apply {
-//                    latitude = 0.0
-//                    longitude = 0.0
-//                }
-//                adapter.addData(
-//                    modelAddress
-//                )
-//
-//            } else if (adapter.getList()[adapter.getList().size - 1].address1.isNotEmpty() || adapter.getList()[adapter.getList().size - 1].city.isNotEmpty() || adapter.getList()
-//                    .get(adapter.getList().size - 1)._destroy == "true"
-//            ) {
-//                Log.d("yash", "onClick: " + adapter.getList()[adapter.getList().size - 1].address1)
-//                modelAddress = CreateCustomerRequestModel.Customer.Addresses()
-//                modelAddress.apply {
-//                    latitude = 0.0
-//                    longitude = 0.0
-//                }
-//                adapter.addData(
-//                    modelAddress
-//                )
-//            }
-//
-//        }
+
 
         binding.header.txtSave.setOnClickListener {
             if (isEdit) {
                 var id1: Int? = null
                 var id2: Int? = null
 
-                if(viewModel.listAddress.size==1){
+                if (viewModel.listAddress.size == 2) {
                     id1 = viewModel.listAddress[0].id!!
-                }else if(viewModel.listAddress.size==2){
                     id2 = viewModel.listAddress[1].id!!
+                } else if (viewModel.listAddress.size == 1) {
+
+                    if (viewModel.listAddress[0].type_of_address == "Billing") {
+                        id1 = viewModel.listAddress[0].id!!
+                    } else if (viewModel.listAddress[0].type_of_address == "Shipping") {
+                        id2 = viewModel.listAddress[0].id!!
+                    }
                 }
+//                if (viewModel.listAddress.size == 1) {
+//                    id1 = viewModel.listAddress[0].id!!
+//                } else if (viewModel.listAddress.size == 2) {
+//                    id2 = viewModel.listAddress[1].id!!
+//                }
                 listAddress = arrayListOf()
 
-
-                listAddress.add(
-                    CreateCustomerRequestModel.Customer.Addresses(
-                        id1,
-                        binding.edtStreet?.text.toString(),
-                        "",
-                        binding.edtCity?.text.toString(),
-                        binding.edtState?.text.toString(),
-                        binding.edtAddress?.selectedItem.toString(),
-                        binding.edtZip?.text.toString(),
-                        "Billing",
-                        0.0,
-                        0.0,
-                        "false"
+                if (binding.edtStreet?.text.toString().isNotEmpty())
+                    listAddress.add(
+                        CreateCustomerRequestModel.Customer.Addresses(
+                            id1,
+                            binding.edtStreet?.text.toString(),
+                            "",
+                            binding.edtCity?.text.toString(),
+                            binding.edtState?.text.toString(),
+                            binding.edtAddress?.selectedItem.toString(),
+                            binding.edtZip?.text.toString(),
+                            "Billing",
+                            0.0,
+                            0.0,
+                            "false"
+                        )
                     )
-                )
-                listAddress.add(
-                    CreateCustomerRequestModel.Customer.Addresses(
-                        id2,
-                        binding.edtStreetDel?.text.toString(),
-                        "",
-                        binding.edtCityDel?.text.toString(),
-                        binding.edtStateDel?.text.toString(),
-                        binding.edtAddressDel?.selectedItem.toString(),
-                        binding.edtZipDel?.text.toString(),
-                        "Shipping",
-                        0.0,
-                        0.0,
-                        "false"
+                if (binding.edtStreetDel?.text.toString().isNotEmpty())
+                    listAddress.add(
+                        CreateCustomerRequestModel.Customer.Addresses(
+                            id2,
+                            binding.edtStreetDel?.text.toString(),
+                            "",
+                            binding.edtCityDel?.text.toString(),
+                            binding.edtStateDel?.text.toString(),
+                            binding.edtAddressDel?.selectedItem.toString(),
+                            binding.edtZipDel?.text.toString(),
+                            "Shipping",
+                            0.0,
+                            0.0,
+                            "false"
+                        )
                     )
-                )
             } else {
                 listAddress = arrayListOf()
                 if (binding.edtStreet?.text.toString().isNotEmpty())
@@ -632,6 +634,28 @@ class AddEditCustomer : Fragment() {
             }
 
             viewModel.submit(listAddress)
+        }
+        binding.chksameasbilling.setOnClickListener {
+            viewModel.same_as_billing_address.value = binding.chksameasbilling.isChecked
+            if (binding.chksameasbilling.isChecked) {
+                binding.edtStreetDel.setText(binding.edtStreet.text.toString())
+                binding.edtSuiteDel.setText(binding.edtSuite.text.toString())
+                binding.edtCityDel.setText(binding.edtCity.text.toString())
+                binding.edtStateDel.setText(binding.edtState.text.toString())
+                binding.edtZipDel.setText(binding.edtZip.text.toString())
+                if (binding.edtAddress.selectedItem.toString() == "United States") {
+                    binding.edtAddressDel.setSelection(0)
+                } else {
+                    binding.edtAddressDel.setSelection(1)
+                }
+            } else {
+                binding.edtStreetDel.setText("")
+                binding.edtSuiteDel.setText("")
+                binding.edtCityDel.setText("")
+                binding.edtStateDel.setText("")
+                binding.edtZipDel.setText("")
+                binding.edtAddressDel?.setSelection(0)
+            }
         }
     }
 
@@ -675,13 +699,13 @@ class AddEditCustomer : Fragment() {
             )
         datePicker.datePicker.maxDate = System.currentTimeMillis()
         datePicker.show()
-        Log.e(TAG, "DatePickerInside  ")
+        LogUtil.logE(TAG, "DatePickerInside  ")
     }
 
     private fun navigate() {
 
-        Log.e(TAG, "POPBACKCUSTOMER")
-        viewModel._Basedata.observe(viewLifecycleOwner, { event ->
+        LogUtil.logE(TAG, "POPBACKCUSTOMER")
+        viewModel._Basedata.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { baseResponse ->
                 activity?.let {
                     AlertUtils.showCustomAlertWithListenerWithOK(
@@ -701,7 +725,7 @@ class AddEditCustomer : Fragment() {
 
                 }
             }
-        })
+        }
 
     }
 

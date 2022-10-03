@@ -91,7 +91,30 @@
                         android:id="@+id/flBarCodeReset"
                         android:layout_width="wrap_content"
                         android:layout_height="@dimen/_40sdp"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="@dimen/_10sdp"
+                        android:layout_marginBottom="@dimen/_25sdp"
                         android:background="@color/bg_color"
+                        android:paddingStart="@dimen/_35sdp"
+                        android:paddingEnd="@dimen/_35sdp" />
+
+                    <TextView
+                        style="@style/ResetStyle"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:text="OR"
+                        android:textSize="@dimen/_10ssp"
+                        android:textStyle="bold" />
+
+
+                    <TextView
+                        style="@style/ResetStyle"
+                        android:text="\n2. Attach your cabled scanner to your device and scan the barcode to connect with this app." />
+
+                    <FrameLayout
+                        android:id="@+id/snapi_barcode"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_40sdp"
                         android:layout_gravity="center"
                         android:layout_marginTop="@dimen/_10sdp"
                         android:layout_marginBottom="@dimen/_25sdp"

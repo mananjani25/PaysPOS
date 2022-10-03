@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.entities.VariationsAttribute
 import com.android.pos.databinding.ViewBoldVariationsBinding
+import com.android.pos.utils.LogUtil
 
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.callback.ItemCallback
@@ -50,7 +51,7 @@ class VariationListAdapter() :
                 it
             )
         }
-        Log.e(TAG, "mpos:  ${mpos}")
+        LogUtil.logE(TAG, "mpos:  ${mpos}")
 
         itemBinding.linearParent.isSelected = mpos == position
 
@@ -136,7 +137,6 @@ class VariationListAdapter() :
             for (i in 0 until variationList.size) {
                 val variation = variationList[i]
                 if (variation.id == id) {
-                    Log.e(TAG,"positionChafnf ${i}")
                     mpos = i
                     notifyItemChanged(mpos)
 

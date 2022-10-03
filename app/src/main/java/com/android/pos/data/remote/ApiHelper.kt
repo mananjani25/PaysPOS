@@ -1,10 +1,10 @@
 package com.android.pos.data.remote
 
-import android.util.Log
 import com.android.pos.data.entities.TbBusinessDetails
 import com.android.pos.data.entities.VariationsAttribute
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.utils.FileUtils.getContentType
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 import javax.inject.Inject
 
@@ -13,6 +13,9 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun userLogIn(data: HashMap<String, String>) = getResult { apiService.userLogIn(data) }
     suspend fun getDefaultTerminal(uniq_id: String, device_token: String) =
         getResult { apiService.getDefaultTerminal(uniq_id, device_token) }
+
+    suspend fun checkPermissionRole(passcode: String) =
+        getResult { apiService.checkEmployeeRole(passcode) }
 
     suspend fun employeeClockIn(data: HashMap<String, String>) =
         getResult { apiService.employeeClockIn(data) }
@@ -26,10 +29,10 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun forgotPassword(data: HashMap<String, String>) =
         getResult { apiService.forgotPassword(data) }
 
-    suspend fun syncVenueData() =
-        getResult { apiService.syncVenueData() }
+    suspend fun syncVenueData(terminalId: Int,timeStamp:String) =
+        getResult { apiService.syncVenueData(terminalId,timeStamp) }
 
-    suspend fun getPrinterData(terminalId:Int) =
+    suspend fun getPrinterData(terminalId: Int) =
         getResult { apiService.getPrinterList(terminalId) }
 
     suspend fun createPrinter(data: CreatePrinterRequestModel) = getResult {
@@ -57,8 +60,8 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun updateServiceChargeDininEnable(id: Int, enable_service_charge: Boolean) =
         getResult { apiService.updateServiceChargeDineinEnable(id, enable_service_charge) }
 
-    suspend fun syncVenueDetails(terminalId:Int) =
-        getResult { apiService.syncVenueDetails(terminalId) }
+    suspend fun syncVenueDetails(terminalId: Int,timeStamp:String) =
+        getResult { apiService.syncVenueDetails(terminalId, true,timeStamp) }
 
 
     suspend fun updateTransactionLockScreen(lock_screen_after_each_transaction: Boolean) =
@@ -135,8 +138,8 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun getServiceChargeList() =
         getResult { apiService.getServiceChargeList() }
 
-    suspend fun getServiceChargeWholeList() =
-        getResult { apiService.getServiceChargeWholeList() }
+    suspend fun getServiceChargeWholeList(terminalId: Int) =
+        getResult { apiService.getServiceChargeWholeList(terminalId) }
 
     suspend fun loyaltyPointList() =
         getResult { apiService.loyaltyPointList() }
@@ -193,8 +196,8 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun noteActive(tipId: Int, active: Boolean) =
         getResult { apiService.noteActive(tipId, active) }
 
-    suspend fun logOut(data: HashMap<String, String>) = getResult {
-        apiService.userLogOut(data)
+    suspend fun logOut(data: HashMap<String, String>, terminalId: String) = getResult {
+        apiService.userLogOut(data,terminalId)
     }
 
     suspend fun createEmployee(data: CreateEmployeeRequestModel) =
@@ -221,8 +224,11 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun deleteItem(itemId: Int) =
         getResult { apiService.deleteItem(itemId) }
 
-    suspend fun hideItem(itemId: Int, active: Boolean) =
-        getResult { apiService.hideItem(itemId, active) }
+    suspend fun hideItem(itemId: Int, hide_status: String) =
+        getResult { apiService.hideItem(itemId, hide_status) }
+
+    suspend fun hideItemWebsite(itemId: Int, hide_status: String) =
+        getResult { apiService.hideItemWebsite(itemId, hide_status) }
 
     suspend fun createItem(data: CreateItemRequestModel) =
         getResult {
@@ -243,7 +249,7 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
             }
 
             //file multipart
-            Log.e("!_@_", "data.image:  ${data.image}")
+            LogUtil.logE("!_@_", "data.image:  ${data.image}")
             val filePart =
                 MethodUtils.makeMultiPartBody(
                     fileUrl = data.image,
@@ -280,7 +286,7 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
             }
 
             //file multipart
-            Log.e("!_@_", "data.image:  ${data.image}")
+            LogUtil.logE("!_@_", "data.image:  ${data.image}")
             val filePart =
                 MethodUtils.makeMultiPartBody(
                     fileUrl = data.image,
@@ -315,7 +321,7 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
             }
 
             //file multipart
-            Log.e("!_@_", "data.image:  ${data.image}")
+            LogUtil.logE("!_@_", "data.image:  ${data.image}")
             val filePart =
                 MethodUtils.makeMultiPartBody(
                     fileUrl = data.image,
@@ -341,7 +347,7 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
             }
 
             //file multipart
-            Log.e("!_@_", "data.image:  ${data.image}")
+            LogUtil.logE("!_@_", "data.image:  ${data.image}")
             val filePart =
                 MethodUtils.makeMultiPartBody(
                     fileUrl = data.image,

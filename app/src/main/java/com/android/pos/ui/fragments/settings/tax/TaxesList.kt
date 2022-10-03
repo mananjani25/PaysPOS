@@ -1,6 +1,5 @@
 package com.android.pos.ui.fragments.settings.tax
 
-import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -8,19 +7,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.PopupMenu
-import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.entities.TaxData
 import com.android.pos.databinding.FragmentTaxesBinding
 import com.android.pos.ui.adapter.TaxListAdapter
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
-import com.android.pos.utils.SwipeHelper
 import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.liveSnackBar
@@ -29,10 +25,9 @@ import com.android.pos.utils.statusUtils.Status
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.*
 
 @AndroidEntryPoint
-class TaxesList : Fragment() , ItemCallback {
+class TaxesList : Fragment(), ItemCallback {
 
     private var position: Int = -1
     private lateinit var taxListUpdateDelete: ArrayList<TaxData>
@@ -168,6 +163,7 @@ class TaxesList : Fragment() , ItemCallback {
             when (menuItem.itemId) {
                 R.id.menu_edit -> {
                     taxObject = taxListadapter.getItem(pos)
+                    Log.e(TAG,"itemIdsSize:  ${taxObject.itemIds.size}")
                     val bundle = Bundle()
                     bundle.putBoolean("isEdit", true)
                     bundle.putParcelable("taxObject", taxObject)

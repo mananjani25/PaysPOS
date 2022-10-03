@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.android.pos.R
 import com.android.pos.data.model.requestModel.LoginRequestModel
 import com.android.pos.data.model.responseModel.LogInResponse
+import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.AUTH_TOKEN
 import com.android.pos.data.remote.Constants.BASE_URL_NEW
 import com.android.pos.data.remote.Constants.EMAIL
@@ -20,6 +21,7 @@ import com.android.pos.di.HostSelectionInterceptor
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Status
+import com.testfairy.TestFairy
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -63,6 +65,8 @@ class LoginViewModel @Inject constructor(
             data["email"] = loginDetails.value?.emailAddress.toString().trim()
             data["password"] = loginDetails.value?.password.toString().trim()
 
+
+
             viewModelScope.launch {
                 val resource = userRepository.userLogIn(data)
                 when (resource.status) {
@@ -71,10 +75,14 @@ class LoginViewModel @Inject constructor(
                         resource.data.let { logInResponse ->
                             if (logInResponse?.status == 200) {
 
+
                                 resource.data?.let {
                                     prefProvider.setValue(BASE_URL_NEW, it.data.baseUrl + "/")
                                     hostSelectionInterceptor.setHostBaseUrl()
 
+                                    TestFairy.setUserId(
+                                        loginDetails.value?.emailAddress.toString().trim()
+                                    );
 
                                     defaultTerminalCall(device_token, it.data)
                                 }
@@ -129,7 +137,10 @@ class LoginViewModel @Inject constructor(
                                     it1
                                 )
                             }
-
+                            prefProvider.setValueboolean(
+                                Constants.ONLINE_ORDER_ENABLE,
+                                terminalResponse.terminalData.enabled_for_receiving_web_order!!
+                            )
                             prefProvider.setValueInt(TERMINAL_ID, terminalResponse.terminalData.id)
                             _data.value = Event(true)
 

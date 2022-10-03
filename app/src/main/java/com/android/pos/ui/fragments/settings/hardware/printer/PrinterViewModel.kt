@@ -1,6 +1,5 @@
 package com.android.pos.ui.fragments.settings.hardware.printer
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -13,6 +12,7 @@ import com.android.pos.data.remote.Constants
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -54,7 +54,7 @@ class PrinterViewModel @Inject constructor(
 
     fun updatePrinterStatus(type: String, id: Int, terminal_id: Int, status: Boolean) {
         _showProgress.value = Event(true)
-        Log.e(TAG, "PrinterType: ${type}")
+        LogUtil.logE(TAG, "PrinterType: ${type}")
         viewModelScope.launch {
             val resource: com.android.pos.utils.statusUtils.Resource<DeletePrinterResponseModel> =
                 posRepository.updatePrinterStatus(id, terminal_id, status)
@@ -97,7 +97,6 @@ class PrinterViewModel @Inject constructor(
                     syncSettingModule()
                     _showProgress.value = Event(false)
                     _update.value = Event(resource.data?.message!!)
-
 
 
                 }
@@ -204,11 +203,17 @@ class PrinterViewModel @Inject constructor(
                             resource.data?.let {
                                 posRepository.deleteCustomerPrinters()
                                 posRepository.deleteKitchenPrinters()
-                                posRepository.addKitchenPrinter(it.data.printers.kitchenPrinterList)
-                                posRepository.addCustomerPrinter(it.data.printers.customerPrinterList)
+                                posRepository.addKitchenPrinter(it.settingData.data.printers.kitchenPrinterList)
+                                posRepository.addCustomerPrinter(it.settingData.data.printers.customerPrinterList)
                             }
                             _showProgress.value = Event(false)
                             prefProvider.setValueboolean(Constants.SYNC_DATA, true)
+                            resource.data?.settingData?.timeStamp?.let {
+                                prefProvider.setValue(
+                                    Constants.SYNC_SETTING_TIME_STAMP,
+                                    it
+                                )
+                            }
                         } else {
                             _snackbarText.value = Event(resource.message)
                         }

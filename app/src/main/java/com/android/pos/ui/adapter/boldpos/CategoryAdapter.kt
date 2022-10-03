@@ -14,6 +14,7 @@ class CategoryAdapter(
     var list: ArrayList<CategoryTabModel>,
     val listner: CategoryTabAdapter1.TabListner
 ) : RecyclerView.Adapter<CategoryAdapter.MyViewHolder>() {
+    private var TAG = "CategoryAdapter"
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         return MyViewHolder(
             ViewBoldCategoryBinding.inflate(
@@ -37,6 +38,9 @@ class CategoryAdapter(
                 binding.txtCategoryName.text = model.title
             }
             binding.root.setOnClickListener {
+                if (MethodUtils.isDoubleClickCategory()) return@setOnClickListener
+
+
                 listner.onTabSelected(bindingAdapterPosition)
                 list.forEachIndexed { index, categoryTabModel ->
 

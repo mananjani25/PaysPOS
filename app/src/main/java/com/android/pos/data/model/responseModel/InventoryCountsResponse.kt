@@ -18,6 +18,8 @@ class InventoryCountsResponse(
         @SerializedName("hidden_categories")
         val hiddenCategories: Int,
         @SerializedName("hidden_items")
-        val hiddenItems: Int
+        val hiddenItems: Int,
+        @SerializedName("hidden_items_website")
+        val hidden_items_website: Int
     )
 }

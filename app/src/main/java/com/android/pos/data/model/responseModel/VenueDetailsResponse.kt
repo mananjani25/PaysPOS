@@ -9,7 +9,7 @@ import com.google.gson.annotations.SerializedName
 
 data class VenueDetailsResponse(
     @SerializedName("data")
-    val `data`: Data,
+    val settingData: SettingData,
     @SerializedName("message")
     val message: String,
     @SerializedName("status")
@@ -17,6 +17,11 @@ data class VenueDetailsResponse(
     @SerializedName("type")
     val type: String
 ) {
+
+    data class SettingData(
+        @SerializedName("setting_data") val `data`: Data, @SerializedName("time_stamp")
+        val timeStamp: String
+    )
 
     data class Data(
         @SerializedName("business_name")
@@ -130,7 +135,9 @@ data class VenueDetailsResponse(
             @SerializedName("reason")
             val reason: String,
             @SerializedName("updated_at")
-            val updatedAt: String
+            val updatedAt: String,
+            @SerializedName("is_deleted")
+            val isDeleted: Boolean
         )
 
         data class MagensaSettings(
@@ -243,7 +250,9 @@ data class VenueDetailsResponse(
             @SerializedName("updated_at")
             val updatedAt: String,
             @SerializedName("enabled_for_receiving_web_order")
-            val enabled_for_receiving_web_order: Boolean? = null
+            val enabled_for_receiving_web_order: Boolean? = null,
+            @SerializedName("is_deleted")
+            var isDeleted: Boolean = false
         )
     }
 }

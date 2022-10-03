@@ -477,7 +477,7 @@ class OrderItemVariationAttribute {
     @SerializedName("variation_id")
     var variationId: Int = 0
 }
-
+@Parcelize
 data class OrderServiceChargesAttribute(
     @SerializedName("amount")
     var amount: Double = 0.0,
@@ -497,7 +497,7 @@ data class OrderServiceChargesAttribute(
     var min_guest_count: Int? = null,
     @SerializedName("max_guest_count")
     var max_guest_count: Int? = null
-)
+) : Parcelable
 
 @Parcelize
 class PaymentAttributes : Parcelable {

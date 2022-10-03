@@ -29,7 +29,8 @@ class ApiModule1 @Inject constructor(@ApplicationContext context: Context) {
         Retrofit.Builder()
             .baseUrl(BASE_URL)
             .client(
-                OkHttpClient.Builder().connectTimeout(1, TimeUnit.MINUTES)
+                OkHttpClient.Builder().connectTimeout(50000, TimeUnit.MILLISECONDS)
+                    .readTimeout(100000, TimeUnit.MILLISECONDS)
                     .addInterceptor { chain ->
                         chain.proceed(chain.request().newBuilder().also {
                         }.build())

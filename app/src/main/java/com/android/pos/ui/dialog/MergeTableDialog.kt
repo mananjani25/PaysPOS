@@ -26,6 +26,7 @@ import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.MergeTableSelectionAdapter
 import com.android.pos.ui.fragments.dinein.DineInViewModel
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.ProgressUtils
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
@@ -109,7 +110,7 @@ class MergeTableDialog : DialogFragment() {
             listFloor.add(MergeFloorModel(it.id, it.name))
 
             it.floor_plan_tables.forEach { table ->
-                if (table.status == AVAILABLE){
+                if (table.status == AVAILABLE) {
                     listTable.add(
                         MergeTableModel(
                             table.id,
@@ -131,30 +132,34 @@ class MergeTableDialog : DialogFragment() {
                         )
                     )
 
+                } else if (table.lock_by_id != null && table.lock_by_id == prefProvider.getValueInt(
+                        EMPLOYEE_ID, 0
+                    )
+                ) {
+
+                    if ( table.status == OCCUPIED) {
+                        listTable.add(
+                            MergeTableModel(
+                                table.id,
+                                table.table_name,
+                                it.id,
+                                it.name,
+                                if (table.status == OCCUPIED) {
+                                    true
+                                } else {
+                                    false
+                                },
+                                orderId = if (table.order_details != null) {
+                                    table.order_details.id
+                                } else {
+                                    null
+                                },
+                                orderDetails = table.order_details,
+                                chairCount = table.chair_count
+                            )
+                        )
+                    }
                 }
-//               else if (table.lock_by_id != null && table.lock_by_id ==  prefProvider.getValueInt(
-//                        EMPLOYEE_ID,0)) {
-//                    listTable.add(
-//                        MergeTableModel(
-//                            table.id,
-//                            table.table_name,
-//                            it.id,
-//                            it.name,
-//                            if (table.status == OCCUPIED) {
-//                                true
-//                            } else {
-//                                false
-//                            },
-//                            orderId = if (table.order_details != null) {
-//                                table.order_details.id
-//                            } else {
-//                                null
-//                            },
-//                            orderDetails = table.order_details,
-//                            chairCount = table.chair_count
-//                        )
-//                    )
-//                }
             }
         }
 
@@ -252,7 +257,7 @@ class MergeTableDialog : DialogFragment() {
                 }
 
             }
-            Log.e(TAG, "getSetData  ${Gson().toJson(set)}")
+            LogUtil.logE(TAG, "getSetData  ${Gson().toJson(set)}")
 
 
             if (!isDuplicateIdTrue) {
@@ -316,7 +321,7 @@ class MergeTableDialog : DialogFragment() {
                     }
 
                 }
-                Log.e(TAG, "listSecondaryOrderDetailsSize:  ${listSecondaryOrderDetails.size}")
+                LogUtil.logE(TAG, "listSecondaryOrderDetailsSize:  ${listSecondaryOrderDetails.size}")
 
                 if (listSecondaryOrderDetails.size == 0) {
                     //This is for Every Empty Table for both Primary and Secondary
@@ -432,16 +437,16 @@ class MergeTableDialog : DialogFragment() {
                 var valdate = false
                 for (i in allIds.indices) {
                     if (allIds[i] == 0) {
-                        valdate =true
+                        valdate = true
                     }
                 }
-                if(valdate){
+                if (valdate) {
                     AlertUtils.showCustomAlertWithListenerWithOK(
                         requireContext(), "Please select Floor and Table"
                     ) { _, _ ->
 
                     }
-                }else{
+                } else {
                     AlertUtils.showCustomAlertWithListenerWithOK(
                         requireContext(), "Same table can't be merged."
                     ) { _, _ ->

@@ -2,7 +2,6 @@ package com.android.pos.ui.fragments.transactions
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
-import android.nfc.Tag
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -26,17 +25,14 @@ import com.android.pos.data.model.responseModel.MagtekOnlineOrderRefundResponse
 import com.android.pos.data.model.responseModel.VenueDetailsResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.KEY
-import com.android.pos.data.remote.Constants.REPORT_END_TIME
-import com.android.pos.data.remote.Constants.REPORT_START_TIME
-import com.android.pos.data.remote.Constants.TRANSACTION_DETAIL
 import com.android.pos.databinding.FragmentTransactionBinding
 import com.android.pos.di.ApiModule1
 import com.android.pos.di.PrefProvider
-import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.TransactionAdapter
 import com.android.pos.ui.fragments.magtek.MagtekRequestUtils
 import com.android.pos.ui.fragments.magtek.PaymentResponse
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.callback.PaginationScrollListener
@@ -53,7 +49,6 @@ import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 import kotlin.math.abs
 
 @AndroidEntryPoint
@@ -647,7 +642,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
 
                 } else {
-                    Log.e(TAG, "itemCount ${transactionAdapter.itemCount}")
+                    LogUtil.logE(TAG, "itemCount ${transactionAdapter.itemCount}")
                     /* binding.rvTeamTimeSheet.visibility = View.GONE
                      binding.txtNodata.visibility = View.VISIBLE
                      binding.txtNodata.text = timeSheet.message*/
@@ -910,37 +905,44 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
     private fun navigate() {
         viewModel.transactionDetails.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
-                val bundle = Bundle().apply {
-                    putInt("orderId", it.orderDetails.id)
-                    putInt("paymentId", it.id)
-                    putBoolean("isFromTrans", true)
-                    putString("orderType", it.orderDetails.orderType)
 
-                    putInt(
-                        "selectedorderType",
-                        binding.includeView.spOrders.selectedItemPosition
+                if (!it.payableType.equals("Invoice", true) && !it.payableType.equals(
+                        "GiftCard",
+                        true
                     )
-                    putInt(
-                        "selectedtransactionType",
-                        binding.includeView.spTransactionTypes.selectedItemPosition
-                    )
-                    putInt(
-                        "selectedroleType",
-                        binding.includeView.spRoles.selectedItemPosition
-                    )
-                    putInt(
-                        "selectedemployeeType",
-                        binding.includeView.spEmployees.selectedItemPosition
-                    )
-                    putInt(
-                        "selectedterminalType",
-                        binding.includeView.spTerminals.selectedItemPosition
+                ) {
+                    val bundle = Bundle().apply {
+                        putInt("orderId", it.orderDetails.id)
+                        putInt("paymentId", it.id)
+                        putBoolean("isFromTrans", true)
+                        putString("orderType", it.orderDetails.orderType)
+
+                        putInt(
+                            "selectedorderType",
+                            binding.includeView.spOrders.selectedItemPosition
+                        )
+                        putInt(
+                            "selectedtransactionType",
+                            binding.includeView.spTransactionTypes.selectedItemPosition
+                        )
+                        putInt(
+                            "selectedroleType",
+                            binding.includeView.spRoles.selectedItemPosition
+                        )
+                        putInt(
+                            "selectedemployeeType",
+                            binding.includeView.spEmployees.selectedItemPosition
+                        )
+                        putInt(
+                            "selectedterminalType",
+                            binding.includeView.spTerminals.selectedItemPosition
+                        )
+                    }
+                    findNavController().navigate(
+                        R.id.action_transactionFragment_to_transactionDetailsFragment,
+                        bundle
                     )
                 }
-                findNavController().navigate(
-                    R.id.action_transactionFragment_to_transactionDetailsFragment,
-                    bundle
-                )
             }
         }
 
@@ -968,16 +970,24 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
         selectedPos = pos
         singleTransaction = transactionAdapter.getItem(pos)
+        if (!singleTransaction?.payableType.equals(
+                "GiftCard",
+                true
+            ) && !singleTransaction?.payableType.equals(
+                "Invoice", true
+            )
+        ) {
 
 
-        val bundle = Bundle()
-        bundle.putDouble("totalTip", singleTransaction!!.tips)
-        bundle.putBoolean("isFromTransaction", true)
-        singleTransaction?.amount?.let { bundle.putDouble("totalPrice", it) }
-        findNavController().navigate(
-            R.id.action_transactionFragment_to_addTipsDialog,
-            bundle
-        )
+            val bundle = Bundle()
+            bundle.putDouble("totalTip", singleTransaction!!.tips)
+            bundle.putBoolean("isFromTransaction", true)
+            singleTransaction?.amount?.let { bundle.putDouble("totalPrice", it) }
+            findNavController().navigate(
+                R.id.action_transactionFragment_to_addTipsDialog,
+                bundle
+            )
+        }
 
 
     }
@@ -1001,7 +1011,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                             model.transactionOutput?.token?.let { it1 ->
                                 amount.times(100).let {
                                     magtekRequestUtils.processTokenFirstData(
-                                        it.toInt(),
+                                        it,
                                         it1,
                                         model.customerTransactionID ?: "",
                                         model.transactionOutput.transactionOutputDetails[0].value,
@@ -1020,7 +1030,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                     jsonArray =
                         model.transactionOutput?.token?.let { it1 ->
                             magtekRequestUtils.processTokenElavon(
-                                (refundAmount * 100).toInt(),
+                                (refundAmount * 100),
                                 it1,
                                 model.customerTransactionID ?: "",
                                 model.transactionOutput.transactionOutputDetails[0].value
@@ -1036,9 +1046,9 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                     jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
                         singleTransaction?.amount?.times(100)?.let {
                             magtekRequestUtils.processReferenceIDEPXForce(
-                                it.toInt(),
+                                it,
                                 model.customerTransactionID ?: "", it1, Constants.CAPTURE,
-                                (tipAmount * 100).toInt().toString()
+                                (tipAmount * 100).toString()
                             )
                         }
                     }
@@ -1049,7 +1059,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
                     jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
                         magtekRequestUtils.processReferenceIDCapture(
-                            (refundAmount * 100).toInt(),
+                            (refundAmount * 100),
                             model.customerTransactionID ?: "", it1,
                             model.transactionOutput.authCode,
                             ""
@@ -1064,7 +1074,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
                     jsonArray = amount?.times(100)?.let {
                         magtekRequestUtils.processTokenChase(
-                            it.toInt(),
+                            it,
                             model.transactionOutput?.token ?: "",
                             model.customerTransactionID ?: "",
                             model.transactionOutput?.authCode ?: "",
@@ -1081,11 +1091,11 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                     jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
                         amount?.times(100)?.let {
                             magtekRequestUtils.processReferenceIdHeartlandCapture(
-                                it.toInt(),
+                                it,
                                 model.customerTransactionID ?: "",
                                 it1,
                                 model.transactionOutput.authCode,
-                                (tipAmount * 100).toInt().toString()
+                                (tipAmount * 100).toString()
                             )
                         }
                     }
@@ -1093,15 +1103,13 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                 }
                 Constants.TSYS_GATEWAY == magtekRequestUtils.gatewayName() -> {
 
-                    val amount = singleTransaction?.amount?.plus(refundAmount)
-
-                    jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
-                        amount?.times(100)?.let {
+                    jsonArray = model.transactionOutput.transactionID.let { it1 ->
+                        refundAmount.let {
                             magtekRequestUtils.processReferenceIDTSYSCapture(
-                                it.toInt(),
+                                it,
                                 model.customerTransactionID ?: "",
                                 it1,
-                                (tipAmount * 100).toInt().toString()
+                                (tipAmount).toString()
                             )
                         }
                     }
@@ -1130,7 +1138,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                             model.transactionOutput?.token?.let { it1 ->
                                 amount.times(100).let {
                                     magtekRequestUtils.processTokenFirstData(
-                                        it.toInt(),
+                                        it,
                                         it1,
                                         model.customerTransactionID ?: "",
                                         model.transactionOutput.transactionOutputDetails[0].value,
@@ -1149,7 +1157,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                     jsonArray =
                         model.transactionOutput?.token?.let { it1 ->
                             magtekRequestUtils.processTokenElavon(
-                                (refundAmount * 100).toInt(),
+                                (refundAmount * 100),
                                 it1,
                                 model.customerTransactionID ?: "",
                                 model.transactionOutput.transactionOutputDetails[0].value
@@ -1165,9 +1173,9 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                     jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
                         singleTransaction?.amount?.times(100)?.let {
                             magtekRequestUtils.processReferenceIDEPXForce(
-                                it.toInt(),
+                                it,
                                 model.customerTransactionID ?: "", it1, Constants.CAPTURE,
-                                (tipAmount * 100).toInt().toString()
+                                (tipAmount * 100).toString()
                             )
                         }
                     }
@@ -1178,7 +1186,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
                     jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
                         magtekRequestUtils.processReferenceIDCapture(
-                            (refundAmount * 100).toInt(),
+                            (refundAmount * 100),
                             model.customerTransactionID ?: "", it1,
                             model.transactionOutput.authCode,
                             ""
@@ -1193,7 +1201,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
                     jsonArray = amount?.times(100)?.let {
                         magtekRequestUtils.processTokenChase(
-                            it.toInt(),
+                            it,
                             model.transactionOutput?.token ?: "",
                             model.customerTransactionID ?: "",
                             model.transactionOutput?.authCode ?: "",
@@ -1210,11 +1218,11 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                     jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
                         amount?.times(100)?.let {
                             magtekRequestUtils.processReferenceIdHeartlandCapture(
-                                it.toInt(),
+                                it,
                                 model.customerTransactionID ?: "",
                                 it1,
                                 model.transactionOutput.authCode,
-                                (tipAmount * 100).toInt().toString()
+                                (tipAmount * 100).toString()
                             )
                         }
                     }
@@ -1222,15 +1230,14 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                 }
                 Constants.TSYS_GATEWAY == magtekRequestUtils.gatewayName() -> {
 
-                    val amount = singleTransaction?.amount?.plus(refundAmount)
 
                     jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
-                        amount?.times(100)?.let {
+                        refundAmount.let {
                             magtekRequestUtils.processReferenceIDTSYSCapture(
-                                it.toInt(),
+                                it,
                                 model.customerTransactionID ?: "",
                                 it1,
-                                (tipAmount * 100).toInt().toString()
+                                (tipAmount).toString()
                             )
                         }
                     }
@@ -1261,7 +1268,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
             ) {
                 ProgressUtils.dismissProgressDialog()
                 if (response.isSuccessful) {
-                    Log.e("onResponse", Gson().toJson(response.body()))
+                    LogUtil.logE("onResponse", Gson().toJson(response.body()))
                     if (response.body() != null && response.body()!![0].transactionOutput != null) {
 
                         if (response.body()!![0].transactionOutput?.isTransactionApproved == true) {

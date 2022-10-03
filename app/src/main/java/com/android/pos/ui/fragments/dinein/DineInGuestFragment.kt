@@ -26,6 +26,7 @@ import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.GuestListAdapter
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.statusUtils.Resource
 import com.google.gson.Gson
@@ -41,8 +42,7 @@ class DineInGuestFragment : Fragment(), GuestListAdapter.GuestListner {
     private val TAG = "DineInGuestFragment"
     private val viewModelDash by activityViewModels<DashBoardCategoryViewModel>()
     private var guestCount: Int = 0
-    private var serviceChargesObserve: androidx.lifecycle.Observer<Resource<List<TbServiceCharge>>>? =
-        null
+    private var serviceChargesObserve: androidx.lifecycle.Observer<Resource<List<TbServiceCharge>>>? = null
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -69,10 +69,11 @@ class DineInGuestFragment : Fragment(), GuestListAdapter.GuestListner {
             event.getContentIfNotHandled()?.let { status ->
                 prefProvider.setValue(ORDER_TYPE, DINE_IN)
                 prefProvider.setValue(ORDER_TYPE_NAME, DINE_IN)
-                var bundle: Bundle = Bundle()
-                bundle.putParcelable("floorplan", dineInFloorTableModel)
-                bundle.putInt("numberOfGuest", guestCount)
-                bundle.putBoolean("isFromDineIn", true)
+                val bundle = bundleOf(
+                    "isFromDineIn" to true,
+                    "numberOfGuest" to guestCount,
+                    "floorplan" to dineInFloorTableModel
+                )
                 prefProvider.setValueInt(DINE_IN_TABLE_ID, dineInFloorTableModel.id)
                 prefProvider.setValueboolean(Constants.DINE_IN_STATUS, true)
                 if (findNavController().currentDestination?.id == R.id.dineInGuestFragment) {
@@ -158,7 +159,7 @@ class DineInGuestFragment : Fragment(), GuestListAdapter.GuestListner {
     private fun tableStatusCheck() {
         viewModel.tableCheck.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { status ->
-                Log.e(TAG, "getstr:   $status")
+                LogUtil.logE(TAG, "getstr:   $status")
 
                 AlertUtils.showCustomAlertWithListenerWithOK(
                     requireContext(),
@@ -196,7 +197,7 @@ class DineInGuestFragment : Fragment(), GuestListAdapter.GuestListner {
     private fun observeUnMergeTable() {
         viewModel.unMergeStatusUpdate.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let { status ->
-                Log.e(TAG, "AnyStatus:  ${status}")
+                LogUtil.logE(TAG, "AnyStatus:  ${status}")
                 AlertUtils.showCustomAlertWithListenerWithOK(
                     requireContext(), status.toString()
                 ) { _, _ ->

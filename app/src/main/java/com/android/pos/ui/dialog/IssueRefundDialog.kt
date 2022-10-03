@@ -20,12 +20,14 @@ import com.android.pos.data.remote.Constants.CASH_DISCOUNT_SURCHARGE_AMOUNT_TYPE
 import com.android.pos.data.remote.Constants.CASH_DISCOUNT_SURCHARGE_RATE
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.OPEN_ORDER
+import com.android.pos.data.remote.Constants.SERVICECHARGE_DINEIN_ORDER
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.databinding.DialogIssueRefundBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.RefundItemListAdapter
 import com.android.pos.ui.fragments.transactions.TransactionDetailsViewModel
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.NumberFormat
@@ -36,7 +38,7 @@ import java.util.*
 class IssueRefundDialog : DialogFragment(), TextWatcher {
 
     private var loyaltyAmount: Double = 0.0
-    private var applyDiscount: Double = 0.0
+    private var orderDiscount: Double = 0.0
     private var cashdiscountdiv: Double = 0.0
     private lateinit var refundData: RefundRequestModel
     private var totalServiceCharge: Double = 0.0
@@ -54,6 +56,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
     lateinit var prefProvider: PrefProvider
     private var serviceChargesList: List<TbServiceCharge>? = arrayListOf()
     private var isSplitPayment = false
+    private var guestCount: Int = 0
 
     companion object {
         fun newInstance() = IssueRefundDialog()
@@ -74,6 +77,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
         payment_id = arguments?.getInt("paymentId")!!
         isSplitPayment = arguments?.getBoolean("isSplitPayment")!!
         serviceChargesList = arguments?.getParcelableArrayList("serviceChargesList")!!
+        guestCount = arguments?.getInt("guestCount") ?: 0
         binding.orderDetails = paymentOrderDetailsResponse
         binding.edtAmount.addTextChangedListener(this)
         prefProvider = PrefProvider(requireContext())
@@ -247,13 +251,11 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                     )
                 }
             } else {
-                if (refundItemListAdapter.selectedItemList().size == 0) {
+
+                if (!checkIfSelectedItems()) {
                     AlertUtils.showCustomAlert(requireActivity(), "Please Select Item To Refund")
                 } else {
-                    //  refundAmount = binding.edtAmount.text.toString().toDouble()
-
                     calculationOfItems()
-
                     val bundle = Bundle().apply {
                         putParcelable("refundData", refundData)
                         putDouble("refundAmount", totalItemPrice)
@@ -280,6 +282,17 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
         return binding.root
     }
 
+    fun checkIfSelectedItems(): Boolean {
+        var found: Boolean = false
+        refundItemListAdapter.selectedItemList().forEach { it ->
+            if (it.isChecked) {
+                found = true
+                return@forEach
+            }
+        }
+        return found
+    }
+
     private fun setUpRecyclerView() {
         refundItemListAdapter = RefundItemListAdapter(viewModel)
         binding.rvItemListRefund.adapter = refundItemListAdapter
@@ -291,13 +304,10 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
         }
 
         refundItemListAdapter.addItems(
+            (paymentOrderDetailsResponse.data.sub_total + paymentOrderDetailsResponse.data.service_charge_amount + paymentOrderDetailsResponse.data.tax_amount),
             paymentOrderDetailsResponse.data.order.order_items,
             serviceChargesList,
-            MethodUtils.calculateCashDiscount(
-                (paymentOrderDetailsResponse.data.sub_total + paymentOrderDetailsResponse.data.tax_amount + paymentOrderDetailsResponse.data.service_charge_amount) - paymentOrderDetailsResponse.data.loyalty_amount!!,
-                prefProvider,
-                requireContext()
-            ),
+            paymentOrderDetailsResponse.data.cash_discount_or_surcharge,
             if (paymentOrderDetailsResponse.data.cash_discount_type != null) paymentOrderDetailsResponse.data.cash_discount_type else "",
             paymentOrderDetailsResponse.data.payment_type,
             if (paymentOrderDetailsResponse.data.total_discount > totalItemDiscount) paymentOrderDetailsResponse.data.total_discount - totalItemDiscount else 0.0,
@@ -327,144 +337,183 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
         totalServiceCharge = 0.0
         totalItemPrice = 0.0
         totalTax = 0.0
-        applyDiscount = 0.0
+        orderDiscount = 0.0
         loyaltyAmount = 0.0
         cashdiscountdiv = 0.0
         var subtotal_divid = 0.0
         val orderItemRefundsAttributesList =
             ArrayList<RefundRequestModel.PaymentRefund.OrderItemRefundsAttribute>()
-
-        //  totalItemPrice = 0.0
-
+        var selectedOrderDiscountDivided = 0.0
+        var selectedLoyaltyPointDivided = 0.0
+        var selectedCashDiscountDivided = 0.0
+        var selectedTipDivided = 0.0
         var totalItemDiscount = 0.0
-
         paymentOrderDetailsResponse.data.order.order_items.forEach {
             totalItemDiscount += it.discountAmount
         }
-
-        var totalDiscount = 0.0
-        if (paymentOrderDetailsResponse.data.total_discount > totalItemDiscount) {
-            totalDiscount = paymentOrderDetailsResponse.data.total_discount - totalItemDiscount
-        }
-        var count = 0
-        refundItemListAdapter.selectedItemList().forEach {
-            var totalItemPrice = 0.0
-            var totalServiceCharge = 0.0
-            var applyDiscount = 0.0
-            var totalTax = 0.0
-            var loyaltyAmount = 0.0
-            if (it.isChecked) {
-                count++
-                totalItemPrice += it.totalPrice - it.discountAmount
-
-                it.orderItemModifiers.forEach { modifiers ->
+        orderDiscount = paymentOrderDetailsResponse.data.total_discount - totalItemDiscount
+        refundItemListAdapter.selectedItemList().forEach { orderItemselected ->
+            if (orderItemselected.isChecked) {
+                totalItemPrice +=
+                    (orderItemselected.price * orderItemselected.quantity) - orderItemselected.discountAmount
+                orderItemselected.orderItemModifiers.forEach { modifiers ->
                     totalItemPrice += (modifiers.price * modifiers.quantity)
                 }
 
-                it.orderItemTaxes.forEach { tax ->
-                    totalTax += if (tax.taxType == "Percentage") {
-                        if (totalItemPrice < 0.0) {
+
+                var itemTotalTax = 0.0
+                var itemServiceCharge = 0.0
+                orderItemselected.orderItemTaxes.forEach { tax ->
+                    itemTotalTax += if (tax.taxType == "Percentage") {
+                        var modifierPrice = 0.0
+                        val price =
+                            (orderItemselected.price * orderItemselected.quantity) - orderItemselected.discountAmount
+
+                        orderItemselected.orderItemModifiers.forEach { modifiers ->
+                            (modifiers.price * modifiers.quantity)
+                        }
+
+                        val totalPrice = price + modifierPrice
+                        if (totalPrice < 0.0) {
 
                             String.format("%.2f", 0.00)
                                 .toDouble()
                         } else {
                             val itemTaxPrice =
-                                (tax.rate * totalItemPrice) / 100
+                                (tax.rate * totalPrice) / 100
                             Log.e("itemTaxPrice", "" + itemTaxPrice)
-                            String.format("%.2f", itemTaxPrice)
-                                .toDouble()
+                            itemTaxPrice
                         }
 
                     } else {
+                        var modifierPrice = 0.0
+                        val price =
+                            (orderItemselected.price * orderItemselected.quantity) - orderItemselected.discountAmount
+
+                        orderItemselected.orderItemModifiers.forEach { modifiers ->
+                            (modifiers.price * modifiers.quantity)
+                        }
+                        val totalPrice = price + modifierPrice
                         Log.d("yash", "taxCalculation: " + tax.taxType)
-                        if (totalItemPrice <= 0.0) {
+                        if (totalPrice <= 0.0) {
                             String.format("%.2f", 0.00)
                                 .toDouble()
                         } else {
-                            String.format("%.2f", tax.rate * it.quantity)
+                            String.format("%.2f", tax.rate * orderItemselected.quantity)
                                 .toDouble()
                         }
                     }
                 }
+                totalTax += itemTotalTax
 
 
-                serviceChargesList?.forEach {
-                    if (paymentOrderDetailsResponse.data.order.order_type == DINE_IN && it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
-                        totalServiceCharge += (totalItemPrice * it.percentage) / 100
-                    } else if ((paymentOrderDetailsResponse.data.order.order_type == TAKEOUT || paymentOrderDetailsResponse.data.order.order_type == OPEN_ORDER) && it.order_type == Constants.SERVICECHARGE_TAKEOUT_OPENORDER) {
-                        totalServiceCharge += (totalItemPrice * it.percentage) / 100
+                var temp_totalPrice = 0.0
+                temp_totalPrice += (orderItemselected.price * orderItemselected.quantity) - orderItemselected.discountAmount
+                orderItemselected.orderItemModifiers.forEach { modifiers ->
+                    temp_totalPrice += (modifiers.price * modifiers.quantity)
+                }
+
+//                item serviceCharge
+                if (serviceChargesList?.isNotEmpty() == true) {
+                    serviceChargesList?.forEach {
+                        itemServiceCharge += (temp_totalPrice * it.percentage) / 100
+                    }
+                }
+                totalServiceCharge += itemServiceCharge
+                // order Discount Divide calculation
+
+                selectedOrderDiscountDivided += (temp_totalPrice * orderDiscount) / (paymentOrderDetailsResponse.data.sub_total + orderDiscount)
+                val nfone: NumberFormat = NumberFormat.getNumberInstance()
+                nfone.maximumFractionDigits = 3
+                val rounded1: String = nfone.format(selectedOrderDiscountDivided)
+                selectedOrderDiscountDivided = rounded1.toDouble()
+
+                var itemwiseOrderDiscount = 0.0
+                refundItemListAdapter.selectedItemList().forEach { orderItems ->
+                    if (orderItems.isChecked) {
+                        itemwiseOrderDiscount =
+                            (temp_totalPrice * orderDiscount) / (paymentOrderDetailsResponse.data.sub_total + orderDiscount)
                     }
                 }
 
-                applyDiscount += (totalDiscount / refundItemListAdapter.itemCount)
 
-                val la = paymentOrderDetailsResponse.data.loyalty_amount
-
-                if (la != null) {
-                    loyaltyAmount += la / refundItemListAdapter.itemCount
+                // loyalty point
+                var item_total_price_included = 0.0
+                item_total_price_included =
+                    (temp_totalPrice + itemServiceCharge + itemTotalTax) - itemwiseOrderDiscount
+                if (paymentOrderDetailsResponse.data.loyalty_amount!! > 0) {
+                    selectedLoyaltyPointDivided += (paymentOrderDetailsResponse.data.loyalty_amount!! * item_total_price_included) / (paymentOrderDetailsResponse.data.sub_total + paymentOrderDetailsResponse.data.service_charge_amount + paymentOrderDetailsResponse.data.tax_amount)
+                }
+                if (paymentOrderDetailsResponse.data.tips > 0) {
+                    if (item_total_price_included == 0.0) {
+                        if ((paymentOrderDetailsResponse.data.sub_total + paymentOrderDetailsResponse.data.service_charge_amount + paymentOrderDetailsResponse.data.tax_amount) == 0.0) {
+                            selectedTipDivided =
+                                paymentOrderDetailsResponse.data.tips / paymentOrderDetailsResponse.data.order.order_items.size
+                        } else {
+                            selectedTipDivided += (paymentOrderDetailsResponse.data.tips * item_total_price_included) / (paymentOrderDetailsResponse.data.sub_total + paymentOrderDetailsResponse.data.service_charge_amount + paymentOrderDetailsResponse.data.tax_amount)
+                        }
+                    } else {
+                        selectedTipDivided += (paymentOrderDetailsResponse.data.tips * item_total_price_included) / (paymentOrderDetailsResponse.data.sub_total + paymentOrderDetailsResponse.data.service_charge_amount + paymentOrderDetailsResponse.data.tax_amount)
+                    }
+                }
+                if (paymentOrderDetailsResponse.data.cash_discount_or_surcharge > 0) {
+                    selectedCashDiscountDivided += (paymentOrderDetailsResponse.data.cash_discount_or_surcharge * item_total_price_included) / (paymentOrderDetailsResponse.data.sub_total + paymentOrderDetailsResponse.data.service_charge_amount + paymentOrderDetailsResponse.data.tax_amount)
                 }
 
-                Log.e("subTotalPrice", totalItemPrice.toString())
-
-                Log.e(
-                    "totalItemPerItem",
-                    "totalItemPrice = " + totalItemPrice + "\n totalServiceCharge = " + totalServiceCharge + "\n totalTax = " + totalTax + "\n loyaltyAmount = " + loyaltyAmount
-                )
-                val totalItemPerItem =
-                    totalItemPrice - applyDiscount + totalServiceCharge + totalTax - loyaltyAmount
-
-                Log.e("subTotalPrice1", totalItemPerItem.toString())
-
-                this.subTotalPrice += totalItemPerItem
-                this.totalTax += totalTax
-                this.totalServiceCharge += totalServiceCharge
-                this.applyDiscount += applyDiscount
-                this.loyaltyAmount += loyaltyAmount
-
-                this.totalItemPrice += totalItemPerItem
-                subtotal_divid += totalItemPerItem
             }
-            val orderItemRefundsAttributeModel =
-                RefundRequestModel.PaymentRefund.OrderItemRefundsAttribute()
 
-            orderItemRefundsAttributeModel.amount = totalItemPrice
-            orderItemRefundsAttributeModel.employeeId = it.employeeId
-            orderItemRefundsAttributeModel.orderId = it.orderId
-            orderItemRefundsAttributeModel.refundType = 0
-            orderItemRefundsAttributeModel.paymentId = payment_id
-            orderItemRefundsAttributeModel.orderItemId = it.id
-            orderItemRefundsAttributeModel.quantity = it.quantity
-            orderItemRefundsAttributesList.add(orderItemRefundsAttributeModel)
         }
+        totalItemPrice += (totalServiceCharge + totalTax)
+        val nf6: NumberFormat = NumberFormat.getNumberInstance()
+        nf6.maximumFractionDigits = 2
+        val rounded6: String = nf6.format(selectedOrderDiscountDivided)
+        selectedOrderDiscountDivided = rounded6.toDouble()
 
 
-        //   totalItemPrice += totalTax + totalServiceCharge - applyDiscount - loyaltyAmount - (paymentOrderDetailsResponse.data.total_discount - applyDiscount)
+        if (totalItemPrice >= selectedOrderDiscountDivided) {
+            totalItemPrice -= selectedOrderDiscountDivided
+        }
+        val nf1: NumberFormat = NumberFormat.getNumberInstance()
+        nf1.maximumFractionDigits = 2
+        val rounded: String = nf1.format(selectedTipDivided)
+        selectedTipDivided = rounded.toDouble()
 
-        if (paymentOrderDetailsResponse.data.payment_type == "Cash") {
-            if (paymentOrderDetailsResponse.data.cash_discount_type == "CashDiscount") {
-                cashdiscountdiv = (MethodUtils.calculateCashDiscount(
-                    totalItemPrice,
-                    prefProvider,
-                    requireContext()
-                ))
-                totalItemPrice -= cashdiscountdiv
-
-            }
-        } else if (paymentOrderDetailsResponse.data.payment_type == "Card") {
-            if (paymentOrderDetailsResponse.data.cash_discount_type == "SurCharge") {
-                cashdiscountdiv = (MethodUtils.calculateCashDiscount(
-                    totalItemPrice,
-                    prefProvider,
-                    requireContext()
-                ))
-                totalItemPrice += cashdiscountdiv
-
+        if (paymentOrderDetailsResponse.data.payment_type == "Card") {
+            if (totalItemPrice >= selectedTipDivided) {
+                totalItemPrice += selectedTipDivided
+            } else if (totalItemPrice == 0.0) {
+                totalItemPrice += paymentOrderDetailsResponse.data.tips / paymentOrderDetailsResponse.data.order.order_items.size
+            }else{
+                totalItemPrice+=paymentOrderDetailsResponse.data.tips
             }
         }
-
-        if (paymentOrderDetailsResponse.data.payment_type == "Card" && count == refundItemListAdapter.itemCount) {
-            totalItemPrice += paymentOrderDetailsResponse.data.tips
+        val nf3: NumberFormat = NumberFormat.getNumberInstance()
+        nf3.maximumFractionDigits = 2
+        val rounded3: String = nf3.format(selectedLoyaltyPointDivided)
+        selectedLoyaltyPointDivided = rounded3.toDouble()
+        selectedLoyaltyPointDivided = MethodUtils.roundOffAmountDouble(selectedLoyaltyPointDivided)
+        totalItemPrice = MethodUtils.roundOffAmountDouble(totalItemPrice)
+        if (totalItemPrice >= selectedLoyaltyPointDivided) {
+            totalItemPrice -= selectedLoyaltyPointDivided
         }
+
+        val nf2: NumberFormat = NumberFormat.getNumberInstance()
+        nf2.maximumFractionDigits = 2
+        val rounded2: String = nf2.format(selectedCashDiscountDivided)
+        selectedCashDiscountDivided = rounded2.toDouble()
+
+        if (selectedCashDiscountDivided > 0.0) {
+            if (paymentOrderDetailsResponse.data.payment_type == "Cash") {
+                if (paymentOrderDetailsResponse.data.cash_discount_type == "CashDiscount") {
+                    totalItemPrice -= selectedCashDiscountDivided
+                }
+            } else if (paymentOrderDetailsResponse.data.payment_type == "Card") {
+                if (paymentOrderDetailsResponse.data.cash_discount_type == "SurCharge") {
+                    totalItemPrice += selectedCashDiscountDivided
+                }
+            }
+        }
+        totalItemPrice = MethodUtils.roundOffAmountDouble(totalItemPrice)
 
         refundData = RefundRequestModel().apply {
             paymentRefund = RefundRequestModel.PaymentRefund().apply {
@@ -482,7 +531,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                 tipsRefunded = if (paymentOrderDetailsResponse.data.payment_type == "Cash") {
                     0.0
                 } else {
-                    if (paymentOrderDetailsResponse.data.payment_type == "Card" && count == refundItemListAdapter.itemCount) {
+                    if (paymentOrderDetailsResponse.data.payment_type == "Card") {
                         paymentOrderDetailsResponse.data.tips
                     } else
                         0.0

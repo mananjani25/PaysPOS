@@ -33,6 +33,10 @@ data class Item(
     val sku: String?,
     @SerializedName("desc")
     val desc: String?,
+    @SerializedName("hide_status")
+    val hide_status: String?,
+    @SerializedName("website_hide_status")
+    val website_hide_status: String?,
     @SerializedName("sort")
     val sort: Int,
     @SerializedName("original_image_url")
@@ -50,4 +54,6 @@ data class Item(
     @SerializedName("variations")
     val variations: List<VariationsAttribute>,
     var taxes: List<TaxData>? = null,
+    @SerializedName("is_deleted")
+    val isDeleted: Boolean
 )

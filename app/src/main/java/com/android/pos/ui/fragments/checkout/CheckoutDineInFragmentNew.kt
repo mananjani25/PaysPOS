@@ -3,7 +3,9 @@ package com.android.pos.ui.fragments.checkout
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
 import android.os.Bundle
+import android.text.Editable
 import android.text.InputType
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -24,6 +26,7 @@ import com.android.pos.data.model.responseModel.GuestPaymentAttributes
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN_ADAPTER_LIST
 import com.android.pos.data.remote.Constants.DINE_IN_GUEST_PAYMENT_DATA
+import com.android.pos.data.remote.Constants.OPTION_TYPE
 import com.android.pos.data.remote.Constants.PRINT_DATA_DINE_IN
 import com.android.pos.databinding.FragmentCheckoutDetailsNewBinding
 import com.android.pos.di.ApiModule1
@@ -42,6 +45,7 @@ import com.android.pos.utils.callback.DeleteOptionCallback
 import com.android.pos.utils.callback.magtekCallback
 import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.runOnUiThread
+import com.android.pos.utils.extensions.setOnSingleClickListener
 import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.statusUtils.Status
 import com.google.gson.Gson
@@ -56,6 +60,7 @@ import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
 class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : Fragment(),
@@ -68,6 +73,8 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
     private var isManualCard: Boolean = false
     private lateinit var binding: FragmentCheckoutDetailsNewBinding
     private val TAG = "DashboardCategoryBold"
+
+    var serviceChargeAppliedList: ArrayList<OrderServiceChargesAttribute> = arrayListOf()
 
     private var requestCancel: Boolean = false
     private var orderId: Int? = null
@@ -139,7 +146,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             bundle.putParcelable("dineInModel", modelDineIn)
 
             frag.arguments = bundle
-            Log.e(TAG, "modelDineInmodelDineIn:  ${Gson().toJson(modelDineIn)}")
+            LogUtil.logE(TAG, "modelDineInmodelDineIn:  ${Gson().toJson(modelDineIn)}")
             return frag
         }
     }
@@ -174,13 +181,14 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.e(TAG, "dineInDataModel:  ${Gson().toJson(dineInDataModel)}")
+        LogUtil.logE(TAG, "dineInDataModel:  ${Gson().toJson(dineInDataModel)}")
         orderId = dineInDataModel?.orderId
         isGuestPay = dineInDataModel?.isFromGuest ?: false
         isLastPayment = dineInDataModel?.isLastPayment ?: false
         guestRequestModel = dineInDataModel?.guestPaymentReq
         splitModel = dineInDataModel?.splitModel
-        Log.e("orderId :: ", orderId.toString())
+        serviceChargeAppliedList = dineInDataModel?.servicChargeAppliedlist!!
+        LogUtil.logE("orderId :: ", orderId.toString())
         if (orderId != null) {
             paymentId = arguments?.getInt("paymentId")!!
             paymentOfflineId = arguments?.getString("paymentOfflineId").toString()
@@ -194,6 +202,66 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         observeShowProgress()
         observeData()
         callback()
+        setUpManualCardFocusChanged()
+    }
+
+    private fun setUpManualCardFocusChanged() {
+        binding.edtCardNumber.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                try {
+                    if (s?.length == 22) {
+                        binding.edtMMYY.requestFocus()
+                    }
+                } catch (e: Exception) {
+                }
+            }
+        })
+        binding.edtMMYY.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                try {
+                    if (s?.length == 5) {
+                        binding.edtCVV.requestFocus()
+                    } else if (s?.length == 0) {
+                        binding.edtCardNumber.requestFocus()
+                    }
+                } catch (e: Exception) {
+                }
+            }
+        })
+        binding.edtCVV.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                try {
+                    if (s?.length == 0) {
+                        binding.edtMMYY.requestFocus()
+                    }
+                } catch (e: Exception) {
+                }
+            }
+        })
     }
 
     @SuppressLint("SetTextI18n")
@@ -250,14 +318,14 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
     private fun splitClick() {
 
-        binding.linearNextSplit.setOnClickListener {
+        binding.linearNextSplit.setOnSingleClickListener {
             PaymentBoldPosFragment.newInstance().addTipHideShow(false)
             viewModel.setSplitCount(isSelectedCount)
             loadPaymentLayout()
             tipAmountCalculation()
         }
 
-        binding.tvFullAmount.setOnClickListener {
+        binding.tvFullAmount.setOnSingleClickListener {
             listtextview = arrayListOf()
             listtextview.add(binding.tv2ways)
             listtextview.add(binding.tv3ways)
@@ -274,7 +342,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
         }
 
-        binding.tv2ways.setOnClickListener {
+        binding.tv2ways.setOnSingleClickListener {
             listtextview = arrayListOf()
             listtextview.add(binding.tvFullAmount)
             listtextview.add(binding.tv3ways)
@@ -291,7 +359,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             binding.tvwaysplit?.text = "$isSelectedCount Way Split Amount"
 
         }
-        binding.tv3ways.setOnClickListener {
+        binding.tv3ways.setOnSingleClickListener {
             listtextview = arrayListOf()
             listtextview.add(binding.tv2ways)
             listtextview.add(binding.tvFullAmount)
@@ -307,7 +375,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             binding.tvwaysplit?.visible()
             binding.tvwaysplit?.text = "$isSelectedCount Way Split Amount"
         }
-        binding.tv4ways.setOnClickListener {
+        binding.tv4ways.setOnSingleClickListener {
             listtextview = arrayListOf()
             listtextview.add(binding.tv2ways)
             listtextview.add(binding.tv3ways)
@@ -323,7 +391,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             binding.tvwaysplit?.visible()
             binding.tvwaysplit?.text = "$isSelectedCount Way Split Amount"
         }
-        binding.tv5ways.setOnClickListener {
+        binding.tv5ways.setOnSingleClickListener {
             listtextview = arrayListOf()
             listtextview.add(binding.tv2ways)
             listtextview.add(binding.tv3ways)
@@ -339,7 +407,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             binding.tvwaysplit?.visible()
             binding.tvwaysplit?.text = "$isSelectedCount Way Split Amount"
         }
-        binding.tv6ways.setOnClickListener {
+        binding.tv6ways.setOnSingleClickListener {
             listtextview = arrayListOf()
             listtextview.add(binding.tv2ways)
             listtextview.add(binding.tv3ways)
@@ -355,7 +423,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             binding.tvwaysplit?.visible()
             binding.tvwaysplit?.text = "$isSelectedCount Way Split Amount"
         }
-        binding.tvCustom.setOnClickListener {
+        binding.tvCustom.setOnSingleClickListener {
             listtextview = arrayListOf()
             listtextview.add(binding.tv2ways)
             listtextview.add(binding.tv3ways)
@@ -379,7 +447,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 prefProvider.setValueInt("ORDER_ID", it.data.order.id)
                 when {
                     paymentType == "Cash" -> {
-                        Log.e("TipAmount 4:: ", tipAmount.toString())
+                        LogUtil.logE("TipAmount 4:: ", tipAmount.toString())
 
                         val bundle = Bundle()
                         bundle.putBoolean("isDineIn", true)
@@ -481,10 +549,10 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                                 splitAllAmounts(Constants.TAX_CHARGE, totalTax)
                                 splitAllAmounts(Constants.SERVICE_CHARGE, totalServiceCharge)
 //                                if (cashDiscountType == "CashDiscount") {
-                                    splitAllAmounts(
-                                        Constants.CASH_DISCOUNT_SURCHARGE,
-                                        cashDiscountSurcharge
-                                    )
+                                splitAllAmounts(
+                                    Constants.CASH_DISCOUNT_SURCHARGE,
+                                    cashDiscountSurcharge
+                                )
 //                                }
 
                                 splitAllAmounts(Constants.TIP, 0.0)
@@ -498,10 +566,10 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                                 splitAllAmounts(Constants.TAX_CHARGE, totalTax)
                                 splitAllAmounts(Constants.SERVICE_CHARGE, totalServiceCharge)
 //                                if (cashDiscountType == "CashDiscount") {
-                                    splitAllAmounts(
-                                        Constants.CASH_DISCOUNT_SURCHARGE,
-                                        cashDiscountSurcharge
-                                    )
+                                splitAllAmounts(
+                                    Constants.CASH_DISCOUNT_SURCHARGE,
+                                    cashDiscountSurcharge
+                                )
 //                                }
 
                                 splitAllAmounts(Constants.TIP, 0.0)
@@ -515,10 +583,10 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                                 splitAllAmounts(Constants.TAX_CHARGE, totalTax)
                                 splitAllAmounts(Constants.SERVICE_CHARGE, totalServiceCharge)
 //                                if (cashDiscountType == "CashDiscount") {
-                                    splitAllAmounts(
-                                        Constants.CASH_DISCOUNT_SURCHARGE,
-                                        cashDiscountSurcharge
-                                    )
+                                splitAllAmounts(
+                                    Constants.CASH_DISCOUNT_SURCHARGE,
+                                    cashDiscountSurcharge
+                                )
 //                                }
 
                                 splitAllAmounts(Constants.TIP, 0.0)
@@ -565,7 +633,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
                     }
                     paymentType == "Card" -> {
-                        Log.e("TipAmount 4:: ", tipAmount.toString())
+                        LogUtil.logE("TipAmount 4:: ", tipAmount.toString())
 
                         val bundle = Bundle()
                         bundle.putBoolean("isDineIn", true)
@@ -671,6 +739,35 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
         paymentviewModel.showProgress.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
+                LogUtil.logE("observeShowProgress1", it.toString())
+                if (it) {
+                    ProgressUtils.showProgressDialog(
+                        "Please wait payment under process",
+                        requireActivity()
+                    )
+                } else {
+                    ProgressUtils.dismissProgressDialog()
+                }
+            }
+        }
+
+        dineinOrderVieweModel.showProgress.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let {
+                LogUtil.logE("observeShowProgress2", it.toString())
+                if (it) {
+                    ProgressUtils.showProgressDialog(
+                        "Please wait payment under process",
+                        requireActivity()
+                    )
+                } else {
+                    ProgressUtils.dismissProgressDialog()
+                }
+            }
+        }
+
+        dineinOrderVieweModel.showProgressCash.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let {
+                LogUtil.logE("observeShowProgress2", it.toString())
                 if (it) {
                     ProgressUtils.showProgressDialog(requireActivity())
                 } else {
@@ -678,6 +775,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 }
             }
         }
+
 
     }
 
@@ -693,8 +791,9 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         if (cashDiscountType == "CashDiscount") {
             paymentAmount -= cashDiscountSurcharge
         }
+        Log.d(TAG, "paymentClick: click 2")
 
-        Log.e(TAG, "isGuestPay:  ${isGuestPay}")
+        LogUtil.logE(TAG, "isGuestPay:  ${isGuestPay}")
         if (isGuestPay) {
             if (custom_paymentAmount != 0.0) {
                 dineinOrderVieweModel.totalPayAmount(custom_paymentAmount)
@@ -717,9 +816,11 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             }
 
         } else {
+            Log.d(TAG, "paymentClick: click 3")
             makeCashPayment()
         }
     }
+
 
     private fun guestAttributeCalculation(i: Int, toJson: String) {
         guestRequestModel?.paymentAttributes!!.amount =
@@ -735,8 +836,23 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         guestRequestModel?.paymentAttributes!!.totalDiscount =
             totalDiscount
         guestRequestModel?.paymentAttributes!!.paymentType = paymentType
-        guestRequestModel?.paymentAttributes!!.cash_discount_or_surcharge =
-            cashDiscountSurcharge
+        if (paymentType == "Cash") {
+            if (cashDiscountType == "CashDiscount") {
+                guestRequestModel?.paymentAttributes!!.cash_discount_or_surcharge =
+                    cashDiscountSurcharge
+            } else {
+                guestRequestModel?.paymentAttributes!!.cash_discount_or_surcharge =
+                    0.0
+            }
+        } else {
+            if (cashDiscountType == "SurCharge") {
+                guestRequestModel?.paymentAttributes!!.cash_discount_or_surcharge =
+                    cashDiscountSurcharge
+            } else {
+                guestRequestModel?.paymentAttributes!!.cash_discount_or_surcharge =
+                    0.0
+            }
+        }
         guestRequestModel?.paymentAttributes!!.cash_discount_type = cashDiscountType
         guestRequestModel?.paymentAttributes!!.terminalId =
             prefProvider.getValueInt(Constants.TERMINAL_ID, 0)
@@ -750,6 +866,18 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             guestRequestModel?.paymentAttributes!!.cardNumber =
                 if (cardNumber.isNotEmpty()) cardNumber.takeLast(4) else ""
             guestRequestModel?.paymentAttributes!!.cardType = "Credit"
+
+            guestRequestModel?.paymentAttributes!!.magensaResponse = toJson
+
+
+            LogUtil.logE(TAG, "getOptionType:  ${prefProvider.getValue(OPTION_TYPE, "")}")
+            if (prefProvider.getValue(OPTION_TYPE, "").equals("SurCharge", true)) {
+                guestRequestModel?.paymentAttributes?.cash_discount_or_surcharge =
+                    cashDiscountSurcharge
+
+            } else {
+                guestRequestModel?.paymentAttributes?.cash_discount_or_surcharge = 0.0
+            }
         } else if (paymentType == "Card" && toJson.isNotEmpty()) {
 
             if (toJson.isNotEmpty()) {
@@ -757,15 +885,17 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                     toJson,
                     PaymentResponse.PaymentResponseItem::class.java
                 )
-                Log.e("magensaResponse", Gson().toJson(model))
+                LogUtil.logE("magensaResponse", Gson().toJson(model))
 
+
+                guestRequestModel?.paymentAttributes!!.magensaResponse = toJson
 
                 if (model.dataOutput != null) {
-                    Log.e("dataOutput", Gson().toJson(model))
+                    LogUtil.logE("dataOutput", Gson().toJson(model))
                     val cardNumber = model.dataOutput.PANLast4
                     var cardN = ""
                     model.dataOutput.additionalOutputData?.forEach {
-                        Log.e("additionalOutputData", it.key)
+                        LogUtil.logE("additionalOutputData", it.key)
                         if (it.key == "CardType") {
                             cardN = it.value
                         }
@@ -776,7 +906,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 }
 
                 if (model.cardSwipeOutput != null) {
-                    Log.e("cardSwipeOutput", Gson().toJson(model))
+                    LogUtil.logE("cardSwipeOutput", Gson().toJson(model))
                     val cardNumber = model.cardSwipeOutput.pANLast4
                     var cardN = ""
                     model.cardSwipeOutput.additionalOutputData?.forEach {
@@ -829,8 +959,27 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             guestPaymentAttributes.cardName = guestRequestModel?.paymentAttributes!!.cardName
             guestPaymentAttributes.cardNumber = guestRequestModel?.paymentAttributes!!.cardNumber
             guestPaymentAttributes.cardType = guestRequestModel?.paymentAttributes!!.cardType
+            guestPaymentAttributes.magensaResponse =
+                guestRequestModel?.paymentAttributes!!.magensaResponse
             guestPaymentAttributes.transactionId =
                 guestRequestModel?.paymentAttributes!!.transactionId
+            if (prefProvider.getValue(OPTION_TYPE, "").equals("SurCharge", true)) {
+                guestPaymentAttributes?.cash_discount_or_surcharge =
+                    cashDiscountSurcharge
+
+            } else {
+                guestPaymentAttributes?.cash_discount_or_surcharge = 0.0
+            }
+        } else if (paymentType == "Cash") {
+            if (prefProvider.getValue(OPTION_TYPE, "").equals("CashDiscount", true)) {
+                guestPaymentAttributes?.cash_discount_or_surcharge = cashDiscountSurcharge
+                guestRequestModel?.paymentAttributes?.cash_discount_or_surcharge =
+                    cashDiscountSurcharge
+
+            } else {
+                guestPaymentAttributes?.cash_discount_or_surcharge = 0.0
+                guestRequestModel?.paymentAttributes?.cash_discount_or_surcharge = 0.0
+            }
         }
 
         guestRequestModel?.paymentAttributes!!.paymentAttributes =
@@ -883,7 +1032,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
     }
 
     private fun paymentClick() {
-        binding.llCreditCard.setOnClickListener {
+        binding.llCreditCard.setOnSingleClickListener {
 
             val device = prefProvider.getValueInt(Constants.MAGTEK_HARDWARE, 0)
             subTotalPrice = String.format("%.2f", subTotalPrice / isSelectedCount).toDouble()
@@ -914,7 +1063,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 errorDisplay("Payment Amount is zero.")
             }
         }
-        binding.llManualCardEntry.setOnClickListener {
+        binding.llManualCardEntry.setOnSingleClickListener {
             binding.frameLayoutId.visible()
             binding.relativeMain.gone()
             binding.llManualCard.visible()
@@ -922,7 +1071,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
         }
 
-        binding.tvCash0.setOnClickListener {
+        binding.tvCash0.setOnSingleClickListener {
 
             custom_paymentAmount = 0.0
 
@@ -937,26 +1086,27 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             }
 
             paymentAmount = binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
+            Log.d(TAG, "paymentClick: click 1")
             cashPaymentWithVariation()
         }
-        binding.tvCash1.setOnClickListener {
+        binding.tvCash1.setOnSingleClickListener {
 
             custom_paymentAmount =
                 binding.tvCash1.text.toString().replace("$", "").trim().toDouble()
             cashPaymentWithVariation()
         }
-        binding.tvCash2.setOnClickListener {
+        binding.tvCash2.setOnSingleClickListener {
             custom_paymentAmount =
                 binding.tvCash2.text.toString().replace("$", "").trim().toDouble()
             cashPaymentWithVariation()
         }
-        binding.tvCash3.setOnClickListener {
+        binding.tvCash3.setOnSingleClickListener {
 
             custom_paymentAmount =
                 binding.tvCash3.text.toString().replace("$", "").trim().toDouble()
             cashPaymentWithVariation()
         }
-        binding.tvCustomAmount.setOnClickListener {
+        binding.tvCustomAmount.setOnSingleClickListener {
 
 
             val bundleVal = Bundle().apply {
@@ -968,18 +1118,18 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             )
 
         }
-        binding.tvPaymentLink.setOnClickListener {
+        binding.tvPaymentLink.setOnSingleClickListener {
 
         }
 
 
-        binding.imgBackManualCard.setOnClickListener {
+        binding.imgBackManualCard.setOnSingleClickListener {
             isManualCard = false
             binding.relativeMain.visible()
             binding.llManualCard.gone()
         }
 
-        binding.txtCharge.setOnClickListener {
+        binding.txtCharge.setOnSingleClickListener {
 
             paymentType = "Card"
 
@@ -1043,7 +1193,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
     ) {
 
         val jsonArray1 = magtekRequestUtils.processManualEntry(
-            (paymentAmount * 100).toInt(),
+            (paymentAmount * 100),
             cardNumber,
             expDate,
             cardCVV
@@ -1068,7 +1218,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 ""
             ) == "0.0"
         ) {
-            Log.e(TAG, "totalPrice  ${viewModel.totalPrice}")
+            LogUtil.logE(TAG, "totalPrice  ${viewModel.totalPrice}")
 
             WholetotalPrice = viewModel.totalPrice
             prefProvider.setValue(
@@ -1178,7 +1328,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
         cartList = viewModel.cartModel
         Log.e("ORDER_TYPE", prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT))
-
+        paymentviewModel.setServiceChargeListApplied(serviceChargeAppliedList)
         viewModel.ordertypelist.forEach {
             if (prefProvider.getValue(Constants.ORDER_TYPE, Constants.DINE_IN) == it.orderType) {
                 paymentviewModel.setOrderTypeId(it.id)
@@ -1347,14 +1497,14 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
     }
 
     private fun setupTabDesign() {
-        binding.linearTab1.setOnClickListener {
+        binding.linearTab1.setOnSingleClickListener {
             PaymentBoldPosFragment.newInstance().addTipHideShow(false)
             isSelectedCount = 1
             tipsetupGlobal(tipAmount, isSelectedCount)
             loadPaymentLayout()
             tipAmountCalculation()
         }
-        binding.linearTab2.setOnClickListener {
+        binding.linearTab2.setOnSingleClickListener {
             if (tipAmount != 0.0 && viewModel.tipTransactionAmount != 0.0) {
                 AlertUtils.showCustomAlertWithListenerWithOKCancel(
                     requireContext(),
@@ -1437,8 +1587,6 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         paymentAmount -= tipAmount
         paymentAmount = MethodUtils.roundOffAmountDouble(paymentAmount)
         paymentType = "Card"
-        Log.e(TAG, "cartList:  ${Gson().toJson(cartList)}")
-        Log.e(TAG, "cartListcartItems:  ${Gson().toJson(cartItems)}")
         if (orderId != -1 && orderId != 0) {
             paymentviewModel.updateOrder(
                 true,
@@ -1472,7 +1620,6 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 tipID
             )
         }
-        Log.e(TAG, "myRequestOriginal ${Gson().toJson(myRequest)}")
         if (myRequest != null) {
             paymentviewModel.totalPayAmount(paymentAmount)
             paymentAttributesRequest(myRequest)
@@ -1501,6 +1648,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         Log.d("yash", "makeCashPayment: totaltax    : " + totalTax)
         Log.d("yash", "makeCashPayment: total disc  : " + totalDiscount)
         Log.d("yash", "makeCashPayment: total serv  : " + totalServiceCharge)
+        Log.d(TAG, "paymentClick: click 4")
         val myRequest = cartList?.let {
             paymentviewModel.createOrderRequest(
                 it,
@@ -1519,10 +1667,9 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 cashDiscountSurcharge,
                 true,
                 paymentType, cashDiscountType,
-                tipID
+                tipID, offlineId = orderOfflineId
             )
         }
-        Log.e(TAG, "myRequestOriginal ${Gson().toJson(myRequest)}")
 
         if (myRequest != null) {
             if (custom_paymentAmount != 0.0) {
@@ -1568,9 +1715,9 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
     private fun paymentAttributesRequest(myRequest: OrderRequestModel) {
         val orderId = prefProvider.getValueInt("ORDER_ID", -1)
-        Log.e(TAG, "orderIdmyRequestOriginal ${orderId}")
         if (orderId == -1) {
             myRequest.completed_all_payments = isSelectedCount <= 1
+            Log.d(TAG, "paymentClick: click 5")
             paymentviewModel.submit(myRequest)
         } else {
             val paymentReq = myRequest.order.paymentAttributes
@@ -1744,7 +1891,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
         val jsonArray1 = magtekModule.m_scra?.let {
             magtekRequestUtils.processCardSwipe(
-                (paymentAmount * 100).toInt(),
+                (paymentAmount * 100),
                 magtekModule.m_scra!!.ksn,
                 magtekModule.m_scra!!.magnePrint,
                 magtekModule.m_scra!!.magnePrintStatus,
@@ -1758,7 +1905,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
     private fun networkCall(jsonArray1: JsonArray?, i: Int) {
 
-        ProgressUtils.showProgressDialog(requireActivity())
+        ProgressUtils.showProgressDialog("Please wait payment under process", requireActivity())
 
         var call: Call<PaymentResponse>? = null
         when (i) {
@@ -1781,7 +1928,6 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             ) {
                 ProgressUtils.dismissProgressDialog()
                 if (response.isSuccessful) {
-                    Log.e("onResponse", Gson().toJson(response.body()))
                     if (response.body() != null && response.body()!![0].transactionOutput != null) {
 
                         if (response.body()!![0].transactionOutput?.isTransactionApproved == true) {
@@ -1792,6 +1938,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                                 if (i == 3) cardNumber else ""
                             )
                             if (isGuestPay) {
+                                paymentAmount -= tipAmount
                                 paymentType = "Card"
                                 dineinOrderVieweModel.totalPayAmount(paymentAmount)
 
@@ -1849,7 +1996,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         ProgressUtils.dismissProgressDialog()
 
         val jsonArray1 = magtekRequestUtils.processData(
-            (paymentAmount * 100).toInt(),
+            (paymentAmount * 100),
             TLVParser.getHexString(data),
             Constants.AUTHORIZE
         )
@@ -1878,20 +2025,20 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 EventType.ConnectionState -> {
                     when (ConnectionStateBuilder.GetValue(data.StringValue())) {
                         ConnectionState.Connected -> {
-                            Log.e("", "[CONNECTED]")
+                            LogUtil.logE("", "[CONNECTED]")
 
                             startTransaction()
                         }
                         ConnectionState.Disconnected -> {
-                            Log.e("", "[DISCONNECTED]")
+                            LogUtil.logE("", "[DISCONNECTED]")
                             ProgressUtils.dismissProgressDialog()
                             AlertUtils.showCustomAlert(requireContext(), "DISCONNECTED")
                         }
                         ConnectionState.Disconnecting -> {
-                            Log.e("", "[DISCONNECTING]")
+                            LogUtil.logE("", "[DISCONNECTING]")
                         }
                         ConnectionState.Connecting -> {
-                            Log.e("", "[CONNECTING]")
+                            LogUtil.logE("", "[CONNECTING]")
 
                         }
                         else -> ""
@@ -1901,12 +2048,12 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
 //                ProgressUtils.dismissProgressDialog()
 
-                    Log.e("TransactionResult", "TransactionResult called")
+                    LogUtil.logE("TransactionResult", "TransactionResult called")
 
                     dismissDialog()
 
                     val jsonArray1 = magtekRequestUtils.processData(
-                        (paymentAmount * 100).toInt(),
+                        (paymentAmount * 100),
                         MTParser.getHexString(data.ByteArray()),
                         Constants.AUTHORIZE
                     )
@@ -1953,11 +2100,11 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
     private fun magtekProPaymentCall() {
 
-        ProgressUtils.showProgressDialog(requireActivity())
+        ProgressUtils.showProgressDialog("Please tap, insert or swipe card", requireActivity())
         ProgressUtils.setCallback(this)
 
 
-        Log.e("mSessionManager", mSessionManager.isConnected.toString())
+        LogUtil.logE("mSessionManager", mSessionManager.isConnected.toString())
         if (mSessionManager.isConnected) {
             startTransaction()
         } else {
@@ -2022,7 +2169,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
     private fun navigateOnPaymentSuccess() {
         dineinOrderVieweModel.onPayment.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let { str ->
-                Log.e(TAG, "getstr:   $str")
+                LogUtil.logE(TAG, "getstr:   $str")
                 /*AlertUtils.showCustomAlertWithListenerWithOK(requireContext(), str) { _, _ ->*/
 
 
@@ -2039,7 +2186,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         when {
 
             paymentType == "Cash" -> {
-                Log.e("TipAmount 4:: ", tipAmount.toString())
+                LogUtil.logE("TipAmount 4:: ", tipAmount.toString())
 
                 val bundle = Bundle()
                 bundle.putBoolean("isDineIn", true)
@@ -2064,7 +2211,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                         ).toDouble()
                     }
 
-                Log.e(TAG, "wholePricewholePrice:  ${wholePrice}")
+                LogUtil.logE(TAG, "wholePricewholePrice:  ${wholePrice}")
 
                 bundle.putDouble("WholetotalPrice", wholePrice)
                 var remainingValue = 0.0
@@ -2154,13 +2301,10 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                         splitAllAmounts(Constants.TOTAL_DISCOUNT, totalDiscount)
                         splitAllAmounts(Constants.TAX_CHARGE, totalTax)
                         splitAllAmounts(Constants.SERVICE_CHARGE, totalServiceCharge)
-                        if (cashDiscountType == "CashDiscount") {
-                            splitAllAmounts(
-                                Constants.CASH_DISCOUNT_SURCHARGE,
-                                cashDiscountSurcharge
-                            )
-                        }
-
+                        splitAllAmounts(
+                            Constants.CASH_DISCOUNT_SURCHARGE,
+                            cashDiscountSurcharge
+                        )
                         splitAllAmounts(Constants.TIP, 0.0)
                     } else if (custom_paymentAmount != 0.0) {
                         bundle.putBoolean("isSpilt", false)
@@ -2171,13 +2315,10 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                         splitAllAmounts(Constants.TOTAL_DISCOUNT, totalDiscount)
                         splitAllAmounts(Constants.TAX_CHARGE, totalTax)
                         splitAllAmounts(Constants.SERVICE_CHARGE, totalServiceCharge)
-                        if (cashDiscountType == "CashDiscount") {
-                            splitAllAmounts(
-                                Constants.CASH_DISCOUNT_SURCHARGE,
-                                cashDiscountSurcharge
-                            )
-                        }
-
+                        splitAllAmounts(
+                            Constants.CASH_DISCOUNT_SURCHARGE,
+                            cashDiscountSurcharge
+                        )
                         splitAllAmounts(Constants.TIP, 0.0)
                     } else {
                         bundle.putBoolean("isSpilt", true)
@@ -2188,12 +2329,10 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                         splitAllAmounts(Constants.TOTAL_DISCOUNT, totalDiscount)
                         splitAllAmounts(Constants.TAX_CHARGE, totalTax)
                         splitAllAmounts(Constants.SERVICE_CHARGE, totalServiceCharge)
-                        if (cashDiscountType == "CashDiscount") {
-                            splitAllAmounts(
-                                Constants.CASH_DISCOUNT_SURCHARGE,
-                                cashDiscountSurcharge
-                            )
-                        }
+                        splitAllAmounts(
+                            Constants.CASH_DISCOUNT_SURCHARGE,
+                            cashDiscountSurcharge
+                        )
 
                         splitAllAmounts(Constants.TIP, 0.0)
                     }
@@ -2240,7 +2379,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             }
 
             paymentType == "Card" -> {
-                Log.e("TipAmount 4:: ", tipAmount.toString())
+                LogUtil.logE("TipAmount 4:: ", tipAmount.toString())
 
                 val bundle = Bundle()
                 bundle.putBoolean("isDineIn", true)

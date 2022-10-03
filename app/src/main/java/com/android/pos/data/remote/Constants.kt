@@ -6,6 +6,7 @@ import com.android.pos.data.model.PrinterListModel
 import com.android.pos.data.model.requestModel.CreatePrinterRequestModel
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.di.PrefProvider
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.TimeFormatUtils
 import com.google.gson.Gson
 import java.text.SimpleDateFormat
@@ -16,6 +17,14 @@ object Constants {
     const val ARG_PARAM1 = "param1"
     const val ARG_PARAM2 = "param2"
     const val ARG_PARAM3 = "param2"
+
+    // payment magtek
+
+    const val TSYS_PRODUCTION = "TSYS - Production"
+    const val TSYS_PILOT = "TSYS - Pilot"
+
+    const val RAPID_PRODUCTION = "Rapid Connect v3 - Production"
+    const val RAPID_PILOT = "Rapid Connect v3 - Pilot"
 
     //Database Name
     const val DATABASE_NAME = "androidPos-db"
@@ -38,6 +47,8 @@ object Constants {
     //SharedPref Keys
     const val AUTH_TOKEN = "authToken"
     const val TERMINAL_ID = "terminalId"
+    const val SYNC_TIME_STAMP = "SyncTimeStamp"
+    const val SYNC_SETTING_TIME_STAMP = "SyncSettingTimeStamp"
     const val ONLINE_ORDER_ENABLE = "ONLINE_ORDER_ENABLE"
     const val BASE_URL_NEW = "baseUrlNew"
     const val PASSCODE = "passcode"
@@ -105,6 +116,7 @@ object Constants {
     const val EMPLOYEE_CLOCK_IN = "employee_activities/clock_in"
     const val LOGIN_TERMINAL = "users/login_terminal"
     const val EMPLOYEE_LOG_IN = "employee_activities/log_in"
+    const val CHECK_PERMISSION_MANAGER = "employees/check_employee_role"
     const val CLOCK_OUT = "employee_activities/clock_out"
     const val LOGOUT = "users/log_out"
     const val FORGOT_PASSWORD = "users/forgot_password"
@@ -407,7 +419,7 @@ object Constants {
             }
         }
 
-        Log.e("ListConvert", "listlist:  ${Gson().toJson(list)}")
+        LogUtil.logE("ListConvert", "listlist:  ${Gson().toJson(list)}")
 
         val model = CreatePrinterRequestModel(
             id = printerModel?.id,
@@ -587,6 +599,8 @@ object Constants {
     const val SEND_CLOCKOUT_NOTIFICATION = "send_clockout_notification"
     const val ONLINE_ORDER_GET_NOTIFICATION = "online_order_get_notification"
     const val ONLINE_ORDER_REFRESH = "online_order_refresh"
+    const val SYNC_NOTIFICATION = "sync_notification"
+    const val SYNC_SETTING_NOTIFICATION = "sync_setting_notification"
 
 
     // dinein
@@ -651,5 +665,10 @@ object Constants {
 
     const val SHIPPING_ADDRESS = "Shipping"
     const val BILLING_ADDRESS = "Billing"
+
+
+    const val TIP_ADDED = "TipAdded"
+    const val TIP_ADDED_AMOUNT = "TipAddedAmount"
+    const val TIP_ADDED_ID = "TipAddedId"
 
 }

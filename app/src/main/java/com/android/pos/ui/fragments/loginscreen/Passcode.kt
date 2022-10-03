@@ -25,11 +25,9 @@ import com.android.pos.databinding.FragmentPasscodeBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.utils.AlertUtils
-import com.android.pos.utils.MethodUtils
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.ProgressUtils
 import dagger.hilt.android.AndroidEntryPoint
-import java.text.SimpleDateFormat
-import java.util.*
 import javax.inject.Inject
 
 
@@ -96,11 +94,11 @@ class Passcode : Fragment() {
 
         isLogin = arguments?.getBoolean("isLogin") ?: false
 
-        if (isLogin)
-            viewModel.defaultTerminalCall(
-                prefProvider.getValue("device_token", ""),
-                prefProvider.getValue(UNIQUE_ID, ""),
-            )
+//        if (isLogin)
+//            viewModel.defaultTerminalCall(
+//                prefProvider.getValue("device_token", ""),
+//                prefProvider.getValue(UNIQUE_ID, ""),
+//            )
 
 
         return binding.root
@@ -133,7 +131,7 @@ class Passcode : Fragment() {
 
         viewModel.timeDetails.observe(requireActivity()) {
             it.data?.let {
-                Log.e("TAG", "timeDetails ${it.data}")
+                LogUtil.logE("TAG", "timeDetails ${it.data}")
                 binding.currentTime.text = it.data.time
                 binding.currentDate.text = it.data.date
             }
@@ -146,12 +144,12 @@ class Passcode : Fragment() {
         selectedList: ArrayList<TextView>,
         isSelected: Boolean
     ) {
-        if (isSelected) {
-            txtview.setBackgroundResource(R.drawable.passcode_viewselected)
-        }
-        for (i in selectedList.indices) {
-            selectedList[i].setBackgroundResource(R.drawable.passcode_viewunselected)
-        }
+//        if (isSelected) {
+//            txtview.setBackgroundResource(R.drawable.passcode_viewselected)
+//        }
+//        for (i in selectedList.indices) {
+//            selectedList[i].setBackgroundResource(R.drawable.passcode_viewunselected)
+//        }
     }
 
     private fun onclickPasscode() {
@@ -346,7 +344,7 @@ class Passcode : Fragment() {
             override fun afterTextChanged(s: Editable?) {
                 var value = s.toString()
                 if (value.length == 4) {
-                    Log.e("passCodeView", value)
+                    LogUtil.logE("passCodeView", value)
                     viewModel.submit(value)
                 }
 
@@ -400,7 +398,7 @@ class Passcode : Fragment() {
 
         viewModel.data1.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
-                Log.e("action_passcode", it.toString())
+                LogUtil.logE("action_passcode", it.toString())
                 findNavController().navigate(R.id.action_passcode_to_login)
 
             }

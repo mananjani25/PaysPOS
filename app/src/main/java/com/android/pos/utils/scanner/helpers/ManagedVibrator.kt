@@ -6,6 +6,7 @@ import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.util.Log
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.scanner.helpers.CustomProgressDialog
 import com.android.pos.utils.scanner.helpers.Foreground
 import com.android.pos.utils.scanner.helpers.ManagedVibrator
@@ -78,7 +79,7 @@ class ManagedVibrator(private val mContext: Context) {
         try {
             mExecutor.schedule(mVibrationEndRunnable, milliseconds, TimeUnit.MILLISECONDS)
         } catch (e: RejectedExecutionException) {
-            Log.e(TAG, e.message!!)
+            LogUtil.logE(TAG, e.message!!)
         }
     }
 

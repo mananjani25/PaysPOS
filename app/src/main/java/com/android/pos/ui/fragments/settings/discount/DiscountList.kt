@@ -17,6 +17,7 @@ import com.android.pos.data.entities.TbDiscount
 import com.android.pos.databinding.DiscountFragmentBinding
 import com.android.pos.ui.adapter.DiscountListAdapter
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.SwipeHelper
 import com.android.pos.utils.callback.ItemCallback
@@ -81,7 +82,7 @@ class DiscountList : Fragment() , ItemCallback {
     }
 
     private fun getTaxListObserver() {
-        viewModel.getDiscountList.observe(viewLifecycleOwner, {
+        viewModel.getDiscountList.observe(viewLifecycleOwner) {
 
 
             it?.let { resource ->
@@ -90,9 +91,9 @@ class DiscountList : Fragment() , ItemCallback {
                         ProgressUtils.dismissProgressDialog()
                         binding.rvDiscountList.visibility = View.VISIBLE
                         resource.data?.let { taxList ->
-                            Log.e(TAG,"taxList:  ${Gson().toJson(taxList)}")
-                           // Collections.reverse(taxList)
-                            //Log.e(TAG,"taxListReversed:  ${Gson().toJson(taxList)}")
+                            LogUtil.logE(TAG, "taxList:  ${Gson().toJson(taxList)}")
+                            // Collections.reverse(taxList)
+                            //LogUtil.logE(TAG,"taxListReversed:  ${Gson().toJson(taxList)}")
                             setTaxData(taxList)
                         }
                     }
@@ -107,7 +108,7 @@ class DiscountList : Fragment() , ItemCallback {
                     }
                 }
             }
-        })
+        }
     }
 
     private fun notifyAdapter() {

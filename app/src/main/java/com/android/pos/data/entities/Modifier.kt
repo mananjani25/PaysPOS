@@ -22,10 +22,14 @@ class Modifier : Parcelable {
     var price: Double = 0.00
 
     @SerializedName("sort")
-    val sort: Int = 0
+    var sort: Int = 0
 
     @SerializedName("_destroy")
     var _destroy: Boolean = false
+
+
+    @SerializedName("is_deleted")
+    var isDeleted: Boolean = false
 
     var isChecked: Boolean = false
 

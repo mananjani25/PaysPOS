@@ -5,7 +5,6 @@ import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
-import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -38,6 +37,7 @@ import com.android.pos.ui.adapter.boldpos.TaxBirfurcationAdapter
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.AmountTextWatcher
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.callback.ManualSaleOptionsCustomCallback
 import com.android.pos.utils.extensions.alert
@@ -45,7 +45,6 @@ import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.visible
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.stream.Collectors
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -267,7 +266,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
         }
         binding.layoutHeader.imgSync.setOnClickListener {
-            viewModel.syncInventoryModule()
+          //  viewModel.syncInventoryModule(requireActivity())
         }
         binding.layoutHeader.imgDrawer.setOnClickListener {
             findNavController().navigate(R.id.action_manualSalesNew_to_menuFragment)
@@ -307,19 +306,20 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
             if (it != null) {
                 manualCategoryId = it.id
-                manualItemId = it.item_ids[0]
-                Log.e("manualItemId", manualItemId.toString())
+                if (it.item_ids.isNotEmpty())
+                    manualItemId = it.item_ids[0]
+                LogUtil.logE("manualItemId", manualItemId.toString())
             }
 
         }
     }
 
     private fun getLoyaltyPrograms() {
-        Log.e("Loyalty", "getLoyaltyPrograms called..")
+        LogUtil.logE("Loyalty", "getLoyaltyPrograms called..")
         viewModel.activeLoyaltyProgram = prefProvider.getActiveLoyaltyData()
         viewModel.activeLoyaltyProgramLiveData.observe(requireActivity()) {
             if (it.data != null) {
-                Log.e("Loyalty", "getLoyaltyPrograms fetched..")
+                LogUtil.logE("Loyalty", "getLoyaltyPrograms fetched..")
                 prefProvider.saveActiveLoyaltyData(it.data)
                 viewModel.activeLoyaltyProgram = it.data
             }
@@ -334,7 +334,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
             ).observe(requireActivity()) {
                 cartList = it
-                Log.e(TAG, "cartListBeforeTax  ${Gson().toJson(cartList)}")
+                LogUtil.logE(TAG, "cartListBeforeTax  ${Gson().toJson(cartList)}")
                 if (cartList?.isNotEmpty()!!) {
 
                     cartList?.get(0)?.items?.forEach {
@@ -424,7 +424,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                             false
                         )
                     ) {
-                        Log.e(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
+                        LogUtil.logE(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
                         serviceChargesList = arrayListOf()
                         it.data?.forEach { service ->
                             if (service.order_type == Constants.SERVICECHARGE_TAKEOUT_OPENORDER) {
@@ -505,7 +505,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
             val bundle = Bundle()
             if (isPayClicked && cartList?.isNotEmpty() == true) {
-                Log.e(
+                LogUtil.logE(
                     "!_@_",
                     "Total Price: ${viewModel.redeemLoyaltyInfo.getAmountToBePaid() ?: 0.0}"
                 )
@@ -519,7 +519,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 bundle.putDouble("totalServiceCharge", viewModel.totalServiceCharge)
                 cartList?.get(0)?.customer = assignCustomer
                 bundle.putParcelable("cartList", cartList?.get(0))
-                Log.e(TAG, "cartListManualSale  ${Gson().toJson(cartList?.get(0))}")
+                LogUtil.logE(TAG, "cartListManualSale  ${Gson().toJson(cartList?.get(0))}")
                 bundle.putString(
                     "redeemLoyalty",
                     Gson().toJson(viewModel.redeemLoyaltyInfo)
@@ -818,10 +818,16 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                             bundle.putDouble("itemOrderDiscount", perItemDiscount)
                             bundle.putInt("totalquantity", totalItemswithQuantity)
                         }
-                        findNavController().navigate(
-                            R.id.action_manualSaleNew__to_addDiscountDialog,
-                            bundle
-                        )
+                        bundle.putString("isFrom","orderDiscountManual")
+                        if (prefProvider.isAdmin() || prefProvider.isManager()){
+                            if (findNavController().currentDestination?.id != R.id.addDiscountDialog) {
+                                findNavController().navigate(R.id.action_manualSaleNew__to_addDiscountDialog, bundle)
+                            }
+                        }else{
+                            findNavController().navigate(
+                                R.id.action_manualSaleNew_to_pascodeManagerDailog,bundle
+                            )
+                        }
                     }
                 }
                 true
@@ -1101,7 +1107,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
     private fun addItemToCart(price: String, isAdd: Boolean) {
         val replaceCurrency = price.replace("$", "")
-        Log.e(TAG, "replaceCurrency  ${replaceCurrency}")
+        LogUtil.logE(TAG, "replaceCurrency  ${replaceCurrency}")
         var count = 0
         if (isAdd) {
             tabItemMOdel = TbItem()
@@ -1153,7 +1159,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             tabItemMOdel.taxes = taxList
 
 
-            Log.e("ordertypelist", Gson().toJson(viewModel.ordertypelist))
+            LogUtil.logE("ordertypelist", Gson().toJson(viewModel.ordertypelist))
 
             viewModel.ordertypelist.forEach {
                 if (it.orderType.equals(
@@ -1168,7 +1174,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 }
             }
 
-            Log.e("orderTypeId", prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1).toString())
+            LogUtil.logE("orderTypeId", prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1).toString())
 
             viewModel.manualSalecartLogic(cartList, tabItemMOdel, ADD)
             binding.llKeypad.edtItemName.text?.clear()
@@ -1247,7 +1253,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             val result = bundle.getParcelable<TbDiscount>("data")
             if (result != null) {
                 val pos = mPostion
-                Log.e(TAG, "GetDiscountResult:  ${Gson().toJson(result)}")
+                LogUtil.logE(TAG, "GetDiscountResult:  ${Gson().toJson(result)}")
                 if (result.discountType == requireContext().getString(R.string.disc_percentage)) {
                     val cartModel = cartAdapter.getItem(pos)
                     cartModel.discountPrice = calculateDiscountPercentage(
@@ -1258,7 +1264,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                     cartModel.discountType = result.discountType
                     cartModel.isDiscountDefault = true
 
-                    Log.e(TAG, "cartModelPArseMsd   ${Gson().toJson(cartModel)}")
+                    LogUtil.logE(TAG, "cartModelPArseMsd   ${Gson().toJson(cartModel)}")
                     cartList?.get(0)?.taxlistDynamic = arrayListOf()
                     cartList?.get(0)?.items?.forEach { items ->
                         items.taxes?.forEach { taxData ->
@@ -1346,7 +1352,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         var newText = StringBuilder(str).insert(0, "%").toString()
 
 
-        Log.e(
+        LogUtil.logE(
             TAG,
             "afterTextSet  ${
                 binding.llKeypad.txtAmount.text.toString().replace("""[$]""".toRegex(), "%")
@@ -1377,8 +1383,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
     @SuppressLint("SetTextI18n")
     override fun onItemClicked(model: TbItem, position: Int) {
-        Log.e(TAG, "Itemmodel: ${Gson().toJson(model)}")
-        Log.e(TAG, "ItemPosition: $position")
+        LogUtil.logE(TAG, "Itemmodel: ${Gson().toJson(model)}")
+        LogUtil.logE(TAG, "ItemPosition: $position")
         val dialog = Dialog(requireContext())
         dialog.window?.requestFeature(Window.FEATURE_NO_TITLE)
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -1466,16 +1472,22 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
 
             model.note = edtNote.text.toString().trim()
-            Log.e("TAG", "notes${edtNote.text.toString().trim()}")
-            model.itemQuantity = txtQty.text.toString().toInt()
-            model.name = edtItemName.text.toString()
+            LogUtil.logE("TAG", "notes${edtNote.text.toString().trim()}")
+            if (txtQty.text.toString().isNotEmpty()) {
+                model.itemQuantity = txtQty.text.toString().toInt()
+            } else {
+                model.itemQuantity = 1
+            }
+
+            cartList?.get(0)?.items?.get(position)?.name = edtItemName.text.toString()
+            Log.d(TAG, "onItemClicked: name  " + edtItemName.text.toString())
 
             model.price = String.format("%.2f", (itemCost)).toDouble()
 
             viewModel.setPosition(position)
-            Log.e(TAG, "Itemmodel: ${Gson().toJson(model)}")
+            LogUtil.logE(TAG, "Itemmodel: ${Gson().toJson(model)}")
 
-            Log.e(TAG, "ItemPosition: $position")
+            LogUtil.logE(TAG, "ItemPosition: $position")
             cartList?.get(0)?.taxlistDynamic = arrayListOf()
             cartList?.get(0)?.items?.forEach { items ->
                 items.taxes?.forEach { taxData ->
@@ -1502,7 +1514,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         }
 
         btnRemove.setOnClickListener {
-            Log.e(TAG, "modelRemove:  ${Gson().toJson(model)}")
+            LogUtil.logE(TAG, "modelRemove:  ${Gson().toJson(model)}")
             viewModel.manualSalecartLogic(cartList, model, Constants.DELETE)
             dialog.dismiss()
         }
@@ -1512,7 +1524,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             setFragmentResultListener("request_key_discount_details") { requestKey: String, bundle: Bundle ->
                 val result = bundle.getParcelable<TbDiscount>("data")
                 if (result != null) {
-                    Log.e(TAG, "GetDiscountResult:  ${Gson().toJson(result)}")
+                    LogUtil.logE(TAG, "GetDiscountResult:  ${Gson().toJson(result)}")
                     if (result.discountType == requireContext().getString(R.string.disc_percentage)) {
 
                         model.discountPrice = calculateDiscountPercentage(
@@ -1532,7 +1544,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                         viewModel.manualSalecartLogic(cartList, model, Constants.UPDATE)
                         txtTitle.text = model.name + "  $" + String.format(
                             "%.2f",
-                            ((model.price * totalquantity) - model.discountPrice)
+                            ((model.price * totalquantity) - model.discountPrice*totalquantity)
                         )
 
                     } else if (result.discountType == "Amount") {
@@ -1552,7 +1564,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                         viewModel.manualSalecartLogic(cartList, model, Constants.UPDATE)
                         txtTitle.text = model.name + "  $" + String.format(
                             "%.2f",
-                            ((model.price * totalquantity) - model.discountPrice)
+                            ((model.price * totalquantity) - model.discountPrice*totalquantity)
                         )
                     } else {
                         model.discountPrice = 0.0
@@ -1630,7 +1642,19 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 }
                 putParcelable("model", model)
             }
-            findNavController().navigate(R.id.action_manualSaleNew_to_addDiscountDialog, bundle)
+            bundle.putString("isFrom","itemDiscountManual")
+            if (prefProvider.isAdmin() || prefProvider.isManager()){
+
+                if (findNavController().currentDestination?.id != R.id.addDiscountDialog) {
+                    findNavController().navigate(R.id.action_manualSaleNew_to_addDiscountDialog, bundle)
+                }
+            }else{
+                findNavController().navigate(
+                    R.id.action_manualSaleNew_to_pascodeManagerDailog,bundle
+                )
+            }
+
+
         }
 
 
@@ -1693,8 +1717,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             lblLoyaltyAmount.visible()
             txtLoyaltyAmount.visible()
 
-            Log.e(TAG, "InsideLoyalty")
-            Log.e(TAG, Gson().toJson(viewModel.redeemLoyaltyInfo))
+            LogUtil.logE(TAG, "InsideLoyalty")
+            LogUtil.logE(TAG, Gson().toJson(viewModel.redeemLoyaltyInfo))
             amountToBepaid = viewModel.redeemLoyaltyInfo.getAmountToBePaid() ?: 0.0
             txtLoyaltyAmount.text =
                 "- $${String.format("%.2f", viewModel.redeemLoyaltyInfo.usedLoyaltyAmount)}"
@@ -1900,7 +1924,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
     fun calculateDiscountPercentage(originalPrice: Double, percentage: Double): Double {
         val disPrice = MethodUtils.roundOffAmountDouble((originalPrice * percentage) / 100)
-        Log.e(TAG, "disPrice  $disPrice")
+        LogUtil.logE(TAG, "disPrice  $disPrice")
         return if (disPrice < originalPrice) {
             disPrice
         } else {
@@ -1945,7 +1969,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                     positiveButton(getString(R.string.tv_delete)) {
                         // Do positive stuff here
                         val item = cartAdapter.getItem(pos)
-                        Log.e(TAG, "item ${Gson().toJson(item)}")
+                        LogUtil.logE(TAG, "item ${Gson().toJson(item)}")
                         viewModel.manualSalecartLogic(cartList, item, Constants.DELETE)
                     }
                     negativeButton(R.string.tv_cancel) {
@@ -1965,7 +1989,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 )
             }
             R.id.txt_rename -> {
-                Log.e(TAG, "pospospos  ${pos}")
+                LogUtil.logE(TAG, "pospospos  ${pos}")
                 cartItemModel = cartAdapter.getItem(pos)
                 val bundle: Bundle = bundleOf("item_name" to cartItemModel.name)
                 cartAdapter.viewBinderHelper.closeLayout(pos.toString())

@@ -17,6 +17,7 @@ import com.android.pos.databinding.FragmentNotesBinding
 
 import com.android.pos.ui.adapter.NotesListAdapter
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.extensions.alert
@@ -24,6 +25,7 @@ import com.android.pos.utils.extensions.liveSnackBar
 import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.statusUtils.Status
 import com.google.android.material.snackbar.Snackbar
+import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 
@@ -82,7 +84,7 @@ class Notes : Fragment(), ItemCallback {
 
                 val oldPos = viewHolder.bindingAdapterPosition
                 val newPos = target.bindingAdapterPosition
-                Log.e(
+                LogUtil.logE(
                     "reorder after", "" + ":::" + ":::" +
                             viewHolder.bindingAdapterPosition.toString() + " :::  " + target.bindingAdapterPosition.toString()
                 )
@@ -93,7 +95,7 @@ class Notes : Fragment(), ItemCallback {
 
                 val a = noteListadapter.getItem(dragFrom).sort
                 val b = noteListadapter.getItem(dragTo).sort
-                Log.e("onItemMove", "$a:: $b")
+                LogUtil.logE("onItemMove", "$a:: $b")
 
 
 
@@ -120,7 +122,7 @@ class Notes : Fragment(), ItemCallback {
 
                 if (dragFrom != -1 && dragTo != -1 && dragFrom != dragTo) {
 
-                    Log.e("clearView", "$dragFrom :: $dragTo")
+                    LogUtil.logE("clearView", "$dragFrom :: $dragTo")
                     reallyMoved(
                         noteListadapter.getItem(dragFrom).sort,
                         noteListadapter.getItem(dragTo).sort,
@@ -141,7 +143,7 @@ class Notes : Fragment(), ItemCallback {
     private fun reallyMoved(oldPos: Int, newPos: Int, categoryIdOld: Int?) {
         if (categoryIdOld != null) {
             isreOrder = true
-            Log.e("reallyMoved", "$oldPos :: $newPos")
+            LogUtil.logE("reallyMoved", "$oldPos :: $newPos")
             viewModel.reOrderItem(categoryIdOld, oldPos, newPos)
         }
 
@@ -157,7 +159,6 @@ class Notes : Fragment(), ItemCallback {
                         ProgressUtils.dismissProgressDialog()
                         binding.rvNoteLise.visibility = View.VISIBLE
                         resource.data?.let { taxList ->
-                            Collections.reverse(taxList)
                             setTaxData(taxList)
                         }
                     }
@@ -209,6 +210,9 @@ class Notes : Fragment(), ItemCallback {
     }
 
     private fun setTaxData(taxList: List<NoteResponse.Data>) {
+        taxList.sortedWith(compareBy { it.sort })
+        Collections.reverse(taxList)
+        Log.d(TAG, "setTaxData: "+Gson().toJson(taxList))
         noteListUpdateDelete = taxList as ArrayList<NoteResponse.Data>
         noteListadapter.apply {
             addNotes(taxList)

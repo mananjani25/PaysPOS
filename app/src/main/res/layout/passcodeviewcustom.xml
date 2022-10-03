@@ -9,24 +9,25 @@
         android:id="@+id/linear_passcode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:layout_centerInParent="true"
-        >
+        android:orientation="vertical">
+
         <LinearLayout
             android:layout_width="match_parent"
-            android:orientation="vertical"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginHorizontal="@dimen/_10sdp"
             android:layout_marginBottom="@dimen/_10sdp"
             android:background="@drawable/passcode_viewunselected"
-            android:layout_height="wrap_content">
+            android:orientation="vertical">
+
             <TextView
                 style="@style/CustomFontRegularStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:gravity="center"
                 android:layout_marginTop="@dimen/_5sdp"
+                android:gravity="center"
                 android:text="@string/tv_enter_your_passcode"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_8mdpi" />
@@ -36,21 +37,22 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:layout_marginBottom="@dimen/_5sdp"
                 android:inputType="number"
                 android:textColorLink="@color/white"
                 android:textSize="16sp"
                 app:circleRadius="15dp"
-                android:layout_marginTop="@dimen/_5sdp"
-                android:layout_marginBottom="@dimen/_5sdp"
                 app:fieldColor="@color/white"
                 app:fillerColor="@color/white"
                 app:highlightColor="@color/white"
                 app:noOfFields="4" />
         </LinearLayout>
+
         <TableLayout
             android:layout_width="wrap_content"
-            android:layout_gravity="center"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_gravity="center">
 
             <TableRow
                 android:layout_width="wrap_content"
@@ -127,8 +129,8 @@
                 <TextView
                     android:id="@+id/clear"
                     style="@style/passcodeviewStyle"
-                    android:textSize="@dimen/_7sdp"
-                    android:text="Clear" />
+                    android:text="Clear"
+                    android:textSize="@dimen/_7sdp" />
 
                 <TextView
                     android:id="@+id/zero"
@@ -144,8 +146,7 @@
                     android:background="@drawable/passcode_viewunselected"
                     android:gravity="center"
                     android:padding="@dimen/_7sdp"
-                    android:src="@drawable/backspase"
-                     />
+                    android:src="@drawable/backspase" />
             </TableRow>
         </TableLayout>
     </androidx.appcompat.widget.LinearLayoutCompat>

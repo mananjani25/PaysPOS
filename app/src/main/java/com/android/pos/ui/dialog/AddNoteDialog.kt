@@ -16,6 +16,7 @@ import com.android.pos.databinding.DailogAddNoteBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.NotesListAdapter
 import com.android.pos.ui.fragments.settings.notes.NoteListViewModel
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.extensions.gone
@@ -23,7 +24,9 @@ import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
 class AddNoteDialog : DialogFragment(), ItemCallback {
@@ -72,7 +75,7 @@ class AddNoteDialog : DialogFragment(), ItemCallback {
         cartList = requireArguments().getParcelableArrayList<CartModel>("cartList")
         if (prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT) == Constants.DINE_IN) {
             headerItemPosition = requireArguments().getInt("headerPos")
-            Log.e(TAG, "headerItemPosition:  ${headerItemPosition}")
+            LogUtil.logE(TAG, "headerItemPosition:  ${headerItemPosition}")
         }
 
 
@@ -132,7 +135,7 @@ class AddNoteDialog : DialogFragment(), ItemCallback {
 
 
     private fun noteList() {
-        viewModel.getTaxList.observe(viewLifecycleOwner) {
+        viewModel.taxListActive.observe(viewLifecycleOwner) {
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
@@ -152,6 +155,8 @@ class AddNoteDialog : DialogFragment(), ItemCallback {
     }
 
     private fun setTaxData(taxList: List<NoteResponse.Data>) {
+        taxList.sortedWith(compareBy { it.sort })
+        Collections.reverse(taxList)
         noteListadapter.apply {
             addNotes(taxList)
             notifyDataSetChanged()

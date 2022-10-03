@@ -18,6 +18,7 @@ import com.android.pos.databinding.FragmentUserAccessPermissionBinding
 import com.android.pos.di.RolePermission
 import com.android.pos.ui.adapter.*
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
@@ -169,11 +170,11 @@ class UserAccessPermissionFragment : Fragment() {
 
     private fun loadTeams() {
 
-        viewModel.employeeData.observe(viewLifecycleOwner, {
+        viewModel.employeeData.observe(viewLifecycleOwner) {
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
-                        Log.e(TAG,"deliverEmployeesResponse: $deliverEmployeesResponse")
+                        LogUtil.logE(TAG, "deliverEmployeesResponse: $deliverEmployeesResponse")
                         deliverEmployeesResponse = true
                         manageProgress(false)
                         binding.rvAllMember.visibility = View.VISIBLE
@@ -198,7 +199,7 @@ class UserAccessPermissionFragment : Fragment() {
                     }
                 }
             }
-        })
+        }
     }
 
     private fun getModulesObserver() {
@@ -206,7 +207,7 @@ class UserAccessPermissionFragment : Fragment() {
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
-                        Log.e(TAG,"deliverModuleResponse: $deliverModuleResponse")
+                        LogUtil.logE(TAG,"deliverModuleResponse: $deliverModuleResponse")
                         deliverModuleResponse = true
                         manageProgress(false)
                         binding.rvAllMember.visibility = View.VISIBLE
@@ -241,7 +242,7 @@ class UserAccessPermissionFragment : Fragment() {
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
-                        Log.e(TAG,"deliverRolesResponse: $deliverRolesResponse")
+                        LogUtil.logE(TAG,"deliverRolesResponse: $deliverRolesResponse")
                         deliverRolesResponse = true
                         manageProgress(false)
                         binding.rvAssignRole.visibility = View.VISIBLE

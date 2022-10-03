@@ -38,6 +38,7 @@ import com.android.pos.ui.fragments.settings.servicecharge.ServiceChargeList
 import com.android.pos.ui.fragments.settings.tax.TaxesList
 import com.android.pos.ui.fragments.settings.teamrole.TeamMemberSettings
 import com.android.pos.ui.fragments.settings.tip.TipsList
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.extensions.styleBold
 import com.android.pos.utils.extensions.styleNormal
 import dagger.hilt.android.AndroidEntryPoint
@@ -99,7 +100,7 @@ class Settings : Fragment() {
                         binding.txtMarketing.styleNormal()
                         binding.txtEmployee.styleNormal()
                         binding.txtReports.styleNormal()
-                        setAdapter(0)
+                        setAdapter(3)
 
 
                     }
@@ -120,7 +121,7 @@ class Settings : Fragment() {
                         binding.txtMarketing.styleNormal()
                         binding.txtEmployee.styleNormal()
                         binding.txtReports.styleNormal()
-                        setAdapter(2)
+                        setAdapter(7)
 
                     }
                     CREATEDISCOUNT -> {
@@ -131,7 +132,7 @@ class Settings : Fragment() {
                         binding.txtMarketing.styleNormal()
                         binding.txtEmployee.styleNormal()
                         binding.txtReports.styleNormal()
-                        setAdapter(3)
+                        setAdapter(4)
 
                     }
                     CREATE_NOTES -> {
@@ -142,7 +143,7 @@ class Settings : Fragment() {
                         binding.txtMarketing.styleNormal()
                         binding.txtEmployee.styleNormal()
                         binding.txtReports.styleNormal()
-                        setAdapter(4)
+                        setAdapter(5)
 
                     }
                     ADD_SERVICE_CHARGE -> {
@@ -153,7 +154,7 @@ class Settings : Fragment() {
                         binding.txtMarketing.styleNormal()
                         binding.txtEmployee.styleNormal()
                         binding.txtReports.styleNormal()
-                        setAdapter(5)
+                        setAdapter(2)
 
                     }
                     TEAM_MEMBER -> {
@@ -201,7 +202,7 @@ class Settings : Fragment() {
                         binding.txtMarketing.styleNormal()
                         binding.txtEmployee.styleNormal()
                         binding.txtReports.styleNormal()
-                        setAdapter(7)
+                        setAdapter(0)
                     }
 
 
@@ -325,14 +326,14 @@ class Settings : Fragment() {
 
     private fun setAdapter(selectedPos: Int) {
         val list: ArrayList<BusinessSettingModel> = arrayListOf()
-        list.add(BusinessSettingModel(0, "Taxes", false))
+        list.add(BusinessSettingModel(0, "Business Information", false))
         list.add(BusinessSettingModel(0, "Tips", false))
-        list.add(BusinessSettingModel(0, "Order Receipts", false))
-        list.add(BusinessSettingModel(0, "Discount", false))
-        list.add(BusinessSettingModel(0, "Notes", false))
-        list.add(BusinessSettingModel(0, "Service Charge", false))
-        list.add(BusinessSettingModel(0, "Loyalty Points", false))
-        list.add(BusinessSettingModel(0, "Business Details", false))
+        list.add(BusinessSettingModel(0, "Service Charges", false))
+        list.add(BusinessSettingModel(0, "Sales Taxes", false))
+        list.add(BusinessSettingModel(0, "Discounts", false))
+        list.add(BusinessSettingModel(0, "Dynamic Notes", false))
+        list.add(BusinessSettingModel(0, "Loyalty Program", false))
+        list.add(BusinessSettingModel(0, "Receipt Settings", false))
         for (i in 0 until list.size) {
             list[i].isSelected = selectedPos == i
 
@@ -356,10 +357,9 @@ class Settings : Fragment() {
     private fun setupView(pos: Int) {
         when (pos) {
             0 -> {
-                binding.commonToolbar.txtSubTitle.text = "Taxes"
-                val taxFrag: Fragment = TaxesList()
-                loadFragment(taxFrag)
-
+                binding.commonToolbar.txtSubTitle.text = "Business Information"
+                val service: Fragment = BusinessDetailsFragment()
+                loadFragment(service)
 
             }
             1 -> {
@@ -369,43 +369,42 @@ class Settings : Fragment() {
 
             }
             2 -> {
-                binding.commonToolbar.txtSubTitle.text = "Order Receipts"
-                val orderReceipts = OrderReceipt()
-                loadFragment(orderReceipts)
+                binding.commonToolbar.txtSubTitle.text = "Service Charges"
+                val service: Fragment = ServiceChargeList()
+                loadFragment(service)
             }
             3 -> {
+                binding.commonToolbar.txtSubTitle.text = "Sales Taxes"
+                val taxFrag: Fragment = TaxesList()
+                loadFragment(taxFrag)
+            }
+            4 -> {
 
                 if (rolePermission.hasDiscountPermission(binding.root)) {
-                    binding.commonToolbar.txtSubTitle.text = "Discount"
+                    binding.commonToolbar.txtSubTitle.text = "Discounts"
                     val discount: Fragment = DiscountList()
                     loadFragment(discount)
                 }
 
             }
-            4 -> {
-                binding.commonToolbar.txtSubTitle.text = "Notes"
+            5 -> {
+                binding.commonToolbar.txtSubTitle.text = "Dynamic Notes"
                 val notes: Fragment = Notes()
                 loadFragment(notes)
 
             }
-            5 -> {
-                binding.commonToolbar.txtSubTitle.text = "Service Charge"
-                val service: Fragment = ServiceChargeList()
-                loadFragment(service)
-            }
             6 -> {
-                binding.commonToolbar.txtSubTitle.text = "Loyalty Points"
+                binding.commonToolbar.txtSubTitle.text = "Loyalty Program"
                 val service: Fragment = LoyaltyPointFragment()
                 loadFragment(service)
 
             }
-
             7 -> {
-                binding.commonToolbar.txtSubTitle.text = "Business Details"
-                val service: Fragment = BusinessDetailsFragment()
-                loadFragment(service)
-
+                binding.commonToolbar.txtSubTitle.text = "Receipt Settings"
+                val orderReceipts = OrderReceipt()
+                loadFragment(orderReceipts)
             }
+
 
         }
     }
@@ -418,7 +417,7 @@ class Settings : Fragment() {
 
     fun setCallBack() {
         ((activity as MainActivity).fragmentCallBack) = { fragment ->
-            Log.e("!_@_", "fragment callback")
+            LogUtil.logE("!_@_", "fragment callback")
             fragment?.let { loadFragment(it) }
         }
     }

@@ -21,6 +21,7 @@ import com.android.pos.data.repositories.TaxServiceChargeRepository
 import com.android.pos.data.repositories.TipDiscountRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.TimeFormatUtils
 import com.android.pos.utils.statusUtils.Resource
@@ -45,6 +46,9 @@ class DineInOrderTableViewModel @Inject constructor(
     private val _updateOrder = MutableLiveData<Event<String>>()
     val updateOrder: LiveData<Event<String>> = _updateOrder
 
+
+    private val _showProgressCash = MutableLiveData<Event<Boolean>>()
+    val showProgressCash: LiveData<Event<Boolean>> = _showProgressCash
 
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
@@ -109,7 +113,12 @@ class DineInOrderTableViewModel @Inject constructor(
         isAllPaymentComplete: Boolean,
         orderReq: DineInOrderPayment
     ) {
-        _showProgress.value = Event(true)
+        if (cashPaymentType(model)) {
+            _showProgressCash.value = Event(true)
+        } else
+            _showProgress.value = Event(true)
+
+//        _showProgress.value = Event(true)
         viewModelScope.launch {
             val resource = posRepository.payByGuest(id, isAllPaymentComplete, model)
 
@@ -118,10 +127,13 @@ class DineInOrderTableViewModel @Inject constructor(
                     _showProgress.value = Event(false)
                     resource.data.let { response ->
 
-                        if (response != null && response.data.order.payments.get(response.data.order.payments.size - 1).paymentType.equals("Cash",true)) {
+                        if (response != null && response.data.order.payments.get(response.data.order.payments.size - 1).paymentType.equals(
+                                "Cash",
+                                true
+                            )
+                        ) {
                             cashLogApi(response, "in")
-                        }
-                        else{
+                        } else {
                             _guestPayment.value =
                                 Event(response?.message.toString())
                         }
@@ -131,16 +143,34 @@ class DineInOrderTableViewModel @Inject constructor(
 
                 Status.ERROR -> {
                     _guestPayment.value = Event(resource.message.toString())
-                    _showProgress.value = Event(false)
+                    if (cashPaymentType(model)) {
+                        _showProgressCash.value = Event(false)
+                    } else
+                        _showProgress.value = Event(false)
+
+//                    _showProgress.value = Event(false)
                 }
 
                 Status.LOADING -> {
-                    _showProgress.value = Event(true)
+                    if (cashPaymentType(model)) {
+                        _showProgressCash.value = Event(true)
+                    } else
+                        _showProgress.value = Event(true)
+
+//                    _showProgress.value = Event(true)
                 }
             }
 
         }
 
+    }
+
+    private fun cashPaymentType(model: GuestPaymentRequest): Boolean {
+
+        return model.paymentAttributes.paymentType.equals(
+            "Cash",
+            ignoreCase = true
+        )
     }
 
     fun fireItemToKitchen(
@@ -269,7 +299,7 @@ class DineInOrderTableViewModel @Inject constructor(
 
                     val itemTaxPrice =
                         (tax.rate * totalPrice) / 100
-                    Log.e("itemTaxPrice", "" + itemTaxPrice)
+                    LogUtil.logE("itemTaxPrice", "" + itemTaxPrice)
                     String.format("%.2f", itemTaxPrice)
                         .toDouble()
                 } else {
@@ -529,11 +559,11 @@ class DineInOrderTableViewModel @Inject constructor(
                         resource.data?.let {
 
 
-                            Log.e(
+                            LogUtil.logE(
                                 "INOUT : Total Amount",
                                 order.payments[order.payments.size - 1].amount.toString()
                             )
-                            Log.e("INOUT : Total PayAmount", totalPayAmounts.toString())
+                            LogUtil.logE("INOUT : Total PayAmount", totalPayAmounts.toString())
 
                             if (order.payments.isNotEmpty()) {
                                 if (order.payments[order.payments.size - 1].amount == totalPayAmounts) {

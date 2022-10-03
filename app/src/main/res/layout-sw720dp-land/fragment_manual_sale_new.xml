@@ -811,7 +811,7 @@
                         android:layout_marginStart="@dimen/_4sdp"
                         android:layout_marginEnd="@dimen/_2sdp"
                         android:layout_weight="1"
-                        android:background="@color/backgroundColor"
+                        android:background="@drawable/border_backgroundcolor_with_orange_color"
                         android:gravity="center"
                         android:padding="@dimen/_5sdp"
                         android:text="@string/save"
@@ -861,7 +861,7 @@
                     android:layout_height="match_parent"
                     android:layout_marginEnd="@dimen/_5sdp"
                     android:layout_weight="0.5"
-                    android:background="@color/backgroundColor"
+                    android:background="@drawable/border_backgroundcolor_with_orange_color"
                     android:gravity="center"
                     android:padding="@dimen/_4sdp"
                     android:text="Add to Cart"
@@ -1013,7 +1013,7 @@
                 layout="@layout/key_pad_manual_sale_fragment"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginBottom="@dimen/_5sdp" />
+                 />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 

@@ -94,7 +94,7 @@ class CreateTip : Fragment() {
                     if (temp_rate.toFloat() > 100) {
                         AlertUtils.showCustomAlertWithListenerWithOK(
                             requireContext(),
-                            "Please Enter Percentage less than or Equal to 100"
+                            "Please enter percentage less than or equal to 100"
                         ) { _, _ ->
                             binding.edtTip.setText("")
                         }
@@ -116,7 +116,7 @@ class CreateTip : Fragment() {
 
     private fun observeShowProgress() {
 
-        viewModel.showProgress.observe(viewLifecycleOwner, { event ->
+        viewModel.showProgress.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
                     ProgressUtils.showProgressDialog(requireActivity())
@@ -124,7 +124,7 @@ class CreateTip : Fragment() {
                     ProgressUtils.dismissProgressDialog()
                 }
             }
-        })
+        }
 
     }
 
@@ -137,7 +137,7 @@ class CreateTip : Fragment() {
 
     private fun navigate() {
 
-        viewModel.data.observe(viewLifecycleOwner, { event ->
+        viewModel.data.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { createTipResponse ->
                 activity?.let {
                     AlertUtils.showCustomAlertWithListenerWithOK(
@@ -147,7 +147,7 @@ class CreateTip : Fragment() {
                     }
                 }
             }
-        })
+        }
 
     }
 

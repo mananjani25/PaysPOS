@@ -15,6 +15,7 @@ import com.android.pos.data.remote.Constants
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
 import com.google.gson.Gson
@@ -58,6 +59,7 @@ class AddCustomerViewModel @Inject constructor(
     val city = MutableLiveData<String>()
     val state = MutableLiveData<String>()
     var enroll_to_loyalty = MutableLiveData<Boolean>()
+    var same_as_billing_address = MutableLiveData<Boolean>()
     var pin = MutableLiveData<String>()
 
 
@@ -114,9 +116,10 @@ class AddCustomerViewModel @Inject constructor(
         }
 
 
-        Log.e(TAG, "listAddress:  ${Gson().toJson(this.listAddress)}")
+        LogUtil.logE(TAG, "listAddress:  ${Gson().toJson(this.listAddress)}")
         addCustomerDetails.value?.data?.final_reward = 0
         addCustomerDetails.value?.data?.enroll_to_loyalty = enroll_to_loyalty.value
+        addCustomerDetails.value?.data?.same_as_billing_address = same_as_billing_address.value
         addCustomerDetails.value?.data?.addresses_attributes?.addAll(listAddress)
 
 
@@ -180,7 +183,7 @@ class AddCustomerViewModel @Inject constructor(
             addCustomerData = CreateCustomerRequestModel().apply {
 
 
-                Log.e("DaataJson", "PassData  ${Gson().toJson(value?.data)}")
+                LogUtil.logE("DaataJson", "PassData  ${Gson().toJson(value?.data)}")
                 data?.first_name = value?.data?.first_name!!.replaceFirstChar { it.uppercase() }
                 data?.last_name = value?.data?.last_name!!.replaceFirstChar { it.uppercase() }
 
@@ -204,15 +207,16 @@ class AddCustomerViewModel @Inject constructor(
                 data?.birthday_year = value.data!!.birthday_year
                 data?.company = value.data!!.company
                 data?.enroll_to_loyalty = value.data!!.enroll_to_loyalty
+                data?.same_as_billing_address = value.data!!.same_as_billing_address
 
                 data?.addresses_attributes?.addAll(value.data?.addresses_attributes!!)
 
 
             }
 
-            Log.e(TAG, "addCustomerDataJson:  ${Gson().toJson(addCustomerData)}")
-            Log.e(TAG, "isEdit:  ${isEdit}")
-            Log.e(TAG, "customerID:  ${customerID}")
+            LogUtil.logE(TAG, "addCustomerDataJson:  ${Gson().toJson(addCustomerData)}")
+            LogUtil.logE(TAG, "isEdit:  ${isEdit}")
+            LogUtil.logE(TAG, "customerID:  ${customerID}")
             viewModelScope.launch {
 
                 resource = if (isEdit) {

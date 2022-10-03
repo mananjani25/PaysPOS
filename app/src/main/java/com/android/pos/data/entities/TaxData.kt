@@ -15,7 +15,7 @@ data class TaxData(
     @SerializedName("id")
     val id: Int,
     @SerializedName("location_id")
-    val locationId: Int,
+    var locationId: Int,
     @SerializedName("name")
     val name: String?,
     @SerializedName("rate")
@@ -38,7 +38,9 @@ data class TaxData(
     var isChecked: Boolean? = false,
     var totalTaxTypePrice: Double = 0.0,
     var subTotalAmount: Double = 0.0,
-    var percentage_value:Double = 0.0,
+    var percentage_value: Double = 0.0,
+    @SerializedName("is_deleted")
+    var isDeleted: Boolean = false
 
 ) : Parcelable {
     fun showFormattedTaxRate() = String.format(

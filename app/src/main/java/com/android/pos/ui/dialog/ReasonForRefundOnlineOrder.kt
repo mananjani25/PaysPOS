@@ -18,16 +18,14 @@ import com.android.pos.data.model.requestModel.RefundRequestModelOnlineOrder
 import com.android.pos.data.model.responseModel.MagtekOnlineOrderRefundResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.ReasonrefundonlineorderBinding
+
 import com.android.pos.di.ApiModule1
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.fragments.magtek.MagtekRequestUtils
 import com.android.pos.ui.fragments.magtek.PaymentResponse
 import com.android.pos.ui.fragments.onlineorder.OnlineDetailViewModel
 import com.android.pos.ui.fragments.transactions.TransactionDetailsViewModel
-import com.android.pos.utils.AlertUtils
-import com.android.pos.utils.MethodUtils
-import com.android.pos.utils.ProgressUtils
-import com.android.pos.utils.TAG
+import com.android.pos.utils.*
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonParser
@@ -118,7 +116,7 @@ class ReasonForRefundOnlineOrder : DialogFragment() {
                             jsonArray =
                                 model.transactionOutput?.token?.let { it1 ->
                                     magtekRequestUtils.processTokenFirstData(
-                                        (refundAmount * 100).toInt(),
+                                        (refundAmount * 100),
                                         it1,
                                         model.customerTransactionID ?: "",
                                         model.transactionOutput.transactionOutputDetails[0].value,
@@ -135,7 +133,7 @@ class ReasonForRefundOnlineOrder : DialogFragment() {
                         jsonArray =
                             model.transactionOutput?.token?.let { it1 ->
                                 magtekRequestUtils.processTokenElavon(
-                                    (refundAmount * 100).toInt(),
+                                    (refundAmount * 100),
                                     it1,
                                     model.customerTransactionID ?: "",
                                     model.transactionOutput.transactionOutputDetails[0].value
@@ -150,7 +148,7 @@ class ReasonForRefundOnlineOrder : DialogFragment() {
 
                         jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
                             magtekRequestUtils.processReferenceIDEPX(
-                                (refundAmount * 100).toInt(),
+                                (refundAmount * 100),
                                 model.customerTransactionID ?: "", it1, Constants.REFUND1
                             )
                         }
@@ -161,7 +159,7 @@ class ReasonForRefundOnlineOrder : DialogFragment() {
 
                         jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
                             magtekRequestUtils.processReferenceIDRefund(
-                                (refundAmount * 100).toInt(),
+                                (refundAmount * 100),
                                 model.customerTransactionID ?: "", it1,
                                 model.transactionOutput.authCode
                             )
@@ -172,7 +170,7 @@ class ReasonForRefundOnlineOrder : DialogFragment() {
                     Constants.CHASE_GATEWAY == magtekRequestUtils.gatewayName() -> {
 
                         jsonArray = magtekRequestUtils.processTokenChase(
-                            (refundAmount * 100).toInt(),
+                            (refundAmount * 100),
                             model.transactionOutput?.token ?: "",
                             model.customerTransactionID ?: "",
                             model.transactionOutput?.authCode ?: "",
@@ -185,7 +183,7 @@ class ReasonForRefundOnlineOrder : DialogFragment() {
 
                         jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
                             magtekRequestUtils.processReferenceIHeartland(
-                                (refundAmount * 100).toInt(),
+                                (refundAmount * 100),
                                 model.customerTransactionID ?: "",
                                 it1,
                                 model.transactionOutput.authCode,
@@ -198,7 +196,7 @@ class ReasonForRefundOnlineOrder : DialogFragment() {
 
                         jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
                             magtekRequestUtils.processReferenceIDTSYS(
-                                (refundAmount * 100).toInt(),
+                                (refundAmount * 100),
                                 model.customerTransactionID ?: "", it1, Constants.REFUND1
                             )
                         }
@@ -272,7 +270,7 @@ class ReasonForRefundOnlineOrder : DialogFragment() {
             ) {
                 ProgressUtils.dismissProgressDialog()
                 if (response.isSuccessful) {
-                    Log.e("onResponse", Gson().toJson(response.body()))
+                    LogUtil.logE("onResponse", Gson().toJson(response.body()))
                     if (response.body() != null && response.body()!![0].transactionOutput != null && response.body()!![0].transactionOutput?.isTransactionApproved == true) {
 
                         refundCall()

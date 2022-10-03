@@ -1,19 +1,26 @@
 package com.android.pos.ui.fragments.inventory
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.responseModel.BaseResponse
+import com.android.pos.data.model.responseModel.InventoryCountsResponse
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -33,25 +40,40 @@ class ItemsViewModel @Inject constructor(
 
 
     val items = posRepository.getItemsList()
-    val showItemsList = posRepository.unhideItemList()
+    val hideItemsListPos = posRepository.unhideItemListPOS()
+    val hideItemsListWebsite = posRepository.unhideItemListWebsite()
+
+    fun inventoryCounts(): LiveData<Resource<InventoryCountsResponse>> =
+        posRepository.inventoryCounts()
+
+    var itemCount = 50
 
 
-    fun _getItems(): LiveData<Resource<List<TbItem?>>> {
-        return posRepository.getInventory()
-    }
+    fun allItemsQuery(desc: String): Flow<PagingData<TbItem>> = Pager(
+        config = PagingConfig(
+            pageSize = 20,
+            enablePlaceholders = false,
+        )
+    ) {
+        appDatabase.itemDao().getItemSearchResults(desc)
+    }.flow.cachedIn(viewModelScope)
 
-    fun deleteAndHide(id: Int, deleteAndHide: Boolean, isHideItemScreen: Boolean) {
+
+    val allItems: Flow<PagingData<TbItem>> = Pager(
+        config = PagingConfig(
+            pageSize = 50,
+            enablePlaceholders = false
+        )
+    ) {
+        appDatabase.itemDao().getPaginationList()
+    }.flow.cachedIn(viewModelScope)
+
+
+    fun deleteItems(id: Int) {
         _showProgress.value = Event(true)
 
         viewModelScope.launch {
-            val resource =
-                if (isHideItemScreen) {
-                    posRepository.itemHide(id, deleteAndHide)
-                } else if (deleteAndHide) {
-                    posRepository.itemHide(id, !deleteAndHide)
-                } else {
-                    posRepository.deleteItem(id)
-                }
+            val resource = posRepository.deleteItem(id)
 
 
             when (resource.status) {
@@ -62,12 +84,96 @@ class ItemsViewModel @Inject constructor(
                         if (it?.status == 200) {
                             resource.data?.let { response ->
                                 _data.value = Event(response)
-                                if (isHideItemScreen) {
-                                    appDatabase.itemDao().updateShowItem(id)
-                                } else if (deleteAndHide) {
-                                    appDatabase.itemDao().update(id)
-                                } else
-                                    appDatabase.itemDao().deleteItem(id)
+                                appDatabase.itemDao().deleteItem(id)
+                            }
+                        } else {
+                            _snackbarText.value = Event(resource.message)
+                        }
+
+                    }
+
+
+                }
+
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message)
+                    _showProgress.value = Event(false)
+                }
+
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+                }
+            }
+        }
+    }
+
+    fun hideItems(id: Int, hide_status: String, type: String) {
+        _showProgress.value = Event(true)
+
+        viewModelScope.launch {
+            val resource = if (type == "website") {
+                posRepository.hideItemWebsite(id, hide_status)
+            } else {
+                posRepository.itemHide(id, hide_status)
+            }
+
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    _showProgress.value = Event(false)
+
+                    resource.data.let {
+                        if (it?.status == 200) {
+                            resource.data?.let { response ->
+                                _data.value = Event(response)
+                                if (type=="website"){
+                                    appDatabase.itemDao().updateItemWebsite(id,hide_status)
+                                }else{
+                                    appDatabase.itemDao().updateItemPos(id,hide_status)
+                                }
+                            }
+                        } else {
+                            _snackbarText.value = Event(resource.message)
+                        }
+
+                    }
+
+
+                }
+
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message)
+                    _showProgress.value = Event(false)
+                }
+
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+                }
+            }
+        }
+    }
+    fun unHideItems(id: Int,  type: String) {
+        _showProgress.value = Event(true)
+
+        viewModelScope.launch {
+            val resource = if (type == "website") {
+                posRepository.hideItemWebsite(id, "UnHideOnWebsite")
+            } else {
+                posRepository.itemHide(id, "UnHide")
+            }
+
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    _showProgress.value = Event(false)
+
+                    resource.data.let {
+                        if (it?.status == 200) {
+                            resource.data?.let { response ->
+                                _data.value = Event(response)
+                                if (type=="website"){
+                                    appDatabase.itemDao().updateItemWebsite(id,"UnHideOnWebsite")
+                                }else{
+                                    appDatabase.itemDao().updateItemPos(id,"UnHide")
+                                }
                             }
                         } else {
                             _snackbarText.value = Event(resource.message)

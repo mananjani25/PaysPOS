@@ -24,6 +24,7 @@ import com.android.pos.databinding.DailogAddDiscountBinding
 import com.android.pos.ui.adapter.DialogDiscountListAdapter
 import com.android.pos.ui.fragments.settings.discount.DiscountListViewModel
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
@@ -85,15 +86,15 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
         itemQuantity = requireArguments().getInt("totalquantity")
         defaultModel = model ?: TbItem()
 
-        Log.e(TAG, "dataModel ${Gson().toJson(model)}")
+        LogUtil.logE(TAG, "dataModel ${Gson().toJson(model)}")
 
         if (model?.discountId != -1 && model?.discountType == PERCENTAGE) {
-            Log.e(TAG, "DiscountPercentage")
+            LogUtil.logE(TAG, "DiscountPercentage")
             orderDiscountType = PERCENTAGE
             var disPercentage = 0.0
             disPercentage =
                 MethodUtils.roundOffAmountDouble(100 * model.discountPrice / model.price)
-            Log.e(TAG, "disPercentage  ${disPercentage}")
+            LogUtil.logE(TAG, "disPercentage  ${disPercentage}")
 
 
         }
@@ -168,7 +169,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                             )
                         )
 
-                        Log.e(TAG, "edtAmountSetThird")
+                        LogUtil.logE(TAG, "edtAmountSetThird")
                     } else {
                         val applyDiscount =
                             (defaultModel.discountPrice * 100) / (itemPrice/*(defaultModel.price + modifierPrice) * defaultModel.itemQuantity*/)
@@ -179,7 +180,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                             )
                         )
 
-                        Log.e(TAG, "edtAmountSetThird")
+                        LogUtil.logE(TAG, "edtAmountSetThird")
                     }
 
                     percentageView()
@@ -385,8 +386,8 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
     }
 
     private fun setDiscountList() {
-        viewModel.getDiscountList.observe(requireActivity()) {
-            Log.e(TAG, "DiscountList ${Gson().toJson(it)}")
+        viewModel.discountList.observe(requireActivity()) {
+            LogUtil.logE(TAG, "DiscountList ${Gson().toJson(it)}")
             if (it.data?.isNotEmpty() == true) {
                 it.data.forEach {
                     it.isChecked = false
@@ -504,7 +505,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                 }
                 when {
                     isFromDetails -> {
-                        Log.e(TAG, "PassingModel:  ${Gson().toJson(discountModel)}")
+                        LogUtil.logE(TAG, "PassingModel:  ${Gson().toJson(discountModel)}")
                         setFragmentResult("request_key_discount_details", result)
                     }
                     isOrderDiscount -> {
@@ -673,6 +674,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
     var current = ""
     override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
 
+        LogUtil.logE(TAG, "isSet  ${isSet}")
 
         if (!isSet) {
             if (s.toString().isNotEmpty()) {
@@ -689,6 +691,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
                 current = formatted
 
+                LogUtil.logE(TAG,"formatted  ${formatted}")
                 binding.edtAmount.setText(formatted.replace("""[$,%]""".toRegex(), ""))
                 binding.edtAmount.setSelection(formatted.replace("""[$,%]""".toRegex(), "").length)
 
@@ -699,16 +702,24 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
 
                     if (isOrderDiscount) {
-                        price = totalOrderPrice
+                        if (totalOrderPrice == 0.0) {
+
+                            price = totalOrderPrice + orderDiscountPrice
+                        } else
+                            price = totalOrderPrice
                     } else {
                         price = itemPrice /*- defaultModel.discountPrice*/
                     }
 
+                    LogUtil.logE(TAG,"pricediscount  ${price}")
+                    LogUtil.logE(TAG,"discountPriceDefault  ${defaultModel.discountPrice}")
+                    LogUtil.logE(TAG,"TextAmount ${binding.edtAmount.text.toString().toDouble()}")
                     if (defaultModel.discountPrice == 0.0) {
 
                         if (binding.edtAmount.text.toString().toDouble() > price) {
                             binding.edtAmount.setText(MethodUtils.roundOffAmountString(price))
                         }
+
                     } else {
 
                         if (binding.edtAmount.text.toString()

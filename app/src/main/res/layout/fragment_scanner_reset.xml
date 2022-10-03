@@ -99,6 +99,26 @@
                         android:paddingEnd="@dimen/_35sdp" />
 
                     <TextView
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:textSize="@dimen/_10ssp"
+                        android:textStyle="bold"
+                        style="@style/ResetStyle"
+                        android:text="OR" />
+
+
+                    <TextView
+                        style="@style/ResetStyle"
+                        android:text="\n2. Attach your cabled scanner to your device and scan the barcode to connect with this app." />
+
+                    <FrameLayout
+                        android:id="@+id/snapi_barcode"
+                        android:layout_width="match_parent"
+                        android:layout_height="200dp"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="10dp" />
+
+                    <TextView
 
                         style="@style/ResetStyle"
                         android:text="3. Scan the barcode below to pair:" />

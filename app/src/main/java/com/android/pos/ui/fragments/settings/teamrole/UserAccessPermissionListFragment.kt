@@ -33,7 +33,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class UserAccessPermissionListFragment : Fragment() ,ItemCallback{
+class UserAccessPermissionListFragment : Fragment(), ItemCallback {
 
     private var position: Int = -1
     private lateinit var binding: FragmentUserAccessPermissionListBinding
@@ -94,10 +94,9 @@ class UserAccessPermissionListFragment : Fragment() ,ItemCallback{
     }
 
     private fun setHeader() {
-        binding.header.txtTitle.text=getString(R.string.tv_user_access_permission)
-        binding.header.txtSave.text=getString(R.string.tv_home)
+        binding.header.txtTitle.text = getString(R.string.tv_user_access_permission)
+        binding.header.txtSave.text = getString(R.string.tv_home)
     }
-
 
 
     private fun setUpRecyclerView() {
@@ -160,7 +159,7 @@ class UserAccessPermissionListFragment : Fragment() ,ItemCallback{
     }
 
     private fun getUserRoleListObserver() {
-        viewModel.getTeamRoleList.observe(viewLifecycleOwner, {
+        viewModel.getTeamRoleList.observe(viewLifecycleOwner) {
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
@@ -179,28 +178,16 @@ class UserAccessPermissionListFragment : Fragment() ,ItemCallback{
                     }
                 }
             }
-        })
+        }
     }
 
     private fun deleteEmployeeRole() {
 
-        viewModel.data.observe(viewLifecycleOwner, { event ->
+        viewModel.data.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
-                /* AlertUtils.showAlert(requireActivity(), it.message)
-                 var adapter = binding.rvTaxList.adapter as TaxListAdapter
-                 var list = adapter.taxList
-                 list.remove(taxObject)
-                 adapter.taxList = list
-                 adapter.notifyDataSetChanged()*/
-
                 AlertUtils.showCustomAlert(requireActivity(), it.message)
-                /*tipListUpdateDelete.remove(tipObject)
-                tipListadapter.addTips(tipListUpdateDelete)
-                tipListadapter.notifyItemRemoved(position)
-                tipListadapter.notifyItemRangeChanged(position, tipListUpdateDelete.size)*/
-
             }
-        })
+        }
 
     }
 
@@ -213,7 +200,7 @@ class UserAccessPermissionListFragment : Fragment() ,ItemCallback{
 
     private fun observeShowProgress() {
 
-        viewModel.showProgress.observe(viewLifecycleOwner, { event ->
+        viewModel.showProgress.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
                     ProgressUtils.showProgressDialog(requireActivity())
@@ -221,7 +208,7 @@ class UserAccessPermissionListFragment : Fragment() ,ItemCallback{
                     ProgressUtils.dismissProgressDialog()
                 }
             }
-        })
+        }
     }
 
     private fun backPressManage() {

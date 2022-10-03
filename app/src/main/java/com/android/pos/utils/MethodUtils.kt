@@ -7,7 +7,6 @@ import android.os.Build
 import android.os.SystemClock
 import android.provider.Settings
 import android.text.TextUtils
-import android.util.Log
 import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import androidx.annotation.RequiresApi
@@ -299,6 +298,14 @@ class MethodUtils {
             return false
         }
 
+        fun isDoubleClickCategory(): Boolean {
+            if (SystemClock.elapsedRealtime() - mLastClickTime < 500) {
+                return true
+            }
+            mLastClickTime = SystemClock.elapsedRealtime()
+            return false
+        }
+
         fun isEnableCashDiscount(context: Context): Boolean {
             val prefProvider: PrefProvider = PrefProvider(context)
             return prefProvider.getValueboolean(Constants.CASHDIS_SURCHARGEENABLE, false)
@@ -338,7 +345,7 @@ class MethodUtils {
         }
 
         fun errorLog(tag: String, message: String) {
-            Log.e(tag, message)
+            LogUtil.logE(tag, message)
         }
 
         fun percentageCalculation(price: Double, rate: Double): Double {
@@ -352,12 +359,12 @@ class MethodUtils {
             tvCash2: AppCompatTextView,
             tvCash3: AppCompatTextView
         ) {
-            Log.e(TAG, "totalPrice  $totalPrice")
+            LogUtil.logE(TAG, "totalPrice  $totalPrice")
             secondValue = floor(totalPrice + 1).toInt()
-            Log.e(TAG, "secondValue  $secondValue")
+            LogUtil.logE(TAG, "secondValue  $secondValue")
             val newVal = totalPrice + 1
             thirdValue = calculateCashOption(newVal)
-            Log.e(TAG, "thirdValuethirdValue:   ${thirdValue}")
+            LogUtil.logE(TAG, "thirdValuethirdValue:   ${thirdValue}")
             if (secondValue.toDouble() == thirdValue) {
                 if (secondValue > 1000) {
                     thirdValue += 100
@@ -414,14 +421,14 @@ class MethodUtils {
                         500
                     )
                     val myValue = value.toInt()
-                    Log.e(TAG, "myValue:  ${myValue}")
+                    LogUtil.logE(TAG, "myValue:  ${myValue}")
                     var searchIndex: Int = -1
                     val filterValue = arrAmount.filter {
                         it >= value
                     }.first()
                     searchIndex = arrAmount.indexOf(filterValue)
-                    Log.e(TAG, "filterValue:  ${filterValue}")
-                    Log.e(TAG, "searchIndex:  ${searchIndex}")
+                    LogUtil.logE(TAG, "filterValue:  ${filterValue}")
+                    LogUtil.logE(TAG, "searchIndex:  ${searchIndex}")
 
 
                     if (arrAmount.contains(myValue)) {
@@ -447,7 +454,7 @@ class MethodUtils {
             val reqLent = 12 - ss.length
             val Alphabet = getSaltString(reqLent)
             val timeStampFinal = Alphabet + ss
-            Log.e("timeStampFinal", timeStampFinal)
+            LogUtil.logE("timeStampFinal", timeStampFinal)
 
             return timeStampFinal
         }

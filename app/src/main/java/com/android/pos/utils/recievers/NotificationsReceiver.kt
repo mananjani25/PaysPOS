@@ -11,6 +11,7 @@ import androidx.core.app.NotificationCompat
 import com.android.pos.MainApplication
 import com.android.pos.R
 import com.android.pos.ui.activities.MainActivity
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.scanner.helpers.Constants
 
 /**
@@ -23,7 +24,7 @@ class NotificationsReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
 
-        Log.e("NotificationsReceiver", " called------ ")
+        LogUtil.logE("NotificationsReceiver", " called------ ")
         val mgr = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         //TODO : Add support for stacked notifications(multiple Scanner events occur when the app is in background)

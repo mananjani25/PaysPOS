@@ -14,10 +14,7 @@ import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
-import com.squareup.okhttp.Response
 import dagger.hilt.android.lifecycle.HiltViewModel
-import hilt_aggregated_deps._com_android_pos_ui_dialog_IssueRefundDialog_GeneratedInjector
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -53,7 +50,7 @@ class ServiceChargeListViewModel @Inject constructor(
         _showProgress.value = Event(true)
         viewModelScope.launch {
             val responsee =
-                taxServiceChargeRepository.getServiceChargeWholeList()
+                taxServiceChargeRepository.getServiceChargeWholeList(prefProvider.getValueInt(Constants.TERMINAL_ID, -1))
             when (responsee.status) {
                 Status.SUCCESS -> {
                     _showProgress.value = Event(false)
@@ -194,18 +191,20 @@ class ServiceChargeListViewModel @Inject constructor(
             _showProgress.value = Event(true)
             viewModelScope.launch {
                 var resource:Resource<ServiceChargeUpdate>?=null
-                if(isFromTakeout){
-                    resource = taxServiceChargeRepository.updateServiceChargeEnable(locationId, enableservice)
+                resource = if(isFromTakeout){
+                    taxServiceChargeRepository.updateServiceChargeEnable(locationId, enableservice)
                 }else{
-                    resource = taxServiceChargeRepository.updateServiceChargeDineinEnable(locationId, enableservice)
+                    taxServiceChargeRepository.updateServiceChargeDineinEnable(locationId, enableservice)
                 }
-                when (resource?.status) {
+                when (resource.status) {
                     Status.SUCCESS -> {
                         _showProgress.value = Event(false)
 
                         resource.data.let {
                             if (it?.status == 200) {
                                 resource.data?.let { servicechargeupdate ->
+
+
                                     prefProvider.setValueboolean(
                                         Constants.SERVICECHARGE_TAKEOUT_OPENORDER,
                                         servicechargeupdate.data.serviceChargeEnable

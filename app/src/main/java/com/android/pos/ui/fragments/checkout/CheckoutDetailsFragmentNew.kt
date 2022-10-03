@@ -3,6 +3,8 @@ package com.android.pos.ui.fragments.checkout
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -18,6 +20,8 @@ import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.TIP_ADDED
+import com.android.pos.data.remote.Constants.TIP_ADDED_AMOUNT
 import com.android.pos.databinding.FragmentCheckoutDetailsNewBinding
 import com.android.pos.di.ApiModule1
 import com.android.pos.di.MagtekModule
@@ -32,10 +36,7 @@ import com.android.pos.ui.fragments.payment.PaymentViewModel
 import com.android.pos.utils.*
 import com.android.pos.utils.callback.DeleteOptionCallback
 import com.android.pos.utils.callback.magtekCallback
-import com.android.pos.utils.extensions.gone
-import com.android.pos.utils.extensions.invisible
-import com.android.pos.utils.extensions.runOnUiThread
-import com.android.pos.utils.extensions.visible
+import com.android.pos.utils.extensions.*
 import com.android.pos.utils.statusUtils.Status
 import com.google.gson.Gson
 import com.google.gson.JsonArray
@@ -138,7 +139,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         orderId = arguments?.getInt("orderId")
 
-        Log.e("orderId :: ", orderId.toString())
+        LogUtil.logE("orderId :: ", orderId.toString())
         if (orderId != null) {
             paymentId = arguments?.getInt("paymentId")!!
             paymentOfflineId = arguments?.getString("paymentOfflineId").toString()
@@ -158,6 +159,89 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         observeQueueCreate()
         observeData()
         callback()
+        setUpManualCardFocusChanged()
+    }
+
+    private fun setUpManualCardFocusChanged() {
+        binding.edtCardNumber.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                try {
+                    Log.e(TAG, "checkMSfsLOnT ${s?.length}")
+                    if (s?.length == 22) {
+                        binding.edtMMYY.requestFocus()
+                    }
+
+                } catch (e: Exception) {
+                }
+
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                try {
+                    Log.e(TAG, "checkMSfsL ${s?.length}")
+                    if (s?.length == 22) {
+                        binding.edtMMYY.requestFocus()
+                    }
+
+                } catch (e: Exception) {
+                }
+            }
+        })
+        binding.edtMMYY.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                try {
+                    Log.e(TAG, "CheckYYLength ${s?.length}")
+                    if (s?.length == 5) {
+                        binding.edtCVV.requestFocus()
+                    } else if (s?.length == 0) {
+                        binding.edtCardNumber.requestFocus()
+                    }
+                } catch (e: Exception) {
+                }
+            }
+        })
+        binding.edtCVV.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                try {
+                    if (s?.length == 0) {
+                        binding.edtMMYY.requestFocus()
+                    }
+                } catch (e: Exception) {
+                }
+            }
+        })
+
+        if (prefProvider.getValueboolean(TIP_ADDED, false)) {
+
+            val tip = prefProvider.getValue(TIP_ADDED_AMOUNT, "")
+            if (tip.isNotEmpty()) {
+                tipAmount = tip.toDouble()
+                viewModel.setTipAmount(tipAmount)
+                tipID = prefProvider.getValueInt(Constants.TIP_ADDED_ID, tipID)
+            }
+            tipAmountCalculation()
+        }
+
     }
 
     @SuppressLint("SetTextI18n")
@@ -169,7 +253,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             tipAmount = bundle.getDouble("tipAmount")
             viewModel.setTipAmount(tipAmount)
             tipID = bundle.getInt("tipId")
-//            isSelectedCount = 1
+
+            prefProvider.setValueboolean(Constants.TIP_ADDED, true)
+            prefProvider.setValue(Constants.TIP_ADDED_AMOUNT, tipAmount.toString())
+            prefProvider.setValueInt(Constants.TIP_ADDED_ID, tipID)
+
             tipAmountCalculation()
             loadPaymentLayout()
         }
@@ -205,13 +293,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     private fun splitClick() {
 
-        binding.linearNextSplit.setOnClickListener {
+        binding.linearNextSplit.setOnSingleClickListener {
             PaymentBoldPosFragment.newInstance().addTipHideShow(false)
             viewModel.setSplitCount(isSelectedCount)
             loadPaymentLayout()
             tipAmountCalculation()
         }
-        binding.tvFullAmount.setOnClickListener {
+        binding.tvFullAmount.setOnSingleClickListener {
             binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.button_action_hover))
             binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tv3ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
@@ -235,7 +323,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         }
 
-        binding.tv2ways.setOnClickListener {
+        binding.tv2ways.setOnSingleClickListener {
             binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.button_action_hover))
             binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tv3ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
@@ -259,7 +347,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             binding.tvwaysplit?.text = "$isSelectedCount Way Split Amount"
 
         }
-        binding.tv3ways.setOnClickListener {
+        binding.tv3ways.setOnSingleClickListener {
             binding.tv3ways.setBackgroundDrawable(resources.getDrawable(R.drawable.button_action_hover))
             binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
@@ -282,7 +370,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             binding.tvwaysplit?.visible()
             binding.tvwaysplit?.text = "$isSelectedCount Way Split Amount"
         }
-        binding.tv4ways.setOnClickListener {
+        binding.tv4ways.setOnSingleClickListener {
             binding.tv4ways.setBackgroundDrawable(resources.getDrawable(R.drawable.button_action_hover))
             binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
@@ -305,7 +393,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             binding.tvwaysplit?.visible()
             binding.tvwaysplit?.text = "$isSelectedCount Way Split Amount"
         }
-        binding.tv5ways.setOnClickListener {
+        binding.tv5ways.setOnSingleClickListener {
             binding.tv5ways.setBackgroundDrawable(resources.getDrawable(R.drawable.button_action_hover))
             binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
@@ -328,7 +416,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             binding.tvwaysplit?.visible()
             binding.tvwaysplit?.text = "$isSelectedCount Way Split Amount"
         }
-        binding.tv6ways.setOnClickListener {
+        binding.tv6ways.setOnSingleClickListener {
             binding.tv6ways.setBackgroundDrawable(resources.getDrawable(R.drawable.button_action_hover))
             binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
@@ -351,7 +439,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             binding.tvwaysplit?.visible()
             binding.tvwaysplit?.text = "$isSelectedCount Way Split Amount"
         }
-        binding.tvCustom.setOnClickListener {
+        binding.tvCustom.setOnSingleClickListener {
             binding.tvCustom.setBackgroundDrawable(resources.getDrawable(R.drawable.button_action_hover))
             binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
@@ -378,7 +466,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     private fun observeData() {
         paymentviewModel.data.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
-                Log.e(TAG, "receiptData: ${Gson().toJson(it.data)}")
+                LogUtil.logE(TAG, "receiptData: ${Gson().toJson(it.data)}")
                 viewModel.redeemLoyaltyInfo = RedeemLoyaltyInfo()
                 prefProvider.setValueInt("ORDER_ID", it.data.order.id)
                 viewModel.updateActiveOrderFlagClear()
@@ -390,7 +478,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 viewModel.setTipAmount(0.0)
                 when {
                     paymentType == "Cash" -> {
-                        Log.e("TipAmount 4:: ", tipAmount.toString())
+                        LogUtil.logE("TipAmount 4:: ", tipAmount.toString())
 
                         val bundle = Bundle()
                         bundle.putBoolean("isDineIn", false)
@@ -496,10 +584,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                 splitAllAmounts(Constants.TAX_CHARGE, totalTax)
                                 splitAllAmounts(Constants.SERVICE_CHARGE, totalServiceCharge)
 //                                if (cashDiscountType == "CashDiscount") {
-                                    splitAllAmounts(
-                                        Constants.CASH_DISCOUNT_SURCHARGE,
-                                        cashDiscountSurcharge
-                                    )
+                                splitAllAmounts(
+                                    Constants.CASH_DISCOUNT_SURCHARGE,
+                                    cashDiscountSurcharge
+                                )
 //                                }
 
                                 splitAllAmounts(Constants.TIP, 0.0)
@@ -513,10 +601,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                 splitAllAmounts(Constants.TAX_CHARGE, totalTax)
                                 splitAllAmounts(Constants.SERVICE_CHARGE, totalServiceCharge)
 //                                if (cashDiscountType == "CashDiscount") {
-                                    splitAllAmounts(
-                                        Constants.CASH_DISCOUNT_SURCHARGE,
-                                        cashDiscountSurcharge
-                                    )
+                                splitAllAmounts(
+                                    Constants.CASH_DISCOUNT_SURCHARGE,
+                                    cashDiscountSurcharge
+                                )
 //                                }
 
                                 splitAllAmounts(Constants.TIP, 0.0)
@@ -530,10 +618,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                 splitAllAmounts(Constants.TAX_CHARGE, totalTax)
                                 splitAllAmounts(Constants.SERVICE_CHARGE, totalServiceCharge)
 //                                if (cashDiscountType == "CashDiscount") {
-                                    splitAllAmounts(
-                                        Constants.CASH_DISCOUNT_SURCHARGE,
-                                        cashDiscountSurcharge
-                                    )
+                                splitAllAmounts(
+                                    Constants.CASH_DISCOUNT_SURCHARGE,
+                                    cashDiscountSurcharge
+                                )
 //                                }
 
                                 splitAllAmounts(Constants.TIP, 0.0)
@@ -564,7 +652,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                     }
                     paymentType == "Card" -> {
-                        Log.e("TipAmount 4:: ", tipAmount.toString())
+                        LogUtil.logE("TipAmount 4:: ", tipAmount.toString())
 
                         val bundle = Bundle()
                         bundle.putBoolean("isDineIn", false)
@@ -683,6 +771,23 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         paymentviewModel.showProgress.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
+
+                LogUtil.logE("observeShowProgress", it.toString())
+                if (it) {
+                    ProgressUtils.showProgressDialog(
+                        "Please wait payment under process",
+                        requireActivity()
+                    )
+                } else {
+                    ProgressUtils.dismissProgressDialog()
+                }
+            }
+        }
+
+        paymentviewModel.showProgressCash.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let {
+
+                LogUtil.logE("observeShowProgress", it.toString())
                 if (it) {
                     ProgressUtils.showProgressDialog(requireActivity())
                 } else {
@@ -709,7 +814,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     }
 
     private fun paymentClick() {
-        binding.llCreditCard.setOnClickListener {
+        binding.llCreditCard.setOnSingleClickListener {
 
             val device = prefProvider.getValueInt(Constants.MAGTEK_HARDWARE, 0)
             subTotalPrice = String.format("%.2f", subTotalPrice / isSelectedCount).toDouble()
@@ -741,7 +846,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
             //  makePaymentCreditCard()
         }
-        binding.llManualCardEntry.setOnClickListener {
+        binding.llManualCardEntry.setOnSingleClickListener {
             binding.frameLayoutId.visible()
             binding.relativeMain.gone()
             binding.llManualCard.visible()
@@ -749,7 +854,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         }
 
-        binding.tvCash0.setOnClickListener {
+        binding.tvCash0.setOnSingleClickListener {
 
             custom_paymentAmount = 0.0
 
@@ -759,24 +864,24 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             paymentAmount = binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
             cashPaymentWithVariation()
         }
-        binding.tvCash1.setOnClickListener {
+        binding.tvCash1.setOnSingleClickListener {
 
             custom_paymentAmount =
                 binding.tvCash1.text.toString().replace("$", "").trim().toDouble()
             cashPaymentWithVariation()
         }
-        binding.tvCash2.setOnClickListener {
+        binding.tvCash2.setOnSingleClickListener {
             custom_paymentAmount =
                 binding.tvCash2.text.toString().replace("$", "").trim().toDouble()
             cashPaymentWithVariation()
         }
-        binding.tvCash3.setOnClickListener {
+        binding.tvCash3.setOnSingleClickListener {
 
             custom_paymentAmount =
                 binding.tvCash3.text.toString().replace("$", "").trim().toDouble()
             cashPaymentWithVariation()
         }
-        binding.tvCustomAmount.setOnClickListener {
+        binding.tvCustomAmount.setOnSingleClickListener {
 
             paymentAmount = binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
             val bundleVal = Bundle().apply {
@@ -788,12 +893,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             )
 
         }
-        binding.tvPaymentLink.setOnClickListener {
+        binding.tvPaymentLink.setOnSingleClickListener {
 
         }
 
 
-        binding.imgBackManualCard.setOnClickListener {
+        binding.imgBackManualCard.setOnSingleClickListener {
             MethodUtils.hideKeyboard(requireActivity())
             isManualCard = false
             binding.relativeMain.visible()
@@ -801,7 +906,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         }
 
-        binding.txtCharge.setOnClickListener {
+        binding.txtCharge.setOnSingleClickListener {
 
             MethodUtils.hideKeyboard(requireActivity())
 
@@ -864,7 +969,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     ) {
 
         val jsonArray1 = magtekRequestUtils.processManualEntry(
-            (paymentAmount * 100).toInt(),
+            (paymentAmount * 100),
             cardNumber,
             expDate,
             cardCVV
@@ -998,7 +1103,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
 
         cartList = viewModel.cartModel
-        Log.e("ORDER_TYPE", prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT))
+        LogUtil.logE("ORDER_TYPE", prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT))
 
         viewModel.ordertypelist.forEach {
             if (prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT) == it.orderType) {
@@ -1168,14 +1273,14 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     }
 
     private fun setupTabDesign() {
-        binding.linearTab1.setOnClickListener {
+        binding.linearTab1.setOnSingleClickListener {
             PaymentBoldPosFragment.newInstance().addTipHideShow(false)
             isSelectedCount = 1
             tipsetupGlobal(tipAmount, isSelectedCount)
             loadPaymentLayout()
             tipAmountCalculation()
         }
-        binding.linearTab2.setOnClickListener {
+        binding.linearTab2.setOnSingleClickListener {
 
             if (tipAmount != 0.0 && viewModel.tipTransactionAmount != 0.0) {
                 AlertUtils.showCustomAlertWithListenerWithOKCancel(
@@ -1258,8 +1363,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         paymentAmount -= tipAmount
         paymentAmount = MethodUtils.roundOffAmountDouble(paymentAmount)
         paymentType = "Card"
-        Log.e(TAG, "cartList:  ${Gson().toJson(cartList)}")
-        Log.e(TAG, "cartListcartItems:  ${Gson().toJson(cartItems)}")
+        LogUtil.logE(TAG, "cartList:  ${Gson().toJson(cartList)}")
+        LogUtil.logE(TAG, "cartListcartItems:  ${Gson().toJson(cartItems)}")
         if (orderId != -1 && orderId != 0) {
             paymentviewModel.updateOrder(
                 true,
@@ -1294,7 +1399,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 tipID
             )
         }
-        Log.e(TAG, "myRequestOriginal ${Gson().toJson(myRequest)}")
+        LogUtil.logE(TAG, "myRequestOriginal ${Gson().toJson(myRequest)}")
         if (myRequest != null) {
             paymentviewModel.totalPayAmount(paymentAmount)
             paymentAttributesRequest(myRequest)
@@ -1303,8 +1408,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     private fun makeCashPayment() {
         paymentType = "Cash"
-        Log.e(TAG, "makeCashPayorderId  ${orderId}")
-        Log.e(TAG, "makeCashPrefOrderId  ${prefProvider.getValueInt("ORDER_ID", -1)}")
+        LogUtil.logE(TAG, "makeCashPayorderId  ${orderId}")
+        LogUtil.logE(TAG, "makeCashPrefOrderId  ${prefProvider.getValueInt("ORDER_ID", -1)}")
 
         if (orderId != -1 && orderId != 0) {
             paymentviewModel.updateOrder(
@@ -1346,8 +1451,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 tipID
             )
         }
-        Log.e(TAG, "myRequestOriginal ${Gson().toJson(myRequest)}")
-        Log.e("ORDER TYPE 1", prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT))
+        LogUtil.logE(TAG, "myRequestOriginal ${Gson().toJson(myRequest)}")
+        LogUtil.logE("ORDER TYPE 1", prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT))
         if (myRequest != null) {
             if (custom_paymentAmount != 0.0) {
                 paymentviewModel.totalPayAmount(custom_paymentAmount)
@@ -1358,7 +1463,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     private fun paymentAttributesRequest(myRequest: OrderRequestModel) {
         val orderId = prefProvider.getValueInt("ORDER_ID", -1)
-        Log.e(TAG, "orderIdmyRequestOriginal ${orderId}")
+        LogUtil.logE(TAG, "orderIdmyRequestOriginal ${orderId}")
         if (orderId == -1) {
             myRequest.completed_all_payments = isSelectedCount <= 1
             paymentviewModel.submit(myRequest)
@@ -1516,7 +1621,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
             val jsonArray1 = magtekModule.m_scra?.let {
                 magtekRequestUtils.processCardSwipe(
-                    (paymentAmount * 100).toInt(),
+                    (paymentAmount * 100),
                     magtekModule.m_scra!!.ksn,
                     magtekModule.m_scra!!.magnePrint,
                     magtekModule.m_scra!!.magnePrintStatus,
@@ -1533,7 +1638,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     private fun networkCall(jsonArray1: JsonArray?, i: Int) {
 
-        ProgressUtils.showProgressDialog(requireActivity())
+        ProgressUtils.showProgressDialog("Please wait payment under process", requireActivity())
 
         var call: Call<PaymentResponse>? = null
         when (i) {
@@ -1557,7 +1662,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 ProgressUtils.dismissProgressDialog()
 
                 if (response.isSuccessful) {
-                    Log.e("onResponse", Gson().toJson(response.body()))
+                    LogUtil.logE("onResponse", Gson().toJson(response.body()))
                     if (response.body() != null && response.body()!![0].transactionOutput != null) {
 
                         if (isDynamo())
@@ -1630,7 +1735,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         ProgressUtils.dismissProgressDialog()
 
         val jsonArray1 = magtekRequestUtils.processData(
-            (paymentAmount * 100).toInt(),
+            (paymentAmount * 100),
             TLVParser.getHexString(data),
             Constants.AUTHORIZE
         )
@@ -1660,22 +1765,22 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 EventType.ConnectionState -> {
                     when (ConnectionStateBuilder.GetValue(data.StringValue())) {
                         ConnectionState.Connected -> {
-                            Log.e("", "[CONNECTED]")
+                            LogUtil.logE("", "[CONNECTED]")
 
                             // ProgressUtils.dismissProgressDialog()
 
                             startTransaction()
                         }
                         ConnectionState.Disconnected -> {
-                            Log.e("", "[DISCONNECTED]")
+                            LogUtil.logE("", "[DISCONNECTED]")
                             ProgressUtils.dismissProgressDialog()
                             AlertUtils.showCustomAlert(requireContext(), "DISCONNECTED")
                         }
                         ConnectionState.Disconnecting -> {
-                            Log.e("", "[DISCONNECTING]")
+                            LogUtil.logE("", "[DISCONNECTING]")
                         }
                         ConnectionState.Connecting -> {
-                            Log.e("", "[CONNECTING]")
+                            LogUtil.logE("", "[CONNECTING]")
 
                         }
                         else -> ""
@@ -1685,12 +1790,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
 //                ProgressUtils.dismissProgressDialog()
 
-                    Log.e("TransactionResult", "TransactionResult called")
+                    LogUtil.logE("TransactionResult", "TransactionResult called")
 
                     dismissDialog()
 
                     val jsonArray1 = magtekRequestUtils.processData(
-                        (paymentAmount * 100).toInt(),
+                        (paymentAmount * 100),
                         MTParser.getHexString(data.ByteArray()),
                         Constants.AUTHORIZE
                     )
@@ -1737,11 +1842,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     private fun magtekProPaymentCall() {
 
-        ProgressUtils.showProgressDialog(requireActivity())
+        ProgressUtils.showProgressDialog("Please tap, insert or swipe card", requireActivity())
         ProgressUtils.setCallback(this)
 
 
-        Log.e("mSessionManager", mSessionManager.isConnected.toString())
+        LogUtil.logE("mSessionManager", mSessionManager.isConnected.toString())
         if (mSessionManager.isConnected) {
             startTransaction()
         } else {
@@ -1813,7 +1918,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     private fun createQueuePrinter(createOrder: CreateOrderResponse) {
         val listPrinter: List<Int> = listOf()
-        Log.e(TAG,"cartListcartList  ${Gson().toJson(cartList)}")
+        LogUtil.logE(TAG, "cartListcartList  ${Gson().toJson(cartList)}")
         if (cartList != null) {
             val orderRequest = cartList?.let {
 

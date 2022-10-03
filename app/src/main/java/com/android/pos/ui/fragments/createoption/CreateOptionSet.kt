@@ -19,6 +19,7 @@ import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.DialogCreateOptionBinding
 import com.android.pos.ui.adapter.OptionAdapter
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
 import com.google.android.material.snackbar.Snackbar
@@ -108,7 +109,7 @@ class CreateOptionSet : Fragment(), TextWatcher {
 
                 val oldPos = viewHolder.bindingAdapterPosition
                 val newPos = target.bindingAdapterPosition
-                Log.e(
+                LogUtil.logE(
                     "reorder after", "" + ":::" + ":::" +
                             viewHolder.bindingAdapterPosition.toString() + " :::  " + target.bindingAdapterPosition.toString()
                 )
@@ -119,7 +120,7 @@ class CreateOptionSet : Fragment(), TextWatcher {
 
                 val a = adapter.getItem(dragFrom).sort
                 val b = adapter.getItem(dragTo).sort
-                Log.e("onItemMove", "$a:: $b")
+                LogUtil.logE("onItemMove", "$a:: $b")
 
 
 

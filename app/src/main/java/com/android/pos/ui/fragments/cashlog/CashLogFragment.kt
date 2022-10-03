@@ -22,6 +22,7 @@ import com.android.pos.databinding.FragmentCashLogBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.CashLogAdapter
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.PaginationScrollListener
 import com.android.pos.utils.extensions.showAlert
@@ -482,14 +483,15 @@ class CashLogFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
         terminalListGlobal.forEachIndexed { index, item ->
             if (item.id == prefProvider.getValueInt(Constants.TERMINAL_ID, 0)) {
-                Log.e("TerminalId", prefProvider.getValueInt(Constants.TERMINAL_ID, 0).toString())
-                Log.e("TerminalId name", item.name)
+                LogUtil.logE("TerminalId", prefProvider.getValueInt(Constants.TERMINAL_ID, 0).toString())
+                LogUtil.logE("TerminalId name", item.name)
                 binding.spTerminals.setSelection(index)
             }
         }
     }
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+        adapter.clearList()
         viewModel.apiCallTimeSheet(
             getTerminalId(binding.spTerminals.selectedItemPosition).toString(),
             currentPage

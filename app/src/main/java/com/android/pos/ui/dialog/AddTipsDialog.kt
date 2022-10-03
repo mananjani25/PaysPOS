@@ -25,6 +25,7 @@ import com.android.pos.ui.adapter.DialogTipsListAdapter
 import com.android.pos.ui.fragments.settings.tip.TipListViewModel
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.AmountTextWatcher
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
@@ -227,15 +228,15 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
     }
 
     private fun setDiscountList() {
-        viewModel.getTipList.observe(requireActivity()) {
-            Log.e(TAG, "DiscountList ${Gson().toJson(it)}")
+        viewModel.getTipActiveList.observe(requireActivity()) {
+            LogUtil.logE(TAG, "DiscountList ${Gson().toJson(it)}")
             if (it.data?.isNotEmpty() == true) {
+
                 it.data.forEach {
                     it.isChecked = false
                 }
                 tipsListAdapter.setList(it.data)
                 tipsListAdapter.setListner(this)
-                //tipsListAdapter.setSelected(defaultModel?.discountId)
             }
 
 
@@ -306,7 +307,7 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
     }
 
     override fun selectedItem(model: GetTipReponse.Data, pos: Int) {
-        Log.e(TAG, "SelectedItem:  ${Gson().toJson(model)}")
+        LogUtil.logE(TAG, "SelectedItem:  ${Gson().toJson(model)}")
         tipModel.apply { model }
         tipID = model.id
         var tipCalculation = 0.0

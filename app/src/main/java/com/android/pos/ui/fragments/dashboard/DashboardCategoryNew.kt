@@ -81,7 +81,6 @@ import com.android.pos.data.remote.Constants.VERTICAL
 import com.android.pos.databinding.FragmentDashboardCategoryNewBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
-import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.activities.SwipeHelper
 import com.android.pos.ui.adapter.*
 import com.android.pos.ui.fragments.payment.PaymentViewModel
@@ -291,11 +290,11 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     }
 
     private fun getLoyaltyPrograms() {
-        Log.e("Loyalty", "getLoyaltyPrograms called..")
+        LogUtil.logE("Loyalty", "getLoyaltyPrograms called..")
         viewModel.activeLoyaltyProgram = prefProvider.getActiveLoyaltyData()
         viewModel.activeLoyaltyProgramLiveData.observe(requireActivity(), {
             if (it.status == Status.SUCCESS && it.data != null) {
-                Log.e("Loyalty", "getLoyaltyPrograms fetched..")
+                LogUtil.logE("Loyalty", "getLoyaltyPrograms fetched..")
                 prefProvider.saveActiveLoyaltyData(it.data)
                 viewModel.activeLoyaltyProgram = it.data
             }
@@ -378,14 +377,14 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         setFragmentResultListener("request_key_customer") { _: String, bundle: Bundle ->
             val result = bundle.getParcelable<TbCustomer>("data")
             if (result != null) {
-                Log.e(TAG, "bundleSelectBundle:  ${Gson().toJson(bundle)}")
+                LogUtil.logE(TAG, "bundleSelectBundle:  ${Gson().toJson(bundle)}")
                 setUpCustomer(result, bundle)
             }
         }
         setFragmentResultListener("request_key_customer_open_order") { _: String, bundle: Bundle ->
             val result = bundle.getParcelable<TbCustomer>("data")
             if (result != null) {
-                Log.e(TAG, "gotBundlebundle:  ${Gson().toJson(bundle)}")
+                LogUtil.logE(TAG, "gotBundlebundle:  ${Gson().toJson(bundle)}")
                 setUpCustomer(result, bundle)
 
 
@@ -432,7 +431,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     private fun initScanner() {
         //barcode event listener
-        (activity as MainActivity).addDevEventsDelegate(this)
+//        (activity as MainActivity).addDevEventsDelegate(this)
     }
 
 
@@ -440,7 +439,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         val sync = prefProvider.getValueboolean(Constants.SYNC_DATA, false)
         if (!sync)
-            viewModel.syncInventoryModule()
+            viewModel.syncInventoryModule(true)
     }
 
     private fun checkDineInEditOrder() {
@@ -558,7 +557,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             openORderType = bundle.getString("TYPE").toString()
             prefProvider.setValueInt(ORDER_TYPE_ID, orderType?.id ?: 3)
             prefProvider.setValue(ORDER_TYPE_NAME, orderType?.name ?: OPEN_ORDER)
-            Log.e("!_@_", "523 ${orderType?.orderType ?: ""}")
+            LogUtil.logE("!_@_", "523 ${orderType?.orderType ?: ""}")
             prefProvider.setValue(ORDER_TYPE, orderType?.orderType ?: OPEN_ORDER)
             hideOrderType()
         }
@@ -595,9 +594,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         orderTypeAdapter.setCallback(this)
         binding.rvOrderType.adapter = orderTypeAdapter
 
-        viewModel.orderTypes().observe(requireActivity(), {
+        viewModel.orderTypes().observe(requireActivity()) {
             it.data?.let { it1 -> orderTypeAdapter.addAll(it1) }
-        })
+        }
 
     }
 
@@ -634,7 +633,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     private fun getCartList() {
 
-        Log.e("Loyalty", "getCartList called..")
+        LogUtil.logE("Loyalty", "getCartList called..")
 
         cartAdapter = CartAdapter()
         cartAdapter.setCallback(this)
@@ -679,7 +678,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     }
 
     private fun bindData(it: List<CartModel>?) {
-        Log.e("bindData", "YesAdded")
+        LogUtil.logE("bindData", "YesAdded")
 
         cartList = it as ArrayList<CartModel>
         viewModel.destroyedList.clear()
@@ -760,8 +759,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                                     dineInList.get(position).customer = result
 
-                                    Log.e(TAG, "UpdateCustomerPostition ${position}")
-                                    Log.e(
+                                    LogUtil.logE(TAG, "UpdateCustomerPostition ${position}")
+                                    LogUtil.logE(
                                         TAG,
                                         "UpdateCustomer ${dineInList.get(position).customer}"
                                     )
@@ -787,8 +786,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 } else
                     binding.layoutCart.llPayment.visible()
 
-                Log.e(TAG, "cartList[0].items > ${cartList[0].items?.size}")
-                Log.e(TAG, "viewModel.destroyedList > ${viewModel.destroyedList.size}")
+                LogUtil.logE(TAG, "cartList[0].items > ${cartList[0].items?.size}")
+                LogUtil.logE(TAG, "viewModel.destroyedList > ${viewModel.destroyedList.size}")
                 cartAdapter.addCart(cartList[0].items)
             }
             viewModel.itemCalculation(
@@ -798,9 +797,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             )
 
             val orderType = prefProvider.getValue(ORDER_TYPE, "")
-            Log.e("!_@_", "rlSave -------- $orderType ")
+            LogUtil.logE("!_@_", "rlSave -------- $orderType ")
             if (orderType == TAKEOUT || orderType == DINE_IN) {
-                Log.e("!_@_", "rlSave -- GONE ")
+                LogUtil.logE("!_@_", "rlSave -- GONE ")
                 binding.layoutCart.rlSave.visibility = View.GONE
                 if (prefProvider.getValue(ORDER_TYPE, "").toString() == DINE_IN) {
                     binding.layoutCart.txtTotalAmount.visibility = View.GONE
@@ -822,7 +821,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     //  binding.layoutCart.llPayment.visible()
                 }
             } else {
-                Log.e("!_@_", "rlSave -- VISIBLE ")
+                LogUtil.logE("!_@_", "rlSave -- VISIBLE ")
                 binding.layoutCart.rlSave.visibility = View.VISIBLE
                 binding.layoutCart.rvCart.visible()
                 //  binding.layoutCart.llPayment.visible()
@@ -849,7 +848,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
 
         if (prefProvider.getValueInt("ORDER_ID", -1) != -1) {
-            Log.e(TAG, "ManualSale ORderIDNOt Null")
+            LogUtil.logE(TAG, "ManualSale ORderIDNOt Null")
             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT).toString() != DINE_IN) {
                 lifecycleScope.launchWhenResumed {
                     if (findNavController().currentDestination?.id == R.id.dashboardCategoryNew) {
@@ -867,7 +866,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     }
 
     private fun hideOrderType() {
-        Log.e(TAG, "ORDERTYPE:  ${prefProvider.getValue(ORDER_TYPE, "")}")
+        LogUtil.logE(TAG, "ORDERTYPE:  ${prefProvider.getValue(ORDER_TYPE, "")}")
 
         if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
             binding.layoutCart.llCart.visibility = View.VISIBLE
@@ -963,7 +962,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         }
 
         binding.layoutMenu.imgSync.setOnClickListener {
-            viewModel.syncInventoryModule()
+//            viewModel.syncInventoryModule()
         }
 
         binding.footer.linearMore.setOnClickListener {
@@ -1522,7 +1521,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         val lblLoyaltyPoints: AppCompatTextView = popupView.findViewById(R.id.lblLoyaltyPoints)
         val lblLoyaltyAmount: AppCompatTextView = popupView.findViewById(R.id.lblLoyaltyAmount)
 
-        Log.e(TAG, "subTotalPrice:   ${viewModel.subTotalPrice - (cartList[0].discountPrice)}")
+        LogUtil.logE(TAG, "subTotalPrice:   ${viewModel.subTotalPrice - (cartList[0].discountPrice)}")
 
 
         val txtTotalcashAdj: AppCompatTextView = popupView.findViewById(R.id.txtnoncashadj)
@@ -1560,8 +1559,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             lblLoyaltyAmount.visible()
             txtLoyaltyAmount.visible()
 
-            Log.e(TAG, "InsideLoyalty")
-            Log.e(TAG, Gson().toJson(viewModel.redeemLoyaltyInfo))
+            LogUtil.logE(TAG, "InsideLoyalty")
+            LogUtil.logE(TAG, Gson().toJson(viewModel.redeemLoyaltyInfo))
             amountToBepaid = viewModel.redeemLoyaltyInfo.getAmountToBePaid() ?: 0.0
             txtLoyaltyAmount.text =
                 "- $${String.format("%.2f", viewModel.redeemLoyaltyInfo.usedLoyaltyAmount)}"
@@ -1913,7 +1912,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 return@setOnClickListener
             }
 
-            Log.e("checkItemQty", checkItemQty(data, variationAdapter).toString())
+            LogUtil.logE("checkItemQty", checkItemQty(data, variationAdapter).toString())
 
             if (!checkItemQty(data, variationAdapter)) {
                 AlertUtils.showCustomAlert(
@@ -2285,6 +2284,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         viewModelPayment.showProgress.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let {
+                LogUtil.logE("observeShowProgress2", it.toString())
                 if (it) {
                     ProgressUtils.showProgressDialog(requireActivity())
                 } else {
@@ -2661,7 +2661,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     }
 
     private fun gotoPayment() {
-        Log.e(TAG, "cartList:  ${cartList.size}")
+        LogUtil.logE(TAG, "cartList:  ${cartList.size}")
         if (cartList.isNotEmpty()) {
             if (prefProvider.getValueboolean(DINE_IN_UPDATE, false)) {
                 var itemCount = 0
@@ -2744,7 +2744,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 cartList[0].customer = assignCustomer
                 val cartModel = viewModel.generateCombinedItems(cartList[0])
                 cartModel.openOrderType = openORderType
-                Log.e(TAG, "PaymentPAsscartModel: ${Gson().toJson(cartModel)}")
+                LogUtil.logE(TAG, "PaymentPAsscartModel: ${Gson().toJson(cartModel)}")
                 bundle.putParcelable("cartList", cartModel)
                 if (isOrderUpdate) {
                     bundle.putBoolean("update", true)
@@ -3695,7 +3695,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 //  printer?.setStatusChangeEventCallback(this)
 
             } catch (e: Exception) {
-                Log.e(TAG, "PrinterException: " + e.message)
+                LogUtil.logE(TAG, "PrinterException: " + e.message)
                 printer = null
                 ProgressUtils.dismissProgressDialog()
                 findNavController().navigate(R.id.action_dashboardCategoryNew_to_orders)
@@ -3710,7 +3710,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             }
 
         } else {
-            Log.e(TAG, "PrinterIsNotNull:")
+            LogUtil.logE(TAG, "PrinterIsNotNull:")
             ProgressUtils.dismissProgressDialog()
             findNavController().navigate(R.id.action_dashboardCategoryNew_to_orders)
         }
@@ -4050,7 +4050,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 findNavController().navigate(R.id.action_dashboardCategoryNew_to_orders)
                 /*PrinterClass.closePrinter()
                 e.printStackTrace()
-                Log.e(TAG, "PrinterError: " + e.localizedMessage)
+                LogUtil.logE(TAG, "PrinterError: " + e.localizedMessage)
                */
             }
 
@@ -4084,7 +4084,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         if (label.equals(OPEN_ORDER, true)) {
             label = OPEN_ORDER
         }
-        Log.e(TAG, "OrderType Label : $label")
+        LogUtil.logE(TAG, "OrderType Label : $label")
         binding.layoutCart.txtOrderType.text = label
     }
 
@@ -4096,7 +4096,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         var itemQuantity = 1
         if (cartList.isNotEmpty()) {
             cartList[0].items?.filter { it.itemId == item?.itemId }?.map {
-                Log.e(TAG, "ScanItemQuantity: ${it.itemQuantity}")
+                LogUtil.logE(TAG, "ScanItemQuantity: ${it.itemQuantity}")
                 itemQty = it.itemQuantity
 
 
@@ -4149,7 +4149,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
 
     override fun scannerBarcodeEvent(barcodeData: ByteArray?, barcodeType: Int, scannerID: Int) {
-        Log.e(TAG, "scannerBarcodeEvent: ${barcodeData?.let { String(it) }}")
+        LogUtil.logE(TAG, "scannerBarcodeEvent: ${barcodeData?.let { String(it) }}")
 
         //Check product code in db
         val productCode = barcodeData?.let { String(it) }

@@ -21,11 +21,10 @@ import java.io.File
 @HiltAndroidApp
 class MainApplication : Application() {
 
-
     override fun onCreate() {
         super.onCreate()
         FirebaseApp.initializeApp(this)
-        TestFairy.begin(this, "SDK-oauliEDO"); // vishal.j.patel+905@bacancy.com/10Ce70901@
+        TestFairy.begin(this, "SDK-6KbOzymv"); // vishal.j.patel+101@bacancy.com/10Ce70901@
         instance = this
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
 

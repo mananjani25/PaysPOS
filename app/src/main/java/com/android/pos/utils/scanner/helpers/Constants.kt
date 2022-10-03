@@ -1,6 +1,7 @@
 package com.android.pos.utils.scanner.helpers
 
 import android.util.Log
+import com.android.pos.utils.LogUtil
 
 /**
  * Created by mfv347 on 6/20/2014.
@@ -158,7 +159,7 @@ object Constants {
             if (type == DEBUG_TYPE.TYPE_DEBUG) Log.d(
                 TAG,
                 message!!
-            ) else if (type == DEBUG_TYPE.TYPE_ERROR) Log.e(TAG, message!!)
+            ) else if (type == DEBUG_TYPE.TYPE_ERROR) TAG?.let { LogUtil.logE(it, message!!) }
         }
     }
 

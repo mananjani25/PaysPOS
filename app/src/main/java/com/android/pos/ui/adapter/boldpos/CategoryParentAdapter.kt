@@ -1,13 +1,13 @@
 package com.android.pos.ui.adapter.boldpos
 
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.model.CategoryParentModel
 import com.android.pos.databinding.ViewParentCategoryBinding
 import com.android.pos.ui.adapter.CategoryTabAdapter1
+import com.android.pos.utils.LogUtil
 
 class CategoryParentAdapter(
     val context: Context,
@@ -22,7 +22,7 @@ class CategoryParentAdapter(
     inner class MyViewHolder(private val binding: ViewParentCategoryBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(model: CategoryParentModel) {
-            Log.e("CartegoryParent", "bindingAdapterPosition  $bindingAdapterPosition")
+            LogUtil.logE("CartegoryParent", "bindingAdapterPosition  $bindingAdapterPosition")
 
             binding.rvCategory.adapter =
                 CategoryAdapter(
@@ -30,10 +30,10 @@ class CategoryParentAdapter(
                     model.list,
                     object : CategoryTabAdapter1.TabListner {
                         override fun onTabSelected(pos: Int) {
-                            Log.e(TAG, "getCatPOS  ${pos}")
+                            LogUtil.logE(TAG, "getCatPOS  ${pos}")
+                            listner.onCategorySelected(bindingAdapterPosition, pos)
                             selectedParentPos = bindingAdapterPosition
                             selectedCategoryPos = pos
-                            listner.onCategorySelected(bindingAdapterPosition, pos)
                         }
 
                     })
@@ -46,7 +46,8 @@ class CategoryParentAdapter(
     }
 
 
-    fun addList(tmpList: ArrayList<CategoryParentModel>) {
+    fun addList(tmpList: List<CategoryParentModel>) {
+        LogUtil.logE(TAG,"tmpListtmpList:  ${tmpList.size}")
         list.clear()
         list = arrayListOf()
         list.addAll(tmpList)
@@ -55,6 +56,12 @@ class CategoryParentAdapter(
 
     fun getList(): List<CategoryParentModel> {
         return list
+    }
+
+    fun clearList(){
+        list.clear()
+        list = arrayListOf()
+        notifyDataSetChanged()
     }
 
 
@@ -81,7 +88,7 @@ class CategoryParentAdapter(
     }
 
     /*  override fun onTabSelected(pos: Int) {
-          Log.e(TAG, "onTabSelected  ${pos}")
+          LogUtil.logE(TAG, "onTabSelected  ${pos}")
           listner.onCategorySelected()
 
       }*/

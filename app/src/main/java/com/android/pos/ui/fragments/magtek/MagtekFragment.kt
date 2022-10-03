@@ -28,6 +28,7 @@ import com.android.pos.R
 import com.android.pos.data.entities.TbCardReader
 import com.android.pos.databinding.FragmentTagtekBinding
 import com.android.pos.di.MagtekModule
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.callback.magtekCallback
@@ -210,7 +211,7 @@ class MagtekFragment : Fragment(), ItemCallback, magtekCallback {
         viewModel.cardReaderList().observe(viewLifecycleOwner) {
 
             if (it.status == Status.SUCCESS && it.data != null) {
-                Log.e("observe", it.data?.name.toString() + "  " + it.data?.status.toString())
+                LogUtil.logE("observe", it.data?.name.toString() + "  " + it.data?.status.toString())
                 adapter?.add(it.data)
             }
         }
@@ -240,7 +241,7 @@ class MagtekFragment : Fragment(), ItemCallback, magtekCallback {
                     }
                 }
                 MTConnectionState.Disconnected -> {
-                    Log.e("Disconnected", true.toString())
+                    LogUtil.logE("Disconnected", true.toString())
                     if (selectedPos != -1) {
 
                         val cardReader = adapter?.getItem(selectedPos)
@@ -264,7 +265,7 @@ class MagtekFragment : Fragment(), ItemCallback, magtekCallback {
 
         if (adapter?.getItem(pos)?.status == 0) {
             if (adapter?.getItem(pos)?.mcAddress?.let { magtekModule.openDevice(it) } != 0L) {
-                Log.e("onItemClick", "[Failed to connect to the device]")
+                LogUtil.logE("onItemClick", "[Failed to connect to the device]")
             }
         } else {
             magtekModule.closeDevice()
@@ -301,7 +302,7 @@ class MagtekFragment : Fragment(), ItemCallback, magtekCallback {
     }
 
     override fun onDeviceResponse(response: String) {
-        Log.e("onDeviceResponse", response)
+        LogUtil.logE("onDeviceResponse", response)
     }
 
     override fun onDeviceList(bluetoothDevice: BluetoothDevice) {
@@ -319,12 +320,12 @@ class MagtekFragment : Fragment(), ItemCallback, magtekCallback {
             .observe(viewLifecycleOwner) {
 
                 if (selectedPos == -1) {
-                    Log.e("addCardReader", it.status.toString())
+                    LogUtil.logE("addCardReader", it.status.toString())
                     if (it.status == Status.SUCCESS) {
                         if (it.data == null) {
-                            Log.e("addCardReader", "callled")
+                            LogUtil.logE("addCardReader", "callled")
                             val cardReader = TbCardReader()
-                            Log.e("mcAddress :: ", bluetoothDevice.address.replace(":", ""))
+                            LogUtil.logE("mcAddress :: ", bluetoothDevice.address.replace(":", ""))
                             cardReader.mcAddress = bluetoothDevice.address.replace(":", "")
                             if (bluetoothDevice.name != null) {
                                 cardReader.name = bluetoothDevice.name

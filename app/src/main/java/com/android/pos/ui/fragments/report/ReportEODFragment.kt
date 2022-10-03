@@ -20,11 +20,13 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.android.pos.R
 import com.android.pos.data.entities.Employee
+import com.android.pos.data.model.ClockinOutReportModel
 import com.android.pos.data.model.ShiftRportConfiguration
 import com.android.pos.data.model.responseModel.EodReportResponse
 import com.android.pos.data.model.responseModel.PrinterResponse
@@ -104,9 +106,11 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     private val salesOrderDetailsAdapter by lazy { SalesOrderDetailsAdapter() }
 
+    private val clockInClockOutAdapter by lazy { ClockInClockOutAdapter() }
+
     private val creditCardBreakdownAdapter by lazy { CreditCardBreakDownAdapter(hideRefund = false) }
 
-    private lateinit var teamEmployeeListGlobal: ArrayList<Employee>
+    private var teamEmployeeListGlobal: ArrayList<Employee> = arrayListOf()
 
     val myCalendar = Calendar.getInstance()
     val myCalendar1 = Calendar.getInstance()
@@ -156,7 +160,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
             binding.txtEmail.setOnClickListener {
 
 
-                if (viewModel.selectedTerminalId.isNotEmpty())
+                if (viewModel.selectedTerminalId.isNotEmpty()) {
                     viewModel.getEmployeeEmail(viewModel.selectedTerminalId.toInt())
                         .observe(viewLifecycleOwner) {
 
@@ -171,6 +175,17 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                                 )
                             }
                         }
+                } else {
+                    val bundle = Bundle()
+                    bundle.putBoolean("EOD", true)
+                    bundle.putInt("type", 2)
+                    bundle.putString("email", "")
+                    findNavController().navigate(
+                        R.id.action_reportEODFragment_to_sendReceiptFragment,
+                        bundle
+                    )
+
+                }
 
 
                 //  viewModel.getReportSummary("")
@@ -184,6 +199,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
             binding.txtClockOut.setOnClickListener {
 
+                if (MethodUtils.isDoubleClick()) return@setOnClickListener
                 alert(
                     getString(R.string.app_name),
                     getString(R.string.clockout_message)
@@ -194,10 +210,13 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                         val bundle = Bundle()
                         bundle.putBoolean("isDashboard", true)
                         bundle.putBoolean("isSwap", false)
-                        findNavController().navigate(
-                            R.id.action_reportEODFragment_to_passcode,
-                            bundle
-                        )
+                        if (findNavController().currentDestination?.id == R.id.reportEODFragment) {
+                            findNavController().navigate(
+                                R.id.action_reportEODFragment_to_passcode,
+                                bundle
+                            )
+                        }
+
                     }
                     negativeButton(R.string.tv_cancel) {
                         // Do negative stuff here
@@ -308,7 +327,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
 
                     } catch (e: Exception) {
-                        Log.e(TAG, "PrinterException: " + e.message)
+                        LogUtil.logE(TAG, "PrinterException: " + e.message)
                         printer = null
                         return@launch
                     }
@@ -329,7 +348,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
     private fun setService(customerReceiptPrinters: PrinterResponse.Data.CustomerReceiptPrinters) {
         if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.FoundSunmiPrinter) {
 
-            Log.e("SunmiPrintHelper", "FoundSunmiPrinter")
+            LogUtil.logE("SunmiPrintHelper", "FoundSunmiPrinter")
 
             if (!BluetoothUtil.isBlueToothPrinter) {
                 createReportFormatEODSunmiInner(customerReceiptPrinters)
@@ -340,12 +359,12 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 { setService(customerReceiptPrinters) },
                 2000
             )
-            Log.e("SunmiPrintHelper", "CheckSunmiPrinter")
+            LogUtil.logE("SunmiPrintHelper", "CheckSunmiPrinter")
         } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.LostSunmiPrinter) {
 
-            Log.e("SunmiPrintHelper", "LostSunmiPrinter")
+            LogUtil.logE("SunmiPrintHelper", "LostSunmiPrinter")
         } else {
-            Log.e("SunmiPrintHelper", "ELSE")
+            LogUtil.logE("SunmiPrintHelper", "ELSE")
         }
     }
 
@@ -451,7 +470,12 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
             )
             addBuilderText(
                 builder,
-                MethodUtils.getUSFormatNumber(prefProvider?.getValue(Constants.BUSINESS_PHONE_NO, "").toString())
+                MethodUtils.getUSFormatNumber(
+                    prefProvider?.getValue(
+                        Constants.BUSINESS_PHONE_NO,
+                        ""
+                    ).toString()
+                )
             )
 
             builder.addFeedLine(2)
@@ -1627,7 +1651,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
             } catch (e: Exception) {
                 PrinterClass.closePrinter()
                 e.printStackTrace()
-                Log.e(TAG, "PrinterError: " + e.localizedMessage)
+                LogUtil.logE(TAG, "PrinterError: " + e.localizedMessage)
             }
 
         } catch (e: java.lang.Exception) {
@@ -2710,7 +2734,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
         } else {
             startDatestring = sdf.format(myCalendar1.time)
         }
-        Log.e("CheckDate", "startingDate   $startDatestring $timestring")
+        LogUtil.logE("CheckDate", "startingDate   $startDatestring $timestring")
         return "$startDatestring $timestring"
     }
 
@@ -2737,6 +2761,8 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
         binding.rvCreditAuditTip.adapter = creditTipAuditAdapter
         binding.rvemployeeGuestDetails.adapter = employeeGuestDetailsAdapter
         binding.rvSaleCategorySummary?.adapter = saleCategorySummaryAdapter
+        binding.rvClockInClockOut?.adapter = clockInClockOutAdapter
+
     }
 
     private fun initObservers() {
@@ -2909,6 +2935,50 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                         visible = it1.isNotEmpty()
                     )
                 }
+
+                LogUtil.logE(TAG, "clock in out Data:  ${Gson().toJson(it.clockInClockOut)}")
+                it.clockInClockOut?.let {
+                    if (it.isNotEmpty()) {
+                        var list: ArrayList<ClockinOutReportModel> = arrayListOf()
+                        it.forEach {
+                            if (it.size == 5) {
+                                val model = ClockinOutReportModel()
+                                it.forEach {
+
+
+                                    if (it.key == "Employee") {
+                                        model.empName = it.value
+
+
+                                    } else if (it.key == "Clock In") {
+                                        model.clockIn = it.value
+                                    } else if (it.key == "Clock Out") {
+                                        model.clockOutval = it.value
+
+                                    } else if (it.key == "Total Working Hour") {
+                                        model.totalTime = it.value
+                                    } else if (it.key == "Actual In Time") {
+                                        model.actualTime = it.value
+                                    }
+
+
+                                }
+                                list.add(model)
+
+                            }
+                        }
+                        LogUtil.logE(TAG, "clockinData ${list.size}")
+
+                        clockInClockOutAdapter.setList(list)
+                    } else {
+                        binding.rvClockInClockOut?.gone()
+                        binding.txtClockInClockOut?.gone()
+                        binding.linearClockInOut?.gone()
+                    }
+
+
+                }
+
                 if (it.salesPerCategorySummary != null) {
 
                     var arrayListSalePerCategory: ArrayList<KeyValue> = arrayListOf()
@@ -3153,6 +3223,8 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     )
                 }
 
+                binding.txtClockOut.isClickable = true
+                binding.txtClockOut.isFocusable = true
 
             }
         })
@@ -3187,37 +3259,37 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     Status.SUCCESS -> {
                         ProgressUtils.dismissProgressDialog()
                         resource.data?.let { employeeList ->
-                            teamEmployeeListGlobal = employeeList as ArrayList<Employee>
+                            teamEmployeeListGlobal.clear()
+                            teamEmployeeListGlobal.addAll(employeeList)
 
-                            Log.e("teamEmployeeListGlobal", Gson().toJson(teamEmployeeListGlobal))
 
                             val isPresent =
                                 teamEmployeeListGlobal.any { it.name == "All Team Members" }
-                            if (!isPresent) {
-                                //  teamEmployeeListGlobal.removeAt(0)
-                                teamEmployeeListGlobal.add(
-                                    0,
-                                    Employee(
-                                        "",
-                                        "",
-                                        -1,
-                                        false,
-                                        "",
-                                        "",
-                                        -1,
-                                        "All Team Members",
-                                        "",
-                                        "",
-                                        "",
-                                        false,
-                                        -1,
-                                        "",
-                                        -1,
-                                        0.0,
-                                        false
-                                    )
+
+                            //  teamEmployeeListGlobal.removeAt(0)
+                            teamEmployeeListGlobal.add(
+                                0,
+                                Employee(
+                                    "",
+                                    "",
+                                    -1,
+                                    false,
+                                    "",
+                                    "",
+                                    -1,
+                                    "All Team Members",
+                                    "",
+                                    "",
+                                    "",
+                                    false,
+                                    -1,
+                                    "",
+                                    -1,
+                                    0.0,
+                                    false
                                 )
-                            }
+                            )
+
 
                             teamEmployeeListGlobal.forEachIndexed { index, employee ->
 
@@ -3231,10 +3303,15 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                             val roleName = teamEmployeeListGlobal.map { it.name }
 
 
-                            setUpEmployeeSpinnerAdapter(
-                                roleName as ArrayList<String>,
-                                defaultEmployeePos
-                            )
+
+                            if (defaultEmployeePos != -1 && roleName.isNotEmpty())
+                                setUpEmployeeSpinnerAdapter(
+                                    roleName as ArrayList<String>,
+                                    defaultEmployeePos
+                                )
+
+
+
 
 
 
@@ -3258,6 +3335,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
         terminalList: ArrayList<String>,
         defaultEmployeePos: Int
     ) {
+        LogUtil.logE(TAG, "terminalListSize  ${terminalList.size}")
         val spinnerAdapter = ArrayAdapter(
             requireActivity(),
             R.layout.row_spinner,
@@ -3268,10 +3346,16 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
             spinnerAdapter.setDropDownViewResource(R.layout.row_spinner)
             binding.spTerminals.adapter = spinnerAdapter
 
-            binding.spTerminals.setSelection(defaultEmployeePos, false);
-            Log.e("defaultEmployeePos", defaultEmployeePos.toString())
-            binding.spTerminals.setSelection(defaultEmployeePos)
+            if (defaultEmployeePos != -1) {
+                // binding.spTerminals.setSelection(defaultEmployeePos, false);
+                LogUtil.logE("defaultEmployeePos", defaultEmployeePos.toString())
+
+                viewModel.viewModelScope.launch {
+                    binding.spTerminals.setSelection(defaultEmployeePos, false)
+                }
+            }
         } catch (e: Exception) {
+            e.printStackTrace()
         }
 
     }
@@ -3282,7 +3366,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
         try {
             if (teamEmployeeListGlobal.size > 0 && position > 0 && position < teamEmployeeListGlobal.size) {
                 viewModel.selectedTerminalId = teamEmployeeListGlobal[position].id.toString()
-                Log.e("selectedEmpId", teamEmployeeListGlobal[position].id.toString())
+                LogUtil.logE("selectedEmpId", teamEmployeeListGlobal[position].id.toString())
             } else {
                 viewModel.selectedTerminalId = ""
             }

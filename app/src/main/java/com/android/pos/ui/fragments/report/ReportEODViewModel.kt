@@ -112,8 +112,6 @@ class ReportEODViewModel @Inject constructor(
         _showProgress.value = Event(true)
         viewModelScope.launch {
 
-            Log.e("startDate", startDate.value ?: "")
-            Log.e("endDate", endDate.value ?: "")
 
             resource =
                 posRepository.getReportEOD(

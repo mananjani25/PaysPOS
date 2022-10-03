@@ -3,7 +3,6 @@ package com.android.pos.ui.fragments.settings.tax
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,6 +23,7 @@ import com.android.pos.data.remote.Constants.INCLUDE_TAX
 import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.databinding.DialogCreateNewTaxBinding
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.getNavigationResultLiveData
@@ -42,6 +42,7 @@ class CreateTax : Fragment() {
 
     var isEdit: Boolean = false
     private lateinit var taxData: TaxData
+    private lateinit var taxDataTmp:TaxData
 
 
     override fun onCreateView(
@@ -64,6 +65,7 @@ class CreateTax : Fragment() {
         binding.header.txtTitle.text = getString(R.string.tv_new_tax_add)
 
         if (isEdit) {
+            taxDataTmp = arguments?.getParcelable("taxObject")!!
             taxData = arguments?.getParcelable("taxObject")!!
             binding.header.txtSave.text = getString(R.string.update)
             binding.header.txtTitle.text = getString(R.string.tv_update_tax)
@@ -108,7 +110,7 @@ class CreateTax : Fragment() {
                         if (temp_rate.toFloat() > 100) {
                             AlertUtils.showCustomAlertWithListenerWithOK(
                                 requireContext(),
-                                "Please Enter Percentage less than or Equal to 100"
+                                "Please enter percentage less than or equal to 100"
                             ) { _, _ ->
                                 binding.edtAmount.setText("")
                             }
@@ -159,7 +161,7 @@ class CreateTax : Fragment() {
                 //bundle have to sent for item ids
 
                 bundle.putBoolean("isEdit", true)
-                Log.e("itemPricing", itemPricing.toString())
+                LogUtil.logE("itemPricing", itemPricing.toString())
                 bundle.putString("itemPricing", itemPricing)
                 findNavController().navigate(R.id.action_newTax_to_itemPricingDialog, bundle)
             } else {
@@ -181,7 +183,8 @@ class CreateTax : Fragment() {
             it.forEach {
                 itemIds.add(it.itemId)
             }
-            viewModel.setItemIds(itemIds)
+
+            // viewModel.setItemIds(itemIds)
         }
 
         val resultDialogKeyTax = getNavigationResultLiveData<String>(DIALOG_KEY_TAX)
@@ -210,6 +213,12 @@ class CreateTax : Fragment() {
     }
 
     private fun backPressManage() {
+
+     /*   Log.e("itemIdsSizeFrag","itemIdsSize ${taxDataTmp.itemIds.size}")
+        viewModel.setItemIds(taxDataTmp.itemIds.toCollection(arrayListOf()))
+        viewModel.setTaxData(taxDataTmp)
+*/
+
         val navController = findNavController()
         navController.previousBackStackEntry?.savedStateHandle?.set(
             KEY,

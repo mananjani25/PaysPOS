@@ -23,4 +23,5 @@ class TbCategory : Parcelable {
     var item_ids: List<Int> = emptyList()
     var thumbImgUrl: String? = ""
     var originalImgUrl: String? = ""
+    var isDeleted: Boolean = false
 }

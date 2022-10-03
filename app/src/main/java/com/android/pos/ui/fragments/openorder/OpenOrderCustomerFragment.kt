@@ -385,6 +385,7 @@ class OpenOrderCustomerFragment : Fragment(), View.OnClickListener {
                         "",
                         MethodUtils.getText(binding.edtEmail),
                         false,
+                        false,
                         0,
                         MethodUtils.getText(binding.edtCompany),
                         phonesList,

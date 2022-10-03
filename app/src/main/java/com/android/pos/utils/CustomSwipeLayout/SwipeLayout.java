@@ -30,6 +30,7 @@ import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.pos.R;
+import com.android.pos.utils.LogUtil;
 
 import static com.android.pos.utils.CustomSwipeLayout.Utils.getViewWeight;
 import static com.android.pos.utils.CustomSwipeLayout.Utils.setTint;
@@ -946,8 +947,6 @@ public class SwipeLayout extends FrameLayout implements View.OnTouchListener, Vi
                         }
                     }
                 });
-        } else {
-            Log.e(TAG, "For autoHideSwipe parent must be a RecyclerView");
         }
     }
 

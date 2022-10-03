@@ -1,7 +1,6 @@
 package com.android.pos.data.repositories
 
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.android.pos.data.db.AppDatabase
@@ -14,9 +13,12 @@ import com.android.pos.data.model.SplitDetailListModel
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.ApiHelper
+import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN
+import com.android.pos.data.remote.Constants.SYNC_SETTING_TIME_STAMP
 import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.di.PrefProvider
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.performGetOperation
 import com.android.pos.utils.performGetOperationDatabase
 import com.android.pos.utils.performGetOperationNew
@@ -35,8 +37,8 @@ class PosRepository @Inject constructor(
     suspend fun addPrinterQueueData(list: PrinterQueueModel) =
         appDatabase.printerQueueDao().addPrinterQueueData(list)
 
-    fun checkQueueExist(id: Int) = performGetOperationDatabase {  appDatabase.printerQueueDao().checkQueueDataExist(id) }
-
+    fun checkQueueExist(id: Int) =
+        performGetOperationDatabase { appDatabase.printerQueueDao().checkQueueDataExist(id) }
 
 
     suspend fun getPrinterQueueQueryData(id: Int) = appDatabase.printerQueueDao().getQueueData(id)
@@ -46,8 +48,8 @@ class PosRepository @Inject constructor(
     fun getKitchenReceiptSettings() = appDatabase.kitchenSettingsDao().getKitchenSettings
     fun getTipsList() = appDatabase.tipDao().allTips
 
-    fun syncVenueData() =
-        performGetOperationNew(networkCall = { apiHelperNew.syncVenueData() })
+//    fun syncVenueData() =
+//        performGetOperationNew(networkCall = { apiHelperNew.syncVenueData() })
 
     suspend fun deleteKitchenPrinter(id: Int) =
         appDatabase.printerDao().deleteKitchenPrinterById(id)
@@ -106,6 +108,9 @@ class PosRepository @Inject constructor(
     suspend fun createPrinter(data: CreatePrinterRequestModel) =
         apiHelperNew.createPrinter(data)
 
+    suspend fun checkPermissionRole(passcode: String) =
+        apiHelperNew.checkPermissionRole(passcode)
+
     suspend fun createQueuePrinter(createQueuePrinterRequest: CreateQueuePrinterRequestModel) =
         apiHelperNew.createQueuePrinter(createQueuePrinterRequest)
 
@@ -127,12 +132,14 @@ class PosRepository @Inject constructor(
     suspend fun syncVenueDetails() = apiHelperNew.syncVenueDetails(
         prefProvider.getValueInt(
             TERMINAL_ID, 0
-        )
+        ),
+        prefProvider.getValue(SYNC_SETTING_TIME_STAMP, "")
     )
 
     suspend fun getOnlineOrderNotificationCount() = apiHelperNew.getOnlineOrderCountNoti()
 
-    suspend fun syncInventory() = apiHelperNew.syncVenueData()
+    suspend fun syncInventory(terminalId: Int, timeStamp: String) =
+        apiHelperNew.syncVenueData(terminalId, timeStamp)
 
 
     suspend fun updateTransactionLockScreen(lock_screen_after_each_transaction: Boolean) =
@@ -144,11 +151,11 @@ class PosRepository @Inject constructor(
 
     suspend fun saveDatabase(response: VenueDataResponse) {
         appDatabase.customerDao().deleteCustomerTb()
-        appDatabase.categoryDao().delete()
-        appDatabase.itemDao().delete()
-        appDatabase.modifierSetDao().delete()
-        appDatabase.itemModifierSetsDao().delete()
-        appDatabase.optionSetDao().delete()
+//        appDatabase.categoryDao().delete()
+//        appDatabase.itemDao().delete()
+//        appDatabase.modifierSetDao().delete()
+//        appDatabase.itemModifierSetsDao().delete()
+//        appDatabase.optionSetDao().delete()
 
         val mData = response.data
         val mCategory = mData.categories
@@ -158,8 +165,6 @@ class PosRepository @Inject constructor(
         val itemModifierSetList = ArrayList<ItemModifierSets>()
         mCategory.forEach { category ->
             val model = TbCategory().apply {
-
-
                 createdAt = ""
                 id = category.id
                 active = category.active
@@ -170,6 +175,7 @@ class PosRepository @Inject constructor(
                 item_ids = category.itemIds
                 thumbImgUrl = category.thumbImgUrl
                 originalImgUrl = category.originalImgUrl
+                isDeleted = category.isDeleted
             }
             categoryModelList.add(model)
 
@@ -184,6 +190,7 @@ class PosRepository @Inject constructor(
                         modifierSetId = modifierSets.id!!
                         minRequired = modifierSets.min_required
                         maxAllowed = modifierSets.max_allowed
+                        isDeleted = modifierSets.isDeleted
                     }
 
                     itemModifierSetList.add(itemModifierSets)
@@ -240,6 +247,9 @@ class PosRepository @Inject constructor(
     fun getItemsList() =
         performGetOperationDatabase(databaseQuery = { appDatabase.itemDao().allItem!! })
 
+    fun getWholeItemFromPos() =
+        performGetOperationDatabase(databaseQuery = { appDatabase.itemDao().allItemFromPos!! })
+
 
     fun getTimeZones() =
         performGetOperationDatabase(databaseQuery = { appDatabase.timeZonesDao().allItem })
@@ -255,10 +265,19 @@ class PosRepository @Inject constructor(
             appDatabase.itemDao().itemByProductCode(productCode)!!
         })
 
+    fun checkCategoryHideOrNot(id: Int) = performGetOperationDatabase(databaseQuery = {
+        appDatabase.categoryDao().getCategory(id)
+    })
+
     fun getItemByCategoryId(id: Int) =
         performGetOperationDatabase(databaseQuery = {
             appDatabase.itemDao().getItemList(id)
         })
+
+    fun getSingleItem(id: Int) = appDatabase.itemDao().itemOne(id)
+
+    fun getSingleModifier(id: Int) = appDatabase.modifierSetDao().itemOne(id)
+
 
     fun modifierSetsList() =
         performGetOperationDatabase(databaseQuery = { appDatabase.modifierSetDao().all })
@@ -274,25 +293,17 @@ class PosRepository @Inject constructor(
 
 
     fun getInventory() =
-        performGetOperation(
-            databaseQuery = { appDatabase.itemDao().allItem!! },
-            networkCall = { apiHelperNew.getItemsCall() },
-            saveCallResult = {
-
-                val inventoryModelList = ArrayList<TbItem>()
-
-                it.data.forEach {
-
-                    val items = TbItem().convertToItem(it, null)
-                    inventoryModelList.add(items)
-                }
-                appDatabase.itemDao().addAllItem(inventoryModelList)
-            }
+        performGetOperationDatabase(
+            databaseQuery = { appDatabase.itemDao().allItem!! }
         )
 
 
     fun getNoteList() = performGetOperationDatabase(
         databaseQuery = { appDatabase.notesDao().alllNotes },
+    )
+
+    fun taxListActive() = performGetOperationDatabase(
+        databaseQuery = { appDatabase.notesDao().taxListActive },
     )
 
 
@@ -526,7 +537,7 @@ class PosRepository @Inject constructor(
 
 
     suspend fun logout(data: HashMap<String, String>) =
-        apiHelperNew.logOut(data)
+        apiHelperNew.logOut(data, prefProvider.getValueInt(Constants.TERMINAL_ID, -1).toString())
 
 
     override suspend fun abs() {
@@ -536,11 +547,16 @@ class PosRepository @Inject constructor(
 
     suspend fun deleteItem(itemId: Int) = apiHelperNew.deleteItem(itemId)
 
-    suspend fun itemHide(itemId: Int, active: Boolean) =
-        apiHelperNew.hideItem(itemId, active)
+    suspend fun itemHide(itemId: Int, hide_status: String) =
+        apiHelperNew.hideItem(itemId, hide_status)
 
-    fun unhideItemList() =
-        performGetOperationDatabase(databaseQuery = { appDatabase.itemDao().unhideItem!! })
+    suspend fun hideItemWebsite(itemId: Int, hide_status: String) =
+        apiHelperNew.hideItemWebsite(itemId, hide_status)
+
+    fun unhideItemListPOS() =
+        performGetOperationDatabase(databaseQuery = { appDatabase.itemDao().unhideItemPos!! })
+    fun unhideItemListWebsite() =
+        performGetOperationDatabase(databaseQuery = { appDatabase.itemDao().unhideItemWebsite!! })
 
     suspend fun createItem(item: TbItem) =
         appDatabase.itemDao().add(item)
@@ -693,6 +709,8 @@ class PosRepository @Inject constructor(
                 appDatabase.optionSetDao().addAll(it.data)
             })
 
+    fun getOptionListData() =
+        performGetOperationDatabase(databaseQuery = { appDatabase.optionSetDao().all })
 
     suspend fun createOptionSet(data: CreateOptionRequestModel) =
         apiHelperNew.createOptionSet(data)
@@ -949,7 +967,7 @@ class PosRepository @Inject constructor(
 
     suspend fun clearTable() {
 
-        Log.e("clear Db Table", "-------")
+        LogUtil.logE("clear Db Table", "-------")
         appDatabase.categoryDao().delete1()
         appDatabase.itemDao().delete()
         appDatabase.taxDao().delete()
@@ -1027,5 +1045,7 @@ class PosRepository @Inject constructor(
         appDatabase.printerDao().addCustomerPrinterList(customerPrinterList)
 
     }
+
+
 }
 

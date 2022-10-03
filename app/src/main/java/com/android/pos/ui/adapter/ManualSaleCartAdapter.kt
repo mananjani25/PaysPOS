@@ -11,6 +11,8 @@ import com.android.pos.data.entities.TbItem
 import com.android.pos.databinding.ViewItemCartBinding
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.callback.ManualSaleOptionsCustomCallback
+import com.android.pos.utils.extensions.gone
+import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.swipereveallayout.ViewBinderHelper
 
 class ManualSaleCartAdapter : RecyclerView.Adapter<ManualSaleCartAdapter.MyViewHolder>() {
@@ -32,15 +34,16 @@ class ManualSaleCartAdapter : RecyclerView.Adapter<ManualSaleCartAdapter.MyViewH
 
 
 
-            if (model.note.isNotEmpty()) {
+            if (model.note.isEmpty()) {
+                binding.txtNote.visibility = View.GONE
+            } else {
                 binding.txtNote.visibility = View.VISIBLE
                 binding.txtNote.text = "Note: " + model.note
-            } else {
-                binding.txtNote.visibility = View.INVISIBLE
-
             }
+
             binding.txtName.text = list[pos].name
             if (list[pos].discountPrice != 0.0) {
+                binding.tvDiscountRate.visible()
                 binding.txtTotalPrice.paintFlags =
                     binding.txtTotalPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
                 val dPrice = (list[pos].price * list[pos].itemQuantity) - (list[pos].discountPrice * list[pos].itemQuantity )
@@ -49,6 +52,7 @@ class ManualSaleCartAdapter : RecyclerView.Adapter<ManualSaleCartAdapter.MyViewH
             } else {
                 binding.txtTotalPrice.setPaintFlags(binding.txtTotalPrice.getPaintFlags() and Paint.STRIKE_THRU_TEXT_FLAG.inv())
                 binding.tvDiscountRate.text = ""
+                binding.tvDiscountRate.gone()
             }
 
             //binding.model = model
@@ -134,7 +138,6 @@ class ManualSaleCartAdapter : RecyclerView.Adapter<ManualSaleCartAdapter.MyViewH
     @SuppressLint("NotifyDataSetChanged")
     fun addItem(model: TbItem) {
         this.list.add(model)
-        Log.e("TbListSize", "TbListSize ${list.size}")
         notifyDataSetChanged()
     }
 

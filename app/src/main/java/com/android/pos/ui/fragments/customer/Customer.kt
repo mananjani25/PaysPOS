@@ -18,22 +18,31 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.pos.R
 import com.android.pos.data.entities.TbCustomer
+import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.CUSTOMERDETAILS
 import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.databinding.FragmentCustomerBinding
+import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.CustomerListAdapter
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.callback.PaginationScrollListener
 import com.android.pos.utils.extensions.alert
+import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.showAlert
+import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.statusUtils.Status
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.*
+import javax.inject.Inject
+import kotlin.collections.ArrayList
+import kotlin.collections.LinkedHashMap
 
 @AndroidEntryPoint
-class Customer : Fragment(),ItemCallback {
+class Customer : Fragment(), ItemCallback {
 
     private lateinit var binding: FragmentCustomerBinding
     private lateinit var customerAdapter: CustomerListAdapter
@@ -43,12 +52,15 @@ class Customer : Fragment(),ItemCallback {
     private var dialog: Dialog? = null
     private val TAG = "Customer"
     private var currentpage = 1
+
+    @Inject
+    lateinit var prefProvider: PrefProvider
     private val perpagedata = 50
     private var isLoading = false
     private var isLastPage = false
     private var firstDetailLoad = false
     private var deletedPos: Int? = null
-    var isIn=false
+    var isIn = false
     val data = LinkedHashMap<String, String>()
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -76,6 +88,7 @@ class Customer : Fragment(),ItemCallback {
 
 
         // loadCustomerList()
+        prefProvider = PrefProvider(requireContext())
         setUpRecyclerView()
         observeCustomerDelete()
         loadCustomerLocalList(currentpage)
@@ -164,12 +177,28 @@ class Customer : Fragment(),ItemCallback {
                         if (resource.data != null) {
                             data =
                                 resource.data as ArrayList<TbCustomer>
-                            binding.rvEmployeeList.visibility = View.VISIBLE
-                            binding.noCustomerDats.visibility = View.GONE
-                            Log.e(TAG, "getCustomerData ${Gson().toJson(data)}")
-                            dynamicCustomerList.clear()
-                            dynamicCustomerList.addAll(data)
-                            customerAdapter.setList(data)
+                            if (data.isNotEmpty()) {
+                                binding.frameContainer.visible()
+                                binding.layout.gone()
+                                binding.rvEmployeeList.visibility = View.VISIBLE
+                                binding.noCustomerDats.visibility = View.GONE
+                                LogUtil.logE(TAG, "getCustomerData ${Gson().toJson(data)}")
+                                dynamicCustomerList.clear()
+                                dynamicCustomerList.addAll(data)
+                                customerAdapter.setList(data)
+                            } else {
+                                binding.frameContainer.gone()
+                                binding.layout.visible()
+                                binding.txtNodatavallidation?.text =
+                                    "${data.size} customers that you manage at " + prefProvider.getValue(
+                                        Constants.BUSINESS_NAME,
+                                        ""
+                                    )
+
+                                binding.rvEmployeeList.visibility = View.GONE
+                                binding.noCustomerDats.visibility = View.VISIBLE
+                            }
+
 
                             //setUpRecyclerView()
 
@@ -187,9 +216,10 @@ class Customer : Fragment(),ItemCallback {
                                         }
                                     }
                                 }
-                                if (!isIn)
+                                if (!isIn) {
                                     setSubTitleFirstLastName(data[0])
-                                loadFragment(data[0])
+                                    loadFragment(data[0])
+                                }
 
                             } catch (e: Exception) {
                                 e.printStackTrace()
@@ -238,7 +268,7 @@ class Customer : Fragment(),ItemCallback {
             ?.observe(viewLifecycleOwner) {
                 when (it) {
                     CUSTOMERDETAILS -> {
-                        Log.e(TAG, "UpdateLoadList")
+                        LogUtil.logE(TAG, "UpdateLoadList")
                         viewModel.customerList(data)
 
                     }
@@ -257,16 +287,16 @@ class Customer : Fragment(),ItemCallback {
         ) {
             var final_string =
                 model.first_name.toString().substring(0, 1)
-                    .toUpperCase() + model.first_name.toString()
+                    .uppercase(Locale.getDefault()) + model.first_name.toString()
                     .substring(1, model.first_name.toString().length) + " " +
                         model.last_name.toString().substring(0, 1)
-                            .toUpperCase() + model.last_name.toString()
+                            .uppercase(Locale.getDefault()) + model.last_name.toString()
                     .substring(1, model.last_name.toString().length)
             binding.layoutTool.txtSubTitle.setText(final_string)
         } else {
             var final_string =
                 model.first_name.toString().substring(0, 1)
-                    .toUpperCase() + model.first_name.toString()
+                    .uppercase(Locale.getDefault()) + model.first_name.toString()
                     .substring(1, model.first_name.toString().length)
             binding.layoutTool.txtSubTitle.setText(final_string)
         }
@@ -363,12 +393,12 @@ class Customer : Fragment(),ItemCallback {
                 ) { _, _ ->
                     if (customerAdapter.getList().size > 0) {
                         if (customerAdapter.getList().size - 1 == deletedPos) {
-                            if (deletedPos == 0 && customerAdapter.getList().size>0) {
+                            if (deletedPos == 0 && customerAdapter.getList().size > 0) {
                                 customerAdapter.isSelectedPos = 0
                                 val model = customerAdapter.getList()[0]
                                 setSubTitleFirstLastName(model)
                                 loadFragment(model)
-                            }else{
+                            } else {
                                 binding.layoutTool.txtSubTitle.text = ""
                                 removeFragment()
                             }
@@ -522,7 +552,7 @@ class Customer : Fragment(),ItemCallback {
 
 
 
-                    Log.e(TAG, "posClicked  ${pos}")
+                    LogUtil.logE(TAG, "posClicked  ${pos}")
                 }
             }
             true

@@ -1,16 +1,13 @@
 package com.android.pos.ui.fragments.inventory
 
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.PopupMenu
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -20,11 +17,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.databinding.FragmentModifiersBinding
-
 import com.android.pos.ui.adapter.ModifierSetsListAdapter
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.ProgressUtils
-import com.android.pos.utils.SwipeHelper
 import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.gone
@@ -33,14 +29,14 @@ import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class Modifiers(val clickedPosition: Int) : Fragment(), TextWatcher,ItemCallback {
+class Modifiers(val clickedPosition: Int) : Fragment(), TextWatcher, ItemCallback {
     private var isreOrder: Boolean = false
     var dragFrom = -1
     var dragTo = -1
     private lateinit var binding: FragmentModifiersBinding
     private lateinit var adapter: ModifierSetsListAdapter
     private val viewModel by viewModels<ModifierSetViewModel>()
-    var listSize:Int?=0
+    var listSize: Int? = 0
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -66,7 +62,9 @@ class Modifiers(val clickedPosition: Int) : Fragment(), TextWatcher,ItemCallback
 
     private fun onClick() {
         binding.txtcreatemodifieer.setOnClickListener {
-            findNavController().navigate(R.id.action_inventory_to_createIModifierSet)
+            if (findNavController().currentDestination?.id == R.id.inventory) {
+                findNavController().navigate(R.id.action_inventory_to_createIModifierSet)
+            }
         }
     }
 
@@ -94,14 +92,14 @@ class Modifiers(val clickedPosition: Int) : Fragment(), TextWatcher,ItemCallback
                     Status.SUCCESS -> {
 
                         binding.progressCircular.visibility = View.GONE
-                        if(it.data?.isNotEmpty()==true){
+                        if (it.data?.isNotEmpty() == true) {
                             binding.rvModifiersList.visibility = View.VISIBLE
                             binding.txtNodata?.gone()
                             it.data?.let { it1 ->
                                 adapter.add(it1)
                                 binding.edtSearch.hint = "Search (" + it1.size + ") Modifiers"
                             }
-                        }else{
+                        } else {
                             binding.rvModifiersList.visibility = View.GONE
                             binding.txtNodata?.visible()
                             binding.txtNodata?.text = "No Data Available"
@@ -137,7 +135,7 @@ class Modifiers(val clickedPosition: Int) : Fragment(), TextWatcher,ItemCallback
                 ): Boolean {
                     val oldPos = viewHolder.layoutPosition
                     val newPos = target.layoutPosition
-                    Log.e(
+                    LogUtil.logE(
                         "reorder after",
                         viewHolder.layoutPosition.toString() + " :::  " + target.layoutPosition.toString()
                     )
@@ -238,7 +236,7 @@ class Modifiers(val clickedPosition: Int) : Fragment(), TextWatcher,ItemCallback
     }
 
     override fun afterTextChanged(s: Editable?) {
-        adapter.filter.filter(s.toString().trim())
+        adapter.filter.filter(s.toString().lowercase().trim())
     }
 
     override fun onItemClickListener(view: View?, pos: Int) {
@@ -273,7 +271,6 @@ class Modifiers(val clickedPosition: Int) : Fragment(), TextWatcher,ItemCallback
         }
         popupMenu?.show()
     }
-
 
 
 }

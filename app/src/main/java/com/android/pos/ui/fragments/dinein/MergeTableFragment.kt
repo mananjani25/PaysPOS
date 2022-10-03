@@ -366,7 +366,7 @@ class MergeTableFragment : Fragment() {
 //                    }
 //
 //                }
-//                Log.e(TAG, "listSecondaryOrderDetailsSize:  ${listSecondaryOrderDetails.size}")
+//                LogUtil.logE(TAG, "listSecondaryOrderDetailsSize:  ${listSecondaryOrderDetails.size}")
 //
 //                if (listSecondaryOrderDetails.size == 0) {
 //                    //This is for Every Empty Table for both Primary and Secondary

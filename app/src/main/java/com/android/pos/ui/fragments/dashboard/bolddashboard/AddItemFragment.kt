@@ -1,11 +1,14 @@
 package com.android.pos.ui.fragments.dashboard.bolddashboard
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -15,9 +18,7 @@ import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DELETE
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
-import com.android.pos.data.remote.Constants.DINE_IN_SERVICECHARGE
 import com.android.pos.data.remote.Constants.ORDER_TYPE
-import com.android.pos.data.remote.Constants.SERVICECHARGE_DINEIN_ORDER
 import com.android.pos.data.remote.Constants.SERVICECHARGE_TAKEOUT_OPENORDER
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.remote.Constants.TERMINAL_ID
@@ -29,6 +30,7 @@ import com.android.pos.ui.adapter.boldpos.ModifiersAdapter
 import com.android.pos.ui.adapter.boldpos.VariationListAdapter
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.callback.ItemListner
@@ -40,6 +42,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
+    private var mainItem: TbItem? = null
     private lateinit var item: TbItem
     private var cartList: ArrayList<CartModel> = arrayListOf()
     private lateinit var binding: FragmentAddItemBinding
@@ -51,8 +54,10 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
     private lateinit var modifiersAdapter: ModifiersAdapter
     private var isUpdateItem: Boolean = false
 
-    private lateinit var adapter: ItemModifierSetAdapter
+    private var adapter: ItemModifierSetAdapter? = null
     private var intArray: IntArray? = null
+    private var mainModifiersId: ArrayList<Int> = arrayListOf()
+    private var mainVariationId: ArrayList<Int> = arrayListOf()
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -126,7 +131,33 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                 }
 
             }
+        binding.edttxtQuantity.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                binding.edttxtQuantity?.isCursorVisible = true
+            }
 
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                if (s.toString().isNotEmpty()) {
+                    qty = s.toString().toInt()
+                    if (qty > 15) {
+                        qty = 15
+                        binding.edttxtQuantity.setText("15")
+                    } else if (qty == 0) {
+                        binding.edttxtQuantity.setText("1")
+                    }
+                    binding.edttxtQuantity.setSelection(binding.edttxtQuantity.text!!.length)
+                } else {
+                    qty = 1
+                    binding.edttxtQuantity.setSelection(binding.edttxtQuantity.text!!.length)
+                }
+
+            }
+
+        })
     }
 
     private fun getCartList() {
@@ -134,7 +165,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
             prefProvider.getValue(ORDER_TYPE, TAKEOUT),
             prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
         ).observe(requireActivity()) {
-            Log.e(TAG, "MAllWords:::  ${Gson().toJson(it)}")
+            LogUtil.logE(TAG, "MAllWords:::  ${Gson().toJson(it)}")
             if (it.isEmpty()) {
                 cartList.clear()
                 cartList = arrayListOf()
@@ -152,6 +183,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
 
     private fun onClick() {
         binding.imgMinus.setOnClickListener {
+            MethodUtils.hideSoftKeyboard(requireActivity())
             /* if (prefProvider.getValueboolean(DINE_IN_UPDATE, false) == true && item.isFired) {
                  if (qty > item.itemQuantity) {
                      qty -= 1
@@ -167,55 +199,37 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
             }
 
 
-            binding.txtQuantity.setText("" + qty)
+            binding.edttxtQuantity.setText("" + qty)
 
         }
         binding.imgPlus.setOnClickListener {
+            MethodUtils.hideSoftKeyboard(requireActivity())
             qty += 1
-            binding.txtQuantity.setText("" + qty)
+            binding.edttxtQuantity.setText("" + qty)
         }
 
         binding.txtCancel.setOnClickListener {
+            MethodUtils.hideSoftKeyboard(requireActivity())
             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
                 listner.onCancelItemSelected(true)
             } else {
-                listner.onCancelItemSelected(false)
+                requireActivity().supportFragmentManager.popBackStackImmediate(
+                    AddItemFragment.javaClass.getName(),
+                    FragmentManager.POP_BACK_STACK_INCLUSIVE
+                )
+                //  listner.onCancelItemSelected(false)
 
             }
         }
 
         binding.txtDone.setOnClickListener {
-
-
+            if (binding.edttxtQuantity.text.isNullOrEmpty()) {
+                binding.edttxtQuantity.setText("1")
+            }
+            MethodUtils.hideSoftKeyboard(requireActivity())
             item.itemQuantity = qty
             prefProvider.setValueInt(Constants.CAT_ID_SELECTED, item.categoryId)
             var isPriceNull = true
-
-            /*  item.variationsAttributes.forEach {
-                  if (it.price!=0.00){
-                      adapter.getSelectedModifiers().forEach {
-                          if (it.price!=0.00)
-                          {
-                              // item.price=it.price
-                              isPriceNull=false
-                          }
-                      }
-                      return@forEach
-                  }
-              }*/
-            Log.e(
-                "TAG",
-                "price - ${item.price.toString() + " variatiions :  " + item.variationsAttributes + " modifiers : "}"
-            )
-            /*  if (item.price == 0.0 && item.variationsAttributes.isNotEmpty()*//*&&isPriceNull*//*) {
-                AlertUtils.showCustomAlert(
-                    requireActivity(),
-                    "Please enter atleast one price of item"
-                )
-                return@setOnClickListener
-            }*/
-
-
 
             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.OPEN_ORDER) {
 
@@ -242,23 +256,18 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
 
 
 
-            if (item.modifier_set_ids.isNotEmpty()) {
+            if (item.modifier_set_ids.isNotEmpty() && adapter != null) {
                 if (minMaxValidationCheck(adapter)) {
 
-                    val modifiers = adapter.getSelectedModifiers()
+                    val modifiers = adapter?.getSelectedModifiers()
 
-                    if (modifiers.isNotEmpty()) {
+                    if (modifiers?.isNotEmpty() == true) {
                         modifiers.forEach {
                             it.itemQuantity = qty
 
                             item.modifiers.forEach { it1 ->
-                                Log.e(
-                                    "OrderItem",
-                                    "orderModifierIdorderModifierId  ${it1.orderModifierId}"
-                                )
                                 if (it1.orderModifierId != null) {
 
-                                    Log.e("OrderIem", "orderModifierId:  ${it1.orderModifierId}")
                                     it.orderModifierId = it1.orderModifierId
 
                                 }
@@ -267,7 +276,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                         item.modifiers = modifiers
 
 
-                    }else{
+                    } else {
                         item.modifiers = arrayListOf()
                     }
                 } else {
@@ -296,7 +305,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                     val dineInList = cartList[0].dineInList
                     dineInList?.get(0)?.headerPosition = viewModel.dineInSelectedItemHeaderPos
                     dineInList?.get(0)?.selectedPosition = viewModel.dineInSelectedItemHeaderPos
-                    Log.e(TAG, "getItem  ${Gson().toJson(item)}")
+                    LogUtil.logE(TAG, "getItem  ${Gson().toJson(item)}")
                     cartList[0].taxlistDynamic = arrayListOf()
                     cartList[0].dineInList?.forEach { dineInModel ->
                         dineInModel.items.forEach { items ->
@@ -322,12 +331,25 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                             taxData.totalTaxTypePrice = 0.0
                         }
                     }
-                    viewModel.cartLogic(cartList, item, Constants.UPDATE, false)
+
+
+                    if (checkVar() && checkMod()) {
+                        LogUtil.logE("NewItem", "ItemSame")
+                        viewModel.cartLogic(cartList, item, Constants.UPDATE, false)
+
+                    } else {
+
+                        LogUtil.logE("NewItem", "ItemSameNot")
+                        item.orderItemId = null
+                        viewModel.cartLogic(cartList, item, Constants.ADD, false)
+                    }
+
+
                 }
             } else {
                 if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
                     val dineInList = cartList[0].dineInList
-                    Log.e(TAG, "dineInList:  ${Gson().toJson(dineInList)}")
+                    LogUtil.logE(TAG, "dineInList:  ${Gson().toJson(dineInList)}")
                     if (dineInList?.isNotEmpty() == true && dineInList != null) {
                         dineInList[0].selectedPosition = viewModel.dineInHeaderPosition
                         viewModel.cartLogic(cartList, item, Constants.ADD, false, dineInList)
@@ -338,7 +360,11 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                 }
             }
 
-            listner.onCancelItemSelected()
+            requireActivity().supportFragmentManager.popBackStackImmediate(
+                AddItemFragment.javaClass.getName(),
+                FragmentManager.POP_BACK_STACK_INCLUSIVE
+            )
+            //listner.onCancelItemSelected()
 
         }
 
@@ -367,8 +393,8 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                     MethodUtils.roundOffAmountDouble(cartList[0].discountPrice / totalItemswithQuantity)
             }
 
-            Log.e(TAG, "totalItemswithQuantity  ${totalItemswithQuantity}")
-            Log.e(TAG, "perItemDiscount  ${perItemDiscount}")
+            LogUtil.logE(TAG, "totalItemswithQuantity  ${totalItemswithQuantity}")
+            LogUtil.logE(TAG, "perItemDiscount  ${perItemDiscount}")
             val bundle = Bundle().apply {
                 putDouble("orderDiscount", cartList[0].discountPrice)
                 putBoolean("isFromDetails", true)
@@ -376,16 +402,23 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                 putDouble("itemOrderDiscount", perItemDiscount)
                 putInt("totalquantity", totalItemswithQuantity)
             }
+            bundle.putString("isFrom","itemDiscount")
+            if (prefProvider.isAdmin() || prefProvider.isManager()) {
+                findNavController().navigate(
+                    R.id.action_dashboardCategoryBoldPOS_to_addDiscountDialog,
+                    bundle
+                )
+            } else {
+                findNavController().navigate(
+                    R.id.actionboldpos_to_pascodeManagerDailog, bundle
+                )
+            }
 
-            findNavController().navigate(
-                R.id.action_dashboardCategoryBoldPOS_to_addDiscountDialog,
-                bundle
-            )
         }
         binding.txtAddNote.setOnClickListener {
 
-            Log.e("HeaderPos", "${viewModel.dineInSelectedItemHeaderPos}")
-            Log.e("HeaderPosdineInHea", "${viewModel.dineInHeaderPosition}")
+            LogUtil.logE("HeaderPos", "${viewModel.dineInSelectedItemHeaderPos}")
+            LogUtil.logE("HeaderPosdineInHea", "${viewModel.dineInHeaderPosition}")
             val bundle = Bundle().apply {
                 putParcelable("item", item)
                 putParcelableArrayList("cartList", cartList)
@@ -402,9 +435,10 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
         }
 
         binding.txtRemoveItem.setOnClickListener {
+            Log.e(TAG, "getDeleteItem  ${Gson().toJson(item)}")
             makeItemEdited(item)
             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
-                Log.e(TAG, "isEditedisEdited  ${item.isEdited}")
+                LogUtil.logE(TAG, "isEditedisEdited  ${item.isEdited}")
                 cartList[0].dineInList?.let { it1 ->
                     viewModel.cartLogic(
                         cartList, item, DELETE, false,
@@ -414,7 +448,11 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
             } else {
                 viewModel.cartLogic(cartList, item, DELETE, item.isManualSales)
             }
-            listner.onCancelItemSelected()
+            requireActivity().supportFragmentManager.popBackStackImmediate(
+                AddItemFragment.javaClass.getName(),
+                FragmentManager.POP_BACK_STACK_INCLUSIVE
+            )
+            //  listner.onCancelItemSelected()
 
         }
 
@@ -452,7 +490,18 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
 
     private fun getData() {
         item = requireArguments().getParcelable<TbItem>("item") ?: TbItem()
-        Log.e(TAG, "getIrem  ${Gson().toJson(item)}")
+        if (item.modifiers.isNotEmpty()) {
+            item.modifiers.forEach {
+                mainModifiersId.add(it.id ?: 0)
+            }
+        }
+        if (item.variationsAttributes.isNotEmpty()) {
+            item.variationsAttributes.forEach {
+                mainVariationId.add(it.id ?: 0)
+            }
+        }
+        mainItem = requireArguments().getParcelable<TbItem>("item") ?: TbItem()
+        LogUtil.logE(TAG, "getIrem  ${Gson().toJson(item)}")
         cartList = requireArguments().getSerializable("cartList") as ArrayList<CartModel>
         setData()
     }
@@ -473,7 +522,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                                     it.modifier_set_ids[i]
                                 }
 
-                                variationAdapter.addVariations(it.variationsAttributes)
+                                variationAdapter.addVariations(it.variationsAttributes.filter { !it.isDeleted })
                                 val variationList = ArrayList<VariationsAttribute>()
                                 if (item.variationsAttributes.isNotEmpty()) {
                                     binding.dividerLine.root.visibility = View.VISIBLE
@@ -502,7 +551,11 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                                 } else binding.dividerLine.root.visibility = View.GONE
 
                                 if (intArray!!.isNotEmpty()) {
-                                    binding.dividerLine2.root.visibility = View.VISIBLE
+                                    if (adapter == null) {
+                                        binding.dividerLine2.root.visibility = View.GONE
+                                    } else {
+                                        binding.dividerLine2.root.visibility = View.VISIBLE
+                                    }
 
                                     viewModel.modifierSet(intArray!!).observe(requireActivity()) {
                                         if (it.data != null && it.data.isNotEmpty() && view != null) {
@@ -523,8 +576,8 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                                                 }
 
                                             }
-                                            adapter.add(it.data)
-                                            adapter.setData(item.modifiers)
+                                            adapter?.add(it.data)
+                                            adapter?.setData(item.modifiers)
                                         } else binding.rvModifiersList.visibility = View.GONE
 
                                     }
@@ -538,7 +591,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                                 variationAdapter?.showVariationPriceClick =
                                     { it: VariationsAttribute ->
                                         if (!MethodUtils.isDoubleClick()) {
-                                            Log.e(TAG, "getpriceType:  ${it.priceType}")
+                                            LogUtil.logE(TAG, "getpriceType:  ${it.priceType}")
                                             if (it.priceType == "Variable") {
                                                 val bundle = Bundle().apply {
                                                     putParcelable("variationAttribute", it)
@@ -623,7 +676,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
 
         if (isUpdateItem) {
             qty = item.itemQuantity
-            binding.txtQuantity.text = "" + qty
+            binding.edttxtQuantity.setText("" + qty)
             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN && item.isFired) {
                 binding.txtRemoveItem.visibility = View.GONE
             } else {
@@ -738,7 +791,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
 
             if (it.status == Status.SUCCESS) {
                 if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
-                    Log.e(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
+                    LogUtil.logE(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
                     serviceChargesList = ArrayList()
                     viewModel.serviceChargesList.clear()
                     it.data?.forEach { service ->
@@ -749,7 +802,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                     }
                 } else {
                     if (prefProvider.getValueboolean(SERVICECHARGE_TAKEOUT_OPENORDER, false)) {
-                        Log.e(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
+                        LogUtil.logE(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
                         serviceChargesList = ArrayList()
                         viewModel.serviceChargesList.clear()
                         it.data?.forEach { service ->
@@ -824,7 +877,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
 
     override fun onItemClickListener(view: View?, pos: Int) {
         /*if (!MethodUtils.isDoubleClick()) {
-            Log.e(TAG, "priceType:  ${variationAdapter.variationList[pos].priceType}")
+            LogUtil.logE(TAG, "priceType:  ${variationAdapter.variationList[pos].priceType}")
             if (variationAdapter.variationList[pos].priceType == "Variable") {
                 val bundle = Bundle().apply {
                     putParcelable("variationAttribute", variationAdapter.variationList[pos])
@@ -868,7 +921,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
     }
 
     private fun makeItemEdited(item: TbItem) {
-        Log.e(TAG, "isOrderUpdateOpen:  ${Gson().toJson(viewModel.openOrderUpdate)}")
+        LogUtil.logE(TAG, "isOrderUpdateOpen:  ${Gson().toJson(viewModel.openOrderUpdate)}")
         if (viewModel.openOrderUpdate == true) {
             //for open order and edit cart
             item.isEdited = true
@@ -879,5 +932,85 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
         ) {
             item.isEdited = true
         }
+    }
+
+    private fun checkVariation(mainItem: TbItem, item: TbItem): Boolean {
+
+        var isSame = false
+        LogUtil.logE(TAG, "mainItem:  ${Gson().toJson(mainItem)}")
+        LogUtil.logE(TAG, "mainItemitem:  ${Gson().toJson(item)}")
+
+        if (mainItem.variationsAttributes.size == item.variationsAttributes.size && item.variationsAttributes.containsAll(
+                mainItem.variationsAttributes
+            )
+        ) {
+            isSame = true
+        } else {
+            isSame = false
+        }
+
+
+        return isSame
+    }
+
+    private fun checkMod(): Boolean {
+        var isSame = true
+
+        var listIds = ArrayList<Int>()
+        item.modifiers.forEach {
+            listIds.add(it.id ?: 0)
+        }
+
+        if (listIds.isNotEmpty() && mainModifiersId.isNotEmpty()) {
+            if (mainModifiersId.containsAll(listIds) && listIds.size == mainModifiersId.size) {
+                isSame = true
+            } else {
+                isSame = false
+            }
+        }
+
+        return isSame
+
+    }
+
+    private fun checkVar(): Boolean {
+        var isSame = true
+
+        var listIds = ArrayList<Int>()
+        item.variationsAttributes.forEach {
+            listIds.add(it.id ?: 0)
+        }
+
+        if (listIds.isNotEmpty() && mainVariationId.isNotEmpty()) {
+            if (mainVariationId.containsAll(listIds) && listIds.size == mainVariationId.size) {
+                isSame = true
+            } else {
+                isSame = false
+            }
+        }
+
+        return isSame
+
+    }
+
+    private fun checkModifier(mainItem: TbItem, item: TbItem): Boolean {
+
+
+        var isSame = true
+
+        if (mainItem.modifiers.size == item.modifiers.size && item.modifiers.containsAll(
+                mainItem.modifiers
+            )
+        ) {
+            isSame = true
+        } else {
+            isSame = false
+        }
+
+
+
+        return isSame
+
+
     }
 }

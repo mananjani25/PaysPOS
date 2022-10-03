@@ -5,10 +5,7 @@ import android.content.*
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Point
-import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.os.Message
+import android.os.*
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.Display
@@ -21,6 +18,7 @@ import androidx.lifecycle.lifecycleScope
 import com.android.pos.MainApplication
 import com.android.pos.R
 import com.android.pos.di.BarcodePrefProvider
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.executeAsyncTask
 import com.android.pos.utils.scanner.barcode.GenerateBarcode128B
 import com.android.pos.utils.scanner.helpers.*
@@ -71,10 +69,13 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
     private val EVENT = 2
     private val TAG = "BaseScannerActivity"
 
+    private val mSNAPIList = java.util.ArrayList<DCSScannerInfo>()
+
+
     @Inject
     lateinit var barcodePrefProvider: BarcodePrefProvider
 
-    private fun initializeScanner() {
+    fun initializeScanner() {
         mScannerInfoList = MainApplication.mScannerInfoList
         mOfflineScannerInfoList = ArrayList<DCSScannerInfo>()
 
@@ -102,9 +103,9 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
         // ...
         initializeDcsSdkWithAppSettings()
 
-        //reconnect the scanner
-        connectToScanner(getScannerPref().getScannerData())
+
     }
+
 
     fun resetConnectionThroughBarcode(flBarcode: FrameLayout?) {
         if (!checkBluetoothAvailable()) {
@@ -149,7 +150,32 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
         }
     }
 
-    private fun checkBluetoothAvailable(): Boolean {
+    open fun getSnapiBarcode(llBarcode: FrameLayout?) {
+        val layoutParams = LinearLayout.LayoutParams(-1, -1)
+        val barCodeView: BarCodeView? =
+            MainApplication.sdkHandler?.dcssdkGetUSBSNAPIWithImagingBarcode()
+        val display = windowManager.defaultDisplay
+        val size = Point()
+        display.getSize(size)
+        val width = size.x
+        val height = size.y
+        val orientation = this.resources.configuration.orientation
+        var x = width * 9 / 10
+        var y = x / 3
+        if (getDeviceScreenSize() > 6) { // TODO: Check 6 is ok or not
+            if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                x = width / 2
+                y = x / 3
+            } else {
+                x = width * 2 / 3
+                y = x / 3
+            }
+        }
+        barCodeView?.setSize(x, y)
+        llBarcode?.addView(barCodeView, layoutParams)
+    }
+
+    fun checkBluetoothAvailable(): Boolean {
         return packageManager.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH)
     }
 
@@ -166,6 +192,23 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
         //Use a positive priority
         filter.priority = 2
         registerReceiver(onNotification, filter)
+
+        mSNAPIList.clear()
+        updateScannersList()
+        for (device in getActualScannersList()!!) {
+            if (device.connectionType == DCSSDK_CONN_TYPES.DCSSDK_CONNTYPE_USB_SNAPI) {
+                mSNAPIList.add(device)
+            }
+        }
+        //reconnect the scanner
+//        connectToScanner(getScannerPref().getScannerData())
+        LogUtil.logE("mSNAPIList", mSNAPIList.size.toString())
+        if (mSNAPIList.isNotEmpty() && !mSNAPIList[0].isActive) {
+            Handler(Looper.getMainLooper()).postDelayed({
+                connectScannerCable(mSNAPIList[0].scannerID)
+            }, 2000)
+
+        }
     }
 
     override fun onPause() {
@@ -295,7 +338,7 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
         delegate?.let {
             mDevEventsDelegates?.add(it)
         }
-        Log.e(TAG, "mDevEventsDelegates.size ADD : ${mDevEventsDelegates?.size ?: 0}")
+        LogUtil.logE(TAG, "mDevEventsDelegates.size ADD : ${mDevEventsDelegates?.size ?: 0}")
     }
 
     override fun removeDevListDelegate(delegate: ScannerAppEngine.IScannerAppEngineDevListDelegate?) {
@@ -308,7 +351,7 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
         if (mDevConnDelegates != null) {
             mDevConnDelegates?.remove(delegate)
         }
-        Log.e(TAG, "mDevEventsDelegates.size REMOVE : ${mDevEventsDelegates?.size ?: 0}")
+        LogUtil.logE(TAG, "mDevEventsDelegates.size REMOVE : ${mDevEventsDelegates?.size ?: 0}")
     }
 
     override fun removeDevEventsDelegate(delegate: ScannerAppEngine.IScannerAppEngineDevEventsDelegate?) {
@@ -460,7 +503,7 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
     }
 
     override fun configureOperationalMode(mode: DCSSDKDefs.DCSSDK_MODE?) {
-        Log.e(TAG, "")
+        LogUtil.logE(TAG, "")
         initializeDcsSdk()
         //MainApplication.sdkHandler?.dcssdkSetOperationalMode(DCSSDK_MODE.DCSSDK_OPMODE_BT_LE)
     }
@@ -559,6 +602,50 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
         })
     }
 
+
+    private fun connectScannerCable(scanner: Int) {
+        var progressDialog: CustomProgressDialog? = null
+        lifecycleScope.executeAsyncTask(onPreExecute = {
+            progressDialog =
+                CustomProgressDialog(this, "Connecting To scanner. Please Wait...")
+            progressDialog?.setCancelable(false)
+            progressDialog?.show()
+            progressDialog?.setOnCancelListener(DialogInterface.OnCancelListener {
+                //scanner dialog cancel
+            })
+        }, doInBackground = {
+            scanner.let {
+                var result: DCSSDK_RESULT? = null
+                runOnUiThread(Runnable {
+                    result = connect(it)
+                })
+
+                if (result == DCSSDK_RESULT.DCSSDK_RESULT_SUCCESS) {
+//                    curAvailableScanner = scanner
+                    curAvailableScanner?.isConnected = true
+                    return@executeAsyncTask true
+                }
+            }
+            curAvailableScanner = null
+            return@executeAsyncTask false
+
+        }, onPostExecute = {
+            progressDialog?.let { progressDialog ->
+                if (progressDialog.isShowing) {
+                    progressDialog.dismiss()
+                }
+            }
+            if (!it) {
+                Toast.makeText(
+                    MainApplication.getInstance(),
+                    "Unable to communicate with scanner",
+                    Toast.LENGTH_SHORT
+                ).show()
+                scannersListHasBeenUpdated()
+            }
+        })
+    }
+
     private val updateScannersHandler: Handler = object : Handler(Looper.getMainLooper()) {
         override fun handleMessage(msg: Message) {
             updateScannersList()
@@ -583,7 +670,7 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
             getActualScannersList()?.let {
                 for (device in it) {
                     if (device.isActive) {
-                        Log.e(TAG, " Last connected scanner : ACTIVE: ${device.scannerName}")
+                        LogUtil.logE(TAG, " Last connected scanner : ACTIVE: ${device.scannerName}")
                         val availableScanner = AvailableScanner(
                             device.scannerID,
                             device.scannerName,
@@ -600,7 +687,7 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
                         addToLastConnectedScannerList(availableScanner)
                         enableLastScannerConnection = true
                     } else {
-                        Log.e(TAG, " Available scanner : NOT ACTIVE: ${device.scannerName}")
+                        LogUtil.logE(TAG, " Available scanner : NOT ACTIVE: ${device.scannerName}")
                         val availableScanner = AvailableScanner(
                             device.scannerID,
                             device.scannerName,
@@ -618,8 +705,8 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
             //-- CDC readers --
             scannersList.sort()
 
-            Log.e(TAG, "lastConnectedScannerList size : ${lastConnectedScannerList.size}")
-            Log.e(TAG, "scannersList size : ${scannersList.size}")
+            LogUtil.logE(TAG, "lastConnectedScannerList size : ${lastConnectedScannerList.size}")
+            LogUtil.logE(TAG, "scannersList size : ${scannersList.size}")
 
             notifyAdapters(enableLastScannerConnection)
 
@@ -696,10 +783,10 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
             } catch (e: java.lang.Exception) {
 
             }
-            Log.e(TAG, "dataHandler : $log")
+            LogUtil.logE(TAG, "dataHandler : $log")
             when (msg.what) {
                 Constants.IMAGE_RECEIVED -> {
-                    Log.e(TAG, "Image Received")
+                    LogUtil.logE(TAG, "Image Received")
                     val imageData = msg.obj as ByteArray
                     //Barcode barcode=(Barcode)msg.obj;
                     //Application.barcodeData.add(barcode);
@@ -707,27 +794,27 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
                     mDevEventsDelegates?.let {
                         for (delegate in it) {
                             if (delegate != null) {
-                                Log.e(TAG, "Show Image Received")
+                                LogUtil.logE(TAG, "Show Image Received")
                                 delegate.scannerImageEvent(imageData)
                             }
                         }
                     }
                 }
                 Constants.VIDEO_RECEIVED -> {
-                    Log.e(TAG, "Video Received")
+                    LogUtil.logE(TAG, "Video Received")
                     val videoEvent = msg.obj as ByteArray
                     mDevEventsDelegates?.let {
                         for (delegate in it) {
                             if (delegate != null) {
-                                Log.e(TAG, "Show Video Received")
+                                LogUtil.logE(TAG, "Show Video Received")
                                 delegate.scannerVideoEvent(videoEvent)
                             }
                         }
                     }
                 }
                 Constants.FW_UPDATE_EVENT -> {
-                    Log.e(TAG, "FW_UPDATE_EVENT")
-                    Log.e(
+                    LogUtil.logE(TAG, "FW_UPDATE_EVENT")
+                    LogUtil.logE(
                         TAG,
                         "FW_UPDATE_EVENT Received. Client count = " + mDevEventsDelegates?.size
                     )
@@ -735,20 +822,20 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
                     mDevEventsDelegates?.let {
                         for (delegate in it) {
                             if (delegate != null) {
-                                Log.e(TAG, "Show FW_UPDATE_EVENT Received")
+                                LogUtil.logE(TAG, "Show FW_UPDATE_EVENT Received")
                                 delegate.scannerFirmwareUpdateEvent(firmwareUpdateEvent)
                             }
                         }
                     }
                 }
                 Constants.BARCODE_RECEIVED -> {
-                    Log.e(TAG, "Barcode Received")
+                    LogUtil.logE(TAG, "Barcode Received")
                     val barcode = msg.obj as Barcode
                     MainApplication.barcodeData.add(barcode)
                     mDevEventsDelegates?.let {
                         for (delegate in it) {
                             if (delegate != null) {
-                                Log.e(TAG, "Show Barcode Received")
+                                LogUtil.logE(TAG, "Show Barcode Received")
                                 delegate.scannerBarcodeEvent(
                                     barcode.barcodeData,
                                     barcode.barcodeType,
@@ -788,7 +875,7 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
                     }
                 }
                 Constants.SESSION_ESTABLISHED -> {
-                    Log.e(TAG, "SESSION_ESTABLISHED")
+                    LogUtil.logE(TAG, "SESSION_ESTABLISHED")
                     val activeScanner = msg.obj as DCSScannerInfo
                     notificaton_processed = false
                     result = false
@@ -879,7 +966,7 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
                     }
                 }
                 Constants.SESSION_TERMINATED -> {
-                    Log.e(TAG, "SESSION_TERMINATED")
+                    LogUtil.logE(TAG, "SESSION_TERMINATED")
                     val scannerID = msg.obj as Int
                     var scannerName = ""
                     notificaton_processed = false
@@ -952,7 +1039,7 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
                     }
                 }
                 Constants.SCANNER_APPEARED, Constants.AUX_SCANNER_CONNECTED -> {
-                    Log.e(TAG, "SCANNER_APPEARED AUX_SCANNER_CONNECTED ")
+                    LogUtil.logE(TAG, "SCANNER_APPEARED AUX_SCANNER_CONNECTED ")
                     notificaton_processed = false
                     result = false
                     val availableScanner = msg.obj as DCSScannerInfo
@@ -1022,7 +1109,7 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
                     }
                 }
                 Constants.SCANNER_DISAPPEARED -> {
-                    Log.e(TAG, "SCANNER_DISAPPEARED")
+                    LogUtil.logE(TAG, "SCANNER_DISAPPEARED")
                     notificaton_processed = false
                     result = false
                     val scannerID = msg.obj as Int
@@ -1061,7 +1148,7 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
                                 break
                             }
                         }
-                        Log.e(
+                        LogUtil.logE(
                             TAG,
                             "ScannerAppEngine:dcssdkEventScannerDisappeared: scanner is not in list"
                         )
@@ -1236,10 +1323,10 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
     private fun getMacAddress(): String? {
         /*val bluetoothAdapter: BluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
         val address = bluetoothAdapter.address
-        Log.e("!_@_ MAC :", address.toString())*/
+        LogUtil.logE("!_@_ MAC :", address.toString())*/
         // return "E0:D0:83:0B:B9:7A"
-       // return "0C:25:76:B4:0B:93"
-         return "0c:25:76:b4:0b:95" // Sunmi Bluetooth MAC Address
+        // return "0C:25:76:B4:0B:93"
+        return "0c:25:76:b4:0b:95" // Sunmi Bluetooth MAC Address
         //0c:25:76:b4:0b:95
         //  return "0c:25:76:b4:0b:95"
     }
@@ -1279,7 +1366,7 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
     }
 
     override fun dcssdkEventScannerAppeared(availableScanner: DCSScannerInfo?) {
-        Log.e(TAG, "Event: dcssdkEventScannerAppeared")
+        LogUtil.logE(TAG, "Event: dcssdkEventScannerAppeared")
         dataHandler.obtainMessage(
             com.android.pos.utils.scanner.helpers.Constants.SCANNER_APPEARED,
             availableScanner
@@ -1287,7 +1374,7 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
     }
 
     override fun dcssdkEventScannerDisappeared(scannerID: Int) {
-        Log.e(TAG, "Event: dcssdkEventScannerDisappeared")
+        LogUtil.logE(TAG, "Event: dcssdkEventScannerDisappeared")
         dataHandler.obtainMessage(
             com.android.pos.utils.scanner.helpers.Constants.SCANNER_DISAPPEARED,
             scannerID
@@ -1295,7 +1382,7 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
     }
 
     override fun dcssdkEventCommunicationSessionEstablished(activeScanner: DCSScannerInfo?) {
-        Log.e(TAG, "Event: dcssdkEventCommunicationSessionEstablished")
+        LogUtil.logE(TAG, "Event: dcssdkEventCommunicationSessionEstablished")
         dataHandler.obtainMessage(
             com.android.pos.utils.scanner.helpers.Constants.SESSION_ESTABLISHED,
             activeScanner
@@ -1305,7 +1392,7 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
     }
 
     override fun dcssdkEventCommunicationSessionTerminated(scannerID: Int) {
-        Log.e(TAG, "Event: dcssdkEventCommunicationSessionTerminated")
+        LogUtil.logE(TAG, "Event: dcssdkEventCommunicationSessionTerminated")
         dataHandler.obtainMessage(
             com.android.pos.utils.scanner.helpers.Constants.SESSION_TERMINATED,
             scannerID
@@ -1314,7 +1401,7 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
     }
 
     override fun dcssdkEventBarcode(barcodeData: ByteArray?, barcodeType: Int, fromScannerID: Int) {
-        Log.e(TAG, "Event: dcssdkEventBarcode")
+        LogUtil.logE(TAG, "Event: dcssdkEventBarcode")
         val barcode = barcodeData?.let { Barcode(it, barcodeType, fromScannerID) }
         dataHandler.obtainMessage(
             com.android.pos.utils.scanner.helpers.Constants.BARCODE_RECEIVED,
@@ -1323,7 +1410,7 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
     }
 
     override fun dcssdkEventImage(imageData: ByteArray?, fromScannerID: Int) {
-        Log.e(TAG, "Event: dcssdkEventImage")
+        LogUtil.logE(TAG, "Event: dcssdkEventImage")
         dataHandler.obtainMessage(
             com.android.pos.utils.scanner.helpers.Constants.IMAGE_RECEIVED,
             imageData
@@ -1331,7 +1418,7 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
     }
 
     override fun dcssdkEventVideo(videoFrame: ByteArray?, fromScannerID: Int) {
-        Log.e(TAG, "Event: dcssdkEventVideo")
+        LogUtil.logE(TAG, "Event: dcssdkEventVideo")
         dataHandler.obtainMessage(
             com.android.pos.utils.scanner.helpers.Constants.VIDEO_RECEIVED,
             videoFrame
@@ -1339,14 +1426,14 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
     }
 
     override fun dcssdkEventBinaryData(binaryData: ByteArray?, fromScannerID: Int) {
-        Log.e(
+        LogUtil.logE(
             TAG,
             "BinaryData Event received no.of bytes : " + binaryData?.size + " for Scanner ID : " + fromScannerID
         )
     }
 
     override fun dcssdkEventFirmwareUpdate(firmwareUpdateEvent: FirmwareUpdateEvent?) {
-        Log.e(TAG, "Event: dcssdkEventFirmwareUpdate")
+        LogUtil.logE(TAG, "Event: dcssdkEventFirmwareUpdate")
         dataHandler.obtainMessage(
             com.android.pos.utils.scanner.helpers.Constants.FW_UPDATE_EVENT,
             firmwareUpdateEvent
@@ -1357,7 +1444,7 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
         newTopology: DCSScannerInfo?,
         auxScanner: DCSScannerInfo?
     ) {
-        Log.e(TAG, "Event: dcssdkEventAuxScannerAppeared")
+        LogUtil.logE(TAG, "Event: dcssdkEventAuxScannerAppeared")
         dataHandler.obtainMessage(
             com.android.pos.utils.scanner.helpers.Constants.AUX_SCANNER_CONNECTED,
             auxScanner

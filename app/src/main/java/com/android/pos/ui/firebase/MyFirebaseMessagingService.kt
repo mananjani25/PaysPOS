@@ -11,10 +11,14 @@ import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.android.pos.R
+import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.ONLINE_ORDER_GET_NOTIFICATION
 import com.android.pos.data.remote.Constants.SEND_CLOCKOUT_NOTIFICATION
+import com.android.pos.data.remote.Constants.SYNC_NOTIFICATION
+import com.android.pos.data.remote.Constants.SYNC_SETTING_NOTIFICATION
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.activities.MainActivity
+import com.android.pos.utils.LogUtil
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import javax.inject.Inject
@@ -26,58 +30,48 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     lateinit var prefProvider: PrefProvider
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
-        Log.e(TAG, "From: ${remoteMessage.from}")
+        LogUtil.logEN(TAG, "From: ${remoteMessage.data}")
 
-//        createNotification()
-
-//        remoteMessage.data["type"]
         prefProvider = PrefProvider(this)
         if (remoteMessage.data.isNotEmpty()) {
             type = remoteMessage.data["type"].toString()
             Log.e(TAG, "onMessageReceived: type : $type")
-            if (type == "Clock Out") {
-                var intent = Intent()
-                intent.putExtra("isAuto", false)
-                intent.action = SEND_CLOCKOUT_NOTIFICATION
-                prefProvider.setValueboolean("clockOutFromNoti", true)
-                sendBroadcast(intent)
-            } else if (type == "Auto Clockout") {
-                var intent = Intent()
-                intent.putExtra("isAuto", true)
-                intent.putExtra("message", remoteMessage.data["message"].toString())
-                intent.action = SEND_CLOCKOUT_NOTIFICATION
-                prefProvider.setValueboolean("clockOutFromNoti", true)
-                sendBroadcast(intent)
-            } else if (type == "onlineorder") {
-                var intent = Intent()
-                intent.putExtra("message", remoteMessage.data["message"].toString())
-                intent.putExtra("count", remoteMessage.data["count"])
-                intent.action = ONLINE_ORDER_GET_NOTIFICATION
-                sendBroadcast(intent)
-                 setSoundForOnlineOrder()
-            } else {
-                var intent = Intent()
-                intent.putExtra("printer_queue", "rem")
-                intent.action = "PrinterQueue"
-                sendBroadcast(intent)
+            if (prefProvider.getValueInt(EMPLOYEE_ID, -1) != -1) {
+                if (type == "Clock Out") {
+                    var intent = Intent()
+                    intent.putExtra("isAuto", false)
+                    intent.action = SEND_CLOCKOUT_NOTIFICATION
+                    prefProvider.setValueboolean("clockOutFromNoti", true)
+                    sendBroadcast(intent)
+                } else if (type == "Auto Clockout") {
+                    var intent = Intent()
+                    intent.putExtra("isAuto", true)
+                    intent.putExtra("message", remoteMessage.data["message"].toString())
+                    intent.action = SEND_CLOCKOUT_NOTIFICATION
+                    prefProvider.setValueboolean("clockOutFromNoti", true)
+                    sendBroadcast(intent)
+                } else if (type == "onlineorder") {
+                    var intent = Intent()
+                    intent.putExtra("message", remoteMessage.data["message"].toString())
+                    intent.putExtra("count", remoteMessage.data["count"])
+                    intent.action = ONLINE_ORDER_GET_NOTIFICATION
+                    sendBroadcast(intent)
+                    setSoundForOnlineOrder()
+                } else if (type == "Sync") {
+                    val intent = Intent()
+                    intent.action = SYNC_NOTIFICATION
+                    sendBroadcast(intent)
+                } else if (type == "SettingData") {
+                    val intent = Intent()
+                    intent.action = SYNC_SETTING_NOTIFICATION
+                    sendBroadcast(intent)
+                } else {
+                    var intent = Intent()
+                    intent.putExtra("printer_queue", "rem")
+                    intent.action = "PrinterQueue"
+                    sendBroadcast(intent)
 
-            }
-
-        }
-
-    }
-
-    private fun createNotification() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val manager = getSystemService(Context.NOTIFICATION_SERVICE)
-                    as NotificationManager
-            val channelId = getString(R.string.default_notification_channel_id)
-            if(manager.getNotificationChannel(channelId)==null) {
-                val channel = NotificationChannel(channelId,
-                    getString(R.string.common_google_play_services_notification_channel_name),
-                    NotificationManager.IMPORTANCE_DEFAULT)
-                channel.description = ""
-                manager.createNotificationChannel(channel)
+                }
             }
         }
     }
@@ -94,12 +88,12 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     }
 
     override fun onNewToken(token: String) {
-        Log.e(TAG, "Refreshed token: $token")
+        LogUtil.logEN(TAG, "Refreshed token: $token")
         sendRegistrationToServer(token)
     }
 
     private fun sendRegistrationToServer(token: String?) {
-        Log.e(TAG, "sendRegistrationTokenToServer($token)")
+        LogUtil.logEN(TAG, "sendRegistrationTokenToServer($token)")
     }
 
     private fun sendNotification(messageBody: String) {
@@ -148,7 +142,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
               .put("location_id", prefProvider.getValueInt(Constants.LOCATION_ID, 0))
               .put("base_url", prefProvider.getValue(Constants.BASE_URL_NEW, ""))
               .build()
-  */
+    */
 
         /*val uploadWorkRequest =
             OneTimeWorkRequest.Builder(UploadWorker::class.java).setInputData(data).build()*/

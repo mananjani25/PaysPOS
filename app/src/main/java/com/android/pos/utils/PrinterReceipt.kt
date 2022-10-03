@@ -790,17 +790,17 @@ fun padLineForItem(
             }
             //  strBuffer.append(partOne.substring())
         }
-        Log.e(TAG, "GeneratePartOne: ${strBuffer.toString()}")
+        LogUtil.logE(TAG, "GeneratePartOne: ${strBuffer.toString()}")
         partOne = ""
         partOne = strBuffer.toString()
         partOne + partTwo
-        Log.e(TAG, "FinalString : $partOne + partTwo")
+        LogUtil.logE(TAG, "FinalString : $partOne + partTwo")
         builder.addText(partOne + partTwo)
         return builder
     } else {
         val padding = columnsPerLine - (partOne.length + partTwo.length)
         partOne + partTwo
-        Log.e(TAG, "FinalElseString: $partOne + partTwo")
+        LogUtil.logE(TAG, "FinalElseString: $partOne + partTwo")
         builder.addText(partOne + partTwo)
         return builder
 
@@ -847,7 +847,7 @@ fun addHorizontalLargeLine(builder: Builder): Builder {
     for (i in 0 until 24) {
         str += "-"
     }
-    Log.e("strLine", "strLine  $str")
+    LogUtil.logE("strLine", "strLine  $str")
     builder.addText(str)
 
     return builder
@@ -861,7 +861,7 @@ fun addHorizontalLine(builder: Builder): Builder {
     for (i in 0 until 48) {
         str += "-"
     }
-    Log.e("strLine", "strLine  $str")
+    LogUtil.logE("strLine", "strLine  $str")
     builder.addText(str)
 
     return builder
@@ -872,7 +872,7 @@ fun addHorizontalLineNew(printer: Printer): Printer {
     for (i in 0 until 48) {
         str += "-"
     }
-    Log.e("strLine", "strLine  $str")
+    LogUtil.logE("strLine", "strLine  $str")
     printer.addText(str)
 
     return printer
@@ -1009,8 +1009,8 @@ fun addOrdersForKitchenCustoemrPrinter(
 
     list.forEach { obj ->
         printerCat?.forEach {
-            Log.e(TAG, "printerListCat ${it.id}")
-            Log.e(TAG, "printerCategoryID ${obj.categoryId}")
+            LogUtil.logE(TAG, "printerListCat ${it.id}")
+            LogUtil.logE(TAG, "printerCategoryID ${obj.categoryId}")
             if (it.id == obj.categoryId && it.printerEnable && it.categoryActive) {
 
 
@@ -2045,7 +2045,7 @@ fun addWholeTbItemToGuest(
 
                 val itemTaxPrice =
                     (tax.rate * totalPrice) / 100
-                Log.e("itemTaxPrice", "" + itemTaxPrice)
+                LogUtil.logE("itemTaxPrice", "" + itemTaxPrice)
                 String.format("%.2f", itemTaxPrice)
                     .toDouble()
             } else {
@@ -2142,7 +2142,7 @@ fun addWholeTbItemToGuest(
 
                 val itemTaxPrice =
                     (tax.rate * totalPrice) / 100
-                Log.e("itemTaxPrice", "" + itemTaxPrice)
+                LogUtil.logE("itemTaxPrice", "" + itemTaxPrice)
                 String.format("%.2f", itemTaxPrice)
                     .toDouble()
             } else {
@@ -2218,7 +2218,7 @@ fun addWholeTbItemToGuestInner(
 
                 val itemTaxPrice =
                     (tax.rate * totalPrice) / 100
-                Log.e("itemTaxPrice", "" + itemTaxPrice)
+                LogUtil.logE("itemTaxPrice", "" + itemTaxPrice)
                 String.format("%.2f", itemTaxPrice)
                     .toDouble()
             } else {

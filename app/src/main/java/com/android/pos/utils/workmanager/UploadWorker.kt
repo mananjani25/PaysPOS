@@ -83,7 +83,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
 
 
-                Log.e(TAG,"onActionCableStarts")
+                LogUtil.logE(TAG,"onActionCableStarts")
                 connectActionCable()
 
             }
@@ -111,19 +111,19 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
         if (subscription != null) {
             subscription?.onConnected {
-                Log.e(TAG, "onActionConnected")
+                LogUtil.logE(TAG, "onActionConnected")
                 val params = JsonObject()
                 params.addProperty("id", locationId)
                 params.addProperty("url", requestURL)
                 subscription?.perform("received", params)
             }?.onRejected {
-                Log.e(TAG, "onActiononRejected")
+                LogUtil.logE(TAG, "onActiononRejected")
                 subscription = consumer?.subscriptions?.create(appearanceChannel)
                 val params = JsonObject()
                 params.addProperty("id", locationId)
                 subscription?.perform("received", params)
             }?.onReceived {
-                Log.e(TAG, "onActiononReceived  " + Gson().toJson(it))
+                LogUtil.logE(TAG, "onActiononReceived  " + Gson().toJson(it))
 
 
 
@@ -148,7 +148,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                         /* isPrinterRunning = false
                          printerQueuelist.clear()
                          printerQueuelist = arrayListOf()
-                         Log.e(TAG, "NoPrinterQueueData")
+                         LogUtil.logE(TAG, "NoPrinterQueueData")
                          if (!printerQueueData) {
                              val params = JsonObject()
                              params.addProperty("id", locationId)
@@ -192,13 +192,13 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                 }
 
             }?.onDisconnected {
-                Log.e(TAG, "onActiononDisconnected")
+                LogUtil.logE(TAG, "onActiononDisconnected")
                 subscription = consumer?.subscriptions?.create(appearanceChannel)
                 val params = JsonObject()
                 params.addProperty("id", locationId)
                 subscription?.perform("received", params)
             }?.onFailed {
-                Log.e(TAG, "onActiononFailed")
+                LogUtil.logE(TAG, "onActiononFailed")
                 //subscription = consumer?.subscriptions?.create(appearanceChannel)
                 try {
 
@@ -564,7 +564,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
 
 
-            Log.e(TAG, "DataNotEmpty")
+            LogUtil.logE(TAG, "DataNotEmpty")
 
 
 
@@ -581,7 +581,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
         printerQueueModel: PrinterQueueModel,
         index: Int,
         arrayItems: ArrayList<PrinterQueueModel>) {
-        Log.e(TAG, "kitchenPrinters  ${kitchenPrinterList.size}")
+        LogUtil.logE(TAG, "kitchenPrinters  ${kitchenPrinterList.size}")
         for (i in 0 until kitchenPrinterList.size) {
             var modelName = -1
             if (kitchenPrinterList[i].modalName.equals("TM-M30", true)) {
@@ -590,7 +590,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                 modelName = Printer.TM_U220
             }
 
-            Log.e(TAG, "modelName  ${modelName}")
+            LogUtil.logE(TAG, "modelName  ${modelName}")
             if (modelName != -1) {
 
                 val mPrinter =
@@ -598,7 +598,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
                 mPrinter.setReceiveEventListener { printarrayItemser, i, printerStatusInfo, s ->
 
-                    Log.e(
+                    LogUtil.logE(
                         "PrinterDataCh",
                         "   int: ${i}  printerInfo: ${
                             Gson().toJson(printerStatusInfo)
@@ -613,14 +613,14 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                         p2: PrinterStatusInfo?,
                         p3: String?
                     ) {
-                        Log.e("getPrintReceive", "online ${Gson().toJson(p2)}  data${p3}")
+                        LogUtil.logE("getPrintReceive", "online ${Gson().toJson(p2)}  data${p3}")
                         try {
 
                             printerQueueModel.id?.let {
                                 val params = JsonObject()
                                 var deleteUrl =
                                     baseUrl + Constants.CREATE_QUEUE_PRINTER + "/" + it
-                                Log.e(TAG, "DeleteUrl ${deleteUrl}")
+                                LogUtil.logE(TAG, "DeleteUrl ${deleteUrl}")
                                 params.addProperty("url", deleteUrl)
                                 subscription?.perform("delete_order", params)
                             }
@@ -657,7 +657,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                 } else {
                     containsFlag = false
                 }
-                Log.e(TAG, "containsFlag:   ${containsFlag}")
+                LogUtil.logE(TAG, "containsFlag:   ${containsFlag}")
                 if (!containsFlag) {
                     try {
                         mPrinter.connect(kitchenPrinterList[i].ipAddress, Printer.PARAM_DEFAULT)
@@ -931,7 +931,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
         } catch (e: Exception) {
             e.printStackTrace()
-            Log.e(TAG, "PrinterOpenFailed")
+            LogUtil.logE(TAG, "PrinterOpenFailed")
             consumer?.disconnect()
             isPrinterRunning = false
             delay(1000)
@@ -942,7 +942,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
 
         if (printer != null) {
-            Log.e(TAG, "GoingToStart")
+            LogUtil.logE(TAG, "GoingToStart")
             PrinterClass.setPrinter(printer)
 
             generateKitchenReceipt(data, "", printerQueueModel, index, printerPos)
@@ -959,7 +959,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
         index: Int,
         printerPos: Int
     ) {
-        Log.e(TAG, "printerPosprinterPos  ${printerPos}")
+        LogUtil.logE(TAG, "printerPosprinterPos  ${printerPos}")
         var builder: Builder? = null
         try {
             val pname = if (customerReceiptPrinters.name.substring(0, 6).toString()
@@ -991,7 +991,8 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
             builder = Builder(pname, PrinterClass.language, mContext)
 
-
+            builder.addTextLineSpace(30)
+            builder.addFeedUnit(30)
             builder.addFeedLine(1)
             builder.addTextFont(Builder.FONT_E)
             builder.addTextLang(Builder.LANG_EN)
@@ -1450,7 +1451,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                     printerQueueModel.id?.let {
                         val params = JsonObject()
                         var deleteUrl = baseUrl + Constants.CREATE_QUEUE_PRINTER + "/" + it
-                        Log.e(TAG, "DeleteUrl ${deleteUrl}")
+                        LogUtil.logE(TAG, "DeleteUrl ${deleteUrl}")
                         params.addProperty("url", deleteUrl)
                         subscription?.perform("delete_order", params)
 
@@ -1495,7 +1496,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
                 /*var requestURL =
                     baseUrl + Constants.CREATE_QUEUE_PRINTER
-                Log.e(TAG, "requestURL:  ${requestURL}")
+                LogUtil.logE(TAG, "requestURL:  ${requestURL}")
                 val uri = URI("wss://hugepos.com/cable")
                 consumer = ActionCable.createConsumer(uri)
 
@@ -1526,7 +1527,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                 printerQueueModel.id?.let {
                     val params = JsonObject()
                     var deleteUrl = baseUrl + Constants.CREATE_QUEUE_PRINTER + "/" + it
-                    Log.e(TAG, "DeleteUrl ${deleteUrl}")
+                    LogUtil.logE(TAG, "DeleteUrl ${deleteUrl}")
                     params.addProperty("url", deleteUrl)
                     subscription?.perform("delete_order", params)
 
@@ -1560,7 +1561,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                 /* printerQueueModel.id?.let {
                      val params = JsonObject()
                      var deleteUrl = baseUrl + Constants.CREATE_QUEUE_PRINTER + "/" + it
-                     Log.e(TAG, "DeleteUrl ${deleteUrl}")
+                     LogUtil.logE(TAG, "DeleteUrl ${deleteUrl}")
                      params.addProperty("url", deleteUrl)
                      subscription?.perform("delete_order", params)
 
@@ -1582,7 +1583,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
                 /*  var requestURL =
                       baseUrl + Constants.CREATE_QUEUE_PRINTER
-                  Log.e(TAG, "requestURL:  ${requestURL}")
+                  LogUtil.logE(TAG, "requestURL:  ${requestURL}")
                   val uri = URI("wss://hugepos.com/cable")
                   consumer = ActionCable.createConsumer(uri)
 
@@ -1597,7 +1598,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                 /* printerQueueModel.id?.let {
                      val params = JsonObject()
                      var deleteUrl = baseUrl + Constants.CREATE_QUEUE_PRINTER + "/" + it
-                     Log.e(TAG, "DeleteUrl ${deleteUrl}")
+                     LogUtil.logE(TAG, "DeleteUrl ${deleteUrl}")
                      params.addProperty("url", deleteUrl)
                      subscription?.perform("delete_order", params)
 

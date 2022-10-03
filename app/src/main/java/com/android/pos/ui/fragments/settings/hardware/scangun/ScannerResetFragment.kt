@@ -52,8 +52,11 @@ class ScannerResetFragment : Fragment() {
     private fun initScanner() {
         //show barcode view
         (activity as MainActivity).generatePairingBarcode(binding.flBarCode)
+        (activity as MainActivity).getSnapiBarcode(binding.snapiBarcode)
 
         //generate reset connection barcode
         (activity as MainActivity).resetConnectionThroughBarcode(binding.flBarCodeReset)
     }
+
+
 }

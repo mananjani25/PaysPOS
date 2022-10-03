@@ -28,5 +28,7 @@ data class CashDiscountModel(
     @SerializedName("amount_type")
     val amount_type: String,
     @SerializedName("updated_at")
-    val updatedAt: String
+    val updatedAt: String,
+    @SerializedName("is_deleted")
+    val isDeleted: Boolean
 ) : Parcelable

@@ -13,6 +13,7 @@ import com.android.pos.data.model.MergeFloorModel
 import com.android.pos.data.model.MergeTableListModel
 import com.android.pos.data.model.MergeTableModel
 import com.android.pos.databinding.ViewMergeTableListBinding
+import com.android.pos.utils.LogUtil
 
 class MergeTableSelectionAdapter : RecyclerView.Adapter<MergeTableSelectionAdapter.MyViewHolder>() {
     private var list: ArrayList<MergeTableListModel> = arrayListOf()
@@ -56,15 +57,15 @@ class MergeTableSelectionAdapter : RecyclerView.Adapter<MergeTableSelectionAdapt
                         (parent?.adapter?.getItem(position) as MergeTableModel).id
                     list[bindingAdapterPosition].orderDetails =
                         (parent?.adapter?.getItem(position) as MergeTableModel).orderDetails
-                    Log.e(
+                    LogUtil.logE(
                         TAG,
                         "selectedTableParetnID ${(parent?.adapter?.getItem(position) as MergeTableModel).id}"
                     )
-                    Log.e(
+                    LogUtil.logE(
                         TAG,
                         "selectedORderID  ${(binding.spnTable.adapter.getItem(position) as MergeTableModel).orderId}"
                     )
-                    Log.e(TAG, "selectedTablePosition  ${position}")
+                    LogUtil.logE(TAG, "selectedTablePosition  ${position}")
                     list.get(bindingAdapterPosition).tableSelectedPosition = position
                     list.get(bindingAdapterPosition).tableChairCount =
                         (binding.spnTable.adapter.getItem(position) as MergeTableModel).chairCount
@@ -202,7 +203,7 @@ class MergeTableSelectionAdapter : RecyclerView.Adapter<MergeTableSelectionAdapt
             ids = list.get(i).selectedTableId.toString()
 
         }
-        Log.e(TAG, "selectedIDs  ${ids}")
+        LogUtil.logE(TAG, "selectedIDs  ${ids}")
 
 
         return ids

@@ -532,7 +532,7 @@ class PrintSunmiUtils {
         }
 
         fun fontSizeInner(fonts: String) {
-            Log.e("fontSizeInner", fonts)
+            LogUtil.logE("fontSizeInner", fonts)
             fontSizeInner = fonts
         }
 

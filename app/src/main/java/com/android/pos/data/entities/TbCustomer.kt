@@ -22,6 +22,7 @@ data class TbCustomer(
     @SerializedName("birth_date") val birth_date: String?,
     @SerializedName("email") val email: String?,
     @SerializedName("enroll_to_loyalty") var enroll_to_loyalty: Boolean? = false,
+    @SerializedName("same_as_billing_address") var same_as_billing_address: Boolean? = false,
     @SerializedName("final_reward") var final_reward: Int? = 0,
     @SerializedName("company") val company: String? = null,
     @TypeConverters(TypeConvertorPhone::class)
@@ -65,6 +66,7 @@ data class TbCustomer(
                 birth_date = customer.birth_date,
                 email = customer.email,
                 enroll_to_loyalty = customer.enroll_to_loyalty,
+                same_as_billing_address = customer.same_as_billing_address,
                 final_reward = customer.final_reward,
                 company = customer.company,
                 phones = customer.phones,

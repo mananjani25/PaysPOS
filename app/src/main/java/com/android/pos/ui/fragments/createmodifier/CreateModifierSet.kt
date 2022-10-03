@@ -3,7 +3,6 @@ package com.android.pos.ui.fragments.createmodifier
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,6 +21,8 @@ import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.CreateModifierSetBinding
 import com.android.pos.ui.adapter.ModifierAdapter
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.AmountTextWatcher
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.getNavigationResultLiveData
 import com.android.pos.utils.extensions.liveSnackBar
@@ -67,7 +68,7 @@ class CreateModifierSet : Fragment(), TextWatcher {
         binding.header.txtSave.text = getString(R.string.save)
 
         binding.edtModifier.addTextChangedListener(this)
-        binding.edtPrice.addTextChangedListener(this)
+        binding.edtPrice.addTextChangedListener(AmountTextWatcher(binding.edtPrice, false))
 
         val resultDialogKey = getNavigationResultLiveData<ArrayList<TbItem>>(Constants.DIALOG_KEY)
         resultDialogKey?.observe(viewLifecycleOwner) {
@@ -106,9 +107,23 @@ class CreateModifierSet : Fragment(), TextWatcher {
         }
 
         binding.header.txtSave.setOnClickListener {
-            viewModel.setModifiers(adapter.getAll())
-            viewModel.setDeleteModifiers(adapter.getDelete())
-            viewModel.submit()
+            if (adapter.getAll().size > 0) {
+                val found = adapter.getAll().firstOrNull { it.name == "" } != null
+                if (found){
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        requireContext(), "Please enter Modifier name"
+                    ) { _, _ ->
+                    }
+                }else{
+                    viewModel.setModifiers(adapter.getAll())
+                    viewModel.setDeleteModifiers(adapter.getDelete())
+                    viewModel.submit()
+                }
+            } else {
+                viewModel.setDeleteModifiers(adapter.getDelete())
+                viewModel.submit()
+            }
+
         }
     }
 
@@ -123,7 +138,10 @@ class CreateModifierSet : Fragment(), TextWatcher {
 //            if (isEdit) {
             bundle.putIntegerArrayList("itemIds", itemIds)
 //            }
-            findNavController().navigate(R.id.action_createIModifierSet_to_itemDialog, bundle)
+
+            if (findNavController().currentDestination?.id == R.id.createIModifierSet) {
+                findNavController().navigate(R.id.action_createIModifierSet_to_itemDialog, bundle)
+            }
         }
 
         val touchHelper = ItemTouchHelper(object :
@@ -137,7 +155,7 @@ class CreateModifierSet : Fragment(), TextWatcher {
 
                 val oldPos = viewHolder.bindingAdapterPosition
                 val newPos = target.bindingAdapterPosition
-                Log.e(
+                LogUtil.logE(
                     "reorder after", "" + ":::" + ":::" +
                             viewHolder.bindingAdapterPosition.toString() + " :::  " + target.bindingAdapterPosition.toString()
                 )
@@ -148,7 +166,7 @@ class CreateModifierSet : Fragment(), TextWatcher {
 
                 val a = adapter.getItem(dragFrom).sort
                 val b = adapter.getItem(dragTo).sort
-                Log.e("onItemMove", "$a:: $b")
+                LogUtil.logE("onItemMove", "$a:: $b")
 
 
 
@@ -223,8 +241,15 @@ class CreateModifierSet : Fragment(), TextWatcher {
             if (s != null && s.length == 1) {
                 val model = Modifier().apply {
                     name = binding.edtModifier.text.toString().trim()
-                    price = 0.00
+                    if (binding.edtPrice.text?.isNotBlank() == true) {
+                        price = binding.edtPrice.text.toString().replace("$", "").toDouble()
+                    } else {
+                        price = 0.0
+                    }
                 }
+                binding.edtPrice.removeTextChangedListener(this)
+                binding.edtPrice.setText("0.00")
+                binding.edtPrice.clearFocus()
                 adapter.add(model)
             }
             binding.edtModifier.text?.clear()
@@ -237,17 +262,32 @@ class CreateModifierSet : Fragment(), TextWatcher {
 
             if (s != null && s.length == 1) {
 
-                val parsed = s.toString().toDouble()
+                val parsed = s.toString().replace("$", "").toDouble()
                 val formatted = NumberFormat.getCurrencyInstance(Locale.US).format((parsed / 100))
                 val model = Modifier().apply {
-                    name = ""
+                    name = binding.edtModifier.text.toString()
                     price = formatted.replace("""[$,]""".toRegex(), "").toDouble()
                 }
-                adapter.add(model)
+                if (binding.edtModifier.text?.isNotBlank() == true) {
+                    adapter.add(model)
+                    binding.edtPrice.setText("0.00")
+                    binding.edtPrice.clearFocus()
+                    binding.edtPrice.addTextChangedListener(
+                        AmountTextWatcher(
+                            binding.edtPrice,
+                            false
+                        )
+                    )
+                } else {
+                    binding.edtPrice.addTextChangedListener(
+                        AmountTextWatcher(
+                            binding.edtPrice,
+                            false
+                        )
+                    )
+                }
             }
-            binding.edtPrice.text?.clear()
-            binding.edtPrice.clearFocus()
-            binding.edtPrice.addTextChangedListener(this)
+
         }
 
         viewModel.setModifiers(adapter.getAll())
