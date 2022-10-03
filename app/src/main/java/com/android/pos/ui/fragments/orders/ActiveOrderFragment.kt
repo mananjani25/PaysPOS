@@ -2737,7 +2737,13 @@ class ActiveOrderFragment(
                 PrintSunmiUtils.orderNote(receiptModel.note)
             }
             SunmiPrinterApi.getInstance().lineWrap(2)
+            val str8 = padLine(
+                "Customer Signature",
+                "     _________________________",
+                48
+            ).toString()
 
+            PrintSunmiUtils.customerSignature(str8)
 
             if (customerSettingModel.showQrCode) {
 
@@ -3252,7 +3258,13 @@ class ActiveOrderFragment(
             }
             SunmiPrintHelper.getInstance().lineWrap(2)
 
+            val str8 = padLine(
+                "Customer Signature",
+                "     _________________________",
+                48
+            ).toString()
 
+            PrintSunmiUtils.customerSignature(str8)
             if (customerSettingModel.showQrCode) {
 
                 PrintSunmiUtils.qrCodeInner(receiptModel.digitalReceiptUrl)

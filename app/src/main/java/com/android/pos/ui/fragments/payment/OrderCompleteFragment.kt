@@ -2674,7 +2674,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 PrintSunmiUtils.orderNote(getDineInOrderDetails?.note!!)
             }
+            SunmiPrinterApi.getInstance().lineWrap(2)
+            val str8 = padLine(
+                "Customer Signature",
+                "     _________________________",
+                48
+            ).toString()
 
+            PrintSunmiUtils.customerSignature(str8)
 
             if (customerSettingModel.showQrCode) {
 
@@ -3079,6 +3086,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 PrintSunmiUtils.orderNoteInner(getDineInOrderDetails?.note!!)
             }
 
+            SunmiPrintHelper.getInstance().lineWrap(2)
+            val str8 = padLine(
+                "Customer Signature",
+                "     _________________________",
+                48
+            ).toString()
+
+            PrintSunmiUtils.customerSignature(str8)
 
             if (customerSettingModel.showQrCode) {
 
@@ -4791,6 +4806,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 PrintSunmiUtils.orderNote(getDineInOrderDetails?.note!!)
             }
 
+            SunmiPrinterApi.getInstance().lineWrap(2)
+            val str8 = padLine(
+                "Customer Signature",
+                "     _________________________",
+                48
+            ).toString()
+
+            PrintSunmiUtils.customerSignature(str8)
 
             if (customerSettingModel.showQrCode) {
 
@@ -5290,7 +5313,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 PrintSunmiUtils.orderNoteInner(getDineInOrderDetails?.note!!)
             }
 
+            SunmiPrintHelper.getInstance().lineWrap(2)
+            val str8 = padLine(
+                "Customer Signature",
+                "     _________________________",
+                48
+            ).toString()
 
+            PrintSunmiUtils.customerSignature(str8)
             if (customerSettingModel.showQrCode) {
 
                 SunmiPrintHelper.getInstance().lineWrap(1)
@@ -9178,6 +9208,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             }
 
+            SunmiPrinterApi.getInstance().lineWrap(2)
+            val str8 = padLine(
+                "Customer Signature",
+                "     _________________________",
+                48
+            ).toString()
+
+            PrintSunmiUtils.customerSignature(str8)
 
             if (customerSettingModel.showQrCode) {
                 SunmiPrinterApi.getInstance().lineWrap(1)
@@ -9817,6 +9855,15 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 PrintSunmiUtils.orderNoteInner(receiptModel?.order?.note!!)
 
             }
+
+            SunmiPrintHelper.getInstance().lineWrap(2)
+            val str8 = padLine(
+                "Customer Signature",
+                "     _________________________",
+                48
+            ).toString()
+
+            PrintSunmiUtils.customerSignature(str8)
 
 
             if (customerSettingModel.showQrCode) {

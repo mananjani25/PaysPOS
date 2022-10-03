@@ -2895,7 +2895,13 @@ class TransactionDetailsFragment : Fragment() {
                 SunmiPrinterApi.getInstance().lineWrap(2)
             }
 
+            val str8 = padLine(
+                "Customer Signature",
+                "     _________________________",
+                48
+            ).toString()
 
+            PrintSunmiUtils.customerSignature(str8)
             if (customerSettingModel.showQrCode) {
 
                 PrintSunmiUtils.qrCode(paymentDetailsResponse?.data.order?.digital_receipt_url.toString())
@@ -3345,6 +3351,13 @@ class TransactionDetailsFragment : Fragment() {
                 SunmiPrintHelper.getInstance().lineWrap(2)
             }
 
+            val str8 = padLine(
+                "Customer Signature",
+                "     _________________________",
+                48
+            ).toString()
+
+            PrintSunmiUtils.customerSignature(str8)
 
             if (customerSettingModel.showQrCode) {
 

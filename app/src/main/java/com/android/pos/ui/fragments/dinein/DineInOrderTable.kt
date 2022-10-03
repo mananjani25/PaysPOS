@@ -4691,6 +4691,13 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             }
 
+            val str8 = padLine(
+                "Customer Signature",
+                "     _________________________",
+                48
+            ).toString()
+
+            PrintSunmiUtils.customerSignature(str8)
 
             if (customerSettingModel.showQrCode) {
                 PrintSunmiUtils.qrCode(getOrderDetailsResponse?.digitalReceiptUrl.toString())
@@ -5178,6 +5185,13 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             }
 
+            val str8 = padLine(
+                "Customer Signature",
+                "     _________________________",
+                48
+            ).toString()
+
+            PrintSunmiUtils.customerSignature(str8)
 
             if (customerSettingModel.showQrCode) {
                 PrintSunmiUtils.qrCodeInner(getOrderDetailsResponse?.digitalReceiptUrl.toString())
@@ -6607,7 +6621,15 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 PrintSunmiUtils.orderNote(getOrderDetailsResponse?.note!!)
             }
 
+            SunmiPrinterApi.getInstance().lineWrap(2)
 
+            val str8 = padLine(
+                "Customer Signature",
+                "     _________________________",
+                48
+            ).toString()
+
+            PrintSunmiUtils.customerSignature(str8)
             if (customerSettingModel.showQrCode) {
 
                 getOrderDetailsResponse?.digitalReceiptUrl?.let { LogUtil.logE("digitalReceiptUrl", it) }
@@ -7020,6 +7042,15 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 PrintSunmiUtils.orderNoteInner(getOrderDetailsResponse?.note!!)
             }
 
+
+            SunmiPrintHelper.getInstance().lineWrap(2)
+            val str8 = padLine(
+                "Customer Signature",
+                "     _________________________",
+                48
+            ).toString()
+
+            PrintSunmiUtils.customerSignature(str8)
 
             if (customerSettingModel.showQrCode) {
 
