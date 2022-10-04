@@ -23,7 +23,7 @@ data class GetOrderDetailsResponse(
         @SerializedName("creation_time_on_terminal")
         val creationTimeOnTerminal: String?,
         @SerializedName("customer")
-        val customer: Customer,
+        val customer: Customer?=null,
         @SerializedName("customer_id")
         val customerId: Int,
         @SerializedName("date")

@@ -460,13 +460,13 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
     private fun assignCustomer(order: GetOrderDetailsResponse.Data): TbCustomer {
 
         val phoneList = ArrayList<TbPhones>()
-        order.customer?.phones.forEach {
+        order.customer?.phones?.forEach {
             val phone = TbPhones(it.id, it.phoneNumber)
             phoneList.add(phone)
         }
 
         val addressList = ArrayList<TbAddress>()
-        order.customer?.addresses.forEach {
+        order.customer?.addresses?.forEach {
             val address = TbAddress(
                 it.id,
                 it.address1,
@@ -486,11 +486,11 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
         }
 
         return TbCustomer(
-            order.customer.id,
-            order.customer.firstName?.toString(),
-            order.customer.lastName.toString(),
-            order.customer.birthDate?.toString(),
-            order.customer.email?.toString(),
+            order.customer?.id,
+            order.customer?.firstName?.toString(),
+            order.customer?.lastName.toString(),
+            order.customer?.birthDate?.toString(),
+            order.customer?.email?.toString(),
             false,
             false,
             0,

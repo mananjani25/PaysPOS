@@ -24,6 +24,7 @@ import com.android.pos.data.entities.*
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ADD
 import com.android.pos.data.remote.Constants.CUSTOMER_NAME
+import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER
 import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.data.remote.Constants.LOYALTY_ADDED
 import com.android.pos.data.remote.Constants.MANUALSALE
@@ -557,6 +558,12 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                         cartList!![0].taxlistDynamic,
                         mainCartList[0].taxlistDynamic
                     )
+
+                    if (prefProvider.getValueboolean(IS_UPDATE_ORDER_FROM_ACTIVE_ORDER, false)) {
+                        cartList!![0].items?.forEach { itemdatap ->
+                            itemdatap.isEdited = true
+                        }
+                    }
                     Log.d(TAG, "data list: " + Gson().toJson(mainCartList[0].taxlistDynamic))
                     val manualItems = cartList!![0].items
                     val mainItems = mainCartList[0].items
