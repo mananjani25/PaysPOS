@@ -86,6 +86,7 @@ class TransactionAdapter(val viewModel: TransactionViewModel) :
             itemBinding.txtTeamName?.text = model.employeeName
 
             if (model.refundedAmount != 0.0) {
+                itemBinding.txtTip.isEnabled = false
                 itemBinding.tvRefundedAmount.visibility = View.VISIBLE
                 itemBinding.tvRefundedAmount.text =
                     "(Refunded " + context.getString(R.string.symbole) + String.format(
@@ -93,6 +94,7 @@ class TransactionAdapter(val viewModel: TransactionViewModel) :
                         model.refundedAmount
                     ) + ")"
             } else {
+                itemBinding.txtTip.isEnabled = true
                 itemBinding.tvRefundedAmount.visibility = View.GONE
             }
 

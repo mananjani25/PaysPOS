@@ -916,6 +916,7 @@ class TransactionDetailsFragment : Fragment() {
 
                 if (!paymentDetailsResponse.data.order.refund_detail.refunded_amount.equals(0.0)) {
                     binding.tvIssueRefund.visibility = View.GONE
+                    binding.tvtipadd.visibility = View.GONE
                 }
 
                 if (paymentDetailsResponse.data.order.open_order_type.equals(
@@ -932,6 +933,7 @@ class TransactionDetailsFragment : Fragment() {
                             ))
                 ) {
                     binding.tvIssueRefund.visibility = View.GONE
+                    binding.tvtipadd.visibility = View.GONE
                 }
 
 

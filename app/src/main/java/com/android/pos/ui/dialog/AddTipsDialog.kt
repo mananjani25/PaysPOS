@@ -262,32 +262,28 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
 
             var amount = 0.0
 
-            val stAmount = binding.edtAmount.text.toString().replace("$", "")
+            amount = binding.edtAmount.text.toString().replace("$", "").trim().toDouble()
+            if (amount >0.0){
+                val result = Bundle().apply {
+                    putDouble("tipAmount", amount)
+                    tipID?.let { putInt("tipId", tipID ?: 0) }
 
-            if (stAmount.isEmpty() && stAmount.toDouble() < 0) {
+                }
+                if (isFromTransaction) {
+                    setFragmentResult("request_key_tips", result)
+                } else {
+                    requireActivity().supportFragmentManager.setFragmentResult(
+                        "request_key_tips",
+                        result
+                    )
+                }
+
+                findNavController().navigateUp()
+            }else{
                 AlertUtils.showCustomAlert(requireContext(), "Please enter tip amount")
                 return@setOnClickListener
             }
 
-            if (stAmount.isNotEmpty() && stAmount != "0.00") {
-                amount = binding.edtAmount.text.toString().replace("$", "").trim().toDouble()
-            }
-
-            val result = Bundle().apply {
-                putDouble("tipAmount", amount)
-                tipID?.let { putInt("tipId", tipID ?: 0) }
-
-            }
-            if (isFromTransaction) {
-                setFragmentResult("request_key_tips", result)
-            } else {
-                requireActivity().supportFragmentManager.setFragmentResult(
-                    "request_key_tips",
-                    result
-                )
-            }
-
-            findNavController().navigateUp()
         }
     }
 

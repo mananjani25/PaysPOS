@@ -224,7 +224,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                             false
                         )
                     ) {
-                        Log.e(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
+                        LogUtil.logE(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
                         serviceChargeList = arrayListOf()
                         it.data.forEach { service ->
                             if (service.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
