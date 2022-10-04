@@ -140,42 +140,12 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
     }
 
     private fun totalPrice(model: TbItem): Double {
-
-        return if (model.modifiers.isNotEmpty()) {
-
-            var totalPrice = 0.0
-
-            val mList = model.modifiers
-            mList.forEach { items ->
-                totalPrice += items.price * items.itemQuantity
-            }
-
-            (model.price * model.itemQuantity) + totalPrice
-        } else {
-
-            model.price * model.itemQuantity
-
-        }
+        return model.price * model.itemQuantity
     }
 
 
     private fun totalEachPrice(model: TbItem): Double {
-        return if (model.modifiers.isNotEmpty()) {
-
-            var totalPrice = 0.0
-
-            val mList = model.modifiers
-            mList.forEach { items ->
-                totalPrice += items.price * 1
-            }
-
-            (model.price * 1) + totalPrice
-        } else {
-
-            model.price * 1
-
-        }
-
+        return model.price * 1
     }
 
 
