@@ -4,6 +4,7 @@ import android.graphics.Point
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.*
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
@@ -130,6 +131,7 @@ class ItemDialog : DialogFragment(), View.OnClickListener {
                 dismiss()
             }
             R.id.txtDone -> {
+                Log.e("selectedItemList", "selectedItemList  ${adapter.selectedItemList().size}")
                 setNavigationResult(DIALOG_KEY, adapter.selectedItemList())
                 findNavController().popBackStack()
             }

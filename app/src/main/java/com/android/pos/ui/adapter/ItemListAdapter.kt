@@ -48,12 +48,15 @@ class ItemListAdapter(private val isChoose: Boolean, private val where: String) 
 
         init {
             binding.ivCheck.setOnClickListener {
-                filterList[layoutPosition].isChecked = !filterList[layoutPosition].isChecked
+                filterList[bindingAdapterPosition].isChecked =
+                    !filterList[bindingAdapterPosition].isChecked
 
-                if (filterList[layoutPosition].isChecked) {
-                    selectedItemList.add(filterList[layoutPosition])
+                if (filterList[bindingAdapterPosition].isChecked) {
+
+                    selectedItemList.add(filterList[bindingAdapterPosition])
                 } else {
-                    selectedItemList.remove(filterList.get(layoutPosition))
+
+                    selectedItemList.remove(filterList.get(bindingAdapterPosition))
                 }
                 notifyDataSetChanged()
 
@@ -88,7 +91,7 @@ class ItemListAdapter(private val isChoose: Boolean, private val where: String) 
     }
 
     fun addPaginationData(list: ArrayList<TbItem>) {
-        filterList.addAll(filterList.size , list)
+        filterList.addAll(filterList.size, list)
         /*for (i in 0 until list.size) {
 
             filterList.add(list[i])

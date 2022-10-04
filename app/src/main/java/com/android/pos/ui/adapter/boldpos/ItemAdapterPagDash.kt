@@ -47,21 +47,21 @@ class ItemAdapterPagDash(
         fun bind(model: TbItem?, position: Int) {
             var itename_price: StringBuffer = StringBuffer()
 
-                if (model?.name?.length!! > 30) {
-                    itename_price.append(
-                        model?.name?.substring(
-                            0,
-                            30
-                        ) + "...\n" + model?.price?.let { MethodUtils.roundOffAmount(it) })
-                    binding.txtCategoryName.text = itename_price
-                } else {
-                    binding.txtCategoryName.text =
-                        "" + model?.name + "\n\n" + model?.price?.let {
-                            MethodUtils.roundOffAmount(
-                                it
-                            )
-                        }
-                }
+            if (model?.name?.length!! >= 30) {
+                itename_price.append(
+                    model?.name?.substring(
+                        0,
+                        30
+                    ) + "...\n" + model?.price?.let { MethodUtils.roundOffAmount(it) })
+                binding.txtCategoryName.text = itename_price
+            } else {
+                binding.txtCategoryName.text =
+                    "" + model?.name + "\n\n" + model?.price?.let {
+                        MethodUtils.roundOffAmount(
+                            it
+                        )
+                    }
+            }
 
 
             binding.txtPrice.gone()
@@ -80,7 +80,10 @@ class ItemAdapterPagDash(
             binding.root.setOnClickListener {
                 try {
                     getItem(position)?.let {
-                        LogUtil.logE("ITemAdapter", "onClickposition  ${position}  itemname ${it.name}")
+                        LogUtil.logE(
+                            "ITemAdapter",
+                            "onClickposition  ${position}  itemname ${it.name}"
+                        )
                         listener.onItemSelected(it)
                     }
                 } catch (e: Exception) {

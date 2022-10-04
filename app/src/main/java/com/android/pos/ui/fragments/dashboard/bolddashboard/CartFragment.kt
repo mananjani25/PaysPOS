@@ -694,7 +694,7 @@ class CartFragment(
                 LogUtil.logE(TAG, "listSize  ${Gson().toJson(it)}")
                 if (it.isNotEmpty()) {
                     if (isFromPayment) {
-                        viewModel.selectedCustomer =null
+                        viewModel.selectedCustomer = null
                         viewModel.redeemLoyaltyInfo.isLoyaltyApplied = false
                         viewModel.redeemLoyaltyInfo.needToApplyLoyalty = false
                         if (MethodUtils.isEnableCashDiscount(requireContext())) {
@@ -1293,6 +1293,17 @@ class CartFragment(
                     }
                 }
             }
+
+            viewModelPayment.showProgressCash.observe(viewLifecycleOwner) { event ->
+                event.getContentIfNotHandled()?.let {
+                    LogUtil.logE("observeShowProgress3", isSaveOrder.toString())
+                    if (it) {
+                        ProgressUtils.showProgressDialog(requireActivity())
+                    } else {
+                        ProgressUtils.dismissProgressDialog()
+                    }
+                }
+            }
         }
     }
 
@@ -1657,7 +1668,6 @@ class CartFragment(
                         )
                     }
                     R.id.menu_discount -> {
-
                         val bundle = Bundle()
                         bundle.putBoolean("isOrderDiscount", true)
                         bundle.putDouble("totalPrice", viewModel.subTotalPrice)
@@ -1666,10 +1676,19 @@ class CartFragment(
                             bundle.putString("orderDiscountType", cartlist[0].discountType)
                             bundle.putDouble("selectedvalue", cartlist[0].discountSelectdValue)
                         }
-                        findNavController().navigate(
-                            R.id.action_dashboardCategoryBoldPOS_to_addDiscountDialog,
-                            bundle
-                        )
+                        bundle.putString("isFrom","orderDiscount")
+                        if (prefProvider.isAdmin() || prefProvider.isManager()){
+
+                            findNavController().navigate(
+                                R.id.action_dashboardCategoryBoldPOS_to_addDiscountDialog,
+                                bundle
+                            )
+                        }else{
+                            findNavController().navigate(
+                                R.id.actionboldpos_to_pascodeManagerDailog,bundle
+                            )
+                        }
+
 
                     }
                     /*R.id.menu_note -> {
@@ -1922,7 +1941,7 @@ class CartFragment(
             floorModel.tableType = cartlist.get(0).dineInList?.get(1)?.floorPlanTable?.tableType
             floorModel.tableNumber = cartlist.get(0).dineInList?.get(1)?.floorPlanTable?.tableNumber
             floorModel.chairCount = cartlist.get(0).dineInList?.get(1)?.floorPlanTable?.chairCount
-            floorModel.tableName =  cartlist.get(0).dineInList?.get(1)?.floorPlanTable?.tableName
+            floorModel.tableName = cartlist.get(0).dineInList?.get(1)?.floorPlanTable?.tableName
 
 
         }

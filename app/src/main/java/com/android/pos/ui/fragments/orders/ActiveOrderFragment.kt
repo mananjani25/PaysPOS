@@ -749,12 +749,19 @@ class ActiveOrderFragment(
         val inventoryModelList = ArrayList<TbItem>()
 
         order.orderItems.forEach {
-
+            var ismanualsale = false
+            var mannual_Sale_ID = ""
+            if (it.itemId == 1) {
+                mannual_Sale_ID = UUID.randomUUID().toString()
+                ismanualsale = true
+            }
             val items = TbItem().apply {
                 orderItemId = it.id
                 itemId = it.itemId
                 name = it.itemName
                 cost = it.price
+                isManualSales = ismanualsale
+                manualSaleId = mannual_Sale_ID
                 price = it.price
                 priceType = ""
                 itemQuantity = it.quantity
@@ -894,6 +901,7 @@ class ActiveOrderFragment(
             order.customer?.lastName.toString(),
             order.customer?.birthDate.toString(),
             order.customer?.email.toString(),
+            false,
             false,
             0,
             order.customer?.company.toString(),

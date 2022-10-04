@@ -50,6 +50,7 @@ import java.util.*
 class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
     private var customerID: Int? = null
     private var enrollToLoyalty: Boolean = false
+    private var same_as_billing_address: Boolean = false
     private var finalReward: Int = 0
     private var deliveryType: String = "Pickup"
     private var selectedDate: String? = null
@@ -359,6 +360,7 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
                     "",
                     MethodUtils.getText(binding.edtEmail),
                     enrollToLoyalty,
+                    same_as_billing_address,
                     finalReward,
                     MethodUtils.getText(binding.edtCompany),
                     phonesList,
@@ -445,6 +447,7 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
 
         customerID = customer.id
         enrollToLoyalty = customer.enroll_to_loyalty ?: false
+        same_as_billing_address = customer.same_as_billing_address ?: false
         finalReward = customer.final_reward ?: 0
 
         binding.edtFirstName.setText(customer.first_name)

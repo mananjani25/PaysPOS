@@ -36,7 +36,10 @@ import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.statusUtils.Status
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
+import kotlin.collections.LinkedHashMap
 
 @AndroidEntryPoint
 class Customer : Fragment(), ItemCallback {
@@ -213,9 +216,10 @@ class Customer : Fragment(), ItemCallback {
                                         }
                                     }
                                 }
-                                if (!isIn)
+                                if (!isIn) {
                                     setSubTitleFirstLastName(data[0])
-                                loadFragment(data[0])
+                                    loadFragment(data[0])
+                                }
 
                             } catch (e: Exception) {
                                 e.printStackTrace()
@@ -283,16 +287,16 @@ class Customer : Fragment(), ItemCallback {
         ) {
             var final_string =
                 model.first_name.toString().substring(0, 1)
-                    .toUpperCase() + model.first_name.toString()
+                    .uppercase(Locale.getDefault()) + model.first_name.toString()
                     .substring(1, model.first_name.toString().length) + " " +
                         model.last_name.toString().substring(0, 1)
-                            .toUpperCase() + model.last_name.toString()
+                            .uppercase(Locale.getDefault()) + model.last_name.toString()
                     .substring(1, model.last_name.toString().length)
             binding.layoutTool.txtSubTitle.setText(final_string)
         } else {
             var final_string =
                 model.first_name.toString().substring(0, 1)
-                    .toUpperCase() + model.first_name.toString()
+                    .uppercase(Locale.getDefault()) + model.first_name.toString()
                     .substring(1, model.first_name.toString().length)
             binding.layoutTool.txtSubTitle.setText(final_string)
         }

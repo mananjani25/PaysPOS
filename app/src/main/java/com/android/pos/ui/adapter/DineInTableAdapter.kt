@@ -185,6 +185,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 //            colorGreen/
 
             Log.e(TAG, "guestAmtguestAmt  ${guestAmt}")
+            binding.btnPay.visibility = View.VISIBLE
             if (isPaid && !noItem) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     binding.btnPay.setBackgroundColor(binding.root.context.getColor(R.color.colorGreen))
@@ -197,6 +198,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                     binding.txtPay.text = "Paid"
                 }
             } else if (noItem && guestAmt == 0.0) {
+                Log.e(TAG,"NoItemGuestAmt")
                 binding.btnPay.visibility = View.GONE
             } else {
                 binding.btnPay.visibility = View.VISIBLE
@@ -209,6 +211,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             }
 
             if (list[layoutPosition].title?.lowercase() == "Whole Table".lowercase() || list.get(0).totalGuestCount == 1) {
+                Log.e(TAG,"TxtPayTitelTotal")
                 binding.txtPay.visibility = View.GONE
                 var layoutmanager: LinearLayout.LayoutParams = LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -217,6 +220,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 layoutmanager.setMargins(0, 0, 0, 0)
 
             } else {
+                binding.txtPay.visibility = View.VISIBLE
                 // binding.txtTotal.visibility = View.VISIBLE
             }
 

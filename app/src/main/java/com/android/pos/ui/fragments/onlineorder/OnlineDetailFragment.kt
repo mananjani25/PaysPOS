@@ -642,12 +642,23 @@ class OnlineDetailFragment(
                             adapter.orderList[pos].magensa_response_data
                         )
                     }
-                    if (findNavController().currentDestination?.id == R.id.onlineOrderFragment) {
-                        findNavController().navigate(
-                            R.id.action_onlineOrder_to_reasonForrefundonline,
-                            bundle
-                        )
+                    bundle.putString("isFrom","rejectOnlineOrder")
+                    if (prefProvider.isAdmin()||prefProvider.isManager()){
+                        if (findNavController().currentDestination?.id == R.id.onlineOrderFragment) {
+                            findNavController().navigate(
+                                R.id.action_onlineOrder_to_reasonForrefundonline,
+                                bundle
+                            )
+                        }
+                    }else{
+                        if (findNavController().currentDestination?.id == R.id.onlineOrderFragment) {
+                            findNavController().navigate(
+                                R.id.action_onlineOrder_to_passcodeManager,
+                                bundle
+                            )
+                        }
                     }
+
 
                 }
                 this.negativeButton("NO") {
@@ -827,7 +838,9 @@ class OnlineDetailFragment(
             }
 
             builder = Builder(pname, PrinterClass.language, requireActivity())
-
+            builder.addTextLineSpace(30)
+            builder.addFeedUnit(30)
+            builder.addFeedLine(1)
             if (customerReceiptPrinters.name.substring(0, 4)
                     .equals("TM-U", true) || customerReceiptPrinters.name.contains("U")
             ) {
@@ -1427,7 +1440,7 @@ class OnlineDetailFragment(
         try {
 
             PrintSunmiUtils.fontSize(kitchenSettingModel.fonts)
-
+            SunmiPrinterApi.getInstance().lineWrap(1)
             PrintSunmiUtils.orderIdSunmi(
                 "OrderID:" + orderData?.data.id
             )
@@ -1588,7 +1601,7 @@ class OnlineDetailFragment(
         try {
 
             SunmiPrintHelper.getInstance().initPrinter()
-
+            SunmiPrintHelper.getInstance().lineWrap(1)
             PrintSunmiUtils.headerText("OrderID:" + orderData?.data.id)
             SunmiPrintHelper.getInstance().lineWrap(1)
 

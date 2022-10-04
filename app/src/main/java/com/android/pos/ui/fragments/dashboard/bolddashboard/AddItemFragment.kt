@@ -54,7 +54,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
     private lateinit var modifiersAdapter: ModifiersAdapter
     private var isUpdateItem: Boolean = false
 
-    private lateinit var adapter: ItemModifierSetAdapter
+    private var adapter: ItemModifierSetAdapter? = null
     private var intArray: IntArray? = null
     private var mainModifiersId: ArrayList<Int> = arrayListOf()
     private var mainVariationId: ArrayList<Int> = arrayListOf()
@@ -256,12 +256,12 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
 
 
 
-            if (item.modifier_set_ids.isNotEmpty()) {
+            if (item.modifier_set_ids.isNotEmpty() && adapter != null) {
                 if (minMaxValidationCheck(adapter)) {
 
-                    val modifiers = adapter.getSelectedModifiers()
+                    val modifiers = adapter?.getSelectedModifiers()
 
-                    if (modifiers.isNotEmpty()) {
+                    if (modifiers?.isNotEmpty() == true) {
                         modifiers.forEach {
                             it.itemQuantity = qty
 
@@ -402,11 +402,18 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                 putDouble("itemOrderDiscount", perItemDiscount)
                 putInt("totalquantity", totalItemswithQuantity)
             }
+            bundle.putString("isFrom","itemDiscount")
+            if (prefProvider.isAdmin() || prefProvider.isManager()) {
+                findNavController().navigate(
+                    R.id.action_dashboardCategoryBoldPOS_to_addDiscountDialog,
+                    bundle
+                )
+            } else {
+                findNavController().navigate(
+                    R.id.actionboldpos_to_pascodeManagerDailog, bundle
+                )
+            }
 
-            findNavController().navigate(
-                R.id.action_dashboardCategoryBoldPOS_to_addDiscountDialog,
-                bundle
-            )
         }
         binding.txtAddNote.setOnClickListener {
 
@@ -544,7 +551,11 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                                 } else binding.dividerLine.root.visibility = View.GONE
 
                                 if (intArray!!.isNotEmpty()) {
-                                    binding.dividerLine2.root.visibility = View.VISIBLE
+                                    if (adapter == null) {
+                                        binding.dividerLine2.root.visibility = View.GONE
+                                    } else {
+                                        binding.dividerLine2.root.visibility = View.VISIBLE
+                                    }
 
                                     viewModel.modifierSet(intArray!!).observe(requireActivity()) {
                                         if (it.data != null && it.data.isNotEmpty() && view != null) {
@@ -565,8 +576,8 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                                                 }
 
                                             }
-                                            adapter.add(it.data)
-                                            adapter.setData(item.modifiers)
+                                            adapter?.add(it.data)
+                                            adapter?.setData(item.modifiers)
                                         } else binding.rvModifiersList.visibility = View.GONE
 
                                     }
