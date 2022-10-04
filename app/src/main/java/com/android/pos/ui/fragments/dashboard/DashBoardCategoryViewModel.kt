@@ -475,6 +475,11 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     }
 
+
+    fun addGuestFromDashBoard(cartList: List<CartModel>?) {
+        addCart(cartList!![0])
+    }
+
     fun cartLogic(
         cartList: List<CartModel>?,
         item: TbItem?,

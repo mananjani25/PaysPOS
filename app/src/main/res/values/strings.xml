@@ -822,6 +822,7 @@
     <string name="toast_5">Not Found InnterPrinter!</string>
     <string name="toast_6">Bluetooth connect failed!</string>
     <string name="no_categories_available">No categories available</string>
+    <string name="add_guest">Add Guest</string>
 
 </resources>
 

@@ -172,14 +172,28 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         observeQueueCreated()
 
         observeTipsList()
+        observeAddGuest()
 
         navigateDineInOrderNew()
         observeUnMergeTable()
+        requireActivity().supportFragmentManager.setFragmentResultListener(
+            "request_for_guestcount",
+            viewLifecycleOwner
+        ) { requestKey: String, bundle: Bundle ->
+            var count: Int = bundle.getInt("count")
+            addGuestToOrder(count)
+        }
         return binding.root
     }
 
-    private fun setProgressDialog() {
-
+    private fun observeAddGuest() {
+        viewModel.updateOrder.observe(viewLifecycleOwner) { event ->
+            AlertUtils.showCustomAlertWithListenerWithOK(
+                requireContext(), event.getContentIfNotHandled().toString()
+            ) { _, _ ->
+                orderId?.let { viewModel.apiCallOrderDetails(it) }
+            }
+        }
     }
 
 
@@ -303,7 +317,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             findNavController().navigate(R.id.action_dineInOrderTable_to_dineInFragment)
 
         }
-
+        binding.txtAddguest.setOnClickListener {
+            findNavController().navigate(
+                R.id.action_dineInOrderTable_to_addguestcount
+            )
+        }
         binding.txtFireAll.setOnClickListener {
 
             checkForAutoFire(false)
@@ -837,6 +855,48 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         binding.llInfo.setOnClickListener {
             showPopupWindow(it)
         }
+    }
+
+    private fun addGuestToOrder(count: Int) {
+
+        val adapterList = dineInTableAdapter.getList()
+        cartList = getCartModel(adapterList.toCollection(arrayListOf()))
+        Log.d(TAG, "addGuestToOrder: " + Gson().toJson(cartList))
+        var existing_count = cartList?.dineInList!!.size - 1
+        var total_count = existing_count + count
+        if (total_count <= 15) {
+            var existinglist: ArrayList<DineInModel> = arrayListOf()
+            existinglist.addAll(cartList?.dineInList!!.toMutableList())
+            Log.d(TAG, "addGuestToOrder size: " + existinglist.size)
+            val dineInList: java.util.ArrayList<DineInModel> = arrayListOf()
+            if (existinglist.isNotEmpty()) {
+                for (i in 1..count) {
+                    dineInList.add(
+                        DineInModel(
+                            0,
+                            false,
+                            0,
+                            "Guest ${existing_count.plus(i)}",
+                            floorPlanTable = cartList!!.dineInList!![0].floorPlanTable
+
+                        )
+                    )
+                }
+
+            }
+            existinglist.addAll(dineInList)
+            cartList?.dineInList = existinglist.toList()
+            Log.d(TAG, "addGuestToOrder size: " + cartList!!.dineInList?.size)
+            Log.d(TAG, "addGuestToOrder: " + Gson().toJson(cartList?.dineInList))
+            val request = viewModel.updateOrderRequest(cartList!!)
+            orderId?.let { viewModel.updateOrder(it, request) }
+        } else {
+            AlertUtils.showCustomAlertWithListenerWithOK(
+                requireContext(), "You can't add more than 15 Guest in an order."
+            ) { _, _ ->
+            }
+        }
+
     }
 
     private fun getTotalTaxBirfurcation(item: TbItem, itemtype: TaxData): Double {
@@ -2400,8 +2460,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
                     if (notPayAnyAmount) {
+                        binding.txtAddguest.visibility = View.GONE
                         binding.txtEditOrder.visibility = View.GONE
                     } else {
+                        binding.txtAddguest.visibility = View.VISIBLE
                         binding.txtEditOrder.visibility = View.VISIBLE
                     }
 

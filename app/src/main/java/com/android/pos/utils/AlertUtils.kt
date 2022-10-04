@@ -407,6 +407,9 @@ object AlertUtils {
         context: Context,
         message: String?
     ) {
+        if (message == null || message.equals("null", ignoreCase = true)) {
+            return
+        }
         val dialogView = LayoutInflater.from(context).inflate(R.layout.view_custom_dialog, null)
         val customDialog = AlertDialog.Builder(context)
             .setView(dialogView)
@@ -433,6 +436,9 @@ object AlertUtils {
         message: String?,
         listener: DialogInterface.OnClickListener?
     ) {
+        if (message == null || message.equals("null", ignoreCase = true)) {
+            return
+        }
         val dialogView = LayoutInflater.from(context).inflate(R.layout.view_custom_dialog, null)
         val customDialog = AlertDialog.Builder(context)
             .setView(dialogView)
@@ -463,6 +469,9 @@ object AlertUtils {
         message: String?,
         listener: DialogInterface.OnClickListener?
     ) {
+        if (message == null || message.equals("null", ignoreCase = true)) {
+            return
+        }
         val dialogView = LayoutInflater.from(context).inflate(R.layout.view_custom_dialog, null)
         val customDialog = AlertDialog.Builder(context)
             .setView(dialogView)
@@ -495,6 +504,9 @@ object AlertUtils {
         message: String?,
         listener: DialogInterface.OnClickListener?
     ) {
+        if (message == null || message.equals("null", ignoreCase = true)) {
+            return
+        }
         val dialogView = LayoutInflater.from(context).inflate(R.layout.view_custom_dialog_ok, null)
         val customDialog = AlertDialog.Builder(context)
             .setView(dialogView)
@@ -526,7 +538,8 @@ object AlertUtils {
         message: String?,
         listener: DialogInterface.OnClickListener?
     ) {
-        val dialogView = LayoutInflater.from(context).inflate(R.layout.view_custom_dialog_ok_cancel, null)
+        val dialogView =
+            LayoutInflater.from(context).inflate(R.layout.view_custom_dialog_ok_cancel, null)
         val customDialog = AlertDialog.Builder(context)
             .setView(dialogView)
             .setCancelable(false)

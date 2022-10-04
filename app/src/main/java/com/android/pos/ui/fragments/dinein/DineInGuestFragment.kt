@@ -29,6 +29,7 @@ import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.statusUtils.Resource
+import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -124,18 +125,17 @@ class DineInGuestFragment : Fragment(), GuestListAdapter.GuestListner {
     override fun onGuestSelected(numberOfGuest: Int) {
         guestCount = numberOfGuest
 
-        LogUtil.logE(TAG,"DineMergeStatus  ${dineInFloorTableModel.status}")
+        Log.e(TAG, "DineMergeStatus  ${dineInFloorTableModel.status}")
 
-        if(dineInFloorTableModel.status== AVAILABLE){
+        if (dineInFloorTableModel.status == AVAILABLE) {
             viewModelDash.deleteCart()
             prefProvider.setValue(Constants.CUSTOMER_NAME, "")
             prefProvider.setValue(Constants.PREF_CUSTOMER, "")
             prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
         }
-        if (dineInFloorTableModel.status == MERGED){
+        if (dineInFloorTableModel.status == MERGED) {
             viewModel.getTableStatus(dineInFloorTableModel.id, MERGED)
-        }
-        else{
+        } else {
             viewModel.getTableStatus(dineInFloorTableModel.id, OCCUPIED)
         }
 

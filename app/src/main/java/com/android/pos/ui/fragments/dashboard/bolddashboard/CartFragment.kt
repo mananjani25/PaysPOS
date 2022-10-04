@@ -83,6 +83,7 @@ class CartFragment(
     var fragmentId: Int? = null
     var checkoutHeaderId: Int = 0
     var dashboardHeaderId: Int = 0
+    var numOfGuest: Int = 0
     private var isOrderUpdate: Boolean = false
     private var isLoyaltyApplied: Boolean = false
     private lateinit var cartAdapter: CartAdapter
@@ -410,6 +411,13 @@ class CartFragment(
             viewModel.setcheckedLoyaltyApply(false)
             viewModel.selectedCustomer = data
         }
+        requireActivity().supportFragmentManager.setFragmentResultListener(
+            "request_for_guestcount",
+            viewLifecycleOwner
+        ) { requestKey: String, bundle: Bundle ->
+            var count: Int = bundle.getInt("count")
+            addGuestToOrder(count)
+        }
     }
 
     private fun removeObserver() {
@@ -479,15 +487,16 @@ class CartFragment(
         binding.rvCartDineIn.visible()
         binding.rvCartList.gone()
         binding.rvCartDineIn.adapter = dineInCartAdapter
-        val numOfGuest: Int by lazy {
-            updateBundle!!.getInt("numberOfGuest")
+        numOfGuest = updateBundle!!.get("numberOfGuest") as Int
+
+
+        dineInFloorTableModel =
+            updateBundle?.get("floorplan") as GetFloorPlanResponse.Data.FloorPlanTable
+        var orderDEtails: GetOrderDetailsResponse.Data.FloorPlanTable? = null
+        if (updateBundle!!.get("tableDetails") != null) {
+            orderDEtails =
+                updateBundle!!.get("tableDetails") as GetOrderDetailsResponse.Data.FloorPlanTable?
         }
-
-        dineInFloorTableModel = arguments?.getParcelable("floorplan")
-
-
-        val orderDEtails: GetOrderDetailsResponse.Data.FloorPlanTable? =
-            arguments?.getParcelable("tableDetails")
         if (orderDEtails != null) {
             orderFloorDetails = orderDEtails
         }
@@ -1375,6 +1384,44 @@ class CartFragment(
 
     }
 
+    fun <T> concatenate(vararg lists: List<T>): List<T> {
+        return listOf(*lists).flatten()
+    }
+
+    fun addGuestToOrder(count: Int) {
+        Log.d(TAG, "addGuestToOrder: " + Gson().toJson(cartlist[0].dineInList))
+        var existing_count = cartlist[0].dineInList!!.size - 1
+        var total_count = existing_count + count
+        if (total_count <= 15) {
+            var existinglist: ArrayList<DineInModel> = arrayListOf()
+            existinglist.addAll(cartlist[0].dineInList!!.toMutableList())
+            Log.d(TAG, "addGuestToOrder size: " + existinglist.size)
+            val dineInList: java.util.ArrayList<DineInModel> = arrayListOf()
+            if (existinglist.isNotEmpty()) {
+                for (i in 1..count) {
+                    dineInList.add(
+                        DineInModel(
+                            0,
+                            false,
+                            0,
+                            "Guest ${existing_count.plus(i)}",
+                            floorPlanTable = cartlist[0].dineInList!![0].floorPlanTable
+
+                        )
+                    )
+                }
+
+            }
+            existinglist.addAll(dineInList)
+            cartlist[0].dineInList = existinglist.toList()
+            viewModel.addGuestFromDashBoard(cartlist)
+        } else {
+            AlertUtils.showCustomAlertWithListenerWithOK(
+                requireContext(), "You can't add more than 15 Guest in an order."
+            ) { _, _ ->
+            }
+        }
+    }
 
     override fun onItemDelete(position: Int, itemPosition: Int, data: TbItem) {
 
@@ -1442,7 +1489,7 @@ class CartFragment(
                         if (dList.isNotEmpty()) {
                             dList[0].floorPlanTable?.id?.let {
 
-                                if (dList[0]?.floorPlanTable?.status.toString() == Constants.MERGED) {
+                                if (dList[0].floorPlanTable?.status.toString() == Constants.MERGED) {
                                     viewModel.getTableStatus(it, Constants.MERGED)
                                 } else {
                                     viewModel.getTableStatus(
@@ -1635,9 +1682,14 @@ class CartFragment(
 
             val popupMenu = PopupMenu(requireContext(), it)
             popupMenu.menuInflater.inflate(R.menu.cart_menu, popupMenu.menu)
-            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN)
+            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
                 if (prefProvider.getValue(Constants.CUSTOMER_NAME, "").isEmpty())
                     popupMenu.menu.findItem(R.id.menu_remove_customer).isVisible = false
+                popupMenu.menu.findItem(R.id.menu_add_guest).isVisible = true
+            } else {
+                popupMenu.menu.findItem(R.id.menu_add_guest).isVisible = false
+            }
+
             if (cartlist.isEmpty()) {
                 popupMenu.menu.findItem(R.id.menu_discount).isVisible = false
                 popupMenu.menu.findItem(R.id.menu_order_note).isVisible = false
@@ -1660,6 +1712,11 @@ class CartFragment(
                         }
                         clearCustomer()
 
+                    }
+                    R.id.menu_add_guest -> {
+                        findNavController().navigate(
+                            R.id.action_dashboardCategoryBoldPOS_to_addguestcount
+                        )
                     }
                     R.id.menu_order_note -> {
                         findNavController().navigate(
