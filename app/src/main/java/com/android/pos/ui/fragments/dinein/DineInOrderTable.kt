@@ -85,7 +85,6 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
 class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
@@ -2339,7 +2338,13 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                     }
                                 }
 
+
                             }
+                            var dividedServiceCharge =
+                                tempServicecharge / (baseResponse.guestAttributes.size - 1)
+                            var remainingguestCount =
+                                (baseResponse.guestAttributes.size - 1) - paidGuestCount
+                            tempServicecharge = dividedServiceCharge * remainingguestCount
 
                             serviceCharge = tempServicecharge
 
