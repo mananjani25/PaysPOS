@@ -2379,7 +2379,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                         if (isInRange(
                                                 it.min_guest_count!!,
                                                 it.max_guest_count!!,
-                                                totalGuestCount
+                                                baseResponse.guestAttributes.size-1
                                             )
                                         ) {
                                             isApplied = true
@@ -2400,12 +2400,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
                             }
-                            var dividedServiceCharge =
-                                tempServicecharge / (baseResponse.guestAttributes.size - 1)
-                            var remainingguestCount =
-                                (baseResponse.guestAttributes.size - 1) - paidGuestCount
-                            tempServicecharge = dividedServiceCharge * remainingguestCount
-
                             serviceCharge = tempServicecharge
 
                         }
