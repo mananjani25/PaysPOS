@@ -2117,6 +2117,34 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }
 
 
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+
+                builder.addTextFont(Builder.FONT_E)
+                // builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, customerSettingModel.fonts)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+
+                //customer signature line.
+                builder.addText(
+                    padLine(
+                        "Customer Signature",
+                        addHorizontalHalfCustomerReceiptLine(customerSettingModel.fonts),
+                        if (customerSettingModel.fonts == LARGE) {
+                            24
+                        } else {
+                            48
+                        }
+                    )
+                )
+
+
                 if (customerSettingModel.showQrCode) {
                     builder.addFeedLine(1)
                     builder.addTextAlign(Builder.ALIGN_CENTER)
@@ -2646,7 +2674,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 PrintSunmiUtils.orderNote(getDineInOrderDetails?.note!!)
             }
+            SunmiPrinterApi.getInstance().lineWrap(2)
+            val str8 = padLine(
+                "Customer Signature",
+                "     _________________________",
+                48
+            ).toString()
 
+            PrintSunmiUtils.customerSignature(str8)
 
             if (customerSettingModel.showQrCode) {
 
@@ -3051,6 +3086,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 PrintSunmiUtils.orderNoteInner(getDineInOrderDetails?.note!!)
             }
 
+            SunmiPrintHelper.getInstance().lineWrap(2)
+            val str8 = padLine(
+                "Customer Signature",
+                "     _________________________",
+                48
+            ).toString()
+
+            PrintSunmiUtils.customerSignature(str8)
 
             if (customerSettingModel.showQrCode) {
 
@@ -4182,6 +4225,33 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     builder.addText(getDineInOrderDetails?.note)
                 }
 
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+
+                builder.addTextFont(Builder.FONT_E)
+                // builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, customerSettingModel.fonts)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+
+                //customer signature line.
+                builder.addText(
+                    padLine(
+                        "Customer Signature",
+                        addHorizontalHalfCustomerReceiptLine(customerSettingModel.fonts),
+                        if (customerSettingModel.fonts == LARGE) {
+                            24
+                        } else {
+                            48
+                        }
+                    )
+                )
+
 
                 if (customerSettingModel.showQrCode) {
                     builder.addFeedLine(1)
@@ -4736,6 +4806,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 PrintSunmiUtils.orderNote(getDineInOrderDetails?.note!!)
             }
 
+            SunmiPrinterApi.getInstance().lineWrap(2)
+            val str8 = padLine(
+                "Customer Signature",
+                "     _________________________",
+                48
+            ).toString()
+
+            PrintSunmiUtils.customerSignature(str8)
 
             if (customerSettingModel.showQrCode) {
 
@@ -5235,7 +5313,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 PrintSunmiUtils.orderNoteInner(getDineInOrderDetails?.note!!)
             }
 
+            SunmiPrintHelper.getInstance().lineWrap(2)
+            val str8 = padLine(
+                "Customer Signature",
+                "     _________________________",
+                48
+            ).toString()
 
+            PrintSunmiUtils.customerSignature(str8)
             if (customerSettingModel.showQrCode) {
 
                 SunmiPrintHelper.getInstance().lineWrap(1)
@@ -7028,6 +7113,33 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 builder.addText(receiptModel?.order?.note)
             }
 
+            builder.addTextLineSpace(30)
+            builder.addFeedUnit(30)
+
+            builder.addTextFont(Builder.FONT_E)
+            // builder.addTextAlign(Builder.ALIGN_LEFT)
+            builder.addTextLang(Builder.LANG_EN)
+            addCustomerTextSize(builder, customerSettingModel.fonts)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.TRUE,
+                Builder.COLOR_1
+            )
+
+            //customer signature line.
+            builder.addText(
+                padLine(
+                    "Customer Signature",
+                    addHorizontalHalfCustomerReceiptLine(customerSettingModel.fonts),
+                    if (customerSettingModel.fonts == LARGE) {
+                        24
+                    } else {
+                        48
+                    }
+                )
+            )
+
 
             if (customerSettingModel.showQrCode) {
                 builder.addFeedLine(1)
@@ -7230,7 +7342,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 builder = Builder(pname, PrinterClass.language, requireActivity())
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
-                builder.addFeedLine(1)
+                builder.addFeedLine(2)
 
                 builder.addTextFont(Builder.FONT_E)
                 builder.addTextAlign(Builder.ALIGN_CENTER)
@@ -7582,7 +7694,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
-                builder.addFeedLine(1)
+                builder.addFeedLine(2)
                 builder.addTextFont(Builder.FONT_E)
                 builder.addTextAlign(Builder.ALIGN_CENTER)
                 builder.addTextLang(Builder.LANG_EN)
@@ -7971,7 +8083,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             PrintSunmiUtils.fontSize(kitchenSettingModel.fonts)
             SunmiPrinterApi.getInstance().printerInit()
-            SunmiPrinterApi.getInstance().lineWrap(1)
+            SunmiPrinterApi.getInstance().lineWrap(2)
             PrintSunmiUtils.orderIdLarge("OrderID:" + receiptModel?.order?.id)
             SunmiPrinterApi.getInstance().lineWrap(1)
 
@@ -8119,7 +8231,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         try {
             // PrintSunmiUtils.fontSizeInner(LARGE)
             SunmiPrintHelper.getInstance().initPrinter()
-            SunmiPrintHelper.getInstance().lineWrap(1)
+            SunmiPrintHelper.getInstance().lineWrap(2)
             PrintSunmiUtils.headerText("OrderID:" + receiptModel?.order?.id)
             SunmiPrintHelper.getInstance().lineWrap(1)
 
@@ -9096,6 +9208,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             }
 
+            SunmiPrinterApi.getInstance().lineWrap(2)
+            val str8 = padLine(
+                "Customer Signature",
+                "     _________________________",
+                48
+            ).toString()
+
+            PrintSunmiUtils.customerSignature(str8)
 
             if (customerSettingModel.showQrCode) {
                 SunmiPrinterApi.getInstance().lineWrap(1)
@@ -9735,6 +9855,15 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 PrintSunmiUtils.orderNoteInner(receiptModel?.order?.note!!)
 
             }
+
+            SunmiPrintHelper.getInstance().lineWrap(2)
+            val str8 = padLine(
+                "Customer Signature",
+                "     _________________________",
+                48
+            ).toString()
+
+            PrintSunmiUtils.customerSignature(str8)
 
 
             if (customerSettingModel.showQrCode) {

@@ -48,6 +48,12 @@
             android:background="@drawable/item_selector"
             android:textColor="@drawable/text_selector"
             android:textSize="@dimen/_5mdpi" />
+        <View
+            android:id="@+id/view_line_formodifier"
+            android:layout_width="match_parent"
+            android:visibility="gone"
+            android:background="@color/txt_color_blue"
+            android:layout_height="@dimen/_1sdp"/>
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 </layout>

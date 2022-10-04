@@ -840,7 +840,7 @@ class OnlineDetailFragment(
             builder = Builder(pname, PrinterClass.language, requireActivity())
             builder.addTextLineSpace(30)
             builder.addFeedUnit(30)
-            builder.addFeedLine(1)
+            builder.addFeedLine(2)
             if (customerReceiptPrinters.name.substring(0, 4)
                     .equals("TM-U", true) || customerReceiptPrinters.name.contains("U")
             ) {
@@ -1440,7 +1440,7 @@ class OnlineDetailFragment(
         try {
 
             PrintSunmiUtils.fontSize(kitchenSettingModel.fonts)
-            SunmiPrinterApi.getInstance().lineWrap(1)
+            SunmiPrinterApi.getInstance().lineWrap(2)
             PrintSunmiUtils.orderIdSunmi(
                 "OrderID:" + orderData?.data.id
             )
@@ -1601,7 +1601,7 @@ class OnlineDetailFragment(
         try {
 
             SunmiPrintHelper.getInstance().initPrinter()
-            SunmiPrintHelper.getInstance().lineWrap(1)
+            SunmiPrintHelper.getInstance().lineWrap(2)
             PrintSunmiUtils.headerText("OrderID:" + orderData?.data.id)
             SunmiPrintHelper.getInstance().lineWrap(1)
 

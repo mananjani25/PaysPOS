@@ -311,6 +311,14 @@ class PrintSunmiUtils {
             SunmiPrinterApi.getInstance().lineWrap(1)
 
         }
+        fun customerSignature(value: String) {
+
+            SunmiPrinterApi.getInstance().enableBold(true)
+            setFontSize()
+            SunmiPrinterApi.getInstance().printText(value)
+            SunmiPrinterApi.getInstance().lineWrap(1)
+
+        }
 
         fun tips(value: String) {
 

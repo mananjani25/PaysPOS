@@ -993,7 +993,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
             builder.addTextLineSpace(30)
             builder.addFeedUnit(30)
-            builder.addFeedLine(1)
+            builder.addFeedLine(2)
             builder.addTextFont(Builder.FONT_E)
             builder.addTextLang(Builder.LANG_EN)
             builder.addTextSize(fontSizeH, fontSizeW)

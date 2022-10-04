@@ -4155,6 +4155,33 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 builder.addText(getOrderDetailsResponse?.note)
             }
 
+            builder.addTextLineSpace(30)
+            builder.addFeedUnit(30)
+
+            builder.addTextFont(Builder.FONT_E)
+            // builder.addTextAlign(Builder.ALIGN_LEFT)
+            builder.addTextLang(Builder.LANG_EN)
+            addCustomerTextSize(builder, customerSettingModel.fonts)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.TRUE,
+                Builder.COLOR_1
+            )
+
+            //customer signature line.
+            builder.addText(
+                padLine(
+                    "Customer Signature",
+                    addHorizontalHalfCustomerReceiptLine(customerSettingModel.fonts),
+                    if (customerSettingModel.fonts == Constants.LARGE) {
+                        24
+                    } else {
+                        48
+                    }
+                )
+            )
+
 
             if (customerSettingModel.showQrCode) {
                 builder.addFeedLine(1)
@@ -4669,6 +4696,13 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             }
 
+            val str8 = padLine(
+                "Customer Signature",
+                "     _________________________",
+                48
+            ).toString()
+
+            PrintSunmiUtils.customerSignature(str8)
 
             if (customerSettingModel.showQrCode) {
                 PrintSunmiUtils.qrCode(getOrderDetailsResponse?.digitalReceiptUrl.toString())
@@ -5156,6 +5190,13 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             }
 
+            val str8 = padLine(
+                "Customer Signature",
+                "     _________________________",
+                48
+            ).toString()
+
+            PrintSunmiUtils.customerSignature(str8)
 
             if (customerSettingModel.showQrCode) {
                 PrintSunmiUtils.qrCodeInner(getOrderDetailsResponse?.digitalReceiptUrl.toString())
@@ -6089,6 +6130,33 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 builder.addText(getOrderDetailsResponse?.note)
             }
 
+            builder.addTextLineSpace(30)
+            builder.addFeedUnit(30)
+
+            builder.addTextFont(Builder.FONT_E)
+            // builder.addTextAlign(Builder.ALIGN_LEFT)
+            builder.addTextLang(Builder.LANG_EN)
+            addCustomerTextSize(builder, customerSettingModel.fonts)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.TRUE,
+                Builder.COLOR_1
+            )
+
+            //customer signature line.
+            builder.addText(
+                padLine(
+                    "Customer Signature",
+                    addHorizontalHalfCustomerReceiptLine(customerSettingModel.fonts),
+                    if (customerSettingModel.fonts == Constants.LARGE) {
+                        24
+                    } else {
+                        48
+                    }
+                )
+            )
+
 
             if (customerSettingModel.showQrCode) {
                 builder.addFeedLine(1)
@@ -6558,7 +6626,15 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 PrintSunmiUtils.orderNote(getOrderDetailsResponse?.note!!)
             }
 
+            SunmiPrinterApi.getInstance().lineWrap(2)
 
+            val str8 = padLine(
+                "Customer Signature",
+                "     _________________________",
+                48
+            ).toString()
+
+            PrintSunmiUtils.customerSignature(str8)
             if (customerSettingModel.showQrCode) {
 
                 getOrderDetailsResponse?.digitalReceiptUrl?.let { LogUtil.logE("digitalReceiptUrl", it) }
@@ -6972,6 +7048,15 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             }
 
 
+            SunmiPrintHelper.getInstance().lineWrap(2)
+            val str8 = padLine(
+                "Customer Signature",
+                "     _________________________",
+                48
+            ).toString()
+
+            PrintSunmiUtils.customerSignature(str8)
+
             if (customerSettingModel.showQrCode) {
 
                 getOrderDetailsResponse?.digitalReceiptUrl?.let { PrintSunmiUtils.qrCodeInner(it) }
@@ -7196,7 +7281,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
-                builder.addFeedLine(1)
+                builder.addFeedLine(2)
                 builder.addTextFont(Builder.FONT_E)
                 builder.addTextAlign(Builder.ALIGN_CENTER)
                 builder.addTextLang(Builder.LANG_EN)
@@ -7362,7 +7447,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
-                builder.addFeedLine(1)
+                builder.addFeedLine(2)
                 builder.addTextFont(Builder.FONT_E)
                 builder.addTextAlign(Builder.ALIGN_CENTER)
                 builder.addTextLang(Builder.LANG_EN)
@@ -7726,7 +7811,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             PrintSunmiUtils.fontSize(kitchenSettingModel.fonts)
             SunmiPrinterApi.getInstance().printerInit()
-            SunmiPrinterApi.getInstance().lineWrap(1)
+            SunmiPrinterApi.getInstance().lineWrap(2)
             PrintSunmiUtils.orderIdLarge("OrderID:" + getOrderDetailsResponse?.id)
             SunmiPrinterApi.getInstance().lineWrap(1)
 
@@ -7817,7 +7902,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
             SunmiPrintHelper.getInstance().initPrinter()
-            SunmiPrintHelper.getInstance().lineWrap(1)
+            SunmiPrintHelper.getInstance().lineWrap(2)
             PrintSunmiUtils.headerText("OrderID:" + getOrderDetailsResponse?.id)
             SunmiPrintHelper.getInstance().lineWrap(1)
 
