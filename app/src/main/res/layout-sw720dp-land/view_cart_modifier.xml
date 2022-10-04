@@ -52,11 +52,10 @@
             android:layout_gravity="end"
             android:layout_weight="1"
             android:gravity="end"
-
-            android:text="Each"
+            android:text="@{@string/symbole +``+String.format(@string/format,model.price)}"
             android:textColor="@color/color88"
             android:textSize="@dimen/_6mdpi"
-            android:visibility="invisible" />
+            android:visibility="visible" />
 
 
         <TextView

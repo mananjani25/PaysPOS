@@ -188,7 +188,7 @@
                 android:contentDescription="@string/search"
                 android:padding="@dimen/_5sdp"
                 android:src="@drawable/cashdrawer"
-                android:visibility="visible"
+                android:visibility="gone"
                 app:tint="@color/txtColor" />
 
 

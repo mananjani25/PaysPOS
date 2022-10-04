@@ -7276,7 +7276,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
-                builder.addFeedLine(1)
+                builder.addFeedLine(2)
                 builder.addTextFont(Builder.FONT_E)
                 builder.addTextAlign(Builder.ALIGN_CENTER)
                 builder.addTextLang(Builder.LANG_EN)
@@ -7442,7 +7442,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
-                builder.addFeedLine(1)
+                builder.addFeedLine(2)
                 builder.addTextFont(Builder.FONT_E)
                 builder.addTextAlign(Builder.ALIGN_CENTER)
                 builder.addTextLang(Builder.LANG_EN)
@@ -7806,7 +7806,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             PrintSunmiUtils.fontSize(kitchenSettingModel.fonts)
             SunmiPrinterApi.getInstance().printerInit()
-            SunmiPrinterApi.getInstance().lineWrap(1)
+            SunmiPrinterApi.getInstance().lineWrap(2)
             PrintSunmiUtils.orderIdLarge("OrderID:" + getOrderDetailsResponse?.id)
             SunmiPrinterApi.getInstance().lineWrap(1)
 
@@ -7897,7 +7897,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
             SunmiPrintHelper.getInstance().initPrinter()
-            SunmiPrintHelper.getInstance().lineWrap(1)
+            SunmiPrintHelper.getInstance().lineWrap(2)
             PrintSunmiUtils.headerText("OrderID:" + getOrderDetailsResponse?.id)
             SunmiPrintHelper.getInstance().lineWrap(1)
 

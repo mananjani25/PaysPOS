@@ -101,7 +101,7 @@ fun addPaymentDetailsThreeData(builder: Builder, keyValue: java.util.ArrayList<K
 
 
         if (it.key.toString().toLowerCase().contains("Refund".toLowerCase())) {
-            refund =   MethodUtils.roundOffAmount(it.value.toString().toDouble() ?: 0.0)
+            refund = MethodUtils.roundOffAmount(it.value.toString().toDouble() ?: 0.0)
         } else {
             title = it.key.toString()
             amount = MethodUtils.roundOffAmount(it.value.toString().toDouble())
@@ -1696,7 +1696,7 @@ fun addOrdersForKitchen(
                         Builder.COLOR_1
                     )
 
-        builder.addText(obj.quantity.toString() + " " + obj.itemName)
+                    builder.addText(obj.quantity.toString() + " " + obj.itemName)
 
                     if (obj.orderItemModifiers.isNotEmpty()) {
                         for (j in 0 until obj.orderItemModifiers.size) {
@@ -2819,78 +2819,21 @@ fun addOrderItemsTransactionInner(
 }
 
 private fun totalPriceOpenOrder(model: OpenOrderResponse.Data.Order.OrderItem): Double {
-    return if (model.orderItemModifiers.isNotEmpty()) {
-
-        var totalPrice = 0.0
-
-        val mList = model.orderItemModifiers
-        mList.forEach { items ->
-            totalPrice += items.price * items.quantity
-        }
-
-        (model.price * model.quantity) + totalPrice
-    } else {
-
-        model.price * model.quantity
-
-    }
+    return model.price * model.quantity
 
 }
 
 private fun totalPriceDineInItem(model: TbItem): Double {
-    return if (model.modifiers.isNotEmpty()) {
-
-        var totalPrice = 0.0
-
-        val mList = model.modifiers
-        mList.forEach { items ->
-            totalPrice += items.price * items.itemQuantity
-        }
-
-        (model.price * model.itemQuantity) + totalPrice
-    } else {
-
-        model.price * model.itemQuantity
-
-    }
+    return model.price * model.itemQuantity
 }
 
 private fun totalPrice(model: CreateOrderResponse.Data.Order.OrderItem): Double {
-
-    return if (model.orderItemModifiers.isNotEmpty()) {
-
-        var totalPrice = 0.0
-
-        val mList = model.orderItemModifiers
-        mList.forEach { items ->
-            totalPrice += items.price * items.quantity
-        }
-
-        (model.price * model.quantity) + totalPrice
-    } else {
-
-        model.price * model.quantity
-
-    }
+    return model.price * model.quantity
 }
 
 private fun totalPriceTransaction(model: GetOrderDetailsResponse.Data.OrderItem): Double {
 
-    return if (model.orderItemModifiers.isNotEmpty()) {
-
-        var totalPrice = 0.0
-
-        val mList = model.orderItemModifiers
-        mList.forEach { items ->
-            totalPrice += items.price * items.quantity
-        }
-
-        (model.price * model.quantity) + totalPrice
-    } else {
-
-        model.price * model.quantity
-
-    }
+    return model.price * model.quantity
 }
 
 
