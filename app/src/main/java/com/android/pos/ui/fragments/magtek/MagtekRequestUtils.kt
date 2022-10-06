@@ -19,6 +19,7 @@ import com.android.pos.data.remote.Constants.TSYS_PRODUCTION
 import com.android.pos.data.remote.Constants.VANIT_EXORESS_GATEWAY
 import com.android.pos.data.remote.Constants.VOID
 import com.android.pos.di.PrefProvider
+import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.Pref
 import com.google.gson.Gson
 import com.google.gson.JsonArray
@@ -698,7 +699,6 @@ class MagtekRequestUtils @Inject constructor(
             authentication = authentication(),
             customerTransactionID = customerTransactionID,
             transactionInput = ProcessCardSwipeRequest.TransactionInput(
-                amount = getPayableAmount(payableAmount),
                 processorName = processorName(),
                 transactionType = transactionType,
                 referenceTransactionID = transactionID
@@ -726,7 +726,7 @@ class MagtekRequestUtils @Inject constructor(
             authentication = authentication(),
             customerTransactionID = customerTransactionID,
             transactionInput = ProcessCardSwipeRequest.TransactionInput(
-                amount = payableAmount,
+                amount = MethodUtils.roundOffAmountDouble(payableAmount),
                 processorName = processorName(),
                 transactionType = CAPTURE,
                 referenceTransactionID = transactionID,
@@ -847,7 +847,7 @@ class MagtekRequestUtils @Inject constructor(
 
                 val mcc = ProcessCardSwipeRequest.TransactionInput.KeyValue(
                     key = "tip",
-                    value = keyValuePair
+                    value = MethodUtils.roundOffAmountStringToDouble(keyValuePair)
 
                 )
                 list.add(mcc)
