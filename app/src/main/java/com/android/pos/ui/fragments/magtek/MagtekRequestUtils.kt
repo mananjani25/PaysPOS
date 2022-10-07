@@ -699,7 +699,6 @@ class MagtekRequestUtils @Inject constructor(
             authentication = authentication(),
             customerTransactionID = customerTransactionID,
             transactionInput = ProcessCardSwipeRequest.TransactionInput(
-                MethodUtils.roundOffAmountDouble(payableAmount),
                 processorName = processorName(),
                 transactionType = transactionType,
                 referenceTransactionID = transactionID
@@ -740,6 +739,7 @@ class MagtekRequestUtils @Inject constructor(
             ),
             customerTransactionID = customerTransactionID,
             transactionInput = TsysCaptureRequest.TransactionInput(
+                amount = MethodUtils.roundOffAmountString(payableAmount + tip),
                 processorName = processorName(),
                 referenceTransactionID = transactionID,
                 transactionInputDetails = list,

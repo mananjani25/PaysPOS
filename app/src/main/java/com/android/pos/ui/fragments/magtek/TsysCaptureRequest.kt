@@ -15,6 +15,7 @@ data class TsysCaptureRequest(
     )
 
     data class TransactionInput(
+        @SerializedName("Amount") val amount: String,
         @SerializedName("ProcessorName") val processorName: String,
         @SerializedName("ReferenceTransactionID") val referenceTransactionID: String,
         @SerializedName("TransactionInputDetails") val transactionInputDetails: List<TransactionInputDetail>,
