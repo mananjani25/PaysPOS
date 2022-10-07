@@ -494,7 +494,7 @@ class TransactionDetailsFragment : Fragment() {
                                 it,
                                 model.customerTransactionID ?: "",
                                 it1,
-                                (tipAmount).toString()
+                                (tipAmount)
                             )
                         }
                     }
@@ -622,7 +622,7 @@ class TransactionDetailsFragment : Fragment() {
                                 it,
                                 model.customerTransactionID ?: "",
                                 it1,
-                                (tipAmount).toString()
+                                (tipAmount)
                             )
                         }
                     }
