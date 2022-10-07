@@ -1110,7 +1110,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                                     it2,
                                     model.customerTransactionID ?: "",
                                     it1,
-                                    (tipAmount).toString()
+                                    (tipAmount)
                                 )
                             }
                         }
@@ -1240,7 +1240,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                                     it2,
                                     model.customerTransactionID ?: "",
                                     it1,
-                                    (tipAmount).toString()
+                                    (tipAmount)
                                 )
                             }
                         }

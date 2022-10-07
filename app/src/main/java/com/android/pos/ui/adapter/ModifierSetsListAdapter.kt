@@ -164,7 +164,7 @@ class ModifierSetsListAdapter(val isCreateItem: Boolean) :
     override fun getFilter(): Filter {
         return object : Filter() {
             override fun performFiltering(charSequence: CharSequence): FilterResults {
-                val charString = charSequence.toString()
+                val charString = charSequence.toString().lowercase(Locale.getDefault())
                 filterList = if (charString.isEmpty()) {
                     list
                 } else {

@@ -196,7 +196,7 @@ class ReasonForRefundOnlineOrder : DialogFragment() {
 
                         jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
                             magtekRequestUtils.processReferenceIDTSYS(
-                                (refundAmount * 100),
+                                (refundAmount),
                                 model.customerTransactionID ?: "", it1, Constants.REFUND1
                             )
                         }

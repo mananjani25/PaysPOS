@@ -699,6 +699,7 @@ class MagtekRequestUtils @Inject constructor(
             authentication = authentication(),
             customerTransactionID = customerTransactionID,
             transactionInput = ProcessCardSwipeRequest.TransactionInput(
+                MethodUtils.roundOffAmountDouble(payableAmount),
                 processorName = processorName(),
                 transactionType = transactionType,
                 referenceTransactionID = transactionID
@@ -719,20 +720,44 @@ class MagtekRequestUtils @Inject constructor(
         payableAmount: Double,
         customerTransactionID: String,
         transactionID: String,
-        tip: String,
+        tip: Double,
     ): JsonArray {
 
-        val processTokenRequest = ProcessTokenRequest(
-            authentication = authentication(),
+        val list = ArrayList<TsysCaptureRequest.TransactionInput.TransactionInputDetail>()
+
+        val mcc = TsysCaptureRequest.TransactionInput.TransactionInputDetail(
+            key = "tip",
+            value = MethodUtils.roundOffAmountString(tip)
+
+        )
+        list.add(mcc)
+
+        val processTokenRequest = TsysCaptureRequest(
+            authentication = TsysCaptureRequest.Authentication(
+                customerCode = customerCode(),
+                password = password(),
+                username = userName()
+            ),
             customerTransactionID = customerTransactionID,
-            transactionInput = ProcessCardSwipeRequest.TransactionInput(
-                amount = MethodUtils.roundOffAmountDouble(payableAmount),
+            transactionInput = TsysCaptureRequest.TransactionInput(
                 processorName = processorName(),
-                transactionType = CAPTURE,
                 referenceTransactionID = transactionID,
-                transactionInputDetails = transactionInputDetails(tip)
+                transactionInputDetails = list,
+                transactionType = CAPTURE
             )
         )
+
+//        val processTokenRequest = ProcessTokenRequest(
+//            authentication = authentication(),
+//            customerTransactionID = customerTransactionID,
+//            transactionInput = ProcessCardSwipeRequest.TransactionInput(
+//                amount = MethodUtils.roundOffAmountDouble(payableAmount),
+//                processorName = processorName(),
+//                transactionType = CAPTURE,
+//                referenceTransactionID = transactionID,
+//                transactionInputDetails = transactionInputDetails(tip)
+//            )
+//        )
 
         val jsonObject = Gson().toJson(processTokenRequest)
         val jsonElement = Gson().fromJson(jsonObject, JsonObject::class.java)

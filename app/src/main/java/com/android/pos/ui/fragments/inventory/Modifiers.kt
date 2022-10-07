@@ -236,7 +236,7 @@ class Modifiers(val clickedPosition: Int) : Fragment(), TextWatcher, ItemCallbac
     }
 
     override fun afterTextChanged(s: Editable?) {
-        adapter.filter.filter(s.toString().trim())
+        adapter.filter.filter(s.toString().lowercase().trim())
     }
 
     override fun onItemClickListener(view: View?, pos: Int) {
