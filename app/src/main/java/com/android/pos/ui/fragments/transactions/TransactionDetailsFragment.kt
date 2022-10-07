@@ -2375,6 +2375,8 @@ class TransactionDetailsFragment : Fragment() {
                 )
 
                 builder.addText(paymentDetailsResponse?.data.order?.note)
+
+
             }
 
             builder.addTextLineSpace(30)

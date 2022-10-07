@@ -112,7 +112,7 @@ class OptionListAdapter :
     override fun getFilter(): Filter {
         return object : Filter() {
             override fun performFiltering(charSequence: CharSequence): FilterResults {
-                val charString = charSequence.toString()
+                val charString = charSequence.toString().lowercase()
                 filterList = if (charString.isEmpty()) {
                     list
                 } else {

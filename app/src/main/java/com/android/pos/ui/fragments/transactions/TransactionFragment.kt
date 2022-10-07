@@ -1104,13 +1104,15 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                 Constants.TSYS_GATEWAY == magtekRequestUtils.gatewayName() -> {
 
                     jsonArray = model.transactionOutput.transactionID.let { it1 ->
-                        refundAmount.let {
-                            magtekRequestUtils.processReferenceIDTSYSCapture(
-                                it,
-                                model.customerTransactionID ?: "",
-                                it1,
-                                (tipAmount).toString()
-                            )
+                        singleTransaction?.totalAmount.let {
+                            it?.let { it2 ->
+                                magtekRequestUtils.processReferenceIDTSYSCapture(
+                                    it2,
+                                    model.customerTransactionID ?: "",
+                                    it1,
+                                    (tipAmount)
+                                )
+                            }
                         }
                     }
                     networkCall(jsonArray, 1)
@@ -1232,13 +1234,15 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
 
                     jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
-                        refundAmount.let {
-                            magtekRequestUtils.processReferenceIDTSYSCapture(
-                                it,
-                                model.customerTransactionID ?: "",
-                                it1,
-                                (tipAmount).toString()
-                            )
+                        singleTransaction?.totalAmount.let {
+                            it?.let { it2 ->
+                                magtekRequestUtils.processReferenceIDTSYSCapture(
+                                    it2,
+                                    model.customerTransactionID ?: "",
+                                    it1,
+                                    (tipAmount)
+                                )
+                            }
                         }
                     }
                     networkCall(jsonArray, 1)

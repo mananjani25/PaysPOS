@@ -50,6 +50,9 @@ class DineInOrderTableViewModel @Inject constructor(
     private val _showProgressCash = MutableLiveData<Event<Boolean>>()
     val showProgressCash: LiveData<Event<Boolean>> = _showProgressCash
 
+    private val _showProgressCash = MutableLiveData<Event<Boolean>>()
+    val showProgressCash: LiveData<Event<Boolean>> = _showProgressCash
+
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
 
