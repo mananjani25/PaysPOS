@@ -2,6 +2,7 @@ package com.android.pos.ui.fragments.loginscreen
 
 import android.content.ClipboardManager
 import android.content.Context
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -15,6 +16,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.android.pos.BuildConfig
 import com.android.pos.R
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.AUTH_TOKEN
@@ -80,6 +82,7 @@ class LoginFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.loginViewModel = viewModel
 
+        versionDisplay()
         setupSnackbar()
         observeShowProgress()
         navigate()
@@ -120,10 +123,16 @@ class LoginFragment : Fragment() {
         return binding.root
     }
 
+    private fun versionDisplay() {
+
+        binding.txtVersion?.text =
+            "Version : " + BuildConfig.VERSION_NAME + "(" + BuildConfig.VERSION_CODE + ")"
+    }
+
 
     private fun firebaseToken() {
 
-        
+
         FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
             if (!task.isSuccessful) {
                 Log.w("FirebaseMessaging", "Fetching FCM registration token failed", task.exception)
@@ -136,7 +145,6 @@ class LoginFragment : Fragment() {
             Log.d("FirebaseMessaging Token", device_token)
         })
     }
-
 
 
     private fun copy() {
