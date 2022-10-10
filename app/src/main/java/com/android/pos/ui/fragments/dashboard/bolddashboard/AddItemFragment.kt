@@ -566,18 +566,22 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                                             )
                                             binding.rvModifiersList.adapter = adapter
                                             binding.rvModifiersList.visibility = View.VISIBLE
-                                            it.data.forEach { modifierSet ->
-                                                modifierSet.modifiers.forEach { modifier ->
-                                                    item.modifiers.forEach { oldmodifier ->
-                                                        if (oldmodifier.id == modifier.id) {
-                                                            modifier.isChecked = true
+                                            if (isUpdateItem){
+                                                it.data.forEach { modifierSet ->
+                                                    modifierSet.modifiers.forEach { modifier ->
+                                                        item.modifiers.forEach { oldmodifier ->
+                                                            if (oldmodifier.id == modifier.id) {
+                                                                modifier.isChecked = true
+                                                            }
                                                         }
                                                     }
-                                                }
 
+                                                }
+                                                adapter?.setData(it.data)
+                                            }else{
+                                                adapter?.add(it.data)
                                             }
-                                            adapter?.add(it.data)
-                                            adapter?.setData(item.modifiers)
+
                                         } else binding.rvModifiersList.visibility = View.GONE
 
                                     }

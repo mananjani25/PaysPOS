@@ -139,6 +139,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
         viewModel.customerId = customerModel.id.toString()
 
         binding.txtEdit.setOnClickListener {
+            Log.d(TAG, "initControls: customerdata : "+Gson().toJson(customerModel))
             val bundle: Bundle = bundleOf("isEdit" to true, "dataModel" to customerModel)
             findNavController().navigate(R.id.action_customer_to_addEditCustomer, bundle)
         }

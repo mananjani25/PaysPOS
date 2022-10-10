@@ -767,6 +767,7 @@ class ActiveOrderFragment(
                 manualSaleId = mannual_Sale_ID
                 price = it.price
                 priceType = ""
+                isEdited=it.isEdited
                 itemQuantity = it.quantity
                 kitchenName = ""
                 productCode = ""

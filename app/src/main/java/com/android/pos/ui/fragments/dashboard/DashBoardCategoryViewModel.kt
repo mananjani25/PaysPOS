@@ -858,7 +858,11 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         if (item.isEdited) {
                                             model.isEdited = item.isEdited
                                         }
-                                        if (prefProvider.getValueboolean(IS_UPDATE_ORDER_FROM_ACTIVE_ORDER,false)){
+                                        if (prefProvider.getValueboolean(
+                                                IS_UPDATE_ORDER_FROM_ACTIVE_ORDER,
+                                                false
+                                            )
+                                        ) {
                                             model.isEdited = true
                                         }
                                         item.modifiers.forEach {
@@ -899,7 +903,11 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                 model.isEdited = item.isEdited
                                             }
 
-                                            if (prefProvider.getValueboolean(IS_UPDATE_ORDER_FROM_ACTIVE_ORDER,false)){
+                                            if (prefProvider.getValueboolean(
+                                                    IS_UPDATE_ORDER_FROM_ACTIVE_ORDER,
+                                                    false
+                                                )
+                                            ) {
                                                 model.isEdited = true
                                             }
                                             //   itemDiscountApply(model, item)
@@ -912,7 +920,11 @@ class DashBoardCategoryViewModel @Inject constructor(
                                             if (item.isEdited) {
                                                 model.isEdited = item.isEdited
                                             }
-                                            if (prefProvider.getValueboolean(IS_UPDATE_ORDER_FROM_ACTIVE_ORDER,false)){
+                                            if (prefProvider.getValueboolean(
+                                                    IS_UPDATE_ORDER_FROM_ACTIVE_ORDER,
+                                                    false
+                                                )
+                                            ) {
                                                 model.isEdited = true
                                             }
                                             itemDiscountApply(model, item)
@@ -927,7 +939,11 @@ class DashBoardCategoryViewModel @Inject constructor(
                             Log.d(TAG, "cartLogic: " + index)
                             if (item != null) {
                                 item.isDestroy = false
-                                if (prefProvider.getValueboolean(IS_UPDATE_ORDER_FROM_ACTIVE_ORDER,false)){
+                                if (prefProvider.getValueboolean(
+                                        IS_UPDATE_ORDER_FROM_ACTIVE_ORDER,
+                                        false
+                                    )
+                                ) {
                                     item.isEdited = true
                                 }
                                 list.add(item)
@@ -3352,12 +3368,12 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         it.modifiers.forEach {
                                             modifierSet.modifiers.forEach { mod ->
                                                 if (mod.id == it.id) {
-                                                       mod.itemQuantity =  it.itemQuantity
-                                                       mod.name =  it.name
-                                                       mod.price =  it.price
-                                                       mod.isDeleted =  it.isDeleted
-                                                       mod.isChecked =  it.isChecked
-                                                       mod.sort =  it.sort
+                                                    mod.itemQuantity = it.itemQuantity
+                                                    mod.name = it.name
+                                                    mod.price = it.price
+                                                    mod.isDeleted = it.isDeleted
+                                                    mod.isChecked = it.isChecked
+                                                    mod.sort = it.sort
 
                                                 }
                                             }

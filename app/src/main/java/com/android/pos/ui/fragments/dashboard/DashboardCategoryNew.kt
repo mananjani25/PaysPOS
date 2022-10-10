@@ -1806,7 +1806,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     it.data.let { it1 -> adapter.add(it1) }
 
                     if (!isItemClick) {
-                        adapter.setData(data.modifiers)
+//                        adapter.setData(data.modifiers)
                     }
 
                 } else rvModifierSets.visibility = View.GONE
@@ -3188,7 +3188,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     it.data.let { it1 -> adapter.add(it1) }
 
                     if (!isItemClick) {
-                        adapter.setData(data.modifiers)
+//                        adapter.setData(data.modifiers)
                     }
 
                 } else rvModifierSets.visibility = View.GONE

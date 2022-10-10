@@ -120,7 +120,7 @@ class AddCustomerViewModel @Inject constructor(
         addCustomerDetails.value?.data?.final_reward = 0
         addCustomerDetails.value?.data?.enroll_to_loyalty = enroll_to_loyalty.value
         addCustomerDetails.value?.data?.same_as_billing_address = same_as_billing_address.value
-        addCustomerDetails.value?.data?.addresses_attributes?.addAll(listAddress)
+        addCustomerDetails.value?.data?.addresses_attributes = listAddress
 
 
         val value = addCustomerDetails.value
@@ -150,8 +150,10 @@ class AddCustomerViewModel @Inject constructor(
  */
         if (TextUtils.isEmpty(value?.data?.first_name?.trim())) {
             _snackbarText.value = Event(R.string.first_name_validate)
-        }
-        else if (value?.data?.phones_attributes?.size != 0&&value?.data?.phones_attributes?.get(0)?.phone_number?.length!=10) {
+        } else if (value?.data?.phones_attributes?.size != 0 && value?.data?.phones_attributes?.get(
+                0
+            )?.phone_number?.length != 10
+        ) {
             _snackbarText.value = Event(R.string.valid_phone_no_validate)
         }
 
@@ -209,7 +211,7 @@ class AddCustomerViewModel @Inject constructor(
                 data?.enroll_to_loyalty = value.data!!.enroll_to_loyalty
                 data?.same_as_billing_address = value.data!!.same_as_billing_address
 
-                data?.addresses_attributes?.addAll(value.data?.addresses_attributes!!)
+                data?.addresses_attributes = (value.data?.addresses_attributes!!)
 
 
             }
@@ -244,6 +246,7 @@ class AddCustomerViewModel @Inject constructor(
                                         phones = customerListReposne.data.phones,
                                         addresses = customerListReposne.data.addresses,
                                         enroll_to_loyalty = customerListReposne.data.enroll_to_loyalty,
+                                        same_as_billing_address = customerListReposne.data.same_as_billing_address,
                                         final_reward = customerListReposne.data.final_reward,
                                         company = customerListReposne.data.company,
                                         isSelcted = true,

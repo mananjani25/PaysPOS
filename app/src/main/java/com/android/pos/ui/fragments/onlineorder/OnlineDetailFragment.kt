@@ -581,7 +581,7 @@ class OnlineDetailFragment(
                 )
             }
         } else if (status == "Completed") {
-            alert("", "Are you sure you want to Complete this Order?") {
+            alert("", "Are you sure, you want to complete this order ?") {
                 this.positiveButton("YES") {
                     updateOrder(adapter.filterList[0].id, status)
                 }
@@ -590,7 +590,7 @@ class OnlineDetailFragment(
 
             }
         } else {
-            alert("", "Are you sure you want to Reject this Order?") {
+            alert("", "Are you sure, you want to reject this Order ?") {
 
                 this.positiveButton("YES") {
                     var employeeIdtemp = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)

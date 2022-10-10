@@ -1453,7 +1453,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         if (model.discountPrice != 0.0) {
             txtTitle.text = model.name + "  $" + String.format(
                 "%.2f",
-                ((model.price * model.itemQuantity) - model.discountPrice)
+                ((model.price * model.itemQuantity) - (model.discountPrice* model.itemQuantity))
             )
         } else {
             txtTitle.text = model.name + "  $" + String.format(
