@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.R
+import com.android.pos.data.entities.ModifierSet
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.entities.VariationsAttribute
 import com.android.pos.data.model.requestModel.CreateItemRequestModel
@@ -59,6 +60,8 @@ class CreateItemViewModel @Inject constructor(
 
     val modifierSet = posRepository.modifierSetsList()
 
+    fun updateMod(mod: ModifierSet) = posRepository.updateModSet(mod)
+
 
     fun setData(itemObject: TbItem) {
         isEdit = true
@@ -76,8 +79,7 @@ class CreateItemViewModel @Inject constructor(
 
         if (TextUtils.isEmpty(value?.name?.trim())) {
             _snackbarText.value = Event(R.string.item_name_validate)
-        }
-        else if (categoryIdViewModel == 0) {
+        } else if (categoryIdViewModel == 0) {
             _snackbarText.value = Event(R.string.category_select_validate)
         } /*else if (TextUtils.isEmpty(
                 value?.price?.toString()?.trim()
@@ -135,7 +137,7 @@ class CreateItemViewModel @Inject constructor(
                 variationsAttributes = variationAttributeModel
                 locationId = prefProvider.getValueInt(LOCATION_ID, -1)
                 taxIds = selectedTaxList
-                productCode = productCodeModel?:""
+                productCode = productCodeModel ?: ""
 
             }
 

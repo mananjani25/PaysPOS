@@ -10,7 +10,6 @@ import com.android.pos.data.entities.ModifierSet
 import com.android.pos.databinding.ViewModifierSetsBinding
 import com.android.pos.utils.callback.ItemCallback
 import java.util.*
-import kotlin.collections.ArrayList
 
 class ModifierSetsListAdapter(val isCreateItem: Boolean) :
     RecyclerView.Adapter<ModifierSetsListAdapter.MyViewHolder>(), Filterable {
@@ -18,25 +17,32 @@ class ModifierSetsListAdapter(val isCreateItem: Boolean) :
     var filterList = ArrayList<ModifierSet>()
     var selectedItemList = ArrayList<ModifierSet>()
     private var mCallback: ItemCallback? = null
+    private var deleteCallback: ModifierCallback? = null
     fun setCallback(callback: ItemCallback) {
         mCallback = callback
     }
+
+    fun setDeleteCallback(callback: ModifierCallback) {
+        deleteCallback = callback
+
+    }
+
     inner class MyViewHolder(private val binding: ViewModifierSetsBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(item: ModifierSet) {
             binding.model = item
             binding.executePendingBindings()
 
-            if(absoluteAdapterPosition==0){
+            if (absoluteAdapterPosition == 0) {
                 binding.firstviewModifier.visibility = View.VISIBLE
-            }else{
+            } else {
                 binding.firstviewModifier.visibility = View.GONE
             }
             if (isCreateItem) {
-                binding.imgCheck.visibility = View.VISIBLE
+                //  binding.imgCheck.visibility = View.VISIBLE
                 binding.imgReorder.visibility = View.GONE
             } else {
-                binding.imgCheck.visibility = View.GONE
+                //binding.imgCheck.visibility = View.GONE
                 binding.imgReorder.visibility = View.VISIBLE
             }
 
@@ -75,6 +81,14 @@ class ModifierSetsListAdapter(val isCreateItem: Boolean) :
                 mCallback?.onItemClickListener(it, bindingAdapterPosition)
             }
 
+            binding.imgDelete.setOnClickListener {
+                var mod = filterList.get(bindingAdapterPosition)
+                deleteCallback?.onDeleteCallback(mod)
+                filterList.removeAt(bindingAdapterPosition)
+                notifyDataSetChanged()
+
+            }
+
 
         }
 
@@ -105,6 +119,7 @@ class ModifierSetsListAdapter(val isCreateItem: Boolean) :
         val binding = ViewModifierSetsBinding.inflate(inflater, parent, false)
         return MyViewHolder(binding)
 
+
     }
 
     override fun onBindViewHolder(holder: ModifierSetsListAdapter.MyViewHolder, position: Int) {
@@ -121,6 +136,11 @@ class ModifierSetsListAdapter(val isCreateItem: Boolean) :
         this.filterList = modifierSet
         notifyDataSetChanged()
 
+    }
+
+    fun addItem(mod: ModifierSet) {
+        this.filterList.add(mod)
+        notifyDataSetChanged()
     }
 
     fun getItem(pos: Int): ModifierSet {
@@ -185,5 +205,9 @@ class ModifierSetsListAdapter(val isCreateItem: Boolean) :
 
             }
         }
+    }
+
+    interface ModifierCallback {
+        fun onDeleteCallback(modifierSet: ModifierSet)
     }
 }

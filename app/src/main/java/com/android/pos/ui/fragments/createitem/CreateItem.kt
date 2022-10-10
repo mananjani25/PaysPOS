@@ -10,6 +10,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import androidx.appcompat.widget.PopupMenu
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -39,6 +41,7 @@ import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.callback.UpdateVariationCallback
 import com.android.pos.utils.extensions.getNavigationResultLiveData
 import com.android.pos.utils.extensions.liveSnackBar
+import com.android.pos.utils.extensions.runOnUiThread
 import com.bumptech.glide.Glide
 import com.bumptech.glide.Priority
 import com.bumptech.glide.load.DataSource
@@ -52,8 +55,10 @@ import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback , ItemCallback {
+class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback, ItemCallback,
+    ModifierSetsListAdapter.ModifierCallback {
 
+    private var spinnerAdapter: ArrayAdapter<ModifierSet>? = null
     private var productCode: String? = ""
     private var imagePath: String? = ""
     private var variationList1: ArrayList<VariationsAttribute>? = null
@@ -71,6 +76,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback , I
     private val TAG = "CreateItem"
     private var isNewVariation: Boolean = false
     private var base64: String = ""
+    var spinnerList: ArrayList<ModifierSet> = arrayListOf()
 
     // private lateinit var passedVariationList: ArrayList<List<VariationsAttribute>>
 
@@ -243,7 +249,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback , I
         getNavigationResultLiveData<VariationsAttribute>(DIALOG_KEY_ADD_VARIATION_DETAILS)?.observe(
             viewLifecycleOwner
         ) {
-            Log.e(TAG,"variationList1  ${Gson().toJson(variationListAdapter.variationList)}")
+            Log.e(TAG, "variationList1  ${Gson().toJson(variationListAdapter.variationList)}")
             variationList1 = ArrayList()
 
             if (customVariationList.isEmpty()) {
@@ -328,23 +334,23 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback , I
             }
 
 
-            Log.e("VariationList" , "varSize ${Gson().toJson(variationListAdapter.variationList)}")
+            Log.e("VariationList", "varSize ${Gson().toJson(variationListAdapter.variationList)}")
 
 
-            Log.e("VarEd","varApiEmp  ${varApiEmp}")
-            if (varApiEmp){
-                Log.e(TAG,"insideEmpty")
+            Log.e("VarEd", "varApiEmp  ${varApiEmp}")
+            if (varApiEmp) {
+                Log.e(TAG, "insideEmpty")
                 viewModel.variationAttribute(variationListAdapter.variationList)
-            }else {
+            } else {
                 viewModel.variationAttribute(mList)
-             /*   for (newVariation in mList) {
-                    if (!newVariation._destroy) {
-                        isNewVariation = true
-                        Log.e(TAG, "getVariationL  ${mList.size}")
-                        viewModel.variationAttribute(mList)
-                        break
-                    }
-                }*/
+                /*   for (newVariation in mList) {
+                       if (!newVariation._destroy) {
+                           isNewVariation = true
+                           Log.e(TAG, "getVariationL  ${mList.size}")
+                           viewModel.variationAttribute(mList)
+                           break
+                       }
+                   }*/
 
 
 
@@ -404,14 +410,88 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback , I
     private fun getModifiers() {
 
         viewModel.modifierSet.observe(requireActivity()) {
+            if (it.data?.isNotEmpty() == true) {
+                var checkedList: ArrayList<ModifierSet> = arrayListOf()
+                var model = ModifierSet()
+                model.name = "Select Modifier Set"
+                spinnerList.add(model)
+                it.data.forEach {
+                    if (isEdit && itemObject.modifier_set_ids.contains(it.id)) {
+                        it.isChecked = true
 
+                        checkedList.add(it)
+                    } else if (it.isChecked) {
+                        checkedList.add(it)
+                    } else {
+                        spinnerList.add(it)
+                    }
+                }
+
+
+                Log.e(TAG, "checkedList  ${checkedList.size}")
+                adapter.add(checkedList)
+
+                spinnerAdapter =
+                    ArrayAdapter(
+                        requireContext(),
+                        android.R.layout.simple_spinner_item,
+                        spinnerList
+                    )
+                spinnerAdapter?.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+
+                binding.edtModifiersList?.adapter = spinnerAdapter
+
+                binding.edtModifiersList?.onItemSelectedListener =
+                    object : AdapterView.OnItemSelectedListener {
+                        override fun onItemSelected(
+                            p0: AdapterView<*>?,
+                            p1: View?,
+                            position: Int,
+                            p3: Long
+                        ) {
+                            Log.e("OnSpinItemSelected", "OnItemSelected")
+                            if (position != 0) {
+                                var mod = spinnerList.get(position)
+
+                                mod.id?.let { it1 ->
+                                    if (isEdit) {
+                                        itemObject.modifier_set_ids.toCollection(arrayListOf())
+                                            .add(
+                                                it1
+                                            )
+                                    }
+
+                                    runOnUiThread(Runnable {
+                                        spinnerAdapter?.remove(spinnerList.get(position))
+                                        spinnerAdapter?.notifyDataSetChanged()
+                                        binding.edtModifiersList?.setSelection(0)
+                                        adapter.addItem(mod)
+                                    })
+                                }
+
+                                //  viewModel.updateMod(mod)
+
+
+                            }
+
+                        }
+
+                        override fun onNothingSelected(p0: AdapterView<*>?) {
+
+                        }
+
+                    }
+
+
+            }
+/*
             it.data?.let { it1 ->
                 adapter.add(it1)
                 if (isEdit) {
                     adapter.selectedItemFromEdit(itemObject.modifier_set_ids as ArrayList<Int>)
                 }
 
-            }
+            }*/
         }
     }
 
@@ -427,6 +507,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback , I
         adapter = ModifierSetsListAdapter(true)
         binding.rvModifiersList.adapter = adapter
         adapter.setCallback(this)
+        adapter.setDeleteCallback(this)
         variationListAdapter = VariationListAdapter(viewModel)
         variationListAdapter.setCallback(this)
         binding.rvVariationList.adapter = variationListAdapter
@@ -722,6 +803,78 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback , I
             true
         }
         popupMenu?.show()
+    }
+
+    override fun onDeleteCallback(modifierSet: ModifierSet) {
+
+
+        if (isEdit) {
+            modifierSet.id?.let { itemObject.modifier_set_ids.toCollection(arrayListOf()).drop(it) }
+        }
+
+        runOnUiThread(Runnable {
+            spinnerList.add(modifierSet)
+
+            binding.edtModifiersList?.adapter = null
+            Log.e(TAG,"spinnerListSize:  ${spinnerList.size}")
+            spinnerAdapter =
+                ArrayAdapter(
+                    requireContext(),
+                    android.R.layout.simple_spinner_item,
+                    spinnerList
+                )
+            spinnerAdapter?.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+
+            binding.edtModifiersList?.adapter = spinnerAdapter
+
+            binding.edtModifiersList?.onItemSelectedListener =
+                object : AdapterView.OnItemSelectedListener {
+                    override fun onItemSelected(
+                        p0: AdapterView<*>?,
+                        p1: View?,
+                        position: Int,
+                        p3: Long
+                    ) {
+                        Log.e("OnSpinItemSelected", "OnItemSelected")
+                        if (position != 0) {
+                            var mod = spinnerList.get(position)
+
+                            mod.id?.let { it1 ->
+                                if (isEdit) {
+                                    itemObject.modifier_set_ids.toCollection(arrayListOf())
+                                        .add(
+                                            it1
+                                        )
+                                }
+
+                                runOnUiThread(Runnable {
+                                    spinnerAdapter?.remove(spinnerList.get(position))
+                                    spinnerAdapter?.notifyDataSetChanged()
+                                    binding.edtModifiersList?.setSelection(0)
+                                    adapter.addItem(mod)
+                                })
+                            }
+
+                            //  viewModel.updateMod(mod)
+
+
+                        }
+
+                    }
+
+                    override fun onNothingSelected(p0: AdapterView<*>?) {
+
+                    }
+
+                }
+
+
+
+
+
+        })
+
+
     }
 
     /*if (isDoubleClick()) return
