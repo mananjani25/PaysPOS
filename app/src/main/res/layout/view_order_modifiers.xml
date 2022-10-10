@@ -16,45 +16,71 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/_2sdp"
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:paddingStart="@dimen/_2sdp"
         android:paddingTop="@dimen/_5sdp"
         android:paddingEnd="@dimen/_2sdp"
         android:paddingBottom="@dimen/_5sdp">
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/edtName"
-            style="@style/CustomFontSemiBold"
-            android:layout_width="match_parent"
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/linearmodifier_nameprice"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight="1"
-            android:background="@null"
-            android:gravity="center"
-            android:clickable="false"
-            android:duplicateParentState="true"
-            android:text="@{model.name}"
-            android:textColor="@{model.isChecked ? @color/white: @color/viewTextColor}"
-            android:textSize="@dimen/_6mdpi"
-            tools:text="Modifier one" />
+            android:layout_weight="9"
+            android:orientation="vertical">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/edtName"
+                style="@style/CustomFontSemiBold"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:background="@null"
+                android:clickable="false"
+                android:duplicateParentState="true"
+                android:gravity="center"
+                android:text="@{model.name}"
+                android:textColor="@{model.isChecked ? @color/white: @color/viewTextColor}"
+                android:textSize="@dimen/_6mdpi"
+                tools:text="Modifier one" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/edtPrice"
+                style="@style/CustomFontSemiBold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:alpha="0.8"
+                android:background="@null"
+                android:clickable="false"
+                android:duplicateParentState="true"
+                android:gravity="start"
+                android:hint="@string/_0_00"
+                android:paddingTop="@dimen/_3sdp"
+                android:text="@{@string/symbole +``+String.format(@string/format,model.price)}"
+                android:textColor="@{model.isChecked ? @color/white: @color/viewTextColor}"
+                android:textSize="@dimen/_5mdpi"
+                android:visibility="visible" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/edtPrice"
+            android:id="@+id/txt_modifier_qnt"
             style="@style/CustomFontSemiBold"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:background="@null"
-            android:gravity="start"
-            android:hint="@string/_0_00"
-            android:paddingTop="@dimen/_3sdp"
+            android:layout_width="@dimen/_10sdp"
+            android:layout_height="@dimen/_10sdp"
+            android:background="@{model.isChecked ? @drawable/rounded_corner_textview_white_badge: @drawable/rounded_corner_textview_badge}"
             android:clickable="false"
-            android:duplicateParentState="true"
-            android:text="@{@string/symbole +``+String.format(@string/format,model.price)}"
-            android:textColor="@{model.isChecked ? @color/white: @color/viewTextColor}"
+            android:layout_gravity="top"
+            android:gravity="center"
+            android:padding="@dimen/_1sdp"
+            android:text="@{Integer.toString(model.itemQuantity)}"
+            android:textColor="@{model.isChecked ? @color/btnColor: @color/white}"
             android:textSize="@dimen/_5mdpi"
-            android:alpha="0.8"
-            android:visibility="visible" />
+            android:visibility="gone" />
+
+
     </androidx.appcompat.widget.LinearLayoutCompat>
 
 

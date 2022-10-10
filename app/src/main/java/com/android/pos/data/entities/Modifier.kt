@@ -34,7 +34,7 @@ class Modifier : Parcelable {
     var isChecked: Boolean = false
 
     @SerializedName("itemQuantity")
-    var itemQuantity: Int = 0
+    var itemQuantity: Int = 1
 
     var orderModifierId: Int? = null
 

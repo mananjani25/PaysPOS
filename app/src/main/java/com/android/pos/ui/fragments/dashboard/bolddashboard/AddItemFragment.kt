@@ -34,6 +34,9 @@ import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.callback.ItemListner
+import com.android.pos.utils.callback.ModifierLongClickCallback
+import com.android.pos.utils.extensions.gone
+import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
 import com.google.gson.Gson
@@ -41,7 +44,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
+class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
+    ModifierLongClickCallback {
     private var mainItem: TbItem? = null
     private lateinit var item: TbItem
     private var cartList: ArrayList<CartModel> = arrayListOf()
@@ -263,11 +267,9 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
 
                     if (modifiers?.isNotEmpty() == true) {
                         modifiers.forEach {
-                            it.itemQuantity = qty
-
                             item.modifiers.forEach { it1 ->
-                                if (it1.orderModifierId != null) {
-
+                                if (it.id == it1.id) {
+                                    it1.itemQuantity = it.itemQuantity
                                     it.orderModifierId = it1.orderModifierId
 
                                 }
@@ -402,7 +404,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                 putDouble("itemOrderDiscount", perItemDiscount)
                 putInt("totalquantity", totalItemswithQuantity)
             }
-            bundle.putString("isFrom","itemDiscount")
+            bundle.putString("isFrom", "itemDiscount")
             if (prefProvider.isAdmin() || prefProvider.isManager()) {
                 findNavController().navigate(
                     R.id.action_dashboardCategoryBoldPOS_to_addDiscountDialog,
@@ -564,6 +566,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                                                 item.itemId,
                                                 viewLifecycleOwner
                                             )
+                                            adapter?.setLongCallback(this)
                                             binding.rvModifiersList.adapter = adapter
                                             binding.rvModifiersList.visibility = View.VISIBLE
                                             it.data.forEach { modifierSet ->
@@ -571,6 +574,8 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                                                     item.modifiers.forEach { oldmodifier ->
                                                         if (oldmodifier.id == modifier.id) {
                                                             modifier.isChecked = true
+                                                            modifier.itemQuantity =
+                                                                oldmodifier.itemQuantity
                                                         }
                                                     }
                                                 }
@@ -1011,6 +1016,45 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
 
         return isSame
 
+
+    }
+
+
+    override fun onLongClickListener(modifier_id: Int?, pos: Int, itemQuantity: Int?) {
+        var counter = 1
+        binding.relativeAddItem.gone()
+        binding.relativeModifierqntUpdatte.visible()
+        binding.edtQntModifir.setText(itemQuantity.toString())
+        binding.linearMinusQty.setOnClickListener {
+            if (counter > 1) {
+                counter -= 1
+                binding.edtQntModifir.setText(counter.toString())
+            }
+        }
+        binding.linearPlusQty.setOnClickListener {
+            if (counter <= 999) {
+                counter += 1
+                binding.edtQntModifir.setText(counter.toString())
+            }
+        }
+        binding.linearDonemodifier.setOnClickListener {
+            counter = binding.edtQntModifir.text.toString().toInt()
+            if (adapter?.filterList?.isNotEmpty() == true) {
+                adapter?.filterList?.forEachIndexed { indexset, modifierset ->
+                    modifierset.modifiers.forEachIndexed { index, modifier ->
+                        if (modifier.id == modifier_id) {
+                            adapter?.filterList!![indexset].modifiers[index].isChecked = true
+                            adapter?.filterList!![indexset].modifiers[index].itemQuantity = counter
+                            adapter?.notifyDataSetChanged()
+                        }
+                    }
+
+                }
+            }
+            Log.d(TAG, "onLongClickListener: " + counter)
+            binding.relativeModifierqntUpdatte.gone()
+            binding.relativeAddItem.visible()
+        }
 
     }
 }

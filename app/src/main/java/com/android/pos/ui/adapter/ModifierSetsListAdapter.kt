@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.entities.ModifierSet
 import com.android.pos.databinding.ViewModifierSetsBinding
 import com.android.pos.utils.callback.ItemCallback
+import com.android.pos.utils.callback.ModifierLongClickCallback
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -18,9 +19,11 @@ class ModifierSetsListAdapter(val isCreateItem: Boolean) :
     var filterList = ArrayList<ModifierSet>()
     var selectedItemList = ArrayList<ModifierSet>()
     private var mCallback: ItemCallback? = null
+
     fun setCallback(callback: ItemCallback) {
         mCallback = callback
     }
+
     inner class MyViewHolder(private val binding: ViewModifierSetsBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(item: ModifierSet) {

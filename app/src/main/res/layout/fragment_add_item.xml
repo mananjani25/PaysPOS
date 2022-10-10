@@ -4,44 +4,55 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MissingDefaultResource">
 
-    <androidx.core.widget.NestedScrollView
+    <RelativeLayout
+        android:id="@+id/relative_main"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/bg_color"
+        android:clickable="true">
 
-        <LinearLayout
+        <RelativeLayout
+            android:id="@+id/relative_Add_item"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:clickable="true"
+            android:visibility="visible"
             android:background="@color/bg_color"
-            android:orientation="vertical">
-
-
+            android:layout_height="match_parent">
             <RelativeLayout
+                android:id="@+id/relative_topbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:padding="@dimen/_5sdp">
 
-                <TextView
-                    android:id="@+id/txtItem"
-                    style="@style/CustomFontSemiBold"
-                    android:layout_width="wrap_content"
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true"
-                    android:text="Sandwich"
-                    android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_7mdpi" />
+                    android:layout_marginRight="@dimen/_10sdp"
+                    android:layout_toLeftOf="@id/linear_quanty"
+                    android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/txtPrice"
-                    style="@style/CustomFontMediumStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/txtItem"
-                    android:layout_marginTop="@dimen/_8sdp"
-                    android:text="@string/_0_00"
-                    android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_6mdpi" />
+                    <TextView
+                        android:id="@+id/txtItem"
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="sandwich"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_7mdpi" />
+
+                    <TextView
+                        android:id="@+id/txtPrice"
+                        style="@style/CustomFontMediumStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:text="@string/_0_00"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_6mdpi" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
 
                 <TextView
                     android:id="@+id/txtDone"
@@ -75,6 +86,7 @@
                     android:textSize="@dimen/_7mdpi" />
 
                 <LinearLayout
+                    android:id="@+id/linear_quanty"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/_5sdp"
@@ -106,13 +118,13 @@
                             android:layout_height="wrap_content"
                             android:layout_centerInParent="true"
                             android:background="@android:color/transparent"
+                            android:digits="1234567890"
                             android:gravity="center"
                             android:inputType="phone"
                             android:maxLength="3"
                             android:paddingTop="@dimen/_7sdp"
                             android:paddingBottom="@dimen/_7sdp"
                             android:text="1"
-                            android:digits="1234567890"
                             android:textColor="@color/white"
                             android:textSize="@dimen/_7mdpi" />
 
@@ -138,108 +150,243 @@
             </RelativeLayout>
 
             <include
+                android:id="@+id/dividerabove"
                 layout="@layout/divider"
                 android:layout_width="match_parent"
-                android:layout_height="1dp" />
+                android:layout_height="1dp"
+                android:layout_below="@id/relative_topbar" />
 
-            <LinearLayout
+            <androidx.core.widget.NestedScrollView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/_2sdp"
-                android:layout_marginTop="@dimen/_5sdp"
-                android:layout_marginEnd="@dimen/_2sdp"
-                android:layout_marginBottom="@dimen/_5sdp"
+                android:layout_height="match_parent"
+                android:layout_below="@id/dividerabove">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/bg_color"
+                    android:orientation="vertical">
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/_2sdp"
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:layout_marginEnd="@dimen/_2sdp"
+                        android:layout_marginBottom="@dimen/_5sdp"
+                        android:orientation="horizontal">
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/txtAddDiscount"
+                            style="@style/CustomFontBold"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/_2sdp"
+                            android:layout_marginEnd="@dimen/_4sdp"
+                            android:layout_weight="1"
+                            android:background="@color/btnColorDark"
+                            android:gravity="center"
+                            android:padding="@dimen/_5sdp"
+                            android:text="@string/add_discount"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/_7mdpi" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/txtAddNote"
+                            style="@style/CustomFontBold"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/_2sdp"
+                            android:layout_marginEnd="@dimen/_4sdp"
+                            android:layout_weight="1"
+                            android:background="@color/btnColorDark"
+                            android:gravity="center"
+                            android:padding="@dimen/_5sdp"
+                            android:text="@string/add_note"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/_7mdpi" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/txtRemoveItem"
+                            style="@style/CustomFontBold"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/_2sdp"
+                            android:layout_marginEnd="@dimen/_4sdp"
+                            android:layout_weight="1"
+                            android:background="@color/colorRed"
+                            android:gravity="center"
+                            android:padding="@dimen/_5sdp"
+                            android:text="@string/remove_item"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/_7mdpi" />
+
+
+                    </LinearLayout>
+
+                    <include
+                        android:id="@+id/dividerUpdate"
+                        layout="@layout/divider"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvVariationList"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                        app:spanCount="4" />
+
+                    <include
+                        android:id="@+id/dividerLine"
+                        layout="@layout/divider"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:layout_marginBottom="@dimen/_5sdp"
+                        android:visibility="gone" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvModifiersList"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/_4sdp"
+                        android:layout_marginEnd="@dimen/_4sdp"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                        app:spanCount="4" />
+
+                    <include
+                        android:id="@+id/dividerLine2"
+                        layout="@layout/divider"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:layout_marginBottom="@dimen/_5sdp"
+                        android:visibility="gone" />
+
+
+                </LinearLayout>
+            </androidx.core.widget.NestedScrollView>
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:id="@+id/relative_modifierqntUpdatte"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/bg_color"
+            android:clickable="true"
+            android:padding="@dimen/_10sdp"
+            android:visibility="gone">
+
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/linear_qntyedit"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_30sdp"
                 android:orientation="horizontal">
 
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/txtAddDiscount"
-                    style="@style/CustomFontBold"
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/linear_minus_qty"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/_2sdp"
-                    android:layout_marginEnd="@dimen/_4sdp"
-                    android:layout_weight="1"
-                    android:background="@color/btnColorDark"
-                    android:gravity="center"
-                    android:padding="@dimen/_5sdp"
-                    android:text="@string/add_discount"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/_7mdpi" />
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="3"
+                    android:background="@drawable/border_with_field"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:fontFamily="@font/sf_pro_display_bold"
+                        android:gravity="center"
+                        android:text="-"
+                        android:textColor="@color/btnColor"
+                        android:textSize="@dimen/_20sdp" />
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/_30sdp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="4"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical"
+                    android:padding="@dimen/_1sdp">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/sf_pro_display_semibold"
+                        android:gravity="center"
+                        android:text="Quantity"
+                        android:textColor="@color/btnColor"
+                        android:textSize="@dimen/_5sdp" />
+
+                    <androidx.appcompat.widget.AppCompatEditText
+                        android:id="@+id/edt_qntModifir"
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:digits="0123456789"
+                        android:gravity="center"
+                        android:singleLine="true"
+                        android:maxLength="6"
+                        android:maxLines="1"
+                        android:inputType="numberDecimal"
+                        android:text="1"
+                        android:textColor="@color/txtColor"
+                        android:textColorHint="@color/hintColor"
+                        android:textSize="@dimen/_12sdp" />
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/linear_plus_qty"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="3"
+                    android:background="@drawable/border_with_field"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/sf_pro_display_bold"
+                        android:gravity="center"
+                        android:text="+"
+                        android:layout_gravity="center"
+                        android:textColor="@color/btnColor"
+                        android:textSize="@dimen/_20sdp" />
+                </androidx.appcompat.widget.LinearLayoutCompat>
+            </androidx.appcompat.widget.LinearLayoutCompat>
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/linear_donemodifier"
+                android:layout_width="match_parent"
+                android:layout_alignParentBottom="true"
+                android:layout_height="@dimen/_30sdp"
+                android:background="@drawable/btn_background_selector"
+                android:gravity="center">
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/txtAddNote"
                     style="@style/CustomFontBold"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/_2sdp"
-                    android:layout_marginEnd="@dimen/_4sdp"
-                    android:layout_weight="1"
-                    android:background="@color/btnColorDark"
+                    android:layout_gravity="center"
                     android:gravity="center"
-                    android:padding="@dimen/_5sdp"
-                    android:text="@string/add_note"
+                    android:text="@string/tv_done"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/_7mdpi" />
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/txtRemoveItem"
-                    style="@style/CustomFontBold"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/_2sdp"
-                    android:layout_marginEnd="@dimen/_4sdp"
-                    android:layout_weight="1"
-                    android:background="@color/btnColorDark"
-                    android:gravity="center"
-                    android:padding="@dimen/_5sdp"
-                    android:text="@string/remove_item"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/_7mdpi" />
+                    android:textSize="@dimen/_10ssp"
+                    android:visibility="visible" />
+            </androidx.appcompat.widget.LinearLayoutCompat>
+        </RelativeLayout>
+    </RelativeLayout>
 
 
-            </LinearLayout>
-
-            <include
-                android:id="@+id/dividerUpdate"
-                layout="@layout/divider"
-                android:layout_width="match_parent"
-                android:layout_height="1dp" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvVariationList"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-                app:spanCount="4" />
-
-            <include
-                android:id="@+id/dividerLine"
-                layout="@layout/divider"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="@dimen/_5sdp"
-                android:layout_marginBottom="@dimen/_5sdp" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvModifiersList"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/_4sdp"
-                android:layout_marginEnd="@dimen/_4sdp"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:spanCount="4" />
-
-            <include
-                android:id="@+id/dividerLine2"
-                layout="@layout/divider"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="@dimen/_5sdp"
-                android:layout_marginBottom="@dimen/_5sdp" />
-
-
-
-
-        </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
 </layout>

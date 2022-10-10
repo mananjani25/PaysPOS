@@ -2,6 +2,7 @@ package com.android.pos.ui.adapter
 
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
@@ -9,8 +10,15 @@ import com.android.pos.data.entities.Modifier
 import com.android.pos.databinding.ViewOrderModifiersBinding
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.LogUtil
+import com.android.pos.utils.callback.ModifierLongClickCallback
+import com.android.pos.utils.extensions.gone
+import com.android.pos.utils.extensions.visible
 
-class ItemModifierAdapter(private val maxAllowed: Int, private val minRequired: Int) :
+class ItemModifierAdapter(
+    private val maxAllowed: Int,
+    private val minRequired: Int,
+    private val mLongClickcallback: ModifierLongClickCallback?
+) :
     RecyclerView.Adapter<ItemModifierAdapter.MyViewHolder>() {
     var list = ArrayList<Modifier>()
 
@@ -19,11 +27,22 @@ class ItemModifierAdapter(private val maxAllowed: Int, private val minRequired: 
         fun bind(item: Modifier) {
             binding.model = item
             binding.executePendingBindings()
+            if (list[position].itemQuantity==0){
+                binding.txtModifierQnt.gone()
+            }else{
+                binding.txtModifierQnt.visible()
+            }
             if (list[position].isChecked) {
+                if (list[position].itemQuantity==0){
+                    binding.txtModifierQnt.gone()
+                }else{
+                    binding.txtModifierQnt.visible()
+                }
                 binding.llMain.setBackgroundResource(R.drawable.bg_squre_modifier_choose)
                 binding.edtName.setTextColor(binding.root.context.resources.getColor(R.color.white))
                 binding.edtPrice.setTextColor(binding.root.context.resources.getColor(R.color.white))
             } else {
+                binding.txtModifierQnt.gone()
                 binding.llMain.setBackgroundResource(R.drawable.bg_squre_modifier)
                 binding.edtName.setTextColor(binding.root.context.resources.getColor(R.color.txtColor))
                 binding.edtPrice.setTextColor(binding.root.context.resources.getColor(R.color.txtColor))
@@ -32,9 +51,28 @@ class ItemModifierAdapter(private val maxAllowed: Int, private val minRequired: 
 
         init {
 
+            binding.llMain.setOnLongClickListener(object : View.OnLongClickListener {
+                override fun onLongClick(v: View?): Boolean {
+                    mLongClickcallback?.onLongClickListener(
+                        list[position].id,
+                        bindingAdapterPosition,
+                        list[position].itemQuantity
+                    )
+                    return true
+                }
+
+            })
+            binding.txtModifierQnt.setOnClickListener {
+                mLongClickcallback?.onLongClickListener(
+                    list[position].id,
+                    bindingAdapterPosition,
+                    list[position].itemQuantity
+                )
+            }
             binding.llMain.setOnClickListener {
 
                 list[bindingAdapterPosition].isChecked = !list[bindingAdapterPosition].isChecked
+                list[bindingAdapterPosition].itemQuantity = 1
 
                 if (maxLogic(
                         maxAllowed,
@@ -60,6 +98,10 @@ class ItemModifierAdapter(private val maxAllowed: Int, private val minRequired: 
                 notifyDataSetChanged()
             }
         }
+
+    }
+
+    private fun showModifierLayout() {
 
     }
 

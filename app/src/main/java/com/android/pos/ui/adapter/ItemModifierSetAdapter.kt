@@ -1,7 +1,6 @@
 package com.android.pos.ui.adapter
 
 import android.annotation.SuppressLint
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +12,7 @@ import com.android.pos.data.entities.Modifier
 import com.android.pos.data.entities.ModifierSet
 import com.android.pos.databinding.ViewOrderModifierSetsBinding
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.android.pos.utils.callback.ModifierLongClickCallback
 
 class ItemModifierSetAdapter(
     val viewModel: DashBoardCategoryViewModel,
@@ -22,7 +22,10 @@ class ItemModifierSetAdapter(
     RecyclerView.Adapter<ItemModifierSetAdapter.MyViewHolder>() {
     var filterList = ArrayList<ModifierSet>()
     var selectedModifierList = ArrayList<Modifier>()
-
+    private var mLongClickcallback: ModifierLongClickCallback? = null
+    fun setLongCallback(modifiercallback: ModifierLongClickCallback) {
+        mLongClickcallback = modifiercallback
+    }
     inner class MyViewHolder(private val binding: ViewOrderModifierSetsBinding) :
         RecyclerView.ViewHolder(binding.root) {
         private var adapter: ItemModifierAdapter? = null
@@ -53,7 +56,7 @@ class ItemModifierSetAdapter(
 
                 if (item.modifiers.isNotEmpty()) {
                     binding.rvModifiers.layoutManager = GridLayoutManager(binding.root.context, 3);
-                    adapter = ItemModifierAdapter(item.max_allowed, item.min_required)
+                    adapter = ItemModifierAdapter(item.max_allowed, item.min_required,mLongClickcallback)
                     binding.rvModifiers.adapter = adapter
                     adapter!!.addAll(item.modifiers)
                 }

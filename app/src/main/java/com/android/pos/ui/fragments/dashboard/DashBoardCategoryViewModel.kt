@@ -563,7 +563,11 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         model.isEdited = true
                                     }
                                     model.modifiers.forEach {
-                                        it.itemQuantity = item?.itemQuantity ?: 1
+                                        item?.modifiers?.forEach { itemmodif ->
+                                            if (itemmodif.id == it.id) {
+                                                it.itemQuantity = itemmodif.itemQuantity ?: 1
+                                            }
+                                        }
                                     }
 
                                     dineIn.get(selectedHeader).items[index] = model
@@ -618,7 +622,12 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                     item.itemQuantity + model.itemQuantity
                                             }
                                             item.modifiers.forEach {
-                                                it.itemQuantity = model.itemQuantity
+                                                model.modifiers.forEach { modelModifier ->
+                                                    if (modelModifier.id == it.id) {
+                                                        it.itemQuantity = model.itemQuantity
+                                                    }
+                                                }
+
                                             }
                                             model.modifiers = item.modifiers
 //                                            itemDiscountApply(model, item)
@@ -858,11 +867,19 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         if (item.isEdited) {
                                             model.isEdited = item.isEdited
                                         }
-                                        if (prefProvider.getValueboolean(IS_UPDATE_ORDER_FROM_ACTIVE_ORDER,false)){
+                                        if (prefProvider.getValueboolean(
+                                                IS_UPDATE_ORDER_FROM_ACTIVE_ORDER,
+                                                false
+                                            )
+                                        ) {
                                             model.isEdited = true
                                         }
                                         item.modifiers.forEach {
-                                            it.itemQuantity = model.itemQuantity
+                                            model.modifiers.forEach { tbmodifier ->
+                                                if (it.id == tbmodifier.id) {
+                                                    tbmodifier.itemQuantity = it.itemQuantity
+                                                }
+                                            }
                                         }
                                         model.modifiers = item.modifiers
                                         model.isDestroy = false
@@ -882,24 +899,33 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                     item.itemQuantity + model.itemQuantity
                                             }
                                             item.modifiers.forEach {
-                                                it.itemQuantity = model.itemQuantity
-                                            }
-
-                                            for (i in model.modifiers) {
-                                                for (j in item.modifiers) {
-                                                    if (i.id == j.id) {
-                                                        j.itemQuantity = j.itemQuantity
-                                                        j.orderModifierId = i.orderModifierId
+                                                model.modifiers.forEach { tbmodfier ->
+                                                    if (it.id == tbmodfier.id) {
+                                                        it.itemQuantity + model.itemQuantity
                                                     }
                                                 }
+
                                             }
+
+//                                            for (i in model.modifiers) {
+//                                                for (j in item.modifiers) {
+//                                                    if (i.id == j.id) {
+//                                                        j.itemQuantity = j.itemQuantity
+//                                                        j.orderModifierId = i.orderModifierId
+//                                                    }
+//                                                }
+//                                            }
 
                                             model.modifiers = item.modifiers
                                             if (item.isEdited) {
                                                 model.isEdited = item.isEdited
                                             }
 
-                                            if (prefProvider.getValueboolean(IS_UPDATE_ORDER_FROM_ACTIVE_ORDER,false)){
+                                            if (prefProvider.getValueboolean(
+                                                    IS_UPDATE_ORDER_FROM_ACTIVE_ORDER,
+                                                    false
+                                                )
+                                            ) {
                                                 model.isEdited = true
                                             }
                                             //   itemDiscountApply(model, item)
@@ -912,7 +938,11 @@ class DashBoardCategoryViewModel @Inject constructor(
                                             if (item.isEdited) {
                                                 model.isEdited = item.isEdited
                                             }
-                                            if (prefProvider.getValueboolean(IS_UPDATE_ORDER_FROM_ACTIVE_ORDER,false)){
+                                            if (prefProvider.getValueboolean(
+                                                    IS_UPDATE_ORDER_FROM_ACTIVE_ORDER,
+                                                    false
+                                                )
+                                            ) {
                                                 model.isEdited = true
                                             }
                                             itemDiscountApply(model, item)
@@ -927,7 +957,11 @@ class DashBoardCategoryViewModel @Inject constructor(
                             Log.d(TAG, "cartLogic: " + index)
                             if (item != null) {
                                 item.isDestroy = false
-                                if (prefProvider.getValueboolean(IS_UPDATE_ORDER_FROM_ACTIVE_ORDER,false)){
+                                if (prefProvider.getValueboolean(
+                                        IS_UPDATE_ORDER_FROM_ACTIVE_ORDER,
+                                        false
+                                    )
+                                ) {
                                     item.isEdited = true
                                 }
                                 list.add(item)
@@ -3079,6 +3113,8 @@ class DashBoardCategoryViewModel @Inject constructor(
             note = cartModel.note
             openOrderType = "DineIn"
             orderTypeId = 2
+            tax_bifurcation_data = Gson().toJson(cartModel.taxlistDynamic)
+            taxEnabled = true
             subTotal = MethodUtils.roundOffAmountDouble(subTotalPrice)
             totalAmount = MethodUtils.roundOffAmountDouble(totalPrice)
             totalDiscount = MethodUtils.roundOffAmountDouble(ttotalDiscount)
@@ -3352,12 +3388,12 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         it.modifiers.forEach {
                                             modifierSet.modifiers.forEach { mod ->
                                                 if (mod.id == it.id) {
-                                                       mod.itemQuantity =  it.itemQuantity
-                                                       mod.name =  it.name
-                                                       mod.price =  it.price
-                                                       mod.isDeleted =  it.isDeleted
-                                                       mod.isChecked =  it.isChecked
-                                                       mod.sort =  it.sort
+                                                    mod.itemQuantity = it.itemQuantity
+                                                    mod.name = it.name
+                                                    mod.price = it.price
+                                                    mod.isDeleted = it.isDeleted
+                                                    mod.isChecked = it.isChecked
+                                                    mod.sort = it.sort
 
                                                 }
                                             }
