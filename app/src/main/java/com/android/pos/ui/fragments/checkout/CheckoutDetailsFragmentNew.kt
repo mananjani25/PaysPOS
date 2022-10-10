@@ -664,8 +664,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         }
                         Log.d(TAG, "observeData: paidAMount value :  " + paymentAmount)
 
-                        val wholePrice =
-                            prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble()
+                        var wholePrice = 0.0
+                        if (prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").isNotEmpty()) {
+                            wholePrice =
+                                prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble()
+                        }
                         Log.d(TAG, "observeData: wholePrice value :  " + wholePrice)
                         bundle.putDouble("WholetotalPrice", wholePrice)
                         Log.d(

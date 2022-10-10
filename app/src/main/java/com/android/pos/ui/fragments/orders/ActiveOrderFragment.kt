@@ -354,8 +354,8 @@ class ActiveOrderFragment(
                 ""
             )
         )
-       return outputFormat.format(parseDate)
-       // return outputFormat.format(parseDate)
+        return outputFormat.format(parseDate)
+        // return outputFormat.format(parseDate)
 
 
     }
@@ -442,9 +442,11 @@ class ActiveOrderFragment(
                 prefProvider.setValue(Constants.IS_UPDATE_ORDER_OFFLINE_ID, order.offlineId)
 
 
-                findNavController().navigate(
-                    R.id.action_orders_to_dashboardCategoryBoldPOS, bundle
-                )
+                if (findNavController().currentDestination?.id == R.id.orders) {
+                    findNavController().navigate(
+                        R.id.action_orders_to_dashboardCategoryBoldPOS, bundle
+                    )
+                }
 
 //                findNavController().navigateUp()
 
@@ -623,7 +625,8 @@ class ActiveOrderFragment(
         var taxListDynamic: ArrayList<TaxData> = arrayListOf()
         if (orderItems.isNotEmpty()) {
             orderItems.forEach { orderItem ->
-                var totalPrice = (orderItem.price * orderItem.quantity) - (orderItem.discountAmount*orderItem.quantity)
+                var totalPrice =
+                    (orderItem.price * orderItem.quantity) - (orderItem.discountAmount * orderItem.quantity)
                 orderItem.orderItemModifiers.forEach { orderItemModifier ->
                     totalPrice += orderItemModifier.price * orderItemModifier.quantity
                 }
@@ -1265,7 +1268,9 @@ class ActiveOrderFragment(
             )
             addBuilderText(
                 builder,
-               MethodUtils.getUSFormatNumber( prefProvider.getValue(Constants.BUSINESS_PHONE_NO, "").toString())
+                MethodUtils.getUSFormatNumber(
+                    prefProvider.getValue(Constants.BUSINESS_PHONE_NO, "").toString()
+                )
             )
 
             builder.addFeedLine(1)
