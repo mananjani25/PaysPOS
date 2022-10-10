@@ -55,5 +55,7 @@ data class Item(
     val variations: List<VariationsAttribute>,
     var taxes: List<TaxData>? = null,
     @SerializedName("is_deleted")
-    val isDeleted: Boolean
+    val isDeleted: Boolean,
+    @SerializedName("item_modifier_sets_sort")
+    val itemModifierSetsSort: List<Int>
 )

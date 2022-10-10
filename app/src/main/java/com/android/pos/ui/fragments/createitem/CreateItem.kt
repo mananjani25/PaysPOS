@@ -19,7 +19,9 @@ import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.entities.*
 import com.android.pos.data.remote.Constants
@@ -32,11 +34,8 @@ import com.android.pos.data.remote.Constants.DIALOG_KEY_VARIATION_DETAILS_REMOVE
 import com.android.pos.databinding.CreateItemBinding
 import com.android.pos.ui.adapter.ModifierSetsListAdapter
 import com.android.pos.ui.adapter.VariationListAdapter
-import com.android.pos.utils.AlertUtils
-import com.android.pos.utils.AmountTextWatcher
-import com.android.pos.utils.MethodUtils
+import com.android.pos.utils.*
 import com.android.pos.utils.MethodUtils.Companion.isDoubleClick
-import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.callback.UpdateVariationCallback
 import com.android.pos.utils.extensions.getNavigationResultLiveData
@@ -77,6 +76,8 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback, It
     private var isNewVariation: Boolean = false
     private var base64: String = ""
     var spinnerList: ArrayList<ModifierSet> = arrayListOf()
+    var dragFrom = -1
+    var dragTo = -1
 
     // private lateinit var passedVariationList: ArrayList<List<VariationsAttribute>>
 
@@ -298,7 +299,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback, It
 
     private fun saveItem() {
 
-        adapter.selectedItemList().forEach {
+        adapter.filterList.forEach {
             modifierSetIds.add(it.id!!)
         }
         viewModel.selectedModifierList(modifierSetIds)
@@ -508,6 +509,72 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback, It
         binding.rvModifiersList.adapter = adapter
         adapter.setCallback(this)
         adapter.setDeleteCallback(this)
+
+        val touchHelper =
+            ItemTouchHelper(object :
+                ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP + ItemTouchHelper.DOWN, 0) {
+
+
+                override fun onMove(
+                    recyclerView: RecyclerView,
+                    viewHolder: RecyclerView.ViewHolder,
+                    target: RecyclerView.ViewHolder
+                ): Boolean {
+                    val oldPos = viewHolder.bindingAdapterPosition
+                    val newPos = target.bindingAdapterPosition
+                    LogUtil.logE(TAG, "posGOTPoldPos ${oldPos}")
+                    LogUtil.logE(TAG, "posGOTPnewPos ${newPos}")
+
+                    if (dragFrom == -1) {
+                        dragFrom = oldPos
+                    }
+                    dragTo = target.layoutPosition
+
+                    adapter.onItemMove(
+                        viewHolder.bindingAdapterPosition,
+                        target.bindingAdapterPosition
+                    )
+
+                    return true
+                }
+
+                override fun isLongPressDragEnabled(): Boolean {
+                    return true
+                }
+
+                override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+
+                }
+
+                override fun clearView(
+                    recyclerView: RecyclerView,
+                    viewHolder: RecyclerView.ViewHolder
+                ) {
+
+                    if (dragFrom != -1 && dragTo != -1 && dragFrom != dragTo) {
+
+                        /*reallyMoved(
+                            adapter.getItem(dragFrom).sort,
+                            adapter.getItem(dragTo).sort,
+                            adapter.getItem(viewHolder.layoutPosition).id
+                        )*/
+                        /* reallyMoved(
+                             dragFrom,
+                             dragTo,
+                             adapter.getItem(dragTo).id
+                         )*/
+
+                    }
+
+                    dragFrom = -1
+                    dragTo = -1
+                }
+
+            })
+
+        touchHelper.attachToRecyclerView(binding.rvModifiersList)
+
+
         variationListAdapter = VariationListAdapter(viewModel)
         variationListAdapter.setCallback(this)
         binding.rvVariationList.adapter = variationListAdapter
@@ -816,7 +883,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback, It
             spinnerList.add(modifierSet)
 
             binding.edtModifiersList?.adapter = null
-            Log.e(TAG,"spinnerListSize:  ${spinnerList.size}")
+            Log.e(TAG, "spinnerListSize:  ${spinnerList.size}")
             spinnerAdapter =
                 ArrayAdapter(
                     requireContext(),
@@ -869,9 +936,6 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback, It
                 }
 
 
-
-
-
         })
 
 
@@ -887,4 +951,6 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback, It
     R.id.action_createItem_to_editModifiersDialog,
     bundle
     )*/
+
+
 }
