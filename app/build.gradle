@@ -19,6 +19,7 @@ android {
         versionCode 13
         versionName "2.2"
 
+
         sourceSets { main { jniLibs.srcDirs = ['src/main/jniLibs/'] } }
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
