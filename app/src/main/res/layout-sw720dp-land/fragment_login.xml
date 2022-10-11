@@ -191,6 +191,21 @@
             android:text="@string/tv_pos_2021"
             android:textColor="@color/txtColor"
             android:textSize="@dimen/_6mdpi" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/txtVersion"
+            style="@style/CustomFontBold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center"
+            android:gravity="bottom|center"
+            android:padding="@dimen/_5sdp"
+            tools:text="Version : 2.0(22)"
+            android:textColor="@color/btnColor"
+            android:textSize="@dimen/_6mdpi" />
     </RelativeLayout>
 
 

@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.android.pos.BuildConfig
 import com.android.pos.R
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentMenuBinding
@@ -39,7 +40,7 @@ class MenuFragment : DialogFragment() {
         binding.lifecycleOwner = this
 
         setUpHeader()
-
+        versionDisplay()
 
         return binding.root
     }
@@ -47,6 +48,12 @@ class MenuFragment : DialogFragment() {
     private fun setUpHeader() {
         binding.header.txtTitle.text = getString(R.string.menu)
         binding.header.txtSave.text = getString(R.string.tv_home)
+    }
+
+    private fun versionDisplay() {
+
+        binding.txtVersion?.text =
+            "Version : " + BuildConfig.VERSION_NAME + "(" + BuildConfig.VERSION_CODE + ")"
     }
 
     override fun getTheme(): Int {
