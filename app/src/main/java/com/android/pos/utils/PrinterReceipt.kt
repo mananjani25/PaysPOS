@@ -1195,7 +1195,7 @@ fun addOrdersForKitchenDineIn(
                     Builder.COLOR_1
                 )
 
-                builder.addText(obj.itemQuantity.toString() + " " + obj.name)
+                builder.addText(obj.itemQuantity.toString() + " " + obj.name.uppercase())
 
                 if (obj.modifiers.isNotEmpty()) {
                     for (j in 0 until obj.modifiers.size) {
@@ -1216,7 +1216,7 @@ fun addOrdersForKitchenDineIn(
                         //builder.addTextPosition(1)
 
 
-                        builder.addText("  " + modifierObj.name)
+                        builder.addText("  " + modifierObj.name.uppercase())
 
 
                     }
@@ -1271,7 +1271,7 @@ fun addOrdersForKitchenOnlineOrder(
                     Builder.COLOR_1
                 )
 
-                builder.addText(obj.quantity.toString() + " " + obj.itemName)
+                builder.addText(obj.quantity.toString() + " " + obj.itemName.uppercase())
 
                 if (obj.orderItemModifiers.isNotEmpty()) {
                     for (j in 0 until obj.orderItemModifiers.size) {
@@ -1292,7 +1292,7 @@ fun addOrdersForKitchenOnlineOrder(
                         //builder.addTextPosition(1)
 
 
-                        builder.addText("  " + modifierObj.name)
+                        builder.addText("  " + modifierObj.name.uppercase())
 
 
                     }
@@ -1334,13 +1334,13 @@ fun addOrdersForKitchenOnlineOrderSunmi(
 
                 val obj = list.get(i)
 
-                PrintSunmiUtils.orderTime(obj.quantity.toString() + " " + obj.itemName)
+                PrintSunmiUtils.orderTime(obj.quantity.toString() + " " + obj.itemName.uppercase())
 
                 if (obj.orderItemModifiers.isNotEmpty()) {
                     for (j in 0 until obj.orderItemModifiers.size) {
                         val modifierObj = obj.orderItemModifiers.get(j)
 
-                        PrintSunmiUtils.orderTime("  " + modifierObj.name)
+                        PrintSunmiUtils.orderTime("  " + modifierObj.name.uppercase())
 
 
                     }
@@ -1364,13 +1364,13 @@ fun addOrdersForKitchenOnlineOrderSunmiInner(
     for (i in 0 until list.size) {
         val obj = list.get(i)
 
-        PrintSunmiUtils.normalTextLarge(obj.quantity.toString() + " " + obj.itemName)
+        PrintSunmiUtils.normalTextLarge(obj.quantity.toString() + " " + obj.itemName.uppercase())
 
         if (obj.orderItemModifiers.isNotEmpty()) {
             for (j in 0 until obj.orderItemModifiers.size) {
                 val modifierObj = obj.orderItemModifiers.get(j)
 
-                PrintSunmiUtils.normalTextLarge("  " + modifierObj.name)
+                PrintSunmiUtils.normalTextLarge("  " + modifierObj.name.uppercase())
 
 
             }
@@ -1396,13 +1396,13 @@ fun addOrdersForKitchenDineIn(
         printerCat?.forEach {
             if (it.id == obj.categoryId && it.printerEnable && it.categoryActive) {
 
-                PrintSunmiUtils.orderTime(obj.itemQuantity.toString() + " " + obj.name)
+                PrintSunmiUtils.orderTime(obj.itemQuantity.toString() + " " + obj.name.uppercase())
 
                 if (obj.modifiers.isNotEmpty()) {
                     for (j in 0 until obj.modifiers.size) {
                         val modifierObj = obj.modifiers.get(j)
 
-                        PrintSunmiUtils.orderTime("  " + modifierObj.name)
+                        PrintSunmiUtils.orderTime("  " + modifierObj.name.uppercase())
 
 
                     }
@@ -1426,13 +1426,13 @@ fun addOrdersForKitchenDineInInner(
     list.forEach { obj ->
 
 
-        PrintSunmiUtils.normalTextLarge(obj.itemQuantity.toString() + " " + obj.name)
+        PrintSunmiUtils.normalTextLarge(obj.itemQuantity.toString() + " " + obj.name.uppercase())
 
         if (obj.modifiers.isNotEmpty()) {
             for (j in 0 until obj.modifiers.size) {
                 val modifierObj = obj.modifiers.get(j)
 
-                PrintSunmiUtils.normalTextLarge("  " + modifierObj.name)
+                PrintSunmiUtils.normalTextLarge("  " + modifierObj.name.uppercase())
 
 
             }
@@ -1472,7 +1472,7 @@ fun addOrdersForKitchenCustomer(
                         Builder.COLOR_1
                     )
 
-                    builder.addText(obj.quantity.toString() + " " + obj.itemName)
+                    builder.addText(obj.quantity.toString() + " " + obj.itemName.uppercase())
 
                     if (obj.orderItemModifiers.isNotEmpty()) {
                         for (j in 0 until obj.orderItemModifiers.size) {
@@ -1493,7 +1493,7 @@ fun addOrdersForKitchenCustomer(
                             //builder.addTextPosition(1)
 
 
-                            builder.addText("  " + modifierObj.name)
+                            builder.addText("  " + modifierObj.name.uppercase())
 
 
                         }
@@ -1545,7 +1545,7 @@ fun addOrdersForKitchenCustomerNewPrinter(
             Builder.COLOR_1
         )
 
-        builder.addText(obj.quantity.toString() + " " + obj.itemName)
+        builder.addText(obj.quantity.toString() + " " + obj.itemName.uppercase())
 
         if (obj.orderItemModifiers.isNotEmpty()) {
             for (j in 0 until obj.orderItemModifiers.size) {
@@ -1565,7 +1565,7 @@ fun addOrdersForKitchenCustomerNewPrinter(
                 //builder.addTextPosition(1)
 
 
-                builder.addText("  " + modifierObj.name)
+                builder.addText("  " + modifierObj.name.uppercase())
 
 
             }
@@ -1696,7 +1696,7 @@ fun addOrdersForKitchen(
                         Builder.COLOR_1
                     )
 
-                    builder.addText(obj.quantity.toString() + " " + obj.itemName)
+                    builder.addText(obj.quantity.toString() + " " + obj.itemName.uppercase())
 
                     if (obj.orderItemModifiers.isNotEmpty()) {
                         for (j in 0 until obj.orderItemModifiers.size) {
@@ -1717,7 +1717,7 @@ fun addOrdersForKitchen(
                             //builder.addTextPosition(1)
 
 
-                            builder.addText("  " + modifierObj.name)
+                            builder.addText("  " + modifierObj.name.uppercase())
 
 
                         }
@@ -1764,13 +1764,13 @@ fun addOrdersForKitchen(
                 val obj = list.get(i)
 
 
-                PrintSunmiUtils.orderTime(obj.quantity.toString() + " " + obj.itemName)
+                PrintSunmiUtils.orderTime(obj.quantity.toString() + " " + obj.itemName.uppercase())
 
                 if (obj.orderItemModifiers.isNotEmpty()) {
                     for (j in 0 until obj.orderItemModifiers.size) {
                         val modifierObj = obj.orderItemModifiers.get(j)
 
-                        PrintSunmiUtils.orderTime("  " + modifierObj.name)
+                        PrintSunmiUtils.orderTime("  " + modifierObj.name.uppercase())
 
 
                     }
@@ -1793,13 +1793,13 @@ fun addOrdersForKitchenInner(
         val obj = list.get(i)
 
 
-        PrintSunmiUtils.normalTextLarge(obj.quantity.toString() + " " + obj.itemName)
+        PrintSunmiUtils.normalTextLarge(obj.quantity.toString() + " " + obj.itemName.uppercase())
 
         if (obj.orderItemModifiers.isNotEmpty()) {
             for (j in 0 until obj.orderItemModifiers.size) {
                 val modifierObj = obj.orderItemModifiers.get(j)
 
-                PrintSunmiUtils.normalTextLarge("  " + modifierObj.name)
+                PrintSunmiUtils.normalTextLarge("  " + modifierObj.name.uppercase())
 
 
             }
