@@ -1863,8 +1863,8 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
                 /*if (isUpdateOrder && it.orderModifierId != null)
                     id = it.orderModifierId
     */
-                if (item.orderItemId != null) {
-                    id = it.id
+                if (it.orderModifierId != null) {
+                    id = it.orderModifierId
                 }
                 name = it.name
                 price = it.price
