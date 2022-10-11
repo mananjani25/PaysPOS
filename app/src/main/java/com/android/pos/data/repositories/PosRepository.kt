@@ -278,6 +278,8 @@ class PosRepository @Inject constructor(
 
     fun getSingleModifier(id: Int) = appDatabase.modifierSetDao().itemOne(id)
 
+    fun updateModifier(mod:ModifierSet) = appDatabase.modifierSetDao().update(mod)
+
 
     fun modifierSetsList() =
         performGetOperationDatabase(databaseQuery = { appDatabase.modifierSetDao().all })

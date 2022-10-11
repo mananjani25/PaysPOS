@@ -404,7 +404,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                 putDouble("itemOrderDiscount", perItemDiscount)
                 putInt("totalquantity", totalItemswithQuantity)
             }
-            bundle.putString("isFrom", "itemDiscount")
+            bundle.putString("isFrom","itemDiscount")
             if (prefProvider.isAdmin() || prefProvider.isManager()) {
                 findNavController().navigate(
                     R.id.action_dashboardCategoryBoldPOS_to_addDiscountDialog,
@@ -569,20 +569,22 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                             adapter?.setLongCallback(this)
                                             binding.rvModifiersList.adapter = adapter
                                             binding.rvModifiersList.visibility = View.VISIBLE
-                                            it.data.forEach { modifierSet ->
-                                                modifierSet.modifiers.forEach { modifier ->
-                                                    item.modifiers.forEach { oldmodifier ->
-                                                        if (oldmodifier.id == modifier.id) {
-                                                            modifier.isChecked = true
-                                                            modifier.itemQuantity =
-                                                                oldmodifier.itemQuantity
+                                            if (isUpdateItem){
+                                                it.data.forEach { modifierSet ->
+                                                    modifierSet.modifiers.forEach { modifier ->
+                                                        item.modifiers.forEach { oldmodifier ->
+                                                            if (oldmodifier.id == modifier.id) {
+                                                                modifier.isChecked = true
+                                                            }
                                                         }
                                                     }
-                                                }
 
+                                                }
+                                                adapter?.setData(it.data)
+                                            }else{
+                                                adapter?.add(it.data)
                                             }
-                                            adapter?.add(it.data)
-                                            adapter?.setData(item.modifiers)
+
                                         } else binding.rvModifiersList.visibility = View.GONE
 
                                     }

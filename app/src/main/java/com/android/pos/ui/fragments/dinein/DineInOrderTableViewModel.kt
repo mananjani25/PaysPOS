@@ -46,7 +46,6 @@ class DineInOrderTableViewModel @Inject constructor(
     private val _updateOrder = MutableLiveData<Event<String>>()
     val updateOrder: LiveData<Event<String>> = _updateOrder
 
-
     private val _showProgressCash = MutableLiveData<Event<Boolean>>()
     val showProgressCash: LiveData<Event<Boolean>> = _showProgressCash
 

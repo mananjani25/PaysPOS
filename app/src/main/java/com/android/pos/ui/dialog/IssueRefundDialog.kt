@@ -370,7 +370,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                             (orderItemselected.price * orderItemselected.quantity) - orderItemselected.discountAmount
 
                         orderItemselected.orderItemModifiers.forEach { modifiers ->
-                            (modifiers.price * modifiers.quantity)
+                            modifierPrice += (modifiers.price * modifiers.quantity)
                         }
 
                         val totalPrice = price + modifierPrice

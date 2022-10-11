@@ -144,6 +144,8 @@ data class OpenOrderResponse(
                 val itemName: String,
                 @SerializedName("note")
                 val note: String,
+                @SerializedName("is_edited")
+                val isEdited: Boolean,
                 @SerializedName("order_id")
                 val orderId: Int,
                 @SerializedName("order_item_modifiers")

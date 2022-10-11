@@ -1114,6 +1114,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
                 }
 
+                PrintSunmiUtils.cutPaperInner()
+
 
             } else {
 

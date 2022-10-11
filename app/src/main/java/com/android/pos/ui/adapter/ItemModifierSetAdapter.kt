@@ -118,19 +118,9 @@ class ItemModifierSetAdapter(
     }
 
 
-    fun setData(modifiers: List<Modifier>) {
-
-
-        filterList.forEach { modifierSet ->
-            modifierSet.modifiers.forEach { modifierSet_Modifier ->
-                modifiers.forEach {
-                    if (modifierSet_Modifier.id == it.id) {
-                        modifierSet_Modifier.isChecked = true
-                    }
-                }
-            }
-        }
-
+    fun setData(modifierSet: List<ModifierSet>) {
+        this.filterList = arrayListOf()
+        this.filterList = modifierSet as ArrayList<ModifierSet>
         notifyDataSetChanged()
 
     }

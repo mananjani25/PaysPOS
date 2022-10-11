@@ -52,6 +52,7 @@ data class TbCustomer(
                 last_name = customer.lastName,
                 birth_date = customer.birthDate,
                 email = customer.email,
+                same_as_billing_address = customer.same_as_billing_address,
                 enroll_to_loyalty = customer.enroll_to_loyalty,
                 final_reward = customer.final_reward,
                 company = customer.company,

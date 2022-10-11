@@ -2032,10 +2032,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                             var modifiers: ArrayList<Modifier> = arrayListOf()
                                             it.orderItemModifiers.forEach { mod ->
                                                 val model = Modifier()
-                                                model.id = mod.id
+                                                model.id = mod.modifierId
                                                 model.itemQuantity = mod.quantity
                                                 model.name = mod.name
-                                                model.orderModifierId = mod.orderItemId
+                                                model.orderModifierId = mod.id
                                                 model.price = mod.price
 
 

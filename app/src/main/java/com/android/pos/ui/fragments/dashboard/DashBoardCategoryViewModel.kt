@@ -2892,12 +2892,12 @@ class DashBoardCategoryViewModel @Inject constructor(
 
             val orderItemModifierAttribute = OrderItemModifierAttribute().apply {
 
-                /*if (isUpdateOrder && it.orderModifierId != null)
+                if (prefProvider.getValueboolean(
+                        DINE_IN_UPDATE,
+                        false
+                    ) && it.orderModifierId != null
+                )
                     id = it.orderModifierId
-    */
-                if (item.orderItemId != null) {
-                    id = it.id
-                }
                 name = it.name
                 price = it.price
                 modifier_id = it.id
@@ -3320,6 +3320,17 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
                                 category.items.forEach {
+                                    it.modifierSets.forEach { modifierset ->
+                                        val itemModifierSets = ItemModifierSets().apply {
+                                            itemId = it.id
+                                            modifierSetId = modifierset.id!!
+                                            minRequired = modifierset.min_required
+                                            maxAllowed = modifierset.max_allowed
+                                            isDeleted = modifierset.isDeleted
+                                        }
+                                        itemModifierSetList.add(itemModifierSets)
+                                    }
+
                                     //new optimise code
                                     inventoryModelList.add(TbItem().convertToItem(it, category))
                                 }
@@ -3328,18 +3339,18 @@ class DashBoardCategoryViewModel @Inject constructor(
                             }
 
 
-                            mData.modifierSets.forEach { modifierSets ->
-
-                                val itemModifierSets = ItemModifierSets().apply {
-                                    itemId = this.modifierSetId
-                                    modifierSetId = modifierSets.id!!
-                                    minRequired = modifierSets.min_required
-                                    maxAllowed = modifierSets.max_allowed
-                                    isDeleted = modifierSets.isDeleted
-                                }
-
-                                itemModifierSetList.add(itemModifierSets)
-                            }
+//                            mData.modifierSets.forEach { modifierSets ->
+//
+//                                val itemModifierSets = ItemModifierSets().apply {
+//                                    itemId = this.modifierSetId
+//                                    modifierSetId = modifierSets.id!!
+//                                    minRequired = modifierSets.min_required
+//                                    maxAllowed = modifierSets.max_allowed
+//                                    isDeleted = modifierSets.isDeleted
+//                                }
+//
+//                                itemModifierSetList.add(itemModifierSets)
+//                            }
                             modifierSetList.addAll(mData.modifierSets)
 
 

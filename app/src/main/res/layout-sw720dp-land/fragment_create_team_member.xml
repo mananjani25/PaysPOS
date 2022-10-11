@@ -27,12 +27,12 @@
             android:layout_height="0.5dp"
             android:background="@color/view" />
 
-        <androidx.core.widget.NestedScrollView
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/_70sdp"
             android:layout_marginTop="@dimen/_15sdp"
-            android:layout_marginBottom="@dimen/_10sdp">
+            >
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -400,6 +400,7 @@
                     android:visibility="gone" />
 
                 <LinearLayout
+                    android:paddingBottom="@dimen/_170sdp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_10sdp"
@@ -425,6 +426,7 @@
                         android:background="@drawable/background_square_border_grey"
                         android:digits="@string/numbers_digits_string"
                         android:hint="@string/tv_personal_passcode_"
+
                         android:inputType="number"
                         android:maxLength="4"
                         android:padding="@dimen/_9sdp"
@@ -480,7 +482,7 @@
                     android:background="@color/gray_rect"
                     android:visibility="gone" />
             </LinearLayout>
-        </androidx.core.widget.NestedScrollView>
+        </ScrollView>
     </LinearLayout>
 
 

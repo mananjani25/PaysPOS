@@ -66,6 +66,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 
 @AndroidEntryPoint
@@ -801,6 +802,7 @@ class CartFragment(
 
 
                 } else {
+                    cartlist = arrayListOf()
                     viewModel.clearListTax()
                     cartAdapter.clearList()
                     reSetTaxBifurcationData()
@@ -935,7 +937,7 @@ class CartFragment(
                                                             id = it.id ?: 0,
                                                             isModifier = it.isChecked,
                                                             itemId = "",
-                                                            modifierId = "",
+                                                            modifierId = 0,
                                                             name = it.name,
                                                             orderId = 0,
                                                             orderItemId = 0,
@@ -1012,6 +1014,7 @@ class CartFragment(
                             binding.lblLoyaltyPoints.visibility = View.GONE
 
                         } else {
+                            cartlist = arrayListOf()
                             if (isFromPayment) {
                                 if (MethodUtils.isEnableCashDiscount(requireContext())) {
                                     binding.linearCashDiscount.visible()
@@ -1105,7 +1108,9 @@ class CartFragment(
 
                             Log.e("mAllWords", "filterItems  ${filterItems.size}")
                             cartAdapter.setList(filterItems)
-                            binding.rvCartList.smoothScrollToPosition(filterItems.size - 1)
+                            if (filterItems.isNotEmpty()){
+                                binding.rvCartList.smoothScrollToPosition(filterItems.size - 1)
+                            }
 
                             cartlist = it as ArrayList<CartModel>
                             viewModel.itemCalculationCartModel(
@@ -1209,6 +1214,7 @@ class CartFragment(
 
 
                         } else {
+                            cartlist = arrayListOf()
                             binding.liinearInfoLayout.layoutParams.height =
                                 resources.getDimension(R.dimen._50sdp).toInt()
                             taxClickable = false

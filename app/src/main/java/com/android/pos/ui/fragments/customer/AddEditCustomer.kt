@@ -76,12 +76,12 @@ class AddEditCustomer : Fragment() {
 
 
         binding.edtStreet?.setOnTouchListener { view, event ->
-                binding.nestedScrollView?.smoothScrollTo(500,500)
+            binding.nestedScrollView?.smoothScrollTo(500, 500)
             false
         }
 
         binding.edtStreetDel?.setOnTouchListener { view, event ->
-            binding.nestedScrollView?.smoothScrollTo(500,500)
+            binding.nestedScrollView?.smoothScrollTo(500, 500)
             false
         }
 
@@ -320,7 +320,7 @@ class AddEditCustomer : Fragment() {
                 .build(binding.root.context)
 
         binding.edtStreet?.setAdapter(PlacesAutoCompleteAdapter(binding.root.context, placesApi))
-        binding.edtStreet?.setOnItemClickListener { parent, view, position, id ->
+        binding.edtStreet.setOnItemClickListener { parent, view, position, id ->
             val place = parent.getItemAtPosition(position) as Place
 
             //binding.edtStreet.setText("${place.description}")
@@ -334,7 +334,7 @@ class AddEditCustomer : Fragment() {
 
                     val gcd = Geocoder(requireContext(), Locale.getDefault())
                     /* val address: List<Address> =
-                         gcd.getFromLocation(placeDetails.lat, placeDetails.lng, 1)*/
+                             gcd.getFromLocation(placeDetails.lat, placeDetails.lng, 1)*/
 
                     var street = ""
                     var suite = ""
@@ -636,29 +636,40 @@ class AddEditCustomer : Fragment() {
             viewModel.submit(listAddress)
         }
         binding.chksameasbilling.setOnClickListener {
-            viewModel.same_as_billing_address.value = binding.chksameasbilling.isChecked
-            if (binding.chksameasbilling.isChecked) {
-                binding.edtStreetDel.setText(binding.edtStreet.text.toString())
-                binding.edtSuiteDel.setText(binding.edtSuite.text.toString())
-                binding.edtCityDel.setText(binding.edtCity.text.toString())
-                binding.edtStateDel.setText(binding.edtState.text.toString())
-                binding.edtZipDel.setText(binding.edtZip.text.toString())
-                if (binding.edtAddress.selectedItem.toString() == "United States") {
-                    binding.edtAddressDel.setSelection(0)
+            if (binding.edtStreet.text.toString().isNotEmpty()) {
+                viewModel.same_as_billing_address.value = binding.chksameasbilling.isChecked
+                if (binding.chksameasbilling.isChecked) {
+                    binding.edtStreetDel.setText(binding.edtStreet.text.toString())
+                    binding.edtSuiteDel.setText(binding.edtSuite.text.toString())
+                    binding.edtCityDel.setText(binding.edtCity.text.toString())
+                    binding.edtStateDel.setText(binding.edtState.text.toString())
+                    binding.edtZipDel.setText(binding.edtZip.text.toString())
+                    if (binding.edtAddress.selectedItem.toString() == "United States") {
+                        binding.edtAddressDel.setSelection(0)
+                    } else {
+                        binding.edtAddressDel.setSelection(1)
+                    }
                 } else {
-                    binding.edtAddressDel.setSelection(1)
+                    binding.edtStreetDel.setText("")
+                    binding.edtSuiteDel.setText("")
+                    binding.edtCityDel.setText("")
+                    binding.edtStateDel.setText("")
+                    binding.edtZipDel.setText("")
+                    binding.edtAddressDel.setSelection(0)
                 }
             } else {
-                binding.edtStreetDel.setText("")
-                binding.edtSuiteDel.setText("")
-                binding.edtCityDel.setText("")
-                binding.edtStateDel.setText("")
-                binding.edtZipDel.setText("")
-                binding.edtAddressDel?.setSelection(0)
+                AlertUtils.showCustomAlertWithListenerWithOK(
+                    requireContext(),
+                    "Please Enter Billing Address.",
+                )
+                { _, _ ->
+                    binding.chksameasbilling.isChecked = false
+                }
+
             }
         }
-    }
 
+    }
 
     private fun showDatePicker() {
         val c = Calendar.getInstance();
@@ -677,10 +688,12 @@ class AddEditCustomer : Fragment() {
                         monthOfYear: Int,
                         dayOfMonth: Int
                     ) {
-                        viewModel.addCustomerDetails.value?.data?.birth_day = dayOfMonth.toString()
+                        viewModel.addCustomerDetails.value?.data?.birth_day =
+                            dayOfMonth.toString()
                         viewModel.addCustomerDetails.value?.data?.birth_month =
                             (monthOfYear + 1).toString()
-                        viewModel.addCustomerDetails.value?.data?.birthday_year = year.toString()
+                        viewModel.addCustomerDetails.value?.data?.birthday_year =
+                            year.toString()
 
 
                         val calendar = Calendar.getInstance()

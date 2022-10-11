@@ -134,6 +134,8 @@ data class GetOrderDetailsResponse(
             val phones: List<Phone>,
             @SerializedName("enroll_to_loyalty")
             val enroll_to_loyalty: Boolean?,
+            @SerializedName("same_as_billing_address")
+            val same_as_billing_address: Boolean?,
             @SerializedName("final_reward")
             val final_reward: Int? = 0
         ) : Parcelable {
@@ -331,7 +333,7 @@ data class GetOrderDetailsResponse(
                 @SerializedName("item_id")
                 val itemId: String?,
                 @SerializedName("modifier_id")
-                val modifierId: String?,
+                val modifierId: Int?,
                 @SerializedName("name")
                 val name: String,
                 @SerializedName("order_id")

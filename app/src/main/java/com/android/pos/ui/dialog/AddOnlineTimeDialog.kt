@@ -246,7 +246,7 @@ class AddOnlineTimeDialog : DialogFragment() {
                 finalstring = binding.edtAmount.text.toString()
             }
             if (finalstring.isEmpty()) {
-                AlertUtils.showCustomAlert(requireContext(), "Please Select Time Or Enter Custom Time.")
+                AlertUtils.showCustomAlert(requireContext(), "Please select time or enter custom time.")
             } else {
                 val result = Bundle().apply {
                     putInt("time", finalstring.toInt())

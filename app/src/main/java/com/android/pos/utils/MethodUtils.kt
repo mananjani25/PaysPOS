@@ -115,6 +115,15 @@ class MethodUtils {
             return String.format("%.2f", price)
         }
 
+        fun roundOffAmountStringToDouble(price: String): String {
+
+            if (price.isEmpty() || price == "0.0" || price == "0.00") {
+                return "0.00"
+            }
+
+            return String.format("%.2f", price.toDouble())
+        }
+
         fun hideKeyboard(activity: Activity) {
             try {
                 val inputManager =

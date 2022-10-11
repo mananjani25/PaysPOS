@@ -14,7 +14,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Base64
-import android.util.Log
 import android.view.*
 import androidx.activity.OnBackPressedCallback
 import androidx.core.text.trimmedLength
@@ -2686,7 +2685,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             if (customerSettingModel.showQrCode) {
 
 
-                getDineInOrderDetails?.digitalReceiptUrl?.let { LogUtil.logE("digitalReceiptUrl1", it) }
+                getDineInOrderDetails?.digitalReceiptUrl?.let {
+                    LogUtil.logE(
+                        "digitalReceiptUrl1",
+                        it
+                    )
+                }
 
 
                 getDineInOrderDetails?.digitalReceiptUrl?.let { PrintSunmiUtils.qrCode(it) }
@@ -3085,6 +3089,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 SunmiPrintHelper.getInstance().lineWrap(1)
                 PrintSunmiUtils.orderNoteInner(getDineInOrderDetails?.note!!)
             }
+
 
             SunmiPrintHelper.getInstance().lineWrap(2)
             val str8 = padLine(
@@ -4805,6 +4810,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 PrintSunmiUtils.orderNote(getDineInOrderDetails?.note!!)
             }
+            SunmiPrinterApi.getInstance().lineWrap(2)
+            PrintSunmiUtils.tips("__________________________")
+            SunmiPrinterApi.getInstance().lineWrap(1)
 
             SunmiPrinterApi.getInstance().lineWrap(2)
             val str8 = padLine(
@@ -5312,6 +5320,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 PrintSunmiUtils.orderNoteInner(getDineInOrderDetails?.note!!)
             }
+
+            SunmiPrintHelper.getInstance().lineWrap(2)
+            PrintSunmiUtils.boldText("__________________________")
+            SunmiPrintHelper.getInstance().lineWrap(1)
 
             SunmiPrintHelper.getInstance().lineWrap(2)
             val str8 = padLine(
@@ -9208,6 +9220,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             }
 
+            PrintSunmiUtils.tips("__________________________")
+            SunmiPrinterApi.getInstance().lineWrap(1)
+
             SunmiPrinterApi.getInstance().lineWrap(2)
             val str8 = padLine(
                 "Customer Signature",
@@ -9855,6 +9870,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 PrintSunmiUtils.orderNoteInner(receiptModel?.order?.note!!)
 
             }
+
+            PrintSunmiUtils.boldText("__________________________")
+            SunmiPrintHelper.getInstance().lineWrap(1)
 
             SunmiPrintHelper.getInstance().lineWrap(2)
             val str8 = padLine(
