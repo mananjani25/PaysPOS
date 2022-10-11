@@ -233,6 +233,16 @@ open class PaymentViewModel @Inject constructor(
         )
     }
 
+    private fun cashPaymentTypeSplit(orderRequestModel: SpitByOrderRequestModel): Boolean {
+
+        if (orderRequestModel.amount_tab.payments_attributes.isEmpty()) return true
+
+        return orderRequestModel.amount_tab.payments_attributes[0].paymentType.equals(
+            "Cash",
+            ignoreCase = true
+        )
+    }
+
     fun saveActualValue(
         total: Double,
         subtotal: Double,
@@ -1828,7 +1838,12 @@ open class PaymentViewModel @Inject constructor(
 
     fun splitByOrder(myRequest: SpitByOrderRequestModel, isDineIn: Boolean) {
 
-        _showProgress.value = Event(true)
+        if (cashPaymentTypeSplit(myRequest)) {
+            _showProgressCash.value = Event(true)
+        } else
+            _showProgress.value = Event(true)
+
+//        _showProgress.value = Event(true)
 
         viewModelScope.launch {
 
@@ -1885,11 +1900,19 @@ open class PaymentViewModel @Inject constructor(
 
                 Status.ERROR -> {
                     _snackbarText.value = Event(resource.message)
-                    _showProgress.value = Event(false)
+                    if (cashPaymentTypeSplit(myRequest)) {
+                        _showProgressCash.value = Event(true)
+                    } else
+                        _showProgress.value = Event(true)
+
                 }
 
                 Status.LOADING -> {
-                    _showProgress.value = Event(true)
+                    if (cashPaymentTypeSplit(myRequest)) {
+                        _showProgressCash.value = Event(true)
+                    } else
+                        _showProgress.value = Event(true)
+
                 }
             }
         }
