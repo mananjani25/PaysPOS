@@ -937,7 +937,7 @@ class CartFragment(
                                                             id = it.id ?: 0,
                                                             isModifier = it.isChecked,
                                                             itemId = "",
-                                                            modifierId = "",
+                                                            modifierId = 0,
                                                             name = it.name,
                                                             orderId = 0,
                                                             orderItemId = 0,

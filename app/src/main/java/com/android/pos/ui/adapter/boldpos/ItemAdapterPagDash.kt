@@ -49,36 +49,24 @@ class ItemAdapterPagDash(
             var itename_price: StringBuffer = StringBuffer()
 
             if (model?.name?.length!! >= 30) {
-                if (getItemPriceIsValid(model.price).isNotEmpty()){
-                    itename_price.append(
-                        model.name.substring(
-                            0,
-                            30
-                        ) + "...\n" + getItemPriceIsValid(model.price)
-                    )
-                    binding.txtCategoryName.text = itename_price
-                }else{
-                    itename_price.append(
-                        model.name.substring(
-                            0,
-                                40
-                        ) + "..."
-                    )
-                    binding.txtCategoryName.text = itename_price
-                }
+                itename_price.append(
+                    model?.name?.substring(
+                        0,
+                        30
+                    ) + "...\n" + model?.price?.let { MethodUtils.roundOffAmount(it) })
+                binding.txtCategoryName.text = itename_price
             } else {
-                if (getItemPriceIsValid(model.price).isNotEmpty()){
-                    binding.txtCategoryName.text =
-                        "" + model.name + "\n\n" + getItemPriceIsValid(model.price)
-                }else {
-                    binding.txtCategoryName.text = "" + model.name
-                }
-
+                binding.txtCategoryName.text =
+                    "" + model?.name + "\n\n" + model?.price?.let {
+                        MethodUtils.roundOffAmount(
+                            it
+                        )
+                    }
             }
 
-            if (model.modifier_set_ids.isNotEmpty()) {
+            if (model.modifier_set_ids.isNotEmpty()){
                 binding.viewLineFormodifier.visible()
-            } else {
+            }else{
                 binding.viewLineFormodifier.gone()
             }
 
@@ -135,16 +123,6 @@ class ItemAdapterPagDash(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(getItem(position), position)
-
-
-    }
-
-    fun getItemPriceIsValid(amount: Double): String {
-        if (amount > 0.0) {
-            return amount.let { MethodUtils.roundOffAmount(it) }
-        }else{
-            return ""
-        }
 
 
     }

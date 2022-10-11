@@ -2874,12 +2874,12 @@ class DashBoardCategoryViewModel @Inject constructor(
 
             val orderItemModifierAttribute = OrderItemModifierAttribute().apply {
 
-                /*if (isUpdateOrder && it.orderModifierId != null)
+                if (prefProvider.getValueboolean(
+                        DINE_IN_UPDATE,
+                        false
+                    ) && it.orderModifierId != null
+                )
                     id = it.orderModifierId
-    */
-                if (item.orderItemId != null) {
-                    id = it.id
-                }
                 name = it.name
                 price = it.price
                 modifier_id = it.id

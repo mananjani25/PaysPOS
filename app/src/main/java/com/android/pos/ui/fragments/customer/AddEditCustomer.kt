@@ -663,7 +663,7 @@ class AddEditCustomer : Fragment() {
                     "Please Enter Billing Address.",
                 )
                 { _, _ ->
-                    binding.chkIsLoyalty.isChecked = false
+                    binding.chksameasbilling.isChecked = false
                 }
 
             }

@@ -333,7 +333,7 @@ data class GetOrderDetailsResponse(
                 @SerializedName("item_id")
                 val itemId: String?,
                 @SerializedName("modifier_id")
-                val modifierId: String?,
+                val modifierId: Int?,
                 @SerializedName("name")
                 val name: String,
                 @SerializedName("order_id")
