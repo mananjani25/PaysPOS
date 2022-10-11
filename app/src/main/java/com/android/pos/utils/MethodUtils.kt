@@ -7,6 +7,7 @@ import android.os.Build
 import android.os.SystemClock
 import android.provider.Settings
 import android.text.TextUtils
+import android.util.Log
 import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import androidx.annotation.RequiresApi
@@ -15,8 +16,10 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.fragment.app.FragmentActivity
 import com.android.pos.MainApplication
 import com.android.pos.R
+import com.android.pos.data.entities.ModifierSet
 import com.android.pos.data.model.requestModel.CreateCategoryRequestModel
 import com.android.pos.data.model.requestModel.CreateItemRequestModel
+
 import com.android.pos.data.remote.Constants
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.extensions.toMultiPartRequestBody
@@ -59,6 +62,26 @@ class MethodUtils {
                 activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             inputMethodManager.hideSoftInputFromWindow(activity.currentFocus!!.windowToken, 0)
         }
+
+        fun convertSortListForModifierSet(
+            seqIds: List<Int>,
+            modList: ArrayList<ModifierSet>
+        ): ArrayList<ModifierSet> {
+            var newListMod: ArrayList<ModifierSet> = arrayListOf()
+            seqIds.forEach { ids ->
+                modList.forEach {
+                    if (it.id == ids) {
+                        newListMod.add(it)
+
+                    }
+                }
+            }
+
+            Log.e(TAG, "newListMod:  ${newListMod.size}")
+
+            return newListMod
+        }
+
 
         @SuppressLint("SetTextI18n")
         fun setPriceEditText(appCompatEditText: AppCompatEditText, price: Double) {

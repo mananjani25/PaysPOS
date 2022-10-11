@@ -402,7 +402,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                 putDouble("itemOrderDiscount", perItemDiscount)
                 putInt("totalquantity", totalItemswithQuantity)
             }
-            bundle.putString("isFrom","itemDiscount")
+            bundle.putString("isFrom", "itemDiscount")
             if (prefProvider.isAdmin() || prefProvider.isManager()) {
                 findNavController().navigate(
                     R.id.action_dashboardCategoryBoldPOS_to_addDiscountDialog,
@@ -490,6 +490,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
 
     private fun getData() {
         item = requireArguments().getParcelable<TbItem>("item") ?: TbItem()
+        Log.e(TAG, "getItem: ${Gson().toJson(item)}")
         if (item.modifiers.isNotEmpty()) {
             item.modifiers.forEach {
                 mainModifiersId.add(it.id ?: 0)
@@ -521,6 +522,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                                 intArray = IntArray(it.modifier_set_ids.size) { i ->
                                     it.modifier_set_ids[i]
                                 }
+
 
                                 variationAdapter.addVariations(it.variationsAttributes.filter { !it.isDeleted })
                                 val variationList = ArrayList<VariationsAttribute>()
@@ -557,6 +559,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                                         binding.dividerLine2.root.visibility = View.VISIBLE
                                     }
 
+                                    Log.e(TAG, "intArrayList   ${Gson().toJson(intArray)}")
                                     viewModel.modifierSet(intArray!!).observe(requireActivity()) {
                                         if (it.data != null && it.data.isNotEmpty() && view != null) {
                                             adapter = ItemModifierSetAdapter(
@@ -576,7 +579,10 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                                                 }
 
                                             }
-                                            adapter?.add(it.data)
+                                            var dataMod = MethodUtils.convertSortListForModifierSet(item.modifier_set_ids,it.data.toCollection(
+                                                arrayListOf()))
+
+                                            adapter?.add(dataMod)
                                             adapter?.setData(item.modifiers)
                                         } else binding.rvModifiersList.visibility = View.GONE
 

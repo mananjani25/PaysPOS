@@ -248,6 +248,11 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
                 variationAttributes["variations_attributes"] = it
             }
 
+            val modifierSetSortIds = HashMap<String, List<Int>>()
+            data.itemModifierSetsSort?.let {
+                modifierSetSortIds["item_modifier_sets_sort"] = it
+            }
+
             //file multipart
             LogUtil.logE("!_@_", "data.image:  ${data.image}")
             val filePart =
@@ -262,7 +267,8 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
                 request = createItemRequestMap,
                 taxIds = taxIds,
                 modifierIds = modifierSetIds,
-                variationAttributes = variationAttributes
+                variationAttributes = variationAttributes,
+                modifierSortIds = modifierSetSortIds
             )
         }
 
@@ -278,6 +284,11 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
             val modifierSetIds = HashMap<String, List<Int>>()
             data.modifierSetIds?.let {
                 modifierSetIds["modifier_set_ids"] = it
+            }
+
+            val modifierSetSortIds = HashMap<String, List<Int>>()
+            data.itemModifierSetsSort?.let {
+                modifierSetSortIds["item_modifier_sets_sort"] = it
             }
 
             val variationAttributes = HashMap<String, List<VariationsAttribute>>()
@@ -300,7 +311,8 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
                 request = createItemRequestMap,
                 taxIds = taxIds,
                 modifierIds = modifierSetIds,
-                variationAttributes = variationAttributes
+                variationAttributes = variationAttributes,
+                modifierSortIds =modifierSetSortIds
             )
         }
 

@@ -7,13 +7,14 @@ import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.android.pos.data.model.responseModel.category.Category
 import com.android.pos.data.model.responseModel.item.Item
+import com.android.pos.data.typeconvert.TypeConvertersIds
 import com.android.pos.data.typeconvert.TypeConvertersTax
 import com.google.gson.Gson
 import kotlinx.parcelize.Parcelize
 import java.util.*
 
 
-@TypeConverters(TypeConvertersTax::class)
+@TypeConverters(TypeConvertersTax::class,TypeConvertersIds::class)
 @Entity(tableName = "TbItem")
 @Parcelize
 class TbItem : Parcelable {
@@ -52,7 +53,7 @@ class TbItem : Parcelable {
     var option_set_ids: List<Int> = emptyList()
     var isTax: Boolean = false
     var modifiers: List<Modifier> = emptyList()
-    var itemModifierSetsSort:List<Int> = emptyList()
+    var itemModifierSetsSort: List<Int>?=null
 
     var customItemCount: Int = 0
     var discountPrice: Double = 0.0
@@ -93,7 +94,7 @@ class TbItem : Parcelable {
         categoryId = category?.id ?: item.categoryId ?: 0
         categoryName = category?.name ?: item.categoryName ?: ""
         taxes = item.taxes
-        modifier_set_ids = item.modifierSetIds
+        modifier_set_ids = item.itemModifierSetsSort
         variationsAttributes = item.variations
         shortDescription = item.desc ?: ""
         isDeleted = item.isDeleted
@@ -158,15 +159,14 @@ class TbItem : Parcelable {
         modeTb.isHide = item.isHide
         modeTb.sort = item.sort
         modeTb.imageUrl = item.imageUrl
-        modeTb.website_hide_status = item.website_hide_status?:""
-        modeTb.hide_status = item.hide_status?:""
+        modeTb.website_hide_status = item.website_hide_status ?: ""
+        modeTb.hide_status = item.hide_status ?: ""
         modeTb.thumbImageUrl = item.thumbImageUrl
         modeTb.categoryId = item.categoryId
         modeTb.categoryName = item.categoryName
-        if (item.itemModifierSetsSort.isNotEmpty()){
+        if (item.itemModifierSetsSort?.isNotEmpty() == true) {
             modeTb.itemModifierSetsSort = item.itemModifierSetsSort
-        }
-        else{
+        } else {
             modeTb.itemModifierSetsSort = model.itemModifierSetsSort
         }
         if (item.modifier_set_ids.isEmpty() && model.modifier_set_ids.isEmpty()) {
@@ -215,9 +215,8 @@ class TbItem : Parcelable {
                                 }
                             }
                             removeVar.add(it)
-                        }
-                        else{
-                            variationList.forEach {varI ->
+                        } else {
+                            variationList.forEach { varI ->
                                 if (varI.id == it.id) {
                                     varI.name = it.name
                                     varI.priceType = it.priceType

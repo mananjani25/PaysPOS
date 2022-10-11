@@ -298,11 +298,15 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback, It
     }
 
     private fun saveItem() {
+        var listSortMod: ArrayList<Int> = arrayListOf()
 
         adapter.filterList.forEach {
+            it.id?.let { it1 -> listSortMod.add(it1) }
             modifierSetIds.add(it.id!!)
         }
         viewModel.selectedModifierList(modifierSetIds)
+        viewModel.selectedModifierSortList(listSortMod)
+
 
         if (isEdit) {
 
@@ -428,9 +432,14 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback, It
                     }
                 }
 
+                adapter.add(
+                    MethodUtils.convertSortListForModifierSet(
+                        itemObject.itemModifierSetsSort!!,
+                        checkedList
+                    )
+                )
 
-                Log.e(TAG, "checkedList  ${checkedList.size}")
-                adapter.add(checkedList)
+
 
                 spinnerAdapter =
                     ArrayAdapter(

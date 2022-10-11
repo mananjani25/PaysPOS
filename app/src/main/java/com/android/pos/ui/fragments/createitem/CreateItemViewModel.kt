@@ -34,6 +34,7 @@ class CreateItemViewModel @Inject constructor(
     var itemDetails = MutableLiveData(CreateItemRequestModel())
     private lateinit var itemData: CreateItemRequestModel
     private lateinit var modifierSetIdsViewModel: ArrayList<Int>
+    private lateinit var itemModifierSetsSortList: ArrayList<Int>
     private var selectedTaxList: ArrayList<String> = ArrayList()
     var taxNameToDisplay: String = ""
     private var itemPriceViewModel: Double? = 0.0
@@ -138,6 +139,7 @@ class CreateItemViewModel @Inject constructor(
                 locationId = prefProvider.getValueInt(LOCATION_ID, -1)
                 taxIds = selectedTaxList
                 productCode = productCodeModel ?: ""
+                itemModifierSetsSort = itemModifierSetsSortList
 
             }
 
@@ -156,6 +158,8 @@ class CreateItemViewModel @Inject constructor(
                                 resource.data?.let { createItemResponse ->
 
                                     //save data in db
+
+
                                     val item = TbItem().convertToItem(createItemResponse.data, null)
                                     posRepository.createItem(item)
 
@@ -198,6 +202,10 @@ class CreateItemViewModel @Inject constructor(
 
     fun selectedModifierList(modifierSetIds: ArrayList<Int>) {
         this.modifierSetIdsViewModel = modifierSetIds
+    }
+
+    fun selectedModifierSortList(list: ArrayList<Int>) {
+        this.itemModifierSetsSortList = list
     }
 
     fun variationAttribute(variationAttribute: ArrayList<VariationsAttribute>) {

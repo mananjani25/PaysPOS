@@ -48,9 +48,9 @@ data class Item(
     @SerializedName("selected_option_sets")
     val selectedOptionSets: List<OptionSet>,
     @SerializedName("modifier_set_ids")
-    val modifierSetIds: List<Int>,
+    var modifierSetIds: List<Int>,
     @SerializedName("modifier_sets")
-    val modifierSets: List<ModifierSet> = emptyList(),
+    var modifierSets: List<ModifierSet> = emptyList(),
     @SerializedName("variations")
     val variations: List<VariationsAttribute>,
     var taxes: List<TaxData>? = null,
