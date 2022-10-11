@@ -575,6 +575,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                                         item.modifiers.forEach { oldmodifier ->
                                                             if (oldmodifier.id == modifier.id) {
                                                                 modifier.isChecked = true
+                                                                modifier.itemQuantity = oldmodifier.itemQuantity
                                                             }
                                                         }
                                                     }
@@ -1023,7 +1024,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 
 
     override fun onLongClickListener(modifier_id: Int?, pos: Int, itemQuantity: Int?) {
-        var counter = 1
+        var counter = itemQuantity!!
         binding.relativeAddItem.gone()
         binding.relativeModifierqntUpdatte.visible()
         binding.edtQntModifir.setText(itemQuantity.toString())
