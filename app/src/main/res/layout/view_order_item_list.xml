@@ -1,46 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MissingDefaultResource">
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:paddingHorizontal="@dimen/_5sdp"
         android:paddingVertical="@dimen/_4sdp"
-        android:weightSum="5">
+        >
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center">
+            android:layout_gravity="center"
+            android:orientation="horizontal">
 
-            <LinearLayout
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvItemName"
+                style="@style/CustomFontSemiBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="2.5"
-                android:orientation="vertical">
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tvItemName"
-                    style="@style/CustomFontSemiBold"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Three layer ice cream"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/_6mdpi" />
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tvModifierName"
-                    style="@style/CustomFontSemiBold"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/hint_color"
-                    android:textSize="@dimen/_5mdpi" />
-
-
-            </LinearLayout>
+                android:text="Three layer ice cream"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_6mdpi" />
 
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -48,11 +35,11 @@
                 style="@style/CustomFontSemiBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:gravity="end"
                 android:layout_marginRight="@dimen/_3sdp"
+                android:layout_weight="0.5"
+                android:gravity="end"
                 android:textColor="@color/white"
-                android:textSize="@dimen/_7mdpi"
-                android:layout_weight="0.5"/>
+                android:textSize="@dimen/_7mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvRate"
@@ -82,6 +69,37 @@
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="horizontal">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvModifiers"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/view_order_modifier_list" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <TextView
+            android:id="@+id/txtNote"
+            style="@style/CustomFontRegularStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:ellipsize="end"
+            android:gravity="start"
+            android:lines="1"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:textColor="@color/btnColor"
+            android:textSize="@dimen/_6mdpi"
+            android:visibility="gone"
+            tools:text="Item Name" />
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 

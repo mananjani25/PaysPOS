@@ -1,5 +1,6 @@
 package com.android.pos.ui.adapter
 
+import android.annotation.SuppressLint
 import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
@@ -8,7 +9,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.databinding.ViewOrderItemListBinding
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
+import com.android.pos.utils.TAG
+import com.android.pos.utils.extensions.gone
+import com.google.gson.Gson
 
 
 class OrderDetailsItemListAdapter :
@@ -26,60 +31,38 @@ class OrderDetailsItemListAdapter :
         return MyViewHolder(binding)
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: OrderDetailsItemListAdapter.MyViewHolder, position: Int) {
         val itemBinding = holder.taxItemBinding
 
         val context = itemBinding.root.context
         itemBinding.tvItemName.text = taxList[position].itemName
-        itemBinding.tvQuantity.text = "" + taxList[position].quantity
+        itemBinding.tvQuantity.text = "x " + taxList[position].quantity
 
 
         var totalPrice = taxList[position].price * taxList[position].quantity
-        var modifierPrices = 0.0
-        taxList[position].orderItemModifiers.forEach {
-            modifierPrices += ((it.price * it.quantity)).toDouble()
-        }
-        totalPrice += modifierPrices
-
-        /* itemBinding.tvRate.text = context.getString(R.string.symbole) + " " + String.format(
-             context.getString(R.string.format),
-             totalPrice
-         )*/
 
         if (taxList[position].note.isEmpty()) {
-            itemBinding.txtNote?.visibility = View.GONE
+            itemBinding.txtNote.visibility = View.GONE
         } else {
-            itemBinding.txtNote?.visibility = View.VISIBLE
-            itemBinding.txtNote?.text = "Note: " + taxList[position].note
+            itemBinding.txtNote.visibility = View.VISIBLE
+            itemBinding.txtNote.text = "Note: " + taxList[position].note
         }
 
         itemBinding.tvTotal.text = MethodUtils.roundOffAmount(totalPrice)
 
-        var total_rate = 0.0
-        total_rate += taxList[position].price
-        if (taxList[position].orderItemModifiers.isNotEmpty() && taxList[position].orderItemModifiers != null)
-            taxList[position].orderItemModifiers.forEach {
-                total_rate += it.price
-            }
-
-
-        itemBinding.tvRate.text = "$" + String.format("%.2f", total_rate)
-
-
-        val modifierNames = taxList[position].orderItemModifiers.map {
-            it.name + " (" + itemBinding.root.context.getString(R.string.symbole) + String.format(
-                itemBinding.root.context.getString(
-                    R.string.format
-                ), it.price
-            ) + ")"
-        }
-
-        if (modifierNames.isEmpty()) {
-            itemBinding.tvModifierName.visibility = View.GONE
+        itemBinding.tvRate.text = MethodUtils.roundOffAmount(taxList[position].price)
+        if (taxList[position].orderItemModifiers.isNotEmpty()) {
+            itemBinding.rvModifiers.visibility = View.VISIBLE
+            val adapter = OrderDetailModifierListAdapter()
+            itemBinding.rvModifiers.adapter = adapter
+            LogUtil.logE(TAG, "dineinMod  ${Gson().toJson(taxList[position].orderItemModifiers)}")
+            adapter.addAll(taxList[position].orderItemModifiers)
         } else {
-            itemBinding.tvModifierName.visibility = View.VISIBLE
-            itemBinding.tvModifierName.text = TextUtils.join("\n", modifierNames)
+            itemBinding.rvModifiers.gone()
         }
+
+
 
         itemBinding.executePendingBindings()
     }
