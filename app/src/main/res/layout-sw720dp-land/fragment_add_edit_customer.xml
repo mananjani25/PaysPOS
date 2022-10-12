@@ -267,12 +267,12 @@
                             android:layout_height="wrap_content"
                             android:background="@drawable/background_square_border_grey"
                             android:hint="Street"
-                            android:scrollbarStyle="insideInset"
-                            android:scrollbars="vertical"
-                            android:overScrollMode="always"
                             android:imeOptions="actionNext"
                             android:inputType="textVisiblePassword"
+                            android:overScrollMode="always"
                             android:padding="@dimen/_9sdp"
+                            android:scrollbarStyle="insideInset"
+                            android:scrollbars="vertical"
                             android:textColor="@color/txtColor"
                             android:textColorHint="@color/hintColor"
                             android:textSize="@dimen/_7mdpi" />
@@ -377,15 +377,10 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="start"
-                            android:layout_marginLeft="-50dp"
-                            android:button="@drawable/selector_size"
-                            android:buttonTint="@color/kitchen_size_color_selector"
                             android:gravity="center_vertical"
-                            android:scaleX="0.7"
-                            android:scaleY="0.7"
                             android:text="@string/same_as_billing_address"
                             android:textColor="@color/txtColor"
-                            android:textSize="@dimen/_7mdpi" />
+                            android:textSize="@dimen/_5mdpi" />
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
 

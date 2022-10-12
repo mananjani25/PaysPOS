@@ -1,163 +1,132 @@
-package com.android.pos.ui.fragments.settings.business;
+package com.android.pos.ui.fragments.settings.business
 
-import android.content.Context;
+import android.R
+import android.content.Context
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.Filter
+import android.widget.Filterable
+import android.widget.TextView
+import com.google.android.libraries.places.api.net.PlacesClient
+import com.google.android.libraries.places.api.model.AutocompletePrediction
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsResponse
+import com.google.android.gms.tasks.Tasks
+import com.google.android.libraries.places.api.model.TypeFilter
+import java.lang.Exception
+import java.util.ArrayList
+import java.util.concurrent.ExecutionException
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeoutException
 
-import androidx.annotation.NonNull;
-
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.Filter;
-import android.widget.Filterable;
-import android.widget.TextView;
-
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.Tasks;
-import com.google.android.libraries.places.api.model.AutocompletePrediction;
-import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
-import com.google.android.libraries.places.api.model.RectangularBounds;
-import com.google.android.libraries.places.api.model.TypeFilter;
-import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest;
-import com.google.android.libraries.places.api.net.FindAutocompletePredictionsResponse;
-import com.google.android.libraries.places.api.net.PlacesClient;
-
-import org.jetbrains.annotations.NotNull;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
-public class AutoCompleteAdapter extends ArrayAdapter<AutocompletePrediction> implements Filterable {
-
-    private List<AutocompletePrediction> mResultList;
-    private final PlacesClient placesClient;
-    String name = "US";
-
-    AutoCompleteAdapter(Context context, PlacesClient placesClient) {
-        super(context, android.R.layout.simple_expandable_list_item_2, android.R.id.text1);
-        this.placesClient = placesClient;
+class AutoCompleteAdapter internal constructor(
+    context: Context?,
+    private val placesClient: PlacesClient
+) : ArrayAdapter<AutocompletePrediction>(
+    context!!, R.layout.simple_expandable_list_item_2, R.id.text1
+), Filterable {
+    private var mResultList: List<AutocompletePrediction>? = null
+    var name = "US"
+    override fun getCount(): Int {
+        return mResultList!!.size
     }
 
-    @Override
-    public int getCount() {
-        return mResultList.size();
+    override fun getItem(position: Int): AutocompletePrediction {
+        return mResultList!![position]
     }
 
-    @Override
-    public AutocompletePrediction getItem(int position) {
-        return mResultList.get(position);
-    }
-
-    @NonNull
-    @Override
-    public View getView(int position, View convertView, @NonNull ViewGroup parent) {
-        View row = super.getView(position, convertView, parent);
-
-        AutocompletePrediction item = getItem(position);
-
-        TextView textView1 = row.findViewById(android.R.id.text1);
-        TextView textView2 = row.findViewById(android.R.id.text2);
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+        val row = super.getView(position, convertView, parent)
+        val item = getItem(position)
+        val textView1 = row.findViewById<TextView>(R.id.text1)
+        val textView2 = row.findViewById<TextView>(R.id.text2)
         if (item != null) {
-            textView1.setText(item.getPrimaryText(null));
-            textView2.setText(item.getSecondaryText(null));
+            textView1.text = item.getPrimaryText(null)
+            textView2.text = item.getSecondaryText(null)
         }
-
-        return row;
+        return row
     }
 
-    @NonNull
-    @Override
-    public Filter getFilter() {
-        return new Filter() {
-            @Override
-            protected FilterResults performFiltering(CharSequence charSequence) {
-
-                FilterResults results = new FilterResults();
+    override fun getFilter(): Filter {
+        return object : Filter() {
+            override fun performFiltering(charSequence: CharSequence?): FilterResults {
+                val results = FilterResults()
 
                 // We need a separate list to store the results, since
                 // this is run asynchronously.
-                List<AutocompletePrediction> filterData = new ArrayList<>();
+                var filterData: List<AutocompletePrediction?>? = ArrayList()
 
                 // Skip the autocomplete query if no constraints are given.
-                if (charSequence != null) {
+                if (charSequence != null && charSequence.isNotEmpty()) {
                     // Query the autocomplete API for the (constraint) search string.
-                    filterData = getAutocomplete(charSequence);
+                    filterData = getAutocomplete(charSequence)
                 }
-
-                results.values = filterData;
+                results.values = filterData
                 if (filterData != null) {
-                    results.count = filterData.size();
+                    results.count = filterData.size
                 } else {
-                    results.count = 0;
+                    results.count = 0
                 }
-
-                return results;
+                return results
             }
 
-            @SuppressWarnings("unchecked")
-            @Override
-            protected void publishResults(CharSequence charSequence, FilterResults results) {
-
+            override fun publishResults(charSequence: CharSequence, results: FilterResults?) {
                 try {
                     if (results != null && results.count > 0) {
                         // The API returned at least one result, update the data.
-                        mResultList = (List<AutocompletePrediction>) results.values;
-                        notifyDataSetChanged();
+                        mResultList = results.values as List<AutocompletePrediction>
+                        notifyDataSetChanged()
                     } else {
                         // The API did not return any results, invalidate the data set.
-                        notifyDataSetInvalidated();
+                        notifyDataSetInvalidated()
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
             }
 
-            @Override
-            public CharSequence convertResultToString(Object resultValue) {
+            override fun convertResultToString(resultValue: Any): CharSequence {
                 // Override this method to display a readable result in the AutocompleteTextView
                 // when clicked.
-                if (resultValue instanceof AutocompletePrediction) {
-                    return ((AutocompletePrediction) resultValue).getFullText(null);
+                return if (resultValue is AutocompletePrediction) {
+                    resultValue.getFullText(null)
                 } else {
-                    return super.convertResultToString(resultValue);
+                    super.convertResultToString(resultValue)
                 }
             }
-        };
+        }
     }
 
-    private List<AutocompletePrediction> getAutocomplete(CharSequence constraint) {
+    private fun getAutocomplete(constraint: CharSequence): List<AutocompletePrediction?>? {
+        val requestBuilder = FindAutocompletePredictionsRequest.builder()
+            .setQuery(constraint.toString())
+            .setCountry(name) //Use only in specific country
+            .setTypeFilter(TypeFilter.ADDRESS)
 
-        final FindAutocompletePredictionsRequest.Builder requestBuilder =
-                FindAutocompletePredictionsRequest.builder()
-                        .setQuery(constraint.toString())
-                        .setCountry(name) //Use only in specific country
-                        .setTypeFilter(TypeFilter.ESTABLISHMENT);
 
-        Task<FindAutocompletePredictionsResponse> results =
-                placesClient.findAutocompletePredictions(requestBuilder.build());
+        val results = placesClient.findAutocompletePredictions(requestBuilder.build())
 
 
         //Wait to get results.
         try {
-            Tasks.await(results, 60, TimeUnit.SECONDS);
-        } catch (ExecutionException | InterruptedException | TimeoutException e) {
-            e.printStackTrace();
+            Tasks.await(results, 60, TimeUnit.SECONDS)
+        } catch (e: ExecutionException) {
+            e.printStackTrace()
+        } catch (e: InterruptedException) {
+            e.printStackTrace()
+        } catch (e: TimeoutException) {
+            e.printStackTrace()
         }
-
-        if (results.isSuccessful()) {
-            if (results.getResult() != null) {
-                return results.getResult().getAutocompletePredictions();
+        if (results.isSuccessful) {
+            if (results.result != null) {
+                return results.result!!.autocompletePredictions
             }
         }
-        return null;
+        return null
     }
 
-    public void setCountry(@NotNull String name) {
-
-        this.name = name;
-
+    fun setCountry(name: String) {
+        this.name = name
     }
 }
