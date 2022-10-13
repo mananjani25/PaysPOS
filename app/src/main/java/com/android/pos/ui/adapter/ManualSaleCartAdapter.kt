@@ -41,12 +41,12 @@ class ManualSaleCartAdapter : RecyclerView.Adapter<ManualSaleCartAdapter.MyViewH
                 binding.txtNote.text = "Note: " + model.note
             }
 
-            binding.txtName.text = list[pos].name
-            if (list[pos].discountPrice != 0.0) {
+            binding.txtName.text = model.name
+            if (model.discountPrice != 0.0) {
                 binding.tvDiscountRate.visible()
                 binding.txtTotalPrice.paintFlags =
                     binding.txtTotalPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
-                val dPrice = (list[pos].price * list[pos].itemQuantity) - (list[pos].discountPrice * list[pos].itemQuantity )
+                val dPrice = (model.price * model.itemQuantity) - (model.discountPrice * model.itemQuantity )
 
                 MethodUtils.setPriceTextView(binding.tvDiscountRate, dPrice)
             } else {
@@ -54,7 +54,9 @@ class ManualSaleCartAdapter : RecyclerView.Adapter<ManualSaleCartAdapter.MyViewH
                 binding.tvDiscountRate.text = ""
                 binding.tvDiscountRate.gone()
             }
-
+            itemView.setOnClickListener {
+                listnerCall.onItemClicked(model, pos)
+            }
             //binding.model = model
             binding.executePendingBindings()
 
@@ -85,9 +87,7 @@ class ManualSaleCartAdapter : RecyclerView.Adapter<ManualSaleCartAdapter.MyViewH
 //
 //                false
 //            }
-            itemView.setOnClickListener {
-                listnerCall.onItemClicked(list[layoutPosition], layoutPosition)
-            }
+
 
           /*  binding.txtDiscount.setOnClickListener {
                 itemlistnerCall.onItemClickListener(binding.txtDiscount,list[layoutPosition],layoutPosition)

@@ -102,6 +102,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     private var orderId: Int? = null
     private var order_note = ""
     private var globalOrderDiscount = 0.0
+    var update_order_Discount = 0.0
     private var getOrderDetailsResponse: GetOrderDetailsResponse.Data? = null
     private val TAG = "DineInOrderTable"
     private lateinit var dineInTableAdapter: DineInTableAdapter
@@ -191,6 +192,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             AlertUtils.showCustomAlertWithListenerWithOK(
                 requireContext(), event.getContentIfNotHandled().toString()
             ) { _, _ ->
+                viewModel.Basedata.removeObservers(viewLifecycleOwner)
+                navigateDineInOrderNew()
                 orderId?.let { viewModel.apiCallOrderDetails(it) }
             }
         }
@@ -757,11 +760,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             LogUtil.logE("OrderFre", "APIDISc  ${getOrderDetailsResponse?.totalDiscount?.toDouble()}")
             LogUtil.logE("OrderFre", "totalDiscount  ${totalDiscount}")
-            LogUtil.logE("OrderFre", "OrderDiscount  ${globalOrderDiscount}")
+            LogUtil.logE("OrderFre", "OrderDiscount  ${update_order_Discount}")
 
             bundle.putDouble(
                 "totalDiscount",
-                globalOrderDiscount
+                update_order_Discount
             )
             bundle.putString("order_note", order_note)
             bundle.putParcelable("tableDetails", getOrderDetailsResponse?.floorPlanTable)
@@ -2259,7 +2262,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     if (baseResponse.totalDiscount - totalItemDiscount > 0) {
                         orderDiscount = baseResponse.totalDiscount - totalItemDiscount
                         globalOrderDiscount = baseResponse.totalDiscount - totalItemDiscount
-
+                        update_order_Discount = baseResponse.totalDiscount - totalItemDiscount
                     }
                     totalServiceChargeAmount = 0.0
                     if (prefProvider.getValueboolean(Constants.SERVICECHARGE_DINEIN_ORDER, false)) {
