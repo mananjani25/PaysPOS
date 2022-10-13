@@ -23,7 +23,6 @@ import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Status
 import com.testfairy.TestFairy
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -64,7 +63,6 @@ class LoginViewModel @Inject constructor(
             val data = HashMap<String, String>()
             data["email"] = loginDetails.value?.emailAddress.toString().trim()
             data["password"] = loginDetails.value?.password.toString().trim()
-
 
 
             viewModelScope.launch {

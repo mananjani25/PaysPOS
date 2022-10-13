@@ -2,7 +2,6 @@ package com.android.pos.ui.fragments.loginscreen
 
 import android.content.ClipboardManager
 import android.content.Context
-import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -165,7 +164,9 @@ class LoginFragment : Fragment() {
             prefProvider?.setBaseUrl(BASE_URL)
             hostSelectionInterceptor?.setHostBaseUrl()
 
-            viewModel.submit(device_token)
+            viewModel.submit(
+                device_token
+            )
         }
     }
 
