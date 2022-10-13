@@ -854,6 +854,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                             if (model != null) {
                                 if (type == "UPDATE") {
                                     if (item != null) {
+                                        if (item.variationsAttributes.size > 0) {
+                                            model.price += item.price
+                                        }
                                         model.itemQuantity = item.itemQuantity
                                         if (item.isEdited) {
                                             model.isEdited = item.isEdited

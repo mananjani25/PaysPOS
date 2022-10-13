@@ -23,9 +23,9 @@ data class VariationsAttribute(
     @SerializedName("price_type")
     var priceType: String = "",
     @SerializedName("sku")
-    var sku: String = "",
+    var sku: String? = null,
     @SerializedName("stock_qty")
-    var stockQty: String = "",
+    var stockQty: String?=null,
     @SerializedName("_destroy")
     var _destroy: Boolean = false,
     @SerializedName("is_deleted")

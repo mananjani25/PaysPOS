@@ -1340,8 +1340,8 @@ open class PaymentViewModel @Inject constructor(
 
             val orderItemModifierAttribute = OrderItemModifierAttribute().apply {
 
-                if (isUpdateOrder && it.id != null)
-                    id = it.id
+                if (isUpdateOrder && it.orderModifierId != null)
+                    id = it.orderModifierId
 
                 name = it.name
                 price = it.price
