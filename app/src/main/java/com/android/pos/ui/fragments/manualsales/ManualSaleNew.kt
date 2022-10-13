@@ -1471,7 +1471,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             val itemCost = model.price
 
             if (model.discountPrice != 0.0) {
-                val dis = model.discountPrice / model.itemQuantity
+                val dis = (model.discountPrice*model.itemQuantity) / model.itemQuantity
 
                 model.discountPrice =
                     String.format("%.2f", (dis)).toDouble()
