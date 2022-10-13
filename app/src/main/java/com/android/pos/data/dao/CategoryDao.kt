@@ -22,6 +22,9 @@ interface CategoryDao {
     @Query("select * from TbCategory where TbCategory.active = 1 and TbCategory.isDeleted = 0 and TbCategory.name != 'Manual Sales' ORDER BY TbCategory.sort ASC")
     fun all(): LiveData<List<TbCategory>>
 
+    @Query("select * from TbCategory where TbCategory.active = 1 and TbCategory.isDeleted = 0 and TbCategory.name != 'Manual Sales' and TbCategory.name != 'Items Without Category' ORDER BY TbCategory.sort ASC")
+    fun allCatWithoutItem(): LiveData<List<TbCategory>>
+
     @get:Query("select * from TbCategory where TbCategory.active = 0 and TbCategory.isDeleted = 0 and TbCategory.name != 'Manual Sales' ORDER BY TbCategory.sort DESC")
     val unhideCategory: LiveData<List<TbCategory>>
 
