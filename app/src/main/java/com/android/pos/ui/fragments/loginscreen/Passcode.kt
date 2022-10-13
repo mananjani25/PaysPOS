@@ -344,10 +344,7 @@ class Passcode : Fragment() {
                 var value = s.toString()
                 if (value.length == 4) {
                     LogUtil.logE("passCodeView", value)
-                    viewModel.submit(value, requireContext().packageManager.getPackageInfo(
-                        requireContext().packageName,
-                        0
-                    ).versionName)
+                    viewModel.submit(value)
                 }
 
                 Log.d("yash", "afterTextChanged: $value")

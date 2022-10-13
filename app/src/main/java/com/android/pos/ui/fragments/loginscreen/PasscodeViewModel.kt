@@ -103,13 +103,12 @@ class PasscodeViewModel @Inject constructor(
     }
 
 
-    fun submit(passcode: String,versionName:String) {
+    fun submit(passcode: String) {
         _showProgress.value = Event(true)
         if (isDashboard) {
             val data = HashMap<String, String>()
             data["passcode"] = passcode
             data["terminal_id"] = prefProvider.getValueInt(TERMINAL_ID, -1).toString()
-
 
             viewModelScope.launch {
                 val resource = userRepository.employeeClockOut(data)
@@ -145,7 +144,6 @@ class PasscodeViewModel @Inject constructor(
             val data = HashMap<String, String>()
             data["passcode"] = passcode
             data["terminal_id"] = prefProvider.getValueInt(TERMINAL_ID, -1).toString()
-            data["current_version"] = versionName
 
             viewModelScope.launch {
                 val resource = userRepository.employeeClockIn(data)
