@@ -3952,14 +3952,14 @@ class DashBoardCategoryViewModel @Inject constructor(
                 totalPrice = finalTotal
 
                 LogUtil.logE(TAG, "newDAstotalPrice  ${totalPrice}")
-                if (selectedCustomer == null) {
+                /*if (selectedCustomer == null) {
                     totalPrice = amountToBePaid
 
                 } else {
                     redeemLoyaltyInfo.getAmountToBePaid()?.let {
                         totalPrice = it
                     }
-                }
+                }*/
 
                 if (MethodUtils.isEnableCashDiscount(context)) {
                     cashdiscountAmount = MethodUtils.calculateCashDiscount(
