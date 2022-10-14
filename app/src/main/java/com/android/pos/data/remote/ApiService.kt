@@ -223,7 +223,8 @@ interface ApiService {
     suspend fun syncVenueDetails(
         @Query("terminal_id") terminalId: Int,
         @Query("new_logic") newLogic: Boolean,
-        @Query("time_stamp") timeStamp: String = ""
+        @Query("time_stamp") timeStamp: String = "",
+        @Query("new_response") newResponse: Boolean = true
     ): VenueDetailsResponse
 
     @GET(ONLINE_ORDER_NOTIFICATION_COUNT)
