@@ -894,7 +894,7 @@ class AddEditCustomer : Fragment() {
                     }
                 } else {
                     if (binding.edtStreetDel.text.toString().trim().isNotEmpty())
-                        binding.edtStreetDel.setText("")
+                        binding.edtStreetDel.text.clear()
                     binding.edtSuiteDel.setText("")
                     binding.edtCityDel.setText("")
                     binding.edtStateDel.setText("")
@@ -915,92 +915,92 @@ class AddEditCustomer : Fragment() {
 
     }
 
-        private fun showDatePicker() {
-            val c = Calendar.getInstance();
-            val mYear = c.get(Calendar.YEAR);
-            val mMonth = c.get(Calendar.MONTH);
-            val mDay = c.get(Calendar.DAY_OF_MONTH)
+    private fun showDatePicker() {
+        val c = Calendar.getInstance();
+        val mYear = c.get(Calendar.YEAR);
+        val mMonth = c.get(Calendar.MONTH);
+        val mDay = c.get(Calendar.DAY_OF_MONTH)
 
-            val datePicker: DatePickerDialog =
-                DatePickerDialog(
-                    requireContext(),
-                    android.R.style.Theme_Material_Light_Dialog,
-                    object : DatePickerDialog.OnDateSetListener {
-                        override fun onDateSet(
-                            view: DatePicker?,
-                            year: Int,
-                            monthOfYear: Int,
-                            dayOfMonth: Int
-                        ) {
+        val datePicker: DatePickerDialog =
+            DatePickerDialog(
+                requireContext(),
+                android.R.style.Theme_Material_Light_Dialog,
+                object : DatePickerDialog.OnDateSetListener {
+                    override fun onDateSet(
+                        view: DatePicker?,
+                        year: Int,
+                        monthOfYear: Int,
+                        dayOfMonth: Int
+                    ) {
                         viewModel.addCustomerDetails.value?.data?.birth_day =
                             dayOfMonth.toString()
-                            viewModel.addCustomerDetails.value?.data?.birth_month =
-                                (monthOfYear + 1).toString()
+                        viewModel.addCustomerDetails.value?.data?.birth_month =
+                            (monthOfYear + 1).toString()
                         viewModel.addCustomerDetails.value?.data?.birthday_year =
                             year.toString()
 
 
-                            val calendar = Calendar.getInstance()
-                            calendar.set(year, monthOfYear, dayOfMonth)
-                            val outputFormat = SimpleDateFormat("MMM-dd-yyyy")
-                            var datestring = outputFormat.format(calendar.time)
+                        val calendar = Calendar.getInstance()
+                        calendar.set(year, monthOfYear, dayOfMonth)
+                        val outputFormat = SimpleDateFormat("MMM-dd-yyyy")
+                        var datestring = outputFormat.format(calendar.time)
 
-                            binding.edtBirthDay.text = datestring
-
-                        }
-
-                    },
-                    mYear,
-                    mMonth,
-                    mDay
-                )
-            datePicker.datePicker.maxDate = System.currentTimeMillis()
-            datePicker.show()
-            LogUtil.logE(TAG, "DatePickerInside  ")
-        }
-
-        private fun navigate() {
-
-            LogUtil.logE(TAG, "POPBACKCUSTOMER")
-            viewModel._Basedata.observe(viewLifecycleOwner) { event ->
-                event.getContentIfNotHandled()?.let { baseResponse ->
-                    activity?.let {
-                        AlertUtils.showCustomAlertWithListenerWithOK(
-                            it,
-                            baseResponse.message,
-                        )
-                        { _, _ ->
-
-                            val navControll = findNavController()
-                            navControll.previousBackStackEntry?.savedStateHandle?.set(
-                                com.android.pos.data.remote.Constants.KEY,
-                                com.android.pos.data.remote.Constants.CUSTOMERDETAILS
-                            )
-                            navControll.popBackStack()
-                        }
-
+                        binding.edtBirthDay.text = datestring
 
                     }
+
+                },
+                mYear,
+                mMonth,
+                mDay
+            )
+        datePicker.datePicker.maxDate = System.currentTimeMillis()
+        datePicker.show()
+        LogUtil.logE(TAG, "DatePickerInside  ")
+    }
+
+    private fun navigate() {
+
+        LogUtil.logE(TAG, "POPBACKCUSTOMER")
+        viewModel._Basedata.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let { baseResponse ->
+                activity?.let {
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        it,
+                        baseResponse.message,
+                    )
+                    { _, _ ->
+
+                        val navControll = findNavController()
+                        navControll.previousBackStackEntry?.savedStateHandle?.set(
+                            com.android.pos.data.remote.Constants.KEY,
+                            com.android.pos.data.remote.Constants.CUSTOMERDETAILS
+                        )
+                        navControll.popBackStack()
+                    }
+
+
                 }
             }
-
         }
 
-        fun getDay(dat: String): String {
-            val format = SimpleDateFormat("dd/MM/yyyy")
-            val date = format.parse(dat)
-            return android.text.format.DateFormat.format("dd", date).toString()
-        }
-
-        fun getMonth(dat: String): String {
-            val format = SimpleDateFormat("dd/MM/yyyy")
-            val date = format.parse(dat)
-            return android.text.format.DateFormat.format("MM", date).toString()
-        }
-
-        fun getYear(dat: String): String {
-            val format = SimpleDateFormat("dd/MM/yyyy")
-            val date = format.parse(dat)
-            return android.text.format.DateFormat.format("yyyy", date).toString()
-        }
     }
+
+    fun getDay(dat: String): String {
+        val format = SimpleDateFormat("dd/MM/yyyy")
+        val date = format.parse(dat)
+        return android.text.format.DateFormat.format("dd", date).toString()
+    }
+
+    fun getMonth(dat: String): String {
+        val format = SimpleDateFormat("dd/MM/yyyy")
+        val date = format.parse(dat)
+        return android.text.format.DateFormat.format("MM", date).toString()
+    }
+
+    fun getYear(dat: String): String {
+        val format = SimpleDateFormat("dd/MM/yyyy")
+        val date = format.parse(dat)
+        return android.text.format.DateFormat.format("yyyy", date).toString()
+    }
+}
