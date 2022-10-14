@@ -3903,40 +3903,12 @@ class DashBoardCategoryViewModel @Inject constructor(
                 totalServiceCharge = model.serviceCharge
                 totalDiscount = model.totalDiscount
                 order_note = cartModel.note
-                /*   cartModel.dineInList?.forEach { dine ->
 
-                   dine.items.forEach { item ->
-                       totalCount += item.itemQuantity
-                       subTotalPrice += if (!item.isManualSales) {
-                           (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
-                       } else {
-                           (item.price * item.itemQuantity) - item.discountPrice
-                       }
-
-                       taxCalculation(item)
-
-                       item.modifiers.forEach {
-                           subTotalPrice += (it.price * it.itemQuantity)
-                       }
-                   }
-
-
-               }
-   */
                 totalServiceCharge = model.serviceCharge
                 // serviceChargeCalculationModel(cartModel)
                 subTotalPrice -= model.totalDiscount
-                //  totalDiscount += cartModel.discountPrice
-                /*   cartModel.dineInList?.forEach {
-                   it.items.forEach {
-                       totalDiscount += if (!it.isManualSales) {
-                           (it.discountPrice * it.itemQuantity)
-                       } else {
-                           it.discountPrice
-                       }
-                   }
-               }
-   */
+
+
 
                 var finalTotal = 0.0
                 finalTotal = model.total
@@ -3945,22 +3917,6 @@ class DashBoardCategoryViewModel @Inject constructor(
                 amountToBePaid = finalTotal
 
                 totalPrice = MethodUtils.roundOffAmountDouble(finalTotal)
-                /* if (selectedCustomer == null) {
-                totalPrice = amountToBePaid
-                *//* MethodUtils.setPriceTextView(
-                     txtTotalAmount,
-                     amountToBePaid
-                 )*//*
-            } else {
-                *//*checkAppliedLoyaltyProgram(
-                    selectedCustomer,
-                    amountToBePaid,
-                    txtTotalAmount
-                )*//*
-                redeemLoyaltyInfo.getAmountToBePaid()?.let {
-                    totalPrice = it
-                }
-            }*/
 
                 if (MethodUtils.isEnableCashDiscount(context)) {
                     cashdiscountAmount = MethodUtils.calculateCashDiscount(
@@ -3986,44 +3942,10 @@ class DashBoardCategoryViewModel @Inject constructor(
                 totalServiceCharge = model.serviceCharge
                 totalDiscount = model.totalDiscount
                 order_note = cartModel.note
-                // subTotalPrice = model.subTotal
-                /*   cartModel.dineInList?.forEach { dine ->
-
-                       dine.items.forEach { item ->
-                           totalCount += item.itemQuantity
-                           subTotalPrice += if (!item.isManualSales) {
-                               (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
-                           } else {
-                               (item.price * item.itemQuantity) - item.discountPrice
-                           }
-
-                           taxCalculation(item)
-
-                           item.modifiers.forEach {
-                               subTotalPrice += (it.price * it.itemQuantity)
-                           }
-                       }
-
-
-                   }
-       */
                 totalServiceCharge = model.serviceCharge
-                // serviceChargeCalculationModel(cartModel)
-                //subTotalPrice -= cartModel.discountPrice
-                //totalDiscount += cartModel.discountPrice
-                /*   cartModel.dineInList?.forEach {
-                       it.items.forEach {
-                           totalDiscount += if (!it.isManualSales) {
-                               (it.discountPrice * it.itemQuantity)
-                           } else {
-                               it.discountPrice
-                           }
-                       }
-                   }
-       */
 
                 var finalTotal = 0.0
-                finalTotal = (subTotalPrice + totalTax + totalServiceCharge)
+                finalTotal = model.total
                 cashDiscountType = prefProvider.getValue(Constants.OPTION_TYPE, "")
                 //loyalty point and price calculation
                 amountToBePaid = finalTotal
@@ -4032,16 +3954,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                 LogUtil.logE(TAG, "newDAstotalPrice  ${totalPrice}")
                 if (selectedCustomer == null) {
                     totalPrice = amountToBePaid
-                    /* MethodUtils.setPriceTextView(
-                         txtTotalAmount,
-                         amountToBePaid
-                     )*/
+
                 } else {
-                    /*checkAppliedLoyaltyProgram(
-                        selectedCustomer,
-                        amountToBePaid,
-                        txtTotalAmount
-                    )*/
                     redeemLoyaltyInfo.getAmountToBePaid()?.let {
                         totalPrice = it
                     }
