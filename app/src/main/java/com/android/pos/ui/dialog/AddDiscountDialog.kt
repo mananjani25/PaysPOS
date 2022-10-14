@@ -429,7 +429,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
                 if (isOrderDiscount && selectedCurrency == PERCENTAGE) {
 
-                    a = totalOrderPrice * a / 100
+                    a = (totalOrderPrice + orderDiscountPrice) * a / 100
                 }
 
                 val discount = TbDiscount(
@@ -475,7 +475,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
                         if (isOrderDiscount) {
 
-                            a = totalOrderPrice * a / 100
+                            a = (totalOrderPrice + orderDiscountPrice) * a / 100
                         }
 
                         TbDiscount(
@@ -691,7 +691,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
                 current = formatted
 
-                LogUtil.logE(TAG,"formatted  ${formatted}")
+                LogUtil.logE(TAG, "formatted  ${formatted}")
                 binding.edtAmount.setText(formatted.replace("""[$,%]""".toRegex(), ""))
                 binding.edtAmount.setSelection(formatted.replace("""[$,%]""".toRegex(), "").length)
 
@@ -711,9 +711,9 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                         price = itemPrice /*- defaultModel.discountPrice*/
                     }
 
-                    LogUtil.logE(TAG,"pricediscount  ${price}")
-                    LogUtil.logE(TAG,"discountPriceDefault  ${defaultModel.discountPrice}")
-                    LogUtil.logE(TAG,"TextAmount ${binding.edtAmount.text.toString().toDouble()}")
+                    LogUtil.logE(TAG, "pricediscount  ${price}")
+                    LogUtil.logE(TAG, "discountPriceDefault  ${defaultModel.discountPrice}")
+                    LogUtil.logE(TAG, "TextAmount ${binding.edtAmount.text.toString().toDouble()}")
                     if (defaultModel.discountPrice == 0.0) {
 
                         if (binding.edtAmount.text.toString().toDouble() > price) {

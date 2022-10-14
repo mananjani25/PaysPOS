@@ -251,9 +251,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             val value = bundle.getDouble("value")
             if (result != null && viewModel.totalPrice != 0.0) {
                 try {
-                    orderDiscount = result.percentage
+                    orderDiscount = MethodUtils.roundOffAmountDouble(result.percentage)
 
                     val discountApplyPrice = viewModel.totalPrice
+                    Log.d(TAG, "resultListener: orderDiscount : "+orderDiscount)
+                    Log.d(TAG, "resultListener: totalprice : "+viewModel.totalPrice)
                     val price = discountApplyPrice - orderDiscount
                     Log.d(TAG, "resultListener: " + cartList.size)
                     if (viewModel.cartModel != null) {
