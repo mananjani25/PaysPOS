@@ -198,7 +198,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                     binding.txtPay.text = "Paid"
                 }
             } else if (noItem && guestAmt == 0.0) {
-                Log.e(TAG,"NoItemGuestAmt")
+                Log.e(TAG, "NoItemGuestAmt")
                 binding.btnPay.visibility = View.GONE
             } else {
                 binding.btnPay.visibility = View.VISIBLE
@@ -211,7 +211,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             }
 
             if (list[layoutPosition].title?.lowercase() == "Whole Table".lowercase() || list.get(0).totalGuestCount == 1) {
-                Log.e(TAG,"TxtPayTitelTotal")
+                Log.e(TAG, "TxtPayTitelTotal")
                 binding.txtPay.visibility = View.GONE
                 var layoutmanager: LinearLayout.LayoutParams = LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -227,6 +227,11 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             if (isAllFired && !noItem) {
                 binding.chkIsFired.isChecked = true
                 binding.chkIsFired.isPressed = true
+                binding.chkIsFired.isEnabled = false
+            } else if (noItem) {
+
+                binding.chkIsFired.isChecked = false
+                binding.chkIsFired.isPressed = false
                 binding.chkIsFired.isEnabled = false
             }
 
@@ -750,7 +755,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private fun totalPrice(model: TbItem): Double {
 
-        return  model.price * model.itemQuantity
+        return model.price * model.itemQuantity
     }
 
     fun onItemMove(fromPosition: Int?, toPosition: Int?): Boolean {
