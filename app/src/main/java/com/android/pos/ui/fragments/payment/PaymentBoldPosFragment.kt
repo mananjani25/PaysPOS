@@ -147,6 +147,7 @@ class PaymentBoldPosFragment : Fragment() {
                         0.0,
                         requireArguments().getDouble("totalDiscount"),
                     )
+                    Log.e(TAG, "getDineInDetails  ${Gson().toJson(model)}")
                     prefProvider.setValue(SPLIT_DINEIN_MODEL, Gson().toJson(model))
                     loadCartFragment(CartFragment(null, null, true, model, false))
                 }
