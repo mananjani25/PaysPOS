@@ -3095,6 +3095,8 @@ class DashBoardCategoryViewModel @Inject constructor(
             note = cartModel.note
             openOrderType = "DineIn"
             orderTypeId = 2
+            tax_bifurcation_data = Gson().toJson(cartModel.taxlistDynamic)
+            taxEnabled = true
             subTotal = MethodUtils.roundOffAmountDouble(subTotalPrice)
             totalAmount = MethodUtils.roundOffAmountDouble(totalPrice)
             totalDiscount = MethodUtils.roundOffAmountDouble(ttotalDiscount)
