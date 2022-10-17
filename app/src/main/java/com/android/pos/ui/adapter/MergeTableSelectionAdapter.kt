@@ -14,6 +14,7 @@ import com.android.pos.data.model.MergeTableListModel
 import com.android.pos.data.model.MergeTableModel
 import com.android.pos.databinding.ViewMergeTableListBinding
 import com.android.pos.utils.LogUtil
+import com.google.gson.Gson
 
 class MergeTableSelectionAdapter : RecyclerView.Adapter<MergeTableSelectionAdapter.MyViewHolder>() {
     private var list: ArrayList<MergeTableListModel> = arrayListOf()
@@ -66,13 +67,14 @@ class MergeTableSelectionAdapter : RecyclerView.Adapter<MergeTableSelectionAdapt
                         "selectedORderID  ${(binding.spnTable.adapter.getItem(position) as MergeTableModel).orderId}"
                     )
                     LogUtil.logE(TAG, "selectedTablePosition  ${position}")
+                    Log.e(TAG,"getTableName  ${(binding.spnTable.adapter.getItem(position) as MergeTableModel).name}")
                     list.get(bindingAdapterPosition).tableSelectedPosition = position
                     list.get(bindingAdapterPosition).tableChairCount =
                         (binding.spnTable.adapter.getItem(position) as MergeTableModel).chairCount
 
                     list.get(bindingAdapterPosition).orderId =
                         (binding.spnTable.adapter.getItem(position) as MergeTableModel).orderId
-
+                    list.get(bindingAdapterPosition).secondaryChairCount = (binding.spnTable.adapter.getItem(position) as MergeTableModel).chairCount
 
                     //list[layoutPosition].table =  (binding.spnTable.adapter.getItem(position) as MergeTableModel)
 
@@ -96,15 +98,16 @@ class MergeTableSelectionAdapter : RecyclerView.Adapter<MergeTableSelectionAdapt
                     ) {
                         var tempTableList: ArrayList<MergeTableModel> = arrayListOf()
                         list.get(0).listFloorPlan.get(position).id
-                        tempTableList = list.get(layoutPosition).listTable.filter { it ->
-                            it.floorId == list.get(layoutPosition).listFloorPlan.get(position).id
+                        tempTableList = list.get(bindingAdapterPosition).listTable.filter { it ->
+                            it.floorId == list.get(bindingAdapterPosition).listFloorPlan.get(position).id
                         }.toCollection(arrayListOf())
-                        list[layoutPosition].selectedFloorPlanId =
+                        list[bindingAdapterPosition].selectedFloorPlanId =
                             list.get(0).listFloorPlan.get(position).id
 
 
                         var sortedlist = tempTableList.toList().sortedBy { it.id }
                         tempTableList = ArrayList(sortedlist)
+                        Log.e(TAG,"tempTableList  ${Gson().toJson(tempTableList)}")
                         tableAdapter = ArrayAdapter(
                             binding.root.context,
                             R.layout.spinner_text_selected,

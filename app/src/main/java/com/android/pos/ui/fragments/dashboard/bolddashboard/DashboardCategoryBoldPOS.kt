@@ -254,8 +254,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     orderDiscount = MethodUtils.roundOffAmountDouble(result.percentage)
 
                     val discountApplyPrice = viewModel.totalPrice
-                    Log.d(TAG, "resultListener: orderDiscount : "+orderDiscount)
-                    Log.d(TAG, "resultListener: totalprice : "+viewModel.totalPrice)
+                    Log.d(TAG, "resultListener: orderDiscount : " + orderDiscount)
+                    Log.d(TAG, "resultListener: totalprice : " + viewModel.totalPrice)
                     val price = discountApplyPrice - orderDiscount
                     Log.d(TAG, "resultListener: " + cartList.size)
                     if (viewModel.cartModel != null) {
@@ -633,40 +633,40 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             }
         }
 
-            /* binding.layoutHeader.txtOpenOrder.setOnClickListener {
-             loadCategoryFragment(CategoryFragment(this))
-             binding.layoutHeader.txtOpenOrder.setTextColor(resources.getColor(R.color.btnColor))
-             binding.layoutHeader.txtOpenOrder.setTypeface(
-                 binding.layoutHeader.txtOpenOrder.typeface,
-                 Typeface.BOLD
-             )
-             binding.layoutHeader.txtKeypad.setTextColor(resources.getColor(R.color.txtColor))
-             binding.layoutHeader.txtKeypad.setTypeface(
-                 binding.layoutHeader.txtKeypad.typeface,
-                 Typeface.NORMAL
-             )
-         }*/
-            binding.layoutHeader.txtKeypad.setOnClickListener {
-                if (rolePermission.hasManualSalesPermission(binding.root)) {
-                    viewModel.deleteManualSaleCart()
-                    binding.layoutHeader.txtKeypad.setTextColor(resources.getColor(R.color.btnColor))
-                    binding.layoutHeader.txtKeypad.setTypeface(
-                        binding.layoutHeader.txtKeypad.typeface,
-                        Typeface.BOLD
-                    )
-                    binding.layoutHeader.txtOpenOrder.setTextColor(resources.getColor(R.color.txtColor))
-                    binding.layoutHeader.txtOpenOrder.setTypeface(
-                        binding.layoutHeader.txtOpenOrder.typeface,
-                        Typeface.NORMAL
-                    )
-                    var bundle: Bundle = Bundle()
-                    bundle.putParcelableArrayList("carttlist", cartList)
-                    findNavController().navigate(
-                        R.id.action_dashboardCategoryBoldPOS_to_manualSalesNew,
-                        bundle
-                    )
-                }
+        /* binding.layoutHeader.txtOpenOrder.setOnClickListener {
+         loadCategoryFragment(CategoryFragment(this))
+         binding.layoutHeader.txtOpenOrder.setTextColor(resources.getColor(R.color.btnColor))
+         binding.layoutHeader.txtOpenOrder.setTypeface(
+             binding.layoutHeader.txtOpenOrder.typeface,
+             Typeface.BOLD
+         )
+         binding.layoutHeader.txtKeypad.setTextColor(resources.getColor(R.color.txtColor))
+         binding.layoutHeader.txtKeypad.setTypeface(
+             binding.layoutHeader.txtKeypad.typeface,
+             Typeface.NORMAL
+         )
+     }*/
+        binding.layoutHeader.txtKeypad.setOnClickListener {
+            if (rolePermission.hasManualSalesPermission(binding.root)) {
+                viewModel.deleteManualSaleCart()
+                binding.layoutHeader.txtKeypad.setTextColor(resources.getColor(R.color.btnColor))
+                binding.layoutHeader.txtKeypad.setTypeface(
+                    binding.layoutHeader.txtKeypad.typeface,
+                    Typeface.BOLD
+                )
+                binding.layoutHeader.txtOpenOrder.setTextColor(resources.getColor(R.color.txtColor))
+                binding.layoutHeader.txtOpenOrder.setTypeface(
+                    binding.layoutHeader.txtOpenOrder.typeface,
+                    Typeface.NORMAL
+                )
+                var bundle: Bundle = Bundle()
+                bundle.putParcelableArrayList("carttlist", cartList)
+                findNavController().navigate(
+                    R.id.action_dashboardCategoryBoldPOS_to_manualSalesNew,
+                    bundle
+                )
             }
+        }
 
 
     }
@@ -815,10 +815,14 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         ).observe(requireActivity()) {
             Log.e(TAG, "MAllWords:::  ${Gson().toJson(it)}")
             if (it.isEmpty()) {
+
                 cartList.clear()
                 cartList = arrayListOf()
 
             } else {
+                if (it[0].orderId != 0) {
+                    it[0].orderId?.let { it1 -> viewModel.setOrderId(it1) }
+                }
                 cartList.clear()
                 cartList = arrayListOf()
                 cartList.addAll(it.toCollection(arrayListOf()))
@@ -1043,6 +1047,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         viewModel._Basedata.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { baseResponse ->
                 if (baseResponse != null) {
+                    Log.e(TAG, "orderIdBaseResponse:  ${baseResponse.order.id}")
                     val bundle = Bundle()
                     bundle.putDouble("totalPrice", baseResponse.order.totalAmount)
                     bundle.putParcelable("dineInList", baseResponse)
@@ -1126,14 +1131,27 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
         viewModel.updateOrder.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
+                var frag =
+                    requireActivity().supportFragmentManager.findFragmentById(R.id.frameLayout)
 
+                if (frag?.javaClass?.name == AddItemFragment.javaClass.getName()) {
+                    requireActivity().supportFragmentManager.popBackStackImmediate(
+                        AddItemFragment.javaClass.getName(),
+                        FragmentManager.POP_BACK_STACK_INCLUSIVE
+                    )
+                }
 
                 val bundle = Bundle()
                 if (cartList.isNotEmpty())
                     bundle.putParcelable("cartList", cartList[0])
                 bundle.putBoolean("isGuestPaid", false)
-                if (cartList.isNotEmpty())
+                Log.e(TAG, "orderIdDineIn:  ${viewModel.orderId}")
+                viewModel.orderId?.let { it1 -> bundle.putInt("orderId", it1) }
+                /*if (cartList.isNotEmpty() && cartList[0].orderId != 0) {
                     cartList[0].orderId?.let { it1 -> bundle.putInt("orderId", it1) }
+                } else {
+                    orderId?.let { it1 -> bundle.putInt("orderId", it1) }
+                }*/
                 prefProvider.setValue(ORDER_TYPE, TAKEOUT)
                 LogUtil.logE(TAG, "deleteCartDineIn")
                 viewModel.deleteCart()

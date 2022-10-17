@@ -128,7 +128,7 @@ class OrderAttributeRequestModel {
     var mergedTableNumbers: Int? = null
 
     @SerializedName("deleted_guest_items")
-    var deletedGuestItems:ArrayList<Int> = arrayListOf()
+    var deletedGuestItems: ArrayList<Int> = arrayListOf()
 }
 
 
@@ -477,6 +477,7 @@ class OrderItemVariationAttribute {
     @SerializedName("variation_id")
     var variationId: Int = 0
 }
+
 @Parcelize
 data class OrderServiceChargesAttribute(
     @SerializedName("amount")

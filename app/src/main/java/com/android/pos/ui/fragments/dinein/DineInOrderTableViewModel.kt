@@ -415,7 +415,9 @@ class DineInOrderTableViewModel @Inject constructor(
             cash_discount_or_surcharge = 0.0
             cash_discount_type = ""
             offlineId = randomOfflineId()
+            dineInOrderDetailsAttr
         }
+
             Log.e(TAG, "getCartmodelId  ${cartModel.orderId}")
         orderModel.apply {
             guestsAttributes = getGuestsAttributes(cartModel)

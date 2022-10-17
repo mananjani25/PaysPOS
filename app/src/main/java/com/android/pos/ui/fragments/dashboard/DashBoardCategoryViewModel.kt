@@ -135,6 +135,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     var tipTransactionAmount = 0.0
     private val _updateOrder = MutableLiveData<Event<Any?>>()
     val updateOrder: LiveData<Event<Any?>> = _updateOrder
+    var orderId: Int? = 0
 
     var openOrderUpdate: Boolean? = false
 
@@ -150,6 +151,10 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun setOpenOrderUpdate(value: Boolean) {
         this.openOrderUpdate = value
+    }
+
+    fun setOrderId(id: Int) {
+        this.orderId = id
     }
 
     fun setSplitCount(selectcount: Int) {
@@ -260,6 +265,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     fun mAllWords(orderType: String, employee_Id: Int): LiveData<List<CartModel>> {
 
         return posRepository.getCartList(orderType, employee_Id)
+
 
     }
 
@@ -3095,6 +3101,8 @@ class DashBoardCategoryViewModel @Inject constructor(
             note = cartModel.note
             openOrderType = "DineIn"
             orderTypeId = 2
+            tax_bifurcation_data = Gson().toJson(cartModel.taxlistDynamic)
+            taxEnabled = true
             subTotal = MethodUtils.roundOffAmountDouble(subTotalPrice)
             totalAmount = MethodUtils.roundOffAmountDouble(totalPrice)
             totalDiscount = MethodUtils.roundOffAmountDouble(ttotalDiscount)
@@ -3907,7 +3915,6 @@ class DashBoardCategoryViewModel @Inject constructor(
                 totalServiceCharge = model.serviceCharge
                 // serviceChargeCalculationModel(cartModel)
                 subTotalPrice -= model.totalDiscount
-
 
 
                 var finalTotal = 0.0
