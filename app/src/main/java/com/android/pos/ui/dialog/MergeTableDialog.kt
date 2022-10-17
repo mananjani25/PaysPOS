@@ -137,7 +137,7 @@ class MergeTableDialog : DialogFragment() {
                     )
                 ) {
 
-                    if ( table.status == OCCUPIED) {
+                    if (table.status == OCCUPIED) {
                         listTable.add(
                             MergeTableModel(
                                 table.id,
@@ -191,6 +191,7 @@ class MergeTableDialog : DialogFragment() {
                 id: Long
             ) {
                 tableSelectedPos = position
+                Log.e(TAG, "tableSelectedPos:  ${tableSelectedPos}")
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -237,6 +238,7 @@ class MergeTableDialog : DialogFragment() {
         }
         binding.txtSave.setOnClickListener {
             var listSecondary = adapter.getList()
+            Log.e(TAG, "listofSecondary  ${Gson().toJson(listSecondary.get(0))}")
             var allIds: MutableList<Int?> = mutableListOf()
             var isDuplicateIdTrue = false
 
@@ -272,20 +274,28 @@ class MergeTableDialog : DialogFragment() {
                 var childIds: String = ""
                 var arrayChildIds: ArrayList<String> = arrayListOf()
 
+                Log.e(TAG, "listSecondaryData  ${listSecondary.size}")
                 for (i in 0 until listSecondary.size) {
                     arrayChildIds.add(listSecondary.get(i).selectedTableId.toString())
+                    Log.e(
+                        TAG, "listSecondarychairCount:  ${
+                            listSecondary.get(i).listTable.get(
+                                listSecondary.get(i).tableSelectedPosition ?: 0
+                            ).name
+                        }"
+                    )
+
+
 
                     if (listSecondary[i].orderDetails == null) {
-                        totalChairCount += listSecondary.get(i).listTable.get(
-                            listSecondary.get(i).tableSelectedPosition ?: 0
-                        ).chairCount
-                            ?: 0
+                        totalChairCount += listSecondary.get(i).secondaryChairCount ?: 0
                     }
                 }
                 childIds = android.text.TextUtils.join(",", arrayChildIds)
 
 
                 var tableMergeList: ArrayList<MergeTableModel> = arrayListOf()
+                Log.e(TAG, "totalChairCount:   ${totalChairCount}")
                 for (i in 0 until totalChairCount) {
 
                     tableMergeList.add(
@@ -321,7 +331,10 @@ class MergeTableDialog : DialogFragment() {
                     }
 
                 }
-                LogUtil.logE(TAG, "listSecondaryOrderDetailsSize:  ${listSecondaryOrderDetails.size}")
+                LogUtil.logE(
+                    TAG,
+                    "listSecondaryOrderDetailsSize:  ${listSecondaryOrderDetails.size}"
+                )
 
                 if (listSecondaryOrderDetails.size == 0) {
                     //This is for Every Empty Table for both Primary and Secondary

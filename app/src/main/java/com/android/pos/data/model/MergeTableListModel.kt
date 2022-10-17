@@ -10,5 +10,6 @@ data class MergeTableListModel(
     var selectedFloorPlanId: Int? = null,
     var tableSelectedPosition: Int? = null,
     var tableChairCount: Int? = null,
-    var orderDetails: GetFloorPlanDetailResponse.OrderDetails? = null
+    var orderDetails: GetFloorPlanDetailResponse.OrderDetails? = null,
+    var secondaryChairCount:Int?=null
 )
