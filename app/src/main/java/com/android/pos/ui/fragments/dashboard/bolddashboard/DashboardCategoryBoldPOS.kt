@@ -254,8 +254,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     orderDiscount = MethodUtils.roundOffAmountDouble(result.percentage)
 
                     val discountApplyPrice = viewModel.totalPrice
-                    Log.d(TAG, "resultListener: orderDiscount : "+orderDiscount)
-                    Log.d(TAG, "resultListener: totalprice : "+viewModel.totalPrice)
+                    Log.d(TAG, "resultListener: orderDiscount : " + orderDiscount)
+                    Log.d(TAG, "resultListener: totalprice : " + viewModel.totalPrice)
                     val price = discountApplyPrice - orderDiscount
                     Log.d(TAG, "resultListener: " + cartList.size)
                     if (viewModel.cartModel != null) {
@@ -633,40 +633,40 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             }
         }
 
-            /* binding.layoutHeader.txtOpenOrder.setOnClickListener {
-             loadCategoryFragment(CategoryFragment(this))
-             binding.layoutHeader.txtOpenOrder.setTextColor(resources.getColor(R.color.btnColor))
-             binding.layoutHeader.txtOpenOrder.setTypeface(
-                 binding.layoutHeader.txtOpenOrder.typeface,
-                 Typeface.BOLD
-             )
-             binding.layoutHeader.txtKeypad.setTextColor(resources.getColor(R.color.txtColor))
-             binding.layoutHeader.txtKeypad.setTypeface(
-                 binding.layoutHeader.txtKeypad.typeface,
-                 Typeface.NORMAL
-             )
-         }*/
-            binding.layoutHeader.txtKeypad.setOnClickListener {
-                if (rolePermission.hasManualSalesPermission(binding.root)) {
-                    viewModel.deleteManualSaleCart()
-                    binding.layoutHeader.txtKeypad.setTextColor(resources.getColor(R.color.btnColor))
-                    binding.layoutHeader.txtKeypad.setTypeface(
-                        binding.layoutHeader.txtKeypad.typeface,
-                        Typeface.BOLD
-                    )
-                    binding.layoutHeader.txtOpenOrder.setTextColor(resources.getColor(R.color.txtColor))
-                    binding.layoutHeader.txtOpenOrder.setTypeface(
-                        binding.layoutHeader.txtOpenOrder.typeface,
-                        Typeface.NORMAL
-                    )
-                    var bundle: Bundle = Bundle()
-                    bundle.putParcelableArrayList("carttlist", cartList)
-                    findNavController().navigate(
-                        R.id.action_dashboardCategoryBoldPOS_to_manualSalesNew,
-                        bundle
-                    )
-                }
+        /* binding.layoutHeader.txtOpenOrder.setOnClickListener {
+         loadCategoryFragment(CategoryFragment(this))
+         binding.layoutHeader.txtOpenOrder.setTextColor(resources.getColor(R.color.btnColor))
+         binding.layoutHeader.txtOpenOrder.setTypeface(
+             binding.layoutHeader.txtOpenOrder.typeface,
+             Typeface.BOLD
+         )
+         binding.layoutHeader.txtKeypad.setTextColor(resources.getColor(R.color.txtColor))
+         binding.layoutHeader.txtKeypad.setTypeface(
+             binding.layoutHeader.txtKeypad.typeface,
+             Typeface.NORMAL
+         )
+     }*/
+        binding.layoutHeader.txtKeypad.setOnClickListener {
+            if (rolePermission.hasManualSalesPermission(binding.root)) {
+                viewModel.deleteManualSaleCart()
+                binding.layoutHeader.txtKeypad.setTextColor(resources.getColor(R.color.btnColor))
+                binding.layoutHeader.txtKeypad.setTypeface(
+                    binding.layoutHeader.txtKeypad.typeface,
+                    Typeface.BOLD
+                )
+                binding.layoutHeader.txtOpenOrder.setTextColor(resources.getColor(R.color.txtColor))
+                binding.layoutHeader.txtOpenOrder.setTypeface(
+                    binding.layoutHeader.txtOpenOrder.typeface,
+                    Typeface.NORMAL
+                )
+                var bundle: Bundle = Bundle()
+                bundle.putParcelableArrayList("carttlist", cartList)
+                findNavController().navigate(
+                    R.id.action_dashboardCategoryBoldPOS_to_manualSalesNew,
+                    bundle
+                )
             }
+        }
 
 
     }
@@ -689,6 +689,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                   item.variationsAttributes.get(0).isChecked = true
               }*/
             item.modifiers.forEach { it.isChecked = false }
+            item.variationsAttributes.forEach { it ->
+                if (it.priceType == "Variable") {
+                    it.price = null
+                }
+            }
             val backStateName: String = AddItemFragment.javaClass.getName()
             val fragment = AddItemFragment.newInstance(item, this, cartList, false)
             val fm: FragmentManager = requireActivity().supportFragmentManager

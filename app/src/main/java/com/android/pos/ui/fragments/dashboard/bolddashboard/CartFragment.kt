@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RelativeLayout
+import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -56,10 +57,7 @@ import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.ItemClickListner
 import com.android.pos.utils.callback.ItemListner
 import com.android.pos.utils.callback.MyCallback
-import com.android.pos.utils.extensions.alert
-import com.android.pos.utils.extensions.gone
-import com.android.pos.utils.extensions.isVisible
-import com.android.pos.utils.extensions.visible
+import com.android.pos.utils.extensions.*
 import com.android.pos.utils.statusUtils.Resource
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
@@ -212,9 +210,8 @@ class CartFragment(
         if (isFromPayment) {
             binding.linearButtonView.visibility = View.GONE
             binding.imgOrderMenu.visibility = View.GONE
-            val params: RelativeLayout.LayoutParams =
-                binding.txtAddCustomer.layoutParams as RelativeLayout.LayoutParams
-            params.addRule(RelativeLayout.ALIGN_PARENT_END)
+            val params: LinearLayoutCompat.LayoutParams =
+                binding.txtAddCustomer.layoutParams as LinearLayoutCompat.LayoutParams
             binding.txtAddCustomer.layoutParams = params
             binding.imgOrderMenu.isEnabled = false
             binding.imgOrderMenu.isClickable = false
@@ -417,7 +414,11 @@ class CartFragment(
             viewLifecycleOwner
         ) { requestKey: String, bundle: Bundle ->
             var count: Int = bundle.getInt("count")
-            addGuestToOrder(count)
+            AlertUtils.showCustomAlertWithListenerWithOK(
+                requireContext(), "Guest added successfully."
+            ) { _, _ ->
+                addGuestToOrder(count)
+            }
         }
     }
 
@@ -1266,7 +1267,7 @@ class CartFragment(
                     }
 
                     if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
-                        binding.txtAddCustomer.gone()
+                        binding.txtAddCustomer.invisible()
                     } else {
                         binding.txtAddCustomer.visible()
                     }

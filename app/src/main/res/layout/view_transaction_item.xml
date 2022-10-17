@@ -153,6 +153,9 @@
                     android:layout_marginTop="@dimen/_3sdp"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/text_size_medium"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:maxLength="40"
                     tools:text="John dSmith" />
 
             </LinearLayout>

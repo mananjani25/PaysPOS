@@ -65,13 +65,13 @@ class AddVariablePriceDialog : DialogFragment() {
         binding.txtSave.setOnClickListener {
             if (TextUtils.isEmpty(binding.edtAmount.text.toString())) {
                 //   variationAttribute?.price = null
-                variationAttribute?.priceType = "Variable"
+//                variationAttribute?.priceType = "Variable"
             } else {
 
                 variationAttribute?.price =
                     binding.edtAmount.text.toString().replace("$", "").toDouble()
 
-                variationAttribute?.priceType = "Fixed"
+//                variationAttribute?.priceType = "Fixed"
             }
 
             var bundle: Bundle = Bundle()

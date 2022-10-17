@@ -60,7 +60,9 @@
                     android:layout_height="wrap_content"
                     android:paddingStart="@dimen/_5sdp"
                     android:paddingEnd="@dimen/_5sdp"
-                    android:maxLength="30"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:maxLength="40"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_5mdpi" />
 
