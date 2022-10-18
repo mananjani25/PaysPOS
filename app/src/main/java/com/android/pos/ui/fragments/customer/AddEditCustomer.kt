@@ -823,7 +823,7 @@ class AddEditCustomer : Fragment() {
                             "false"
                         )
                     )
-                if (binding.edtStreetDel?.text.toString().isNotEmpty())
+                if (binding.edtStreetDel?.text.toString().isNotEmpty()){
                     listAddress.add(
                         CreateCustomerRequestModel.Customer.Addresses(
                             id2,
@@ -839,6 +839,27 @@ class AddEditCustomer : Fragment() {
                             "false"
                         )
                     )
+                }else{
+                    if (viewModel.listAddress.size==2){
+                        listAddress.add(
+                            CreateCustomerRequestModel.Customer.Addresses(
+                                id2,
+                                viewModel.listAddress[1].address1,
+                                viewModel.listAddress[1].address2,
+                                viewModel.listAddress[1].city,
+                                viewModel.listAddress[1].state,
+                                viewModel.listAddress[1].country,
+                                viewModel.listAddress[1].postcode,
+                                "Shipping",
+                                0.0,
+                                0.0,
+                                "true"
+                            )
+                        )
+                    }
+
+                }
+
             } else {
                 listAddress = arrayListOf()
                 if (binding.edtStreet?.text.toString().isNotEmpty())
