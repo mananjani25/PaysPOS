@@ -170,7 +170,7 @@ class PasscodeDialogForManagerDialog : DialogFragment() {
                         )
                     }else if(isFrom=="rejectOnlineOrder"){
                         findNavController().navigate(
-                            R.id.action_onlineOrder_to_passcodeManager,
+                            R.id.action_onlineOrder_to_reasonForrefundonline,
                             arguments
                         )
                     }else if(isFrom=="itemDiscountManual"){
