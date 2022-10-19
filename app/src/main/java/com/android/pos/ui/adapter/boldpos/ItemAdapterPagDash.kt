@@ -140,10 +140,10 @@ class ItemAdapterPagDash(
     }
 
     fun getItemPriceIsValid(amount: Double): String {
-        if (amount > 0.0) {
-            return amount.let { MethodUtils.roundOffAmount(it) }
+        return if (amount > 0.0) {
+            amount.let { MethodUtils.roundOffAmount(it) }
         }else{
-            return ""
+            ""
         }
 
 
