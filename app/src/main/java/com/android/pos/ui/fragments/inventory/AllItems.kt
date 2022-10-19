@@ -392,7 +392,7 @@ class AllItems(val clickedPosition: Int, val totalItems: Int) : Fragment(), Item
             .show()
         customDialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
         val back = ColorDrawable(Color.WHITE)
-        val inset = InsetDrawable(back, 150, 300, 150, 300)
+        val inset = InsetDrawable(back, 150, 200, 150, 200)
         customDialog?.window?.setBackgroundDrawable(inset);
         var txttitle = customDialog.findViewById<AppCompatTextView>(R.id.txtTitle)
         var imgback = customDialog.findViewById<AppCompatImageView>(R.id.imgBack)

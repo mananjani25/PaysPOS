@@ -78,8 +78,12 @@ class AssignCustomerToOrderAdapter :
             }
 
             //customer name and loyalty point
+            var fullname = item.first_name + " " + item.last_name
+            if (fullname.toString().length > 39) {
+                fullname.substring(0, 37) + "..."
+            }
             setupNameAndLoyalty(
-                "${item.first_name} ${item.last_name}",
+                fullname,
                 item.enroll_to_loyalty == true,
                 item.final_reward
             )
@@ -111,6 +115,7 @@ class AssignCustomerToOrderAdapter :
                     ssPoint.length,
                     Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
                 )
+
                 TextUtils.concat(
                     ssName.substring(0, 1).uppercase() + ssName.substring(1),
                     "  ",

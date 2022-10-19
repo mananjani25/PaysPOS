@@ -298,6 +298,14 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                 variationList.add(variation)
                 item.name = item.name.substringBefore(" (") + " (" + variation.name + ")"
                 item.price = variation.price ?: 0.0
+                if (item.price == 0.0 && variation.priceType=="Variable") {
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        requireContext(), "Please enter amount"
+                    ) { _, _ ->
+
+                    }
+                    return@setOnClickListener
+                }
                 item.variationsAttributes = variationList
 
             }
@@ -404,7 +412,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                 putDouble("itemOrderDiscount", perItemDiscount)
                 putInt("totalquantity", totalItemswithQuantity)
             }
-            bundle.putString("isFrom","itemDiscount")
+            bundle.putString("isFrom", "itemDiscount")
             if (prefProvider.isAdmin() || prefProvider.isManager()) {
                 findNavController().navigate(
                     R.id.action_dashboardCategoryBoldPOS_to_addDiscountDialog,
@@ -569,7 +577,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                             adapter?.setLongCallback(this)
                                             binding.rvModifiersList.adapter = adapter
                                             binding.rvModifiersList.visibility = View.VISIBLE
-                                            if (isUpdateItem){
+                                            if (isUpdateItem) {
                                                 it.data.forEach { modifierSet ->
                                                     modifierSet.modifiers.forEach { modifier ->
                                                         item.modifiers.forEach { oldmodifier ->
@@ -582,7 +590,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 
                                                 }
                                                 adapter?.setData(it.data)
-                                            }else{
+                                            } else {
                                                 adapter?.add(it.data)
                                             }
 

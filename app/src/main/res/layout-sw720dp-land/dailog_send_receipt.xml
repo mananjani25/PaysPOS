@@ -9,13 +9,14 @@
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
-        android:background="@color/bg_color"
         android:layout_height="match_parent"
+        android:background="@color/bg_color"
         android:orientation="vertical">
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="@dimen/_20sdp">
+
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/imgBack"
@@ -23,7 +24,8 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_gravity="center"
-                android:padding="@dimen/_6sdp"
+                android:background="?attr/selectableItemBackground"
+                android:padding="@dimen/_5sdp"
                 app:srcCompat="@drawable/ic_cancel_black" />
 
 
@@ -60,25 +62,26 @@
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:id="@+id/linear_edit_email"
                 android:layout_width="match_parent"
-                android:visibility="gone"
-                android:background="@drawable/background_square_border_grey"
-                android:layout_height="@dimen/_20sdp">
-            <androidx.appcompat.widget.AppCompatEditText
-                android:id="@+id/edtEmail"
-                style="@style/CustomFontSemiBold"
-                android:layout_width="match_parent"
                 android:layout_height="@dimen/_20sdp"
-                android:layout_gravity="center"
-                app:backgroundTint="@color/bg_color"
-                android:hint="@string/email_receipt"
-                android:imeOptions="actionDone"
-                android:inputType="textEmailAddress"
-                android:padding="@dimen/_7sdp"
-                android:textColor="@color/txtColor"
-                android:textColorHint="@color/hintColor"
-                android:textSize="@dimen/_6mdpi"
-                android:visibility="visible"
-                app:textAllCaps="true" />
+                android:background="@drawable/background_square_border_grey"
+                android:visibility="gone">
+
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/edtEmail"
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_20sdp"
+                    android:layout_gravity="center"
+                    android:hint="@string/email_receipt"
+                    android:imeOptions="actionDone"
+                    android:inputType="textEmailAddress"
+                    android:padding="@dimen/_7sdp"
+                    android:textColor="@color/txtColor"
+                    android:textColorHint="@color/hintColor"
+                    android:textSize="@dimen/_6mdpi"
+                    android:visibility="visible"
+                    app:backgroundTint="@color/bg_color"
+                    app:textAllCaps="true" />
             </androidx.appcompat.widget.LinearLayoutCompat>
 
             <com.santalu.maskedittext.MaskEditText

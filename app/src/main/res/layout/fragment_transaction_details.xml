@@ -840,6 +840,9 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/_3sdp"
                             android:gravity="end"
+                            android:ellipsize="end"
+                            android:singleLine="true"
+                            android:maxLength="40"
                             android:textColor="@color/white"
                             android:textSize="@dimen/text_size_medium" />
                     </LinearLayout>

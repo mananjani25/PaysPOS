@@ -77,7 +77,7 @@
                             android:background="@drawable/background_square_border_grey"
                             android:imeOptions="actionNext"
                             android:padding="@dimen/_9sdp"
-                            android:maxLength="30"
+                            android:maxLength="20"
                             android:inputType="textCapWords|textVisiblePassword"
                             android:digits="@string/character_String"
                             android:text="@={viewModel.addCustomerDetails.data.first_name}"
@@ -120,7 +120,7 @@
                             android:textColorHint="@color/hintColor"
                             android:textSize="@dimen/_7mdpi"
                             android:hint="@string/last_name_"
-                            android:maxLength="30"/>
+                            android:maxLength="20"/>
                     </LinearLayout>
 
                 </LinearLayout>

@@ -689,6 +689,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                   item.variationsAttributes.get(0).isChecked = true
               }*/
             item.modifiers.forEach { it.isChecked = false }
+            item.variationsAttributes.forEach { it ->
+                if (it.priceType == "Variable") {
+                    it.price = null
+                }
+            }
             val backStateName: String = AddItemFragment.javaClass.getName()
             val fragment = AddItemFragment.newInstance(item, this, cartList, false)
             val fm: FragmentManager = requireActivity().supportFragmentManager
