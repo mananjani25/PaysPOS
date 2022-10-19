@@ -209,9 +209,7 @@ class CartFragment(
         if (isFromPayment) {
             binding.linearButtonView.visibility = View.GONE
             binding.imgOrderMenu.visibility = View.GONE
-            val params: LinearLayoutCompat.LayoutParams =
-                binding.txtAddCustomer.layoutParams as LinearLayoutCompat.LayoutParams
-            binding.txtAddCustomer.layoutParams = params
+            binding.txtAddCustomer.setPadding(0,resources.getDimension(R.dimen._5sdp).toInt(),resources.getDimension(R.dimen._10sdp).toInt(),resources.getDimension(R.dimen._5sdp).toInt())
             binding.imgOrderMenu.isEnabled = false
             binding.imgOrderMenu.isClickable = false
         }
