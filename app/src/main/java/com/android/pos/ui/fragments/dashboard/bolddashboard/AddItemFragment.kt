@@ -298,7 +298,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                 variationList.add(variation)
                 item.name = item.name.substringBefore(" (") + " (" + variation.name + ")"
                 item.price = variation.price ?: 0.0
-                if (item.price == 0.0 && variation.priceType=="Variable") {
+                if (item.price == 0.0 && variation.priceType == "Variable") {
                     AlertUtils.showCustomAlertWithListenerWithOK(
                         requireContext(), "Please enter amount"
                     ) { _, _ ->
@@ -585,61 +585,69 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                                         item.modifiers.forEach { oldmodifier ->
                                                             if (oldmodifier.id == modifier.id) {
                                                                 modifier.isChecked = true
-                                                                modifier.itemQuantity = oldmodifier.itemQuantity
+                                                                modifier.itemQuantity =
+                                                                    oldmodifier.itemQuantity
                                                             }
                                                         }
                                                     }
 
+                                                }
+                                                var dataMod =
+                                                    MethodUtils.convertSortListForModifierSet(
+                                                        item.modifier_set_ids, it.data.toCollection(
+                                                            arrayListOf()
+                                                        )
+                                                    )
+
+                                                adapter?.add(dataMod)
+                                                adapter?.setData(it.data)
                                             }
-                                            var dataMod = MethodUtils.convertSortListForModifierSet(item.modifier_set_ids,it.data.toCollection(
-                                                arrayListOf()))
+                                            else{
+                                                adapter?.add(it.data)
+                                            }
 
-                                            adapter?.add(dataMod)
-                                            adapter?.setData(item.modifiers)
-                                        } else binding.rvModifiersList.visibility = View.GONE
 
+
+                                        } else {
+                                            binding.rvModifiersList.visibility = View.GONE
+                                            binding.dividerLine2.root.visibility = View.GONE
+                                        }
                                     }
 
-
-                                } else {
-                                    binding.rvModifiersList.visibility = View.GONE
-                                    binding.dividerLine2.root.visibility = View.GONE
-                                }
-
-                                variationAdapter?.showVariationPriceClick =
-                                    { it: VariationsAttribute ->
-                                        if (!MethodUtils.isDoubleClick()) {
-                                            LogUtil.logE(TAG, "getpriceType:  ${it.priceType}")
-                                            if (it.priceType == "Variable") {
-                                                val bundle = Bundle().apply {
-                                                    putParcelable("variationAttribute", it)
-                                                }
-                                                findNavController().navigate(
-                                                    R.id.action_dashboardCategoryBoldPOS_to_addVariablePriceDialog,
-                                                    bundle
-                                                )
+                                    variationAdapter?.showVariationPriceClick =
+                                        { it: VariationsAttribute ->
+                                            if (!MethodUtils.isDoubleClick()) {
+                                                LogUtil.logE(TAG, "getpriceType:  ${it.priceType}")
+                                                if (it.priceType == "Variable") {
+                                                    val bundle = Bundle().apply {
+                                                        putParcelable("variationAttribute", it)
+                                                    }
+                                                    findNavController().navigate(
+                                                        R.id.action_dashboardCategoryBoldPOS_to_addVariablePriceDialog,
+                                                        bundle
+                                                    )
 
 
-                                            } else if (it.priceType == "Fixed") {
+                                                } else if (it.priceType == "Fixed") {
 
-                                                var variation: VariationsAttribute? = null
-                                                if (variationAdapter != null) {
-                                                    variation = variationAdapter.getItem()
-                                                } else if (variation != null) {
-                                                    variation = it
-                                                }
-
-
-
-                                                if (variation != null) {
-                                                    variation.price?.let {
-                                                        item.price = it
+                                                    var variation: VariationsAttribute? = null
+                                                    if (variationAdapter != null) {
+                                                        variation = variationAdapter.getItem()
+                                                    } else if (variation != null) {
+                                                        variation = it
                                                     }
 
-                                                } else {
-                                                    item.price = item.price
+
+
+                                                    if (variation != null) {
+                                                        variation.price?.let {
+                                                            item.price = it
+                                                        }
+
+                                                    } else {
+                                                        item.price = item.price
+                                                    }
                                                 }
-                                            }
 
 //                                    if (item.variationsAttributes.isNotEmpty()) {
 //                                        val resultVariationDetails =
@@ -668,12 +676,13 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 //                                            }
 //                                        }
 //                                    }
+                                            }
                                         }
-                                    }
 
+
+                                }
 
                             }
-
                         }
                         Status.ERROR -> {
                             binding.rvVariationList.visibility = View.GONE
@@ -682,9 +691,9 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                             binding.rvVariationList.visibility = View.GONE
                         }
                     }
+
+
                 }
-
-
             }
         }
 
