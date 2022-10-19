@@ -5,7 +5,6 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable
 import android.os.Build
-import android.util.Log
 import androidx.annotation.Nullable
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
@@ -1675,7 +1674,8 @@ fun addOrdersForKitchen(
     list: List<CreateOrderResponse.Data.Order.OrderItem>,
     fontSizeH: Int = 1,
     fontSizeW: Int = 1,
-    printerCat: ArrayList<PrinterResponse.Data.PrinterCategories?>? = null
+    printerCat: ArrayList<PrinterResponse.Data.PrinterCategories?>? = null,
+    guestAttributes: ArrayList<CreateOrderResponse.Data.Order.GuestAttributes>? = null
 ): Builder {
     for (i in 0 until list.size) {
         printerCat?.forEach {

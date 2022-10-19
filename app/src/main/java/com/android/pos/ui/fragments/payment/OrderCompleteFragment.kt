@@ -7255,8 +7255,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }
             }
 
-        }
-        else if (data.name.startsWith(SUNMI_INNER_PRINTER, true)) {
+        } else if (data.name.startsWith(SUNMI_INNER_PRINTER, true)) {
 
             SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
             viewLifecycleOwner.lifecycleScope.launch {
@@ -7853,7 +7852,19 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 addHorizontalLine(builder)
 
-                receiptModel?.order?.orderItems?.let {
+                receiptModel?.order?.guestAttributes?.forEach {
+                    if (it.guestItemAttributes.isNotEmpty()) {
+                        val guestName: String = it.name
+                        receiptModel?.order?.orderItems?.forEach { it1->
+
+                        }
+
+                    }
+
+                }
+
+
+              /*  receiptModel?.order?.orderItems?.let {
                     addOrdersForKitchen(
                         builder,
                         it,
@@ -7862,7 +7873,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         customerReceiptPrinters.printerCategories.toCollection(arrayListOf())
                     )
                 }
-
+*/
                 if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
                     builder.addTextLineSpace(30)
                     builder.addFeedUnit(30)

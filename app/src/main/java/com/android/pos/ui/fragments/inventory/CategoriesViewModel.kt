@@ -30,7 +30,7 @@ class CategoriesViewModel @Inject constructor(
     val enableTaxes = taxServiceChargeRepository.enableTaxes()
 
     fun _getCategories(): LiveData<Resource<List<TbCategory>>> {
-        return posRepository.getCategoryListAll()
+        return posRepository.getCategoryListIWCAll()
     }
 
     private val _snackbarText = MutableLiveData<Event<Any?>>()
