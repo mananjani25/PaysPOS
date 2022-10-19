@@ -19,10 +19,10 @@ import com.android.pos.R
 import com.android.pos.data.entities.ModifierSet
 import com.android.pos.data.model.requestModel.CreateCategoryRequestModel
 import com.android.pos.data.model.requestModel.CreateItemRequestModel
-
 import com.android.pos.data.remote.Constants
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.extensions.toMultiPartRequestBody
+import com.google.gson.Gson
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.google.i18n.phonenumbers.Phonenumber
 import okhttp3.MultipartBody
@@ -68,16 +68,14 @@ class MethodUtils {
             modList: ArrayList<ModifierSet>
         ): ArrayList<ModifierSet> {
             var newListMod: ArrayList<ModifierSet> = arrayListOf()
-            seqIds.forEach { ids ->
-                modList.forEach {
-                    if (it.id == ids) {
-                        newListMod.add(it)
+            Log.e(TAG, "getseqIds:  ${Gson().toJson(seqIds)}")
 
-                    }
-                }
+            for (i in 0 until seqIds.size) {
+                modList.find { it.id == seqIds.get(i) }?.let { newListMod.add(it) }
             }
 
             Log.e(TAG, "newListMod:  ${newListMod.size}")
+
 
             return newListMod
         }

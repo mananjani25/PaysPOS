@@ -579,7 +579,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                             adapter?.setLongCallback(this)
                                             binding.rvModifiersList.adapter = adapter
                                             binding.rvModifiersList.visibility = View.VISIBLE
-                                            if (isUpdateItem) {
+
                                                 it.data.forEach { modifierSet ->
                                                     modifierSet.modifiers.forEach { modifier ->
                                                         item.modifiers.forEach { oldmodifier ->
@@ -599,13 +599,16 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                                         )
                                                     )
 
+                                                Log.e(
+                                                    TAG,
+                                                    "getdataModSets:  ${Gson().toJson(dataMod)}"
+                                                )
+
                                                 adapter?.add(dataMod)
                                                 adapter?.setData(it.data)
-                                            }
-                                            else{
+                                            /* else {
                                                 adapter?.add(it.data)
-                                            }
-
+                                            }*/
 
 
                                         } else {
