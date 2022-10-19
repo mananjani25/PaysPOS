@@ -38,6 +38,8 @@ data class CreateItemRequestModel(
     @SerializedName("tax_ids")
     var taxIds: List<String>? = null,
     @SerializedName("variations_attributes")
-    var variationsAttributes: List<VariationsAttribute>? = null
+    var variationsAttributes: List<VariationsAttribute>? = null,
+    @SerializedName("item_modifier_sets_sort")
+    var itemModifierSetsSort: List<Int>? = null
 )
 

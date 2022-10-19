@@ -12,7 +12,10 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.RadioButton
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
@@ -331,14 +334,14 @@ class AllItems(val clickedPosition: Int, val totalItems: Int) : Fragment(), Item
         popupMenu?.menuInflater?.inflate(R.menu.item_option_menu_delete_hide, popupMenu.menu)
         var menu_pos = popupMenu?.menu?.findItem(R.id.menu_hide_pos)
         var menu_website = popupMenu?.menu?.findItem(R.id.menu_hide_website)
-        if (adapterPage.peek(pos)?.hide_status=="UnHide"){
+        if (adapterPage.peek(pos)?.hide_status == "UnHide") {
             menu_pos?.title = "Hide For POS"
-        }else{
+        } else {
             menu_pos?.title = "UnHide For POS"
         }
-        if (adapterPage.peek(pos)?.website_hide_status=="UnHideOnWebsite"){
+        if (adapterPage.peek(pos)?.website_hide_status == "UnHideOnWebsite") {
             menu_website?.title = "Hide For Website"
-        }else{
+        } else {
             menu_website?.title = "UnHide For Website"
         }
         popupMenu?.setOnMenuItemClickListener { menuItem ->
@@ -366,16 +369,19 @@ class AllItems(val clickedPosition: Int, val totalItems: Int) : Fragment(), Item
                     }
                 }
                 R.id.menu_hide_pos -> {
-                    if (adapterPage.peek(pos)?.hide_status=="HideForToday" || adapterPage.peek(pos)?.hide_status=="HideForIndefinitely"){
-                        viewModel.unHideItems(adapterPage.peek(pos)?.itemId!!,"pos")
-                    }else{
+                    if (adapterPage.peek(pos)?.hide_status == "HideForToday" || adapterPage.peek(pos)?.hide_status == "HideForIndefinitely") {
+                        viewModel.unHideItems(adapterPage.peek(pos)?.itemId!!, "pos")
+                    } else {
                         dialogShowForHide(adapterPage.peek(pos), "pos")
                     }
                 }
                 R.id.menu_hide_website -> {
-                    if (adapterPage.peek(pos)?.website_hide_status=="HideForTodayOnWebsite" || adapterPage.peek(pos)?.website_hide_status=="HideForIndefinitelyOnWebsite"){
-                        viewModel.unHideItems(adapterPage.peek(pos)?.itemId!!,"website")
-                    }else{
+                    if (adapterPage.peek(pos)?.website_hide_status == "HideForTodayOnWebsite" || adapterPage.peek(
+                            pos
+                        )?.website_hide_status == "HideForIndefinitelyOnWebsite"
+                    ) {
+                        viewModel.unHideItems(adapterPage.peek(pos)?.itemId!!, "website")
+                    } else {
                         dialogShowForHide(adapterPage.peek(pos), "website")
                     }
                 }

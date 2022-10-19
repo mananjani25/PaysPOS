@@ -532,6 +532,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                     it.modifier_set_ids[i]
                                 }
 
+
                                 variationAdapter.addVariations(it.variationsAttributes.filter { !it.isDeleted })
                                 val variationList = ArrayList<VariationsAttribute>()
                                 if (item.variationsAttributes.isNotEmpty()) {
@@ -567,6 +568,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                         binding.dividerLine2.root.visibility = View.VISIBLE
                                     }
 
+                                    Log.e(TAG, "intArrayList   ${Gson().toJson(intArray)}")
                                     viewModel.modifierSet(intArray!!).observe(requireActivity()) {
                                         if (it.data != null && it.data.isNotEmpty() && view != null) {
                                             adapter = ItemModifierSetAdapter(
@@ -588,12 +590,12 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                                         }
                                                     }
 
-                                                }
-                                                adapter?.setData(it.data)
-                                            } else {
-                                                adapter?.add(it.data)
                                             }
+                                            var dataMod = MethodUtils.convertSortListForModifierSet(item.modifier_set_ids,it.data.toCollection(
+                                                arrayListOf()))
 
+                                            adapter?.add(dataMod)
+                                            adapter?.setData(item.modifiers)
                                         } else binding.rvModifiersList.visibility = View.GONE
 
                                     }

@@ -286,6 +286,8 @@ class PosRepository @Inject constructor(
     fun modifierSetsList() =
         performGetOperationDatabase(databaseQuery = { appDatabase.modifierSetDao().all })
 
+    fun updateModSet(mod:ModifierSet) = appDatabase.modifierSetDao().update(mod)
+
     fun getAllCountryList() = appDatabase.countryListDao().all
 
     fun modifierSets() =

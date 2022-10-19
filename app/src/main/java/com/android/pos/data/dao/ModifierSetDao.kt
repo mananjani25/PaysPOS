@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.room.*
 import androidx.room.OnConflictStrategy.REPLACE
 import com.android.pos.data.entities.ModifierSet
-import com.android.pos.data.entities.TbItem
 
 
 /**
@@ -26,7 +25,7 @@ interface ModifierSetDao {
     @Insert(onConflict = REPLACE)
     suspend fun addAll(modifierModel: List<ModifierSet>)
 
-    @get:Query("select * from ModifierSet where ModifierSet.isDeleted = 0 ORDER BY ModifierSet.sort DESC")
+    @get:Query("select * from ModifierSet where ModifierSet.isDeleted = 0")
     val all: LiveData<List<ModifierSet>>
 
 

@@ -454,6 +454,7 @@ interface ApiService {
         @PartMap() request: @JvmSuppressWildcards Map<String, RequestBody>,
         @PartMap() taxIds: @JvmSuppressWildcards Map<String, List<String>>,
         @PartMap() modifierIds: @JvmSuppressWildcards Map<String, List<Int>>,
+        @PartMap() modifierSortIds: @JvmSuppressWildcards Map<String, List<Int>>,
         @PartMap() variationAttributes: @JvmSuppressWildcards Map<String, List<VariationsAttribute>>
     ): ItemResponseNew
 
@@ -465,6 +466,7 @@ interface ApiService {
         @PartMap() request: @JvmSuppressWildcards Map<String, RequestBody>,
         @PartMap() taxIds: @JvmSuppressWildcards Map<String, List<String>>,
         @PartMap() modifierIds: @JvmSuppressWildcards Map<String, List<Int>>,
+        @PartMap() modifierSortIds: @JvmSuppressWildcards Map<String, List<Int>>,
         @PartMap() variationAttributes: @JvmSuppressWildcards Map<String, List<VariationsAttribute>>
     ): ItemResponseNew
 

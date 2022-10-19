@@ -44,4 +44,9 @@ class ModifierSet : Parcelable {
 
     @SerializedName("is_deleted")
     var isDeleted: Boolean = false
+
+
+    override fun toString(): String {
+        return name
+    }
 }
