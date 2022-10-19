@@ -1518,6 +1518,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
             }
 
+            builder?.addFeedLine(2)
 
             if (customerReceiptPrinters.name.substring(0, 4)
                     .equals("TM-U", true) || customerReceiptPrinters.name.contains("U")
@@ -2176,7 +2177,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
             }
 
-            builder?.addFeedLine(2)
+            builder?.addFeedLine(5)
 
             builder?.addCut(Builder.CUT_FEED)
 
@@ -2240,7 +2241,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
             PrintSunmiUtils.fontSize(kitchenSettingModel.fonts)
             SunmiPrinterApi.getInstance().printerInit()
-            SunmiPrinterApi.getInstance().lineWrap(2)
+            SunmiPrinterApi.getInstance().lineWrap(4)
             PrintSunmiUtils.orderIdLarge("OrderID:" + receiptModel?.order?.id)
             SunmiPrinterApi.getInstance().lineWrap(1)
 
@@ -2366,6 +2367,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 }
             }
 
+            SunmiPrinterApi.getInstance().lineWrap(2)
             PrintSunmiUtils.cutPaper()
 
             viewModel.downloadFinished(false)
@@ -2390,7 +2392,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         try {
 
             SunmiPrintHelper.getInstance().initPrinter()
-            SunmiPrintHelper.getInstance().lineWrap(2)
+            SunmiPrintHelper.getInstance().lineWrap(4)
             PrintSunmiUtils.headerText("OrderID:" + receiptModel?.order?.id)
             SunmiPrintHelper.getInstance().lineWrap(1)
 
@@ -2497,6 +2499,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                 }
             }
+
+            SunmiPrintHelper.getInstance().lineWrap(2)
 
             PrintSunmiUtils.cutPaperInner()
 

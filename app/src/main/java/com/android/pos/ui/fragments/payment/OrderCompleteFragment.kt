@@ -7354,7 +7354,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 builder = Builder(pname, PrinterClass.language, requireActivity())
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
-                builder.addFeedLine(2)
+                builder.addFeedLine(4)
 
                 builder.addTextFont(Builder.FONT_E)
                 builder.addTextAlign(Builder.ALIGN_CENTER)
@@ -8051,7 +8051,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             }
 
-            builder.addFeedLine(2)
+            builder.addFeedLine(5)
 
             builder.addCut(Builder.CUT_FEED)
 
@@ -8107,7 +8107,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             PrintSunmiUtils.fontSize(kitchenSettingModel.fonts)
             SunmiPrinterApi.getInstance().printerInit()
-            SunmiPrinterApi.getInstance().lineWrap(2)
+            SunmiPrinterApi.getInstance().lineWrap(4)
             PrintSunmiUtils.orderIdLarge("OrderID:" + receiptModel?.order?.id)
             SunmiPrinterApi.getInstance().lineWrap(1)
 
@@ -8237,6 +8237,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }
             }
 
+            SunmiPrinterApi.getInstance().lineWrap(2)
             PrintSunmiUtils.cutPaper()
 
             //  SunmiPrinterApi.getInstance().disconnectPrinter(requireContext())
@@ -8255,7 +8256,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         try {
             // PrintSunmiUtils.fontSizeInner(LARGE)
             SunmiPrintHelper.getInstance().initPrinter()
-            SunmiPrintHelper.getInstance().lineWrap(2)
+            SunmiPrintHelper.getInstance().lineWrap(4)
             PrintSunmiUtils.headerText("OrderID:" + receiptModel?.order?.id)
             SunmiPrintHelper.getInstance().lineWrap(1)
 
@@ -8358,6 +8359,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }
             }
 
+            SunmiPrintHelper.getInstance().lineWrap(2)
             PrintSunmiUtils.cutPaperInner()
 
             //  SunmiPrinterApi.getInstance().disconnectPrinter(requireContext())
