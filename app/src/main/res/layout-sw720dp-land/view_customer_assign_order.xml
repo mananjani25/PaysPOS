@@ -28,12 +28,12 @@
             android:orientation="vertical"
             android:layout_gravity="center_vertical"
             android:gravity="center_vertical"
-            android:paddingVertical="@dimen/_7sdp">
+            android:paddingVertical="@dimen/_5sdp">
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
+                android:orientation="vertical"
                 android:layout_gravity="center_vertical"
                 android:gravity="center_vertical"
                 android:paddingEnd="@dimen/_3sdp">
@@ -41,10 +41,9 @@
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtName"
                     style="@style/CustomFontSemiBold"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_weight="1"
                     android:gravity="start"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi"
@@ -54,14 +53,16 @@
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtPhone"
                     style="@style/CustomFontSemiBold"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_marginStart="@dimen/_5sdp"
+                    android:layout_marginStart="@dimen/_3sdp"
                     android:gravity="start"
+                    android:visibility="gone"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_5mdpi"
                     tools:text="(200) 300-4000" />
+
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -81,7 +82,7 @@
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtAddress1"
                 style="@style/CustomFontSemiBold"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="start|center_vertical"
                 android:gravity="start|center_vertical"
@@ -89,8 +90,7 @@
                 android:textSize="@dimen/_5mdpi"
                 tools:text="(200) 300-4000"
                 android:visibility="gone"
-                android:layout_marginTop="@dimen/_3sdp"
-                android:layout_marginStart="@dimen/_3sdp"/>
+                android:layout_marginStart="@dimen/_5sdp"/>
         </androidx.appcompat.widget.LinearLayoutCompat>
 
         <View

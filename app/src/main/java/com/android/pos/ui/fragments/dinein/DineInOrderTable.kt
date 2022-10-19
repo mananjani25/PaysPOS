@@ -102,6 +102,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     private var orderId: Int? = null
     private var order_note = ""
     private var globalOrderDiscount = 0.0
+    var update_order_Discount = 0.0
     private var getOrderDetailsResponse: GetOrderDetailsResponse.Data? = null
     private val TAG = "DineInOrderTable"
     private lateinit var dineInTableAdapter: DineInTableAdapter
@@ -191,6 +192,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             AlertUtils.showCustomAlertWithListenerWithOK(
                 requireContext(), event.getContentIfNotHandled().toString()
             ) { _, _ ->
+                viewModel.Basedata.removeObservers(viewLifecycleOwner)
+                navigateDineInOrderNew()
                 orderId?.let { viewModel.apiCallOrderDetails(it) }
             }
         }
@@ -373,7 +376,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     MethodUtils.roundOffAmountDouble(globalOrderDiscount / (getOrderDetailsResponse?.guestAttributes?.size!! - 1))
 
                 dividedOrderDiscount = globalOrderDiscount - (eachGuestDiscount * paidGuestAmount)
-                LogUtil.logE(TAG,"DividedOrwrs ${dividedOrderDiscount}")
+                LogUtil.logE(TAG, "DividedOrwrs ${dividedOrderDiscount}")
 
                 tmpOrderDis = globalOrderDiscount - (eachGuestDiscount * paidGuestAmount)
 
@@ -388,7 +391,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 totalDiscount -= wholeDisDivide
 
                 subTotalDInin -= tmpOrderDis
-                LogUtil.logE("dividedOrderDiscount", "dividedOrderDiscount  ${dividedOrderDiscount}")
+                LogUtil.logE(
+                    "dividedOrderDiscount",
+                    "dividedOrderDiscount  ${dividedOrderDiscount}"
+                )
                 LogUtil.logE("WRqwrfarf", "wholeDisDivide  ${wholeDisDivide}")
                 LogUtil.logE(TAG, "subtotal :: " + subTotalDInin)
             }
@@ -621,7 +627,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 //            viewModelPayment.totalServiceCharge = MethodUtils.roundOffAmountDouble(serviceCharge)
 //            viewModelPayment.totalDiscount = MethodUtils.roundOffAmountDouble(totalDiscount)
 
-            LogUtil.logE("AAJE", "subTotalDInin:  ${MethodUtils.roundOffAmountDouble(subTotalDInin)}")
+            LogUtil.logE(
+                "AAJE",
+                "subTotalDInin:  ${MethodUtils.roundOffAmountDouble(subTotalDInin)}"
+            )
             bundle.putDouble("totalPrice", MethodUtils.roundOffAmountDouble(toFinalAmt))
             bundle.putDouble("subTotalPrice", MethodUtils.roundOffAmountDouble(subTotalDInin))
             bundle.putDouble("totalTax", MethodUtils.roundOffAmountDouble(finalTaxAmt))
@@ -742,7 +751,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
             }
-            LogUtil.logE(TAG,"listOfMoveItemIds:  ${listOfMoveItemIds.size}")
+            LogUtil.logE(TAG, "listOfMoveItemIds:  ${listOfMoveItemIds.size}")
             newList[0].listOfItemsMoved.addAll(listOfMoveItemIds.toCollection(arrayListOf()))
 
             //   prefProvider.setValue(Constants.DINE_IN_UPDATE_LIST, Gson().toJson(newList))
@@ -755,18 +764,22 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 newList
             )
 
-            LogUtil.logE("OrderFre", "APIDISc  ${getOrderDetailsResponse?.totalDiscount?.toDouble()}")
+            LogUtil.logE(
+                "OrderFre",
+                "APIDISc  ${getOrderDetailsResponse?.totalDiscount?.toDouble()}"
+            )
             LogUtil.logE("OrderFre", "totalDiscount  ${totalDiscount}")
-            LogUtil.logE("OrderFre", "OrderDiscount  ${globalOrderDiscount}")
+            LogUtil.logE("OrderFre", "OrderDiscount  ${update_order_Discount}")
 
             bundle.putDouble(
                 "totalDiscount",
-                globalOrderDiscount
+                update_order_Discount
             )
             bundle.putString("order_note", order_note)
             bundle.putParcelable("tableDetails", getOrderDetailsResponse?.floorPlanTable)
             viewModelPayment.deleteCart()
             orderId?.let { it1 -> bundle.putInt("orderId", it1) }
+            Log.e(TAG, "dineIndorderId:   ${orderId}")
 
             prefProvider.setValueboolean(DINE_IN_UPDATE, true)
             prefProvider.setValue(Constants.ORDER_TYPE, DINE_IN)
@@ -2093,7 +2106,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                                                             val itemTaxPrice =
                                                                 (tax.rate * totalPrice) / 100
-                                                            LogUtil.logE("itemTaxPrice", "" + itemTaxPrice)
+                                                            LogUtil.logE(
+                                                                "itemTaxPrice",
+                                                                "" + itemTaxPrice
+                                                            )
                                                             String.format("%.2f", itemTaxPrice)
                                                                 .toDouble()
                                                         } else {
@@ -2259,7 +2275,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     if (baseResponse.totalDiscount - totalItemDiscount > 0) {
                         orderDiscount = baseResponse.totalDiscount - totalItemDiscount
                         globalOrderDiscount = baseResponse.totalDiscount - totalItemDiscount
-
+                        update_order_Discount = baseResponse.totalDiscount - totalItemDiscount
                     }
                     totalServiceChargeAmount = 0.0
                     if (prefProvider.getValueboolean(Constants.SERVICECHARGE_DINEIN_ORDER, false)) {
@@ -2379,7 +2395,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                         if (isInRange(
                                                 it.min_guest_count!!,
                                                 it.max_guest_count!!,
-                                                baseResponse.guestAttributes.size-1
+                                                baseResponse.guestAttributes.size - 1
                                             )
                                         ) {
                                             isApplied = true
@@ -2563,7 +2579,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         var totalTablePrice = 0.0
         var WTDiscount = 0.0
         var guestCount = 0
-        LogUtil.logE(TAG,"getMovedItemDAta  ${Gson().toJson(oldList.get(dragTo).item)}")
+        LogUtil.logE(TAG, "getMovedItemDAta  ${Gson().toJson(oldList.get(dragTo).item)}")
         oldList.get(dragTo).item?.guestItemId?.let { listOfMoveItemIds.add(it) }
         oldList.get(dragTo).item?.guestItemId = null
         dragFrom = -1
@@ -6693,7 +6709,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             PrintSunmiUtils.customerSignature(str8)
             if (customerSettingModel.showQrCode) {
 
-                getOrderDetailsResponse?.digitalReceiptUrl?.let { LogUtil.logE("digitalReceiptUrl", it) }
+                getOrderDetailsResponse?.digitalReceiptUrl?.let {
+                    LogUtil.logE(
+                        "digitalReceiptUrl",
+                        it
+                    )
+                }
 
                 getOrderDetailsResponse?.digitalReceiptUrl?.let { PrintSunmiUtils.qrCode(it) }
 
@@ -8294,7 +8315,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     if (isCheckAndFire) {
                         kit.orderTypes.forEach {
                             if (it.orderTypeId == getOrderDetailsResponse?.orderTypeId) {
-                                LogUtil.logE(TAG, "printerSettings  ${Gson().toJson(it.printerSettings)}")
+                                LogUtil.logE(
+                                    TAG,
+                                    "printerSettings  ${Gson().toJson(it.printerSettings)}"
+                                )
                                 it.printerSettings.forEach {
                                     if (it.printType.lowercase()
                                             .equals(Constants.KITCHEN.lowercase()) && it.autoPrinting

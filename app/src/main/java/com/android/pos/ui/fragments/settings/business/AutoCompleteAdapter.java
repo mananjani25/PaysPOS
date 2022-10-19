@@ -36,7 +36,7 @@ public class AutoCompleteAdapter extends ArrayAdapter<AutocompletePrediction> im
     private final PlacesClient placesClient;
     String name = "US";
 
-    AutoCompleteAdapter(Context context, PlacesClient placesClient) {
+    public AutoCompleteAdapter(Context context, PlacesClient placesClient) {
         super(context, android.R.layout.simple_expandable_list_item_2, android.R.id.text1);
         this.placesClient = placesClient;
     }
@@ -131,21 +131,21 @@ public class AutoCompleteAdapter extends ArrayAdapter<AutocompletePrediction> im
     private List<AutocompletePrediction> getAutocomplete(CharSequence constraint) {
 
         final FindAutocompletePredictionsRequest.Builder requestBuilder =
-                FindAutocompletePredictionsRequest.builder()
-                        .setQuery(constraint.toString())
-                        .setCountry(name) //Use only in specific country
-                        .setTypeFilter(TypeFilter.ESTABLISHMENT);
+            FindAutocompletePredictionsRequest.builder()
+                .setQuery(constraint.toString())
+                .setCountry(name) //Use only in specific country
+                .setTypeFilter(TypeFilter.ESTABLISHMENT);
 
         Task<FindAutocompletePredictionsResponse> results =
-                placesClient.findAutocompletePredictions(requestBuilder.build());
+        placesClient.findAutocompletePredictions(requestBuilder.build());
 
 
         //Wait to get results.
         try {
             Tasks.await(results, 60, TimeUnit.SECONDS);
         } catch (ExecutionException | InterruptedException | TimeoutException e) {
-            e.printStackTrace();
-        }
+        e.printStackTrace();
+    }
 
         if (results.isSuccessful()) {
             if (results.getResult() != null) {

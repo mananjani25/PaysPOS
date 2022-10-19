@@ -87,7 +87,7 @@ class BusinessDetailsFragment : Fragment() {
 
         binding.edtStreet.threshold = 1
         binding.edtStreet.onItemClickListener = autocompleteClickListener
-        adapter1 = AutoCompleteAdapter(requireContext(), placesClient)
+        adapter1 = placesClient?.let { AutoCompleteAdapter(requireContext(), it) }
         adapter1?.setCountry("US")
         binding.edtStreet.setAdapter(adapter1)
     }

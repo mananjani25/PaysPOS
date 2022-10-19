@@ -26,11 +26,16 @@ import com.android.pos.data.entities.TbCustomer
 import com.android.pos.data.model.requestModel.CreateCustomerRequestModel
 import com.android.pos.databinding.FragmentAddEditCustomerBinding
 import com.android.pos.ui.adapter.AddressListAdapter
+import com.android.pos.ui.fragments.settings.business.AutoCompleteAdapter
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.LogUtil
+import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
 import com.android.pos.utils.extensions.runOnUiThread
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.net.FetchPlaceRequest
+import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
@@ -45,13 +50,17 @@ class AddEditCustomer : Fragment() {
     private val TAG = "AddEditCustomer"
     private val viewModel by viewModels<AddCustomerViewModel>()
     private var currentSelectedDate: Long? = null
-    private lateinit var placesApi: PlaceAPI
+
+    //    private lateinit var placesApi: PlaceAPI
     private var listAddress: ArrayList<CreateCustomerRequestModel.Customer.Addresses> =
         arrayListOf()
     private lateinit var modelAddress: CreateCustomerRequestModel.Customer.Addresses
     private lateinit var adapter: AddressListAdapter
     private var country = arrayOf("United States", "Canada")
 
+    var placesClient: PlacesClient? = null
+    var adapter1: AutoCompleteAdapter? = null
+    var adapter2: AutoCompleteAdapter? = null
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(
@@ -314,167 +323,388 @@ class AddEditCustomer : Fragment() {
     }
 
     private fun setPlaceApi() {
-        placesApi =
-            PlaceAPI.Builder()
-                .apiKey(binding.root.context.getString(com.android.pos.R.string.api_key))
-                .build(binding.root.context)
+//        placesApi =
+//            PlaceAPI.Builder()
+//                .apiKey(binding.root.context.getString(com.android.pos.R.string.api_key))
+//                .build(binding.root.context)
 
-        binding.edtStreet?.setAdapter(PlacesAutoCompleteAdapter(binding.root.context, placesApi))
-        binding.edtStreet.setOnItemClickListener { parent, view, position, id ->
-            val place = parent.getItemAtPosition(position) as Place
-
-            //binding.edtStreet.setText("${place.description}")
-            placesApi.fetchPlaceDetails(place.id, object : OnPlacesDetailsListener {
-                override fun onError(errorMessage: String) {
-                }
-
-                override fun onPlaceDetailsFetched(placeDetails: PlaceDetails) {
-
-                    decodeLocation(placeDetails.lat, placeDetails.lng, placeDetails.name)
-
-                    val gcd = Geocoder(requireContext(), Locale.getDefault())
-                    /* val address: List<Address> =
-                             gcd.getFromLocation(placeDetails.lat, placeDetails.lng, 1)*/
-
-                    var street = ""
-                    var suite = ""
-                    var city = ""
-                    var state = ""
-                    var zip = ""
-                    placeDetails.address.forEach {
-                        it.type.forEach { type ->
-                            if (type.trim().lowercase() == "street_number".trim().lowercase()) {
-                                street += it.longName
-                            } else if (type.trim().lowercase() == "route".trim().lowercase()) {
-                                street += it.longName
-                            } else if (type.trim().lowercase() == "neighborhood".trim()
-                                    .lowercase()
-                            ) {
-                                suite = it.longName
-                            } else if (type.trim().lowercase() == "locality".trim()
-                                    .lowercase()
-                            ) {
-                                city = it.longName
-                            } else if (type.trim()
-                                    .lowercase() == "administrative_area_level_1".trim()
-                                    .lowercase()
-                            ) {
-                                state = it.longName
-                            } else if (type.trim().lowercase() == "postal_code".trim()
-                                    .lowercase()
-                            ) {
-                                zip = it.longName
-                            }
-
-                        }
-
-                    }
-
-
-                    if (placeDetails.address.isNotEmpty()) {
-                        try {
-                            runOnUiThread {
-                                binding.edtStreet?.setText(street)
-                                binding.edtSuite?.setText(suite)
-                                binding.edtCity?.setText(city)
-                                binding.edtState?.setText(state)
-                                binding.edtZip?.setText(zip)
-                                binding.edtStreet?.dismissDropDown()
-                            }
-                        } catch (e: Exception) {
-                            LogUtil.logE(TAG, "exception in pplaces api")
-                        } finally {
-                            binding.edtStreet?.dismissDropDown()
-                            LogUtil.logE(TAG, "notify callback")
-                        }
-                    }
-
-                    LogUtil.logE(TAG, "placeDetails:  ${Gson().toJson(placeDetails.name)}")
-
-                }
-
-            })
+        if (!Places.isInitialized()) {
+            Places.initialize(
+                requireContext(),
+                binding.root.context.getString(com.android.pos.R.string.api_key)
+            )
         }
 
-        binding.edtStreetDel?.setAdapter(PlacesAutoCompleteAdapter(binding.root.context, placesApi))
-        binding.edtStreetDel.setOnItemClickListener { parent, view, position, id ->
-            val place = parent.getItemAtPosition(position) as Place
-
-            //binding.edtStreet.setText("${place.description}")
-            placesApi.fetchPlaceDetails(place.id, object : OnPlacesDetailsListener {
-                override fun onError(errorMessage: String) {
-                }
-
-                override fun onPlaceDetailsFetched(placeDetails: PlaceDetails) {
-
-                    decodeLocation(placeDetails.lat, placeDetails.lng, placeDetails.name)
-
-                    val gcd = Geocoder(requireContext(), Locale.getDefault())
-                    /* val address: List<Address> =
-                             gcd.getFromLocation(placeDetails.lat, placeDetails.lng, 1)*/
-
-                    var street = ""
-                    var suite = ""
-                    var city = ""
-                    var state = ""
-                    var zip = ""
-                    placeDetails.address.forEach {
-                        it.type.forEach { type ->
-                            if (type.trim().lowercase() == "street_number".trim().lowercase()) {
-                                street += it.longName
-                            } else if (type.trim().lowercase() == "route".trim().lowercase()) {
-                                street += it.longName
-                            } else if (type.trim().lowercase() == "neighborhood".trim()
-                                    .lowercase()
-                            ) {
-                                suite = it.longName
-                            } else if (type.trim().lowercase() == "locality".trim()
-                                    .lowercase()
-                            ) {
-                                city = it.longName
-                            } else if (type.trim()
-                                    .lowercase() == "administrative_area_level_1".trim()
-                                    .lowercase()
-                            ) {
-                                state = it.longName
-                            } else if (type.trim().lowercase() == "postal_code".trim()
-                                    .lowercase()
-                            ) {
-                                zip = it.longName
-                            }
-
-                        }
-
-                    }
+        placesClient = Places.createClient(requireContext())
 
 
-                    if (placeDetails.address.isNotEmpty()) {
-                        try {
-                            runOnUiThread {
-                                binding.edtStreetDel?.setText(street)
-                                binding.edtSuiteDel?.setText(suite)
-                                binding.edtCityDel?.setText(city)
-                                binding.edtStateDel?.setText(state)
-                                binding.edtZipDel?.setText(zip)
-                                binding.edtStreetDel?.dismissDropDown()
-                            }
-                        } catch (e: Exception) {
-                            LogUtil.logE(TAG, "exception in pplaces api")
-                        } finally {
-                            binding.edtStreetDel?.dismissDropDown()
-                            LogUtil.logE(TAG, "notify callback")
-                        }
-                    }
+        binding.edtStreet.threshold = 1
+        binding.edtStreet.onItemClickListener = autocompleteClickListener
+        adapter1 = placesClient?.let { AutoCompleteAdapter(requireContext(), it) }
+        adapter1?.setCountry("US")
+        binding.edtStreet.setAdapter(adapter1)
 
-                    LogUtil.logE(TAG, "placeDetails:  ${Gson().toJson(placeDetails.name)}")
 
-                }
+        binding.edtStreetDel.threshold = 1
+        binding.edtStreetDel.onItemClickListener = autocompleteClickListener1
+        adapter2 = placesClient?.let { AutoCompleteAdapter(requireContext(), it) }
+        adapter2?.setCountry("US")
+        binding.edtStreetDel.setAdapter(adapter2)
 
-            })
 
-        }
+//        binding.edtStreet?.setAdapter(PlacesAutoCompleteAdapter(binding.root.context, placesApi))
+//        binding.edtStreet?.setOnItemClickListener { parent, view, position, id ->
+//            val place = parent.getItemAtPosition(position) as Place
+//
+//            //binding.edtStreet.setText("${place.description}")
+//            placesApi.fetchPlaceDetails(place.id, object : OnPlacesDetailsListener {
+//                override fun onError(errorMessage: String) {
+//                }
+//
+//                override fun onPlaceDetailsFetched(placeDetails: PlaceDetails) {
+//
+//                    decodeLocation(placeDetails.lat, placeDetails.lng, placeDetails.name)
+//
+//                    val gcd = Geocoder(requireContext(), Locale.getDefault())
+//                    /* val address: List<Address> =
+//                         gcd.getFromLocation(placeDetails.lat, placeDetails.lng, 1)*/
+//
+//                    var street = ""
+//                    var suite = ""
+//                    var city = ""
+//                    var state = ""
+//                    var zip = ""
+//                    placeDetails.address.forEach {
+//                        it.type.forEach { type ->
+//                            if (type.trim().lowercase() == "street_number".trim().lowercase()) {
+//                                street += it.longName
+//                            } else if (type.trim().lowercase() == "route".trim().lowercase()) {
+//                                street += it.longName
+//                            } else if (type.trim().lowercase() == "neighborhood".trim()
+//                                    .lowercase()
+//                            ) {
+//                                suite = it.longName
+//                            } else if (type.trim().lowercase() == "locality".trim()
+//                                    .lowercase()
+//                            ) {
+//                                city = it.longName
+//                            } else if (type.trim()
+//                                    .lowercase() == "administrative_area_level_1".trim()
+//                                    .lowercase()
+//                            ) {
+//                                state = it.longName
+//                            } else if (type.trim().lowercase() == "postal_code".trim()
+//                                    .lowercase()
+//                            ) {
+//                                zip = it.longName
+//                            }
+//
+//                        }
+//
+//                    }
+//
+//
+//                    if (placeDetails.address.isNotEmpty()) {
+//                        try {
+//                            runOnUiThread {
+//                                binding.edtStreet?.setText(street)
+//                                binding.edtSuite?.setText(suite)
+//                                binding.edtCity?.setText(city)
+//                                binding.edtState?.setText(state)
+//                                binding.edtZip?.setText(zip)
+//                                binding.edtStreet?.dismissDropDown()
+//                            }
+//                        } catch (e: Exception) {
+//                            LogUtil.logE(TAG, "exception in pplaces api")
+//                        } finally {
+//                            binding.edtStreet?.dismissDropDown()
+//                            LogUtil.logE(TAG, "notify callback")
+//                        }
+//                    }
+//
+//                    LogUtil.logE(TAG, "placeDetails:  ${Gson().toJson(placeDetails.name)}")
+//
+//                }
+//
+//            })
+//        }
+//
+//        binding.edtStreetDel?.setAdapter(PlacesAutoCompleteAdapter(binding.root.context, placesApi))
+//        binding.edtStreetDel.setOnItemClickListener { parent, view, position, id ->
+//            val place = parent.getItemAtPosition(position) as Place
+//
+//            //binding.edtStreet.setText("${place.description}")
+//            placesApi.fetchPlaceDetails(place.id, object : OnPlacesDetailsListener {
+//                override fun onError(errorMessage: String) {
+//                }
+//
+//                override fun onPlaceDetailsFetched(placeDetails: PlaceDetails) {
+//
+//                    decodeLocation(placeDetails.lat, placeDetails.lng, placeDetails.name)
+//
+//                    val gcd = Geocoder(requireContext(), Locale.getDefault())
+//                    /* val address: List<Address> =
+//                             gcd.getFromLocation(placeDetails.lat, placeDetails.lng, 1)*/
+//
+//                    var street = ""
+//                    var suite = ""
+//                    var city = ""
+//                    var state = ""
+//                    var zip = ""
+//                    placeDetails.address.forEach {
+//                        it.type.forEach { type ->
+//                            if (type.trim().lowercase() == "street_number".trim().lowercase()) {
+//                                street += it.longName
+//                            } else if (type.trim().lowercase() == "route".trim().lowercase()) {
+//                                street += it.longName
+//                            } else if (type.trim().lowercase() == "neighborhood".trim()
+//                                    .lowercase()
+//                            ) {
+//                                suite = it.longName
+//                            } else if (type.trim().lowercase() == "locality".trim()
+//                                    .lowercase()
+//                            ) {
+//                                city = it.longName
+//                            } else if (type.trim()
+//                                    .lowercase() == "administrative_area_level_1".trim()
+//                                    .lowercase()
+//                            ) {
+//                                state = it.longName
+//                            } else if (type.trim().lowercase() == "postal_code".trim()
+//                                    .lowercase()
+//                            ) {
+//                                zip = it.longName
+//                            }
+//
+//                        }
+//
+//                    }
+//
+//
+//                    if (placeDetails.address.isNotEmpty()) {
+//                        try {
+//                            runOnUiThread {
+//                                binding.edtStreetDel?.setText(street)
+//                                binding.edtSuiteDel?.setText(suite)
+//                                binding.edtCityDel?.setText(city)
+//                                binding.edtStateDel?.setText(state)
+//                                binding.edtZipDel?.setText(zip)
+//                                binding.edtStreetDel?.dismissDropDown()
+//                            }
+//                        } catch (e: Exception) {
+//                            LogUtil.logE(TAG, "exception in pplaces api")
+//                        } finally {
+//                            binding.edtStreetDel?.dismissDropDown()
+//                            LogUtil.logE(TAG, "notify callback")
+//                        }
+//                    }
+//
+//                    LogUtil.logE(TAG, "placeDetails:  ${Gson().toJson(placeDetails.name)}")
+//
+//                }
+//
+//            })
+//
+//        }
+
 
     }
+
+    private val autocompleteClickListener =
+        AdapterView.OnItemClickListener { _, _, i, _ ->
+            try {
+                val item = adapter1!!.getItem(i)
+                var placeID: String? = null
+                if (item != null) {
+                    placeID = item.placeId
+                }
+                val placeFields = listOf(
+                    com.google.android.libraries.places.api.model.Place.Field.ID,
+                    com.google.android.libraries.places.api.model.Place.Field.NAME,
+                    com.google.android.libraries.places.api.model.Place.Field.ADDRESS,
+                    com.google.android.libraries.places.api.model.Place.Field.ADDRESS_COMPONENTS,
+                    com.google.android.libraries.places.api.model.Place.Field.LAT_LNG
+                )
+                var request: FetchPlaceRequest? = null
+                if (placeID != null) {
+                    request = FetchPlaceRequest.builder(placeID, placeFields)
+                        .build()
+                }
+                if (request != null) {
+                    placesClient!!.fetchPlace(request).addOnSuccessListener { task ->
+
+                        MethodUtils.hideKeyboard(requireActivity())
+
+                        binding.edtStreet.clearFocus()
+                        binding.edtStreet.isFocusableInTouchMode = false;
+                        binding.edtStreet.isFocusable = false;
+                        binding.edtStreet.isFocusableInTouchMode = true;
+                        binding.edtStreet.isFocusable = true;
+
+                        var street = ""
+                        var suite = ""
+                        var city = ""
+                        var state = ""
+                        var zip = ""
+
+                        task.place.name?.let { LogUtil.logE("Task", it) }
+                        task.place.address?.let { LogUtil.logE("Task", it) }
+                        task.place.addressComponents?.asList()
+                            ?.forEachIndexed { index, addressComponent ->
+
+                                addressComponent.types.forEach { type ->
+
+                                    LogUtil.logE(
+                                        "addressComponent",
+                                        type + " ===  " + addressComponent.name
+                                    )
+
+                                    when {
+                                        type.trim().lowercase() == "street_number".trim()
+                                            .lowercase() -> {
+                                            street += addressComponent.name
+                                        }
+                                        type.trim().lowercase() == "route".trim().lowercase() -> {
+                                            street += addressComponent.name
+                                        }
+                                        type.trim().lowercase() == "neighborhood".trim()
+                                            .lowercase() -> {
+                                            suite = addressComponent.name
+                                        }
+                                        type.trim().lowercase() == "locality".trim()
+                                            .lowercase() -> {
+                                            city = addressComponent.name
+                                        }
+                                        type.trim()
+                                            .lowercase() == "administrative_area_level_1".trim()
+                                            .lowercase() -> {
+                                            state = addressComponent.name
+                                        }
+                                        type.trim().lowercase() == "postal_code".trim()
+                                            .lowercase() -> {
+                                            zip = addressComponent.name
+                                        }
+                                    }
+                                }
+
+                                LogUtil.logE("index$index", addressComponent.name)
+                            }
+
+
+                        binding.edtStreet.setText(task.place.name)
+                        binding.edtSuite.setText(suite)
+                        binding.edtCity.setText(city)
+                        binding.edtState.setText(state)
+                        binding.edtZip.setText(zip)
+
+
+                    }.addOnFailureListener { e ->
+                        e.printStackTrace()
+
+                    }
+                }
+            } catch (e: java.lang.Exception) {
+                e.printStackTrace()
+            }
+        }
+
+    private val autocompleteClickListener1 =
+        AdapterView.OnItemClickListener { _, _, i, _ ->
+            try {
+                val item = adapter1!!.getItem(i)
+                var placeID: String? = null
+                if (item != null) {
+                    placeID = item.placeId
+                }
+                val placeFields = listOf(
+                    com.google.android.libraries.places.api.model.Place.Field.ID,
+                    com.google.android.libraries.places.api.model.Place.Field.NAME,
+                    com.google.android.libraries.places.api.model.Place.Field.ADDRESS,
+                    com.google.android.libraries.places.api.model.Place.Field.ADDRESS_COMPONENTS,
+                    com.google.android.libraries.places.api.model.Place.Field.LAT_LNG
+                )
+                var request: FetchPlaceRequest? = null
+                if (placeID != null) {
+                    request = FetchPlaceRequest.builder(placeID, placeFields)
+                        .build()
+                }
+                if (request != null) {
+                    placesClient!!.fetchPlace(request).addOnSuccessListener { task ->
+
+                        MethodUtils.hideKeyboard(requireActivity())
+
+                        binding.edtStreet.clearFocus()
+                        binding.edtStreet.isFocusableInTouchMode = false;
+                        binding.edtStreet.isFocusable = false;
+                        binding.edtStreet.isFocusableInTouchMode = true;
+                        binding.edtStreet.isFocusable = true;
+
+                        var street = ""
+                        var suite = ""
+                        var city = ""
+                        var state = ""
+                        var zip = ""
+
+                        task.place.name?.let { LogUtil.logE("Task", it) }
+                        task.place.address?.let { LogUtil.logE("Task", it) }
+                        task.place.addressComponents?.asList()
+                            ?.forEachIndexed { index, addressComponent ->
+
+                                addressComponent.types.forEach { type ->
+
+                                    LogUtil.logE(
+                                        "addressComponent",
+                                        type + " ===  " + addressComponent.name
+                                    )
+
+                                    when {
+                                        type.trim().lowercase() == "street_number".trim()
+                                            .lowercase() -> {
+                                            street += addressComponent.name
+                                        }
+                                        type.trim().lowercase() == "route".trim().lowercase() -> {
+                                            street += addressComponent.name
+                                        }
+                                        type.trim().lowercase() == "neighborhood".trim()
+                                            .lowercase() -> {
+                                            suite = addressComponent.name
+                                        }
+                                        type.trim().lowercase() == "locality".trim()
+                                            .lowercase() -> {
+                                            city = addressComponent.name
+                                        }
+                                        type.trim()
+                                            .lowercase() == "administrative_area_level_1".trim()
+                                            .lowercase() -> {
+                                            state = addressComponent.name
+                                        }
+                                        type.trim().lowercase() == "postal_code".trim()
+                                            .lowercase() -> {
+                                            zip = addressComponent.name
+                                        }
+                                    }
+                                }
+
+                                LogUtil.logE("index$index", addressComponent.name)
+                            }
+
+
+                        binding.edtStreetDel.setText(task.place.name)
+                        binding.edtSuiteDel.setText(suite)
+                        binding.edtCityDel.setText(city)
+                        binding.edtStateDel.setText(state)
+                        binding.edtZipDel.setText(zip)
+
+
+                    }.addOnFailureListener { e ->
+                        e.printStackTrace()
+
+                    }
+                }
+            } catch (e: java.lang.Exception) {
+                e.printStackTrace()
+            }
+        }
 
     private fun setCountryAddress() {
         val adapter =
@@ -489,6 +719,12 @@ class AddEditCustomer : Fragment() {
                 position: Int,
                 id: Long
             ) {
+
+                if (parent?.selectedItem.toString() == "United States") {
+                    adapter1?.setCountry("US")
+                } else if (parent?.selectedItem.toString() == "Canada") {
+                    adapter1?.setCountry("CA")
+                }
 
                 if (Build.VERSION.SDK_INT < 23) {
                     (parent?.getChildAt(0) as TextView).setTextAppearance(
@@ -519,6 +755,12 @@ class AddEditCustomer : Fragment() {
                     position: Int,
                     id: Long
                 ) {
+
+                    if (parent?.selectedItem.toString() == "United States") {
+                        adapter2?.setCountry("US")
+                    } else if (parent?.selectedItem.toString() == "Canada") {
+                        adapter2?.setCountry("CA")
+                    }
 
                     if (Build.VERSION.SDK_INT < 23) {
                         (parent?.getChildAt(0) as TextView).setTextAppearance(
@@ -581,7 +823,7 @@ class AddEditCustomer : Fragment() {
                             "false"
                         )
                     )
-                if (binding.edtStreetDel?.text.toString().isNotEmpty())
+                if (binding.edtStreetDel?.text.toString().isNotEmpty()){
                     listAddress.add(
                         CreateCustomerRequestModel.Customer.Addresses(
                             id2,
@@ -597,6 +839,27 @@ class AddEditCustomer : Fragment() {
                             "false"
                         )
                     )
+                }else{
+                    if (viewModel.listAddress.size==2){
+                        listAddress.add(
+                            CreateCustomerRequestModel.Customer.Addresses(
+                                id2,
+                                viewModel.listAddress[1].address1,
+                                viewModel.listAddress[1].address2,
+                                viewModel.listAddress[1].city,
+                                viewModel.listAddress[1].state,
+                                viewModel.listAddress[1].country,
+                                viewModel.listAddress[1].postcode,
+                                "Shipping",
+                                0.0,
+                                0.0,
+                                "true"
+                            )
+                        )
+                    }
+
+                }
+
             } else {
                 listAddress = arrayListOf()
                 if (binding.edtStreet?.text.toString().isNotEmpty())
@@ -639,7 +902,8 @@ class AddEditCustomer : Fragment() {
             if (binding.edtStreet.text.toString().isNotEmpty()) {
                 viewModel.same_as_billing_address.value = binding.chksameasbilling.isChecked
                 if (binding.chksameasbilling.isChecked) {
-                    binding.edtStreetDel.setText(binding.edtStreet.text.toString())
+                    if (binding.edtStreet.text.toString().trim().isNotEmpty())
+                        binding.edtStreetDel.setText(binding.edtStreet.text.toString())
                     binding.edtSuiteDel.setText(binding.edtSuite.text.toString())
                     binding.edtCityDel.setText(binding.edtCity.text.toString())
                     binding.edtStateDel.setText(binding.edtState.text.toString())
@@ -650,7 +914,8 @@ class AddEditCustomer : Fragment() {
                         binding.edtAddressDel.setSelection(1)
                     }
                 } else {
-                    binding.edtStreetDel.setText("")
+                    if (binding.edtStreetDel.text.toString().trim().isNotEmpty())
+                        binding.edtStreetDel.text.clear()
                     binding.edtSuiteDel.setText("")
                     binding.edtCityDel.setText("")
                     binding.edtStateDel.setText("")

@@ -194,8 +194,6 @@ class DineInFragment : Fragment() {
 
                         if (resource.data != null && resource.data.data.isNotEmpty()) {
 
-                            LogUtil.logE(TAG, "loadFloorPlan${Gson().toJson(resource.data.data)}")
-
                             dineInFloorNameList =
                                 it.data!!.data as ArrayList<GetFloorPlanResponse.Data>
                             dineInFloorNameListAdapter.addFloorName(dineInFloorNameList)

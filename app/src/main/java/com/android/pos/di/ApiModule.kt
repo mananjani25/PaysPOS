@@ -2,6 +2,7 @@ package com.android.pos.di
 
 import android.content.Context
 import com.android.pos.BuildConfig
+import com.android.pos.MainApplication
 import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants.AUTH_TOKEN
 import com.android.pos.data.remote.Constants.BASE_URL_NEW
@@ -24,10 +25,10 @@ object ApiModule {
 
     // private const val BASE_URL = "https://possoft.io/api/v1/"
     //public const val BASE_URL = "https://boldpos.site/api/v1/"  // for BOLD POS
-//        public const val BASE_URL = "https://snackhq.com/api/v1/"  // for SNACK POS
+        public const val BASE_URL = "https://snackhq.com/api/v1/"  // for SNACK POS
     //  private const val BASE_URL = "http://34.205.43.53/api/v1/"
     //private const val BASE_URL = "https://possoft.io/api/v1/"
-    public const val BASE_URL = "https://hugepos.com/api/v1/"
+//    public const val BASE_URL = "https://hugepos.com/api/v1/"
 
     @Singleton
     @Provides
@@ -60,6 +61,18 @@ object ApiModule {
                             val authToken = prefProvider.getValue(AUTH_TOKEN, "")
                             println("authToken ::  $authToken")
                             println("BASE_URL :: ${prefProvider.getValue(BASE_URL_NEW, BASE_URL)}")
+                            if (MainApplication.getInstance() != null) {
+                                MainApplication.getInstance()?.applicationContext?.packageManager?.getPackageInfo(
+                                    MainApplication.getInstance()?.applicationInfo?.packageName
+                                        ?: "",
+                                    0
+                                )?.versionName?.let { it1 ->
+                                    it.addHeader(
+                                        "CURRENTVERSION",
+                                        it1
+                                    )
+                                }
+                            }
                             if (authToken.isNotEmpty())
                                 it.addHeader("TOKEN", authToken)
 

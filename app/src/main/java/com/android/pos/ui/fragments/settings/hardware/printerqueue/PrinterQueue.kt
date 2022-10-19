@@ -404,7 +404,7 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
     }
 
     private fun getKitchenPrinters() {
-        viewModel.getKitchenPrinterList().observe(viewLifecycleOwner, { it ->
+        viewModel.getKitchenPrinterList().observe(viewLifecycleOwner) { it ->
             when (it.status) {
                 Status.SUCCESS -> {
                     ProgressUtils.dismissProgressDialog()
@@ -424,7 +424,7 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
                 }
             }
 
-        })
+        }
 
     }
 

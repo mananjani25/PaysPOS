@@ -66,7 +66,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 
 
 @AndroidEntryPoint
@@ -593,6 +592,8 @@ class CartFragment(
                         listOfItemRemoved = dineInList[0].listOfItemsMoved
 
                     }
+
+                    orderId = arguments?.getInt("orderId")
                     cartlist.add(cartModel)
                 }
 
@@ -1108,7 +1109,7 @@ class CartFragment(
 
                             Log.e("mAllWords", "filterItems  ${filterItems.size}")
                             cartAdapter.setList(filterItems)
-                            if (filterItems.isNotEmpty()){
+                            if (filterItems.isNotEmpty()) {
                                 binding.rvCartList.smoothScrollToPosition(filterItems.size - 1)
                             }
 
@@ -1625,8 +1626,14 @@ class CartFragment(
                             prefProvider.setValueboolean(DINE_IN_UPDATE, false)
 
 
+                            if (cartlist[0].orderId != 0){
+                                cartlist[0].orderId?.let { viewModel.updateOrderCall(it, request) }
+                            }
+                            else{
+                                orderId?.let { it1 -> viewModel.updateOrderCall(it1, request) }
+                            }
 
-                            cartlist[0].orderId?.let { viewModel.updateOrderCall(it, request) }
+
 
 
                         }
@@ -1739,16 +1746,16 @@ class CartFragment(
                             bundle.putString("orderDiscountType", cartlist[0].discountType)
                             bundle.putDouble("selectedvalue", cartlist[0].discountSelectdValue)
                         }
-                        bundle.putString("isFrom","orderDiscount")
-                        if (prefProvider.isAdmin() || prefProvider.isManager()){
+                        bundle.putString("isFrom", "orderDiscount")
+                        if (prefProvider.isAdmin() || prefProvider.isManager()) {
 
                             findNavController().navigate(
                                 R.id.action_dashboardCategoryBoldPOS_to_addDiscountDialog,
                                 bundle
                             )
-                        }else{
+                        } else {
                             findNavController().navigate(
-                                R.id.actionboldpos_to_pascodeManagerDailog,bundle
+                                R.id.actionboldpos_to_pascodeManagerDailog, bundle
                             )
                         }
 
