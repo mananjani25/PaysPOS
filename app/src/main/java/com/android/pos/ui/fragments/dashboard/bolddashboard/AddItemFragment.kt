@@ -580,6 +580,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                             binding.rvModifiersList.adapter = adapter
                                             binding.rvModifiersList.visibility = View.VISIBLE
 
+                                            if (isUpdateItem) {
                                                 it.data.forEach { modifierSet ->
                                                     modifierSet.modifiers.forEach { modifier ->
                                                         item.modifiers.forEach { oldmodifier ->
@@ -592,24 +593,20 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                                     }
 
                                                 }
-                                                var dataMod =
-                                                    MethodUtils.convertSortListForModifierSet(
-                                                        item.modifier_set_ids, it.data.toCollection(
-                                                            arrayListOf()
-                                                        )
+                                            }
+                                            var dataMod =
+                                                MethodUtils.convertSortListForModifierSet(
+                                                    item.modifier_set_ids, it.data.toCollection(
+                                                        arrayListOf()
                                                     )
-
-                                                Log.e(
-                                                    TAG,
-                                                    "getdataModSets:  ${Gson().toJson(dataMod)}"
                                                 )
 
-                                                adapter?.add(dataMod)
-                                                adapter?.setData(it.data)
-                                            /* else {
-                                                adapter?.add(it.data)
-                                            }*/
+                                            Log.e(
+                                                TAG,
+                                                "getdataModSets:  ${Gson().toJson(dataMod)}"
+                                            )
 
+                                            adapter?.add(dataMod)
 
                                         } else {
                                             binding.rvModifiersList.visibility = View.GONE
