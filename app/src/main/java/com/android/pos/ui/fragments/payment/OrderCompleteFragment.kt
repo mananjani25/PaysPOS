@@ -9897,6 +9897,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     true
                 )
             ) {
+                PrintSunmiUtils.cutPaperInner()
 
                 val aa = ByteArray(5)
 
@@ -9919,7 +9920,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }
             }
 
-            PrintSunmiUtils.cutPaperInner()
+
             //  SunmiPrinterApi.getInstance().disconnectPrinter(requireContext())
 
 
