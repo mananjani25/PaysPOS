@@ -7852,19 +7852,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 addHorizontalLine(builder)
 
-                receiptModel?.order?.guestAttributes?.forEach {
-                    if (it.guestItemAttributes.isNotEmpty()) {
-                        val guestName: String = it.name
-                        receiptModel?.order?.orderItems?.forEach { it1->
-
-                        }
-
-                    }
-
-                }
-
-
-              /*  receiptModel?.order?.orderItems?.let {
+                receiptModel?.order?.orderItems?.let {
                     addOrdersForKitchen(
                         builder,
                         it,
@@ -7873,7 +7861,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         customerReceiptPrinters.printerCategories.toCollection(arrayListOf())
                     )
                 }
-*/
+
                 if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
                     builder.addTextLineSpace(30)
                     builder.addFeedUnit(30)
