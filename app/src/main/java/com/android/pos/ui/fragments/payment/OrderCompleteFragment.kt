@@ -2,17 +2,17 @@ package com.android.pos.ui.fragments.payment
 
 
 import android.app.Dialog
+import android.content.ComponentName
 import android.content.Context
 import android.content.Context.WINDOW_SERVICE
+import android.content.Intent
+import android.content.ServiceConnection
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.Point
 import android.graphics.drawable.ColorDrawable
-import android.os.Build
-import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
+import android.os.*
 import android.util.Base64
 import android.view.*
 import androidx.activity.OnBackPressedCallback
@@ -23,7 +23,10 @@ import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.android.pos.MainApplication
 import com.android.pos.R
+import com.android.pos.aidl.ICallback
+import com.android.pos.aidl.IWoyouService
 import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.RedeemLoyaltyInfo
 import com.android.pos.data.entities.TbItem
@@ -107,7 +110,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEventListener,
-    BatteryStatusChangeEventListener {
+    BatteryStatusChangeEventListener, ICallback {
     private var tipAmount: Double = 0.0
     private var dineInList: ArrayList<DineInModel> = arrayListOf()
     private var customerPrinterDineIn: List<PrinterResponse.Data.CustomerReceiptPrinters>? = null
@@ -116,6 +119,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private var isGuest: Boolean = false
     private var remainingAmount: Double = 0.0
     private var splitPaidAmount: Double = 0.0
+    private var woyouService: IWoyouService? = null
     private var splitValue: Int = -1
     private var subTotalWT = 0.0
     private var serviceCharge = 0.0
@@ -265,6 +269,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         super.onViewCreated(view, savedInstanceState)
 
 
+        Binding()
         setupSnackbar()
         observeShowProgress()
         tipAmount = requireArguments().getDouble("TipAmount")
@@ -9873,7 +9878,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             }
 
-            PrintSunmiUtils.boldText("__________________________")
+            //   PrintSunmiUtils.boldText("__________________________")
             SunmiPrintHelper.getInstance().lineWrap(1)
 
             SunmiPrintHelper.getInstance().lineWrap(2)
@@ -9883,7 +9888,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 48
             ).toString()
 
-            PrintSunmiUtils.customerSignature(str8)
+            PrintSunmiUtils.boldText(str8)
 
 
             if (customerSettingModel.showQrCode) {
@@ -9892,32 +9897,41 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             }
 
+            PrintSunmiUtils.cutPaperInner()
+
             if (receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.paymentType.equals(
                     "Cash",
                     true
                 )
             ) {
-                PrintSunmiUtils.cutPaperInner()
 
-                val aa = ByteArray(5)
+                if (woyouService != null) {
+                    woyouService!!.sendRAWData(byteArrayOf(0x1B, 0x45, 0x01), this)
+                } else {
+                    val aa = ByteArray(5)
 
-                aa[0] = 0x10
-                aa[1] = 0x14
-                aa[2] = 0x00
-                aa[3] = 0x00
-                aa[4] = 0x00
+                    aa[0] = 0x10
+                    aa[1] = 0x14
+                    aa[2] = 0x00
+                    aa[3] = 0x00
+                    aa[4] = 0x00
 
 
-                try {
-                    SunmiPrinterApi.getInstance().sendRawData(aa)
-                } catch (e: java.lang.Exception) {
-                    e.printStackTrace()
+                    try {
+                        SunmiPrinterApi.getInstance().sendRawData(aa)
+                    } catch (e: java.lang.Exception) {
+                        e.printStackTrace()
+                    }
+                    try {
+                        SunmiPrintHelper.getInstance().openCashBox()
+                    } catch (e: java.lang.Exception) {
+                        e.printStackTrace()
+                    }
+
+
                 }
-                try {
-                    SunmiPrintHelper.getInstance().openCashBox()
-                } catch (e: java.lang.Exception) {
-                    e.printStackTrace()
-                }
+
+
             }
 
 
@@ -10080,4 +10094,39 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         }
     }
 
+    private val serviceConnection: ServiceConnection = object : ServiceConnection {
+        override fun onServiceConnected(p0: ComponentName?, service: IBinder?) {
+            LogUtil.logE(TAG, "onServiceConnected  1")
+            woyouService = IWoyouService.Stub.asInterface(service)
+
+        }
+
+        override fun onServiceDisconnected(p0: ComponentName?) {
+            LogUtil.logE(TAG, "onServiceDisConnected  2")
+            woyouService = null
+
+
+        }
+
+    }
+
+    private fun Binding() {
+        val intent = Intent()
+        intent.setPackage("com.android.pos")
+        intent.action = "com.android.pos.aidl.IWoyouService"
+        MainApplication.getInstance()?.applicationContext?.bindService(
+            intent,
+            serviceConnection,
+            Context.BIND_AUTO_CREATE
+        )
+    }
+
+    override fun asBinder(): IBinder {
+        return woyouService?.asBinder()!!
+
+    }
+
+    override fun onRunResult(isSuccess: Boolean, code: Int, msg: String?) {
+
+    }
 }

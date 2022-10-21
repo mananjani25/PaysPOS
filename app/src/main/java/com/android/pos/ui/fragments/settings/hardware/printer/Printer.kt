@@ -15,7 +15,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
 import android.text.Html
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -1089,6 +1088,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                 }
                 SunmiPrintHelper.getInstance().lineWrap(2)
                 LogUtil.logE(TAG, "Here Drawer Code")
+                PrintSunmiUtils.cutPaperInner()
                 if (woyouService != null) {
                     woyouService!!.sendRAWData(byteArrayOf(0x1B, 0x45, 0x01), this)
                 } else {
@@ -1114,7 +1114,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
                 }
 
-                PrintSunmiUtils.cutPaperInner()
+
 
 
             } else {
@@ -2243,6 +2243,6 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     }
 
     override fun onRunResult(isSuccess: Boolean, code: Int, msg: String?) {
-        ToastUtil.showNormalToast(requireContext(), "Drawer ${msg}")
+
     }
 }
