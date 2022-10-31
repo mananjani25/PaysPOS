@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.os.StrictMode
 import android.provider.MediaStore
 import android.provider.Settings
+import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.widget.ImageView
@@ -63,6 +64,7 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.hosopy.actioncable.ActionCable
+import com.hosopy.actioncable.Channel
 import com.hosopy.actioncable.Consumer
 import com.hosopy.actioncable.Subscription
 import dagger.hilt.android.AndroidEntryPoint
@@ -167,8 +169,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
             LogUtil.logEN("onReceive", "" + p1?.action)
 
-                dashBoardCategoryViewModel.syncInventoryModule(true)
-
+            dashBoardCategoryViewModel.syncInventoryModule(true)
 
 
         }
@@ -727,6 +728,8 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN)
+
+        connectionActionCable()
         val intentFilter = IntentFilter("PrinterQueue")
         registerReceiver(wifiStateReceiver, intentFilter)
         getCustomerReceiptSettings()
@@ -882,6 +885,61 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         }
 
         observeShowProgress()
+
+    }
+
+    private fun connectionActionCable() {
+        val uri = URI("wss://hugepos.com/cable")
+        consumer = ActionCable.createConsumer(uri)
+
+        val appearanceChannel = Channel("printer_queue_channel")
+        subscription = consumer?.subscriptions?.create(appearanceChannel)
+
+        if (subscription != null) {
+            subscription?.onConnected {
+                ToastUtil.showNormalToast(this,"Connected")
+                Log.e(TAG, "onActionConnected")
+
+
+            }?.onRejected {
+                ToastUtil.showNormalToast(this,"Connected")
+                Log.e(TAG, "onActiononRejected")
+
+            }?.onReceived {
+                ToastUtil.showNormalToast(this,"Connected")
+                Log.e(TAG, "onActiononReceived  " + Gson().toJson(it))
+
+
+            }?.onDisconnected {
+                ToastUtil.showNormalToast(this,"Connected")
+                Log.e(TAG, "onActiononDisconnected")
+
+            }?.onFailed {
+                ToastUtil.showNormalToast(this,"Connected")
+                Log.e(TAG, "onActiononFailed")
+                //subscription = consumer?.subscriptions?.create(appearanceChannel)
+                try {
+
+                    /*subscription = consumer?.subscriptions?.create(appearanceChannel)
+                    val params = JsonObject()
+                    params.addProperty("id", locationId)
+                    subscription?.perform("received", params)*/
+                    consumer?.connect()
+
+                } catch (e: java.lang.Exception) {
+                    e.printStackTrace()
+                }
+
+            }
+        } else {
+            Log.e(TAG, "SubscriptionNull")
+        }
+
+        if (consumer != null) {
+            consumer?.connect()
+        } else {
+            Log.e(TAG, "ConsumerNull")
+        }
 
     }
 
