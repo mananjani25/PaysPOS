@@ -94,17 +94,6 @@
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi" />
 
-                <TextView
-                    android:id="@+id/tvDiscountRate"
-                    style="@style/CustomFontSemiBold"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:gravity="end"
-                    android:textColor="@color/btnColor"
-                    android:textSize="@dimen/_6mdpi"
-                    android:visibility="visible"
-                    tools:text="@string/_0_00" />
 
             </LinearLayout>
 
@@ -118,5 +107,18 @@
             android:visibility="gone"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:listitem="@layout/view_cart_modifier" />
+        <TextView
+            android:id="@+id/tvDiscountRate"
+            style="@style/CustomFontSemiBold"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:gravity="end"
+            android:paddingBottom="@dimen/_5sdp"
+            android:paddingEnd="@dimen/_6sdp"
+            android:textColor="@color/btnColor"
+            android:textSize="@dimen/_6mdpi"
+            android:visibility="visible"
+            tools:text="@string/_0_00" />
     </androidx.appcompat.widget.LinearLayoutCompat>
 </layout>

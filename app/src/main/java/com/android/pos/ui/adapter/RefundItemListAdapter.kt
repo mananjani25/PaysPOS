@@ -303,7 +303,7 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
 
             val mList = model.orderItemModifiers
             mList.forEach { items ->
-                totalPrice += items.price * model.quantity
+                totalPrice += items.price * items.quantity
             }
 
             ((model.price) * model.quantity) - model.discountAmount + totalPrice

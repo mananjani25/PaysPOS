@@ -42,13 +42,14 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
                 binding.tvDiscountRate.visibility = View.VISIBLE
                 binding.txtTotalPrice.strike = true
                 var dPrice = 0.0
-                dPrice = if (item.reorder) {
-                    totalPrice(item) - item.discountPrice
-                } else {
-
-                    totalPrice(item) - (item.discountPrice * item.itemQuantity)
-
+                var total_price_fordiscount = 0.0
+                total_price_fordiscount += item.price * item.itemQuantity
+                if (item.modifiers.isNotEmpty()) {
+                    item.modifiers.forEach { it ->
+                        total_price_fordiscount += it.price * it.itemQuantity
+                    }
                 }
+                dPrice = total_price_fordiscount - (item.discountPrice * item.itemQuantity)
 
                 MethodUtils.setPriceTextView(binding.tvDiscountRate, dPrice)
             } else {
@@ -69,7 +70,7 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
                 binding.rvModifiers.visibility = View.VISIBLE
                 val adapter = CartItemModifierAdapter()
                 binding.rvModifiers.adapter = adapter
-                LogUtil.logE(TAG,"dineinMod  ${Gson().toJson(item.modifiers)}")
+                LogUtil.logE(TAG, "dineinMod  ${Gson().toJson(item.modifiers)}")
                 adapter.addAll(item.modifiers)
             } else {
                 binding.rvModifiers.visibility = View.GONE
@@ -105,7 +106,7 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
     }
 
     fun setList(list: ArrayList<TbItem>) {
-        LogUtil.logE(TAG,"itemListSize ${list.size}")
+        LogUtil.logE(TAG, "itemListSize ${list.size}")
         cartList = list
         notifyDataSetChanged()
 

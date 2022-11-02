@@ -1054,11 +1054,38 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
             }
         }
         binding.linearPlusQty.setOnClickListener {
-            if (counter <= 999) {
+            if (counter < 15) {
                 counter += 1
                 binding.edtQntModifir.setText(counter.toString())
             }
         }
+        binding.edtQntModifir.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                binding.edtQntModifir?.isCursorVisible = true
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                if (s.toString().isNotEmpty()) {
+                    counter = s.toString().toInt()
+                    if (counter > 15) {
+                        counter = 15
+                        binding.edtQntModifir.setText("15")
+                    } else if (counter == 0) {
+                        binding.edtQntModifir.setText("1")
+                    }
+                    binding.edtQntModifir.setSelection(binding.edtQntModifir.text!!.length)
+                } else {
+                    counter = 1
+                    binding.edtQntModifir.setSelection(binding.edtQntModifir.text!!.length)
+                }
+
+            }
+
+        })
         binding.linearDonemodifier.setOnClickListener {
             counter = binding.edtQntModifir.text.toString().toInt()
             if (adapter?.filterList?.isNotEmpty() == true) {

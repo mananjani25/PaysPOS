@@ -184,7 +184,7 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
                                                 Log.e("CollectItems", "Collect")
 
                                                 binding.rvItemList.adapter = null
-                                                itemAdapter = ItemAdapterPagDash(listner)
+                                                itemAdapter = ItemAdapterPagDash(listner,null,prefProvider)
                                                 binding.rvItemList.setHasFixedSize(true)
                                                 binding.rvItemList.layoutManager =
                                                     GridLayoutManager(requireContext(), 4)
@@ -379,7 +379,7 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
             }
             itemAdapter.snapshot().toCollection(arrayListOf()).clear()
 
-            itemAdapter.snapshot().toCollection(arrayListOf()).addAll(itemList)
+            itemAdapter.snapshot().toCollection(itemList.toCollection(arrayListOf()))
             for (i in itemList.indices) {
                 if (itemList[i]?.itemId == model.itemID) {
                     itemAdapter.setPos(i)
@@ -421,7 +421,7 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
         list.add(CategoryParentModel(listCategories))
         list.add(CategoryParentModel(listCategories))
         categoryParentAdapter = CategoryParentAdapter(requireContext(), arrayListOf(), this)
-        itemAdapter = ItemAdapterPagDash(listner)
+        itemAdapter = ItemAdapterPagDash(listner,null,prefProvider)
         binding.rvItemList.setHasFixedSize(true)
         binding.rvItemList.layoutManager = GridLayoutManager(requireContext(), 4)
         binding.rvItemList.adapter = itemAdapter

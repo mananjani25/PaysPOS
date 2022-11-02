@@ -111,7 +111,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
                     "getServiceCharges: finall " + Gson().toJson(listOfServiceCharge)
                 )
 
-            }else{
+            } else {
                 listOfServiceCharge = ArrayList()
             }
         }
@@ -139,7 +139,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
         viewModel.customerId = customerModel.id.toString()
 
         binding.txtEdit.setOnClickListener {
-            Log.d(TAG, "initControls: customerdata : "+Gson().toJson(customerModel))
+            Log.d(TAG, "initControls: customerdata : " + Gson().toJson(customerModel))
             val bundle: Bundle = bundleOf("isEdit" to true, "dataModel" to customerModel)
             findNavController().navigate(R.id.action_customer_to_addEditCustomer, bundle)
         }
@@ -239,7 +239,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
                         prefProvider.setValueInt(Constants.CUSTOMER_ID, order.customer.id)
                         prefProvider.saveCustomerData(TbCustomer.customerMapping(order.customer))
                     }
-                    Log.e(TAG,"getOrderReOrder  ${Gson().toJson(order)}")
+                    Log.e(TAG, "getOrderReOrder  ${Gson().toJson(order)}")
                     dashboardViewModel.addCart(
                         cartModel(order)
                     )
@@ -266,7 +266,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
                     prefProvider.saveCustomerData(TbCustomer.customerMapping(order.customer))
                 }
 
-                Log.e(TAG,"getOrderReOrder7  ${Gson().toJson(order)}")
+                Log.e(TAG, "getOrderReOrder7  ${Gson().toJson(order)}")
                 dashboardViewModel.addCart(
                     cartModel(order)
                 )
@@ -506,7 +506,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
         val inventoryModelList = ArrayList<TbItem>()
 
         order.orderItems.forEach {
-            if (listOfItemsId.contains(it.itemId)){
+            if (listOfItemsId.contains(it.itemId)) {
                 val items = TbItem().apply {
                     orderItemId = it.id
                     itemId = it.itemId
@@ -528,7 +528,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
                     taxes = taxes(it.orderItemTaxes, order.locationId, it.itemId)
                     modifier_set_ids = modifiersIds(it.orderItemModifiers)
                     modifiers = modifierSets(it.orderItemModifiers)
-                    discountPrice = it.discountAmount
+                    discountPrice = (it.discountAmount / it.quantity)
                     discountType = it.discountType.toString()
                     if (it.discountId != null)
                         discountId = it.discountId

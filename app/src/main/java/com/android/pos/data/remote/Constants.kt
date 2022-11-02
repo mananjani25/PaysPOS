@@ -37,6 +37,7 @@ object Constants {
     const val SERVICECHARGE_DINEIN_ORDER = "DineIn"
     const val LOCK_SCREEN_TRANSACTION = "lock_screen_after_each_transaction"
     const val DINEIN_FLOORPLAN_SHOW_TABLENAME = "dine_floorplan_show_tablename"
+    const val ONLY_SHOW_PRICE_GREATER_THAN_ZERO = "only_show_price_greater_than_zero"
 
     const val PRINTER_QUEUE_DATA = "Printer_Queue_Data"
     const val PRINTER_QUEUE_DATA_RECEIVED = "Printer_Queue_Data_Received"

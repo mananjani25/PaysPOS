@@ -64,6 +64,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.HashSet
 import kotlin.math.abs
 
 @AndroidEntryPoint
@@ -837,10 +838,11 @@ class ActiveOrderFragment(
         val selectedIds = ArrayList<Int>()
         if (orderItemModifiers.isNotEmpty()) {
             orderItemModifiers.forEach {
-                selectedIds.add(it.id)
+                selectedIds.add(it.modifierSetId)
             }
         }
-        return selectedIds
+        var uniqueSelectedId = HashSet<Int>(selectedIds)
+        return uniqueSelectedId.toList()
     }
 
     private fun taxes(

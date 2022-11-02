@@ -104,6 +104,8 @@ data class VenueDetailsResponse(
         val lock_screen_after_each_transaction: Boolean,
         @SerializedName("show_table_name")
         val show_table_name: Boolean,
+        @SerializedName("only_show_price_greater_than_zero")
+        val only_show_price_greater_than_zero: Boolean,
         @SerializedName("report_start_time")
         val report_start_time: String,
         @SerializedName("report_end_time")

@@ -46,6 +46,7 @@ import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER
 import com.android.pos.data.remote.Constants.LOCK_SCREEN_TRANSACTION
 import com.android.pos.data.remote.Constants.ONLINE_ORDER_ENABLE
+import com.android.pos.data.remote.Constants.ONLY_SHOW_PRICE_GREATER_THAN_ZERO
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.REPORT_END_TIME
 import com.android.pos.data.remote.Constants.REPORT_START_TIME
@@ -215,6 +216,9 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     val _tableStatusSuccess = MutableLiveData<Event<Int>>()
     val tableCheckSuccess: LiveData<Event<Int>> = _tableStatusSuccess
+
+    val _syncInventroyForPriceChange = MutableLiveData<Event<Boolean>>()
+    val syncInventroyForPriceChange: LiveData<Event<Boolean>> = _syncInventroyForPriceChange
 
     val _tableStatus = MutableLiveData<Event<String>>()
     val tableCheck: LiveData<Event<String>> = _tableStatus
@@ -1618,8 +1622,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                     cartModel.items?.forEach { item ->
                         Log.e(TAG, "reorderItem:  ${Gson().toJson(item)}")
                         totalCount += item.itemQuantity
-                        totalDiscount += item.discountPrice
-                        subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice)
+                        totalDiscount += (item.discountPrice * item.itemQuantity)
+                        subTotalPrice += (item.price * item.itemQuantity)
                         item.modifiers.forEach {
                             subTotalPrice += (it.price * it.itemQuantity)
                         }
@@ -1629,8 +1633,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     }
                     String.format("%.2f", totalTax).toDouble()
                     serviceChargeCalculationModel(cartModel)
-
-                    subTotalPrice -= cartModel.discountPrice
+                    subTotalPrice -= totalDiscount
                     if (subTotalPrice < 0) {
                         subTotalPrice = 0.0
                     }
@@ -1712,6 +1715,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     serviceChargeCalculationModel(cartModel)
 
                     subTotalPrice -= cartModel.discountPrice
+                    Log.d(TAG, "itemCalculationCartModel: " + subTotalPrice)
                     if (subTotalPrice < 0) {
                         subTotalPrice = 0.0
                     }
@@ -3623,6 +3627,21 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     it.settingData.data.show_table_name
                                 )
 
+
+                                if (prefProvider.getValueboolean(
+                                        ONLY_SHOW_PRICE_GREATER_THAN_ZERO, false
+                                    ) != it.settingData.data.only_show_price_greater_than_zero
+                                ) {
+                                    _syncInventroyForPriceChange.value = Event(true)
+
+                                }
+
+
+
+                                prefProvider.setValueboolean(
+                                    ONLY_SHOW_PRICE_GREATER_THAN_ZERO,
+                                    it.settingData.data.only_show_price_greater_than_zero
+                                )
                                 posRepository.addCashDiscountsFromDb(it.settingData.data.cash_discounts)
 //                                taxServiceChargeRepository.deleteTaxFromDb()
                                 if (it.settingData.data.taxes.isNotEmpty()) {

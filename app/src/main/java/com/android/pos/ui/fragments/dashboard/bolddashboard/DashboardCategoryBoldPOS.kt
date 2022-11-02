@@ -157,9 +157,20 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         getDineInData()
         checkSearch()
         observeServiceChargeUpdate()
+        observerSyncItemPriceChange()
         prefProvider.setValueboolean(Constants.ORDER_COMPLETED, false)
         binding.lifecycleOwner = this
         return binding.root
+    }
+
+    private fun observerSyncItemPriceChange() {
+        viewModel.syncInventroyForPriceChange.observe(requireActivity(), Observer {
+            if (isAdded){
+                loadCartFragment(CartFragment(this, this))
+                loadCategoryFragment(CategoryFragment(this, binding.layoutHeader.edtSearch))
+            }
+        })
+
     }
 
     private fun observeServiceChargeUpdate() {

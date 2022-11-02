@@ -8,7 +8,9 @@ import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.entities.TbItem
+import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.ViewCategoryItemBoldBinding
+import com.android.pos.di.PrefProvider
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.callback.ItemListner
@@ -17,7 +19,8 @@ import com.android.pos.utils.extensions.visible
 
 class ItemAdapterPagDash(
     val listener: ItemListner,
-    var lastChecked: TextView? = null
+    var lastChecked: TextView? = null,
+    var prefProvider: PrefProvider? = null
 ) : PagingDataAdapter<TbItem, ItemAdapterPagDash.ViewHolder>(
     ItemListPageAdapter.DIFF_CALLBACK
 ) {
@@ -49,7 +52,7 @@ class ItemAdapterPagDash(
             var itename_price: StringBuffer = StringBuffer()
 
             if (model?.name?.length!! >= 30) {
-                if (getItemPriceIsValid(model.price).isNotEmpty()){
+                if (getItemPriceIsValid(model.price).isNotEmpty()) {
                     itename_price.append(
                         model.name.substring(
                             0,
@@ -57,20 +60,20 @@ class ItemAdapterPagDash(
                         ) + "...\n" + getItemPriceIsValid(model.price)
                     )
                     binding.txtCategoryName.text = itename_price
-                }else{
+                } else {
                     itename_price.append(
                         model.name.substring(
                             0,
-                                40
+                            40
                         ) + "..."
                     )
                     binding.txtCategoryName.text = itename_price
                 }
             } else {
-                if (getItemPriceIsValid(model.price).isNotEmpty()){
+                if (getItemPriceIsValid(model.price).isNotEmpty()) {
                     binding.txtCategoryName.text =
                         "" + model.name + "\n\n" + getItemPriceIsValid(model.price)
-                }else {
+                } else {
                     binding.txtCategoryName.text = "" + model.name
                 }
 
@@ -140,9 +143,15 @@ class ItemAdapterPagDash(
     }
 
     fun getItemPriceIsValid(amount: Double): String {
-        return if (amount > 0.0) {
+        return if (prefProvider?.getValueboolean(
+                Constants.ONLY_SHOW_PRICE_GREATER_THAN_ZERO,
+                false
+            ) == false
+        ) {
             amount.let { MethodUtils.roundOffAmount(it) }
-        }else{
+        } else if (amount > 0.0) {
+            amount.let { MethodUtils.roundOffAmount(it) }
+        } else {
             ""
         }
 
