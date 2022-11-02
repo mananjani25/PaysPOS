@@ -299,9 +299,9 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
             reorder = true
             var itemDiscount = 0.0
             items?.forEach {
-                itemDiscount += it.discountPrice
+                itemDiscount += it.discountPrice * it.itemQuantity
             }
-            discountPrice = (order.totalDiscount - itemDiscount)
+            discountPrice += (order.totalDiscount - itemDiscount)
             taxlistDynamic = getTaxBirfucationList(inventoryList(order)!!)
         }
     }
