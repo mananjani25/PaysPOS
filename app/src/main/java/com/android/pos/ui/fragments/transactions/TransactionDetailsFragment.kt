@@ -2262,7 +2262,9 @@ class TransactionDetailsFragment : Fragment() {
                     }
 
                     if (customerSettingModel.showCustomerPhone) {
-                        if (paymentDetailsResponse?.data?.order?.customer?.phones?.isNotEmpty()) {
+                        if (paymentDetailsResponse?.data?.order?.customer?.phones?.isNotEmpty() &&  paymentDetailsResponse?.data?.order?.customer?.phones?.get(
+                                paymentDetailsResponse?.data?.order?.customer.phones?.size - 1
+                            ).phoneNumber.isNotEmpty()) {
                             builder.addTextLineSpace(30)
                             builder.addFeedUnit(30)
                             builder.addTextFont(Builder.FONT_E)
@@ -2275,6 +2277,7 @@ class TransactionDetailsFragment : Fragment() {
                                 Builder.FALSE,
                                 Builder.COLOR_1
                             )
+
 
                             var phoneNoFormatted = MethodUtils.getUSFormatNumber(
                                 paymentDetailsResponse?.data?.order?.customer?.phones?.get(

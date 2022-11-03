@@ -7010,41 +7010,52 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         )
                     }
                     if (customerSettingModel.showCustomerPhone) {
-                        if (receiptModel?.order?.customer?.phones?.isNotEmpty() == true) {
-                            builder.addTextLineSpace(30)
-                            builder.addFeedUnit(30)
-                            builder.addTextFont(Builder.FONT_E)
-                            //builder.addTextAlign(Builder.ALIGN_LEFT)
-                            builder.addTextLang(Builder.LANG_EN)
-                            addCustomerTextSize(builder, customerSettingModel.fonts)
-                            builder.addTextStyle(
-                                Builder.FALSE,
-                                Builder.FALSE,
-                                Builder.FALSE,
-                                Builder.COLOR_1
-                            )
 
-                            val phone = receiptModel?.order?.customer?.phones?.size?.minus(
-                                1
-                            )?.let {
-                                receiptModel?.order?.customer?.phones?.get(
-                                    it
-                                )?.phoneNumber
-                            }
-                            builder.addText(
-                                padLine(
-                                    MethodUtils.getUSFormatNumber(phone.toString()),
-                                    "",
-                                    if (customerSettingModel.fonts == LARGE) {
-                                        24
-                                    } else {
-                                        48
-                                    }
+
+                        if (receiptModel?.order?.customer?.phones?.isNotEmpty() == true) {
+
+                            var phoneNoLast = receiptModel?.order?.customer?.phones?.get(
+                                receiptModel?.order?.customer?.phones?.size?.minus(
+                                    1
+                                ) ?: 0
+                            )?.phoneNumber ?: ""
+
+                            if (phoneNoLast.isNotEmpty()) {
+                                builder.addTextLineSpace(30)
+                                builder.addFeedUnit(30)
+                                builder.addTextFont(Builder.FONT_E)
+                                //builder.addTextAlign(Builder.ALIGN_LEFT)
+                                builder.addTextLang(Builder.LANG_EN)
+                                addCustomerTextSize(builder, customerSettingModel.fonts)
+                                builder.addTextStyle(
+                                    Builder.FALSE,
+                                    Builder.FALSE,
+                                    Builder.FALSE,
+                                    Builder.COLOR_1
                                 )
-                            )
+
+                                val phone = receiptModel?.order?.customer?.phones?.size?.minus(
+                                    1
+                                )?.let {
+                                    receiptModel?.order?.customer?.phones?.get(
+                                        it
+                                    )?.phoneNumber
+                                }
+                                builder.addText(
+                                    padLine(
+                                        MethodUtils.getUSFormatNumber(phone.toString()),
+                                        "",
+                                        if (customerSettingModel.fonts == LARGE) {
+                                            24
+                                        } else {
+                                            48
+                                        }
+                                    )
+                                )
+
+                            }
 
                         }
-
 
                     }
 
