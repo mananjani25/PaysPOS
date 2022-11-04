@@ -5,6 +5,8 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.android.pos.data.dao.*
 import com.android.pos.data.entities.*
 import com.android.pos.data.model.CharacterModel
@@ -29,6 +31,8 @@ import com.android.pos.data.typeconvert.*
         DineInCartModel::class, ShiftRportConfiguration::class, TbBusinessDetails::class, TbTimeZones::class, PrinterQueueModel::class],
     version = 2
 )
+
+
 @TypeConverters(
     TypeConvertersIds::class,
     TypeConvertorAddress::class,
@@ -91,6 +95,9 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun printerQueueDao(): PrinterQueueDao
 
     companion object {
+
+        var CURRENT_VERSION = 1
+
         @Volatile
         private var instance: AppDatabase? = null
 
@@ -101,9 +108,16 @@ abstract class AppDatabase : RoomDatabase() {
                 }
             }
 
+        val MIGRATION_FROM_TO = object : Migration(CURRENT_VERSION, CURRENT_VERSION + 1) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+
+            }
+        }
+
         private fun buildDatabase(appContext: Context) =
             Room.databaseBuilder(appContext, AppDatabase::class.java, DATABASE_NAME)
                 .fallbackToDestructiveMigration()
+                .addMigrations(MIGRATION_FROM_TO)
                 .build()
     }
 
