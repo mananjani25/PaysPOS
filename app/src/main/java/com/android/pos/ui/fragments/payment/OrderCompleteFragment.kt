@@ -9889,7 +9889,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             }
 
-            //   PrintSunmiUtils.boldText("__________________________")
+          //  PrintSunmiUtils.boldText("__________________________")
             SunmiPrintHelper.getInstance().lineWrap(1)
 
             SunmiPrintHelper.getInstance().lineWrap(2)
@@ -9916,6 +9916,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 )
             ) {
 
+
                 if (woyouService != null) {
                     woyouService!!.sendRAWData(byteArrayOf(0x1B, 0x45, 0x01), this)
                 } else {
@@ -9941,8 +9942,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
                 }
-
-
             }
 
 
@@ -10140,4 +10139,5 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     override fun onRunResult(isSuccess: Boolean, code: Int, msg: String?) {
 
     }
+
 }
