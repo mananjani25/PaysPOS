@@ -14,7 +14,6 @@ import com.android.pos.data.model.PrinterQueueModel
 import com.android.pos.data.model.ShiftRportConfiguration
 import com.android.pos.data.model.SplitDetailListModel
 import com.android.pos.data.model.responseModel.*
-import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DATABASE_NAME
 import com.android.pos.data.typeconvert.*
 
@@ -30,10 +29,8 @@ import com.android.pos.data.typeconvert.*
         GetCustomerReceiptSettingsResponse.Data::class, LoyaltyProgramsModel::class, SplitDetailListModel::class,
         CashDiscountModel::class, TbCountryList::class, TbCardReader::class, VenueDetailsResponse.Data.CancelOrderReason::class,
         DineInCartModel::class, ShiftRportConfiguration::class, TbBusinessDetails::class, TbTimeZones::class, PrinterQueueModel::class],
-    version = Constants.CURRENT_VERSION
+    version = 2
 )
-
-
 @TypeConverters(
     TypeConvertersIds::class,
     TypeConvertorAddress::class,
@@ -98,7 +95,6 @@ abstract class AppDatabase : RoomDatabase() {
     companion object {
 
 
-
         @Volatile
         private var instance: AppDatabase? = null
 
@@ -109,7 +105,7 @@ abstract class AppDatabase : RoomDatabase() {
                 }
             }
 
-        val MIGRATION_FROM_TO = object : Migration(1, 2) {
+        val MIGRATION_FROM1_TO2 = object : Migration(1, 2) {
             override fun migrate(database: SupportSQLiteDatabase) {
 
             }
@@ -117,6 +113,7 @@ abstract class AppDatabase : RoomDatabase() {
 
         private fun buildDatabase(appContext: Context) =
             Room.databaseBuilder(appContext, AppDatabase::class.java, DATABASE_NAME)
+                .addMigrations(MIGRATION_FROM1_TO2)
                 .build()
     }
 
