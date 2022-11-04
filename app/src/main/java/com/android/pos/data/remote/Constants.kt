@@ -1,7 +1,6 @@
 package com.android.pos.data.remote
 
 import android.content.Context
-import android.util.Log
 import com.android.pos.data.model.PrinterListModel
 import com.android.pos.data.model.requestModel.CreatePrinterRequestModel
 import com.android.pos.data.model.responseModel.PrinterResponse
@@ -17,6 +16,8 @@ object Constants {
     const val ARG_PARAM1 = "param1"
     const val ARG_PARAM2 = "param2"
     const val ARG_PARAM3 = "param2"
+
+    const val CURRENT_VERSION = 1
 
     // payment magtek
 
