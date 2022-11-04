@@ -3127,7 +3127,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             taxEnabled = true
             subTotal = MethodUtils.roundOffAmountDouble(subTotalPrice)
             totalAmount = MethodUtils.roundOffAmountDouble(totalPrice)
-            totalDiscount = MethodUtils.roundOffAmountDouble(ttotalDiscount)
+            totalDiscount = MethodUtils.roundOffAmountDouble(cartModel.discountPrice)
             totalServiceCharges = totalServiceCharge
             totalTaxAmount = totalTax
             orderItemsAttributes = dineInOrderItemAttributed(cartModel)
