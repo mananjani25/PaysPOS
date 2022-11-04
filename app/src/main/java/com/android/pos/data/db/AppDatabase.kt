@@ -29,7 +29,7 @@ import com.android.pos.data.typeconvert.*
         GetCustomerReceiptSettingsResponse.Data::class, LoyaltyProgramsModel::class, SplitDetailListModel::class,
         CashDiscountModel::class, TbCountryList::class, TbCardReader::class, VenueDetailsResponse.Data.CancelOrderReason::class,
         DineInCartModel::class, ShiftRportConfiguration::class, TbBusinessDetails::class, TbTimeZones::class, PrinterQueueModel::class],
-    version = 2
+    version = 1
 )
 @TypeConverters(
     TypeConvertersIds::class,
@@ -107,13 +107,14 @@ abstract class AppDatabase : RoomDatabase() {
 
         val MIGRATION_FROM1_TO2 = object : Migration(1, 2) {
             override fun migrate(database: SupportSQLiteDatabase) {
+               // database.execSQL("ALTER TABLE TbITem ADD COLUMN itemModifierSetsSort INTEGER")
+
 
             }
         }
 
         private fun buildDatabase(appContext: Context) =
             Room.databaseBuilder(appContext, AppDatabase::class.java, DATABASE_NAME)
-                .addMigrations(MIGRATION_FROM1_TO2)
                 .build()
     }
 

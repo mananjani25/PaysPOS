@@ -435,7 +435,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback, It
                 if (isEdit){
                     adapter.add(
                         MethodUtils.convertSortListForModifierSet(
-                            itemObject.itemModifierSetsSort!!,
+                            itemObject.modifier_set_ids,
                             checkedList
                         )
                     )

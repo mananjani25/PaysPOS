@@ -53,7 +53,6 @@ class TbItem : Parcelable {
     var option_set_ids: List<Int> = emptyList()
     var isTax: Boolean = false
     var modifiers: List<Modifier> = emptyList()
-    var itemModifierSetsSort: List<Int>?=null
 
     var customItemCount: Int = 0
     var discountPrice: Double = 0.0
@@ -98,7 +97,6 @@ class TbItem : Parcelable {
         variationsAttributes = item.variations
         shortDescription = item.desc ?: ""
         isDeleted = item.isDeleted
-        itemModifierSetsSort = item.itemModifierSetsSort
         return this
     }
 
@@ -164,11 +162,11 @@ class TbItem : Parcelable {
         modeTb.thumbImageUrl = item.thumbImageUrl
         modeTb.categoryId = item.categoryId
         modeTb.categoryName = item.categoryName
-        if (item.itemModifierSetsSort?.isNotEmpty() == true) {
+      /*  if (item.itemModifierSetsSort?.isNotEmpty() == true) {
             modeTb.itemModifierSetsSort = item.itemModifierSetsSort
         } else {
             modeTb.itemModifierSetsSort = model.itemModifierSetsSort
-        }
+        }*/
         if (item.modifier_set_ids.isEmpty() && model.modifier_set_ids.isEmpty()) {
 
             var listMod: ArrayList<Int> = arrayListOf()
