@@ -1087,6 +1087,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 
         })
         binding.linearDonemodifier.setOnClickListener {
+            MethodUtils.hideKeyboard(requireActivity())
             counter = binding.edtQntModifir.text.toString().toInt()
             if (adapter?.filterList?.isNotEmpty() == true) {
                 adapter?.filterList?.forEachIndexed { indexset, modifierset ->
@@ -1103,7 +1104,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
             Log.d(TAG, "onLongClickListener: " + counter)
             binding.relativeModifierqntUpdatte.gone()
             binding.relativeAddItem.visible()
-            MethodUtils.hideKeyboard(requireActivity())
+
         }
 
     }
