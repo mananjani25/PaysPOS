@@ -1103,6 +1103,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
             Log.d(TAG, "onLongClickListener: " + counter)
             binding.relativeModifierqntUpdatte.gone()
             binding.relativeAddItem.visible()
+            MethodUtils.hideKeyboard(requireActivity())
         }
 
     }

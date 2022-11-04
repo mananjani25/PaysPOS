@@ -92,8 +92,7 @@
                         android:textColor="@color/txtColor"
                         android:textColorHint="@color/hintColor"
                         android:textSize="@dimen/_6mdpi"
-                        app:textAllCaps="true"
-                        android:inputType="textVisiblePassword"/>
+                        app:textAllCaps="true" />
 
                 </LinearLayout>
 
