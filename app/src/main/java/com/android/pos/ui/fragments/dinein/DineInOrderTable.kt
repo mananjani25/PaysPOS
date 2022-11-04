@@ -1177,6 +1177,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
         //New Drag and Drop
 
+        Log.e(TAG, "divideDiscount2:  ${divideDiscount2}")
         var divideDiscount = divideDiscount2
         LogUtil.logE("WholeTabDis", "Fasf  ${wholeTableDiscount}")
         var dividedWtDis: Double = MethodUtils.roundOffAmountDouble(
@@ -1418,6 +1419,15 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             Log.e(TAG, "chSubTotal  ${chSubTotal}")
             chSubTotal -= divideDiscount
             String.format("%.2f", chSubTotal).toDouble()
+
+            Log.e(TAG, "globalOrderDiscountForGPAy:   ${globalOrderDiscount}")
+            Log.e(TAG, "totalGuestCountGPAy:   ${totalGuestCount}")
+            Log.e(TAG, "totalGuestAfterserviceCharge ${serviceCharge}")
+
+
+            var orderDiscountGuestDivided =
+                MethodUtils.roundOffAmountDouble(globalOrderDiscount / totalGuestCount)
+            Log.e(TAG, "orderDiscountGuestDividedGpay:  ${orderDiscountGuestDivided}")
             serviceChargeList.forEach {
                 if (prefProvider.getValueboolean(Constants.SERVICECHARGE_DINEIN_ORDER, false)) {
 
@@ -1435,9 +1445,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                             isApplied = true
                             Log.e(
                                 TAG,
-                                "checkSer  ${it.percentage}  check 2ndSubTital ${chSubTotal}"
+                                "checkSer  ${it.percentage}  check 2ndSubTital ${chSubTotal + orderDiscountGuestDivided}"
                             )
-                            serviceCharge += MethodUtils.roundOffAmountDouble((chSubTotal * it.percentage) / 100)
+                            serviceCharge += MethodUtils.roundOffAmountDouble(((chSubTotal + orderDiscountGuestDivided) * it.percentage) / 100)
                             return@forEach
                         }
                     }
@@ -1446,7 +1456,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             if (!isApplied) {
                 serviceChargeList.forEach { service ->
                     if (service.id == checkMaxGuestCountId(serviceChargeList)) {
-                        serviceCharge += MethodUtils.roundOffAmountDouble((chSubTotal * service.percentage) / 100)
+                        serviceCharge += MethodUtils.roundOffAmountDouble(((chSubTotal + orderDiscountGuestDivided) * service.percentage) / 100)
                         return@forEach
                     }
                 }
@@ -3949,7 +3959,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
 
-            if (customerSettingModel.showRefundAmount) {
+            if (customerSettingModel.showRefundAmount && !paymentType.equals("Unpaid", true)) {
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
 
