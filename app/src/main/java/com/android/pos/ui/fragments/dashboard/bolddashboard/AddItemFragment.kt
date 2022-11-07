@@ -535,6 +535,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 
                                 variationAdapter.addVariations(it.variationsAttributes.filter { !it.isDeleted })
                                 val variationList = ArrayList<VariationsAttribute>()
+                                Log.e(TAG,"variationsAttributesInData   ${Gson().toJson(item.variationsAttributes)}")
                                 if (item.variationsAttributes.isNotEmpty()) {
                                     binding.dividerLine.root.visibility = View.VISIBLE
                                     val variation = item.variationsAttributes[0]
@@ -557,7 +558,76 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                         variationAdapter.updateVariation(variation)
 
                                     }
+
+                                    variationAdapter.showVariationPriceClick =
+                                        { it1: VariationsAttribute ->
+                                            Log.e(TAG,"VariationClicked")
+                                            if (!MethodUtils.isDoubleClick()) {
+                                                LogUtil.logE(TAG, "getpriceType:  ${it1.priceType}")
+                                                if (it1.priceType == "Variable") {
+                                                    val bundle = Bundle().apply {
+                                                        putParcelable("variationAttribute", it1)
+                                                    }
+                                                    findNavController().navigate(
+                                                        R.id.action_dashboardCategoryBoldPOS_to_addVariablePriceDialog,
+                                                        bundle
+                                                    )
+
+
+                                                } else if (it1.priceType == "Fixed") {
+
+                                                    var variation: VariationsAttribute? = null
+                                                    if (variationAdapter != null) {
+                                                        variation = variationAdapter.getItem()
+                                                    } else if (variation != null) {
+                                                        variation = it1
+                                                    }
+
+
+
+                                                    if (variation != null) {
+                                                        variation.price?.let {
+                                                            item.price = it
+                                                        }
+
+                                                    } else {
+                                                        item.price = item.price
+                                                    }
+                                                }
+
+//                                    if (item.variationsAttributes.isNotEmpty()) {
+//                                        val resultVariationDetails =
+//                                            getNavigationResultLiveData<VariationsAttribute>(
+//                                                Constants.DIALOG_KEY_VARIATION_DETAILS
+//                                            )
+//                                        resultVariationDetails?.observe(viewLifecycleOwner) {
+//                                            variationAdapter?.updateVariation(it)
+//                                            var variation: VariationsAttribute? = null
+//                                            if (variationAdapter != null) {
+//                                                variation = variationAdapter.getItem()
+//                                            } else if (it != null) {
+//                                                variation = it
+//                                            }
+//
+//
+//
+//
+//                                            if (variation != null) {
+//                                                variation?.price?.let {
+//                                                    item.price = it
+//                                                }
+//
+//                                            } else {
+//                                                item.price = item.price
+//                                            }
+//                                        }
+//                                    }
+                                            }
+                                        }
+
                                 }
+
+
                                 if (intArray!!.isNotEmpty()) {
                                 } else binding.dividerLine.root.visibility = View.GONE
 
@@ -614,70 +684,6 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                         }
                                     }
 
-                                    variationAdapter?.showVariationPriceClick =
-                                        { it: VariationsAttribute ->
-                                            if (!MethodUtils.isDoubleClick()) {
-                                                LogUtil.logE(TAG, "getpriceType:  ${it.priceType}")
-                                                if (it.priceType == "Variable") {
-                                                    val bundle = Bundle().apply {
-                                                        putParcelable("variationAttribute", it)
-                                                    }
-                                                    findNavController().navigate(
-                                                        R.id.action_dashboardCategoryBoldPOS_to_addVariablePriceDialog,
-                                                        bundle
-                                                    )
-
-
-                                                } else if (it.priceType == "Fixed") {
-
-                                                    var variation: VariationsAttribute? = null
-                                                    if (variationAdapter != null) {
-                                                        variation = variationAdapter.getItem()
-                                                    } else if (variation != null) {
-                                                        variation = it
-                                                    }
-
-
-
-                                                    if (variation != null) {
-                                                        variation.price?.let {
-                                                            item.price = it
-                                                        }
-
-                                                    } else {
-                                                        item.price = item.price
-                                                    }
-                                                }
-
-//                                    if (item.variationsAttributes.isNotEmpty()) {
-//                                        val resultVariationDetails =
-//                                            getNavigationResultLiveData<VariationsAttribute>(
-//                                                Constants.DIALOG_KEY_VARIATION_DETAILS
-//                                            )
-//                                        resultVariationDetails?.observe(viewLifecycleOwner) {
-//                                            variationAdapter?.updateVariation(it)
-//                                            var variation: VariationsAttribute? = null
-//                                            if (variationAdapter != null) {
-//                                                variation = variationAdapter.getItem()
-//                                            } else if (it != null) {
-//                                                variation = it
-//                                            }
-//
-//
-//
-//
-//                                            if (variation != null) {
-//                                                variation?.price?.let {
-//                                                    item.price = it
-//                                                }
-//
-//                                            } else {
-//                                                item.price = item.price
-//                                            }
-//                                        }
-//                                    }
-                                            }
-                                        }
 
 
                                 }
