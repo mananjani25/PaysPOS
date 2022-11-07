@@ -802,7 +802,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/_3sdp"
-                            android:text="Team Member Name"
+                            android:text="Employee Name"
                             android:textColor="@color/white"
                             android:textSize="@dimen/text_size_medium" />
 

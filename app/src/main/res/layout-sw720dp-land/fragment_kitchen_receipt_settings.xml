@@ -308,7 +308,7 @@
                             android:fontFamily="@font/sf_pro_display_semibold"
                             android:gravity="start"
                             android:padding="@dimen/_5sdp"
-                            android:text="Show Team Member"
+                            android:text="Show Employees"
                             android:textAllCaps="true"
                             android:textColor="@color/txtColor"
                             android:textSize="@dimen/_6mdpi" />
@@ -332,7 +332,7 @@
                             android:fontFamily="@font/sf_pro_display_semibold"
                             android:gravity="start"
                             android:padding="@dimen/_5sdp"
-                            android:text="Team Member"
+                            android:text="Employees"
                             android:textColor="@color/txtColor"
                             android:textSize="@dimen/_6mdpi" />
                         <com.google.android.material.switchmaterial.SwitchMaterial

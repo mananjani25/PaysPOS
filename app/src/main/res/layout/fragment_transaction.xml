@@ -117,7 +117,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:layout_gravity="center"
-                android:text="Team Member"
+                android:text="Employee"
                 android:visibility="gone"
                 android:textColor="@color/white"
                 android:textSize="@dimen/text_size_large" />
