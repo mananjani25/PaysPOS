@@ -578,7 +578,7 @@ open class PaymentViewModel @Inject constructor(
 
         val customerId = prefProvider.getValueInt(Constants.CUSTOMER_ID, -1)
         if (customerId != -1) {
-            orderAttributeRequestModel.customer_id = customerId
+            orderAttributeRequestModel.customer_id = "" + customerId
         }
 
 
@@ -761,9 +761,9 @@ open class PaymentViewModel @Inject constructor(
 
         val customerId = prefProvider.getValueInt(Constants.CUSTOMER_ID, -1)
         if (customerId != -1) {
-            orderAttributeRequestModel.customer_id = customerId
+            orderAttributeRequestModel.customer_id = "" + customerId
         } else {
-            orderAttributeRequestModel.customer_id = 0
+            orderAttributeRequestModel.customer_id = ""
         }
 
 
@@ -918,7 +918,7 @@ open class PaymentViewModel @Inject constructor(
 
         val customerId = prefProvider.getValueInt(Constants.CUSTOMER_ID, -1)
         if (customerId != -1) {
-            orderAttributeRequestModel.customer_id = customerId
+            orderAttributeRequestModel.customer_id = ""+customerId
         }
 
 

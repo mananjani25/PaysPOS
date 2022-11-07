@@ -1470,7 +1470,7 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
 
         val customerId = prefProvider.getValueInt(Constants.CUSTOMER_ID, -1)
         if (customerId != -1) {
-            orderAttributeRequestModel.customer_id = customerId
+            orderAttributeRequestModel.customer_id = ""+customerId
         }
 
         /*  orderAttributeRequestModel.paymentAttributes =

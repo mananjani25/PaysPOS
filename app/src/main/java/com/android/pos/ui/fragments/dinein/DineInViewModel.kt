@@ -1,6 +1,5 @@
 package com.android.pos.ui.fragments.dinein
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -1002,7 +1001,7 @@ class DineInViewModel @Inject constructor(
         model.totalServiceCharges = orderDetails.total_service_charges
         model.totalTaxAmount = orderDetails.total_tax_amount
         model.totalTips = orderDetails.total_tips
-        model.customer_id = orderDetails.customer_id
+        model.customer_id = ""+orderDetails.customer_id
         model.discount_id = orderDetails.discount_id
 /*
         model.loyalty_program_id = orderDetails.loyalty_program_id
