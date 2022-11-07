@@ -85,7 +85,7 @@
             android:layout_gravity="center"
             android:gravity="center"
             android:padding="@dimen/_5sdp"
-            android:text="Allow team member to clock in and out from any POS point of sale.View and edit shifts in POS Soft Dashboard"
+            android:text="Allow employee to clock in and out from any POS point of sale.View and edit shifts in POS Soft Dashboard"
             android:textColor="@color/hint_color"
             android:textSize="@dimen/_5mdpi" />
 

@@ -28,10 +28,10 @@
 
         <item
             android:id="@+id/menuTeam"
-            android:title="Team" />
+            android:title="Employees" />
         <item
             android:id="@+id/memuInventory"
-            android:title="Inventory" />
+            android:title="Menu" />
         <item
             android:id="@+id/menuSettings"
             android:title="Setup" />

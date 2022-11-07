@@ -229,7 +229,7 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
 
 
     private fun configureToolbar() {
-        binding.layoutTool.txtTitle.text = "Team"
+        binding.layoutTool.txtTitle.text = "Employees"
         binding.layoutTool.txtSubTitle.text = ""
         binding.layoutTool.txtEdit.visibility = View.GONE
         binding.layoutTool.imgDrawer.setOnClickListener {

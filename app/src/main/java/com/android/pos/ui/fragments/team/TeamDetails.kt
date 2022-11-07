@@ -68,7 +68,7 @@ class TeamDetails : Fragment() {
 
         binding.txtPersonalPasscode.text = model?.passcode
         binding.txtNodatavallidation?.text =
-            "$count team members that you manage at " + prefProvider.getValue(
+            "$count Employees that you manage at " + prefProvider.getValue(
                 Constants.BUSINESS_NAME,
                 ""
             )
