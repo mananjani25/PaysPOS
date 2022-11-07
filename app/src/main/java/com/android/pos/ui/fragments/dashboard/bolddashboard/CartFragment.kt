@@ -938,6 +938,7 @@ class CartFragment(
                                                             isModifier = it.isChecked,
                                                             itemId = "",
                                                             modifierId = 0,
+                                                            it.modifierSetId,
                                                             name = it.name,
                                                             orderId = 0,
                                                             orderItemId = 0,
@@ -945,6 +946,7 @@ class CartFragment(
                                                             price = it.price,
                                                             quantity = it.itemQuantity,
                                                             timestamp = ""
+
                                                         )
 
                                                     modifiers.add(modelMod)

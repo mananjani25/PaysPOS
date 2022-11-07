@@ -869,6 +869,31 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             showPopupWindow(it)
         }
     }
+    private fun variationAtt(variation: GetOrderDetailsResponse.Data.OrderItem.OrderItemVariationAttribute): List<VariationsAttribute> {
+
+        val variationsAttributeList = ArrayList<VariationsAttribute>()
+
+        val variationsAttribute = VariationsAttribute()
+        variationsAttribute.id = variation.variationId
+        variationsAttribute.name = variation.name
+        variationsAttribute.price = variation.price
+        variationsAttribute.orderVariationId = variation.id
+        variationsAttributeList.add(variationsAttribute)
+
+        return variationsAttributeList
+    }
+
+    private fun modifiersIds(orderItemModifiers: List<GetOrderDetailsResponse.Data.OrderItem.OrderItemModifier>): List<Int> {
+
+        val selectedIds = ArrayList<Int>()
+        if (orderItemModifiers.isNotEmpty()) {
+            orderItemModifiers.forEach {
+                it.modifier_set_id?.let { it1 -> selectedIds.add(it1) }
+            }
+        }
+        var uniqueSelectedId = HashSet<Int>(selectedIds)
+        return uniqueSelectedId.toList()
+    }
 
     private fun addGuestToOrder(count: Int) {
 
@@ -2060,6 +2085,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                                 model.name = mod.name
                                                 model.orderModifierId = mod.id
                                                 model.price = mod.price
+                                                model.modifierSetId = mod.modifier_set_id
 
 
                                                 if (mod.orderItemTaxes.isNotEmpty()) {
@@ -2079,7 +2105,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                         item.note = it.note
                                         item.isFired = guestItem.get(j).is_fired
                                         item.timeStamp = it.timestamp
-
+                                        item.modifier_set_ids = modifiersIds(it.orderItemModifiers)
+                                        item.variationsAttributes = variationAtt(it.order_item_variation!!)
 
                                         itemDineIn.isHeader = 1
                                         itemDineIn.item = item
