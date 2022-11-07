@@ -94,7 +94,7 @@
                 android:layout_weight="1"
                 android:gravity="left"
                 android:layout_gravity="center"
-                android:text="Team/Customer"
+                android:text="Employee/Customer"
                 android:textColor="@color/white"
                 android:textSize="@dimen/text_size_normal"
                 android:textAllCaps="true"/>
@@ -118,7 +118,7 @@
                 android:layout_weight="1"
                 android:gravity="left"
                 android:layout_gravity="left"
-                android:text="Team Member"
+                android:text="Employees"
                 android:visibility="gone"
                 android:textColor="@color/white"
                 android:textSize="@dimen/text_size_large" />

@@ -151,7 +151,7 @@
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="Team Member"
+                android:text="Employee"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_7mdpi" />
 

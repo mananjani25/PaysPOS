@@ -590,7 +590,7 @@ class OnlineDetailFragment(
 
             }
         } else {
-            alert("", "Are you sure, you want to reject this Order ?") {
+            alert("", "Are you sure, you want to reject this order ?") {
 
                 this.positiveButton("YES") {
                     var employeeIdtemp = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)

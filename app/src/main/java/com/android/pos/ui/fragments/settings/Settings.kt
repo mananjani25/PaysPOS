@@ -167,7 +167,7 @@ class Settings : Fragment() {
                         binding.rvBusiness.visibility = View.GONE
                         val frag: Fragment = TeamMemberSettings()
                         loadFragment(frag)
-                        binding.commonToolbar.txtSubTitle.setText("Team Member")
+                        binding.commonToolbar.txtSubTitle.setText("Employees")
 
 
                     }
@@ -307,7 +307,7 @@ class Settings : Fragment() {
             binding.rvBusiness.visibility = View.GONE
             val frag: Fragment = TeamMemberSettings()
             loadFragment(frag)
-            binding.commonToolbar.txtSubTitle.text = "Team Member"
+            binding.commonToolbar.txtSubTitle.text = "Employees"
         }
         binding.txtReports.setOnClickListener {
             /*binding.txtBusiness.styleNormal()

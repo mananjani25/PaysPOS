@@ -27,7 +27,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/_30sdp"
         android:fontFamily="@font/sf_pro_display_medium"
-        android:text="Team"
+        android:text="Employees"
         android:textColor="@color/txtColor"
         android:textSize="@dimen/_12mdpi"
         app:layout_constraintBottom_toBottomOf="parent"
