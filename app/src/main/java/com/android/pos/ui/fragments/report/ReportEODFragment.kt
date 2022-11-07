@@ -3264,7 +3264,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
 
                             val isPresent =
-                                teamEmployeeListGlobal.any { it.name == "All Team Members" }
+                                teamEmployeeListGlobal.any { it.name == "All Employees" }
 
                             //  teamEmployeeListGlobal.removeAt(0)
                             teamEmployeeListGlobal.add(
@@ -3277,7 +3277,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                                     "",
                                     "",
                                     -1,
-                                    "All Team Members",
+                                    "All Employees",
                                     "",
                                     "",
                                     "",

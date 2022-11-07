@@ -726,7 +726,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                             teamEmployeeListGlobal = employeeList as ArrayList<Employee>
 
                             val isPresent =
-                                teamEmployeeListGlobal.any { it.name == "All Team Members" }
+                                teamEmployeeListGlobal.any { it.name == "All Employees" }
                             if (!isPresent) {
                                 //  teamEmployeeListGlobal.removeAt(0)
                                 teamEmployeeListGlobal.add(
@@ -739,7 +739,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                                         "",
                                         "",
                                         -1,
-                                        "All Team Members",
+                                        "All Employees",
                                         "",
                                         "",
                                         "",
