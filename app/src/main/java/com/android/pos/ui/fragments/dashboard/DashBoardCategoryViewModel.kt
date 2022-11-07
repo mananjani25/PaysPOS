@@ -2419,7 +2419,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
         val customerId = prefProvider.getValueInt(Constants.CUSTOMER_ID, -1)
         if (customerId != -1) {
-            orderAttributeRequestModel.customer_id = ""+customerId
+            orderAttributeRequestModel.customer_id = "" + customerId
         }
 
         /*  orderAttributeRequestModel.paymentAttributes =
@@ -3106,8 +3106,10 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     fun updateOrder(cartModel: CartModel): OrderRequestModel {
+        Log.e(TAG, "totalDiscountDineIn  ${totalDiscount}")
         val orderModel: OrderAttributeRequestModel = OrderAttributeRequestModel()
         var ttotalDiscount = totalDiscount
+        Log.e(TAG, "ttotalDiscount:  ${ttotalDiscount}")
         LogUtil.logE(TAG, "getCartmodelId  ${cartModel.orderId}")
         orderModel.apply {
             date = TimeFormatUtils.getCurrentDate()
@@ -3127,7 +3129,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             taxEnabled = true
             subTotal = MethodUtils.roundOffAmountDouble(subTotalPrice)
             totalAmount = MethodUtils.roundOffAmountDouble(totalPrice)
-            totalDiscount = MethodUtils.roundOffAmountDouble(cartModel.discountPrice)
+            totalDiscount = MethodUtils.roundOffAmountDouble(ttotalDiscount)
             totalServiceCharges = totalServiceCharge
             totalTaxAmount = totalTax
             orderItemsAttributes = dineInOrderItemAttributed(cartModel)
