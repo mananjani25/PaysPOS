@@ -873,12 +873,15 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
         val variationsAttributeList = ArrayList<VariationsAttribute>()
 
-        val variationsAttribute = VariationsAttribute()
-        variationsAttribute.id = variation.variationId
-        variationsAttribute.name = variation.name
-        variationsAttribute.price = variation.price
-        variationsAttribute.orderVariationId = variation.id
-        variationsAttributeList.add(variationsAttribute)
+        if (variation!=null){
+            val variationsAttribute = VariationsAttribute()
+            variationsAttribute.id = variation.variationId
+            variationsAttribute.name = variation.name
+            variationsAttribute.price = variation.price
+            variationsAttribute.orderVariationId = variation.id
+            variationsAttributeList.add(variationsAttribute)
+
+        }
 
         return variationsAttributeList
     }
@@ -2105,9 +2108,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                         item.note = it.note
                                         item.isFired = guestItem.get(j).is_fired
                                         item.timeStamp = it.timestamp
-                                        item.modifier_set_ids = modifiersIds(it.orderItemModifiers)
-                                        item.variationsAttributes = variationAtt(it.order_item_variation!!)
-
+                                        if (it.orderItemModifiers.isNotEmpty()){
+                                            item.modifier_set_ids = modifiersIds(it.orderItemModifiers)
+                                        }
+                                        if (it.order_item_variation!=null){
+                                            item.variationsAttributes = variationAtt(it.order_item_variation!!)
+                                        }
                                         itemDineIn.isHeader = 1
                                         itemDineIn.item = item
                                         itemDineIn.empName =

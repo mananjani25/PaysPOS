@@ -2865,9 +2865,17 @@ class DashBoardCategoryViewModel @Inject constructor(
                     orderItemTaxesAttribute.orderItemId = items.orderItemId
                 }*/
 
+
+                var total_price = 0.0
+                if (items.price!=0.0){
+                    total_price = (items.price - items.discountPrice) * items.itemQuantity
+                }
+                items.modifiers.forEach { mod ->
+                    total_price += mod.price * mod.itemQuantity
+                }
                 if (tax.taxType == "Percentage") {
                     val itemTaxPrice =
-                        (tax.rate * ((items.price - items.discountPrice) * items.itemQuantity)) / 100
+                        (tax.rate * total_price) / 100
                     orderItemTaxesAttribute.taxTotalAmount =
                         MethodUtils.roundOffAmountDouble(itemTaxPrice)
                 } else {
