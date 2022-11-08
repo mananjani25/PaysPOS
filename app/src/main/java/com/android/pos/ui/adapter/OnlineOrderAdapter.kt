@@ -27,7 +27,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-class OnlineOrderAdapter(val context: Context) :
+class OnlineOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
     RecyclerView.Adapter<OnlineOrderAdapter.MyViewHolder>(),
     Filterable {
     var orderList = ArrayList<OnlineOrderResponseModel.Data>()
@@ -47,13 +47,18 @@ class OnlineOrderAdapter(val context: Context) :
             binding.viewModel = item
             binding.executePendingBindings()
             binding.llShowLayout.visibility = View.GONE
+            if (prefProvider.getValueboolean(Constants.ORDER_NUMBER_STARTING_FROM_ONE, false)) {
+                binding.tvOrderID.text = item.custom_order_id.toString()
+            } else {
+                binding.tvOrderID.text = item.id.toString()
+            }
             if (item.futureDeliveryDate != null) {
                 val inputFormat = SimpleDateFormat("yyyy-MM-dd")
                 val outputFormat = SimpleDateFormat("MMM-dd-yyyy")
                 val date = inputFormat.parse(item.futureDeliveryDate)
                 val formattedDate = outputFormat.format(date)
                 binding.tvDate.text = formattedDate
-            }else{
+            } else {
                 binding.tvDate.text =
                     TimeFormatUtils.convertCurrentDate(
                         item.createdAt,
@@ -67,7 +72,7 @@ class OnlineOrderAdapter(val context: Context) :
                 val date = inputFormat.parse(item.futureDeliveryTime.toString())
                 val formattedTime = outputFormat.format(date)
                 binding.tvtime.text = formattedTime
-            }else{
+            } else {
                 binding.tvtime.text =
                     TimeFormatUtils.convertCurrentTime(
                         item.createdAt,

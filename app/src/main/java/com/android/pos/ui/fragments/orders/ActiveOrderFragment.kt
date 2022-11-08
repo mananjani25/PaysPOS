@@ -33,6 +33,7 @@ import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.BUSINESS_ADDRESS
 import com.android.pos.data.remote.Constants.OPEN_ORDER
+import com.android.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
 import com.android.pos.data.remote.Constants.PRINT_PAID
 import com.android.pos.data.remote.Constants.PRINT_UNPAID
 import com.android.pos.data.remote.Constants.SHIPPING_ADDRESS
@@ -278,7 +279,7 @@ class ActiveOrderFragment(
             )
         )
 
-        adapter = OpenOrderAdapter(requireContext())
+        adapter = OpenOrderAdapter(requireContext(),prefProvider)
         adapter.setCallback(this)
         binding.rvOpenOrder.adapter = adapter
     }
@@ -1169,8 +1170,11 @@ class ActiveOrderFragment(
                     Builder.TRUE,
                     Builder.COLOR_1
                 )
-
-                builder.addText("OrderID:" + receiptModel.id)
+                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE,false)){
+                    builder.addText("OrderID:" + receiptModel.custom_order_id)
+                }else{
+                    builder.addText("OrderID:" + receiptModel.id)
+                }
 
                 builder.addFeedLine(1)
             }
@@ -2248,7 +2252,11 @@ class ActiveOrderFragment(
             PrintSunmiUtils.fontSize(customerSettingModel.fonts)
 
             if (customerSettingModel.showOrderIdTop) {
-                PrintSunmiUtils.orderIdLarge("OrderID:" + receiptModel?.id)
+                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE,false)){
+                    PrintSunmiUtils.orderIdLarge("OrderID:" + receiptModel.custom_order_id)
+                }else{
+                    PrintSunmiUtils.orderIdLarge("OrderID:" + receiptModel?.id)
+                }
                 SunmiPrinterApi.getInstance().lineWrap(1)
             }
 
@@ -2777,7 +2785,11 @@ class ActiveOrderFragment(
 
             SunmiPrintHelper.getInstance().initPrinter()
             if (customerSettingModel.showOrderIdTop) {
-                PrintSunmiUtils.headerText("OrderID:" + receiptModel?.id)
+                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE,false)){
+                    PrintSunmiUtils.headerText("OrderID:" + receiptModel?.custom_order_id)
+                }else{
+                    PrintSunmiUtils.headerText("OrderID:" + receiptModel?.id)
+                }
                 SunmiPrintHelper.getInstance().lineWrap(1)
             }
 

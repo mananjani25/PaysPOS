@@ -53,7 +53,6 @@
                     android:layout_weight="1"
                     android:fontFamily="@font/sf_pro_display_medium"
                     android:gravity="center"
-                    android:text="@{`Order `+orderDetails.data.order.id}"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_7mdpi"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -697,12 +696,12 @@
                             android:textSize="@dimen/text_size_medium" />
 
                         <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/order_detail_order_id"
                             style="@style/CustomFontMediumStyle"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/_3sdp"
                             android:gravity="end"
-                            android:text="@{``+orderDetails.data.order.id}"
                             android:textColor="@color/white"
                             android:textSize="@dimen/text_size_medium" />
                     </LinearLayout>

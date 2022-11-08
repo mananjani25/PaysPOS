@@ -610,7 +610,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
             )
         )
 
-        transactionAdapter = TransactionAdapter(viewModel)
+        transactionAdapter = TransactionAdapter(viewModel,prefProvider)
         transactionAdapter.setCallback(this)
         binding.rvTeamTimeSheet.adapter = transactionAdapter
 

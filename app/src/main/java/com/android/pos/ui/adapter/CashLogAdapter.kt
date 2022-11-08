@@ -6,11 +6,13 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.model.responseModel.CashLogResponse
+import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.ViewCashLogBinding
 import com.android.pos.databinding.ViewPaginationBinding
+import com.android.pos.di.PrefProvider
 import com.android.pos.utils.TimeFormatUtils
 
-class CashLogAdapter(val context: Context?) :
+class CashLogAdapter(val context: Context?, val prefProvider: PrefProvider) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     var orderList = ArrayList<CashLogResponse.Data.Cashe>()
@@ -20,7 +22,7 @@ class CashLogAdapter(val context: Context?) :
 
     private var showLoader = false
 
-    fun clearList(){
+    fun clearList() {
         orderList.clear()
         orderList = arrayListOf()
         notifyDataSetChanged()
@@ -52,7 +54,14 @@ class CashLogAdapter(val context: Context?) :
             binding.txtTime.text = TimeFormatUtils.convertCurrentTime(
                 item.createdAt, context
             )
-            binding.txtOrderId.text = item.orderId.toString()
+
+
+            if (prefProvider.getValueboolean(Constants.ORDER_NUMBER_STARTING_FROM_ONE, false)) {
+                binding.txtOrderId.text = item.custom_order_id.toString()
+            } else {
+                binding.txtOrderId.text = item.orderId.toString()
+            }
+
 
             if (item.event.equals("IN", ignoreCase = true)) {
                 binding.txtEvent.text = "Cash IN"

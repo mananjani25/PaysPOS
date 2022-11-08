@@ -55,6 +55,7 @@ import com.android.pos.data.remote.Constants.LOYALTY_ADDED
 import com.android.pos.data.remote.Constants.OPEN_ORDER
 import com.android.pos.data.remote.Constants.OPTION_TYPE
 import com.android.pos.data.remote.Constants.ORDER_COMPLETED
+import com.android.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
 import com.android.pos.data.remote.Constants.PAYMENT_ID
 import com.android.pos.data.remote.Constants.PRINT_DATA_DINE_IN
 import com.android.pos.data.remote.Constants.SAVE_SPLIT_BUNDLE
@@ -1233,7 +1234,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         Builder.COLOR_1
                     )
 
-                    builder.addText("OrderID:" + getDineInOrderDetails?.id)
+                    if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
+                        builder.addText("OrderID:" + getDineInOrderDetails?.custom_order_id)
+                    } else {
+                        builder.addText("OrderID:" + getDineInOrderDetails?.id)
+                    }
                     builder.addTextLineSpace(30)
                     builder.addFeedUnit(30)
                     builder.addFeedLine(2)
@@ -2312,7 +2317,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             SunmiPrinterApi.getInstance().printerInit()
 
             if (customerSettingModel.showOrderIdTop) {
-                PrintSunmiUtils.orderIdLarge("OrderID:" + getDineInOrderDetails?.id)
+                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
+                    PrintSunmiUtils.orderIdLarge("OrderID:" + getDineInOrderDetails?.custom_order_id)
+                } else {
+                    PrintSunmiUtils.orderIdLarge("OrderID:" + getDineInOrderDetails?.id)
+                }
                 SunmiPrinterApi.getInstance().lineWrap(1)
             }
 
@@ -2725,7 +2734,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             SunmiPrintHelper.getInstance().initPrinter()
 
             if (customerSettingModel.showOrderIdTop) {
-                PrintSunmiUtils.headerText("OrderID:" + getDineInOrderDetails?.id)
+                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
+                    PrintSunmiUtils.headerText("OrderID:" + getDineInOrderDetails?.custom_order_id)
+                } else {
+                    PrintSunmiUtils.headerText("OrderID:" + getDineInOrderDetails?.id)
+                }
                 SunmiPrintHelper.getInstance().lineWrap(1)
             }
 
@@ -3238,7 +3251,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         Builder.COLOR_1
                     )
 
-                    builder.addText("OrderID:" + getDineInOrderDetails?.id)
+                    if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
+                        builder.addText("OrderID:" + getDineInOrderDetails?.custom_order_id)
+                    } else {
+                        builder.addText("OrderID:" + getDineInOrderDetails?.id)
+                    }
                     builder.addTextLineSpace(30)
                     builder.addFeedUnit(30)
                     builder.addFeedLine(2)
@@ -4335,7 +4352,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             SunmiPrinterApi.getInstance().printerInit()
 
             if (customerSettingModel.showOrderIdTop) {
-                PrintSunmiUtils.orderIdLarge("OrderID:" + getDineInOrderDetails?.id)
+                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE,false)){
+                    PrintSunmiUtils.orderIdLarge("OrderID:" + getDineInOrderDetails?.custom_order_id)
+                }else{
+                    PrintSunmiUtils.orderIdLarge("OrderID:" + getDineInOrderDetails?.id)
+                }
                 SunmiPrinterApi.getInstance().lineWrap(1)
             }
             if (customerSettingModel.showVenueLogo && prefProvider.getValue(VENUE_LOGO, "")
@@ -4850,7 +4871,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             SunmiPrintHelper.getInstance().initPrinter()
 
             if (customerSettingModel.showOrderIdTop) {
-                PrintSunmiUtils.headerText("OrderID:" + getDineInOrderDetails?.id)
+                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE,false)){
+                    PrintSunmiUtils.headerText("OrderID:" + getDineInOrderDetails?.custom_order_id)
+                }else{
+                    PrintSunmiUtils.headerText("OrderID:" + getDineInOrderDetails?.id)
+                }
                 SunmiPrintHelper.getInstance().lineWrap(1)
             }
 
@@ -5810,7 +5835,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     Builder.COLOR_1
                 )
 
-                builder.addText("OrderID:" + receiptModel?.order?.id)
+                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
+                    builder.addText("OrderID:" + receiptModel?.order?.custom_order_id)
+                } else {
+                    builder.addText("OrderID:" + receiptModel?.order?.id)
+
+                }
 
                 builder.addFeedLine(1)
             }
@@ -7383,7 +7413,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     Builder.COLOR_1
                 )
 
-                builder.addText("OrderID:" + receiptModel?.order?.id)
+                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
+                    builder.addText("OrderID:" + receiptModel?.order?.custom_order_id)
+                } else {
+                    builder.addText("OrderID:" + receiptModel?.order?.id)
+                }
+
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
                 builder.addFeedLine(1)
@@ -7733,10 +7768,16 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     Builder.TRUE,
                     Builder.COLOR_1
                 )
+                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
+                    builder.addText(
+                        "OrderID:" + receiptModel?.order?.custom_order_id
+                    )
+                } else {
+                    builder.addText(
+                        "OrderID:" + receiptModel?.order?.id
+                    )
+                }
 
-                builder.addText(
-                    "OrderID:" + receiptModel?.order?.id
-                )
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
                 builder.addFeedLine(1)
@@ -8112,7 +8153,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             PrintSunmiUtils.fontSize(kitchenSettingModel.fonts)
             SunmiPrinterApi.getInstance().printerInit()
             SunmiPrinterApi.getInstance().lineWrap(4)
-            PrintSunmiUtils.orderIdLarge("OrderID:" + receiptModel?.order?.id)
+            if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
+                PrintSunmiUtils.orderIdLarge("OrderID:" + receiptModel?.order?.custom_order_id)
+            } else {
+                PrintSunmiUtils.orderIdLarge("OrderID:" + receiptModel?.order?.id)
+            }
             SunmiPrinterApi.getInstance().lineWrap(1)
 
             if (kitchenSettingModel.showOrderType) {
@@ -8261,7 +8306,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             // PrintSunmiUtils.fontSizeInner(LARGE)
             SunmiPrintHelper.getInstance().initPrinter()
             SunmiPrintHelper.getInstance().lineWrap(4)
-            PrintSunmiUtils.headerText("OrderID:" + receiptModel?.order?.id)
+            if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
+                PrintSunmiUtils.headerText("OrderID:" + receiptModel?.order?.custom_order_id)
+            } else {
+                PrintSunmiUtils.headerText("OrderID:" + receiptModel?.order?.id)
+            }
             SunmiPrintHelper.getInstance().lineWrap(1)
 
             if (kitchenSettingModel.showOrderType) {
@@ -8615,8 +8664,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             SunmiPrinterApi.getInstance().printerInit()
 
             if (customerSettingModel.showOrderIdTop) {
+                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
+                    PrintSunmiUtils.orderIdLarge("OrderID:" + receiptModel?.order?.custom_order_id)
+                } else {
+                    PrintSunmiUtils.orderIdLarge("OrderID:" + receiptModel?.order?.id)
 
-                PrintSunmiUtils.orderIdLarge("OrderID:" + receiptModel?.order?.id)
+                }
                 SunmiPrinterApi.getInstance().lineWrap(1)
 
             }
@@ -9280,8 +9333,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
             if (customerSettingModel.showOrderIdTop) {
-
-                PrintSunmiUtils.headerText("OrderID:" + receiptModel?.order?.id)
+                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
+                    PrintSunmiUtils.headerText("OrderID:" + receiptModel?.order?.custom_order_id)
+                } else {
+                    PrintSunmiUtils.headerText("OrderID:" + receiptModel?.order?.id)
+                }
                 SunmiPrintHelper.getInstance().lineWrap(1)
             }
 
@@ -9889,7 +9945,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             }
 
-          //  PrintSunmiUtils.boldText("__________________________")
+            //  PrintSunmiUtils.boldText("__________________________")
             SunmiPrintHelper.getInstance().lineWrap(1)
 
             SunmiPrintHelper.getInstance().lineWrap(2)

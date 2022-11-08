@@ -31,6 +31,7 @@ import com.android.pos.data.remote.Constants.LARGE
 import com.android.pos.data.remote.Constants.MEDIUM
 import com.android.pos.data.remote.Constants.ONLINE_ORDER_ENABLE
 import com.android.pos.data.remote.Constants.OPEN_ORDER_ITEMS
+import com.android.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.SMALL
 import com.android.pos.data.remote.Constants.SPLIT_ENABLE
@@ -1553,9 +1554,16 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     Builder.COLOR_1
                 )
 
-                builder.addText(
-                    "OrderID:" + receiptModel?.order?.id
-                )
+                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE,false)){
+                    builder.addText(
+                        "OrderID:" + receiptModel.order.custom_order_id
+                    )
+                }else{
+                    builder.addText(
+                        "OrderID:" + receiptModel.order.id
+                    )
+                }
+
 
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
@@ -1883,9 +1891,16 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     Builder.COLOR_1
                 )
 
-                builder.addText(
-                    "OrderID:" + receiptModel?.order?.id
-                )
+                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE,false)){
+                    builder.addText(
+                        "OrderID:" + receiptModel?.order?.custom_order_id
+                    )
+                }else{
+                    builder.addText(
+                        "OrderID:" + receiptModel?.order?.id
+                    )
+                }
+
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
                 builder.addFeedLine(1)
@@ -2253,7 +2268,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             PrintSunmiUtils.fontSize(kitchenSettingModel.fonts)
             SunmiPrinterApi.getInstance().printerInit()
             SunmiPrinterApi.getInstance().lineWrap(4)
-            PrintSunmiUtils.orderIdLarge("OrderID:" + receiptModel?.order?.id)
+            if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE,false)){
+                PrintSunmiUtils.orderIdLarge("OrderID:" + receiptModel?.order?.custom_order_id)
+            }else{
+                PrintSunmiUtils.orderIdLarge("OrderID:" + receiptModel?.order?.id)
+            }
             SunmiPrinterApi.getInstance().lineWrap(1)
 
             if (kitchenSettingModel.showOrderType) {
@@ -2404,7 +2423,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
             SunmiPrintHelper.getInstance().initPrinter()
             SunmiPrintHelper.getInstance().lineWrap(4)
-            PrintSunmiUtils.headerText("OrderID:" + receiptModel?.order?.id)
+            if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE,false)){
+                PrintSunmiUtils.headerText("OrderID:" + receiptModel?.order?.custom_order_id)
+            }else{
+                PrintSunmiUtils.headerText("OrderID:" + receiptModel?.order?.id)
+            }
             SunmiPrintHelper.getInstance().lineWrap(1)
 
             if (kitchenSettingModel.showOrderType) {

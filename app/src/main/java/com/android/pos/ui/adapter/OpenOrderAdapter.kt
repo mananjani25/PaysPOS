@@ -13,9 +13,11 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.model.responseModel.OpenOrderResponse
+import com.android.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
 import com.android.pos.data.remote.Constants.PRINT_PAID
 import com.android.pos.data.remote.Constants.PRINT_UNPAID
 import com.android.pos.databinding.ViewOpenOrderItemBinding
+import com.android.pos.di.PrefProvider
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.TimeFormatUtils
@@ -25,7 +27,7 @@ import com.android.pos.utils.extensions.visible
 import com.google.gson.Gson
 import java.util.*
 
-class OpenOrderAdapter(val context: Context) :
+class OpenOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
     RecyclerView.Adapter<OpenOrderAdapter.MyViewHolder>(), Filterable {
 
     var orderList = ArrayList<OpenOrderResponse.Data.Order>()
@@ -51,6 +53,12 @@ class OpenOrderAdapter(val context: Context) :
             binding.llShowLayout.visibility = View.GONE
 
 
+
+            if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE,false)){
+                binding.tvOrderID.text = item.custom_order_id.toString()
+            }else{
+                binding.tvOrderID.text = item.id.toString()
+            }
             if (item.createdAt.isNotEmpty()) {
                 binding.tvDate.text =
                     TimeFormatUtils.convertCurrentDate(
