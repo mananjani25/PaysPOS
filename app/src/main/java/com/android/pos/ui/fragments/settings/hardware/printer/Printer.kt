@@ -1089,7 +1089,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                 LogUtil.logE(TAG, "Here Drawer Code")
                 PrintSunmiUtils.cutPaperInner()
                 if (woyouService != null) {
-                    woyouService!!.sendRAWData(byteArrayOf(0x1B, 0x45, 0x01), this)
+                    //   woyouService!!.sendRAWData(byteArrayOf(0x1B, 0x45, 0x01), this)
                 } else {
                     val aa = ByteArray(5)
 
@@ -1105,11 +1105,11 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                     } catch (e: java.lang.Exception) {
                         e.printStackTrace()
                     }
-                    try {
-                        SunmiPrintHelper.getInstance().openCashBox()
-                    } catch (e: java.lang.Exception) {
-                        e.printStackTrace()
-                    }
+                    /*  try {
+                          SunmiPrintHelper.getInstance().openCashBox()
+                      } catch (e: java.lang.Exception) {
+                          e.printStackTrace()
+                      }*/
 
                 }
 
@@ -1242,8 +1242,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             LogUtil.logE(TAG, "WOHO SERIESNULL ${woyouService}")
             if (woyouService != null) {
                 LogUtil.logE(TAG, "WOHO SERIES NOT NULL")
-                ToastUtil.showNormalToast(requireContext(), "Cash Drawer Connected..")
-                woyouService!!.sendRAWData(byteArrayOf(0x1B, 0x45, 0x01), this)
+                // ToastUtil.showNormalToast(requireContext(), "Cash Drawer Connected..")
+                //  woyouService!!.sendRAWData(byteArrayOf(0x1B, 0x45, 0x01), this)
             } else {
                 val aa = ByteArray(5)
 
@@ -1259,11 +1259,11 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                 } catch (e: java.lang.Exception) {
                     e.printStackTrace()
                 }
-                try {
-                    SunmiPrintHelper.getInstance().openCashBox()
-                } catch (e: java.lang.Exception) {
-                    e.printStackTrace()
-                }
+                /* try {
+                     SunmiPrintHelper.getInstance().openCashBox()
+                 } catch (e: java.lang.Exception) {
+                     e.printStackTrace()
+                 }*/
             }
 
 

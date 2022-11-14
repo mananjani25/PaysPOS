@@ -7543,6 +7543,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 data.printerCategories.toCollection(arrayListOf())
             )
         }
+        mPrinter.addFeedLine(1)
 
         if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
             mPrinter.addFeedUnit(30)
