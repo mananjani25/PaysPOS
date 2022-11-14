@@ -1495,10 +1495,23 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         )
         builder.addText("Test Print")
 
-        var mPrinter = Printer(
-            Printer.TM_U220,
-            Printer.MODEL_ANK, (activity as MainActivity).applicationContext
-        ) // Initialize the printer
+        var mPrinter = if (printerListModel.printerName?.substring(0, 6).toString().lowercase()
+                .contains("TM-m".lowercase())
+        ) {
+            Log.e(TAG, "YesContains")
+            Printer(
+                Printer.TM_M30,
+                Printer.MODEL_ANK, (activity as MainActivity).applicationContext
+            )
+        } else {
+            Printer(
+                Printer.TM_U220,
+                Printer.MODEL_ANK, (activity as MainActivity).applicationContext
+            )
+
+
+        }
+        // Initialize the printer
 
         mPrinter.setReceiveEventListener { printer, i, printerStatusInfo, s ->
 
