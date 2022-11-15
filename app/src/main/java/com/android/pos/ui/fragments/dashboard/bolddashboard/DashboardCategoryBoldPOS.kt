@@ -129,6 +129,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        checkCashDrawerObserver()
         syncData()
         Binding()
 
@@ -168,6 +169,27 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         prefProvider.setValueboolean(Constants.ORDER_COMPLETED, false)
         binding.lifecycleOwner = this
         return binding.root
+    }
+
+    private fun checkCashDrawerObserver() {
+        viewModel.checkCashDrawerPer.observe(viewLifecycleOwner){
+            if (it){
+                checkCashDrawerPer()
+
+            }
+        }
+    }
+
+    private fun checkCashDrawerPer() {
+        Log.e("UserPermissionCash", "InsideCheckPermissionCash: ")
+        if (rolePermission.hasCashDrawerPermission()) {
+            Log.e("UserPermissionCash", "HasRole")
+            binding.layoutHeader.imgCashdDrawer.visible()
+        } else {
+            Log.e("UserPermissionCash", "HasRoleNo")
+            binding.layoutHeader.imgCashdDrawer.gone()
+        }
+
     }
 
     private fun observerSyncItemPriceChange() {
@@ -417,6 +439,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         onClick()
+
         if (prefProvider.getValueboolean(ONLINE_ORDER_ENABLE, false)) {
             binding.layoutHeader.linearOnlineorder?.visible()
         } else {
@@ -508,6 +531,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
         initScanner()
 
+        checkCashDrawerPer()
         super.onViewCreated(view, savedInstanceState)
     }
 
@@ -522,6 +546,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         if (!sync) {
             ProgressUtils.showProgressDialog(requireActivity())
             viewModel.syncInventoryModule(false)
+
         } else {
             viewModel.getOnlineOrderCount()
         }

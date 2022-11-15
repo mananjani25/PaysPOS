@@ -205,6 +205,9 @@ class DashBoardCategoryViewModel @Inject constructor(
     private val _enableOnlineOrder = MutableLiveData<Event<Boolean>>()
     val enableOnlineOrder: LiveData<Event<Boolean>> = _enableOnlineOrder
 
+    private val _checkCashDrawerPermission = MutableLiveData<Boolean>()
+    val checkCashDrawerPer :LiveData<Boolean> = _checkCashDrawerPermission
+
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
 
@@ -389,9 +392,10 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     }
 
-    fun getCustomerPrinterList():LiveData<Resource<List<PrinterResponse.Data.CustomerReceiptPrinters>>> {
+    fun getCustomerPrinterList(): LiveData<Resource<List<PrinterResponse.Data.CustomerReceiptPrinters>>> {
         return posRepository.getCustomerPrinters()
     }
+
     fun getKitchenPrinterList(): LiveData<Resource<List<PrinterResponse.Data.KitchenReceiptPrinters>>> {
         return posRepository.getKitchenPrinters()
     }
@@ -2870,7 +2874,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
                 var total_price = 0.0
-                if (items.price!=0.0){
+                if (items.price != 0.0) {
                     total_price = (items.price - items.discountPrice) * items.itemQuantity
                 }
                 items.modifiers.forEach { mod ->
@@ -3534,6 +3538,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 if (it.settingData.data.teamRoles.isNotEmpty()) {
                                     posRepository.addTeamRoleFromDb(it.settingData.data.teamRoles)
                                     rolePermission.findCurrentUserRoleAndSave(it.settingData.data.teamRoles)
+                                    _checkCashDrawerPermission.value= true
                                 } else {
 
                                     ThreadPoolManager.instance.executeTask(Runnable {
@@ -3806,6 +3811,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 SYNC_SETTING_TIME_STAMP,
                                 venueDetailsResponse.settingData.timeStamp
                             )
+
 
                         } else {
                             _snackbarText.value = Event(resource.message)
