@@ -7565,7 +7565,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             mPrinter.addFeedUnit(30)
 
             mPrinter.addTextFont(Builder.FONT_E)
-            mPrinter.addTextAlign(Builder.ALIGN_CENTER)
+            mPrinter.addTextAlign(Builder.ALIGN_LEFT)
             mPrinter.addTextLang(Builder.LANG_EN)
             mPrinter.addTextSize(fontSizeH, fontSizeW)
             mPrinter.addTextStyle(
@@ -7579,8 +7579,20 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             mPrinter.addText(receiptModel?.order?.note.toString())
         }
 
-        addHorizontalKitchenLineForU220(mPrinter)
+        mPrinter.addFeedLine(1)
+
         if (kitchenSettingModel.showCustomerAddress != false or kitchenSettingModel.showCustomerPhone != false or kitchenSettingModel.showCustomerName != false) {
+            mPrinter.addTextFont(Builder.FONT_B)
+            //builder.addTextLineSpace(20)
+            mPrinter.addTextLang(Builder.LANG_EN)
+            mPrinter.addTextSize(fontSizeH, fontSizeW)
+            mPrinter.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.COLOR_1
+            )
+            addHorizontalKitchenLineForU220(mPrinter)
             if (receiptModel?.order?.customer != null) {
 
                 mPrinter.addFeedLine(1)
