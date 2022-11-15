@@ -1,10 +1,11 @@
 package com.android.pos.ui.fragments.dashboard.bolddashboard
 
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
 import android.graphics.Typeface
-import android.os.Build
-import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
+import android.os.*
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -17,7 +18,10 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.*
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import com.android.pos.MainApplication
 import com.android.pos.R
+import com.android.pos.aidl.ICallback
+import com.android.pos.aidl.IWoyouService
 import com.android.pos.data.entities.*
 import com.android.pos.data.model.DineInModel
 import com.android.pos.data.model.requestModel.CreateQueuePrinterRequestModel
@@ -68,8 +72,9 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
-    ScannerAppEngine.IScannerAppEngineDevEventsDelegate {
+    ScannerAppEngine.IScannerAppEngineDevEventsDelegate, ICallback {
     private var dineInList: List<DineInModel>? = null
+    private var woyouService: IWoyouService? = null
     private var cartList: ArrayList<CartModel> = arrayListOf()
     private val viewModelServiceCharge by viewModels<ServiceChargeListViewModel>()
     private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
@@ -125,6 +130,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         savedInstanceState: Bundle?
     ): View? {
         syncData()
+        Binding()
 
         binding = FragmentDashboardCategoryBoldPosBinding.inflate(inflater, container, false)
         val callback: OnBackPressedCallback =
@@ -638,11 +644,13 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             viewModel.syncInventoryModule(false)
         }
         binding.layoutHeader.imgCashdDrawer.setOnClickListener {
-            try {
+
+            getCustomerPrinters()
+            /*try {
                 SunmiPrintHelper.getInstance().openCashBox()
             } catch (e: java.lang.Exception) {
                 e.printStackTrace()
-            }
+            }*/
         }
 
         /* binding.layoutHeader.txtOpenOrder.setOnClickListener {
@@ -681,6 +689,132 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         }
 
 
+    }
+
+    private fun getCustomerPrinters() {
+        viewModel.getCustomerPrinterList().observe(viewLifecycleOwner) {
+
+            when (it.status) {
+                Status.SUCCESS -> {
+                    if (it.data?.isNotEmpty() == true) {
+                        for (i in 0 until it.data.size) {
+                            if (it.data[i].name.startsWith("CloudPrint", true) == true) {
+                                if (woyouService != null) {
+                                    woyouService!!.sendRAWData(byteArrayOf(0x1B, 0x45, 0x01), this)
+                                } else {
+                                    val aa = ByteArray(5)
+
+                                    aa[0] = 0x10
+                                    aa[1] = 0x14
+                                    aa[2] = 0x00
+                                    aa[3] = 0x00
+                                    aa[4] = 0x00
+
+                                    try {
+                                        SunmiPrinterApi.getInstance().sendRawData(aa)
+                                    } catch (e: java.lang.Exception) {
+                                        e.printStackTrace()
+                                    }
+
+                                    try {
+                                        SunmiPrintHelper.getInstance().openCashBox()
+                                    } catch (e: java.lang.Exception) {
+                                        e.printStackTrace()
+                                    }
+                                }
+
+                            } else if (it.data[i].name.startsWith("InnerPrinter", true) == true) {
+
+                                if (woyouService != null) {
+                                    woyouService!!.sendRAWData(byteArrayOf(0x1B, 0x45, 0x01), this)
+                                } else {
+                                    val aa = ByteArray(5)
+
+                                    aa[0] = 0x10
+                                    aa[1] = 0x14
+                                    aa[2] = 0x00
+                                    aa[3] = 0x00
+                                    aa[4] = 0x00
+
+
+                                    try {
+                                        SunmiPrinterApi.getInstance().sendRawData(aa)
+                                    } catch (e: java.lang.Exception) {
+                                        e.printStackTrace()
+                                    }
+                                    try {
+                                        SunmiPrintHelper.getInstance().openCashBox()
+                                    } catch (e: java.lang.Exception) {
+                                        e.printStackTrace()
+                                    }
+
+                                }
+
+                            } else {
+                                var builder: Builder = Builder(
+                                    if (it.data[i].name.substring(0, 6).toString()
+                                            .lowercase() == "TM-m30".lowercase()
+                                    ) {
+                                        "TM-m30"
+                                    } else {
+                                        it.data[i].name
+                                    }, PrinterClass.language, requireActivity()
+                                )
+
+
+                                builder.addPulse(
+                                    com.epson.epos2.printer.Printer.DRAWER_HIGH,
+                                    com.epson.epos2.printer.Printer.PULSE_100
+                                )
+
+                                val status = IntArray(1)
+                                val battery = IntArray(1)
+                                try {
+                                    PrinterClass.getPrinter()?.sendData(
+                                        builder,
+                                        PrinterClass.BLUETOOTH_TIMEOUT, status, battery
+                                    )
+                                } catch (e: java.lang.Exception) {
+                                    e.printStackTrace()
+                                }
+
+
+                            }
+                        }
+
+                    }
+
+                }
+
+            }
+        }
+    }
+
+    private val serviceConnection: ServiceConnection = object : ServiceConnection {
+        override fun onServiceConnected(p0: ComponentName?, service: IBinder?) {
+            LogUtil.logE(TAG, "onServiceConnected  1")
+            woyouService = IWoyouService.Stub.asInterface(service)
+
+        }
+
+        override fun onServiceDisconnected(p0: ComponentName?) {
+            LogUtil.logE(TAG, "onServiceDisConnected  2")
+            woyouService = null
+
+
+        }
+
+    }
+
+    private fun Binding() {
+        val intent = Intent()
+        intent.setPackage("com.android.pos")
+        intent.action = "com.android.pos.aidl.IWoyouService"
+        MainApplication.getInstance()?.applicationContext?.bindService(
+            intent,
+            serviceConnection,
+            Context.BIND_AUTO_CREATE
+        )
     }
 
 
@@ -1286,7 +1420,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     )
                     mPrinter.startMonitor()
 
-                    generateReceiptForU220(mPrinter,data, type, createOrderResponse.data)
+                    generateReceiptForU220(mPrinter, data, type, createOrderResponse.data)
 
                 } catch (e: java.lang.Exception) {
                     e.printStackTrace()
@@ -1685,9 +1819,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             val battery = IntArray(1)
 
 
-            try
-            {
-               builder.sendData(Printer.PARAM_DEFAULT)
+            try {
+                builder.sendData(Printer.PARAM_DEFAULT)
                 viewModel.downloadFinished(false)
                 if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
                     findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
@@ -3142,6 +3275,15 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         } else {
             viewModel.cartLogic(cartList, item, ADD)
         }*/
+
+    }
+
+    override fun asBinder(): IBinder {
+        return woyouService?.asBinder()!!
+
+    }
+
+    override fun onRunResult(isSuccess: Boolean, code: Int, msg: String?) {
 
     }
 }
