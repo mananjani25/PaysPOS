@@ -758,7 +758,8 @@ interface ApiService {
     @PUT(UPDATE_TIP)
     suspend fun orderUpdateTip(
         @Path("id") id: Int,
-        @Query("tips") old_position: Double
+        @Query("tips") old_position: Double,
+        @Query("is_captured") is_captured: Boolean,
     ): BaseResponse
 
 

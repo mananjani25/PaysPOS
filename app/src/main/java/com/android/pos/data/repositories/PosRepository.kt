@@ -894,8 +894,8 @@ class PosRepository @Inject constructor(
     ) =
         apiHelperNew.getCashInOut(startDate, endDate, terminalId, s, s1)
 
-    suspend fun orderUpdateTip(orderId: Int, customerId: Double) =
-        apiHelperNew.orderUpdateTip(orderId, customerId)
+    suspend fun orderUpdateTip(orderId: Int, customerId: Double,is_captured: Boolean) =
+        apiHelperNew.orderUpdateTip(orderId, customerId,is_captured)
 
     suspend fun updateKitchenFireStatus(
         id: Int,

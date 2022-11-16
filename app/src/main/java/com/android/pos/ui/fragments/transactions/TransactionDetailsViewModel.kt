@@ -208,11 +208,12 @@ class TransactionDetailsViewModel @Inject constructor(
             }
         }
     }
-    fun orderUpdateTip(orderID: Int, tipAmount: Double) {
+
+    fun orderUpdateTip(orderID: Int, tipAmount: Double, is_captured: Boolean) {
 
         viewModelScope.launch {
 
-            val resource = posRepository.orderUpdateTip(orderID, tipAmount)
+            val resource = posRepository.orderUpdateTip(orderID, tipAmount, is_captured)
 
             when (resource.status) {
                 Status.SUCCESS -> {
@@ -239,6 +240,7 @@ class TransactionDetailsViewModel @Inject constructor(
             }
         }
     }
+
     private suspend fun cashOutApi(
         refundRequestModel: RefundRequestModel,
         amount: Double,
