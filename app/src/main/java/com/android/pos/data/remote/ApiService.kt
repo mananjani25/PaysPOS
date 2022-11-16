@@ -760,6 +760,7 @@ interface ApiService {
         @Path("id") id: Int,
         @Query("tips") old_position: Double,
         @Query("is_captured") is_captured: Boolean,
+        @Body data: CashInOutModel,
     ): BaseResponse
 
 
