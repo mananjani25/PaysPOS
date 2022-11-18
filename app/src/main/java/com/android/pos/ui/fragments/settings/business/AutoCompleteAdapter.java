@@ -148,7 +148,7 @@ public class AutoCompleteAdapter extends ArrayAdapter<AutocompletePrediction> im
     }
 
         if (results.isSuccessful()) {
-            if (results.getResult() != null) {
+                if (results.getResult() != null) {
                 return results.getResult().getAutocompletePredictions();
             }
         }

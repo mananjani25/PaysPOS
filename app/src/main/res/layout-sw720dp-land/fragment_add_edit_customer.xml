@@ -229,7 +229,7 @@
                             style="@style/CustomFontSemiBold"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/billing_address"
+                            android:text="@string/delivery_address"
                             android:textColor="@color/txtColor"
                             android:textSize="@dimen/_5mdpi" />
 
@@ -367,7 +367,7 @@
                             style="@style/CustomFontSemiBold"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/shipping_address"
+                            android:text="@string/billing_address"
                             android:textColor="@color/txtColor"
                             android:textSize="@dimen/_5mdpi" />
 

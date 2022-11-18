@@ -524,7 +524,7 @@
     <string name="date">Date</string>
     <string name="time">Time</string>
     <string name="note">Note</string>
-    <string name="same_as_billing_address">Same as Billing Address</string>
+    <string name="same_as_billing_address">Same as Delivery Address</string>
     <string name="customer_address">Customer Address</string>
     <string name="apt_suite">Apt / Suite</string>
     <string name="city">City</string>
