@@ -84,7 +84,7 @@ class CategorySearchAdapter @Inject constructor(
                     val fList = ArrayList<CategorySearchData>()
                     for (model in list) {
                         if (model.title.lowercase(Locale.getDefault()).trim()
-                                .startsWith(charSequence.toString().lowercase(Locale.getDefault()).trim())
+                                .contains(charSequence.toString().lowercase(Locale.getDefault()).trim())
                         ) {
 
                             fList.add(model)
