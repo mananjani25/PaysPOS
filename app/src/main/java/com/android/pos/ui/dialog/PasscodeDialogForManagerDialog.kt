@@ -12,6 +12,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
@@ -48,7 +49,7 @@ class PasscodeDialogForManagerDialog : DialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
-        val back = ColorDrawable(Color.WHITE)
+        val back = ColorDrawable(ContextCompat.getColor(binding.root.context,R.color.bg_color))
         val inset = InsetDrawable(back, 0, 100, 0, 100)
         dialog?.window?.setBackgroundDrawable(inset);
 

@@ -6,6 +6,7 @@ import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.InsetDrawable
 import android.os.Bundle
 import android.view.*
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
@@ -45,7 +46,7 @@ class CustomAmountFragment : DialogFragment() {
         ) + " Cash"
 
         dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
-        val back = ColorDrawable(Color.WHITE)
+        val back = ColorDrawable(ContextCompat.getColor(binding.root.context,R.color.bg_color))
         val inset = InsetDrawable(back, 150, 100, 150, 100)
         dialog?.window?.setBackgroundDrawable(inset);
 

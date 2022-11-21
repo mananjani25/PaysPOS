@@ -27,8 +27,9 @@
             android:layout_height="wrap_content"
             android:background="@color/backgroundColor"
             android:orientation="horizontal"
-            android:paddingStart="@dimen/_18sdp"
+            android:paddingStart="@dimen/_12sdp"
             android:paddingTop="@dimen/_4sdp"
+            android:weightSum="6"
             android:paddingBottom="@dimen/_4sdp">
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -36,13 +37,11 @@
                 style="@style/CustomFontRegularStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-
+                android:layout_weight="0.7"
                 android:text="@{model.itemName}"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_6mdpi"
-                tools:text="Item Name"
-                android:paddingEnd="@dimen/_5sdp"/>
+                tools:text="Item Name" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtQty"
@@ -52,11 +51,10 @@
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1"
                 android:gravity="center_vertical"
-                android:paddingEnd="@dimen/_5sdp"
                 android:text="@{@string/cross+``+model.quantity}"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_6mdpi"
-                android:paddingLeft="@dimen/_2sdp"
+
                 tools:text="X 1" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -66,11 +64,9 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1"
-                android:gravity="center_vertical"
-
+                android:gravity="start"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_6mdpi"
-                android:paddingLeft="@dimen/_2sdp"
                 tools:text="$12.00" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -109,7 +105,7 @@
                 android:textColor="@color/white"
                 android:textSize="@dimen/_6mdpi"
                 tools:text="Terminal Name"
-                android:paddingLeft="@dimen/_2sdp"/>
+                />
 
         </LinearLayout>
 

@@ -900,6 +900,9 @@ class AddEditCustomer : Fragment() {
         }
         binding.chksameasbilling.setOnClickListener {
             if (binding.edtStreet.text.toString().isNotEmpty()) {
+                binding.edtStreetDel.clearFocus()
+                binding.edtStreetDel.isFocusableInTouchMode = false;
+                binding.edtStreetDel.isFocusable = false;
                 viewModel.same_as_billing_address.value = binding.chksameasbilling.isChecked
                 if (binding.chksameasbilling.isChecked) {
                     if (binding.edtStreet.text.toString().trim().isNotEmpty())

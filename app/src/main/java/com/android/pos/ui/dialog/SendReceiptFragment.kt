@@ -9,6 +9,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.text.style.UnderlineSpan
 import android.view.*
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
@@ -48,7 +49,7 @@ class SendReceiptFragment : DialogFragment() {
     ): View? {
         binding = DailogSendReceiptBinding.inflate(inflater, container, false)
         dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
-        val back = ColorDrawable(Color.WHITE)
+        val back = ColorDrawable(ContextCompat.getColor(binding.root.context,R.color.bg_color))
         val inset = InsetDrawable(back, 150, 100, 150, 100)
         dialog?.window?.setBackgroundDrawable(inset);
         setupSnackbar()

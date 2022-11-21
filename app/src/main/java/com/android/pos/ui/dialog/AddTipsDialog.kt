@@ -12,6 +12,7 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.*
 import android.view.inputmethod.InputMethodManager
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
@@ -77,7 +78,7 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
         }
 
         dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
-        val back = ColorDrawable(Color.WHITE)
+        val back = ColorDrawable(ContextCompat.getColor(binding.root.context,R.color.bg_color))
         val inset = InsetDrawable(back, 150, 100, 150, 100)
         dialog?.window?.setBackgroundDrawable(inset);
 

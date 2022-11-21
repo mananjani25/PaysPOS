@@ -20,6 +20,7 @@ import android.widget.RadioButton
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.PopupMenu
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -397,7 +398,7 @@ class AllItems(val clickedPosition: Int, val totalItems: Int) : Fragment(), Item
             .setView(dialogView)
             .show()
         customDialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
-        val back = ColorDrawable(Color.WHITE)
+        val back = ColorDrawable(ContextCompat.getColor(binding.root.context,R.color.bg_color))
         val inset = InsetDrawable(back, 150, 200, 150, 200)
         customDialog?.window?.setBackgroundDrawable(inset);
         var txttitle = customDialog.findViewById<AppCompatTextView>(R.id.txtTitle)
