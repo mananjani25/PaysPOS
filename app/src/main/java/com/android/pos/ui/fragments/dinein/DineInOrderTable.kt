@@ -5309,13 +5309,13 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             }
 
-            val str8 = padLine(
-                "Customer Signature",
-                "     _________________________",
-                48
-            ).toString()
+            if (customerSettingModel.fonts == Constants.LARGE) {
+                PrintSunmiUtils.boldText("Customer Signature ____")
+            } else {
+                PrintSunmiUtils.boldText("Customer Signature           __________________")
+            }
 
-            PrintSunmiUtils.customerSignature(str8)
+            SunmiPrintHelper.getInstance().lineWrap(2)
 
             if (customerSettingModel.showQrCode) {
                 PrintSunmiUtils.qrCodeInner(getOrderDetailsResponse?.digitalReceiptUrl.toString())
@@ -7173,13 +7173,13 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
             SunmiPrintHelper.getInstance().lineWrap(2)
-            val str8 = padLine(
-                "Customer Signature",
-                "     _________________________",
-                48
-            ).toString()
+            if (customerSettingModel.fonts == Constants.LARGE) {
+                PrintSunmiUtils.boldText("Customer Signature ____")
+            } else {
+                PrintSunmiUtils.boldText("Customer Signature           __________________")
+            }
 
-            PrintSunmiUtils.customerSignature(str8)
+            SunmiPrintHelper.getInstance().lineWrap(2)
 
             if (customerSettingModel.showQrCode) {
 

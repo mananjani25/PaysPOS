@@ -3273,6 +3273,7 @@ class ActiveOrderFragment(
                 PrintSunmiUtils.boldText("Customer Signature           __________________")
             }
 
+            SunmiPrintHelper.getInstance().lineWrap(2)
             if (customerSettingModel.showQrCode) {
 
                 PrintSunmiUtils.qrCodeInner(receiptModel.digitalReceiptUrl)
