@@ -134,7 +134,7 @@ public class AutoCompleteAdapter extends ArrayAdapter<AutocompletePrediction> im
             FindAutocompletePredictionsRequest.builder()
                 .setQuery(constraint.toString())
                 .setCountry(name) //Use only in specific country
-                .setTypeFilter(TypeFilter.ESTABLISHMENT);
+                .setTypeFilter(TypeFilter.ADDRESS);
 
         Task<FindAutocompletePredictionsResponse> results =
         placesClient.findAutocompletePredictions(requestBuilder.build());
@@ -148,7 +148,7 @@ public class AutoCompleteAdapter extends ArrayAdapter<AutocompletePrediction> im
     }
 
         if (results.isSuccessful()) {
-            if (results.getResult() != null) {
+                if (results.getResult() != null) {
                 return results.getResult().getAutocompletePredictions();
             }
         }

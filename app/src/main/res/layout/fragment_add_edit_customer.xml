@@ -229,7 +229,7 @@
                             style="@style/CustomFontSemiBold"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/billing_address"
+                            android:text="@string/delivery_address"
                             android:textColor="@color/txtColor"
                             android:textSize="@dimen/_5mdpi" />
 
@@ -269,7 +269,10 @@
                             android:hint="Street"
                             android:imeOptions="actionNext"
                             android:inputType="textVisiblePassword"
+                            android:overScrollMode="always"
                             android:padding="@dimen/_9sdp"
+                            android:scrollbarStyle="insideInset"
+                            android:scrollbars="vertical"
                             android:textColor="@color/txtColor"
                             android:textColorHint="@color/hintColor"
                             android:textSize="@dimen/_7mdpi" />
@@ -364,7 +367,7 @@
                             style="@style/CustomFontSemiBold"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/shipping_address"
+                            android:text="@string/billing_address"
                             android:textColor="@color/txtColor"
                             android:textSize="@dimen/_5mdpi" />
 
@@ -374,22 +377,17 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="start"
-                            android:layout_marginLeft="-50dp"
-                            android:button="@drawable/selector_size"
-                            android:buttonTint="@color/kitchen_size_color_selector"
                             android:gravity="center_vertical"
-                            android:scaleX="0.7"
-                            android:scaleY="0.7"
                             android:text="@string/same_as_billing_address"
                             android:textColor="@color/txtColor"
-                            android:textSize="@dimen/_7mdpi" />
+                            android:textSize="@dimen/_5mdpi" />
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
                     <androidx.appcompat.widget.LinearLayoutCompat
                         android:layout_width="match_parent"
-                        android:layout_below="@+id/heading_linear_delivery"
                         android:layout_height="wrap_content"
+                        android:layout_below="@+id/heading_linear_delivery"
                         android:layout_marginTop="@dimen/_3sdp"
                         android:orientation="vertical">
 
@@ -423,13 +421,13 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:background="@drawable/background_square_border_grey"
+                            android:digits="@string/disable_emoji_string"
+                            android:hint="@string/apt_suite"
                             android:inputType="textVisiblePassword"
                             android:padding="@dimen/_9sdp"
                             android:textColor="@color/txtColor"
-                            android:textSize="@dimen/_7mdpi"
                             android:textColorHint="@color/hint_color"
-                            android:hint="@string/apt_suite"
-                            android:digits="@string/disable_emoji_string"/>
+                            android:textSize="@dimen/_7mdpi" />
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -445,13 +443,13 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:background="@drawable/background_square_border_grey"
+                                android:digits="@string/disable_emoji_string"
+                                android:hint="@string/city"
                                 android:inputType="textVisiblePassword"
                                 android:padding="@dimen/_9sdp"
-                                android:digits="@string/disable_emoji_string"
                                 android:textColor="@color/txtColor"
-                                android:textSize="@dimen/_7mdpi"
-                                android:hint="@string/city"
-                                android:textColorHint="@color/hint_color"/>
+                                android:textColorHint="@color/hint_color"
+                                android:textSize="@dimen/_7mdpi" />
 
                             <EditText
                                 android:id="@+id/edtState_del"
@@ -460,13 +458,13 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:background="@drawable/background_square_border_grey"
+                                android:digits="@string/disable_emoji_string"
+                                android:hint="@string/state"
                                 android:inputType="textVisiblePassword"
                                 android:padding="@dimen/_9sdp"
-                                android:digits="@string/disable_emoji_string"
                                 android:textColor="@color/txtColor"
-                                android:textSize="@dimen/_7mdpi"
-                                android:hint="@string/state"
-                                android:textColorHint="@color/hint_color"/>
+                                android:textColorHint="@color/hint_color"
+                                android:textSize="@dimen/_7mdpi" />
 
                             <EditText
                                 android:id="@+id/edtZip_del"
@@ -475,13 +473,13 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:background="@drawable/background_square_border_grey"
+                                android:digits="@string/disable_emoji_string"
+                                android:hint="@string/zip"
                                 android:inputType="textVisiblePassword"
                                 android:padding="@dimen/_9sdp"
-                                android:digits="@string/disable_emoji_string"
                                 android:textColor="@color/txtColor"
-                                android:textSize="@dimen/_7mdpi"
-                                android:hint="@string/zip"
-                                android:textColorHint="@color/hint_color"/>
+                                android:textColorHint="@color/hint_color"
+                                android:textSize="@dimen/_7mdpi" />
 
 
                         </LinearLayout>
@@ -756,6 +754,7 @@
 
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
+                    android:layout_marginBottom="@dimen/_50sdp"
                     android:layout_height="wrap_content">
 
                     <TextView

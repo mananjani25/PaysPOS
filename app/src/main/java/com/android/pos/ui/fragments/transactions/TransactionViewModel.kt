@@ -5,6 +5,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.android.pos.data.model.requestModel.CashInOutModel
+import com.android.pos.data.model.requestModel.CashInOutPaymentModel
 import com.android.pos.data.model.responseModel.BaseResponse
 import com.android.pos.data.model.responseModel.GetTransactionListResponse
 import com.android.pos.data.remote.Constants
@@ -116,7 +118,11 @@ class TransactionViewModel @Inject constructor(
     }
 
     fun transactionId(transactionId: GetTransactionListResponse.Data.Payment) {
-        if (!transactionId.payableType.equals("GiftCart",true) || !transactionId.payableType.equals("Invoice",true)) {
+        if (!transactionId.payableType.equals(
+                "GiftCart",
+                true
+            ) || !transactionId.payableType.equals("Invoice", true)
+        ) {
             _transactionDetails.value = Event(transactionId)
         }
     }
@@ -247,11 +253,17 @@ class TransactionViewModel @Inject constructor(
         return b
     }
 
-    fun orderUpdateTip(orderID: Int, tipAmount: Double) {
+    fun orderUpdateTip(orderID: Int, tipAmount: Double, is_captured: Boolean) {
+
+        val paymentModel = CashInOutPaymentModel()
+        paymentModel.id = orderID
+        paymentModel.isCaptured = is_captured
+        val data = CashInOutModel()
+        data.paymentAttributes = paymentModel
 
         viewModelScope.launch {
 
-            val resource = posRepository.orderUpdateTip(orderID, tipAmount)
+            val resource = posRepository.orderUpdateTip(orderID, tipAmount, is_captured,data)
 
             when (resource.status) {
                 Status.SUCCESS -> {

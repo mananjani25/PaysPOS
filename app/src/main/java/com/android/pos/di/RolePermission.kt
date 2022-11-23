@@ -27,6 +27,7 @@ class RolePermission @Inject constructor(
     private val MODULE_INVENTORY = "Inventory"
     private val MODULE_MANUAL_SALES = "Manual Sales"
     private val MODULE_CANCEL_ORDER = "Cancel Order"
+    private val MODULE_CASH_DRAWER = "Cash Drawer"
 
     fun findCurrentUserRoleAndSave(teamRoles: List<TeamRole>) {
         for (teamRole in teamRoles) {
@@ -36,7 +37,7 @@ class RolePermission @Inject constructor(
         }
     }
 
-    private fun checkPermission(root: View?, moduleName: String): Boolean {
+     fun checkPermission(root: View?, moduleName: String): Boolean {
         prefProvider.getCurrentEmployeeRole()?.let {
             if (it.modulePermission?.isNotEmpty() == true) {
                 it.modulePermission.forEach { modulePermission ->
@@ -47,6 +48,20 @@ class RolePermission @Inject constructor(
             }
         }
         root?.showAlert("You do not have permission to access this feature.\nPlease contact your manager.")
+        return false
+    }
+
+    fun checkPermissionForCashDrawer( moduleName: String): Boolean {
+        prefProvider.getCurrentEmployeeRole()?.let {
+            if (it.modulePermission?.isNotEmpty() == true) {
+                it.modulePermission.forEach { modulePermission ->
+                    if (modulePermission.name.equals(moduleName, true)) {
+                        return true
+                    }
+                }
+            }
+        }
+      //  root?.showAlert("You do not have permission to access this feature.\nPlease contact your manager.")
         return false
     }
 
@@ -107,6 +122,10 @@ class RolePermission @Inject constructor(
 
     fun hasTablePermission(root: View?): Boolean {
         return checkPermission(root, MODULE_TABLE)
+    }
+
+    fun hasCashDrawerPermission():Boolean{
+        return checkPermissionForCashDrawer(MODULE_CASH_DRAWER)
     }
 
     fun hasClearTablePermission(root: View?): Boolean {

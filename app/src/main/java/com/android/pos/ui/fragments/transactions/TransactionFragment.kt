@@ -222,7 +222,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
             if (singleTransaction?.paymentType == "Card") {
                 magtekCall(tipAmount)
             } else {
-                tipCall()
+                tipCall(false)
             }
 
 
@@ -314,8 +314,8 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
         return binding.root
     }
 
-    private fun tipCall() {
-        singleTransaction?.let { viewModel.orderUpdateTip(it.id, tipAmount) }
+    private fun tipCall(isCard: Boolean) {
+        singleTransaction?.let { viewModel.orderUpdateTip(it.id, tipAmount, isCard) }
     }
 
     private fun apiCallTimeSheet() {
@@ -1277,7 +1277,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
                         if (response.body()!![0].transactionOutput?.isTransactionApproved == true) {
 
-                            tipCall()
+                            tipCall(true)
 
                         } else {
                             AlertUtils.showCustomAlert(

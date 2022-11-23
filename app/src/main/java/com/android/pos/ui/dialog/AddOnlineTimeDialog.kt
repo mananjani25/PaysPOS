@@ -54,7 +54,7 @@ class AddOnlineTimeDialog : DialogFragment() {
                 requireArguments().getInt("order_id")
         }
         dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
-        val back = ColorDrawable(Color.WHITE)
+        val back = ColorDrawable(ContextCompat.getColor(binding.root.context,R.color.bg_color))
         val inset = InsetDrawable(back, 150, 300, 150, 300)
         dialog?.window?.setBackgroundDrawable(inset);
 
@@ -73,7 +73,7 @@ class AddOnlineTimeDialog : DialogFragment() {
 
     private fun setUpClickForMinutes() {
         binding.txt15.setOnClickListener {
-            val back = ColorDrawable(Color.WHITE)
+            val back = ColorDrawable(ContextCompat.getColor(binding.root.context,R.color.bg_color))
             val inset = InsetDrawable(back, 150, 300, 150, 300)
             dialog?.window?.setBackgroundDrawable(inset);
             finalstring = "15"
@@ -88,7 +88,7 @@ class AddOnlineTimeDialog : DialogFragment() {
 
         }
         binding.txt30.setOnClickListener {
-            val back = ColorDrawable(Color.WHITE)
+            val back = ColorDrawable(ContextCompat.getColor(binding.root.context,R.color.bg_color))
             val inset = InsetDrawable(back, 150, 300, 150, 300)
             dialog?.window?.setBackgroundDrawable(inset);
             finalstring = "30"
@@ -103,7 +103,7 @@ class AddOnlineTimeDialog : DialogFragment() {
 
         }
         binding.txt45.setOnClickListener {
-            val back = ColorDrawable(Color.WHITE)
+            val back = ColorDrawable(ContextCompat.getColor(binding.root.context,R.color.bg_color))
             val inset = InsetDrawable(back, 150, 300, 150, 300)
             dialog?.window?.setBackgroundDrawable(inset);
             finalstring = "45"
@@ -117,7 +117,7 @@ class AddOnlineTimeDialog : DialogFragment() {
             setBackGroundAndTextColor(listTextView, binding.txt45)
         }
         binding.txt60.setOnClickListener {
-            val back = ColorDrawable(Color.WHITE)
+            val back = ColorDrawable(ContextCompat.getColor(binding.root.context,R.color.bg_color))
             val inset = InsetDrawable(back, 150, 300, 150, 300)
             dialog?.window?.setBackgroundDrawable(inset);
             binding.linearCustom.gone()
@@ -133,8 +133,8 @@ class AddOnlineTimeDialog : DialogFragment() {
         }
         binding.customMinutes.setOnClickListener {
 
-            val back = ColorDrawable(Color.WHITE)
-            val inset = InsetDrawable(back, 150, 80, 150, 110)
+            val back = ColorDrawable(ContextCompat.getColor(binding.root.context,R.color.bg_color))
+            val inset = InsetDrawable(back, 150, 110, 150, 110)
             dialog?.window?.setBackgroundDrawable(inset);
             finalstring = ""
             isSelected = false
@@ -156,11 +156,11 @@ class AddOnlineTimeDialog : DialogFragment() {
         selectedTextView: AppCompatTextView
     ) {
         for (i in unselectedList.indices) {
-            unselectedList[i].setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+            unselectedList[i].setTextColor(ContextCompat.getColor(requireContext(), R.color.txtColor))
             unselectedList[i].background =
                 ContextCompat.getDrawable(requireContext(), R.drawable.border_with_field)
         }
-        selectedTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+        selectedTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.txtColor))
         selectedTextView.setBackgroundColor(
             ContextCompat.getColor(
                 requireContext(),

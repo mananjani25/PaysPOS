@@ -1,10 +1,11 @@
 package com.android.pos.ui.fragments.dashboard.bolddashboard
 
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
 import android.graphics.Typeface
-import android.os.Build
-import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
+import android.os.*
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -17,7 +18,10 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.*
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import com.android.pos.MainApplication
 import com.android.pos.R
+import com.android.pos.aidl.ICallback
+import com.android.pos.aidl.IWoyouService
 import com.android.pos.data.entities.*
 import com.android.pos.data.model.DineInModel
 import com.android.pos.data.model.requestModel.CreateQueuePrinterRequestModel
@@ -54,6 +58,7 @@ import com.android.pos.utils.printer.PrinterClass
 import com.android.pos.utils.scanner.helpers.ScannerAppEngine
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
+import com.epson.epos2.printer.Printer
 import com.epson.eposprint.Builder
 import com.epson.eposprint.Print
 import com.google.gson.Gson
@@ -67,8 +72,9 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
-    ScannerAppEngine.IScannerAppEngineDevEventsDelegate {
+    ScannerAppEngine.IScannerAppEngineDevEventsDelegate, ICallback {
     private var dineInList: List<DineInModel>? = null
+    private var woyouService: IWoyouService? = null
     private var cartList: ArrayList<CartModel> = arrayListOf()
     private val viewModelServiceCharge by viewModels<ServiceChargeListViewModel>()
     private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
@@ -123,7 +129,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        checkCashDrawerObserver()
         syncData()
+        Binding()
 
         binding = FragmentDashboardCategoryBoldPosBinding.inflate(inflater, container, false)
         val callback: OnBackPressedCallback =
@@ -163,9 +171,30 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         return binding.root
     }
 
+    private fun checkCashDrawerObserver() {
+        viewModel.checkCashDrawerPer.observe(viewLifecycleOwner){
+            if (it){
+                checkCashDrawerPer()
+
+            }
+        }
+    }
+
+    private fun checkCashDrawerPer() {
+        Log.e("UserPermissionCash", "InsideCheckPermissionCash: ")
+        if (rolePermission.hasCashDrawerPermission()) {
+            Log.e("UserPermissionCash", "HasRole")
+            binding.layoutHeader.imgCashdDrawer.visible()
+        } else {
+            Log.e("UserPermissionCash", "HasRoleNo")
+            binding.layoutHeader.imgCashdDrawer.gone()
+        }
+
+    }
+
     private fun observerSyncItemPriceChange() {
         viewModel.syncInventroyForPriceChange.observe(requireActivity(), Observer {
-            if (isAdded){
+            if (isAdded) {
                 loadCartFragment(CartFragment(this, this))
                 loadCategoryFragment(CategoryFragment(this, binding.layoutHeader.edtSearch))
             }
@@ -410,6 +439,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         onClick()
+
         if (prefProvider.getValueboolean(ONLINE_ORDER_ENABLE, false)) {
             binding.layoutHeader.linearOnlineorder?.visible()
         } else {
@@ -501,6 +531,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
         initScanner()
 
+        checkCashDrawerPer()
         super.onViewCreated(view, savedInstanceState)
     }
 
@@ -515,6 +546,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         if (!sync) {
             ProgressUtils.showProgressDialog(requireActivity())
             viewModel.syncInventoryModule(false)
+
         } else {
             viewModel.getOnlineOrderCount()
         }
@@ -637,11 +669,13 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             viewModel.syncInventoryModule(false)
         }
         binding.layoutHeader.imgCashdDrawer.setOnClickListener {
-            try {
+
+            getCustomerPrinters()
+            /*try {
                 SunmiPrintHelper.getInstance().openCashBox()
             } catch (e: java.lang.Exception) {
                 e.printStackTrace()
-            }
+            }*/
         }
 
         /* binding.layoutHeader.txtOpenOrder.setOnClickListener {
@@ -680,6 +714,132 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         }
 
 
+    }
+
+    private fun getCustomerPrinters() {
+        viewModel.getCustomerPrinterList().observe(viewLifecycleOwner) {
+
+            when (it.status) {
+                Status.SUCCESS -> {
+                    if (it.data?.isNotEmpty() == true) {
+                        for (i in 0 until it.data.size) {
+                            if (it.data[i].name.startsWith("CloudPrint", true) == true) {
+                                if (woyouService != null) {
+                                    woyouService!!.sendRAWData(byteArrayOf(0x1B, 0x45, 0x01), this)
+                                } else {
+                                    val aa = ByteArray(5)
+
+                                    aa[0] = 0x10
+                                    aa[1] = 0x14
+                                    aa[2] = 0x00
+                                    aa[3] = 0x00
+                                    aa[4] = 0x00
+
+                                    try {
+                                        SunmiPrinterApi.getInstance().sendRawData(aa)
+                                    } catch (e: java.lang.Exception) {
+                                        e.printStackTrace()
+                                    }
+
+                                    try {
+                                        SunmiPrintHelper.getInstance().openCashBox()
+                                    } catch (e: java.lang.Exception) {
+                                        e.printStackTrace()
+                                    }
+                                }
+
+                            } else if (it.data[i].name.startsWith("InnerPrinter", true) == true) {
+
+                                if (woyouService != null) {
+                                    woyouService!!.sendRAWData(byteArrayOf(0x1B, 0x45, 0x01), this)
+                                } else {
+                                    val aa = ByteArray(5)
+
+                                    aa[0] = 0x10
+                                    aa[1] = 0x14
+                                    aa[2] = 0x00
+                                    aa[3] = 0x00
+                                    aa[4] = 0x00
+
+
+                                    try {
+                                        SunmiPrinterApi.getInstance().sendRawData(aa)
+                                    } catch (e: java.lang.Exception) {
+                                        e.printStackTrace()
+                                    }
+                                    try {
+                                        SunmiPrintHelper.getInstance().openCashBox()
+                                    } catch (e: java.lang.Exception) {
+                                        e.printStackTrace()
+                                    }
+
+                                }
+
+                            } else {
+                                var builder: Builder = Builder(
+                                    if (it.data[i].name.substring(0, 6).toString()
+                                            .lowercase() == "TM-m30".lowercase()
+                                    ) {
+                                        "TM-m30"
+                                    } else {
+                                        it.data[i].name
+                                    }, PrinterClass.language, requireActivity()
+                                )
+
+
+                                builder.addPulse(
+                                    com.epson.epos2.printer.Printer.DRAWER_HIGH,
+                                    com.epson.epos2.printer.Printer.PULSE_100
+                                )
+
+                                val status = IntArray(1)
+                                val battery = IntArray(1)
+                                try {
+                                    PrinterClass.getPrinter()?.sendData(
+                                        builder,
+                                        PrinterClass.BLUETOOTH_TIMEOUT, status, battery
+                                    )
+                                } catch (e: java.lang.Exception) {
+                                    e.printStackTrace()
+                                }
+
+
+                            }
+                        }
+
+                    }
+
+                }
+
+            }
+        }
+    }
+
+    private val serviceConnection: ServiceConnection = object : ServiceConnection {
+        override fun onServiceConnected(p0: ComponentName?, service: IBinder?) {
+            LogUtil.logE(TAG, "onServiceConnected  1")
+            woyouService = IWoyouService.Stub.asInterface(service)
+
+        }
+
+        override fun onServiceDisconnected(p0: ComponentName?) {
+            LogUtil.logE(TAG, "onServiceDisConnected  2")
+            woyouService = null
+
+
+        }
+
+    }
+
+    private fun Binding() {
+        val intent = Intent()
+        intent.setPackage("com.android.pos")
+        intent.action = "com.android.pos.aidl.IWoyouService"
+        MainApplication.getInstance()?.applicationContext?.bindService(
+            intent,
+            serviceConnection,
+            Context.BIND_AUTO_CREATE
+        )
     }
 
 
@@ -1242,58 +1402,110 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
         } else {
 
+            if (!data.name.substring(0, 6).toString().lowercase().contains("TM-m".lowercase())) {
 
-            try {
-                PrinterClass.closePrinter()
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-            /*if (PrinterClass.getPrinter() == null) {*/
-            var printer: Print? = Print(requireContext())
-            if (printer != null) {
-                /* printer.setStatusChangeEventCallback(this)
-             printer.setBatteryStatusChangeEventCallback(this)*/
-            }
-
-            val enabled = Print.FALSE
-
-            try {
-
-                printer?.openPrinter(
-                    if (data.printer_type == Constants.BLUETOOTH) {
-                        Print.DEVTYPE_BLUETOOTH
-                    } else {
-                        Print.DEVTYPE_TCP
-                    },
-                    data.ipAddress,
-                    enabled,
-                    1000
-                )
-                //  printer?.setStatusChangeEventCallback(this)
-
-            } catch (e: Exception) {
-                LogUtil.logE(TAG, "PrinterException: " + e.message)
-                printer = null
-                viewModel.downloadFinished(false)
-                if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
-                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                var mPrinter = if (data.name.substring(0, 6).toString().lowercase()
+                        .contains("TM-m".lowercase())
+                ) {
+                    Log.e(TAG, "YesContains")
+                    Printer(
+                        Printer.TM_M30,
+                        Printer.MODEL_ANK, requireContext()
+                    )
+                } else {
+                    Printer(
+                        Printer.TM_U220,
+                        Printer.MODEL_ANK, requireContext()
+                    )
                 }
 
-            }
+                mPrinter.setReceiveEventListener { printer, i, printerStatusInfo, s ->
 
+                    Log.e(
+                        TAG,
+                        "PrinterEvent  ${Gson().toJson(printerStatusInfo)} other1 ${s}  other2 ${i}"
+                    )
+                    if (printerStatusInfo.online == 1) {
+                        try {
+                            printer.disconnect()
 
-            if (printer != null) {
-                PrinterClass.setPrinter(printer)
+                        } catch (e: java.lang.Exception) {
+                            e.printStackTrace()
+                        }
+                    }
+                }
+                try {
+                    Log.e(TAG, "printerDataType:  ${data.printer_type}")
 
-                generateKitchenReceipt(data, type, createOrderResponse.data)
+                    var printerAdd =
+                        if (data.printer_type == Constants.BLUETOOTH) "BT:" + data.macAddress else "TCP:" + data.ipAddress
+                    mPrinter.connect(
+                        printerAdd,
+                        Printer.PARAM_DEFAULT
+                    )
+                    mPrinter.startMonitor()
+
+                    generateReceiptForU220(mPrinter, data, type, createOrderResponse.data)
+
+                } catch (e: java.lang.Exception) {
+                    e.printStackTrace()
+                }
 
             } else {
-                LogUtil.logE(TAG, "PrinterIsNotNull:")
-                viewModel.downloadFinished(false)
-                if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
-                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+
+
+                try {
+                    PrinterClass.closePrinter()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+                /*if (PrinterClass.getPrinter() == null) {*/
+                var printer: Print? = Print(requireContext())
+                if (printer != null) {
+                    /* printer.setStatusChangeEventCallback(this)
+             printer.setBatteryStatusChangeEventCallback(this)*/
                 }
 
+                val enabled = Print.FALSE
+
+                try {
+
+                    printer?.openPrinter(
+                        if (data.printer_type == Constants.BLUETOOTH) {
+                            Print.DEVTYPE_BLUETOOTH
+                        } else {
+                            Print.DEVTYPE_TCP
+                        },
+                        data.ipAddress,
+                        enabled,
+                        1000
+                    )
+                    //  printer?.setStatusChangeEventCallback(this)
+
+                } catch (e: Exception) {
+                    LogUtil.logE(TAG, "PrinterException: " + e.message)
+                    printer = null
+                    viewModel.downloadFinished(false)
+                    if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                        findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                    }
+
+                }
+
+
+                if (printer != null) {
+                    PrinterClass.setPrinter(printer)
+
+                    generateKitchenReceipt(data, type, createOrderResponse.data)
+
+                } else {
+                    LogUtil.logE(TAG, "PrinterIsNotNull:")
+                    viewModel.downloadFinished(false)
+                    if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                        findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                    }
+
+                }
             }
         }
 
@@ -1301,6 +1513,365 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
          }
  */
+    }
+
+    private fun generateReceiptForU220(
+        builder: Printer,
+        data: PrinterResponse.Data.KitchenReceiptPrinters,
+        type: String,
+        receiptModel: CreateOrderResponse.Data
+    ) {
+        try {
+            val pname = if (data.name.substring(0, 6).toString()
+                    .lowercase() == "TM-m30".lowercase()
+            ) {
+                "TM-m30"
+            } else {
+                data.name
+            }
+
+            var fontSizeH = 1
+            var fontSizeW = 1
+            when (kitchenSettingModel.fonts) {
+                SMALL -> {
+                    fontSizeH = 1
+                    fontSizeW = 1
+                }
+                MEDIUM -> {
+                    fontSizeH = 1
+                    fontSizeW = 2
+                }
+                LARGE -> {
+                    fontSizeH = 2
+                    fontSizeW = 2
+                }
+
+
+            }
+
+
+            if (data.name.substring(0, 4)
+                    .equals("TM-U", true) || data.name.contains("U")
+            ) {
+
+                LogUtil.logE(TAG, "kitchenFonts:  ${kitchenSettingModel.fonts}")
+                LogUtil.logE(TAG, "kitfontSize:  ${fontSizeH}")
+
+                builder.addFeedUnit(30)
+                builder.addFeedLine(2)
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(2, 2)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+
+                builder.addText(
+                    "OrderID:" + receiptModel?.order?.id
+                )
+
+                builder.addFeedUnit(30)
+                builder.addFeedLine(1)
+                if (kitchenSettingModel.showOrderType) {
+
+
+                    builder.addTextFont(Builder.FONT_E)
+                    builder.addTextLang(Builder.LANG_EN)
+                    builder.addTextSize(fontSizeH, fontSizeW)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.TRUE,
+                        Builder.COLOR_1
+                    )
+                    builder.addTextAlign(Builder.ALIGN_CENTER)
+
+                    addBuilderTextForU220(builder, receiptModel?.order?.orderType.toString())
+                }
+
+                /* if (receiptModel?.order?.orderType.trim().lowercase() == "OpenOrder".trim()
+                     .lowercase()
+               ) {*/
+                builder.addFeedLine(1)
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(fontSizeH, fontSizeW)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+
+                addBuilderTextForU220(builder, receiptModel?.order?.deliveryType.toString())
+
+
+                if (kitchenSettingModel.showTeamMember) {
+
+                    builder.addFeedUnit(30)
+                    builder.addTextFont(Builder.FONT_E)
+                    //  builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextLang(Builder.LANG_EN)
+                    builder.addTextSize(fontSizeH, fontSizeW)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.COLOR_1
+                    )
+                    builder.addText(
+                        padLine(
+                            "Employee:" + receiptModel?.order?.employee?.name, "",
+                            33
+                        )
+                    )
+
+                }
+                builder.addFeedUnit(30)
+                builder.addTextFont(Builder.FONT_E)
+                //  builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(fontSizeH, fontSizeW)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+
+                builder.addText(
+                    padLine(
+                        Constants.getReceiptFormatDateFromUTCServer(
+                            requireContext(),
+                            receiptModel?.order?.createdAt.toString()
+                        ),
+                        "",
+                        33
+                    )
+                )
+
+                builder.addFeedLine(1)
+
+                builder.addTextFont(Builder.FONT_B)
+                //builder.addTextLineSpace(20)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(fontSizeH, fontSizeW)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+
+                addHorizontalKitchenLineForU220(builder)
+
+                receiptModel?.order?.orderItems?.let {
+                    addOrdersForKitchenU220(
+                        builder!!,
+                        it,
+                        fontSizeH,
+                        fontSizeW,
+                        data.printerCategories.toCollection(arrayListOf())
+                    )
+                }
+
+                if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
+                    builder.addFeedUnit(30)
+                    builder.addFeedLine(1)
+                    builder.addTextFont(Builder.FONT_E)
+                    builder.addTextAlign(Builder.ALIGN_LEFT)
+                    //builder.addTextLineSpace(20)
+                    builder.addTextLang(Builder.LANG_EN)
+                    builder.addTextSize(fontSizeH, fontSizeW)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.TRUE,
+                        Builder.COLOR_1
+                    )
+                    builder.addText("Order Note")
+
+                    builder.addFeedUnit(30)
+
+                    builder.addTextFont(Builder.FONT_E)
+                    builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextLang(Builder.LANG_EN)
+                    builder.addTextSize(fontSizeH, fontSizeW)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.COLOR_1
+                    )
+
+
+                    builder.addText(receiptModel?.order?.note.toString())
+                }
+
+
+                if (kitchenSettingModel.showCustomerAddress != false or kitchenSettingModel.showCustomerPhone != false or kitchenSettingModel.showCustomerName) {
+                    if (receiptModel?.order?.customer != null) {
+
+                        builder.addFeedUnit(30)
+                        builder.addFeedLine(1)
+                        builder.addTextFont(Builder.FONT_E)
+                        //builder.addTextLineSpace(20)
+                        builder.addTextAlign(Builder.ALIGN_LEFT)
+                        builder.addTextLang(Builder.LANG_EN)
+                        builder.addTextSize(fontSizeH, fontSizeW)
+                        builder.addTextStyle(
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.TRUE,
+                            Builder.COLOR_1
+                        )
+                        builder.addText("Customer Details" + "\n")
+
+                        builder.addTextFont(Builder.FONT_B)
+                        //builder.addTextLineSpace(20)
+                        builder.addTextLang(Builder.LANG_EN)
+                        builder.addTextSize(fontSizeH, fontSizeW)
+                        builder.addTextStyle(
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.COLOR_1
+                        )
+                        addHorizontalKitchenLineForU220(builder)
+
+                        if (kitchenSettingModel.showCustomerName) {
+
+                            builder.addFeedUnit(30)
+                            builder.addTextFont(Builder.FONT_E)
+                            builder.addTextAlign(Builder.ALIGN_LEFT)
+                            //builder.addTextLineSpace(20)
+                            builder.addTextLang(Builder.LANG_EN)
+                            builder.addTextSize(fontSizeH, fontSizeW)
+                            builder.addTextStyle(
+                                Builder.FALSE,
+                                Builder.FALSE,
+                                Builder.TRUE,
+                                Builder.COLOR_1
+                            )
+                            builder.addText(receiptModel?.order?.customer?.firstName + " " + receiptModel?.order?.customer?.lastName)
+
+                        }
+
+
+                        if (kitchenSettingModel.showCustomerPhone) {
+
+                            if (receiptModel?.order?.customer?.phones?.isNotEmpty()) {
+                                builder.addFeedUnit(30)
+                                builder.addTextFont(Builder.FONT_E)
+                                builder.addTextAlign(Builder.ALIGN_LEFT)
+                                //builder.addTextLineSpace(20)
+                                builder.addTextLang(Builder.LANG_EN)
+                                builder.addTextSize(fontSizeH, fontSizeW)
+                                builder.addTextStyle(
+                                    Builder.FALSE,
+                                    Builder.FALSE,
+                                    Builder.TRUE,
+                                    Builder.COLOR_1
+                                )
+                                builder.addText(
+                                    MethodUtils.getUSFormatNumber(
+                                        receiptModel?.order?.customer?.phones?.get(
+                                            0
+                                        )?.phoneNumber
+                                    )
+                                )
+                            }
+
+                        }
+
+                        if (kitchenSettingModel.showCustomerAddress) {
+
+                            if (receiptModel?.order?.orderType.trim()
+                                    .lowercase() == "Open Order".trim()
+                                    .lowercase() && receiptModel?.order?.deliveryType.trim()
+                                    .lowercase() == "Pickup".trim()
+                                    .lowercase()
+                            ) {
+
+                            } else if (receiptModel.order?.customer?.addresses?.isNotEmpty()) {
+
+                                builder.addFeedUnit(30)
+                                builder.addTextFont(Builder.FONT_E)
+                                builder.addTextAlign(Builder.ALIGN_LEFT)
+                                //builder.addTextLineSpace(20)
+                                builder.addTextLang(Builder.LANG_EN)
+                                builder.addTextSize(fontSizeH, fontSizeW)
+                                builder.addTextStyle(
+                                    Builder.FALSE,
+                                    Builder.FALSE,
+                                    Builder.TRUE,
+                                    Builder.COLOR_1
+                                )
+
+                                receiptModel?.order?.customer?.addresses?.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
+                                    ?.forEach {
+
+                                        if (it.typeOfAddress.equals(
+                                                Constants.BILLING_ADDRESS,
+                                                ignoreCase = true
+                                            )
+                                        ) {
+                                            builder!!.addText(
+                                                it.fullAddress
+                                            )
+                                        }
+                                    }
+
+                                // builder.addText(receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress)
+                            }
+                        }
+
+                    }
+                }
+            }
+
+            builder?.addFeedLine(5)
+
+            builder?.addCut(Builder.CUT_FEED)
+
+            val status = IntArray(1)
+            status[0] = 0
+            val battery = IntArray(1)
+
+
+            try {
+                builder.sendData(Printer.PARAM_DEFAULT)
+                viewModel.downloadFinished(false)
+                if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                }
+
+                //PrinterClass.getPrinter()?.sendData(builder, 0, status, battery)
+            } catch (e: Exception) {
+                viewModel.downloadFinished(false)
+                if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                }
+                /*PrinterClass.closePrinter()
+                e.printStackTrace()
+                Log.e(TAG, "PrinterError: " + e.localizedMessage)
+               */
+            }
+
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            viewModel.downloadFinished(false)
+            if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+            }
+        }
+
     }
 
     private fun setService(data: CreateOrderResponse.Data) {
@@ -2729,6 +3300,15 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         } else {
             viewModel.cartLogic(cartList, item, ADD)
         }*/
+
+    }
+
+    override fun asBinder(): IBinder {
+        return woyouService?.asBinder()!!
+
+    }
+
+    override fun onRunResult(isSuccess: Boolean, code: Int, msg: String?) {
 
     }
 }

@@ -535,8 +535,13 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     ) =
         getResult { apiService.getCashInOut(startDate, endDate, terminalId, s, s1) }
 
-    suspend fun orderUpdateTip(orderId: Int, customerId: Double) =
-        getResult { apiService.orderUpdateTip(orderId, customerId) }
+    suspend fun orderUpdateTip(
+        orderId: Int,
+        customerId: Double,
+        is_captured: Boolean,
+        data: CashInOutModel
+    ) =
+        getResult { apiService.orderUpdateTip(orderId, customerId,is_captured,data) }
 
     suspend fun updateKitchenFireStatus(id: Int, isFired: Boolean, items: String) =
         getResult {

@@ -841,6 +841,14 @@ fun addBuilderText(
     return builder
 }
 
+fun addBuilderTextForU220(
+    builder:Printer,
+    text: String
+): Printer {
+    builder.addText(text)
+    return builder
+}
+
 fun addHorizontalLargeLine(builder: Builder): Builder {
     var str: String = ""
     for (i in 0 until 24) {
@@ -882,6 +890,20 @@ fun orderSalesDetails(builder: Builder): Builder {
 }
 
 fun addHorizontalKitchenLine(builder: Builder): Builder {
+
+
+    var str: String = ""
+    for (i in 0 until 40) {
+        str += "-"
+    }
+
+    builder.addText(str)
+
+    return builder
+}
+
+
+fun addHorizontalKitchenLineForU220(builder: Printer): Printer {
 
 
     var str: String = ""
@@ -1222,6 +1244,79 @@ fun addOrdersForKitchenDineIn(
                 }
                 if (obj.note.isNotEmpty()) {
                     builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+                    builder.addTextFont(Builder.FONT_C)
+                    //builder.addTextLineSpace(20)
+                    builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextLang(Builder.LANG_EN)
+                    builder.addTextSize(fontSizeH, fontSizeW)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.TRUE,
+                        Builder.COLOR_1
+                    )
+                    builder.addText("  Note:" + obj.note)
+
+                }
+            }
+        }
+    }
+
+
+    return builder
+}
+
+fun addOrdersForKitchenDineInU220(
+    builder: Printer,
+    list: ArrayList<TbItem>,
+    fontSizeH: Int = 1,
+    fontSizeW: Int = 1,
+    printerCat: ArrayList<PrinterResponse.Data.PrinterCategories>? = null
+): Printer {
+
+    list.forEach { obj ->
+        printerCat?.forEach {
+            if (it.id == obj.categoryId && it.printerEnable && it.categoryActive) {
+
+                builder.addFeedUnit(30)
+                builder.addTextFont(Builder.FONT_C)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextSize(fontSizeH, fontSizeW)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+
+                builder.addText(obj.itemQuantity.toString() + " " + obj.name.uppercase())
+
+                if (obj.modifiers.isNotEmpty()) {
+                    for (j in 0 until obj.modifiers.size) {
+                        val modifierObj = obj.modifiers.get(j)
+                        builder.addFeedUnit(30)
+                        builder.addTextFont(Builder.FONT_C)
+                        //builder.addTextLineSpace(20)
+                        builder.addTextAlign(Builder.ALIGN_LEFT)
+                        builder.addTextLang(Builder.LANG_EN)
+                        builder.addTextSize(fontSizeH, fontSizeW)
+                        builder.addTextStyle(
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.TRUE,
+                            Builder.COLOR_2
+                        )
+                        //builder.addTextPosition(1)
+
+
+                        builder.addText("  " + modifierObj.name.uppercase())
+
+
+                    }
+                }
+                if (obj.note.isNotEmpty()) {
                     builder.addFeedUnit(30)
                     builder.addTextFont(Builder.FONT_C)
                     //builder.addTextLineSpace(20)
@@ -1751,6 +1846,90 @@ fun addOrdersForKitchen(
 
     return builder
 }
+
+fun addOrdersForKitchenU220(
+    builder: Printer,
+    list: List<CreateOrderResponse.Data.Order.OrderItem>,
+    fontSizeH: Int = 1,
+    fontSizeW: Int = 1,
+    printerCat: ArrayList<PrinterResponse.Data.PrinterCategories?>? = null,
+    guestAttributes: ArrayList<CreateOrderResponse.Data.Order.GuestAttributes>? = null
+): Printer {
+    for (i in 0 until list.size) {
+        printerCat?.forEach {
+            if (it?.id == list[i].categoryId) {
+                if (it.categoryActive && it.printerEnable) {
+
+                    val obj = list.get(i)
+                    builder.addFeedLine(1)
+                    builder.addFeedUnit(30)
+                    builder.addTextFont(Builder.FONT_C)
+                    builder.addTextLang(Builder.LANG_EN)
+                    builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextSize(fontSizeH, fontSizeW)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.TRUE,
+                        Builder.COLOR_1
+                    )
+
+                    builder.addText(obj.quantity.toString() + " " + obj.itemName.uppercase())
+
+                    if (obj.orderItemModifiers.isNotEmpty()) {
+                        for (j in 0 until obj.orderItemModifiers.size) {
+                            val modifierObj = obj.orderItemModifiers.get(j)
+                            builder.addFeedLine(1)
+                            builder.addFeedUnit(30)
+                            builder.addTextFont(Builder.FONT_C)
+                            //builder.addTextLineSpace(20)
+                            builder.addTextAlign(Builder.ALIGN_LEFT)
+                            builder.addTextLang(Builder.LANG_EN)
+                            builder.addTextSize(fontSizeH, fontSizeW)
+                            builder.addTextStyle(
+                                Builder.FALSE,
+                                Builder.FALSE,
+                                Builder.TRUE,
+                                Builder.COLOR_2
+                            )
+                            //builder.addTextPosition(1)
+
+
+                            builder.addText("  " + modifierObj.name.uppercase())
+
+
+                        }
+                    }
+                    if (obj.note.isNotEmpty()) {
+                        builder.addFeedLine(1)
+                        builder.addFeedUnit(30)
+                        builder.addTextFont(Builder.FONT_C)
+                        //builder.addTextLineSpace(20)
+                        builder.addTextAlign(Builder.ALIGN_LEFT)
+                        builder.addTextLang(Builder.LANG_EN)
+                        builder.addTextSize(fontSizeH, fontSizeW)
+                        builder.addTextStyle(
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.TRUE,
+                            Builder.COLOR_1
+                        )
+                        builder.addText("  Note:" + obj.note)
+
+                    }
+
+
+                }
+            }
+        }
+
+
+    }
+
+
+    return builder
+}
+
 
 fun addOrdersForKitchen(
     list: List<CreateOrderResponse.Data.Order.OrderItem>,

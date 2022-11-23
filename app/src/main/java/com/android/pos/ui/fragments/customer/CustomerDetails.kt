@@ -111,7 +111,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
                     "getServiceCharges: finall " + Gson().toJson(listOfServiceCharge)
                 )
 
-            } else {
+            }else{
                 listOfServiceCharge = ArrayList()
             }
         }
@@ -169,7 +169,12 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
             var pos = 0
 
             customerModel.addresses.forEach { addresstemp ->
-                address.append(addresstemp.type_of_address + " : " + addresstemp.full_address + "\n")
+                if (addresstemp.type_of_address=="Shipping"){
+                    address.append("Delivery" + " : " + addresstemp.full_address + "\n")
+                }else{
+                    address.append(addresstemp.type_of_address + " : " + addresstemp.full_address)
+                }
+
             }
             address.also {
                 binding.txtAddress.text = it

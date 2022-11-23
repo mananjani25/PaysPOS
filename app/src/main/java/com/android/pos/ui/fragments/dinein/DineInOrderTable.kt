@@ -70,6 +70,7 @@ import com.android.pos.utils.*
 import com.android.pos.utils.extensions.liveSnackBar
 import com.android.pos.utils.printer.PrinterClass
 import com.android.pos.utils.statusUtils.Status
+import com.epson.epos2.printer.Printer
 import com.epson.eposprint.Builder
 import com.epson.eposprint.Print
 import com.google.android.material.snackbar.Snackbar
@@ -869,11 +870,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             showPopupWindow(it)
         }
     }
+
     private fun variationAtt(variation: GetOrderDetailsResponse.Data.OrderItem.OrderItemVariationAttribute): List<VariationsAttribute> {
 
         val variationsAttributeList = ArrayList<VariationsAttribute>()
 
-        if (variation!=null){
+        if (variation != null) {
             val variationsAttribute = VariationsAttribute()
             variationsAttribute.id = variation.variationId
             variationsAttribute.name = variation.name
@@ -2108,11 +2110,13 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                         item.note = it.note
                                         item.isFired = guestItem.get(j).is_fired
                                         item.timeStamp = it.timestamp
-                                        if (it.orderItemModifiers.isNotEmpty()){
-                                            item.modifier_set_ids = modifiersIds(it.orderItemModifiers)
+                                        if (it.orderItemModifiers.isNotEmpty()) {
+                                            item.modifier_set_ids =
+                                                modifiersIds(it.orderItemModifiers)
                                         }
-                                        if (it.order_item_variation!=null){
-                                            item.variationsAttributes = variationAtt(it.order_item_variation!!)
+                                        if (it.order_item_variation != null) {
+                                            item.variationsAttributes =
+                                                variationAtt(it.order_item_variation!!)
                                         }
                                         itemDineIn.isHeader = 1
                                         itemDineIn.item = item
@@ -5305,13 +5309,13 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             }
 
-            val str8 = padLine(
-                "Customer Signature",
-                "     _________________________",
-                48
-            ).toString()
+            if (customerSettingModel.fonts == Constants.LARGE) {
+                PrintSunmiUtils.boldText("Customer Signature ____")
+            } else {
+                PrintSunmiUtils.boldText("Customer Signature           __________________")
+            }
 
-            PrintSunmiUtils.customerSignature(str8)
+            SunmiPrintHelper.getInstance().lineWrap(2)
 
             if (customerSettingModel.showQrCode) {
                 PrintSunmiUtils.qrCodeInner(getOrderDetailsResponse?.digitalReceiptUrl.toString())
@@ -7169,13 +7173,13 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
             SunmiPrintHelper.getInstance().lineWrap(2)
-            val str8 = padLine(
-                "Customer Signature",
-                "     _________________________",
-                48
-            ).toString()
+            if (customerSettingModel.fonts == Constants.LARGE) {
+                PrintSunmiUtils.boldText("Customer Signature ____")
+            } else {
+                PrintSunmiUtils.boldText("Customer Signature           __________________")
+            }
 
-            PrintSunmiUtils.customerSignature(str8)
+            SunmiPrintHelper.getInstance().lineWrap(2)
 
             if (customerSettingModel.showQrCode) {
 
@@ -7311,49 +7315,536 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             }
         } else {
 
-            PrinterClass.setPrinter(null)
-            if (PrinterClass.getPrinter() == null) {
-                var printer: Print? = Print(requireContext())
-                if (printer != null) {
-//                printer.setStatusChangeEventCallback(this)
-//                printer.setBatteryStatusChangeEventCallback(this)
+            if (!data.name.substring(0, 6).toString().lowercase().contains("TM-m".lowercase())) {
+                var mPrinter = if (data.name.substring(0, 6).toString().lowercase()
+                        .contains("TM-m".lowercase())
+                ) {
+                    Log.e(TAG, "YesContains")
+                    Printer(
+                        Printer.TM_M30,
+                        Printer.MODEL_ANK, requireContext()
+                    )
+                } else {
+                    Printer(
+                        Printer.TM_U220,
+                        Printer.MODEL_ANK, requireContext()
+                    )
+
+
                 }
 
-                val enabled = Print.FALSE
+                mPrinter.setReceiveEventListener { printer, i, printerStatusInfo, s ->
+
+                    Log.e(
+                        TAG,
+                        "PrinterEvent  ${Gson().toJson(printerStatusInfo)} other1 ${s}  other2 ${i}"
+                    )
+                    if (printerStatusInfo.online == 1) {
+                        try {
+                            printer.disconnect()
+
+                        } catch (e: java.lang.Exception) {
+                            e.printStackTrace()
+                        }
+                    }
+                }
 
                 try {
+                    Log.e(TAG, "printerDataType:  ${data.printer_type}")
 
-                    printer?.openPrinter(
-                        if (data.printer_type == Constants.BLUETOOTH) {
-                            Print.DEVTYPE_BLUETOOTH
-                        } else {
-                            Print.DEVTYPE_TCP
-                        },
-                        data.ipAddress,
-                        enabled,
-                        1000
+                    var printerAdd =
+                        if (data.printer_type == Constants.BLUETOOTH) "BT:" + data.macAddress else "TCP:" + data.ipAddress
+                    mPrinter.connect(
+                        printerAdd,
+                        Printer.PARAM_DEFAULT
                     )
-                    // printer?.setStatusChangeEventCallback(this)
+                    mPrinter.startMonitor()
 
-                } catch (e: Exception) {
-                    LogUtil.logE(TAG, "PrinterException: " + e.message)
-                    printer = null
-                    return
+                    generateReceiptForU220(data, type, item,mPrinter)
+
+                } catch (e: java.lang.Exception) {
+                    e.printStackTrace()
                 }
 
-                if (printer != null) {
-                    PrinterClass.setPrinter(printer)
 
-                    generateKitchenReceipt(data, type, item)
 
-                }
+
+
+
 
             } else {
-                LogUtil.logE(TAG, "PrinterIsNotNull:")
+
+                PrinterClass.setPrinter(null)
+                if (PrinterClass.getPrinter() == null) {
+                    var printer: Print? = Print(requireContext())
+                    if (printer != null) {
+//                printer.setStatusChangeEventCallback(this)
+//                printer.setBatteryStatusChangeEventCallback(this)
+                    }
+
+                    val enabled = Print.FALSE
+
+                    try {
+
+                        printer?.openPrinter(
+                            if (data.printer_type == Constants.BLUETOOTH) {
+                                Print.DEVTYPE_BLUETOOTH
+                            } else {
+                                Print.DEVTYPE_TCP
+                            },
+                            data.ipAddress,
+                            enabled,
+                            1000
+                        )
+                        // printer?.setStatusChangeEventCallback(this)
+
+                    } catch (e: Exception) {
+                        LogUtil.logE(TAG, "PrinterException: " + e.message)
+                        printer = null
+                        return
+                    }
+
+                    if (printer != null) {
+                        PrinterClass.setPrinter(printer)
+
+                        generateKitchenReceipt(data, type, item)
+
+                    }
+
+                } else {
+                    LogUtil.logE(TAG, "PrinterIsNotNull:")
+                }
             }
         }
 
     }
+
+    private fun generateKitchenReceiptForU220(
+        customerReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
+        type: String,
+        item: ArrayList<TbItem>,
+        builder: Printer
+    ) {
+        try {
+
+            val pname = if (customerReceiptPrinters.name.substring(0, 6).toString()
+                    .lowercase() == "TM-m30".lowercase()
+            ) {
+                "TM-m30"
+            } else {
+                customerReceiptPrinters.name
+            }
+
+
+            var fontSizeH = 1
+            var fontSizeW = 1
+            when (kitchenSettingModel.fonts) {
+                Constants.SMALL -> {
+                    fontSizeH = 1
+                    fontSizeW = 1
+                }
+                Constants.MEDIUM -> {
+                    fontSizeH = 1
+                    fontSizeW = 2
+                }
+                Constants.LARGE -> {
+                    fontSizeH = 2
+                    fontSizeW = 2
+                }
+
+
+            }
+
+
+            if (customerReceiptPrinters.name.substring(0, 4)
+                    .equals("TM-U", true) || customerReceiptPrinters.name.contains("U")
+            ) {
+
+
+                builder.addFeedUnit(30)
+                builder.addFeedLine(2)
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(2, 2)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+
+                builder.addText(
+                    "OrderID:" + getOrderDetailsResponse?.id
+                )
+                builder.addFeedUnit(30)
+                builder.addFeedLine(1)
+
+                if (kitchenSettingModel.showOrderType) {
+
+
+                    builder.addFeedLine(1)
+                    builder.addTextFont(Builder.FONT_E)
+                    builder.addTextLang(Builder.LANG_EN)
+                    builder.addTextSize(fontSizeH, fontSizeW)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.TRUE,
+                        Builder.COLOR_1
+                    )
+                    builder.addTextAlign(Builder.ALIGN_CENTER)
+
+                    addBuilderTextForU220(builder, getOrderDetailsResponse?.orderType.toString())
+                }
+
+                builder.addFeedLine(2)
+                builder.addTextFont(Builder.FONT_E)
+                //  builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(fontSizeH, fontSizeW)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+
+
+                builder.addText(getOrderDetailsResponse?.floorPlanTable?.tableName + " (" + getOrderDetailsResponse?.floorPlanTable?.tableNumber + ")")
+
+
+                if (kitchenSettingModel.showTeamMember) {
+
+                    builder.addFeedUnit(30)
+                    builder.addTextFont(Builder.FONT_E)
+                    //  builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextLang(Builder.LANG_EN)
+                    builder.addTextSize(fontSizeH, fontSizeW)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.COLOR_1
+                    )
+                    builder.addText(
+                        padLine(
+                            "Employee:" + getOrderDetailsResponse?.employee?.name, "",
+                            33
+                        )
+                    )
+
+                }
+                builder.addFeedUnit(30)
+                builder.addTextFont(Builder.FONT_E)
+                //  builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(fontSizeH, fontSizeW)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+
+
+                builder.addText(
+                    padLine(
+                        Constants.getReceiptFormatDateFromUTCServer(
+                            requireContext(),
+                            getOrderDetailsResponse?.createdAt.toString()
+                        ),
+                        "",
+                        33
+                    )
+                )
+
+                builder.addFeedLine(1)
+
+                builder.addTextFont(Builder.FONT_B)
+                //builder.addTextLineSpace(20)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(fontSizeH, fontSizeW)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+
+                addHorizontalKitchenLineForU220(builder)
+
+
+                addOrdersForKitchenDineInU220(
+                    builder,
+                    item,
+                    fontSizeH,
+                    fontSizeW,
+                    customerReceiptPrinters.printerCategories.toCollection(
+                        arrayListOf()
+                    )
+                )
+
+                if (getOrderDetailsResponse?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
+                    builder.addFeedUnit(30)
+                    builder.addFeedLine(1)
+                    builder.addTextFont(Builder.FONT_E)
+                    builder.addTextAlign(Builder.ALIGN_LEFT)
+                    //builder.addTextLineSpace(20)
+                    builder.addTextLang(Builder.LANG_EN)
+                    builder.addTextSize(fontSizeH, fontSizeW)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.TRUE,
+                        Builder.COLOR_1
+                    )
+                    builder.addText("Order Note")
+
+                    builder.addFeedUnit(30)
+
+                    builder.addTextFont(Builder.FONT_E)
+                    builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextLang(Builder.LANG_EN)
+                    builder.addTextSize(fontSizeH, fontSizeW)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.COLOR_1
+                    )
+
+
+                    builder.addText(getOrderDetailsResponse?.note.toString())
+                }
+
+
+            }
+
+            builder.addFeedLine(2)
+
+            builder.addCut(Builder.CUT_FEED)
+
+            try {
+
+                builder.sendData(Printer.PARAM_DEFAULT)
+            } catch (e: java.lang.Exception) {
+                e.printStackTrace()
+            }
+
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+    }
+
+    private fun generateReceiptForU220(customerReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters, type: String, item: ArrayList<TbItem>, builder: Printer) {
+
+
+        var fontSizeH = 1
+        var fontSizeW = 1
+        when (kitchenSettingModel.fonts) {
+            Constants.SMALL -> {
+                fontSizeH = 1
+                fontSizeW = 1
+            }
+            Constants.MEDIUM -> {
+                fontSizeH = 1
+                fontSizeW = 2
+            }
+            Constants.LARGE -> {
+                fontSizeH = 2
+                fontSizeW = 2
+            }
+
+
+        }
+
+
+
+
+        if (customerReceiptPrinters.name.substring(0, 4)
+                .equals("TM-U", true) || customerReceiptPrinters.name.contains("U")
+        ) {
+
+
+            builder.addFeedUnit(30)
+            builder.addFeedLine(2)
+            builder.addTextFont(Builder.FONT_E)
+            builder.addTextAlign(Builder.ALIGN_CENTER)
+            builder.addTextLang(Builder.LANG_EN)
+            builder.addTextSize(2, 2)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.TRUE,
+                Builder.COLOR_1
+            )
+
+            builder.addText(
+                "OrderID:" + getOrderDetailsResponse?.id
+            )
+            builder.addFeedUnit(30)
+            builder.addFeedLine(1)
+
+            if (kitchenSettingModel.showOrderType) {
+
+
+                builder.addFeedLine(1)
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(fontSizeH, fontSizeW)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+
+                addBuilderTextForU220(builder, getOrderDetailsResponse?.orderType.toString())
+            }
+
+            builder.addFeedLine(2)
+            builder.addTextFont(Builder.FONT_E)
+            //  builder.addTextAlign(Builder.ALIGN_LEFT)
+            builder.addTextLang(Builder.LANG_EN)
+            builder.addTextSize(fontSizeH, fontSizeW)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.COLOR_1
+            )
+
+
+            builder.addText(getOrderDetailsResponse?.floorPlanTable?.tableName + " (" + getOrderDetailsResponse?.floorPlanTable?.tableNumber + ")")
+
+
+            if (kitchenSettingModel.showTeamMember) {
+
+                builder.addFeedUnit(30)
+                builder.addTextFont(Builder.FONT_E)
+                //  builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(fontSizeH, fontSizeW)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+                builder.addText(
+                    padLine(
+                        "Employee:" + getOrderDetailsResponse?.employee?.name, "",
+                        33
+                    )
+                )
+
+            }
+            builder.addFeedUnit(30)
+            builder.addTextFont(Builder.FONT_E)
+            //  builder.addTextAlign(Builder.ALIGN_LEFT)
+            builder.addTextLang(Builder.LANG_EN)
+            builder.addTextSize(fontSizeH, fontSizeW)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.COLOR_1
+            )
+
+
+            builder.addText(
+                padLine(
+                    Constants.getReceiptFormatDateFromUTCServer(
+                        requireContext(),
+                        getOrderDetailsResponse?.createdAt.toString()
+                    ),
+                    "",
+                    33
+                )
+            )
+
+            builder.addFeedLine(1)
+
+            builder.addTextFont(Builder.FONT_B)
+            //builder.addTextLineSpace(20)
+            builder.addTextLang(Builder.LANG_EN)
+            builder.addTextSize(fontSizeH, fontSizeW)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.COLOR_1
+            )
+
+            addHorizontalKitchenLineForU220(builder)
+
+
+            addOrdersForKitchenDineInU220(
+                builder,
+                item,
+                fontSizeH,
+                fontSizeW,
+                customerReceiptPrinters.printerCategories.toCollection(
+                    arrayListOf()
+                )
+            )
+
+            if (getOrderDetailsResponse?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
+                builder.addFeedUnit(30)
+                builder.addFeedLine(1)
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextAlign(Builder.ALIGN_LEFT)
+                //builder.addTextLineSpace(20)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(fontSizeH, fontSizeW)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+                builder.addText("Order Note")
+
+                builder.addFeedUnit(30)
+
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(fontSizeH, fontSizeW)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+
+
+                builder.addText(getOrderDetailsResponse?.note.toString())
+            }
+
+
+        }
+
+        builder.addFeedLine(2)
+
+        builder.addCut(Builder.CUT_FEED)
+
+        try {
+            builder.sendData(Printer.PARAM_DEFAULT)
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+
+        }
+
+
+
+    }
+
 
     private fun generateKitchenReceipt(
         customerReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,

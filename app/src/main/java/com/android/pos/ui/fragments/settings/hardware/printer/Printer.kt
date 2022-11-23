@@ -15,6 +15,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
 import android.text.Html
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -59,8 +60,6 @@ import com.epson.epos2.discovery.Discovery
 import com.epson.epos2.discovery.DiscoveryListener
 import com.epson.epos2.discovery.FilterOption
 import com.epson.epos2.printer.Printer
-import com.epson.epos2.printer.PrinterStatusInfo
-import com.epson.epos2.printer.ReceiveListener
 import com.epson.eposprint.BatteryStatusChangeEventListener
 import com.epson.eposprint.Builder
 import com.epson.eposprint.Print
@@ -1090,7 +1089,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                 LogUtil.logE(TAG, "Here Drawer Code")
                 PrintSunmiUtils.cutPaperInner()
                 if (woyouService != null) {
-                    woyouService!!.sendRAWData(byteArrayOf(0x1B, 0x45, 0x01), this)
+                    //   woyouService!!.sendRAWData(byteArrayOf(0x1B, 0x45, 0x01), this)
                 } else {
                     val aa = ByteArray(5)
 
@@ -1106,15 +1105,13 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                     } catch (e: java.lang.Exception) {
                         e.printStackTrace()
                     }
-                    try {
-                        SunmiPrintHelper.getInstance().openCashBox()
-                    } catch (e: java.lang.Exception) {
-                        e.printStackTrace()
-                    }
+                    /*  try {
+                          SunmiPrintHelper.getInstance().openCashBox()
+                      } catch (e: java.lang.Exception) {
+                          e.printStackTrace()
+                      }*/
 
                 }
-
-
 
 
             } else {
@@ -1245,8 +1242,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             LogUtil.logE(TAG, "WOHO SERIESNULL ${woyouService}")
             if (woyouService != null) {
                 LogUtil.logE(TAG, "WOHO SERIES NOT NULL")
-                ToastUtil.showNormalToast(requireContext(), "Cash Drawer Connected..")
-                woyouService!!.sendRAWData(byteArrayOf(0x1B, 0x45, 0x01), this)
+                // ToastUtil.showNormalToast(requireContext(), "Cash Drawer Connected..")
+                //  woyouService!!.sendRAWData(byteArrayOf(0x1B, 0x45, 0x01), this)
             } else {
                 val aa = ByteArray(5)
 
@@ -1262,11 +1259,11 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                 } catch (e: java.lang.Exception) {
                     e.printStackTrace()
                 }
-                try {
-                    SunmiPrintHelper.getInstance().openCashBox()
-                } catch (e: java.lang.Exception) {
-                    e.printStackTrace()
-                }
+                /* try {
+                     SunmiPrintHelper.getInstance().openCashBox()
+                 } catch (e: java.lang.Exception) {
+                     e.printStackTrace()
+                 }*/
             }
 
 
@@ -1460,9 +1457,126 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
     private fun onInitPrinter(printerListModel: PrinterListModel) {
         //open
-        initPrinter(printerListModel)
+        // initPrinter(printerListModel)
+
+        initOldPrinterMethod(printerListModel)
 
         //initNewPrinter(printerListModel)
+
+    }
+
+    private fun initOldPrinterMethod(printerListModel: PrinterListModel) {
+        var builder: Builder? = null
+        var method = ""
+
+        builder = Builder(
+            if (printerListModel.printerName?.substring(0, 6).toString()
+                    .lowercase() == "TM-m30".lowercase()
+            ) {
+                "TM-m30"
+            } else {
+                printerListModel.printerName
+            }, language, requireActivity()
+        )
+
+        builder.addFeedLine(2)
+
+
+
+        builder.addTextFont(Builder.FONT_C)
+        builder.addTextAlign(Builder.ALIGN_CENTER)
+        builder.addTextLang(Builder.LANG_EN)
+        builder.addTextSize(1, 2)
+        builder.addTextStyle(
+            Builder.FALSE,
+            Builder.FALSE,
+            Builder.FALSE,
+            Builder.COLOR_1
+        )
+        builder.addText("Test Print")
+
+        var mPrinter = if (printerListModel.printerName?.substring(0, 6).toString().lowercase()
+                .contains("TM-m".lowercase())
+        ) {
+            Log.e(TAG, "YesContains")
+            Printer(
+                Printer.TM_M30,
+                Printer.MODEL_ANK, (activity as MainActivity).applicationContext
+            )
+        } else {
+            Printer(
+                Printer.TM_U220,
+                Printer.MODEL_ANK, (activity as MainActivity).applicationContext
+            )
+
+
+        }
+        // Initialize the printer
+
+        mPrinter.setReceiveEventListener { printer, i, printerStatusInfo, s ->
+
+            Log.e(TAG, "PrinterEvent  ${Gson().toJson(printerStatusInfo)} other1 ${s}  other2 ${i}")
+            if (printerStatusInfo.online == 1) {
+                try {
+                    printer.disconnect()
+
+                } catch (e: java.lang.Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
+        try {
+
+            var printerAdd =
+                if (printerListModel.connectionType == BLUETOOTH) "BT:" + printerListModel.deviceModel?.macAddress else "TCP:" + printerListModel.deviceModel?.ipAddress
+            mPrinter.connect(
+                printerAdd,
+                Printer.PARAM_DEFAULT
+            )
+            mPrinter.startMonitor()
+
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
+
+        mPrinter.addFeedLine(2)
+        mPrinter.addTextFont(Builder.FONT_C)
+        mPrinter.addTextAlign(Builder.ALIGN_CENTER)
+        mPrinter.addTextLang(Builder.LANG_EN)
+        mPrinter.addTextSize(1, 2)
+        mPrinter.addTextStyle(
+            Builder.FALSE,
+            Builder.FALSE,
+            Builder.FALSE,
+            Builder.COLOR_1
+        )
+        mPrinter.addText("Test Print")
+        mPrinter.addFeedLine(4)
+        mPrinter.addCut(Builder.CUT_FEED)
+
+        try {
+            mPrinter.sendData(Printer.PARAM_DEFAULT)
+            /*  try {
+                  mPrinter.disconnect()
+              } catch (e: java.lang.Exception) {
+                  e.printStackTrace()
+              }*/
+
+        } catch (e: java.lang.Exception) {
+            /* try {
+                 mPrinter.disconnect()
+             } catch (e: Exception) {
+                 e.printStackTrace()
+             }*/
+            e.printStackTrace()
+        }
+
+        /*    mPrinter.endTransaction()
+            mPrinter.disconnect()*/
+        /*  Handler(Looper.getMainLooper()).postDelayed({
+
+          }, 3000)
+  */
 
     }
 
@@ -1479,27 +1593,27 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
 /*Add a listener to your printer*/
 
-            mPrinter.setReceiveEventListener { printer, i, printerStatusInfo, s ->
+            /* mPrinter.setReceiveEventListener { printer, i, printerStatusInfo, s ->
 
-                LogUtil.logE(
-                    "PrinterDataCh",
-                    "${Gson().toJson(printer)}   int: ${i}  printerInfo: ${
-                        Gson().toJson(printerStatusInfo)
-                    }  string: ${s}"
-                )
-            }
-
-            mPrinter.setReceiveEventListener(object : ReceiveListener {
-                override fun onPtrReceive(
-                    p0: Printer?,
-                    p1: Int,
-                    p2: PrinterStatusInfo?,
-                    p3: String?
-                ) {
-                    LogUtil.logE("getPrintReceive", "online ${Gson().toJson(p2)}  data${p3}")
-                    mPrinter.endTransaction()
-                    mPrinter.disconnect()
-                    /*
+                 LogUtil.logE(
+                     "PrinterDataCh",
+                     "${Gson().toJson(printer)}   int: ${i}  printerInfo: ${
+                         Gson().toJson(printerStatusInfo)
+                     }  string: ${s}"
+                 )
+             }
+ */
+            /*  mPrinter.setReceiveEventListener(object : ReceiveListener {
+                  override fun onPtrReceive(
+                      p0: Printer?,
+                      p1: Int,
+                      p2: PrinterStatusInfo?,
+                      p3: String?
+                  ) {
+                      Log.e("getPrintReceive", "online ${Gson().toJson(p2)}  data${p3}")
+                      mPrinter.endTransaction()
+                      mPrinter.disconnect()
+                      *//*
                     mPrinter.addFeedLine(2)
 
 
@@ -1519,10 +1633,11 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                      mPrinter.sendData(Printer.PARAM_DEFAULT)
                      mPrinter.endTransaction()
                      mPrinter.disconnect()
-                     */
+                     *//*
                 }
 
             })
+*/
 
             runOnUiThread(Runnable {
 
@@ -1673,36 +1788,68 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
     private fun initPrinter(printerListModel: PrinterListModel) {
         PrinterClass.setPrinter(null)
+        Log.e(TAG, "getprinterListModel:  ${Gson().toJson(printerListModel)}")
 
-        var printer: Print? = Print(requireContext())
-        if (printer != null) {
-            printer.setStatusChangeEventCallback(this)
-            printer.setBatteryStatusChangeEventCallback(this)
-        }
+        //new code logice for print receipt U220
+        var printer = Printer(Printer.TM_U220, Printer.LANG_EN, requireContext())
 
 
-        if (printerListModel.connectionType == "") {
-            findBT()
-            openBT()
-        } else {
-            try {
-                printer?.openPrinter(
-                    if (printerListModel.connectionType == BLUETOOTH) Print.DEVTYPE_BLUETOOTH else Print.DEVTYPE_TCP,
-                    printerListModel.deviceModel?.ipAddress
-                )
+        val builder = StringBuilder()
+        builder.append("test content ")
+        builder.append("\n")
+        builder.append("test content ")
+        builder.append("\n")
+        printer.addText(builder.toString())
+        /*Adds a sheet cut command "CUT THE SHEET" to the command buffer.*/
+        /*Adds a sheet cut command "CUT THE SHEET" to the command buffer.*/
+        printer.addCut(Printer.CUT_FEED)
+        runOnUiThread(Runnable {
+            printer.connect("TCP:" + printerListModel.deviceModel?.macAddress, Print.PARAM_DEFAULT)
+            printer.beginTransaction()
+            printer.sendData(Printer.PARAM_DEFAULT)
+        })
 
 
-            } catch (e: Exception) {
-                LogUtil.logE(TAG, "Exception:  " + e.message)
-                printer = null
-                return
+        /*    var printer: Print? = Print(requireContext())
+            if (printer != null) {
+                printer.setStatusChangeEventCallback(this)
+                printer.setBatteryStatusChangeEventCallback(this)
             }
-            PrinterClass.setPrinter(printer)
-            LogUtil.logE(TAG, "printerListModel:  ${Gson().toJson(printerListModel)}")
 
-            //generateKitchenReceipt(printerListModel)
-            showPrinterStatus(printerListModel)
-        }
+
+            if (printerListModel.connectionType == "") {
+                Log.e(TAG,"ConnectionEmpty")
+                findBT()
+                openBT()
+            } else {
+
+                Log.e(TAG,"ConnectionIsNotEmpty")
+
+
+
+                ThreadPoolManager.instance.executeTask(Runnable {
+                            try {
+                            printer?.openPrinter(
+                                if (printerListModel.connectionType == BLUETOOTH) Print.DEVTYPE_BLUETOOTH else Print.DEVTYPE_TCP,
+                                printerListModel.deviceModel?.ipAddress
+                            )
+                                PrinterClass.setPrinter(printer)
+                                LogUtil.logE(TAG, "printerListModel:  ${Gson().toJson(printerListModel)}")
+
+                                //generateKitchenReceipt(printerListModel)
+                                showPrinterStatus(printerListModel)
+                            } catch (e: Exception) {
+                                LogUtil.logE(TAG, "Exception:  " + e.message)
+                                printer = null
+
+                            }
+                })
+
+
+
+
+
+            }*/
     }
 
     private fun generateKitchenReceipt(printerListModel: PrinterListModel) {

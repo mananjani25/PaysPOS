@@ -49,13 +49,15 @@
 
         <ScrollView
             android:layout_width="match_parent"
+            android:layout_height="fill_parent"
             android:layout_below="@id/divider_line"
-            android:layout_height="match_parent">
+            android:layout_marginTop="@dimen/_5sdp"
+            android:fillViewport="true">
+
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginBottom="@dimen/_10sdp"
                 android:orientation="vertical">
 
 
@@ -63,7 +65,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/_20sdp"
                     android:layout_gravity="center"
-                    android:layout_marginTop="@dimen/_5sdp"
+                    android:layout_marginTop="@dimen/_20sdp"
                     android:gravity="center"
                     android:orientation="horizontal">
 
@@ -79,7 +81,7 @@
                         android:paddingHorizontal="@dimen/_3sdp"
                         android:text="15 Minutes"
                         android:textColor="@color/white"
-                        android:textSize="@dimen/_5mdpi"/>
+                        android:textSize="@dimen/_5mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txt_30"
@@ -93,7 +95,7 @@
                         android:paddingHorizontal="@dimen/_3sdp"
                         android:text="30 Minutes"
                         android:textColor="@color/white"
-                        android:textSize="@dimen/_5mdpi"/>
+                        android:textSize="@dimen/_5mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txt_45"
@@ -128,8 +130,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/_20sdp"
                     android:layout_gravity="center"
-                    android:layout_marginTop="@dimen/_5sdp"
                     android:layout_marginHorizontal="@dimen/_21sdp"
+                    android:layout_marginTop="@dimen/_5sdp"
                     android:gravity="center"
                     android:orientation="horizontal">
 
@@ -416,7 +418,7 @@
                     android:layout_alignParentEnd="true"
                     android:layout_gravity="center"
                     android:layout_marginHorizontal="@dimen/_21sdp"
-                    android:layout_marginTop="@dimen/_5sdp"
+                    android:layout_marginVertical="@dimen/_5sdp"
                     android:background="@color/btnColor"
                     android:gravity="center"
                     android:paddingHorizontal="@dimen/_3sdp"

@@ -611,7 +611,7 @@ class AddEditCustomer : Fragment() {
     private val autocompleteClickListener1 =
         AdapterView.OnItemClickListener { _, _, i, _ ->
             try {
-                val item = adapter1!!.getItem(i)
+                val item = adapter2!!.getItem(i)
                 var placeID: String? = null
                 if (item != null) {
                     placeID = item.placeId
@@ -633,11 +633,11 @@ class AddEditCustomer : Fragment() {
 
                         MethodUtils.hideKeyboard(requireActivity())
 
-                        binding.edtStreet.clearFocus()
-                        binding.edtStreet.isFocusableInTouchMode = false;
-                        binding.edtStreet.isFocusable = false;
-                        binding.edtStreet.isFocusableInTouchMode = true;
-                        binding.edtStreet.isFocusable = true;
+                        binding.edtStreetDel.clearFocus()
+                        binding.edtStreetDel.isFocusableInTouchMode = false;
+                        binding.edtStreetDel.isFocusable = false;
+                        binding.edtStreetDel.isFocusableInTouchMode = true;
+                        binding.edtStreetDel.isFocusable = true;
 
                         var street = ""
                         var suite = ""
@@ -794,9 +794,9 @@ class AddEditCustomer : Fragment() {
                     id2 = viewModel.listAddress[1].id!!
                 } else if (viewModel.listAddress.size == 1) {
 
-                    if (viewModel.listAddress[0].type_of_address == "Billing") {
+                    if (viewModel.listAddress[0].type_of_address == "Shipping") {
                         id1 = viewModel.listAddress[0].id!!
-                    } else if (viewModel.listAddress[0].type_of_address == "Shipping") {
+                    } else if (viewModel.listAddress[0].type_of_address == "Billing") {
                         id2 = viewModel.listAddress[0].id!!
                     }
                 }
@@ -817,7 +817,7 @@ class AddEditCustomer : Fragment() {
                             binding.edtState?.text.toString(),
                             binding.edtAddress?.selectedItem.toString(),
                             binding.edtZip?.text.toString(),
-                            "Billing",
+                            "Shipping",
                             0.0,
                             0.0,
                             "false"
@@ -833,7 +833,7 @@ class AddEditCustomer : Fragment() {
                             binding.edtStateDel?.text.toString(),
                             binding.edtAddressDel?.selectedItem.toString(),
                             binding.edtZipDel?.text.toString(),
-                            "Shipping",
+                            "Billing",
                             0.0,
                             0.0,
                             "false"
@@ -850,7 +850,7 @@ class AddEditCustomer : Fragment() {
                                 viewModel.listAddress[1].state,
                                 viewModel.listAddress[1].country,
                                 viewModel.listAddress[1].postcode,
-                                "Shipping",
+                                "Billing",
                                 0.0,
                                 0.0,
                                 "true"
@@ -872,7 +872,7 @@ class AddEditCustomer : Fragment() {
                             binding.edtState?.text.toString(),
                             binding.edtAddress?.selectedItem.toString(),
                             binding.edtZip?.text.toString(),
-                            "Billing",
+                            "Shipping",
                             0.0,
                             0.0,
                             "false"
@@ -888,7 +888,7 @@ class AddEditCustomer : Fragment() {
                             binding.edtStateDel?.text.toString(),
                             binding.edtAddressDel?.selectedItem.toString(),
                             binding.edtZipDel?.text.toString(),
-                            "Shipping",
+                            "Billing",
                             0.0,
                             0.0,
                             "false"
@@ -900,6 +900,7 @@ class AddEditCustomer : Fragment() {
         }
         binding.chksameasbilling.setOnClickListener {
             if (binding.edtStreet.text.toString().isNotEmpty()) {
+                binding.edtStreetDel.clearFocus()
                 viewModel.same_as_billing_address.value = binding.chksameasbilling.isChecked
                 if (binding.chksameasbilling.isChecked) {
                     if (binding.edtStreet.text.toString().trim().isNotEmpty())
@@ -925,7 +926,7 @@ class AddEditCustomer : Fragment() {
             } else {
                 AlertUtils.showCustomAlertWithListenerWithOK(
                     requireContext(),
-                    "Please Enter Billing Address.",
+                    "Please Enter Delivery Address.",
                 )
                 { _, _ ->
                     binding.chksameasbilling.isChecked = false

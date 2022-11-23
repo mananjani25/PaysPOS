@@ -258,7 +258,7 @@ class TransactionDetailsFragment : Fragment() {
             if (paymentDetailsResponse.data?.payment_type == "Card") {
                 magtekCall(tipAmount)
             } else {
-                tipCall()
+                tipCall(false)
             }
 
 
@@ -373,8 +373,8 @@ class TransactionDetailsFragment : Fragment() {
         }
     }
 
-    private fun tipCall() {
-        paymentDetailsResponse.data.let { viewModel.orderUpdateTip(it.id, tipAmount) }
+    private fun tipCall(isCard: Boolean) {
+        paymentDetailsResponse.data.let { viewModel.orderUpdateTip(it.id, tipAmount,isCard) }
     }
 
     private fun magtekCall(refundAmount: Double) {
@@ -658,7 +658,7 @@ class TransactionDetailsFragment : Fragment() {
 
                         if (response.body()!![0].transactionOutput?.isTransactionApproved == true) {
 
-                            tipCall()
+                            tipCall(true)
 
                         } else {
                             AlertUtils.showCustomAlert(
@@ -3358,14 +3358,13 @@ class TransactionDetailsFragment : Fragment() {
                 SunmiPrintHelper.getInstance().lineWrap(2)
             }
 
-            val str8 = padLine(
-                "Customer Signature",
-                "     _________________________",
-                48
-            ).toString()
+            if (customerSettingModel.fonts == Constants.LARGE) {
+                PrintSunmiUtils.boldText("Customer Signature ____")
+            } else {
+                PrintSunmiUtils.boldText("Customer Signature           __________________")
+            }
 
-            PrintSunmiUtils.customerSignature(str8)
-
+            SunmiPrintHelper.getInstance().lineWrap(2)
             if (customerSettingModel.showQrCode) {
 
                 PrintSunmiUtils.qrCodeInner(paymentDetailsResponse?.data.order?.digital_receipt_url.toString())

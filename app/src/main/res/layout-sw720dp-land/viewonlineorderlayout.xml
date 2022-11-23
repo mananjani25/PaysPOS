@@ -23,14 +23,14 @@
             android:background="@color/backgroundColor"
             android:orientation="horizontal"
             android:paddingVertical="@dimen/_7sdp"
-            android:paddingStart="@dimen/_12sdp"
+            android:paddingStart="@dimen/_10sdp"
             android:weightSum="6">
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:layout_weight="1"
+                android:layout_weight="0.7"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
@@ -125,7 +125,7 @@
                 android:id="@+id/order_Inprogress_button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight="1.3"
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:visibility="gone"
@@ -149,7 +149,7 @@
                 android:id="@+id/order_completed_button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight="1.3"
                 android:layout_gravity="left"
                 android:gravity="left"
                 android:visibility="gone"
@@ -172,7 +172,7 @@
                 android:id="@+id/order_cancelled_button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight="1.3"
                 android:layout_gravity="left"
                 android:gravity="left"
                 android:visibility="gone"
@@ -218,7 +218,7 @@
                 android:id="@+id/order_status_linear"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight="1.3"
                 android:layout_gravity="left|center"
                 android:gravity="left"
                 android:visibility="gone"
@@ -227,7 +227,7 @@
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/accept_img"
                     android:layout_width="wrap_content"
-                    android:paddingHorizontal="@dimen/_3sdp"
+                    android:paddingHorizontal="@dimen/_2sdp"
                     android:paddingVertical="@dimen/_5sdp"
                     android:text="Accept"
                     android:gravity="center"
@@ -237,11 +237,11 @@
                     android:background="@drawable/whiteborder_with_transparent"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="@dimen/_3sdp"
-                     />
+                    />
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/decline_img"
-                    android:paddingHorizontal="@dimen/_3sdp"
+                    android:paddingHorizontal="@dimen/_2sdp"
                     android:paddingVertical="@dimen/_5sdp"
                     android:layout_width="wrap_content"
                     android:text="Reject"
@@ -251,7 +251,7 @@
                     android:fontFamily="@font/sf_pro_display_bold"
                     android:background="@drawable/whiteborder_with_transparent"
                     android:layout_height="wrap_content"
-                     />
+                    />
 
             </LinearLayout>
 
