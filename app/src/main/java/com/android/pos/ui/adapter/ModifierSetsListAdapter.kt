@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.entities.ModifierSet
 import com.android.pos.databinding.ViewModifierSetsBinding
 import com.android.pos.utils.callback.ItemCallback
-import com.android.pos.utils.callback.ModifierLongClickCallback
 import java.util.*
 
 class ModifierSetsListAdapter(val isCreateItem: Boolean) :
@@ -19,6 +18,7 @@ class ModifierSetsListAdapter(val isCreateItem: Boolean) :
     var selectedItemList = ArrayList<ModifierSet>()
     private var mCallback: ItemCallback? = null
     private var deleteCallback: ModifierCallback? = null
+    private var onModDelete: ModifierDeleteCallback? = null
     fun setCallback(callback: ItemCallback) {
         mCallback = callback
     }
@@ -26,6 +26,10 @@ class ModifierSetsListAdapter(val isCreateItem: Boolean) :
     fun setDeleteCallback(callback: ModifierCallback) {
         deleteCallback = callback
 
+    }
+
+    fun onDelteCallbackMod(callback: ModifierDeleteCallback) {
+        onModDelete = callback
     }
 
     inner class MyViewHolder(private val binding: ViewModifierSetsBinding) :
@@ -83,10 +87,7 @@ class ModifierSetsListAdapter(val isCreateItem: Boolean) :
             }
 
             binding.imgDelete.setOnClickListener {
-                var mod = filterList.get(bindingAdapterPosition)
-                deleteCallback?.onDeleteCallback(mod)
-                filterList.removeAt(bindingAdapterPosition)
-                notifyDataSetChanged()
+                onModDelete?.onDelete(bindingAdapterPosition)
 
             }
 
@@ -210,5 +211,9 @@ class ModifierSetsListAdapter(val isCreateItem: Boolean) :
 
     interface ModifierCallback {
         fun onDeleteCallback(modifierSet: ModifierSet)
+    }
+
+    interface ModifierDeleteCallback {
+        fun onDelete(pos: Int)
     }
 }

@@ -29,7 +29,8 @@ import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class Modifiers(val clickedPosition: Int) : Fragment(), TextWatcher, ItemCallback {
+class Modifiers(val clickedPosition: Int) : Fragment(), TextWatcher, ItemCallback,
+    ModifierSetsListAdapter.ModifierDeleteCallback {
     private var isreOrder: Boolean = false
     var dragFrom = -1
     var dragTo = -1
@@ -79,7 +80,7 @@ class Modifiers(val clickedPosition: Int) : Fragment(), TextWatcher, ItemCallbac
         adapter = ModifierSetsListAdapter(false)
         binding.rvModifiersList.adapter = adapter
         adapter.setCallback(this)
-
+        adapter.onDelteCallbackMod(this)
         binding.edtSearch.addTextChangedListener(this)
     }
 
@@ -270,6 +271,21 @@ class Modifiers(val clickedPosition: Int) : Fragment(), TextWatcher, ItemCallbac
             true
         }
         popupMenu?.show()
+    }
+
+    override fun onDelete(pos:Int) {
+        alert(
+            getString(R.string.app_name),
+            getString(R.string.delete_modifier_message)
+        ) {
+            positiveButton(getString(R.string.tv_delete)) {
+                adapter.getItem(pos).id?.let { viewModel.deleteModifierSet(it) }
+            }
+            negativeButton(R.string.tv_cancel) {
+                // Do negative stuff here
+            }
+        }
+
     }
 
 
