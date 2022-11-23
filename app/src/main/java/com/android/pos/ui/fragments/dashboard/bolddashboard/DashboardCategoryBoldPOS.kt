@@ -36,6 +36,7 @@ import com.android.pos.data.remote.Constants.MEDIUM
 import com.android.pos.data.remote.Constants.ONLINE_ORDER_ENABLE
 import com.android.pos.data.remote.Constants.OPEN_ORDER_ITEMS
 import com.android.pos.data.remote.Constants.ORDER_TYPE
+import com.android.pos.data.remote.Constants.ORDER_TYPE_ID
 import com.android.pos.data.remote.Constants.SMALL
 import com.android.pos.data.remote.Constants.SPLIT_ENABLE
 import com.android.pos.data.remote.Constants.SUNMI_INNER_PRINTER
@@ -50,6 +51,7 @@ import com.android.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
 import com.android.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.android.pos.ui.fragments.settings.servicecharge.ServiceChargeListViewModel
 import com.android.pos.utils.*
+import com.android.pos.utils.callback.DineInOrderCallBack
 import com.android.pos.utils.callback.ItemClickListner
 import com.android.pos.utils.callback.ItemListner
 import com.android.pos.utils.extensions.gone
@@ -72,7 +74,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
-    ScannerAppEngine.IScannerAppEngineDevEventsDelegate, ICallback {
+    ScannerAppEngine.IScannerAppEngineDevEventsDelegate, ICallback, DineInOrderCallBack {
     private var dineInList: List<DineInModel>? = null
     private var woyouService: IWoyouService? = null
     private var cartList: ArrayList<CartModel> = arrayListOf()
@@ -172,8 +174,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     }
 
     private fun checkCashDrawerObserver() {
-        viewModel.checkCashDrawerPer.observe(viewLifecycleOwner){
-            if (it){
+        viewModel.checkCashDrawerPer.observe(viewLifecycleOwner) {
+            if (it) {
                 checkCashDrawerPer()
 
             }
@@ -195,7 +197,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     private fun observerSyncItemPriceChange() {
         viewModel.syncInventroyForPriceChange.observe(requireActivity(), Observer {
             if (isAdded) {
-                loadCartFragment(CartFragment(this, this))
+                loadCartFragment(CartFragment(this, this, dineInCallback = this))
                 loadCategoryFragment(CategoryFragment(this, binding.layoutHeader.edtSearch))
             }
         })
@@ -520,7 +522,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_paymentBoldPosFragment)
             }
         } else {
-            loadCartFragment(CartFragment(this, this))
+            loadCartFragment(CartFragment(this, this, dineInCallback = this))
             loadCategoryFragment(CategoryFragment(this, binding.layoutHeader.edtSearch))
         }
         binding.layoutHeader.txtUserName.text =
@@ -598,32 +600,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
         }
         binding.layoutHeader.txtDineIn.setOnClickListener {
-            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
-                if (cartList.isNotEmpty()) {
-                    val dList = cartList[0].dineInList ?: arrayListOf()
-                    LogUtil.logE(TAG, "dList:  ${Gson().toJson(dList)}")
-                    var updateDinein = arguments?.getBoolean("is_dine_in_edit") ?: false
-                    if (!updateDinein) {
-                        if (dList.isNotEmpty()) {
-                            dList[0].floorPlanTable?.id?.let {
-                                viewModel.getTableStatus(
-                                    it, "Available"
-                                )
-                            }
-                            prefProvider.setValue(Constants.DINE_IN_UPDATE_LIST, "")
-                            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragment)
-                        }
-                    } else {
-                        prefProvider.setValue(Constants.DINE_IN_UPDATE_LIST, "")
-                        findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragment)
-                    }
-                }
-            } else {
-                if (rolePermission.hasTablePermission(it)) {
-                    prefProvider.setValue(Constants.DINE_IN_UPDATE_LIST, "")
-                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragment)
-                }
-            }
+            dineInClickEvent()
+
 
         }
         binding.layoutHeader.imgDrawer.setOnClickListener {
@@ -1229,7 +1207,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     bundle.putParcelable("dineInList", baseResponse)
                     bundle.putBoolean("isGuestPaid", false)
                     bundle.putInt("orderId", baseResponse.order.id)
-                    prefProvider.setValue(ORDER_TYPE, TAKEOUT)
+                    prefProvider.setValue(ORDER_TYPE, "")
                     viewModel.deleteCart()
                     findNavController().navigate(
                         R.id.action_dashboardCategoryBoldPOS_to_dineInOrderTable,
@@ -1276,9 +1254,13 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     it.floorPlanTable = orderTableData
                 }
 
-                prefProvider.setValue(ORDER_TYPE, DINE_IN)
+                prefProvider.setValue(ORDER_TYPE, prefProvider.getValue(ORDER_TYPE, ""))
                 prefProvider.setValue(Constants.ORDER_TYPE_NAME, DINE_IN)
-                prefProvider.setValueInt(Constants.ORDER_TYPE_ID, 2)
+                prefProvider.setValueInt(
+                    Constants.ORDER_TYPE_ID, prefProvider.getValueInt(
+                        ORDER_TYPE_ID, 0
+                    )
+                )
 
                 cartList[0].note = arguments?.getString("order_note").toString()
                 LogUtil.logE("AAjeDine", "cartdiscountPrice  ${cartList[0].discountPrice}")
@@ -1328,7 +1310,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 } else {
                     orderId?.let { it1 -> bundle.putInt("orderId", it1) }
                 }*/
-                prefProvider.setValue(ORDER_TYPE, TAKEOUT)
+                prefProvider.setValue(ORDER_TYPE, "")
                 LogUtil.logE(TAG, "deleteCartDineIn")
                 viewModel.deleteCart()
                 clearCustomer()
@@ -1909,7 +1891,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 viewModel.deleteCart()
                 viewModel.updateActiveOrderFlagClear()
                 if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
-                    prefProvider.setValue(ORDER_TYPE, TAKEOUT)
+                    prefProvider.setValue(ORDER_TYPE, "")
                 }
                 LogUtil.logE(TAG, "QueueCreateAgain")
 
@@ -3310,5 +3292,41 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
     override fun onRunResult(isSuccess: Boolean, code: Int, msg: String?) {
 
+    }
+
+    override fun onDineInClickListener() {
+        dineInClickEvent()
+    }
+
+    fun dineInClickEvent() {
+        if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN) {
+            Log.e(TAG,"DineinNewCh ORderTypeYES")
+            if (cartList.isNotEmpty()) {
+                val dList = cartList[0].dineInList ?: arrayListOf()
+                LogUtil.logE(TAG, "dList:  ${Gson().toJson(dList)}")
+                var updateDinein = arguments?.getBoolean("is_dine_in_edit") ?: false
+                if (!updateDinein) {
+                    if (dList.isNotEmpty()) {
+                        dList[0].floorPlanTable?.id?.let {
+                            viewModel.getTableStatus(
+                                it, "Available"
+                            )
+                        }
+                        prefProvider.setValue(Constants.DINE_IN_UPDATE_LIST, "")
+                        findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragment)
+                    }
+                } else {
+                    prefProvider.setValue(Constants.DINE_IN_UPDATE_LIST, "")
+                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragment)
+                }
+            }
+        } else {
+            Log.e(TAG,"DineinNewCh NoOrderType")
+            if (rolePermission.hasTablePermission(binding.root)) {
+                 prefProvider.setValue(ORDER_TYPE, DINE_IN)
+                prefProvider.setValue(Constants.DINE_IN_UPDATE_LIST, "")
+                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragment)
+            }
+        }
     }
 }

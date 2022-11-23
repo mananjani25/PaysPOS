@@ -477,9 +477,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     it.floorPlanTable = orderTableData
                 }
 
-                prefProvider.setValue(ORDER_TYPE, DINE_IN)
+                prefProvider.setValue(ORDER_TYPE, prefProvider.getValue(ORDER_TYPE, ""))
                 prefProvider.setValue(ORDER_TYPE_NAME, DINE_IN)
-                prefProvider.setValueInt(ORDER_TYPE_ID, 2)
+                prefProvider.setValueInt(ORDER_TYPE_ID, prefProvider.getValueInt(ORDER_TYPE_ID, 0))
 
                 viewModel.cartLogic(cartList, null, ADD, false, dineInList = dineInList)
                 viewModel.orderItemDiscount = arguments?.getDouble("totalDiscount") ?: 0.0
@@ -4080,7 +4080,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     private fun refreshOrderTypeLabel() {
         //set order type label
-        var label = prefProvider.getValue(ORDER_TYPE, TAKEOUT).toString()
+        var label = prefProvider.getValue(ORDER_TYPE, "").toString()
         if (label.equals(OPEN_ORDER, true)) {
             label = OPEN_ORDER
         }

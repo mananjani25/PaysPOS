@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
@@ -97,6 +98,17 @@ class DineInFragment : Fragment() {
 
 
 
+        val callback: OnBackPressedCallback =
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+
+                    prefProvider.setValue(Constants.ORDER_TYPE, "")
+                    findNavController().popBackStack()
+                }
+
+            }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+
 
         dineInFloorNameListAdapter.showFloorPlan = {
             dineInFloorTablesList =
@@ -139,6 +151,8 @@ class DineInFragment : Fragment() {
             loadFloorPlanDetails()
         }
         binding.layoutHeader.txthome.setOnClickListener {
+
+            prefProvider.setValue(Constants.ORDER_TYPE, "")
             findNavController().popBackStack()
         }
         binding.layoutHeader.imgDrawer.setOnClickListener {

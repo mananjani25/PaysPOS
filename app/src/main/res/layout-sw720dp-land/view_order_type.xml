@@ -14,14 +14,15 @@
         android:id="@+id/txtTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/_5sdp"
-        android:background="@drawable/background_square_border_grey"
+        android:layout_marginHorizontal="@dimen/_30sdp"
+        android:layout_marginVertical="@dimen/_5sdp"
+        android:background="@drawable/bg_square_border_order_type"
         style="@style/CustomFontBold"
         android:gravity="center"
         tools:text="Item 1"
-        android:paddingVertical="@dimen/_5sdp"
+        android:paddingVertical="@dimen/_8sdp"
         android:text="@{model.name}"
         android:textColor="@color/txtColor"
-        android:textSize="@dimen/_5mdpi" />
+        android:textSize="@dimen/_7mdpi" />
 </layout>
 
