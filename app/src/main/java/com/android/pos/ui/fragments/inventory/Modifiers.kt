@@ -134,8 +134,8 @@ class Modifiers(val clickedPosition: Int) : Fragment(), TextWatcher, ItemCallbac
                     viewHolder: RecyclerView.ViewHolder,
                     target: RecyclerView.ViewHolder
                 ): Boolean {
-                    val oldPos = viewHolder.layoutPosition
-                    val newPos = target.layoutPosition
+                    val oldPos = viewHolder.bindingAdapterPosition
+                    val newPos = target.bindingAdapterPosition
                     LogUtil.logE(
                         "reorder after",
                         viewHolder.layoutPosition.toString() + " :::  " + target.layoutPosition.toString()
@@ -144,11 +144,11 @@ class Modifiers(val clickedPosition: Int) : Fragment(), TextWatcher, ItemCallbac
                     if (dragFrom == -1) {
                         dragFrom = oldPos
                     }
-                    dragTo = newPos
+                    dragTo = target.bindingAdapterPosition
 
                     adapter.onItemMove(
-                        viewHolder.layoutPosition,
-                        target.layoutPosition
+                        viewHolder.bindingAdapterPosition,
+                        target.bindingAdapterPosition
                     )
 
                     return true
