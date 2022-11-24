@@ -1,20 +1,13 @@
 package com.android.pos.ui.fragments.customer
 
-import `in`.madapps.placesautocomplete.PlaceAPI
-import `in`.madapps.placesautocomplete.adapter.PlacesAutoCompleteAdapter
-import `in`.madapps.placesautocomplete.listener.OnPlacesDetailsListener
-import `in`.madapps.placesautocomplete.model.Place
-import `in`.madapps.placesautocomplete.model.PlaceDetails
 import android.R
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
-import android.location.Geocoder
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
@@ -29,24 +22,20 @@ import com.android.pos.data.model.requestModel.CreateCustomerRequestModel
 import com.android.pos.databinding.FragmentAddEditCustomerBinding
 import com.android.pos.ui.adapter.AddressListAdapter
 import com.android.pos.ui.fragments.settings.business.AutoCompleteAdapter
-import com.android.pos.utils.AlertUtils
-import com.android.pos.utils.LogUtil
-import com.android.pos.utils.MethodUtils
-import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.*
+import com.android.pos.utils.callback.AddressTextChangeListner
 import com.android.pos.utils.extensions.liveSnackBar
-import com.android.pos.utils.extensions.runOnUiThread
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.android.material.snackbar.Snackbar
-import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.*
 
 
 @AndroidEntryPoint
-class AddEditCustomer : Fragment() {
+class AddEditCustomer : Fragment(), AddressTextChangeListner {
     private lateinit var binding: FragmentAddEditCustomerBinding
     private var isEdit = false
     private val TAG = "AddEditCustomer"
@@ -63,6 +52,7 @@ class AddEditCustomer : Fragment() {
     var placesClient: PlacesClient? = null
     var adapter1: AutoCompleteAdapter? = null
     var adapter2: AutoCompleteAdapter? = null
+    var changeField: Boolean = false
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(
@@ -197,16 +187,30 @@ class AddEditCustomer : Fragment() {
             viewModel.addCustomerDetails.value?.data?.enroll_to_loyalty =
                 editModel?.enroll_to_loyalty
 
-            viewModel.addCustomerDetails.value?.data?.same_as_billing_address =
-                editModel?.same_as_billing_address
-
 
 
             viewModel.addCustomerDetails.value?.data?.enroll_to_loyalty?.let {
                 binding.chkIsLoyalty.isChecked = it
             }
-            viewModel.addCustomerDetails.value?.data?.same_as_billing_address?.let {
-                binding.chksameasbilling.isChecked = it
+
+            if (editModel?.addresses?.isNotEmpty() == true) {
+                if (editModel.addresses.size == 2) {
+                    if (editModel.addresses[0].full_address.contentEquals(editModel.addresses[1].full_address)) {
+                        viewModel.addCustomerDetails.value?.data?.same_as_billing_address =
+                            editModel?.same_as_billing_address
+
+                        viewModel.addCustomerDetails.value?.data?.same_as_billing_address?.let {
+                            binding.chksameasbilling.isChecked = it
+                        }
+                    } else {
+                        viewModel.addCustomerDetails.value?.data?.same_as_billing_address =
+                            false
+
+                        viewModel.addCustomerDetails.value?.data?.same_as_billing_address?.let {
+                            binding.chksameasbilling.isChecked = it
+                        }
+                    }
+                }
             }
 
 
@@ -341,7 +345,7 @@ class AddEditCustomer : Fragment() {
                                 binding.edtAddress.setSelection(1)
                             }
                         }
-                    }else if (editModel.addresses.size==2){
+                    } else if (editModel.addresses.size == 2) {
                         if (editModel.addresses[0].type_of_address == "Shipping") {
                             binding.edtStreet.setText(editModel.addresses[0].address1)
                             binding.edtSuite.setText(editModel.addresses[0].address2)
@@ -364,7 +368,7 @@ class AddEditCustomer : Fragment() {
                             } else {
                                 binding.edtAddressDel.setSelection(1)
                             }
-                        }else {
+                        } else {
                             binding.edtStreet.setText(editModel.addresses[1].address1)
                             binding.edtSuite.setText(editModel.addresses[1].address2)
                             binding.edtCity.setText(editModel.addresses[1].city)
@@ -417,13 +421,87 @@ class AddEditCustomer : Fragment() {
 
         }
 
+        setTextWatcherForAddressField()
+
+    }
+
+    private fun setTextWatcherForAddressField(onTextChanges:Boolean = false) {
+        binding.edtZip.addTextChangedListener(
+            CustomerAddressTextWatcher(
+                binding.chksameasbilling,
+                binding.edtZip,
+                changeField,
+                this,
+                onTextChanges
+            )
+        )
+        binding.edtZipDel.addTextChangedListener(
+            CustomerAddressTextWatcher(
+                binding.chksameasbilling,
+                binding.edtZipDel,
+                changeField,
+                this,
+                onTextChanges
+            )
+        )
+        binding.edtSuiteDel.addTextChangedListener(
+            CustomerAddressTextWatcher(
+                binding.chksameasbilling,
+                binding.edtSuiteDel,
+                changeField, this,
+                onTextChanges
+            )
+        )
+        binding.edtCityDel.addTextChangedListener(
+            CustomerAddressTextWatcher(
+                binding.chksameasbilling,
+                binding.edtCityDel,
+                changeField,
+                this,
+                onTextChanges
+            )
+        )
+        binding.edtStateDel.addTextChangedListener(
+            CustomerAddressTextWatcher(
+                binding.chksameasbilling,
+                binding.edtStateDel,
+                changeField,
+                this,
+                onTextChanges
+            )
+        )
+        binding.edtSuite.addTextChangedListener(
+            CustomerAddressTextWatcher(
+                binding.chksameasbilling,
+                binding.edtSuite,
+                changeField,
+                this,
+                onTextChanges
+            )
+        )
+        binding.edtCity.addTextChangedListener(
+            CustomerAddressTextWatcher(
+                binding.chksameasbilling,
+                binding.edtCity,
+                changeField, this,
+                onTextChanges
+            )
+        )
+        binding.edtState.addTextChangedListener(
+            CustomerAddressTextWatcher(
+                binding.chksameasbilling,
+                binding.edtState,
+                changeField, this,
+                onTextChanges
+            )
+        )
     }
 
     private fun decodeLocation(lat: Double, lng: Double, place: String) {
-
     }
 
     private fun setPlaceApi() {
+
 //        placesApi =
 //            PlaceAPI.Builder()
 //                .apiKey(binding.root.context.getString(com.android.pos.R.string.api_key))
@@ -609,7 +687,7 @@ class AddEditCustomer : Fragment() {
 //        }
 
 
-        binding.edtStreet.addTextChangedListener(object :TextWatcher{
+        binding.edtStreet.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
 
             }
@@ -619,13 +697,13 @@ class AddEditCustomer : Fragment() {
             }
 
             override fun afterTextChanged(s: Editable?) {
-                if (binding.edtStreet.text.isNullOrEmpty()){
+                if (binding.edtStreet.text.isNullOrEmpty()) {
                     binding.chksameasbilling.isChecked = false
                 }
             }
 
         })
-        binding.edtStreet2.addTextChangedListener(object :TextWatcher{
+        binding.edtStreet2.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
 
             }
@@ -635,7 +713,7 @@ class AddEditCustomer : Fragment() {
             }
 
             override fun afterTextChanged(s: Editable?) {
-                if (binding.edtStreet2.text.isNullOrEmpty()){
+                if (binding.edtStreet2.text.isNullOrEmpty()) {
                     binding.chksameasbilling.isChecked = false
                 }
             }
@@ -919,6 +997,7 @@ class AddEditCustomer : Fragment() {
 
 
         binding.header.txtSave.setOnClickListener {
+            viewModel.sameAsAddressValueChanges(binding.chksameasbilling.isChecked)
             if (isEdit) {
                 var id1: Int? = null
                 var id2: Int? = null
@@ -1037,6 +1116,8 @@ class AddEditCustomer : Fragment() {
                 binding.edtStreetDel.clearFocus()
                 viewModel.same_as_billing_address.value = binding.chksameasbilling.isChecked
                 if (binding.chksameasbilling.isChecked) {
+                    changeField = true
+                    setTextWatcherForAddressField(true)
                     if (binding.edtStreet.text.toString().trim().isNotEmpty())
                         binding.edtStreetDel.setText(binding.edtStreet.text.toString())
                     binding.edtSuiteDel.setText(binding.edtSuite.text.toString())
@@ -1049,6 +1130,8 @@ class AddEditCustomer : Fragment() {
                         binding.edtAddressDel.setSelection(1)
                     }
                 } else {
+                    changeField = false
+                    setTextWatcherForAddressField()
                     if (binding.edtStreetDel.text.toString().trim().isNotEmpty())
                         binding.edtStreetDel.text.clear()
                     binding.edtSuiteDel.setText("")
@@ -1158,5 +1241,12 @@ class AddEditCustomer : Fragment() {
         val format = SimpleDateFormat("dd/MM/yyyy")
         val date = format.parse(dat)
         return android.text.format.DateFormat.format("yyyy", date).toString()
+    }
+
+    override fun onTextChanges(b: Boolean) {
+        if (b){
+            changeField = false
+            setTextWatcherForAddressField()
+        }
     }
 }
