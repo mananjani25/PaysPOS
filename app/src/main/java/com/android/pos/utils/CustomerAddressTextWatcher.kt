@@ -2,6 +2,7 @@ package com.android.pos.utils
 
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.widget.CheckBox
 import android.widget.EditText
 
@@ -10,24 +11,53 @@ import com.android.pos.utils.callback.AddressTextChangeListner
 class CustomerAddressTextWatcher(
     var checkBox: CheckBox,
     var edittext: EditText,
-   var changeField: Boolean,
+    var changeField: Boolean,
     var listner: AddressTextChangeListner,
-    var isFromSelect:Boolean = false
+    var isFromSelect: Boolean
 ) : TextWatcher {
+    var pervText: String = ""
+    private val TAG = this.javaClass.name
+    private var counter: Int = 0
     override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-
+        pervText = edittext.text.toString()
     }
 
     override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-        if (edittext.text.trim().toString().isNotEmpty()) {
-            listner.onTextChanges(true)
-        }
-            }
+
+
+    }
 
     override fun afterTextChanged(s: Editable?) {
-        if (changeField && !isFromSelect){
-            listner.onTextChanges(true)
+        Log.e(TAG, "AfterTextChanged")
+
+        LogUtil.logE(
+            TAG,
+            "oldText ${pervText}  newText ${edittext.text.toString()}  isFromSelect ${isFromSelect}  changeField ${changeField}"
+        )
+
+        if (isFromSelect) {
+            Log.e(TAG, "Condition True 3")
+            listner.oncheckBox(true)
+            isFromSelect = false
+        } else {
+
+
+            if ((pervText.isNotEmpty() && !pervText.equals(edittext.text.toString())) && counter == 0) {
+                Log.e(TAG, "Condition True 1")
+                listner.onTextChanges()
+                counter = 1
+                isFromSelect = false
+            } else if (pervText.trim().isEmpty() && edittext.text.trim().toString()
+                    .isNotEmpty()
+            ) {
+                Log.e(TAG, "Condition True 2")
+                listner.oncheckBox(false)
+                isFromSelect = false
+
+            }
         }
-        checkBox.isChecked = changeField
+
+
     }
+
 }

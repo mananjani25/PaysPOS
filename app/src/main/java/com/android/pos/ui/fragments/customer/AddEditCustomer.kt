@@ -421,11 +421,11 @@ class AddEditCustomer : Fragment(), AddressTextChangeListner {
 
         }
 
-        setTextWatcherForAddressField()
+        setTextWatcherForAddressField(false)
 
     }
 
-    private fun setTextWatcherForAddressField(onTextChanges:Boolean = false) {
+    private fun setTextWatcherForAddressField(onTextChanges: Boolean) {
         binding.edtZip.addTextChangedListener(
             CustomerAddressTextWatcher(
                 binding.chksameasbilling,
@@ -1131,7 +1131,7 @@ class AddEditCustomer : Fragment(), AddressTextChangeListner {
                     }
                 } else {
                     changeField = false
-                    setTextWatcherForAddressField()
+                    setTextWatcherForAddressField(false)
                     if (binding.edtStreetDel.text.toString().trim().isNotEmpty())
                         binding.edtStreetDel.text.clear()
                     binding.edtSuiteDel.setText("")
@@ -1243,10 +1243,16 @@ class AddEditCustomer : Fragment(), AddressTextChangeListner {
         return android.text.format.DateFormat.format("yyyy", date).toString()
     }
 
-    override fun onTextChanges(b: Boolean) {
-        if (b){
-            changeField = false
-            setTextWatcherForAddressField()
-        }
+    override fun onTextChanges() {
+        changeField = false
+
+        binding.chksameasbilling.isChecked = false
+
+        //  setTextWatcherForAddressField(true)
+
+    }
+
+    override fun oncheckBox(b: Boolean) {
+        binding.chksameasbilling.isChecked = b
     }
 }
