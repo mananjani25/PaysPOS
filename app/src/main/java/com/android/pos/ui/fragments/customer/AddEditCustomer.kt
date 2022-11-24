@@ -11,6 +11,8 @@ import android.app.DatePickerDialog
 import android.location.Geocoder
 import android.os.Build
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -607,6 +609,39 @@ class AddEditCustomer : Fragment() {
 //        }
 
 
+        binding.edtStreet.addTextChangedListener(object :TextWatcher{
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                if (binding.edtStreet.text.isNullOrEmpty()){
+                    binding.chksameasbilling.isChecked = false
+                }
+            }
+
+        })
+        binding.edtStreet2.addTextChangedListener(object :TextWatcher{
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                if (binding.edtStreet2.text.isNullOrEmpty()){
+                    binding.chksameasbilling.isChecked = false
+                }
+            }
+
+        })
+
     }
 
     private val autocompleteClickListener =
@@ -633,7 +668,7 @@ class AddEditCustomer : Fragment() {
                     placesClient!!.fetchPlace(request).addOnSuccessListener { task ->
 
                         MethodUtils.hideKeyboard(requireActivity())
-
+                        binding.chksameasbilling.isChecked = false
                         binding.edtStreet.clearFocus()
                         binding.edtStreet.isFocusableInTouchMode = false;
                         binding.edtStreet.isFocusable = false;
@@ -731,7 +766,7 @@ class AddEditCustomer : Fragment() {
                     placesClient!!.fetchPlace(request).addOnSuccessListener { task ->
 
                         MethodUtils.hideKeyboard(requireActivity())
-
+                        binding.chksameasbilling.isChecked = false
                         binding.edtStreetDel.clearFocus()
                         binding.edtStreetDel.isFocusableInTouchMode = false;
                         binding.edtStreetDel.isFocusable = false;
