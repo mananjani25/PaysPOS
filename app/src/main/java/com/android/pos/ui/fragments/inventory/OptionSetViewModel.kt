@@ -1,5 +1,6 @@
 package com.android.pos.ui.fragments.inventory
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -23,7 +24,7 @@ class OptionSetViewModel @Inject constructor(
         return posRepository.getOptionSet()
     }
 
-    fun optionSetLocalList():LiveData<Resource<List<OptionSet>>>{
+    fun optionSetLocalList(): LiveData<Resource<List<OptionSet>>> {
         return posRepository.getOptionListData()
     }
 
@@ -79,6 +80,7 @@ class OptionSetViewModel @Inject constructor(
 
 
     fun reOrderOption(catId: Int, oldPos: Int, newPos: Int) {
+        Log.e("ReorderOption", "oldPos:  ${oldPos}  newPos:${newPos}")
         _showProgress.value = Event(true)
 
         viewModelScope.launch {
