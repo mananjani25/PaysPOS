@@ -111,7 +111,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
                     "getServiceCharges: finall " + Gson().toJson(listOfServiceCharge)
                 )
 
-            }else{
+            } else {
                 listOfServiceCharge = ArrayList()
             }
         }
@@ -166,15 +166,20 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
         }
         if (customerModel.addresses.isNotEmpty()) {
             var address: StringBuffer = StringBuffer()
-            var pos = 0
 
-            customerModel.addresses.forEach { addresstemp ->
-                if (addresstemp.type_of_address=="Shipping"){
-                    address.append("Delivery" + " : " + addresstemp.full_address + "\n")
-                }else{
-                    address.append(addresstemp.type_of_address + " : " + addresstemp.full_address)
+
+            if (customerModel.addresses.size == 1) {
+                if (customerModel.addresses[0].type_of_address == "Shipping") {
+                    address.append("Delivery" + " : " + customerModel.addresses[0].full_address)
                 }
-
+            } else if (customerModel.addresses.size == 2) {
+                if (customerModel.addresses[0].type_of_address == "Shipping") {
+                    address.append("Delivery" + " : " + customerModel.addresses[0].full_address + "\n")
+                    address.append(customerModel.addresses[1].type_of_address + " : " + customerModel.addresses[1].full_address)
+                } else {
+                    address.append("Delivery" + " : " + customerModel.addresses[1].full_address + "\n")
+                    address.append(customerModel.addresses[0].type_of_address + " : " + customerModel.addresses[0].full_address)
+                }
             }
             address.also {
                 binding.txtAddress.text = it

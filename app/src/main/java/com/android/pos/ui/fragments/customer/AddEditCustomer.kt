@@ -243,51 +243,150 @@ class AddEditCustomer : Fragment() {
 
 
             if (editModel.addresses.isNotEmpty()) {
-                editModel.addresses.forEach {
+                if (editModel.addresses.size == 1) {
                     listAddress.add(
                         CreateCustomerRequestModel.Customer.Addresses(
-                            it.id,
-                            it.address1,
-                            it.address2,
-                            it.city,
-                            it.state,
-                            it.country,
-                            it.postcode,
-                            it.type_of_address,
+                            editModel.addresses[0].id,
+                            editModel.addresses[0].address1,
+                            editModel.addresses[0].address2,
+                            editModel.addresses[0].city,
+                            editModel.addresses[0].state,
+                            editModel.addresses[0].country,
+                            editModel.addresses[0].postcode,
+                            editModel.addresses[0].type_of_address,
                             0.0,
                             0.0,
                             "false"
                         )
                     )
+                } else if (editModel.addresses.size == 2) {
+                    if (editModel.addresses[0].type_of_address == "Shipping") {
+                        listAddress.add(
+                            CreateCustomerRequestModel.Customer.Addresses(
+                                editModel.addresses[0].id,
+                                editModel.addresses[0].address1,
+                                editModel.addresses[0].address2,
+                                editModel.addresses[0].city,
+                                editModel.addresses[0].state,
+                                editModel.addresses[0].country,
+                                editModel.addresses[0].postcode,
+                                editModel.addresses[0].type_of_address,
+                                0.0,
+                                0.0,
+                                "false"
+                            )
+                        )
+                        listAddress.add(
+                            CreateCustomerRequestModel.Customer.Addresses(
+                                editModel.addresses[1].id,
+                                editModel.addresses[1].address1,
+                                editModel.addresses[1].address2,
+                                editModel.addresses[1].city,
+                                editModel.addresses[1].state,
+                                editModel.addresses[1].country,
+                                editModel.addresses[1].postcode,
+                                editModel.addresses[1].type_of_address,
+                                0.0,
+                                0.0,
+                                "false"
+                            )
+                        )
+                    } else {
+                        listAddress.add(
+                            CreateCustomerRequestModel.Customer.Addresses(
+                                editModel.addresses[1].id,
+                                editModel.addresses[1].address1,
+                                editModel.addresses[1].address2,
+                                editModel.addresses[1].city,
+                                editModel.addresses[1].state,
+                                editModel.addresses[1].country,
+                                editModel.addresses[1].postcode,
+                                editModel.addresses[1].type_of_address,
+                                0.0,
+                                0.0,
+                                "false"
+                            )
+                        )
+                        listAddress.add(
+                            CreateCustomerRequestModel.Customer.Addresses(
+                                editModel.addresses[0].id,
+                                editModel.addresses[0].address1,
+                                editModel.addresses[0].address2,
+                                editModel.addresses[0].city,
+                                editModel.addresses[0].state,
+                                editModel.addresses[0].country,
+                                editModel.addresses[0].postcode,
+                                editModel.addresses[0].type_of_address,
+                                0.0,
+                                0.0,
+                                "false"
+                            )
+                        )
+                    }
                 }
                 viewModel.setAddressList(listAddress)
-                binding.edtStreet?.setText(editModel.addresses[0].address1)
-                binding.edtSuite?.setText(editModel.addresses[0].address2)
-                binding.edtCity?.setText(editModel.addresses[0].city)
-                binding.edtState?.setText(editModel.addresses[0].state)
-                binding.edtZip?.setText(editModel.addresses[0].postcode)
-                if (editModel.addresses[0].country == "United States") {
-                    binding.edtAddress?.setSelection(0)
-                } else {
-                    binding.edtAddress?.setSelection(1)
-                }
+                if (editModel.addresses.isNotEmpty()) {
+                    if (editModel.addresses.size == 1) {
+                        if (editModel.addresses[0].type_of_address == "Shipping") {
+                            binding.edtStreet.setText(editModel.addresses[0].address1)
+                            binding.edtSuite.setText(editModel.addresses[0].address2)
+                            binding.edtCity.setText(editModel.addresses[0].city)
+                            binding.edtState.setText(editModel.addresses[0].state)
+                            binding.edtZip.setText(editModel.addresses[0].postcode)
+                            if (editModel.addresses[0].country == "United States") {
+                                binding.edtAddress.setSelection(0)
+                            } else {
+                                binding.edtAddress.setSelection(1)
+                            }
+                        }
+                    }else if (editModel.addresses.size==2){
+                        if (editModel.addresses[0].type_of_address == "Shipping") {
+                            binding.edtStreet.setText(editModel.addresses[0].address1)
+                            binding.edtSuite.setText(editModel.addresses[0].address2)
+                            binding.edtCity.setText(editModel.addresses[0].city)
+                            binding.edtState.setText(editModel.addresses[0].state)
+                            binding.edtZip.setText(editModel.addresses[0].postcode)
+                            if (editModel.addresses[0].country == "United States") {
+                                binding.edtAddress.setSelection(0)
+                            } else {
+                                binding.edtAddress.setSelection(1)
+                            }
 
-                if (editModel.addresses.size == 2) {
-                    if (editModel.addresses[1] != null) {
-                        binding.edtStreetDel?.setText(editModel.addresses[1].address1)
-                        binding.edtSuiteDel?.setText(editModel.addresses[1].address2)
-                        binding.edtCityDel?.setText(editModel.addresses[1].city)
-                        binding.edtStateDel?.setText(editModel.addresses[1].state)
-                        binding.edtZipDel?.setText(editModel.addresses[1].postcode)
-                        if (editModel.addresses[1].country == "United States") {
-                            binding.edtAddressDel?.setSelection(0)
-                        } else {
-                            binding.edtAddressDel?.setSelection(1)
+                            binding.edtStreetDel.setText(editModel.addresses[1].address1)
+                            binding.edtSuiteDel.setText(editModel.addresses[1].address2)
+                            binding.edtCityDel.setText(editModel.addresses[1].city)
+                            binding.edtStateDel.setText(editModel.addresses[1].state)
+                            binding.edtZipDel.setText(editModel.addresses[1].postcode)
+                            if (editModel.addresses[1].country == "United States") {
+                                binding.edtAddressDel.setSelection(0)
+                            } else {
+                                binding.edtAddressDel.setSelection(1)
+                            }
+                        }else {
+                            binding.edtStreet.setText(editModel.addresses[1].address1)
+                            binding.edtSuite.setText(editModel.addresses[1].address2)
+                            binding.edtCity.setText(editModel.addresses[1].city)
+                            binding.edtState.setText(editModel.addresses[1].state)
+                            binding.edtZip.setText(editModel.addresses[1].postcode)
+                            if (editModel.addresses[1].country == "United States") {
+                                binding.edtAddress.setSelection(0)
+                            } else {
+                                binding.edtAddress.setSelection(1)
+                            }
+
+                            binding.edtStreetDel.setText(editModel.addresses[0].address1)
+                            binding.edtSuiteDel.setText(editModel.addresses[0].address2)
+                            binding.edtCityDel.setText(editModel.addresses[0].city)
+                            binding.edtStateDel.setText(editModel.addresses[0].state)
+                            binding.edtZipDel.setText(editModel.addresses[0].postcode)
+                            if (editModel.addresses[0].country == "United States") {
+                                binding.edtAddressDel.setSelection(0)
+                            } else {
+                                binding.edtAddressDel.setSelection(1)
+                            }
                         }
                     }
                 }
-
-
             }
 
 
@@ -807,40 +906,40 @@ class AddEditCustomer : Fragment() {
 //                }
                 listAddress = arrayListOf()
 
-                if (binding.edtStreet?.text.toString().isNotEmpty())
+                if (binding.edtStreet.text.toString().isNotEmpty())
                     listAddress.add(
                         CreateCustomerRequestModel.Customer.Addresses(
                             id1,
-                            binding.edtStreet?.text.toString(),
-                            "",
-                            binding.edtCity?.text.toString(),
-                            binding.edtState?.text.toString(),
-                            binding.edtAddress?.selectedItem.toString(),
-                            binding.edtZip?.text.toString(),
+                            binding.edtStreet.text.toString(),
+                            binding.edtSuite.text.toString(),
+                            binding.edtCity.text.toString(),
+                            binding.edtState.text.toString(),
+                            binding.edtAddress.selectedItem.toString(),
+                            binding.edtZip.text.toString(),
                             "Shipping",
                             0.0,
                             0.0,
                             "false"
                         )
                     )
-                if (binding.edtStreetDel?.text.toString().isNotEmpty()){
+                if (binding.edtStreetDel.text.toString().isNotEmpty()) {
                     listAddress.add(
                         CreateCustomerRequestModel.Customer.Addresses(
                             id2,
-                            binding.edtStreetDel?.text.toString(),
-                            "",
-                            binding.edtCityDel?.text.toString(),
-                            binding.edtStateDel?.text.toString(),
-                            binding.edtAddressDel?.selectedItem.toString(),
-                            binding.edtZipDel?.text.toString(),
+                            binding.edtStreetDel.text.toString(),
+                            binding.edtSuiteDel.text.toString(),
+                            binding.edtCityDel.text.toString(),
+                            binding.edtStateDel.text.toString(),
+                            binding.edtAddressDel.selectedItem.toString(),
+                            binding.edtZipDel.text.toString(),
                             "Billing",
                             0.0,
                             0.0,
                             "false"
                         )
                     )
-                }else{
-                    if (viewModel.listAddress.size==2){
+                } else {
+                    if (viewModel.listAddress.size == 2) {
                         listAddress.add(
                             CreateCustomerRequestModel.Customer.Addresses(
                                 id2,
@@ -862,32 +961,32 @@ class AddEditCustomer : Fragment() {
 
             } else {
                 listAddress = arrayListOf()
-                if (binding.edtStreet?.text.toString().isNotEmpty())
+                if (binding.edtStreet.text.toString().isNotEmpty())
                     listAddress.add(
                         CreateCustomerRequestModel.Customer.Addresses(
                             null,
-                            binding.edtStreet?.text.toString(),
-                            "",
-                            binding.edtCity?.text.toString(),
-                            binding.edtState?.text.toString(),
-                            binding.edtAddress?.selectedItem.toString(),
-                            binding.edtZip?.text.toString(),
+                            binding.edtStreet.text.toString(),
+                            binding.edtSuite.text.toString(),
+                            binding.edtCity.text.toString(),
+                            binding.edtState.text.toString(),
+                            binding.edtAddress.selectedItem.toString(),
+                            binding.edtZip.text.toString(),
                             "Shipping",
                             0.0,
                             0.0,
                             "false"
                         )
                     )
-                if (binding.edtStreetDel?.text.toString().isNotEmpty())
+                if (binding.edtStreetDel.text.toString().isNotEmpty())
                     listAddress.add(
                         CreateCustomerRequestModel.Customer.Addresses(
                             null,
-                            binding.edtStreetDel?.text.toString(),
-                            "",
-                            binding.edtCityDel?.text.toString(),
-                            binding.edtStateDel?.text.toString(),
-                            binding.edtAddressDel?.selectedItem.toString(),
-                            binding.edtZipDel?.text.toString(),
+                            binding.edtStreetDel.text.toString(),
+                            binding.edtSuiteDel.text.toString(),
+                            binding.edtCityDel.text.toString(),
+                            binding.edtStateDel.text.toString(),
+                            binding.edtAddressDel.selectedItem.toString(),
+                            binding.edtZipDel.text.toString(),
                             "Billing",
                             0.0,
                             0.0,
