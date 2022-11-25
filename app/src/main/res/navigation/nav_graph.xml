@@ -1269,7 +1269,7 @@
             app:enterAnim="@anim/nav_default_enter_anim" />
         <action
             android:id="@+id/action_dineInOrderTable_to_dashboardCategoryNew"
-            app:destination="@id/dineInFragment"
+            app:destination="@id/dashboardCategoryBoldPOS"
             app:popUpTo="@id/dashboardCategoryBoldPOS"
             app:popUpToInclusive="true" />
         <action
@@ -1281,6 +1281,11 @@
             app:destination="@id/dineInFragment"
             app:enterAnim="@anim/nav_default_enter_anim"
             app:popUpTo="@id/dineInFragment" />
+        <action
+            android:id="@+id/action_dineInOrderTable_to_dineInFragment2"
+            app:destination="@id/dineInFragment"
+            app:popUpTo="@id/dineInOrderTable"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/payByGuestDialog"

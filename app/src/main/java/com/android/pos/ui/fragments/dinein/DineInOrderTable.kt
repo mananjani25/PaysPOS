@@ -8576,7 +8576,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     requireContext(), status.toString()
                 ) { _, _ ->
                     if (findNavController().currentDestination?.id == R.id.dineInOrderTable) {
-                        findNavController().navigate(R.id.action_dineInOrderTable_to_dashboardCategoryNew)
+                        findNavController().navigate(R.id.action_dineInOrderTable_to_dineInFragment)
                     }
                 }
 
