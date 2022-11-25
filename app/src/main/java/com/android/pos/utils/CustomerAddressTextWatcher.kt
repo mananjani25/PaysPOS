@@ -35,15 +35,20 @@ class CustomerAddressTextWatcher(
             "oldText ${pervText}  newText ${edittext.text.toString()}  isFromSelect ${isFromSelect}  changeField ${changeField}"
         )
 
+
+        if (pervText != edittext.text.toString()){
+            isFromSelect = false
+            listner.oncheckBox(false)
+        }
+
+
         if (isFromSelect) {
             Log.e(TAG, "Condition True 3")
             listner.oncheckBox(true)
             isFromSelect = false
         } else {
-
-
             if ((pervText.isNotEmpty() && !pervText.equals(edittext.text.toString())) && counter == 0) {
-                Log.e(TAG, "Condition True 1")
+                Log.e(TAG, "c True 1")
                 listner.onTextChanges()
                 counter = 1
                 isFromSelect = false

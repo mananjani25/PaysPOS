@@ -7,6 +7,7 @@ import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -1253,6 +1254,7 @@ class AddEditCustomer : Fragment(), AddressTextChangeListner {
     }
 
     override fun oncheckBox(b: Boolean) {
+        Log.d(TAG, "oncheckBox: ${b}")
         binding.chksameasbilling.isChecked = b
     }
 }
