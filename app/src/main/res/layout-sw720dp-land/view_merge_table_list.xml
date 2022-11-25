@@ -24,9 +24,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_5sdp"
             android:layout_weight="1"
-            android:paddingVertical="@dimen/_1sdp"
+            android:background="@drawable/background_square_border_grey"
 
-            android:background="@drawable/background_square_border_grey">
+            android:paddingVertical="@dimen/_1sdp">
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtFloorPlanLabel"
@@ -44,10 +44,12 @@
                 android:textSize="@dimen/_6mdpi" />
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
+                android:layout_toEndOf="@+id/txtFloorPlanLabel"
+                android:gravity="end"
                 android:paddingVertical="@dimen/_2sdp">
 
                 <Spinner
@@ -55,18 +57,18 @@
                     style="@style/CustomFontSemiBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
+                    android:layout_gravity="end"
                     android:layout_marginStart="@dimen/_5sdp"
                     android:background="@null"
-                    android:gravity="start"
+                    android:gravity="end"
                     android:padding="@dimen/_5sdp"
                     android:spinnerMode="dialog"
                     android:textColor="@color/color96"
                     android:textSize="@dimen/_5mdpi" />
 
                 <androidx.appcompat.widget.AppCompatImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="14dp"
+                    android:layout_height="19dp"
                     android:layout_gravity="center"
                     android:layout_marginStart="@dimen/_5sdp"
                     android:layout_marginEnd="@dimen/_5sdp"
@@ -79,9 +81,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:paddingVertical="@dimen/_1sdp"
+            android:background="@drawable/background_square_border_grey"
 
-            android:background="@drawable/background_square_border_grey">
+            android:paddingVertical="@dimen/_1sdp">
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtPrimaryLabel"

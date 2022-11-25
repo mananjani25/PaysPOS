@@ -273,7 +273,7 @@ class Modifiers(val clickedPosition: Int) : Fragment(), TextWatcher, ItemCallbac
         popupMenu?.show()
     }
 
-    override fun onDelete(pos:Int) {
+    override fun onDelete(pos: Int) {
         alert(
             getString(R.string.app_name),
             getString(R.string.delete_modifier_message)

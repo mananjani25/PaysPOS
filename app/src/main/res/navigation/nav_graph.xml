@@ -1269,7 +1269,7 @@
             app:enterAnim="@anim/nav_default_enter_anim" />
         <action
             android:id="@+id/action_dineInOrderTable_to_dashboardCategoryNew"
-            app:destination="@id/dashboardCategoryBoldPOS"
+            app:destination="@id/dineInFragment"
             app:popUpTo="@id/dashboardCategoryBoldPOS"
             app:popUpToInclusive="true" />
         <action
