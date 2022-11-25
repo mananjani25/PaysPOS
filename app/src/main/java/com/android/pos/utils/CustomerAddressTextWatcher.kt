@@ -36,9 +36,12 @@ class CustomerAddressTextWatcher(
         )
 
 
-        if (pervText != edittext.text.toString()){
+        if (isFromSelect==false && pervText != edittext.text.toString()){
             isFromSelect = false
             listner.oncheckBox(false)
+        }else{
+            isFromSelect = false
+            listner.oncheckBox(true)
         }
 
 

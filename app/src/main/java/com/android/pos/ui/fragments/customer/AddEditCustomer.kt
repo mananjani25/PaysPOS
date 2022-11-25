@@ -413,7 +413,12 @@ class AddEditCustomer : Fragment(), AddressTextChangeListner {
         }
 
         binding.header.imgBack.setOnClickListener {
-            findNavController().navigateUp()
+            val navControll = findNavController()
+            navControll.previousBackStackEntry?.savedStateHandle?.set(
+                com.android.pos.data.remote.Constants.KEY,
+                com.android.pos.data.remote.Constants.CUSTOMERDETAILS
+            )
+            navControll.popBackStack()
         }
 
         binding.edtBirthDay.setOnClickListener {
@@ -1256,5 +1261,17 @@ class AddEditCustomer : Fragment(), AddressTextChangeListner {
     override fun oncheckBox(b: Boolean) {
         Log.d(TAG, "oncheckBox: ${b}")
         binding.chksameasbilling.isChecked = b
+    }
+
+    fun checkedAllFieldAreSame(): Boolean {
+        var delivery_Address :StringBuffer = StringBuffer()
+        var billing_Address :StringBuffer = StringBuffer()
+        delivery_Address.append(binding.edtStreet.text.toString())
+        delivery_Address.append(binding.edtSuite.text.toString())
+        delivery_Address.append(binding.edtStreet.text.toString())
+        delivery_Address.append(binding.edtStreet.text.toString())
+        delivery_Address.append(binding.edtStreet.text.toString())
+
+        return false
     }
 }
