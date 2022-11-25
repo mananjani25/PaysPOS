@@ -168,7 +168,7 @@ class Modifiers(val clickedPosition: Int) : Fragment(), TextWatcher, ItemCallbac
                 ) {
 
                     if (dragFrom != -1 && dragTo != -1 && dragFrom != dragTo) {
-                        adapter.getItem(dragFrom).sort?.let {
+                        adapter.getItem(dragFrom).sort.let {
                             reallyMoved(
                                 it,
                                 adapter.getItem(dragTo).sort!!,
@@ -190,7 +190,7 @@ class Modifiers(val clickedPosition: Int) : Fragment(), TextWatcher, ItemCallbac
         if (modifierSetId != null) {
 
             isreOrder = true
-            viewModel.reOrderModifier(modifierSetId, oldPos, newPos)
+            viewModel.reOrderModifier(modifierSetId, newPos, oldPos)
         }
 
     }
@@ -213,7 +213,7 @@ class Modifiers(val clickedPosition: Int) : Fragment(), TextWatcher, ItemCallbac
 
         viewModel.data.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let {
-                if (!isreOrder)
+               // if (!isreOrder)
                     AlertUtils.showCustomAlert(requireActivity(), it.message)
 
                 if (isreOrder) {

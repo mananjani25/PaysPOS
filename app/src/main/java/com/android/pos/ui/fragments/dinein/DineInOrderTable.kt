@@ -7360,16 +7360,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     )
                     mPrinter.startMonitor()
 
-                    generateReceiptForU220(data, type, item,mPrinter)
+                    generateReceiptForU220(data, type, item, mPrinter)
 
                 } catch (e: java.lang.Exception) {
                     e.printStackTrace()
                 }
-
-
-
-
-
 
 
             } else {
@@ -7639,7 +7634,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
     }
 
-    private fun generateReceiptForU220(customerReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters, type: String, item: ArrayList<TbItem>, builder: Printer) {
+    private fun generateReceiptForU220(
+        customerReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
+        type: String,
+        item: ArrayList<TbItem>,
+        builder: Printer
+    ) {
 
 
         var fontSizeH = 1
@@ -7840,7 +7840,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             e.printStackTrace()
 
         }
-
 
 
     }
