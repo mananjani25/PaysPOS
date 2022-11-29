@@ -206,7 +206,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     val enableOnlineOrder: LiveData<Event<Boolean>> = _enableOnlineOrder
 
     private val _checkCashDrawerPermission = MutableLiveData<Boolean>()
-    val checkCashDrawerPer :LiveData<Boolean> = _checkCashDrawerPermission
+    val checkCashDrawerPer: LiveData<Boolean> = _checkCashDrawerPermission
 
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
@@ -495,6 +495,318 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun addGuestFromDashBoard(cartList: List<CartModel>?) {
         addCart(cartList!![0])
+    }
+
+
+    fun newCartLogicModifier(
+        cartList: List<CartModel>?,
+        item: TbItem?,
+        type: String,
+        isManualSales: Boolean,
+        dineInList: List<DineInModel> = arrayListOf()
+    ) {
+        if (cartList != null && cartList.isEmpty()) {
+            // empty cart hoy to new cart create kare
+            var cartModel = item?.let { addCartModel(it, isManualSales) }
+            if (item != null) {
+                if (type == UPDATE) {
+                    cartModel?.items?.forEach { items ->
+                        cartModel = taxBifurcationCalculation(items, cartModel!!, type, false)
+                    }
+                } else {
+                    cartModel = taxBifurcationCalculation(item, cartModel!!, type, false)
+                }
+            } else if (dineInList.isNotEmpty()) {
+                dineInList.forEach { dineInModel ->
+                    dineInModel.items.forEach { itemData ->
+                        cartModel = taxBifurcationCalculation(itemData, cartModel!!, type, false)
+                    }
+
+                }
+            }
+            if (cartModel != null) {
+                addCart(cartModel!!)
+            }
+
+
+        } else {
+            val list = cartList?.get(0)?.items?.toMutableList()
+            if (list != null && list.isNotEmpty()) {
+
+                if (type == ADD) {
+                    var index = -1
+                    for (i in list.indices) {
+                        if (item != null) {
+                            if (item.isManualSales) {
+
+
+                                if (list[i].manualSaleId == item.manualSaleId) {
+                                    Log.d(TAG, "cartLogic: " + i)
+                                    index = i
+                                    break
+                                }
+
+                            } else {
+                                if (list[i].itemId == item.itemId && checkVariation(
+                                        list[i],
+                                        item
+                                    ) && checkModifierNewLogic(list[i], item)
+                                ) {
+                                    Log.d(TAG, "cartLogic: " + i)
+                                    index = i
+                                    break
+                                }
+                            }
+
+                        }
+                    }
+                    if (index != -1) {
+                        val model = cartList[0].items?.get(index)
+                        Log.d(TAG, "cartLogic: " + index)
+                        if (model != null) {
+                            if (index != -1) {
+                                if (item != null) {
+                                    model.name = item.name
+                                    model.itemQuantity = model.itemQuantity + item.itemQuantity
+                                    model.price = item.price
+                                    model.variationsAttributes = item.variationsAttributes
+                                    item.modifiers.forEach {
+                                        model.modifiers.forEach { tbmodfier ->
+                                            if (it.id == tbmodfier.id) {
+                                                it.modifierQuantity =
+                                                    it.itemQuantity / item.itemQuantity
+                                                it.itemQuantity =
+                                                    it.itemQuantity + tbmodfier.itemQuantity
+                                            }
+                                        }
+
+                                    }
+
+
+                                    model.modifiers = item.modifiers
+                                    if (item.isEdited) {
+                                        model.isEdited = item.isEdited
+                                    }
+
+                                    if (prefProvider.getValueboolean(
+                                            IS_UPDATE_ORDER_FROM_ACTIVE_ORDER,
+                                            false
+                                        )
+                                    ) {
+                                        model.isEdited = true
+                                    }
+                                    itemDiscountApply(model, item)
+                                }
+
+                                list[index] = model
+                            } else {
+                                if (item != null) {
+                                    model.itemQuantity = item.itemQuantity
+                                    if (item.isEdited) {
+                                        model.isEdited = item.isEdited
+                                    }
+                                    if (prefProvider.getValueboolean(
+                                            IS_UPDATE_ORDER_FROM_ACTIVE_ORDER,
+                                            false
+                                        )
+                                    ) {
+                                        model.isEdited = true
+                                    }
+                                    itemDiscountApply(model, item)
+                                    model.isDestroy = false
+                                }
+                                list[index] = model
+                            }
+
+                        }
+                    } else {
+                        Log.d(TAG, "cartLogic: " + index)
+                        if (item != null) {
+                            item.singleItemPrice = item.price
+                            item.modifiers.forEach { it ->
+                                it.modifierQuantity = it.itemQuantity
+                                item.singleItemPrice += it.price * it.itemQuantity
+                            }
+                            item.isDestroy = false
+                            if (prefProvider.getValueboolean(
+                                    IS_UPDATE_ORDER_FROM_ACTIVE_ORDER,
+                                    false
+                                )
+                            ) {
+                                item.isEdited = true
+                            }
+                            list.add(item)
+                        }
+                    }
+                } else if (type == UPDATE) {
+                    var index = -1
+
+                    for (i in list.indices) {
+                        if (item != null) {
+                            if (item.isManualSales) {
+
+
+                                if (list[i].manualSaleId == item.manualSaleId) {
+                                    Log.d(TAG, "cartLogic: " + i)
+                                    index = i
+                                    break
+                                }
+
+                            } else {
+                                if (list[i].itemId == item.itemId) {
+                                    Log.d(TAG, "cartLogic: " + i)
+                                    index = i
+                                    break
+                                }
+                            }
+
+                        }
+                    }
+
+                    if (index != -1) {
+                        val model = cartList[0].items?.get(index)
+                        Log.d(TAG, "cartLogic: " + index)
+                        if (model != null) {
+                            if (item != null) {
+                                model.name = item.name
+                                model.price = item.price
+                                model.variationsAttributes = item.variationsAttributes
+                                model.itemQuantity = item.itemQuantity
+                                if (item.isEdited) {
+                                    model.isEdited = item.isEdited
+                                }
+                                if (prefProvider.getValueboolean(
+                                        IS_UPDATE_ORDER_FROM_ACTIVE_ORDER,
+                                        false
+                                    )
+                                ) {
+                                    model.isEdited = true
+                                }
+                                item.singleItemPrice = item.price
+                                item.modifiers.forEach {
+                                    model.modifiers.forEach { tbmodifier ->
+                                        if (it.id == tbmodifier.id) {
+                                            it.itemQuantity =
+                                                (it.itemQuantity * item.itemQuantity)
+                                        }
+                                    }
+                                    item.singleItemPrice += it.price * it.itemQuantity
+                                    it.modifierQuantity = it.itemQuantity / item.itemQuantity
+                                }
+                                model.modifiers = item.modifiers
+                                model.isDestroy = false
+                                itemDiscountApply(model, item)
+
+                            }
+                            Log.d(TAG, "cartLogic:itemname " + model.name)
+                            list[index] = model
+
+                        }
+                    }
+                } else if (type == DELETE) {
+
+                    var index = -1
+                    Log.e(TAG, "CheckDeleteItem ${Gson().toJson(item)}")
+                    Log.e(TAG, "getListedItems  ${Gson().toJson(list[0])}")
+                    Log.e(TAG, "checkReOrder  ${cartModel?.reorder}")
+
+                    for (i in list.indices) {
+                        if (item != null) {
+                            if (!item.isManualSales) {
+
+                                if (cartModel?.reorder == false && list[i].itemId == item.itemId && checkVariation(
+                                        list[i],
+                                        item
+                                    ) && checkModifier(list[i], item)
+                                ) {
+                                    Log.e(TAG, "CheckedBefore")
+                                    index = i
+                                    break
+                                } else if (cartModel?.reorder == true) {
+                                    if (list[i].orderItemId == item.orderItemId) {
+                                        index = i
+                                        Log.e(TAG, "indexReorder:  ${index}")
+                                        break
+                                    }
+
+                                }
+
+                            } else {
+                                if (list[i].manualSaleId == item.manualSaleId) {
+                                    index = i
+                                    break
+                                } else if (cartModel?.reorder == true) {
+                                    if (list[i].orderItemId == item.orderItemId) {
+                                        index = i
+                                        Log.e(TAG, "indexReorder23:  ${index}")
+                                        break
+                                    }
+
+                                }
+                            }
+                        }
+
+                    }
+
+                    if (index != -1) {
+                        val model = cartList[0].items?.get(index)
+                        if (model != null) {
+                            //delete from cart
+                            if (item?.isEdited == true) {
+                                model.isEdited = item.isEdited
+                                model.isDestroy = true
+                            } else {
+                                list.remove(model)
+                            }
+                        }
+                    } else {
+                        //list.remove(item)
+                    }
+                }
+
+                var cartModel = cartList[0]
+                if (type == UPDATE) {
+                    cartModel.items?.forEach { itemData ->
+                        cartModel = taxBifurcationCalculation(
+                            itemData,
+                            cartModel,
+                            type, false
+                        )
+                    }
+                } else {
+                    cartModel = taxBifurcationCalculation(item!!, cartModel, type, false)
+                }
+                cartModel.items = list
+                addCart(cartModel)
+                if (list.isEmpty()) {
+                    // delete carts
+                    deleteCart()
+                }
+            } else {
+
+                if (type == DELETE) {
+                    deleteCart()
+                } else {
+
+                    var cartModel = cartList?.get(0)
+                    cartModel = taxBifurcationCalculation(item!!, cartModel!!, type, false)
+                    if (item != null) {
+                        if (item.modifiers.isNotEmpty()) {
+                            item.modifiers.forEach { mod ->
+                                mod.modifierQuantity = mod.itemQuantity
+                            }
+                        }
+                        cartModel?.items = listOf(item)
+                    }
+
+                    if (cartModel != null) {
+                        addCart(cartModel!!)
+                    }
+                }
+
+
+            }
+        }
     }
 
     fun cartLogic(
@@ -1275,6 +1587,47 @@ class DashBoardCategoryViewModel @Inject constructor(
 
             }
         }
+
+    }
+
+
+    fun checkModifierNewLogic(tbItem: TbItem, item: TbItem): Boolean {
+        var isSame = false
+        var listOfDataMod: ArrayList<Int> = arrayListOf()
+
+        if (tbItem.modifiers.isNotEmpty()) {
+            tbItem.modifiers.forEach {
+                listOfDataMod.add(it.id ?: 0)
+            }
+        }
+
+        var listOfDataModSelected: ArrayList<Int> = arrayListOf()
+        if (item.modifiers.isNotEmpty()) {
+            item.modifiers.forEach {
+                listOfDataModSelected.add(it.id ?: 0)
+            }
+        }
+
+        if (tbItem.modifiers.isEmpty() && item.modifiers.isEmpty()) return true
+
+        if (listOfDataMod.containsAll(listOfDataModSelected) && listOfDataMod.size == listOfDataModSelected.size) {
+            isSame = true
+            item.modifiers.forEach { itmod ->
+                tbItem.modifiers.forEach { tbmod ->
+                    if (tbmod.id == itmod.id && tbmod.modifierQuantity != itmod.itemQuantity) {
+                        Log.d(
+                            TAG,
+                            "checkModifierNewLogic: ${tbmod.modifierQuantity}   ${itmod.itemQuantity}"
+                        )
+                        isSame = false
+                    }
+                }
+            }
+        } else {
+            isSame = false
+        }
+
+        return isSame
 
     }
 
@@ -3538,7 +3891,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 if (it.settingData.data.teamRoles.isNotEmpty()) {
                                     posRepository.addTeamRoleFromDb(it.settingData.data.teamRoles)
                                     rolePermission.findCurrentUserRoleAndSave(it.settingData.data.teamRoles)
-                                    _checkCashDrawerPermission.value= true
+                                    _checkCashDrawerPermission.value = true
                                 } else {
 
                                     ThreadPoolManager.instance.executeTask(Runnable {

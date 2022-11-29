@@ -37,6 +37,7 @@ class Modifier : Parcelable {
     var itemQuantity: Int = 1
 
     var orderModifierId: Int? = null
+    var modifierQuantity: Int = 1
 
     var orderItemTaxes: List<GetOrderDetailsResponse.Data.OrderItem.OrderItemModifier.OrderItemTaxe?> =
         emptyList()

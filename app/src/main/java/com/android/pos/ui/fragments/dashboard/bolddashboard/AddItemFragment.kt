@@ -343,15 +343,15 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                     }
 
 
-                    if (checkVar() && checkMod()) {
+                    if (checkVar()) {
                         LogUtil.logE("NewItem", "ItemSame")
-                        viewModel.cartLogic(cartList, item, Constants.UPDATE, false)
+                        viewModel.newCartLogicModifier(cartList, item, Constants.UPDATE, false)
 
                     } else {
 
                         LogUtil.logE("NewItem", "ItemSameNot")
                         item.orderItemId = null
-                        viewModel.cartLogic(cartList, item, Constants.ADD, false)
+                        viewModel.newCartLogicModifier(cartList, item, Constants.UPDATE, false)
                     }
 
 
@@ -366,7 +366,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                     }
                 } else {
 
-                    viewModel.cartLogic(cartList, item, Constants.ADD, false)
+                    viewModel.newCartLogicModifier(cartList, item, Constants.ADD, false)
                 }
             }
 
@@ -1111,6 +1111,11 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
             binding.relativeModifierqntUpdatte.gone()
             binding.relativeAddItem.visible()
 
+        }
+        binding.linearCancelmodifier.setOnClickListener {
+            MethodUtils.hideKeyboard(requireActivity())
+            binding.relativeModifierqntUpdatte.gone()
+            binding.relativeAddItem.visible()
         }
 
     }

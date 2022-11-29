@@ -56,6 +56,7 @@ class TbItem : Parcelable {
 
     var customItemCount: Int = 0
     var discountPrice: Double = 0.0
+    var singleItemPrice:Double = 0.0
     var isDiscountDefault = false
     var discountId: Int? = null
     var discountType: String = ""
