@@ -29,7 +29,8 @@ import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class Modifiers(val clickedPosition: Int) : Fragment(), TextWatcher, ItemCallback {
+class Modifiers(val clickedPosition: Int) : Fragment(), TextWatcher, ItemCallback,
+    ModifierSetsListAdapter.ModifierDeleteCallback {
     private var isreOrder: Boolean = false
     var dragFrom = -1
     var dragTo = -1
@@ -79,7 +80,7 @@ class Modifiers(val clickedPosition: Int) : Fragment(), TextWatcher, ItemCallbac
         adapter = ModifierSetsListAdapter(false)
         binding.rvModifiersList.adapter = adapter
         adapter.setCallback(this)
-
+        adapter.onDelteCallbackMod(this)
         binding.edtSearch.addTextChangedListener(this)
     }
 
@@ -133,8 +134,8 @@ class Modifiers(val clickedPosition: Int) : Fragment(), TextWatcher, ItemCallbac
                     viewHolder: RecyclerView.ViewHolder,
                     target: RecyclerView.ViewHolder
                 ): Boolean {
-                    val oldPos = viewHolder.layoutPosition
-                    val newPos = target.layoutPosition
+                    val oldPos = viewHolder.bindingAdapterPosition
+                    val newPos = target.bindingAdapterPosition
                     LogUtil.logE(
                         "reorder after",
                         viewHolder.layoutPosition.toString() + " :::  " + target.layoutPosition.toString()
@@ -143,11 +144,11 @@ class Modifiers(val clickedPosition: Int) : Fragment(), TextWatcher, ItemCallbac
                     if (dragFrom == -1) {
                         dragFrom = oldPos
                     }
-                    dragTo = newPos
+                    dragTo = target.bindingAdapterPosition
 
                     adapter.onItemMove(
-                        viewHolder.layoutPosition,
-                        target.layoutPosition
+                        viewHolder.bindingAdapterPosition,
+                        target.bindingAdapterPosition
                     )
 
                     return true
@@ -167,7 +168,7 @@ class Modifiers(val clickedPosition: Int) : Fragment(), TextWatcher, ItemCallbac
                 ) {
 
                     if (dragFrom != -1 && dragTo != -1 && dragFrom != dragTo) {
-                        adapter.getItem(dragFrom).sort?.let {
+                        adapter.getItem(dragFrom).sort.let {
                             reallyMoved(
                                 it,
                                 adapter.getItem(dragTo).sort!!,
@@ -189,7 +190,7 @@ class Modifiers(val clickedPosition: Int) : Fragment(), TextWatcher, ItemCallbac
         if (modifierSetId != null) {
 
             isreOrder = true
-            viewModel.reOrderModifier(modifierSetId, oldPos, newPos)
+            viewModel.reOrderModifier(modifierSetId, newPos, oldPos)
         }
 
     }
@@ -212,7 +213,7 @@ class Modifiers(val clickedPosition: Int) : Fragment(), TextWatcher, ItemCallbac
 
         viewModel.data.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let {
-                if (!isreOrder)
+               // if (!isreOrder)
                     AlertUtils.showCustomAlert(requireActivity(), it.message)
 
                 if (isreOrder) {
@@ -270,6 +271,21 @@ class Modifiers(val clickedPosition: Int) : Fragment(), TextWatcher, ItemCallbac
             true
         }
         popupMenu?.show()
+    }
+
+    override fun onDelete(pos: Int) {
+        alert(
+            getString(R.string.app_name),
+            getString(R.string.delete_modifier_message)
+        ) {
+            positiveButton(getString(R.string.tv_delete)) {
+                adapter.getItem(pos).id?.let { viewModel.deleteModifierSet(it) }
+            }
+            negativeButton(R.string.tv_cancel) {
+                // Do negative stuff here
+            }
+        }
+
     }
 
 

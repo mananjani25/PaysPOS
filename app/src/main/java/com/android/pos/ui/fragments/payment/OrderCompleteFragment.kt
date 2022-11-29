@@ -9067,6 +9067,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 //            SunmiPrinterApi.getInstance().lineWrap(1)
 
 
+            SunmiPrinterApi.getInstance().lineWrap(2)
+
             receiptModel?.order?.orderType?.trim()?.let { PrintSunmiUtils.printOrderType(it) }
 
 
