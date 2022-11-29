@@ -671,7 +671,6 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 model.name = item.name
                                 model.price = item.price
                                 model.variationsAttributes = item.variationsAttributes
-                                model.itemQuantity = item.itemQuantity
                                 if (item.isEdited) {
                                     model.isEdited = item.isEdited
                                 }
@@ -686,13 +685,16 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 item.modifiers.forEach {
                                     model.modifiers.forEach { tbmodifier ->
                                         if (it.id == tbmodifier.id) {
+                                            it.modifierQuantity =
+                                                it.itemQuantity / model.itemQuantity
                                             it.itemQuantity =
-                                                (it.itemQuantity * item.itemQuantity)
+                                                (it.modifierQuantity * item.itemQuantity)
                                         }
                                     }
-                                    item.singleItemPrice += it.price * it.itemQuantity
-                                    it.modifierQuantity = it.itemQuantity / item.itemQuantity
+                                    item.singleItemPrice += it.price * it.modifierQuantity
                                 }
+                                Log.d(TAG, "newCartLogicModifier: "+item.singleItemPrice)
+                                model.itemQuantity = item.itemQuantity
                                 model.modifiers = item.modifiers
                                 model.isDestroy = false
                                 itemDiscountApply(model, item)
