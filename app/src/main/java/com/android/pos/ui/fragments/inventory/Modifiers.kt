@@ -190,7 +190,7 @@ class Modifiers(val clickedPosition: Int) : Fragment(), TextWatcher, ItemCallbac
         if (modifierSetId != null) {
 
             isreOrder = true
-            viewModel.reOrderModifier(modifierSetId, newPos, oldPos)
+            viewModel.reOrderModifier(modifierSetId, oldPos, newPos)
         }
 
     }
