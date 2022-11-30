@@ -5939,7 +5939,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     Builder.COLOR_1
                 )
                 builder.addTextAlign(Builder.ALIGN_CENTER)
-                builder.addText(receiptModel?.order?.deliveryType + "\n")
+             //   builder.addText(receiptModel?.order?.deliveryType + "\n")
 
 
             }
@@ -9076,7 +9076,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 || receiptModel?.order?.orderType?.lowercase() == OPEN_ORDER.lowercase()
             ) {
 
-                receiptModel?.order?.deliveryType?.let { PrintSunmiUtils.deliveryType(it) }
+              //  receiptModel?.order?.deliveryType?.let { PrintSunmiUtils.deliveryType(it) }
             }
 
 
@@ -9739,7 +9739,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 || receiptModel?.order?.orderType?.lowercase() == OPEN_ORDER.lowercase()
             ) {
 
-                receiptModel?.order?.deliveryType?.let { PrintSunmiUtils.headerText(it) }
+              //  receiptModel?.order?.deliveryType?.let { PrintSunmiUtils.headerText(it) }
             }
 
 
