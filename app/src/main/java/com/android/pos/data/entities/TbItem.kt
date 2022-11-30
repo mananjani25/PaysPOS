@@ -22,6 +22,7 @@ class TbItem : Parcelable {
     @PrimaryKey
     var itemId: Int = 0
     var name: String = ""
+    var id:Int = 1
     var cost: Double = 0.0
     var price: Double = 0.0
     var priceType: String = ""

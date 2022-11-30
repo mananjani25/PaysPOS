@@ -555,6 +555,12 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     Log.d(TAG, "cartLogic: " + i)
                                     index = i
                                     break
+                                } else if (list[i].itemId == item.itemId && (!checkVariation(
+                                        list[i],
+                                        item
+                                    ) || !checkModifierNewLogic(list[i], item))
+                                ) {
+                                    item.id += 1
                                 }
                             }
 
@@ -653,7 +659,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 }
 
                             } else {
-                                if (list[i].itemId == item.itemId) {
+                                if (list[i].id == item.id) {
                                     Log.d(TAG, "cartLogic: " + i)
                                     index = i
                                     break
@@ -685,15 +691,20 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 item.modifiers.forEach {
                                     model.modifiers.forEach { tbmodifier ->
                                         if (it.id == tbmodifier.id) {
-                                            it.modifierQuantity =
-                                                it.itemQuantity / model.itemQuantity
+                                            if (it.modifierQuantity != tbmodifier.modifierQuantity) {
+                                                tbmodifier.modifierQuantity = it.modifierQuantity
+                                            } else {
+                                                it.modifierQuantity =
+                                                    it.itemQuantity / model.itemQuantity
+                                            }
+
                                             it.itemQuantity =
                                                 (it.modifierQuantity * item.itemQuantity)
                                         }
                                     }
                                     item.singleItemPrice += it.price * it.modifierQuantity
                                 }
-                                Log.d(TAG, "newCartLogicModifier: "+item.singleItemPrice)
+                                Log.d(TAG, "newCartLogicModifier: " + item.singleItemPrice)
                                 model.itemQuantity = item.itemQuantity
                                 model.modifiers = item.modifiers
                                 model.isDestroy = false
@@ -1593,6 +1604,11 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
 
+
+    fun combineItemWithModifier()
+    {
+
+    }
     fun checkModifierNewLogic(tbItem: TbItem, item: TbItem): Boolean {
         var isSame = false
         var listOfDataMod: ArrayList<Int> = arrayListOf()
