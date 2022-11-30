@@ -168,7 +168,6 @@ class TransactionDetailsFragment : Fragment() {
         }
 
 
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -374,7 +373,7 @@ class TransactionDetailsFragment : Fragment() {
     }
 
     private fun tipCall(isCard: Boolean) {
-        paymentDetailsResponse.data.let { viewModel.orderUpdateTip(it.id, tipAmount,isCard) }
+        paymentDetailsResponse.data.let { viewModel.orderUpdateTip(it.id, tipAmount, isCard) }
     }
 
     private fun magtekCall(refundAmount: Double) {
@@ -1798,7 +1797,7 @@ class TransactionDetailsFragment : Fragment() {
                     Builder.COLOR_1
                 )
 
-                if (paymentDetailsResponse?.data?.payment_type.lowercase() == "Card".lowercase()) {
+                if (paymentDetailsResponse?.data?.payment_type.lowercase() == "Card".lowercase() && paymentDetailsResponse.data.cash_discount_type.lowercase() == "SurCharge".lowercase()) {
                     builder.addText(
                         padLine(
                             "SurCharge",
@@ -1815,7 +1814,7 @@ class TransactionDetailsFragment : Fragment() {
                         )
                     )
 
-                } else {
+                } else if (paymentDetailsResponse?.data?.payment_type.lowercase() == "Cash".lowercase() && paymentDetailsResponse.data.cash_discount_type.lowercase() == "CashDiscount".lowercase()) {
 
                     builder.addText(
                         padLine(
@@ -2262,9 +2261,10 @@ class TransactionDetailsFragment : Fragment() {
                     }
 
                     if (customerSettingModel.showCustomerPhone) {
-                        if (paymentDetailsResponse?.data?.order?.customer?.phones?.isNotEmpty() &&  paymentDetailsResponse?.data?.order?.customer?.phones?.get(
+                        if (paymentDetailsResponse?.data?.order?.customer?.phones?.isNotEmpty() && paymentDetailsResponse?.data?.order?.customer?.phones?.get(
                                 paymentDetailsResponse?.data?.order?.customer.phones?.size - 1
-                            ).phoneNumber.isNotEmpty()) {
+                            ).phoneNumber.isNotEmpty()
+                        ) {
                             builder.addTextLineSpace(30)
                             builder.addFeedUnit(30)
                             builder.addTextFont(Builder.FONT_E)
@@ -2679,7 +2679,7 @@ class TransactionDetailsFragment : Fragment() {
 
             if (paymentDetailsResponse.data?.cash_discount_or_surcharge != null) {
 
-                if (paymentDetailsResponse?.data?.payment_type.lowercase() == "Card".lowercase()) {
+                if (paymentDetailsResponse?.data?.payment_type.lowercase() == "Card".lowercase() && paymentDetailsResponse?.data?.cash_discount_type.lowercase() == "SurCharge".lowercase()) {
                     val surCharge =
                         padLine(
                             "SurCharge",
@@ -2693,7 +2693,7 @@ class TransactionDetailsFragment : Fragment() {
                     PrintSunmiUtils.surCharge(surCharge)
 
 
-                } else {
+                } else if (paymentDetailsResponse?.data?.payment_type.lowercase() == "Cash".lowercase() && paymentDetailsResponse?.data?.cash_discount_type.lowercase() == "CashDiscount".lowercase()){
 
 
                     val cashDisc = padLine(
@@ -3137,7 +3137,7 @@ class TransactionDetailsFragment : Fragment() {
 
             if (paymentDetailsResponse.data?.cash_discount_or_surcharge != null) {
 
-                if (paymentDetailsResponse?.data?.payment_type.lowercase() == "Card".lowercase()) {
+                if (paymentDetailsResponse?.data?.payment_type.lowercase() == "Card".lowercase() && paymentDetailsResponse?.data?.cash_discount_type.lowercase() == "SurCharge".lowercase()) {
                     val surCharge =
                         padLine(
                             "SurCharge",
@@ -3151,7 +3151,7 @@ class TransactionDetailsFragment : Fragment() {
                     PrintSunmiUtils.normalText(surCharge)
 
 
-                } else {
+                } else if (paymentDetailsResponse?.data?.payment_type.lowercase() == "Cash".lowercase() && paymentDetailsResponse?.data?.cash_discount_type.lowercase() == "CashDiscount".lowercase()) {
 
 
                     val cashDisc = padLine(

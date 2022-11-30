@@ -2089,6 +2089,96 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     )
                 )
 
+                if (paymentType.lowercase() == "Card".lowercase() && getDineInOrderDetails?.payments?.isNotEmpty() == true) {
+
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+                    builder.addTextFont(Builder.FONT_E)
+                    // builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextLang(Builder.LANG_EN)
+                    addCustomerTextSize(builder, customerSettingModel.fonts)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.TRUE,
+                        Builder.COLOR_1
+                    )
+
+                    builder.addText(
+                        padLine(
+                            "",
+                            getDineInOrderDetails?.payments?.get(
+                                getDineInOrderDetails?.payments?.size?.minus(
+                                    1
+                                ) ?: 0
+                            )?.cardName,
+                            if (customerSettingModel.fonts == Constants.LARGE) {
+                                24
+                            } else {
+                                48
+                            }
+                        )
+                    )
+
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+                    builder.addTextFont(Builder.FONT_E)
+                    // builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextLang(Builder.LANG_EN)
+                    addCustomerTextSize(builder, customerSettingModel.fonts)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.TRUE,
+                        Builder.COLOR_1
+                    )
+
+                    builder.addText(
+                        padLine(
+                            "",
+                            getDineInOrderDetails?.payments?.get(
+                                getDineInOrderDetails?.payments?.size?.minus(
+                                    1
+                                ) ?: 0
+                            )?.cardType,
+                            if (customerSettingModel.fonts == Constants.LARGE) {
+                                24
+                            } else {
+                                48
+                            }
+                        )
+                    )
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+                    builder.addTextFont(Builder.FONT_E)
+                    // builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextLang(Builder.LANG_EN)
+                    addCustomerTextSize(builder, customerSettingModel.fonts)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.TRUE,
+                        Builder.COLOR_1
+                    )
+
+                    builder.addText(
+                        padLine(
+                            "",
+                            getDineInOrderDetails?.payments?.get(
+                                getDineInOrderDetails?.payments?.size?.minus(
+                                    1
+                                ) ?: 0
+                            )?.cardNumber,
+                            if (customerSettingModel.fonts == Constants.LARGE) {
+                                24
+                            } else {
+                                48
+                            }
+                        )
+                    )
+
+                }
+
 
 
                 if (getDineInOrderDetails?.note != null && getDineInOrderDetails?.note != "" && customerSettingModel.showOrderNote) {
@@ -3087,6 +3177,42 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 paymentType, if (customerSettingModel.fonts == LARGE) 23 else 48
             ).toString()
             PrintSunmiUtils.normalText(str11)
+
+            if (paymentType.lowercase() == "Card".lowercase() && getDineInOrderDetails?.payments?.isNotEmpty() == true) {
+
+                PrintSunmiUtils.normalText(
+                    padLine(
+                        "",
+                        getDineInOrderDetails?.payments?.get(
+                            getDineInOrderDetails?.payments?.size?.minus(
+                                1
+                            ) ?: 0
+                        )?.cardName, if (customerSettingModel.fonts == LARGE) 23 else 48
+                    ).toString()
+                )
+
+                PrintSunmiUtils.normalText(
+                    padLine(
+                        "",
+                        getDineInOrderDetails?.payments?.get(
+                            getDineInOrderDetails?.payments?.size?.minus(
+                                1
+                            ) ?: 0
+                        )?.cardType, if (customerSettingModel.fonts == LARGE) 23 else 48
+                    ).toString()
+                )
+                PrintSunmiUtils.normalText(
+                    padLine(
+                        "",
+                        getDineInOrderDetails?.payments?.get(
+                            getDineInOrderDetails?.payments?.size?.minus(
+                                1
+                            ) ?: 0
+                        )?.cardNumber, if (customerSettingModel.fonts == LARGE) 23 else 48
+                    ).toString()
+                )
+
+            }
 
 
 
@@ -5320,6 +5446,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             }
 
+            if (receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.paymentType?.lowercase() == "Card".lowercase()) {
+                PrintSunmiUtils.normalText(receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardName.toString())
+                PrintSunmiUtils.normalText(receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardType.toString())
+                PrintSunmiUtils.normalText(receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardNumber.toString())
+
+            }
+
 
             if (getDineInOrderDetails?.note != null && getDineInOrderDetails?.note != "" && customerSettingModel.showOrderNote) {
 
@@ -5939,7 +6072,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     Builder.COLOR_1
                 )
                 builder.addTextAlign(Builder.ALIGN_CENTER)
-                builder.addText(receiptModel?.order?.deliveryType + "\n")
+                //   builder.addText(receiptModel?.order?.deliveryType + "\n")
 
 
             }
@@ -9076,7 +9209,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 || receiptModel?.order?.orderType?.lowercase() == OPEN_ORDER.lowercase()
             ) {
 
-                receiptModel?.order?.deliveryType?.let { PrintSunmiUtils.deliveryType(it) }
+                //  receiptModel?.order?.deliveryType?.let { PrintSunmiUtils.deliveryType(it) }
             }
 
 
@@ -9663,8 +9796,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             }
 
-            PrintSunmiUtils.tips("__________________________")
-            SunmiPrinterApi.getInstance().lineWrap(1)
+            /*  PrintSunmiUtils.tips("__________________________")
+              SunmiPrinterApi.getInstance().lineWrap(1)*/
 
             SunmiPrinterApi.getInstance().lineWrap(2)
             val str8 = padLine(
@@ -9739,7 +9872,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 || receiptModel?.order?.orderType?.lowercase() == OPEN_ORDER.lowercase()
             ) {
 
-                receiptModel?.order?.deliveryType?.let { PrintSunmiUtils.headerText(it) }
+                //  receiptModel?.order?.deliveryType?.let { PrintSunmiUtils.headerText(it) }
             }
 
 
