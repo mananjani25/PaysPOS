@@ -25,14 +25,14 @@ interface DBItemDao {
     val allItemFromPos: LiveData<List<TbItem?>>?
 
 
-    @Query("select * from TbItem where TbItem.isDeleted = 0 and (TbItem.website_hide_status ='UnHideOnWebsite' or TbItem.hide_status ='UnHide') and TbItem.name != 'Manual Item' GROUP by TbItem.itemId ORDER BY TbItem.sort DESC")
+    @Query("select * from TbItem where TbItem.isDeleted = 0 and (TbItem.website_hide_status ='UnHideOnWebsite' or TbItem.hide_status ='UnHide') and TbItem.name != 'Manual Item' GROUP by TbItem.itemId ORDER BY TbItem.sort ASC")
     fun getPaginationList(): PagingSource<Int, TbItem>
 
     /*@get:Query("select * from TbItem whe  re TbItem.isManualSales = 1")
     val manualItems : LiveData<List<TabItem?>>?
     */
 
-    @Query("select * from TbItem where TbItem.name like :desc and (TbItem.website_hide_status ='UnHideOnWebsite' or TbItem.hide_status ='UnHide') and  TbItem.name != 'Manual Item' GROUP by TbItem.itemId ORDER BY TbItem.sort DESC")
+    @Query("select * from TbItem where TbItem.name like :desc and (TbItem.website_hide_status ='UnHideOnWebsite' or TbItem.hide_status ='UnHide') and  TbItem.name != 'Manual Item' GROUP by TbItem.itemId ORDER BY TbItem.sort ASC")
     fun getItemSearchResults(desc: String): PagingSource<Int, TbItem>
 
 

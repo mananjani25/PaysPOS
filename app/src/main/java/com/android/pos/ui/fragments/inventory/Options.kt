@@ -181,7 +181,7 @@ class Options(val clickedPosition: Int) : Fragment(), TextWatcher, ItemCallback 
             Log.e(TAG, "newnewPos  ${newPos}")
             Log.e(TAG, "oldoldPos  ${oldPos}")
             isreOrder = true
-            viewModel.reOrderOption(modifierSetId, newPos, oldPos)
+            viewModel.reOrderOption(modifierSetId, oldPos,newPos)
         }
 
     }
