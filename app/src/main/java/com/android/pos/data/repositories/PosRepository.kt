@@ -212,7 +212,9 @@ class PosRepository @Inject constructor(
     fun getCategoryListAll() =
         performGetOperationDatabase(databaseQuery = { appDatabase.categoryDao().all() })
 
-    fun getCategoryListIWCAll() = performGetOperationDatabase(databaseQuery = { appDatabase.categoryDao().allCatWithoutItem() })
+    fun getCategoryListIWCAll() = performGetOperationDatabase(databaseQuery = {
+        appDatabase.categoryDao().allCatWithoutItem()
+    })
 
     fun getCategoryList() =
         performGetOperation(databaseQuery = { appDatabase.categoryDao().all() },
@@ -278,15 +280,17 @@ class PosRepository @Inject constructor(
 
     fun getSingleItem(id: Int) = appDatabase.itemDao().itemOne(id)
 
+    fun getItemForMod(id: Int) = appDatabase.itemDao().itemByIdMod(id)
+
     fun getSingleModifier(id: Int) = appDatabase.modifierSetDao().itemOne(id)
 
-    fun updateModifier(mod:ModifierSet) = appDatabase.modifierSetDao().update(mod)
+    fun updateModifier(mod: ModifierSet) = appDatabase.modifierSetDao().update(mod)
 
 
     fun modifierSetsList() =
         performGetOperationDatabase(databaseQuery = { appDatabase.modifierSetDao().all })
 
-    fun updateModSet(mod:ModifierSet) = appDatabase.modifierSetDao().update(mod)
+    fun updateModSet(mod: ModifierSet) = appDatabase.modifierSetDao().update(mod)
 
     fun getAllCountryList() = appDatabase.countryListDao().all
 
@@ -561,6 +565,7 @@ class PosRepository @Inject constructor(
 
     fun unhideItemListPOS() =
         performGetOperationDatabase(databaseQuery = { appDatabase.itemDao().unhideItemPos!! })
+
     fun unhideItemListWebsite() =
         performGetOperationDatabase(databaseQuery = { appDatabase.itemDao().unhideItemWebsite!! })
 
@@ -900,7 +905,7 @@ class PosRepository @Inject constructor(
         is_captured: Boolean,
         data: CashInOutModel
     ) =
-        apiHelperNew.orderUpdateTip(orderId, customerId,is_captured,data)
+        apiHelperNew.orderUpdateTip(orderId, customerId, is_captured, data)
 
     suspend fun updateKitchenFireStatus(
         id: Int,

@@ -99,6 +99,7 @@ class TbItem : Parcelable {
         variationsAttributes = item.variations
         shortDescription = item.desc ?: ""
         isDeleted = item.isDeleted
+        id = Random().nextInt(100000)
         return this
     }
 

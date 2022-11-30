@@ -269,7 +269,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                         modifiers.forEach {
                             item.modifiers.forEach { it1 ->
                                 if (it.id == it1.id) {
-                                    it1.itemQuantity = it.itemQuantity
+                                   // it1.itemQuantity = it.itemQuantity
                                     it.orderModifierId = it1.orderModifierId
 
                                 }
@@ -344,7 +344,8 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 
 
                     if (checkVar()) {
-                        LogUtil.logE("NewItem", "ItemSame")
+
+                        LogUtil.logE("NewItem", "ItemSame ${Gson().toJson(mainItem)}")
                         viewModel.newCartLogicModifier(cartList, item, Constants.UPDATE, false)
 
                     } else {
@@ -500,6 +501,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 
     private fun getData() {
         item = requireArguments().getParcelable<TbItem>("item") ?: TbItem()
+        Log.e(TAG,"getMainItemAdd  ${Gson().toJson(item)}")
         if (item.modifiers.isNotEmpty()) {
             item.modifiers.forEach {
                 mainModifiersId.add(it.id ?: 0)
