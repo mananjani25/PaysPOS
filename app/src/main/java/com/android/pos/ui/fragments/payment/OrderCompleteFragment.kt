@@ -9663,8 +9663,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             }
 
-            PrintSunmiUtils.tips("__________________________")
-            SunmiPrinterApi.getInstance().lineWrap(1)
+          /*  PrintSunmiUtils.tips("__________________________")
+            SunmiPrinterApi.getInstance().lineWrap(1)*/
 
             SunmiPrinterApi.getInstance().lineWrap(2)
             val str8 = padLine(
