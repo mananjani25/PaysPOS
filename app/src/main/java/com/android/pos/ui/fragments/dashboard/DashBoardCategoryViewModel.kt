@@ -845,8 +845,16 @@ class DashBoardCategoryViewModel @Inject constructor(
 
         ThreadPoolManager.instance.executeTask {
             Log.e("ThreadPoolManager", list[index].id.toString())
-            val tb = posRepository.getItemForMod(1)
-            if (tb != null)
+            Log.e("ThreadPoolManagere ", list[index].manualSaleId.toString())
+            viewModelScope.launch {
+                val tb = posRepository.getItemList()
+
+
+                Log.e(TAG, "getListlistItems  ${tb.get(0).items?.size}")
+            }
+
+
+          /*  if (tb != null)
             tb.modifiers.forEach { mod ->
                 item.modifiers.forEach { it ->
                     if (mod.id == it.id) {
@@ -859,36 +867,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                 }
             }
             list.remove(list.get(index))
-            list.set(index, item)
+            list.set(index, item)*/
 
         }
-
-
-        viewModelScope.launch(Dispatchers.IO) {
-
-            var tb = posRepository.getItemForMod(list[index].id)
-
-
-            if (tb != null) {
-
-
-
-                Log.e(TAG, "modremovebefore  1${list.size}")
-
-            }
-        }
-
-
-
-
-
-        Log.e(TAG, "modremovebefore  2${list.size}")
-
-
-        Log.e(TAG, "modremovebefore Item 3${Gson().toJson(list.get(index).modifiers)}")
-
-
-
 
 
 

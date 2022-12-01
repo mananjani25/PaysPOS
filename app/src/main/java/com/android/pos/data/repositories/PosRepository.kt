@@ -15,6 +15,7 @@ import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.ApiHelper
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN
+import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.SYNC_SETTING_TIME_STAMP
 import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.di.PrefProvider
@@ -280,7 +281,7 @@ class PosRepository @Inject constructor(
 
     fun getSingleItem(id: Int) = appDatabase.itemDao().itemOne(id)
 
-    fun getItemForMod(id: Int) = appDatabase.itemDao().itemByIdMod(id)
+    fun getItemList()=appDatabase.cartDao().allItemMod(prefProvider.getValueInt(EMPLOYEE_ID,0))
 
     fun getSingleModifier(id: Int) = appDatabase.modifierSetDao().itemOne(id)
 

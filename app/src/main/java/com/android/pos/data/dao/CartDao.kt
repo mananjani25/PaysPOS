@@ -19,6 +19,9 @@ interface CartDao {
     @Query("select * from CartModel where CartModel.orderType = :orderType AND CartModel.isMaual = 0 AND CartModel.employeeID=:employee_Id")
     fun allItem(orderType: String, employee_Id: Int): LiveData<List<CartModel>>
 
+    @Query("select * from CartModel where CartModel.isMaual = 0 AND CartModel.employeeID=:employee_Id")
+    fun allItemMod( employee_Id: Int): List<CartModel>
+
     @Query("DELETE FROM CartModel where CartModel.employeeID=:employee_Id")
     suspend fun delete(employee_Id: Int)
 
@@ -34,7 +37,6 @@ interface CartDao {
 
     @Query("select * from CartModel where CartModel.orderType = :orderType AND CartModel.isMaual = 1 AND CartModel.employeeID=:employee_Id")
     fun getManualSaleItems(orderType: String, employee_Id: Int): LiveData<List<CartModel>>
-
 
     //For Dine in Local Database
     @Insert(onConflict = OnConflictStrategy.REPLACE)

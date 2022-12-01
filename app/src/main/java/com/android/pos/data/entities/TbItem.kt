@@ -14,7 +14,7 @@ import kotlinx.parcelize.Parcelize
 import java.util.*
 
 
-@TypeConverters(TypeConvertersTax::class,TypeConvertersIds::class)
+@TypeConverters(TypeConvertersTax::class, TypeConvertersIds::class)
 @Entity(tableName = "TbItem")
 @Parcelize
 class TbItem : Parcelable {
@@ -22,7 +22,7 @@ class TbItem : Parcelable {
     @PrimaryKey
     var itemId: Int = 0
     var name: String = ""
-    var id:Int = 1
+    var id: Int = 1
     var cost: Double = 0.0
     var price: Double = 0.0
     var priceType: String = ""
@@ -57,7 +57,7 @@ class TbItem : Parcelable {
 
     var customItemCount: Int = 0
     var discountPrice: Double = 0.0
-    var singleItemPrice:Double = 0.0
+    var singleItemPrice: Double = 0.0
     var isDiscountDefault = false
     var discountId: Int? = null
     var discountType: String = ""
@@ -99,7 +99,6 @@ class TbItem : Parcelable {
         variationsAttributes = item.variations
         shortDescription = item.desc ?: ""
         isDeleted = item.isDeleted
-        id = Random().nextInt(100000)
         return this
     }
 
@@ -165,11 +164,11 @@ class TbItem : Parcelable {
         modeTb.thumbImageUrl = item.thumbImageUrl
         modeTb.categoryId = item.categoryId
         modeTb.categoryName = item.categoryName
-      /*  if (item.itemModifierSetsSort?.isNotEmpty() == true) {
-            modeTb.itemModifierSetsSort = item.itemModifierSetsSort
-        } else {
-            modeTb.itemModifierSetsSort = model.itemModifierSetsSort
-        }*/
+        /*  if (item.itemModifierSetsSort?.isNotEmpty() == true) {
+              modeTb.itemModifierSetsSort = item.itemModifierSetsSort
+          } else {
+              modeTb.itemModifierSetsSort = model.itemModifierSetsSort
+          }*/
         if (item.modifier_set_ids.isEmpty() && model.modifier_set_ids.isEmpty()) {
 
             var listMod: ArrayList<Int> = arrayListOf()
@@ -324,8 +323,6 @@ class TbItem : Parcelable {
             Log.e("GetVaroatommodifierList", "${modifierList.size}")
 
             modeTb.modifiers = modifierList
-
-
 
 
         } else if (item.modifiers.isNotEmpty()) {
