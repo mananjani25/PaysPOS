@@ -281,7 +281,7 @@ class PosRepository @Inject constructor(
 
     fun getSingleItem(id: Int) = appDatabase.itemDao().itemOne(id)
 
-    fun getItemList()=appDatabase.cartDao().allItemMod(prefProvider.getValueInt(EMPLOYEE_ID,0))
+     fun getItemList()=appDatabase.cartDao().allItemMod(prefProvider.getValueInt(EMPLOYEE_ID,0))
 
     fun getSingleModifier(id: Int) = appDatabase.modifierSetDao().itemOne(id)
 

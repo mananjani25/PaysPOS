@@ -20,7 +20,7 @@ interface CartDao {
     fun allItem(orderType: String, employee_Id: Int): LiveData<List<CartModel>>
 
     @Query("select * from CartModel where CartModel.isMaual = 0 AND CartModel.employeeID=:employee_Id")
-    fun allItemMod( employee_Id: Int): List<CartModel>
+     fun allItemMod( employee_Id: Int): LiveData<List<CartModel>>
 
     @Query("DELETE FROM CartModel where CartModel.employeeID=:employee_Id")
     suspend fun delete(employee_Id: Int)
