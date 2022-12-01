@@ -86,6 +86,7 @@ import java.net.URL
 import java.text.NumberFormat
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 import kotlin.collections.set
 import kotlin.math.ceil
 
@@ -561,6 +562,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     ) || !checkModifierNewLogic(list[i], item))
                                 ) {
                                     item.id += 1
+                                    break
                                 }
                             }
 
@@ -669,13 +671,16 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         item
                                     ) && checkModifierNewLogic(list[i], item)
                                 ) {
-                                    Log.e(TAG, "InsideRemoveLogic")
                                     var listTmp =
                                         combineItem(list.toCollection(arrayListOf()), item, i)
                                     list.clear()
-                                    Log.e(TAG, "listTmpSize  ${listTmp.size}")
-                                    Log.e(TAG, "getListSize  ${list.size}")
-                                    list.addAll(listTmp.toMutableList())
+                                    Log.d(
+                                        TAG,
+                                        "newCartLogicModifier: position of selected Item " + item.id
+                                    )
+                                    var ttempllist =
+                                        ArrayList(listTmp).apply { removeAt(item.id) }
+                                    list.addAll(ttempllist.toMutableList())
                                     index = -1
                                     break
                                 }
@@ -745,7 +750,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 if (cartModel?.reorder == false && list[i].itemId == item.itemId && checkVariation(
                                         list[i],
                                         item
-                                    ) && checkModifier(list[i], item)
+                                    ) && checkModifierNewLogic(list[i], item)
                                 ) {
                                     Log.e(TAG, "CheckedBefore")
                                     index = i
@@ -756,6 +761,12 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         Log.e(TAG, "indexReorder:  ${index}")
                                         break
                                     }
+
+                                } else if (cartModel?.reorder == false && list[i].itemId == item.itemId && (!checkVariation(
+                                        list[i],
+                                        item
+                                    ) || !checkModifierNewLogic(list[i], item))
+                                ) {
 
                                 }
 
@@ -838,42 +849,20 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     private fun combineItem(list: ArrayList<TbItem>, item: TbItem, index: Int): List<TbItem> {
+        Log.e(TAG, "newItemitemQuantity  ${Gson().toJson(item)}")
         Log.e(TAG, "newItemitemQuantity  ${item.itemQuantity}")
         Log.e(TAG, "newItemitemQuantityOld  ${list[index].itemQuantity}")
-        item.itemQuantity += list[index].itemQuantity
-
-
-        ThreadPoolManager.instance.executeTask {
-            Log.e("ThreadPoolManager", list[index].id.toString())
-            Log.e("ThreadPoolManagere ", list[index].manualSaleId.toString())
-            viewModelScope.launch {
-                val tb = posRepository.getItemList()
-
-
-                Log.e(TAG, "getListlistItems  ${tb.get(0).items?.size}")
-            }
-
-
-          /*  if (tb != null)
-            tb.modifiers.forEach { mod ->
-                item.modifiers.forEach { it ->
-                    if (mod.id == it.id) {
-                        Log.e(TAG, "ModMerge 1  ${it.itemQuantity}")
-                        Log.e(TAG, "ModMerge 2  ${mod.itemQuantity}")
-                        it.itemQuantity += mod.itemQuantity
-                        it.modifierQuantity = mod.modifierQuantity
-                    }
-
+        list[index].itemQuantity += item.itemQuantity
+        list[index].modifiers.forEach { listmod ->
+            item.modifiers.forEach { itemmod ->
+                if (itemmod.id == listmod.id) {
+                    listmod.itemQuantity = itemmod.modifierQuantity * list[index].itemQuantity
                 }
             }
-            list.remove(list.get(index))
-            list.set(index, item)*/
-
         }
 
-
-
-
+        Log.d(TAG, "combineItem: " + list[index].itemQuantity)
+        Log.d(TAG, "combineItem: " + Gson().toJson(list[index].modifiers))
         return list
 
     }
