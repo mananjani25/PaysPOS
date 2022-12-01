@@ -1695,9 +1695,8 @@ class CartFragment(
             val popupMenu = PopupMenu(requireContext(), it)
             popupMenu.menuInflater.inflate(R.menu.cart_menu, popupMenu.menu)
             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
-
                 popupMenu.menu.findItem(R.id.menu_remove_customer).isVisible = false
-                popupMenu.menu.findItem(R.id.menu_add_guest).isVisible = false
+                popupMenu.menu.findItem(R.id.menu_add_guest).isVisible = true
             } else {
                 popupMenu.menu.findItem(R.id.menu_add_guest).isVisible = false
             }
