@@ -5,8 +5,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.RelativeLayout
-import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -1697,12 +1695,13 @@ class CartFragment(
             val popupMenu = PopupMenu(requireContext(), it)
             popupMenu.menuInflater.inflate(R.menu.cart_menu, popupMenu.menu)
             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
-                if (prefProvider.getValue(Constants.CUSTOMER_NAME, "").isEmpty())
-                    popupMenu.menu.findItem(R.id.menu_remove_customer).isVisible = false
-                popupMenu.menu.findItem(R.id.menu_add_guest).isVisible = true
+
+                popupMenu.menu.findItem(R.id.menu_remove_customer).isVisible = false
+                popupMenu.menu.findItem(R.id.menu_add_guest).isVisible = false
             } else {
                 popupMenu.menu.findItem(R.id.menu_add_guest).isVisible = false
             }
+
 
             if (cartlist.isEmpty()) {
                 popupMenu.menu.findItem(R.id.menu_discount).isVisible = false
