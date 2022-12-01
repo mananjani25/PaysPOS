@@ -8,7 +8,10 @@ import android.os.StrictMode
 import android.util.Base64
 import android.util.Log
 import androidx.appcompat.widget.AppCompatTextView
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
@@ -74,7 +77,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 import java.io.IOException
@@ -84,6 +86,7 @@ import java.net.URL
 import java.text.NumberFormat
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 import kotlin.collections.set
 import kotlin.math.ceil
 
@@ -559,6 +562,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     ) || !checkModifierNewLogic(list[i], item))
                                 ) {
                                     item.id += 1
+                                    break
                                 }
                             }
 
@@ -667,22 +671,17 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         item
                                     ) && checkModifierNewLogic(list[i], item)
                                 ) {
-                                    Log.e(TAG, "InsideRemoveLogic")
-                                    var clickedItemIndex = list.indexOf(item)
-                                    viewModelScope.launch {
-                                        var listTmp =
-                                            combineItem(
-                                                list.toCollection(arrayListOf()),
-                                                item,
-                                                i,
-                                                clickedItemIndex
-                                            )
-                                        list.clear()
-                                        Log.e(TAG, "listTmpSize  ${listTmp.size}")
-                                        Log.e(TAG, "getListSize  ${list.size}")
-                                        list.addAll(listTmp.toMutableList())
-                                        index = -1
-                                    }
+                                    var listTmp =
+                                        combineItem(list.toCollection(arrayListOf()), item, i)
+                                    list.clear()
+                                    Log.d(
+                                        TAG,
+                                        "newCartLogicModifier: position of selected Item " + item.id
+                                    )
+                                    var ttempllist =
+                                        ArrayList(listTmp).apply { removeAt(item.id) }
+                                    list.addAll(ttempllist.toMutableList())
+                                    index = -1
                                     break
                                 }
                             }
@@ -751,7 +750,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 if (cartModel?.reorder == false && list[i].itemId == item.itemId && checkVariation(
                                         list[i],
                                         item
-                                    ) && checkModifier(list[i], item)
+                                    ) && checkModifierNewLogic(list[i], item)
                                 ) {
                                     Log.e(TAG, "CheckedBefore")
                                     index = i
@@ -762,6 +761,12 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         Log.e(TAG, "indexReorder:  ${index}")
                                         break
                                     }
+
+                                } else if (cartModel?.reorder == false && list[i].itemId == item.itemId && (!checkVariation(
+                                        list[i],
+                                        item
+                                    ) || !checkModifierNewLogic(list[i], item))
+                                ) {
 
                                 }
 
@@ -843,95 +848,22 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
     }
 
-    private fun combineItem(
-        list: ArrayList<TbItem>,
-        item: TbItem,
-        index: Int,
-        clickedItemIndex: Int
-    ): List<TbItem> {
+    private fun combineItem(list: ArrayList<TbItem>, item: TbItem, index: Int): List<TbItem> {
+        Log.e(TAG, "newItemitemQuantity  ${Gson().toJson(item)}")
         Log.e(TAG, "newItemitemQuantity  ${item.itemQuantity}")
         Log.e(TAG, "newItemitemQuantityOld  ${list[index].itemQuantity}")
-        item.itemQuantity += list[index].itemQuantity
-        var tb: List<CartModel> = listOf()
-        var itemData: TbItem? = null
-
-            Log.e("ThreadPoolManager", list[index].id.toString())
-            Log.e("ThreadPoolManagere ", list[index].manualSaleId.toString())
-        viewModelScope.launch {
-            val liveData = posRepository.getItemList()
-
-            liveData.asFlow().collect {it->
-                tb = it
-                Log.d(TAG, "combineItem: " + Gson().toJson(tb))
-                Log.e(TAG, "getListlistItems  ${tb.get(0).items?.size}")
-                if (tb != null)
-                    tb[0].items?.get(index)?.modifiers?.forEach { mod ->
-                        item.modifiers.forEach { it ->
-                            if (mod.id == it.id) {
-                                Log.e(TAG, "ModMerge 1  ${it.itemQuantity}")
-                                Log.e(TAG, "ModMerge 2  ${mod.itemQuantity}")
-                                it.modifierQuantity = mod.modifierQuantity
-                                it.itemQuantity = it.modifierQuantity * item.itemQuantity
-                                Log.e(TAG, "ModMerge updated itemquantity  ${it.itemQuantity}")
-                                Log.e(
-                                    TAG,
-                                    "ModMerge updated modifierquantity ${it.modifierQuantity}"
-                                )
-                            }
-
-                        }
-
-                        itemData = item
-                        Log.e(TAG, "ModMerge updated items ${Gson().toJson(itemData)}")
-
-                    }
-
-                var removeSize = list.size
-                list.remove(list[index + 1])
-                checkSize(removeSize, list.size)
-                when (checkSize(removeSize, list.size)) {
-                    true -> {
-                        Log.e(TAG, "ItemRemovedNewModLogic")
-                        list.set(index,item)
-                       /* list[index].itemQuantity = itemData?.itemQuantity!!
-                        list[index].modifiers = itemData?.modifiers!!*/
-
-                    }
-                    false -> {
-                        list.remove(list[index + 1])
-                        checkSize(removeSize, list.size)
-
-                    }
+        list[index].itemQuantity += item.itemQuantity
+        list[index].modifiers.forEach { listmod ->
+            item.modifiers.forEach { itemmod ->
+                if (itemmod.id == listmod.id) {
+                    listmod.itemQuantity = itemmod.modifierQuantity * list[index].itemQuantity
                 }
-                /* } catch (e: Exception) {
-                     e.printStackTrace()
-                 }*/
-
-                Log.d(TAG, "combineItem: " + Gson().toJson(list[index].modifiers))
-
             }
         }
 
-        Log.d(TAG, "combineItem: index " + index)
-        Log.d(TAG, "combineItem: size " + list.size)
-//        list.remove(list[index])
-        Log.d(TAG, "combineItem: index " + index)
-        /*try {*/
-//            list[index].itemQuantity = itemData?.itemQuantity!!
-//            list[index].modifiers = itemData?.modifiers!!
-
-
-
-
-
-
-
+        Log.d(TAG, "combineItem: " + list[index].itemQuantity)
+        Log.d(TAG, "combineItem: " + Gson().toJson(list[index].modifiers))
         return list
-
-    }
-
-    private fun checkSize(removeSize: Int, size: Int): Boolean {
-        return removeSize != size
 
     }
 
