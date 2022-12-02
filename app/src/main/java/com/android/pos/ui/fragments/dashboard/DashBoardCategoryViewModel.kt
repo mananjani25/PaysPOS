@@ -86,7 +86,6 @@ import java.net.URL
 import java.text.NumberFormat
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 import kotlin.collections.set
 import kotlin.math.ceil
 
@@ -548,27 +547,71 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 }
 
                             } else {
+
                                 if (list[i].itemId == item.itemId && checkVariation(
                                         list[i],
                                         item
                                     ) && checkModifierNewLogic(list[i], item)
                                 ) {
                                     Log.d(TAG, "cartLogic: " + i)
-                                    index = i
+
+                                    var listTmp =
+                                        combineItem(list.toCollection(arrayListOf()), item, i)
+                                    list.clear()
+                                    Log.d(
+                                        TAG,
+                                        "newCartLogicModifier: position of selected Item " + item.id
+                                    )
+                                    /* var ttempllist =
+                                         ArrayList(listTmp).apply { removeAt(item.id) }*/
+                                    list.addAll(listTmp.toMutableList())
+
+                                    Log.e(TAG, "getMergeCombineItem  ${list.size}")
+
+                                    index = -2
                                     break
+
+
                                 } else if (list[i].itemId == item.itemId && (!checkVariation(
                                         list[i],
                                         item
                                     ) || !checkModifierNewLogic(list[i], item))
                                 ) {
-                                    item.id += 1
-                                    break
+                                    var isBreak: Boolean = false
+
+                                    list[i].modifiers.forEach { modifier ->
+                                            item.modifiers.forEach { mod ->
+                                                if (mod.id == modifier.id && mod.modifierQuantity == modifier.modifierQuantity) {
+                                                    item.id += 1
+                                                    isBreak = true
+                                                    Log.d(TAG, "newCartLogicModifier: isBreak")
+
+                                                    return@forEach
+
+
+                                                }
+
+                                            }
+
+
+
+                                        if (isBreak) {
+                                            return@forEach
+                                        }
+                                    }
+
+                                    if (isBreak) {
+                                        index = i
+                                        break
+                                    }
+
+
                                 }
                             }
 
                         }
                     }
-                    if (index != -1) {
+                    if (index != -1 && index != -2) {
                         val model = cartList[0].items?.get(index)
                         Log.d(TAG, "cartLogic: " + index)
                         if (model != null) {
@@ -627,7 +670,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                             }
 
                         }
-                    } else {
+                    } else if (index != -2) {
                         Log.d(TAG, "cartLogic: " + index)
                         if (item != null) {
                             item.singleItemPrice = item.price
@@ -747,7 +790,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                         if (item != null) {
                             if (!item.isManualSales) {
 
-                                if (cartModel?.reorder == false && list[i].itemId == item.itemId && checkVariation(
+                                if (cartModel?.reorder == false && list[i].id == item.id && checkVariation(
                                         list[i],
                                         item
                                     ) && checkModifierNewLogic(list[i], item)
@@ -762,12 +805,14 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         break
                                     }
 
-                                } else if (cartModel?.reorder == false && list[i].itemId == item.itemId && (!checkVariation(
+                                } else if (cartModel?.reorder == false && list[i].id == item.id && (!checkVariation(
                                         list[i],
                                         item
                                     ) || !checkModifierNewLogic(list[i], item))
                                 ) {
-
+                                    Log.e(TAG, "CheckedBefore")
+                                    index = i
+                                    break
                                 }
 
                             } else {
