@@ -64,7 +64,6 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.HashSet
 import kotlin.math.abs
 
 @AndroidEntryPoint
@@ -768,7 +767,7 @@ class ActiveOrderFragment(
                 manualSaleId = mannual_Sale_ID
                 price = it.price
                 priceType = ""
-                isEdited=it.isEdited
+                isEdited = it.isEdited
                 itemQuantity = it.quantity
                 kitchenName = ""
                 productCode = ""
@@ -1309,7 +1308,7 @@ class ActiveOrderFragment(
                     Builder.COLOR_1
                 )
                 builder.addTextAlign(Builder.ALIGN_CENTER)
-                builder.addText(receiptModel?.deliveryType + "\n")
+//                builder.addText(receiptModel?.deliveryType + "\n")
 
 
             }
@@ -2283,11 +2282,12 @@ class ActiveOrderFragment(
                 || receiptModel?.orderType?.lowercase() == Constants.OPEN_ORDER.lowercase()
             ) {
 
-                PrintSunmiUtils.deliveryType(receiptModel?.deliveryType)
+//                PrintSunmiUtils.deliveryType(receiptModel?.deliveryType)
 
             }
 
 
+            SunmiPrinterApi.getInstance().lineWrap(1)
 
 
             if (customerSettingModel.fonts == Constants.LARGE) {
@@ -2816,7 +2816,7 @@ class ActiveOrderFragment(
             if (receiptModel?.orderType?.lowercase() == Constants.OPEN_ORDER.lowercase()
                 || receiptModel?.orderType?.lowercase() == Constants.OPEN_ORDER.lowercase()
             ) {
-                PrintSunmiUtils.headerText(receiptModel?.deliveryType)
+//                PrintSunmiUtils.headerText(receiptModel?.deliveryType)
 
             }
             SunmiPrintHelper.getInstance().lineWrap(1)
