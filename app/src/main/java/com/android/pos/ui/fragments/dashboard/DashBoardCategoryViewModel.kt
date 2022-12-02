@@ -577,32 +577,40 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 ) {
                                     var isBreak: Boolean = false
 
-                                    list[i].modifiers.forEach { modifier ->
-                                        item.modifiers.forEach { mod ->
-                                            if (mod.id == modifier.id && mod.modifierQuantity == modifier.modifierQuantity) {
-//                                                item.id += 1
-                                                isBreak = true
-                                                Log.d(TAG, "newCartLogicModifier: isBreak")
+                                        list[i].modifiers.forEach { modifier ->
+                                            item.modifiers.forEach { mod ->
+                                                if (mod.id == modifier.id && mod.modifierQuantity == modifier.modifierQuantity) {
+                                                    if (list[i].variationsAttributes.isNotEmpty() && list[i].variationsAttributes[0].id == item.variationsAttributes[0].id) {
+                                                        item.id += 1
+                                                        isBreak = true
+                                                        Log.d(TAG, "newCartLogicModifier: isBreak")
 
-                                                return@forEach
+                                                        return@forEach
+                                                    } else if (list[i].variationsAttributes.isEmpty() == true) {
+                                                        item.id += 1
+                                                        isBreak = true
+                                                        Log.d(TAG, "newCartLogicModifier: isBreak")
 
+                                                        return@forEach
+                                                    }
+//
 
-                                            } else if (mod.id == modifier.id && mod.modifierQuantity != modifier.modifierQuantity) {
-                                                item.id += 1
-                                                isBreak = false
-                                                Log.d(TAG, "newCartLogicModifier: isBreak")
+                                                } else if (mod.id == modifier.id && mod.modifierQuantity != modifier.modifierQuantity) {
+                                                    item.id += 1
+                                                    isBreak = false
+                                                    Log.d(TAG, "newCartLogicModifier: isBreak")
 
-                                                return@forEach
+                                                    return@forEach
+                                                }
+
                                             }
 
+
+
+                                            if (isBreak) {
+                                                return@forEach
+                                            }
                                         }
-
-
-
-                                        if (isBreak) {
-                                            return@forEach
-                                        }
-                                    }
 
                                     if (isBreak) {
                                         index = i
@@ -810,31 +818,41 @@ class DashBoardCategoryViewModel @Inject constructor(
                     for (i in list.indices) {
                         if (item != null) {
                             if (!item.isManualSales) {
-
-                                if (cartModel?.reorder == false && list[i].id == item.id && checkVariation(
+                                if (cartModel?.reorder == false && list[i].itemId == item.itemId && item.modifiers.isEmpty() && checkVariation(
                                         list[i],
                                         item
-                                    ) && checkModifierNewLogic(list[i], item)
+                                    )
                                 ) {
-                                    Log.e(TAG, "CheckedBefore")
                                     index = i
+                                    Log.d(TAG, "newCartLogicModifier normal item: ${i}")
                                     break
-                                } else if (cartModel?.reorder == true) {
-                                    if (list[i].orderItemId == item.orderItemId) {
+                                } else
+                                    if (cartModel?.reorder == false && list[i].id == item.id && checkVariation(
+                                            list[i],
+                                            item
+                                        ) && checkModifierNewLogic(list[i], item)
+                                    ) {
+                                        Log.e(TAG, "CheckedBefore")
                                         index = i
-                                        Log.e(TAG, "indexReorder:  ${index}")
                                         break
-                                    }
+                                    } else if (cartModel?.reorder == true) {
+                                        if (list[i].orderItemId == item.orderItemId) {
+                                            index = i
+                                            Log.e(TAG, "indexReorder:  ${index}")
+                                            break
+                                        }
 
-                                } else if (cartModel?.reorder == false && list[i].id == item.id && (!checkVariation(
-                                        list[i],
-                                        item
-                                    ) || !checkModifierNewLogic(list[i], item))
-                                ) {
-                                    Log.e(TAG, "CheckedBefore")
-                                    index = i
-                                    break
-                                }
+                                    } else if (cartModel?.reorder == false && list[i].itemId == item.itemId && (!checkVariation(
+                                            list[i],
+                                            item
+                                        ) || !checkModifierNewLogic(list[i], item))
+                                    ) {
+                                        if (list[i].id == item.id) {
+                                            Log.e(TAG, "CheckedBefore   ${i}")
+                                            index = i
+                                            break
+                                        }
+                                    }
 
                             } else {
                                 if (list[i].manualSaleId == item.manualSaleId) {
@@ -1834,13 +1852,17 @@ class DashBoardCategoryViewModel @Inject constructor(
 
         if (tbItem.variationsAttributes.isEmpty() && item.variationsAttributes.isEmpty()) return true
         if (listOfDataMod.containsAll(listOfDataModSelecteItem) && listOfDataMod.size == listOfDataModSelecteItem.size) {
-            isSame = true
+            if (tbItem.variationsAttributes.get(0).id == item.variationsAttributes.get(0).id) {
+                isSame = true
+            } else {
+                isSame = false
+            }
         } else {
             isSame = false
         }
 
 
-
+        Log.e(TAG, "CheckVariationAdd ${isSame}")
         return isSame
     }
 

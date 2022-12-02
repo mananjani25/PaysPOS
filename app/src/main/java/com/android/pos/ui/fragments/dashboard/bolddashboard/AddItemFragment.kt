@@ -457,7 +457,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                     )
                 }
             } else {
-                viewModel.cartLogic(cartList, item, DELETE, item.isManualSales)
+                viewModel.newCartLogicModifier(cartList, item, DELETE, item.isManualSales)
             }
             requireActivity().supportFragmentManager.popBackStackImmediate(
                 AddItemFragment.javaClass.getName(),
