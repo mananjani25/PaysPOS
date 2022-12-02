@@ -562,8 +562,6 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         TAG,
                                         "newCartLogicModifier: position of selected Item " + item.id
                                     )
-                                    /* var ttempllist =
-                                         ArrayList(listTmp).apply { removeAt(item.id) }*/
                                     list.addAll(listTmp.toMutableList())
 
                                     Log.e(TAG, "getMergeCombineItem  ${list.size}")
@@ -580,18 +578,24 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     var isBreak: Boolean = false
 
                                     list[i].modifiers.forEach { modifier ->
-                                            item.modifiers.forEach { mod ->
-                                                if (mod.id == modifier.id && mod.modifierQuantity == modifier.modifierQuantity) {
-                                                    item.id += 1
-                                                    isBreak = true
-                                                    Log.d(TAG, "newCartLogicModifier: isBreak")
+                                        item.modifiers.forEach { mod ->
+                                            if (mod.id == modifier.id && mod.modifierQuantity == modifier.modifierQuantity) {
+//                                                item.id += 1
+                                                isBreak = true
+                                                Log.d(TAG, "newCartLogicModifier: isBreak")
 
-                                                    return@forEach
+                                                return@forEach
 
 
-                                                }
+                                            } else if (mod.id == modifier.id && mod.modifierQuantity != modifier.modifierQuantity) {
+                                                item.id += 1
+                                                isBreak = false
+                                                Log.d(TAG, "newCartLogicModifier: isBreak")
 
+                                                return@forEach
                                             }
+
+                                        }
 
 
 
@@ -721,18 +725,35 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         TAG,
                                         "newCartLogicModifier: position of selected Item " + item.id
                                     )
+                                    var indexJ = -1
+
+                                    for (j in 0 until listTmp.size) {
+                                        if (listTmp[j].id == item.id
+                                        ) {
+                                            indexJ = j
+                                            break
+                                        }
+
+                                    }
                                     var ttempllist =
-                                        ArrayList(listTmp).apply { removeAt(item.id) }
+                                        ArrayList(listTmp).apply {
+                                            if (indexJ != -1) {
+                                                Log.e(TAG, "GETIndexJ  ${indexJ}")
+                                                removeAt(indexJ)
+                                            }
+                                        }
                                     list.addAll(ttempllist.toMutableList())
-                                    index = -1
+                                    index = -2
                                     break
                                 }
+
                             }
 
                         }
                     }
+                    if (index == -2) {
 
-                    if (index != -1) {
+                    } else if (index != -1) {
                         val model = cartList[0].items?.get(index)
                         Log.d(TAG, "cartLogic: " + index)
                         if (model != null) {
