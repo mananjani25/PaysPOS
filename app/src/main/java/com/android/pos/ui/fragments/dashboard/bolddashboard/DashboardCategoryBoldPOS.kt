@@ -895,7 +895,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     if (cartList[0].dineInList?.isNotEmpty() == true) {
                         var dineInList = cartList[0].dineInList
                         dineInList!![0]?.selectedPosition = viewModel.dineInHeaderPosition
-                        viewModel.cartLogic(
+                        viewModel.newCartLogicModifier(
                             cartList,
                             item,
                             Constants.ADD,
@@ -904,7 +904,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         )
                     }
                 } else {
-                    viewModel.cartLogic(cartList, item, Constants.ADD, false)
+                    viewModel.newCartLogicModifier(cartList, item, Constants.ADD, false)
                 }
             }
 

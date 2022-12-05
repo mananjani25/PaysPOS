@@ -363,7 +363,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                     LogUtil.logE(TAG, "dineInList:  ${Gson().toJson(dineInList)}")
                     if (dineInList?.isNotEmpty() == true && dineInList != null) {
                         dineInList[0].selectedPosition = viewModel.dineInHeaderPosition
-                        viewModel.cartLogic(cartList, item, Constants.ADD, false, dineInList)
+                        viewModel.newCartLogicModifier(cartList, item, Constants.ADD, false, dineInList)
                     }
                 } else {
 
@@ -451,7 +451,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
                 LogUtil.logE(TAG, "isEditedisEdited  ${item.isEdited}")
                 cartList[0].dineInList?.let { it1 ->
-                    viewModel.cartLogic(
+                    viewModel.newCartLogicModifier(
                         cartList, item, DELETE, false,
                         it1
                     )

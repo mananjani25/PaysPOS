@@ -530,52 +530,417 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
         } else {
-            val list = cartList?.get(0)?.items?.toMutableList()
-            if (list != null && list.isNotEmpty()) {
+            if (cartList?.get(0)?.orderType == DINE_IN) {
+                var cartModel = cartList[0]
+                order_note = cartList[0].note
+                cartModel.dineInList = dineInList
+                var dinein = dineInList
+                if (dinein.isNotEmpty() && dinein!=null){
+                    val selectedHeader = dineInList.get(0).selectedPosition
+                    if (dineInList[selectedHeader].items.isNotEmpty()|| dineInList[selectedHeader].items!=null){
+                        if (type==ADD){
+                            var index = -1
+                          var list =  dineInList[selectedHeader].items
+                            for (i in list.indices) {
+                                if (item != null) {
+                                    if (item.isManualSales) {
 
-                if (type == ADD) {
-                    var index = -1
-                    for (i in list.indices) {
-                        if (item != null) {
-                            if (item.isManualSales) {
+
+                                        if (list[i].manualSaleId == item.manualSaleId) {
+                                            Log.d(TAG, "cartLogic: " + i)
+                                            index = i
+                                            break
+                                        }
+
+                                    } else {
+
+                                        if (list[i].itemId == item.itemId && checkVariation(
+                                                list[i],
+                                                item
+                                            ) && checkModifierNewLogic(list[i], item)
+                                        ) {
+                                            Log.d(TAG, "cartLogic: " + i)
+
+                                            var listTmp =
+                                                combineItem(list.toCollection(arrayListOf()), item, i)
+                                            list.clear()
+                                            Log.d(
+                                                TAG,
+                                                "newCartLogicModifier: position of selected Item " + item.id
+                                            )
+                                            list.addAll(listTmp.toMutableList())
+
+                                            Log.e(TAG, "getMergeCombineItem  ${list.size}")
+
+                                            index = -2
+                                            break
 
 
-                                if (list[i].manualSaleId == item.manualSaleId) {
-                                    Log.d(TAG, "cartLogic: " + i)
-                                    index = i
-                                    break
+                                        } else if (list[i].itemId == item.itemId && (!checkVariation(
+                                                list[i],
+                                                item
+                                            ) || !checkModifierNewLogic(list[i], item))
+                                        ) {
+                                            var isBreak: Boolean = false
+
+                                            list[i].modifiers.forEach { modifier ->
+                                                item.modifiers.forEach { mod ->
+                                                    if (mod.id == modifier.id && mod.modifierQuantity == modifier.modifierQuantity) {
+                                                        if (list[i].variationsAttributes.isNotEmpty() && list[i].variationsAttributes[0].id == item.variationsAttributes[0].id) {
+                                                            item.id += 1
+                                                            isBreak = true
+                                                            Log.d(TAG, "newCartLogicModifier: isBreak")
+
+                                                            return@forEach
+                                                        } else if (list[i].variationsAttributes.isEmpty() == true) {
+                                                            item.id += 1
+                                                            isBreak = true
+                                                            Log.d(TAG, "newCartLogicModifier: isBreak")
+
+                                                            return@forEach
+                                                        }
+//
+
+                                                    } else if (mod.id == modifier.id && mod.modifierQuantity != modifier.modifierQuantity) {
+                                                        item.id += 1
+                                                        isBreak = false
+                                                        Log.d(TAG, "newCartLogicModifier: isBreak")
+
+                                                        return@forEach
+                                                    }
+
+                                                }
+
+
+
+                                                if (isBreak) {
+                                                    return@forEach
+                                                }
+                                            }
+
+                                            if (isBreak) {
+                                                index = i
+                                                break
+                                            }
+
+
+                                        }
+                                    }
+
+                                }
+                            }
+                            if (index != -1 && index != -2) {
+                                val model = cartList[0].items?.get(index)
+                                Log.d(TAG, "cartLogic: " + index)
+                                if (model != null) {
+                                    if (index != -1) {
+                                        if (item != null) {
+                                            model.name = item.name
+                                            model.itemQuantity = model.itemQuantity + item.itemQuantity
+                                            model.price = item.price
+                                            model.variationsAttributes = item.variationsAttributes
+                                            item.modifiers.forEach {
+                                                model.modifiers.forEach { tbmodfier ->
+                                                    if (it.id == tbmodfier.id) {
+                                                        it.modifierQuantity =
+                                                            it.itemQuantity / item.itemQuantity
+                                                        it.itemQuantity =
+                                                            it.itemQuantity + tbmodfier.itemQuantity
+                                                    }
+                                                }
+
+                                            }
+
+
+                                            model.modifiers = item.modifiers
+                                            if (item.isEdited) {
+                                                model.isEdited = item.isEdited
+                                            }
+
+                                            if (prefProvider.getValueboolean(
+                                                    IS_UPDATE_ORDER_FROM_ACTIVE_ORDER,
+                                                    false
+                                                )
+                                            ) {
+                                                model.isEdited = true
+                                            }
+                                            itemDiscountApply(model, item)
+                                        }
+
+                                        list[index] = model
+                                    } else {
+                                        if (item != null) {
+                                            model.itemQuantity = item.itemQuantity
+                                            if (item.isEdited) {
+                                                model.isEdited = item.isEdited
+                                            }
+                                            if (prefProvider.getValueboolean(
+                                                    IS_UPDATE_ORDER_FROM_ACTIVE_ORDER,
+                                                    false
+                                                )
+                                            ) {
+                                                model.isEdited = true
+                                            }
+                                            itemDiscountApply(model, item)
+                                            model.isDestroy = false
+                                        }
+                                        list[index] = model
+                                    }
+
+                                }
+                            } else if (index != -2) {
+                                Log.d(TAG, "cartLogic: " + index)
+                                if (item != null) {
+                                    item.singleItemPrice = item.price
+                                    item.modifiers.forEach { it ->
+                                        it.modifierQuantity = it.itemQuantity
+                                        item.singleItemPrice += it.price * it.itemQuantity
+                                    }
+                                    item.isDestroy = false
+                                    if (prefProvider.getValueboolean(
+                                            IS_UPDATE_ORDER_FROM_ACTIVE_ORDER,
+                                            false
+                                        )
+                                    ) {
+                                        item.isEdited = true
+                                    }
+                                    list.add(item)
+                                }
+                            }
+                        }else if (type== UPDATE){
+                            var index = -1
+                            var list =  dineInList[selectedHeader].items
+                            for (i in list.indices) {
+                                if (item != null) {
+                                    if (item.isManualSales) {
+
+
+                                        if (list[i].manualSaleId == item.manualSaleId) {
+                                            Log.d(TAG, "cartLogic: " + i)
+                                            index = i
+                                            break
+                                        }
+
+                                    } else {
+                                        if (list[i].id == item.id) {
+                                            Log.d(TAG, "cartLogic: " + i)
+                                            index = i
+                                            break
+                                        } else if (list[i].itemId == item.itemId && checkVariation(
+                                                list[i],
+                                                item
+                                            ) && checkModifierNewLogic(list[i], item)
+                                        ) {
+                                            var listTmp =
+                                                combineItem(list.toCollection(arrayListOf()), item, i)
+                                            list.clear()
+                                            Log.d(
+                                                TAG,
+                                                "newCartLogicModifier: position of selected Item " + item.id
+                                            )
+                                            var indexJ = -1
+
+                                            for (j in 0 until listTmp.size) {
+                                                if (listTmp[j].id == item.id
+                                                ) {
+                                                    indexJ = j
+                                                    break
+                                                }
+
+                                            }
+                                            var ttempllist =
+                                                ArrayList(listTmp).apply {
+                                                    if (indexJ != -1) {
+                                                        Log.e(TAG, "GETIndexJ  ${indexJ}")
+                                                        removeAt(indexJ)
+                                                    }
+                                                }
+                                            list.addAll(ttempllist.toMutableList())
+                                            index = -2
+                                            break
+                                        }
+
+                                    }
+
+                                }
+                            }
+                            if (index == -2) {
+
+                            } else if (index != -1) {
+                                val model = cartList[0].items?.get(index)
+                                Log.d(TAG, "cartLogic: " + index)
+                                if (model != null) {
+                                    if (item != null) {
+                                        model.name = item.name
+                                        model.price = item.price
+                                        model.variationsAttributes = item.variationsAttributes
+                                        if (item.isEdited) {
+                                            model.isEdited = item.isEdited
+                                        }
+                                        if (prefProvider.getValueboolean(
+                                                DINE_IN_UPDATE,
+                                                false
+                                            )
+                                        ) {
+                                            model.isEdited = true
+                                        }
+                                        item.singleItemPrice = item.price
+                                        item.modifiers.forEach {
+                                            model.modifiers.forEach { tbmodifier ->
+                                                if (it.id == tbmodifier.id) {
+                                                    if (it.modifierQuantity != tbmodifier.modifierQuantity) {
+                                                        tbmodifier.modifierQuantity = it.modifierQuantity
+                                                    } else {
+                                                        it.modifierQuantity =
+                                                            it.itemQuantity / model.itemQuantity
+                                                    }
+
+                                                    it.itemQuantity =
+                                                        (it.modifierQuantity * item.itemQuantity)
+                                                }
+                                            }
+                                            item.singleItemPrice += it.price * it.modifierQuantity
+                                        }
+                                        Log.d(TAG, "newCartLogicModifier: " + item.singleItemPrice)
+                                        model.itemQuantity = item.itemQuantity
+                                        model.modifiers = item.modifiers
+                                        model.isDestroy = false
+                                        itemDiscountApply(model, item)
+
+                                    }
+                                    Log.d(TAG, "cartLogic:itemname " + model.name)
+                                    list[index] = model
+
+                                }
+                            }
+                        }else if(type == DELETE){
+                            var index = -1
+                            var list =  dineInList[selectedHeader].items
+                            Log.e(TAG, "CheckDeleteItem ${Gson().toJson(item)}")
+                            Log.e(TAG, "getListedItems  ${Gson().toJson(list[0])}")
+                            Log.e(TAG, "checkReOrder  ${cartModel?.reorder}")
+
+                            for (i in list.indices) {
+                                if (item != null) {
+                                    if (!item.isManualSales) {
+                                        if (cartModel?.reorder == false && list[i].itemId == item.itemId && item.modifiers.isEmpty() && checkVariation(
+                                                list[i],
+                                                item
+                                            )
+                                        ) {
+                                            index = i
+                                            Log.d(TAG, "newCartLogicModifier normal item: ${i}")
+                                            break
+                                        } else
+                                            if (cartModel?.reorder == false && list[i].id == item.id && checkVariation(
+                                                    list[i],
+                                                    item
+                                                ) && checkModifierNewLogic(list[i], item)
+                                            ) {
+                                                Log.e(TAG, "CheckedBefore")
+                                                index = i
+                                                break
+                                            } else if (cartModel?.reorder == true) {
+                                                if (list[i].orderItemId == item.orderItemId) {
+                                                    index = i
+                                                    Log.e(TAG, "indexReorder:  ${index}")
+                                                    break
+                                                }
+
+                                            } else if (cartModel?.reorder == false && list[i].itemId == item.itemId && (!checkVariation(
+                                                    list[i],
+                                                    item
+                                                ) || !checkModifierNewLogic(list[i], item))
+                                            ) {
+                                                if (list[i].id == item.id) {
+                                                    Log.e(TAG, "CheckedBefore   ${i}")
+                                                    index = i
+                                                    break
+                                                }
+                                            }
+
+                                    } else {
+                                        if (list[i].manualSaleId == item.manualSaleId) {
+                                            index = i
+                                            break
+                                        } else if (cartModel?.reorder == true) {
+                                            if (list[i].orderItemId == item.orderItemId) {
+                                                index = i
+                                                Log.e(TAG, "indexReorder23:  ${index}")
+                                                break
+                                            }
+
+                                        }
+                                    }
                                 }
 
+                            }
+
+                            if (index != -1) {
+                                val model = cartList[0].items?.get(index)
+                                if (model != null) {
+                                    //delete from cart
+                                    if (item?.isEdited == true) {
+                                        model.isEdited = item.isEdited
+                                        model.isDestroy = true
+                                    } else {
+                                        list.remove(model)
+                                    }
+                                }
                             } else {
+                                //list.remove(item)
+                            }
+                        }
+                    }
+                }
 
-                                if (list[i].itemId == item.itemId && checkVariation(
-                                        list[i],
-                                        item
-                                    ) && checkModifierNewLogic(list[i], item)
-                                ) {
-                                    Log.d(TAG, "cartLogic: " + i)
+            }else{
+                val list = cartList?.get(0)?.items?.toMutableList()
+                if (list != null && list.isNotEmpty()) {
 
-                                    var listTmp =
-                                        combineItem(list.toCollection(arrayListOf()), item, i)
-                                    list.clear()
-                                    Log.d(
-                                        TAG,
-                                        "newCartLogicModifier: position of selected Item " + item.id
-                                    )
-                                    list.addAll(listTmp.toMutableList())
-
-                                    Log.e(TAG, "getMergeCombineItem  ${list.size}")
-
-                                    index = -2
-                                    break
+                    if (type == ADD) {
+                        var index = -1
+                        for (i in list.indices) {
+                            if (item != null) {
+                                if (item.isManualSales) {
 
 
-                                } else if (list[i].itemId == item.itemId && (!checkVariation(
-                                        list[i],
-                                        item
-                                    ) || !checkModifierNewLogic(list[i], item))
-                                ) {
-                                    var isBreak: Boolean = false
+                                    if (list[i].manualSaleId == item.manualSaleId) {
+                                        Log.d(TAG, "cartLogic: " + i)
+                                        index = i
+                                        break
+                                    }
+
+                                } else {
+
+                                    if (list[i].itemId == item.itemId && checkVariation(
+                                            list[i],
+                                            item
+                                        ) && checkModifierNewLogic(list[i], item)
+                                    ) {
+                                        Log.d(TAG, "cartLogic: " + i)
+
+                                        var listTmp =
+                                            combineItem(list.toCollection(arrayListOf()), item, i)
+                                        list.clear()
+                                        Log.d(
+                                            TAG,
+                                            "newCartLogicModifier: position of selected Item " + item.id
+                                        )
+                                        list.addAll(listTmp.toMutableList())
+
+                                        Log.e(TAG, "getMergeCombineItem  ${list.size}")
+
+                                        index = -2
+                                        break
+
+
+                                    } else if (list[i].itemId == item.itemId && (!checkVariation(
+                                            list[i],
+                                            item
+                                        ) || !checkModifierNewLogic(list[i], item))
+                                    ) {
+                                        var isBreak: Boolean = false
 
                                         list[i].modifiers.forEach { modifier ->
                                             item.modifiers.forEach { mod ->
@@ -612,344 +977,329 @@ class DashBoardCategoryViewModel @Inject constructor(
                                             }
                                         }
 
-                                    if (isBreak) {
-                                        index = i
-                                        break
-                                    }
-
-
-                                }
-                            }
-
-                        }
-                    }
-                    if (index != -1 && index != -2) {
-                        val model = cartList[0].items?.get(index)
-                        Log.d(TAG, "cartLogic: " + index)
-                        if (model != null) {
-                            if (index != -1) {
-                                if (item != null) {
-                                    model.name = item.name
-                                    model.itemQuantity = model.itemQuantity + item.itemQuantity
-                                    model.price = item.price
-                                    model.variationsAttributes = item.variationsAttributes
-                                    item.modifiers.forEach {
-                                        model.modifiers.forEach { tbmodfier ->
-                                            if (it.id == tbmodfier.id) {
-                                                it.modifierQuantity =
-                                                    it.itemQuantity / item.itemQuantity
-                                                it.itemQuantity =
-                                                    it.itemQuantity + tbmodfier.itemQuantity
-                                            }
-                                        }
-
-                                    }
-
-
-                                    model.modifiers = item.modifiers
-                                    if (item.isEdited) {
-                                        model.isEdited = item.isEdited
-                                    }
-
-                                    if (prefProvider.getValueboolean(
-                                            IS_UPDATE_ORDER_FROM_ACTIVE_ORDER,
-                                            false
-                                        )
-                                    ) {
-                                        model.isEdited = true
-                                    }
-                                    itemDiscountApply(model, item)
-                                }
-
-                                list[index] = model
-                            } else {
-                                if (item != null) {
-                                    model.itemQuantity = item.itemQuantity
-                                    if (item.isEdited) {
-                                        model.isEdited = item.isEdited
-                                    }
-                                    if (prefProvider.getValueboolean(
-                                            IS_UPDATE_ORDER_FROM_ACTIVE_ORDER,
-                                            false
-                                        )
-                                    ) {
-                                        model.isEdited = true
-                                    }
-                                    itemDiscountApply(model, item)
-                                    model.isDestroy = false
-                                }
-                                list[index] = model
-                            }
-
-                        }
-                    } else if (index != -2) {
-                        Log.d(TAG, "cartLogic: " + index)
-                        if (item != null) {
-                            item.singleItemPrice = item.price
-                            item.modifiers.forEach { it ->
-                                it.modifierQuantity = it.itemQuantity
-                                item.singleItemPrice += it.price * it.itemQuantity
-                            }
-                            item.isDestroy = false
-                            if (prefProvider.getValueboolean(
-                                    IS_UPDATE_ORDER_FROM_ACTIVE_ORDER,
-                                    false
-                                )
-                            ) {
-                                item.isEdited = true
-                            }
-                            list.add(item)
-                        }
-                    }
-                } else if (type == UPDATE) {
-                    var index = -1
-
-
-                    for (i in list.indices) {
-                        if (item != null) {
-                            if (item.isManualSales) {
-
-
-                                if (list[i].manualSaleId == item.manualSaleId) {
-                                    Log.d(TAG, "cartLogic: " + i)
-                                    index = i
-                                    break
-                                }
-
-                            } else {
-                                if (list[i].id == item.id) {
-                                    Log.d(TAG, "cartLogic: " + i)
-                                    index = i
-                                    break
-                                } else if (list[i].itemId == item.itemId && checkVariation(
-                                        list[i],
-                                        item
-                                    ) && checkModifierNewLogic(list[i], item)
-                                ) {
-                                    var listTmp =
-                                        combineItem(list.toCollection(arrayListOf()), item, i)
-                                    list.clear()
-                                    Log.d(
-                                        TAG,
-                                        "newCartLogicModifier: position of selected Item " + item.id
-                                    )
-                                    var indexJ = -1
-
-                                    for (j in 0 until listTmp.size) {
-                                        if (listTmp[j].id == item.id
-                                        ) {
-                                            indexJ = j
+                                        if (isBreak) {
+                                            index = i
                                             break
                                         }
 
+
                                     }
-                                    var ttempllist =
-                                        ArrayList(listTmp).apply {
-                                            if (indexJ != -1) {
-                                                Log.e(TAG, "GETIndexJ  ${indexJ}")
-                                                removeAt(indexJ)
-                                            }
-                                        }
-                                    list.addAll(ttempllist.toMutableList())
-                                    index = -2
-                                    break
                                 }
 
                             }
-
                         }
-                    }
-                    if (index == -2) {
+                        if (index != -1 && index != -2) {
+                            val model = cartList[0].items?.get(index)
+                            Log.d(TAG, "cartLogic: " + index)
+                            if (model != null) {
+                                if (index != -1) {
+                                    if (item != null) {
+                                        model.name = item.name
+                                        model.itemQuantity = model.itemQuantity + item.itemQuantity
+                                        model.price = item.price
+                                        model.variationsAttributes = item.variationsAttributes
+                                        item.modifiers.forEach {
+                                            model.modifiers.forEach { tbmodfier ->
+                                                if (it.id == tbmodfier.id) {
+                                                    it.modifierQuantity =
+                                                        it.itemQuantity / item.itemQuantity
+                                                    it.itemQuantity =
+                                                        it.itemQuantity + tbmodfier.itemQuantity
+                                                }
+                                            }
 
-                    } else if (index != -1) {
-                        val model = cartList[0].items?.get(index)
-                        Log.d(TAG, "cartLogic: " + index)
-                        if (model != null) {
-                            if (item != null) {
-                                model.name = item.name
-                                model.price = item.price
-                                model.variationsAttributes = item.variationsAttributes
-                                if (item.isEdited) {
-                                    model.isEdited = item.isEdited
+                                        }
+
+
+                                        model.modifiers = item.modifiers
+                                        if (item.isEdited) {
+                                            model.isEdited = item.isEdited
+                                        }
+
+                                        if (prefProvider.getValueboolean(
+                                                IS_UPDATE_ORDER_FROM_ACTIVE_ORDER,
+                                                false
+                                            )
+                                        ) {
+                                            model.isEdited = true
+                                        }
+                                        itemDiscountApply(model, item)
+                                    }
+
+                                    list[index] = model
+                                } else {
+                                    if (item != null) {
+                                        model.itemQuantity = item.itemQuantity
+                                        if (item.isEdited) {
+                                            model.isEdited = item.isEdited
+                                        }
+                                        if (prefProvider.getValueboolean(
+                                                IS_UPDATE_ORDER_FROM_ACTIVE_ORDER,
+                                                false
+                                            )
+                                        ) {
+                                            model.isEdited = true
+                                        }
+                                        itemDiscountApply(model, item)
+                                        model.isDestroy = false
+                                    }
+                                    list[index] = model
                                 }
+
+                            }
+                        } else if (index != -2) {
+                            Log.d(TAG, "cartLogic: " + index)
+                            if (item != null) {
+                                item.singleItemPrice = item.price
+                                item.modifiers.forEach { it ->
+                                    it.modifierQuantity = it.itemQuantity
+                                    item.singleItemPrice += it.price * it.itemQuantity
+                                }
+                                item.isDestroy = false
                                 if (prefProvider.getValueboolean(
                                         IS_UPDATE_ORDER_FROM_ACTIVE_ORDER,
                                         false
                                     )
                                 ) {
-                                    model.isEdited = true
+                                    item.isEdited = true
                                 }
-                                item.singleItemPrice = item.price
-                                item.modifiers.forEach {
-                                    model.modifiers.forEach { tbmodifier ->
-                                        if (it.id == tbmodifier.id) {
-                                            if (it.modifierQuantity != tbmodifier.modifierQuantity) {
-                                                tbmodifier.modifierQuantity = it.modifierQuantity
-                                            } else {
-                                                it.modifierQuantity =
-                                                    it.itemQuantity / model.itemQuantity
-                                            }
-
-                                            it.itemQuantity =
-                                                (it.modifierQuantity * item.itemQuantity)
-                                        }
-                                    }
-                                    item.singleItemPrice += it.price * it.modifierQuantity
-                                }
-                                Log.d(TAG, "newCartLogicModifier: " + item.singleItemPrice)
-                                model.itemQuantity = item.itemQuantity
-                                model.modifiers = item.modifiers
-                                model.isDestroy = false
-                                itemDiscountApply(model, item)
-
+                                list.add(item)
                             }
-                            Log.d(TAG, "cartLogic:itemname " + model.name)
-                            list[index] = model
-
                         }
-                    }
-                } else if (type == DELETE) {
+                    } else if (type == UPDATE) {
+                        var index = -1
 
-                    var index = -1
-                    Log.e(TAG, "CheckDeleteItem ${Gson().toJson(item)}")
-                    Log.e(TAG, "getListedItems  ${Gson().toJson(list[0])}")
-                    Log.e(TAG, "checkReOrder  ${cartModel?.reorder}")
 
-                    for (i in list.indices) {
-                        if (item != null) {
-                            if (!item.isManualSales) {
-                                if (cartModel?.reorder == false && list[i].itemId == item.itemId && item.modifiers.isEmpty() && checkVariation(
-                                        list[i],
-                                        item
-                                    )
-                                ) {
-                                    index = i
-                                    Log.d(TAG, "newCartLogicModifier normal item: ${i}")
-                                    break
-                                } else
-                                    if (cartModel?.reorder == false && list[i].id == item.id && checkVariation(
+                        for (i in list.indices) {
+                            if (item != null) {
+                                if (item.isManualSales) {
+
+
+                                    if (list[i].manualSaleId == item.manualSaleId) {
+                                        Log.d(TAG, "cartLogic: " + i)
+                                        index = i
+                                        break
+                                    }
+
+                                } else {
+                                    if (list[i].id == item.id) {
+                                        Log.d(TAG, "cartLogic: " + i)
+                                        index = i
+                                        break
+                                    } else if (list[i].itemId == item.itemId && checkVariation(
                                             list[i],
                                             item
                                         ) && checkModifierNewLogic(list[i], item)
                                     ) {
-                                        Log.e(TAG, "CheckedBefore")
+                                        var listTmp =
+                                            combineItem(list.toCollection(arrayListOf()), item, i)
+                                        list.clear()
+                                        Log.d(
+                                            TAG,
+                                            "newCartLogicModifier: position of selected Item " + item.id
+                                        )
+                                        var indexJ = -1
+
+                                        for (j in 0 until listTmp.size) {
+                                            if (listTmp[j].id == item.id
+                                            ) {
+                                                indexJ = j
+                                                break
+                                            }
+
+                                        }
+                                        var ttempllist =
+                                            ArrayList(listTmp).apply {
+                                                if (indexJ != -1) {
+                                                    Log.e(TAG, "GETIndexJ  ${indexJ}")
+                                                    removeAt(indexJ)
+                                                }
+                                            }
+                                        list.addAll(ttempllist.toMutableList())
+                                        index = -2
+                                        break
+                                    }
+
+                                }
+
+                            }
+                        }
+                        if (index == -2) {
+
+                        } else if (index != -1) {
+                            val model = cartList[0].items?.get(index)
+                            Log.d(TAG, "cartLogic: " + index)
+                            if (model != null) {
+                                if (item != null) {
+                                    model.name = item.name
+                                    model.price = item.price
+                                    model.variationsAttributes = item.variationsAttributes
+                                    if (item.isEdited) {
+                                        model.isEdited = item.isEdited
+                                    }
+                                    if (prefProvider.getValueboolean(
+                                            IS_UPDATE_ORDER_FROM_ACTIVE_ORDER,
+                                            false
+                                        )
+                                    ) {
+                                        model.isEdited = true
+                                    }
+                                    item.singleItemPrice = item.price
+                                    item.modifiers.forEach {
+                                        model.modifiers.forEach { tbmodifier ->
+                                            if (it.id == tbmodifier.id) {
+                                                if (it.modifierQuantity != tbmodifier.modifierQuantity) {
+                                                    tbmodifier.modifierQuantity = it.modifierQuantity
+                                                } else {
+                                                    it.modifierQuantity =
+                                                        it.itemQuantity / model.itemQuantity
+                                                }
+
+                                                it.itemQuantity =
+                                                    (it.modifierQuantity * item.itemQuantity)
+                                            }
+                                        }
+                                        item.singleItemPrice += it.price * it.modifierQuantity
+                                    }
+                                    Log.d(TAG, "newCartLogicModifier: " + item.singleItemPrice)
+                                    model.itemQuantity = item.itemQuantity
+                                    model.modifiers = item.modifiers
+                                    model.isDestroy = false
+                                    itemDiscountApply(model, item)
+
+                                }
+                                Log.d(TAG, "cartLogic:itemname " + model.name)
+                                list[index] = model
+
+                            }
+                        }
+                    } else if (type == DELETE) {
+
+                        var index = -1
+                        Log.e(TAG, "CheckDeleteItem ${Gson().toJson(item)}")
+                        Log.e(TAG, "getListedItems  ${Gson().toJson(list[0])}")
+                        Log.e(TAG, "checkReOrder  ${cartModel?.reorder}")
+
+                        for (i in list.indices) {
+                            if (item != null) {
+                                if (!item.isManualSales) {
+                                    if (cartModel?.reorder == false && list[i].itemId == item.itemId && item.modifiers.isEmpty() && checkVariation(
+                                            list[i],
+                                            item
+                                        )
+                                    ) {
+                                        index = i
+                                        Log.d(TAG, "newCartLogicModifier normal item: ${i}")
+                                        break
+                                    } else
+                                        if (cartModel?.reorder == false && list[i].id == item.id && checkVariation(
+                                                list[i],
+                                                item
+                                            ) && checkModifierNewLogic(list[i], item)
+                                        ) {
+                                            Log.e(TAG, "CheckedBefore")
+                                            index = i
+                                            break
+                                        } else if (cartModel?.reorder == true) {
+                                            if (list[i].orderItemId == item.orderItemId) {
+                                                index = i
+                                                Log.e(TAG, "indexReorder:  ${index}")
+                                                break
+                                            }
+
+                                        } else if (cartModel?.reorder == false && list[i].itemId == item.itemId && (!checkVariation(
+                                                list[i],
+                                                item
+                                            ) || !checkModifierNewLogic(list[i], item))
+                                        ) {
+                                            if (list[i].id == item.id) {
+                                                Log.e(TAG, "CheckedBefore   ${i}")
+                                                index = i
+                                                break
+                                            }
+                                        }
+
+                                } else {
+                                    if (list[i].manualSaleId == item.manualSaleId) {
                                         index = i
                                         break
                                     } else if (cartModel?.reorder == true) {
                                         if (list[i].orderItemId == item.orderItemId) {
                                             index = i
-                                            Log.e(TAG, "indexReorder:  ${index}")
+                                            Log.e(TAG, "indexReorder23:  ${index}")
                                             break
                                         }
 
-                                    } else if (cartModel?.reorder == false && list[i].itemId == item.itemId && (!checkVariation(
-                                            list[i],
-                                            item
-                                        ) || !checkModifierNewLogic(list[i], item))
-                                    ) {
-                                        if (list[i].id == item.id) {
-                                            Log.e(TAG, "CheckedBefore   ${i}")
-                                            index = i
-                                            break
-                                        }
                                     }
-
-                            } else {
-                                if (list[i].manualSaleId == item.manualSaleId) {
-                                    index = i
-                                    break
-                                } else if (cartModel?.reorder == true) {
-                                    if (list[i].orderItemId == item.orderItemId) {
-                                        index = i
-                                        Log.e(TAG, "indexReorder23:  ${index}")
-                                        break
-                                    }
-
                                 }
                             }
+
                         }
 
+                        if (index != -1) {
+                            val model = cartList[0].items?.get(index)
+                            if (model != null) {
+                                //delete from cart
+                                if (item?.isEdited == true) {
+                                    model.isEdited = item.isEdited
+                                    model.isDestroy = true
+                                } else {
+                                    list.remove(model)
+                                }
+                            }
+                        } else {
+                            //list.remove(item)
+                        }
                     }
 
-                    if (index != -1) {
-                        val model = cartList[0].items?.get(index)
-                        if (model != null) {
-                            //delete from cart
-                            if (item?.isEdited == true) {
-                                model.isEdited = item.isEdited
-                                model.isDestroy = true
-                            } else {
-                                list.remove(model)
-                            }
+                    var cartModel = cartList[0]
+                    if (type == UPDATE) {
+                        cartModel.items?.forEach { itemData ->
+                            cartModel = taxBifurcationCalculation(
+                                itemData,
+                                cartModel,
+                                type, false
+                            )
                         }
                     } else {
-                        //list.remove(item)
+                        cartModel = taxBifurcationCalculation(item!!, cartModel, type, false)
                     }
-                }
-
-                var cartModel = cartList[0]
-                if (type == UPDATE) {
-                    cartModel.items?.forEach { itemData ->
-                        cartModel = taxBifurcationCalculation(
-                            itemData,
-                            cartModel,
-                            type, false
-                        )
+                    cartModel.items = list
+                    addCart(cartModel)
+                    if (list.isEmpty()) {
+                        // delete carts
+                        deleteCart()
                     }
                 } else {
-                    cartModel = taxBifurcationCalculation(item!!, cartModel, type, false)
-                }
-                cartModel.items = list
-                addCart(cartModel)
-                if (list.isEmpty()) {
-                    // delete carts
-                    deleteCart()
-                }
-            } else {
 
-                if (type == DELETE) {
-                    deleteCart()
-                } else {
+                    if (type == DELETE) {
+                        deleteCart()
+                    } else {
 
-                    var cartModel = cartList?.get(0)
-                    cartModel = taxBifurcationCalculation(item!!, cartModel!!, type, false)
-                    if (item != null) {
-                        if (item.modifiers.isNotEmpty()) {
-                            item.modifiers.forEach { mod ->
-                                mod.modifierQuantity = mod.itemQuantity
+                        var cartModel = cartList?.get(0)
+                        cartModel = taxBifurcationCalculation(item!!, cartModel!!, type, false)
+                        if (item != null) {
+                            if (item.modifiers.isNotEmpty()) {
+                                item.modifiers.forEach { mod ->
+                                    mod.modifierQuantity = mod.itemQuantity
+                                }
                             }
+                            cartModel?.items = listOf(item)
                         }
-                        cartModel?.items = listOf(item)
+
+                        if (cartModel != null) {
+                            addCart(cartModel!!)
+                        }
                     }
 
-                    if (cartModel != null) {
-                        addCart(cartModel!!)
-                    }
+
                 }
-
-
             }
+
         }
     }
 
-    private fun combineItem(list: ArrayList<TbItem>, item: TbItem, index: Int): List<TbItem> {
-        Log.e(TAG, "newItemitemQuantity  ${Gson().toJson(item)}")
-        Log.e(TAG, "newItemitemQuantity  ${item.itemQuantity}")
-        Log.e(TAG, "newItemitemQuantityOld  ${list[index].itemQuantity}")
-        list[index].itemQuantity += item.itemQuantity
-        list[index].modifiers.forEach { listmod ->
-            item.modifiers.forEach { itemmod ->
-                if (itemmod.id == listmod.id) {
-                    listmod.itemQuantity = itemmod.modifierQuantity * list[index].itemQuantity
-                }
-            }
-        }
 
-        Log.d(TAG, "combineItem: " + list[index].itemQuantity)
-        Log.d(TAG, "combineItem: " + Gson().toJson(list[index].modifiers))
-        return list
-
-    }
 
     fun cartLogic(
         cartList: List<CartModel>?,
@@ -1584,6 +1934,24 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
     }
 
+    private fun combineItem(list: ArrayList<TbItem>, item: TbItem, index: Int): List<TbItem> {
+        Log.e(TAG, "newItemitemQuantity  ${Gson().toJson(item)}")
+        Log.e(TAG, "newItemitemQuantity  ${item.itemQuantity}")
+        Log.e(TAG, "newItemitemQuantityOld  ${list[index].itemQuantity}")
+        list[index].itemQuantity += item.itemQuantity
+        list[index].modifiers.forEach { listmod ->
+            item.modifiers.forEach { itemmod ->
+                if (itemmod.id == listmod.id) {
+                    listmod.itemQuantity = itemmod.modifierQuantity * list[index].itemQuantity
+                }
+            }
+        }
+
+        Log.d(TAG, "combineItem: " + list[index].itemQuantity)
+        Log.d(TAG, "combineItem: " + Gson().toJson(list[index].modifiers))
+        return list
+
+    }
     private fun checkSameModifier(tbItem: TbItem, item: TbItem): Boolean {
 
         var isSame = false
