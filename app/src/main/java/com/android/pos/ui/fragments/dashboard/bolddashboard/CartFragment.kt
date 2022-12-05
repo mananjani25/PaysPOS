@@ -1362,6 +1362,7 @@ class CartFragment(
         // viewModel.dineInHeaderPosition = headerPosition
         viewModel.dineInSelectedItemHeaderPos = headerPosition
 
+        item.headerPositionDinein = headerPosition
         itemClickListner?.onItemUpdate(item)
         /* if (prefProvider.getValue(ORDER_TYPE, "") == Constants.DINE_IN) {
              val dineinList = dineInCartAdapter.getList()
