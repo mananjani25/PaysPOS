@@ -1082,7 +1082,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     }
 
                                 } else {
-                                    if (list[i].id == item.id) {
+                                    if (list[i].id == item.id && list[i].itemId == item.itemId) {
                                         Log.d(TAG, "cartLogic: " + i)
                                         index = i
                                         break
