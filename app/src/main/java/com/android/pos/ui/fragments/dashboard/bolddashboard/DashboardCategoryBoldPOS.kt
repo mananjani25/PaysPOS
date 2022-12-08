@@ -333,7 +333,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         item.discountId = result.id
                         item.discountType = result.discountType
 
-                        viewModel.cartLogic(cartList, item, Constants.UPDATE, false)
+                        viewModel.newCartLogicModifier(cartList, item, Constants.UPDATE, false)
 
                     }
                     "Amount" -> {
@@ -343,14 +343,14 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         item?.discountType = result.discountType
 
 
-                        viewModel.cartLogic(cartList, item, Constants.UPDATE, false)
+                        viewModel.newCartLogicModifier(cartList, item, Constants.UPDATE, false)
                     }
                     else -> {
                         item?.discountPrice = result.percentage
                         item?.discountId = 0
                         item?.discountType = result.discountType
 
-                        viewModel.cartLogic(cartList, item, Constants.UPDATE, false)
+                        viewModel.newCartLogicModifier(cartList, item, Constants.UPDATE, false)
 
                     }
                 }
@@ -1214,7 +1214,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
         cartList.get(0).orderType = Constants.DINE_IN
 
-        viewModel.cartLogic(cartList, null, Constants.ADD, false, dineInList = dineInList)
+        viewModel.newCartLogicModifier(cartList, null, Constants.ADD, false, dineInList = dineInList)
 
 
     }
@@ -1287,7 +1287,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     "dineTotalDiscount  ${arguments?.getDouble("totalDiscount")}"
                 )
                 cartList[0].discountPrice = arguments?.getDouble("totalDiscount") ?: 0.0
-                viewModel.cartLogic(
+                viewModel.newCartLogicModifier(
                     cartList,
                     null,
                     Constants.ADD,
@@ -3280,7 +3280,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 viewModel.setServiceCharges(serviceChargesList)
             }
 
-            viewModel.cartLogic(cartList, item, Constants.ADD, false)
+            viewModel.newCartLogicModifier(cartList, item, Constants.ADD, false)
 
         } else {
             item?.itemQuantity = -1

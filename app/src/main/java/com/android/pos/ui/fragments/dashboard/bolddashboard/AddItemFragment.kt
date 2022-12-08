@@ -325,7 +325,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                             }
                         }
                     }
-                    viewModel.cartLogic(
+                    viewModel.newCartLogicModifier(
                         cartList,
                         item,
                         Constants.UPDATE,

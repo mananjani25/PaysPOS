@@ -561,7 +561,7 @@ class CartFragment(
         viewModel.dineInHeaderPosition = 0
         viewModel.dineInSelectedItemHeaderPos = 0
         cartlist.get(0).orderType = Constants.DINE_IN
-        viewModel.cartLogic(cartlist, null, Constants.ADD, false, dineInList = dineInList)
+        viewModel.newCartLogicModifier(cartlist, null, Constants.ADD, false, dineInList = dineInList)
 
     }
 
@@ -609,7 +609,7 @@ class CartFragment(
 
                 viewModel.orderItemDiscount = arguments?.getDouble("totalDiscount") ?: 0.0
                 viewModel.totalDiscount = arguments?.getDouble("totalDiscount") ?: 0.0
-                viewModel.cartLogic(cartlist, null, Constants.ADD, false, dineInList = dineInList)
+                viewModel.newCartLogicModifier(cartlist, null, Constants.ADD, false, dineInList = dineInList)
 
 
             }
@@ -1442,7 +1442,7 @@ class CartFragment(
                 // Do positive stuff here
                 cartlist.get(0).orderType = Constants.DINE_IN
 
-                viewModel.cartLogic(
+                viewModel.newCartLogicModifier(
                     cartlist,
                     data,
                     Constants.DELETE, false,
