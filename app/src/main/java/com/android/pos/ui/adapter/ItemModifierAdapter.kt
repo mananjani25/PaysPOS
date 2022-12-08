@@ -56,7 +56,7 @@ class ItemModifierAdapter(
                     mLongClickcallback?.onLongClickListener(
                         list[position].id,
                         bindingAdapterPosition,
-                        list[position].modifierQuantity
+                        list[position].modifier_quantity
                     )
                     return true
                 }
@@ -66,7 +66,7 @@ class ItemModifierAdapter(
                 mLongClickcallback?.onLongClickListener(
                     list[position].id,
                     bindingAdapterPosition,
-                    list[position].modifierQuantity
+                    list[position].modifier_quantity
                 )
             }
             binding.llMain.setOnClickListener {

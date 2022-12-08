@@ -33,7 +33,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@{model.name}"
+                android:text="@{`x`+model.modifier_quantity+` `+model.name}"
                 android:textColor="@color/colorRed"
                 android:textSize="@dimen/_5mdpi"
                 tools:text="Item Name" />

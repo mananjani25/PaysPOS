@@ -2091,6 +2091,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                                 model.orderModifierId = mod.id
                                                 model.price = mod.price
                                                 model.modifierSetId = mod.modifier_set_id
+                                                model.modifier_quantity = mod.modifier_quantity!!
 
 
                                                 if (mod.orderItemTaxes.isNotEmpty()) {
@@ -8641,6 +8642,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         modifierModel.quantity = it.quantity
                         modifierModel.modifier_set_id = it.modifierId?.toInt() ?: 0
                         modifierModel.price = it.price
+                        modifierModel.modifier_quantity = it.modifier_quantity!!
 
                         listModifiers.add(modifierModel)
 
@@ -8819,6 +8821,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                             modifiers.price = it.price
                                             modifiers.name = it.name
                                             modifiers.itemQuantity = it.quantity
+                                            modifiers.modifier_quantity= it.modifier_quantity!!
                                             modifierList.add(modifiers)
                                         }
                                         tbItem.modifiers = modifierList

@@ -514,6 +514,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
             if (listOfItemsId.contains(it.itemId)) {
                 val items = TbItem().apply {
                     orderItemId = it.id
+                    id = it.custom_item_id
                     itemId = it.itemId
                     name = it.itemName
                     cost = it.price
@@ -609,6 +610,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
                 price = it.price
                 itemQuantity = it.quantity
                 orderModifierId = it.id
+                modifier_quantity = it.modifier_quantity!!
 
             }
             modifierList.add(modifier)

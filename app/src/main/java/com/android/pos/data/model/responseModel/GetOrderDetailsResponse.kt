@@ -246,6 +246,8 @@ data class GetOrderDetailsResponse(
         data class OrderItem(
             @SerializedName("category_id")
             val categoryId: Int,
+            @SerializedName("custom_item_id")
+            val custom_item_id: Int,
             @SerializedName("completed_in_kitchen")
             val completedInKitchen: Boolean,
             @SerializedName("discount_amount")
@@ -328,6 +330,8 @@ data class GetOrderDetailsResponse(
                 val categoryId: String?,
                 @SerializedName("id")
                 val id: Int,
+                @SerializedName("modifier_quantity")
+                val modifier_quantity: Int?=null,
                 @SerializedName("is_modifier")
                 val isModifier: Boolean,
                 @SerializedName("item_id")

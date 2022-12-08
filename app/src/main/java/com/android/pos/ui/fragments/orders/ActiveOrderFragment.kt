@@ -762,6 +762,7 @@ class ActiveOrderFragment(
             val items = TbItem().apply {
                 orderItemId = it.id
                 itemId = it.itemId
+                id =it.custom_item_id
                 name = it.itemName
                 cost = it.price
                 isManualSales = ismanualsale
@@ -825,6 +826,7 @@ class ActiveOrderFragment(
                 price = it.price
                 itemQuantity = it.quantity
                 orderModifierId = it.id
+                modifier_quantity = it.modifier_quantity
 
             }
             modifierList.add(modifier)

@@ -1162,6 +1162,7 @@ open class PaymentViewModel @Inject constructor(
                     orderItemsAttribute.id = item.orderItemId
 
 
+                orderItemsAttribute.custom_item_id = item.id
                 orderItemsAttribute.category_id = item.categoryId
 
                 orderItemsAttribute.discountAmount = (item.discountPrice * item.itemQuantity)
@@ -1220,6 +1221,7 @@ open class PaymentViewModel @Inject constructor(
 
 
             orderItemsAttribute.category_id = item.categoryId
+            orderItemsAttribute.custom_item_id = item.id
 
 
             if (cartModel.reorder) {
@@ -1322,6 +1324,7 @@ open class PaymentViewModel @Inject constructor(
                 totalPrice = MethodUtils.roundOffAmountDouble(it.price * it.itemQuantity)
                 modifier_set_id = it.modifierSetId ?: 0
                 quantity = it.itemQuantity
+                modifier_quantity = it.modifier_quantity
                 order_item_taxes_attributes = arrayListOf()
             }
             orderItemModifierAttributeList.add(orderItemModifierAttribute)
@@ -1352,6 +1355,7 @@ open class PaymentViewModel @Inject constructor(
                 modifier_set_id = it.modifierSetId ?: 0
                 quantity = it.itemQuantity
                 order_item_taxes_attributes = arrayListOf()
+                modifier_quantity = it.modifier_quantity
             }
             orderItemModifierAttributeList.add(orderItemModifierAttribute)
         }

@@ -660,7 +660,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                                                 modifier.isChecked = true
                                                                 modifier.itemQuantity =
                                                                     oldmodifier.itemQuantity
-                                                                modifier.modifierQuantity= oldmodifier.modifierQuantity
+                                                                modifier.modifier_quantity= oldmodifier.modifier_quantity
                                                             }
                                                         }
                                                     }
@@ -1103,7 +1103,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                     modifierset.modifiers.forEachIndexed { index, modifier ->
                         if (modifier.id == modifier_id) {
                             adapter?.filterList!![indexset].modifiers[index].isChecked = true
-                            adapter?.filterList!![indexset].modifiers[index].modifierQuantity = counter
+                            adapter?.filterList!![indexset].modifiers[index].modifier_quantity = counter
                             adapter?.filterList!![indexset].modifiers[index].itemQuantity = counter
                             adapter?.notifyDataSetChanged()
                         }

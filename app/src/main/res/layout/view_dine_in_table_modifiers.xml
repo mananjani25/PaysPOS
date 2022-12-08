@@ -54,7 +54,7 @@
                         android:layout_gravity="start"
                         android:gravity="start"
                         android:paddingStart="@dimen/_14sdp"
-                        android:text="@{model.name}"
+                        android:text="@{`x`+model.modifier_quantity+` `+model.name}"
                         android:textColor="@color/txtColor"
                         android:textSize="@dimen/_5mdpi"
                         tools:text="Item" />

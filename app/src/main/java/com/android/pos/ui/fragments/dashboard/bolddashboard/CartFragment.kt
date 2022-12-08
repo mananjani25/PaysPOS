@@ -209,7 +209,12 @@ class CartFragment(
         if (isFromPayment) {
             binding.linearButtonView.visibility = View.GONE
             binding.imgOrderMenu.visibility = View.GONE
-            binding.txtAddCustomer.setPadding(0,resources.getDimension(R.dimen._5sdp).toInt(),resources.getDimension(R.dimen._10sdp).toInt(),resources.getDimension(R.dimen._5sdp).toInt())
+            binding.txtAddCustomer.setPadding(
+                0,
+                resources.getDimension(R.dimen._5sdp).toInt(),
+                resources.getDimension(R.dimen._10sdp).toInt(),
+                resources.getDimension(R.dimen._5sdp).toInt()
+            )
             binding.imgOrderMenu.isEnabled = false
             binding.imgOrderMenu.isClickable = false
         }
@@ -561,7 +566,13 @@ class CartFragment(
         viewModel.dineInHeaderPosition = 0
         viewModel.dineInSelectedItemHeaderPos = 0
         cartlist.get(0).orderType = Constants.DINE_IN
-        viewModel.newCartLogicModifier(cartlist, null, Constants.ADD, false, dineInList = dineInList)
+        viewModel.newCartLogicModifier(
+            cartlist,
+            null,
+            Constants.ADD,
+            false,
+            dineInList = dineInList
+        )
 
     }
 
@@ -609,7 +620,13 @@ class CartFragment(
 
                 viewModel.orderItemDiscount = arguments?.getDouble("totalDiscount") ?: 0.0
                 viewModel.totalDiscount = arguments?.getDouble("totalDiscount") ?: 0.0
-                viewModel.newCartLogicModifier(cartlist, null, Constants.ADD, false, dineInList = dineInList)
+                viewModel.newCartLogicModifier(
+                    cartlist,
+                    null,
+                    Constants.ADD,
+                    false,
+                    dineInList = dineInList
+                )
 
 
             }
@@ -934,7 +951,7 @@ class CartFragment(
                                                     var modelMod =
                                                         GetOrderDetailsResponse.Data.OrderItem.OrderItemModifier(
                                                             categoryId = "",
-                                                            id = it.id ?: 0,
+                                                            id = it.id ?: 0, it.modifier_quantity,
                                                             isModifier = it.isChecked,
                                                             itemId = "",
                                                             modifierId = 0,
@@ -955,6 +972,7 @@ class CartFragment(
                                             listItemDine.add(
                                                 GetOrderDetailsResponse.Data.OrderItem(
                                                     categoryId = item.categoryId,
+                                                    custom_item_id = item.id,
                                                     completedInKitchen = false,
                                                     discountAmount = 0.0,
                                                     discountId = 0,
@@ -1628,14 +1646,11 @@ class CartFragment(
                             prefProvider.setValueboolean(DINE_IN_UPDATE, false)
 
 
-                            if (cartlist[0].orderId != 0){
+                            if (cartlist[0].orderId != 0) {
                                 cartlist[0].orderId?.let { viewModel.updateOrderCall(it, request) }
-                            }
-                            else{
+                            } else {
                                 orderId?.let { it1 -> viewModel.updateOrderCall(it1, request) }
                             }
-
-
 
 
                         }

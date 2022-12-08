@@ -392,7 +392,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 singleItem?.note = note.toString()
                 singleItem?.let {
                     dineInArrayList?.let { it1 ->
-                        viewModel.cartLogic(
+                        viewModel.newCartLogicModifier(
                             cartList,
                             it,
                             Constants.UPDATE,
