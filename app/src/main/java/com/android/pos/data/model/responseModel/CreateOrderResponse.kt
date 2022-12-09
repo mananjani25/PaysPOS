@@ -111,7 +111,7 @@ data class CreateOrderResponse(
             @SerializedName("venue_website")
             val venue_website: String,
             @SerializedName("loyalty_amount")
-            val loyaltyAmount:Double
+            val loyaltyAmount: Double
         ) {
 
             @Parcelize
@@ -245,7 +245,8 @@ data class CreateOrderResponse(
                     @SerializedName("is_modifier") var isModifier: Boolean,
                     @SerializedName("created_at") var createdAt: String,
                     @SerializedName("updated_at") var updatedAt: String,
-                    @SerializedName("total_price") var totalPrice: Double
+                    @SerializedName("total_price") var totalPrice: Double,
+                    @SerializedName("modifier_quantity") var modifierQuantity: Int
 
                 ) : Parcelable
             }

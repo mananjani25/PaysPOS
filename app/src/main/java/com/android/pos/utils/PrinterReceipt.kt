@@ -842,7 +842,7 @@ fun addBuilderText(
 }
 
 fun addBuilderTextForU220(
-    builder:Printer,
+    builder: Printer,
     text: String
 ): Printer {
     builder.addText(text)
@@ -2714,7 +2714,7 @@ fun addOrderItems(
                 builder.addTextPosition(4)
                 builder.addText(
                     padLineCustomerItem(
-                        "   " + modifierObj.name,
+                        "   " + "X" + modifierObj.modifierQuantity + " " + modifierObj.name,
                         "$" + MethodUtils.roundOffAmountString(modifierObj.price.toDouble() * modifierObj.quantity),
                         if (font == Constants.LARGE) {
                             23
