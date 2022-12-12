@@ -2711,15 +2711,15 @@ fun addOrderItems(
                     Builder.FALSE,
                     Builder.COLOR_1
                 )
-                builder.addTextPosition(4)
+
                 builder.addText(
                     padLineCustomerItem(
-                        "   "  + modifierObj.quantity+ "x" + " " + modifierObj.name,
+                         modifierObj.quantity.toString() + "x" + "    " + modifierObj.name + " x" + modifierObj.modifierQuantity ,
                         "$" + MethodUtils.roundOffAmountString(modifierObj.price.toDouble() * modifierObj.quantity),
                         if (font == Constants.LARGE) {
-                            23
+                            24
                         } else {
-                            47
+                            48
                         }
                     )
                 )

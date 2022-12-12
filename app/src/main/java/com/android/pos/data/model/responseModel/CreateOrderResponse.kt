@@ -246,7 +246,7 @@ data class CreateOrderResponse(
                     @SerializedName("created_at") var createdAt: String,
                     @SerializedName("updated_at") var updatedAt: String,
                     @SerializedName("total_price") var totalPrice: Double,
-                    @SerializedName("modifier_quantity") var modifierQuantity: Int
+                    @SerializedName("modifier_quantity") var modifierQuantity: Int =0
 
                 ) : Parcelable
             }
