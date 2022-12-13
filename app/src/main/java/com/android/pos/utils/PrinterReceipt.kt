@@ -2685,7 +2685,7 @@ fun addOrderItems(
 
         builder.addText(
             padLineCustomerItem(
-                obj.quantity.toString() + "x " + obj.itemName,
+                obj.quantity.toString() + "  " + obj.itemName,
                 "$" + MethodUtils.roundOffAmountString(totalPrice(obj)),
                 if (font == Constants.LARGE) {
                     24
@@ -2712,7 +2712,21 @@ fun addOrderItems(
                     Builder.COLOR_1
                 )
 
+
                 builder.addText(
+                    padLineCustomerItem(
+                        if (modifierObj.modifierQuantity == 1){"     "}else {"   "+modifierObj.modifierQuantity.toString() + "x"} + "  " + modifierObj.name ,
+                        "$" + MethodUtils.roundOffAmountString(modifierObj.price.toDouble() * modifierObj.quantity),
+                        if (font == Constants.LARGE) {
+                            24
+                        } else {
+                            48
+                        }
+                    )
+                )
+
+
+                /*builder.addText(
                     padLineCustomerItem(
                          modifierObj.quantity.toString() + "x" + "    " + modifierObj.name + " x" + modifierObj.modifierQuantity ,
                         "$" + MethodUtils.roundOffAmountString(modifierObj.price.toDouble() * modifierObj.quantity),
@@ -2723,7 +2737,7 @@ fun addOrderItems(
                         }
                     )
                 )
-
+*/
 
             }
 
@@ -2777,10 +2791,14 @@ fun addOrderItems(
             for (j in 0 until obj.orderItemModifiers.size) {
                 val modifierObj = obj.orderItemModifiers.get(j)
 
-                val modifier = padLineCustomerItem(
-                    "   " + modifierObj.name,
+                val modifier =  padLineCustomerItem(
+                    if (modifierObj.modifierQuantity == 1){"     "}else {"   "+modifierObj.modifierQuantity.toString() + "x"} + "  " + modifierObj.name ,
                     "$" + MethodUtils.roundOffAmountString(modifierObj.price.toDouble() * modifierObj.quantity),
-                    if (font == Constants.LARGE) 22 else 48
+                    if (font == Constants.LARGE) {
+                        24
+                    } else {
+                        48
+                    }
                 )
 
                 PrintSunmiUtils.orderTime(modifier.toString())
@@ -2824,12 +2842,22 @@ fun addOrderItemsInner(
             for (j in 0 until obj.orderItemModifiers.size) {
                 val modifierObj = obj.orderItemModifiers.get(j)
 
-                val modifier = padLineCustomerItem(
+                val modifier =  padLineCustomerItem(
+                    if (modifierObj.modifierQuantity == 1){"     "}else {"   "+modifierObj.modifierQuantity.toString() + "x"} + "  " + modifierObj.name ,
+                    "$" + MethodUtils.roundOffAmountString(modifierObj.price.toDouble() * modifierObj.quantity),
+                    if (font == Constants.LARGE) {
+                        22
+                    } else {
+                        48
+                    }
+                )
+
+                /*val modifier = padLineCustomerItem(
                     "   " + modifierObj.name,
                     "$" + MethodUtils.roundOffAmountString(modifierObj.price.toDouble() * modifierObj.quantity),
                     if (font == Constants.LARGE) 22 else 48
                 )
-
+*/
                 PrintSunmiUtils.normalText(modifier.toString())
 
             }
