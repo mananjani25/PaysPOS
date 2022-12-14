@@ -3924,12 +3924,12 @@ class DashBoardCategoryViewModel @Inject constructor(
             model.employeeID =
                 prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
             model.terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, 0)
-            model.orderType = prefProvider.getValue(ORDER_TYPE, Constants.TAKEOUT)
+            model.orderType = prefProvider.getValue(ORDER_TYPE, "")
             model.locationId = prefProvider.getValueInt(Constants.LOCATION_ID, 1)
             model.serviceCharge = serviceChargesList
             // model.orderTypeId = 1
             ordertypelist.forEach {
-                if (it.orderType.lowercase() == Constants.TAKEOUT.lowercase()) {
+                if (it.orderType.lowercase() == prefProvider.getValue(ORDER_TYPE, "").lowercase()) {
                     model.orderTypeId = it.id
                 }
             }

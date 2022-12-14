@@ -235,14 +235,14 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
             prefProvider.setValueInt(Constants.CAT_ID_SELECTED, item.categoryId)
             var isPriceNull = true
 
-            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.OPEN_ORDER) {
+            if (prefProvider.getValue(ORDER_TYPE, "") == Constants.OPEN_ORDER) {
 
                 if (cartList.isEmpty()) {
                     val model = CartModel()
                     model.employeeID =
                         prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
                     model.terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
-                    model.orderType = prefProvider.getValue(ORDER_TYPE, TAKEOUT)
+                    model.orderType = prefProvider.getValue(ORDER_TYPE, "")
                     model.locationId = prefProvider.getValueInt(Constants.LOCATION_ID, 1)
                     model.serviceCharge = serviceChargesList
                     viewModel.ordertypelist.forEach {

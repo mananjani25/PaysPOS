@@ -98,6 +98,17 @@ class DineInFragment : Fragment() {
 
 
 
+        val callback: OnBackPressedCallback =
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+
+                    prefProvider.setValue(Constants.ORDER_TYPE, "")
+                    findNavController().popBackStack()
+                }
+
+            }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+
 
         dineInFloorNameListAdapter.showFloorPlan = {
             dineInFloorTablesList =
@@ -147,6 +158,8 @@ class DineInFragment : Fragment() {
             loadFloorPlanDetails()
         }
         binding.layoutHeader.txthome.setOnClickListener {
+
+            prefProvider.setValue(Constants.ORDER_TYPE, "")
             findNavController().popBackStack()
         }
         binding.layoutHeader.imgDrawer.setOnClickListener {

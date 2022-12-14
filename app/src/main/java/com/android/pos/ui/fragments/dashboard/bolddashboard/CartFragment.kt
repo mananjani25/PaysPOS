@@ -37,12 +37,14 @@ import com.android.pos.data.remote.Constants.MANUAL_SALE
 import com.android.pos.data.remote.Constants.OPEN_ORDER
 import com.android.pos.data.remote.Constants.OPTION_TYPE
 import com.android.pos.data.remote.Constants.ORDER_TYPE
+import com.android.pos.data.remote.Constants.ORDER_TYPE_ID
 import com.android.pos.data.remote.Constants.REDIRECT_FROM
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.remote.Constants.WHOLE_AMOUNT
 import com.android.pos.databinding.FragmentCartBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.DineInAdapter
+import com.android.pos.ui.adapter.OrderTypeAdapter
 import com.android.pos.ui.adapter.boldpos.CartAdapter
 import com.android.pos.ui.adapter.boldpos.TaxBirfurcationAdapter
 import com.android.pos.ui.fragments.checkout.CheckoutDineInPaymentViewModel
@@ -52,9 +54,7 @@ import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
-import com.android.pos.utils.callback.ItemClickListner
-import com.android.pos.utils.callback.ItemListner
-import com.android.pos.utils.callback.MyCallback
+import com.android.pos.utils.callback.*
 import com.android.pos.utils.extensions.*
 import com.android.pos.utils.statusUtils.Resource
 import com.google.gson.Gson
@@ -71,9 +71,10 @@ class CartFragment(
     val isFromPaymentDinein: Boolean = false,
     val guestCalModel: GuestPaymentCalculationModel? = null,
     val isGuestPayment: Boolean = false,
+    val dineInCallback: DineInOrderCallBack? = null,
 ) :
     Fragment(), MyCallback,
-    DineInAdapter.DineInCallback {
+    DineInAdapter.DineInCallback, ItemCallback {
     private var isSaveOrder: Boolean = false
     private lateinit var binding: FragmentCartBinding
     var fragmentId: Int? = null
@@ -115,6 +116,8 @@ class CartFragment(
     var taxClickable = false
     var cashDiscountSurcharge = 0.0
 
+    private var orderTypeAdapter: OrderTypeAdapter? = null
+
     @Inject
     lateinit var prefProvider: PrefProvider
     private val TAG = "CartFragment"
@@ -128,6 +131,8 @@ class CartFragment(
         binding = FragmentCartBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
         LogUtil.logE("bundleData", arguments.toString())
+
+        checkOrderType()
 
         if (arguments?.getBundle("updateBundle") != null) {
             updateBundle = arguments?.getBundle("updateBundle")
@@ -190,6 +195,22 @@ class CartFragment(
         return binding.root
     }
 
+    private fun checkOrderType() {
+
+        if (prefProvider.getValue(ORDER_TYPE, "").isEmpty()) {
+            binding.rlCartView?.gone()
+            binding.rvOrderType?.visible()
+            binding.orderTypeDisplay?.text =
+                getString(R.string.current_order)
+        } else {
+            binding.rlCartView?.visible()
+            binding.rvOrderType?.gone()
+
+            binding.orderTypeDisplay?.text =
+                getString(R.string.current_order) + " : " + prefProvider.getValue(ORDER_TYPE, "")
+        }
+    }
+
     private fun displayCustomer() {
 
 
@@ -207,7 +228,12 @@ class CartFragment(
         if (isFromPayment) {
             binding.linearButtonView.visibility = View.GONE
             binding.imgOrderMenu.visibility = View.GONE
-            binding.txtAddCustomer.setPadding(0,resources.getDimension(R.dimen._5sdp).toInt(),resources.getDimension(R.dimen._10sdp).toInt(),resources.getDimension(R.dimen._5sdp).toInt())
+            binding.txtAddCustomer.setPadding(
+                0,
+                resources.getDimension(R.dimen._5sdp).toInt(),
+                resources.getDimension(R.dimen._10sdp).toInt(),
+                resources.getDimension(R.dimen._5sdp).toInt()
+            )
             binding.imgOrderMenu.isEnabled = false
             binding.imgOrderMenu.isClickable = false
         }
@@ -223,6 +249,7 @@ class CartFragment(
         setupLoyalytyPoints()
         addObserver()
         setupTaxAdapter()
+        getOrderTypes()
 
 
         if (taxBirfurcationAdapter.taxlist.size == 0) {
@@ -601,9 +628,12 @@ class CartFragment(
                     it.floorPlanTable = orderTableData
                 }
 
-                prefProvider.setValue(ORDER_TYPE, Constants.DINE_IN)
+                prefProvider.setValue(ORDER_TYPE, prefProvider.getValue(ORDER_TYPE, ""))
                 prefProvider.setValue(Constants.ORDER_TYPE_NAME, Constants.DINE_IN)
-                prefProvider.setValueInt(Constants.ORDER_TYPE_ID, 2)
+                prefProvider.setValueInt(
+                    Constants.ORDER_TYPE_ID,
+                    prefProvider.getValueInt(ORDER_TYPE_ID, 0)
+                )
 
                 viewModel.orderItemDiscount = arguments?.getDouble("totalDiscount") ?: 0.0
                 viewModel.totalDiscount = arguments?.getDouble("totalDiscount") ?: 0.0
@@ -1067,6 +1097,9 @@ class CartFragment(
                         binding.rvCartDineIn.gone()
                         binding.rvCartList.visible()
 
+                        checkOrderType()
+
+
                         if (it.isNotEmpty()) {
                             Log.e("mAllWords", "listSize ITEM ${it.get(0).items?.size}")
                             viewModel.destroyedList.clear()
@@ -1517,8 +1550,10 @@ class CartFragment(
                     // prefProvider.setValue(DINE_IN_UPDATE_LIST, "")
 //                    uiSave()
 
-                    prefProvider.setValue(ORDER_TYPE, TAKEOUT)
+                    prefProvider.setValue(ORDER_TYPE, "")
                     prefProvider.setValueboolean(Constants.LOYALTY_ADDED, false)
+
+                    getOrderTypes()
 
 
 
@@ -1536,10 +1571,11 @@ class CartFragment(
                     viewModel.deleteCart()
                     cartlist.clear()
                     isOrderUpdate = false
-                    prefProvider.setValue(ORDER_TYPE, TAKEOUT)
+                    prefProvider.setValue(ORDER_TYPE, "")
                     prefProvider.setValueboolean(Constants.LOYALTY_ADDED, false)
                     itemClickListner?.onDineInOrderCleared()
                     uiSave()
+                    getOrderTypes()
 
                 }
             }
@@ -1625,14 +1661,11 @@ class CartFragment(
                             prefProvider.setValueboolean(DINE_IN_UPDATE, false)
 
 
-                            if (cartlist[0].orderId != 0){
+                            if (cartlist[0].orderId != 0) {
                                 cartlist[0].orderId?.let { viewModel.updateOrderCall(it, request) }
-                            }
-                            else{
+                            } else {
                                 orderId?.let { it1 -> viewModel.updateOrderCall(it1, request) }
                             }
-
-
 
 
                         }
@@ -1775,7 +1808,7 @@ class CartFragment(
             prefProvider.setValueboolean(Constants.TIP_ADDED, false)
 
             if (cartAdapter.cartList.isNotEmpty()) {
-                prefProvider.setValue(ORDER_TYPE, prefProvider.getValue(ORDER_TYPE, TAKEOUT))
+                prefProvider.setValue(ORDER_TYPE, prefProvider.getValue(ORDER_TYPE, ""))
                 prefProvider.setValue("PaidAmount", "")
                 prefProvider.setValue(WHOLE_AMOUNT, "")
                 prefProvider.setValueInt("cardCount", 0)
@@ -1815,7 +1848,7 @@ class CartFragment(
         binding.tvSave.setOnClickListener {
             if (cartAdapter.cartList.isNotEmpty()) {
 
-                prefProvider.setValue(ORDER_TYPE, OPEN_ORDER)
+                prefProvider.setValue(ORDER_TYPE, prefProvider.getValue(ORDER_TYPE, ""))
                 prefProvider.setValue("PaidAmount", "")
                 prefProvider.setValue(WHOLE_AMOUNT, "")
                 prefProvider.setValueInt("cardCount", 0)
@@ -2040,6 +2073,40 @@ class CartFragment(
         if (orderRequestModel != null) {
             viewModel.submit(orderRequestModel)
         }
+
+    }
+
+    private fun getOrderTypes() {
+        orderTypeAdapter = OrderTypeAdapter()
+        orderTypeAdapter?.setCallback(this)
+        binding.rvOrderType?.adapter = orderTypeAdapter
+
+        viewModel.orderTypes().observe(requireActivity()) {
+            it.data?.let { it1 -> orderTypeAdapter?.addAll(it1) }
+        }
+
+    }
+
+    override fun onItemClickListener(view: View?, pos: Int) {
+
+        val model = orderTypeAdapter?.getItem(pos)
+
+        model?.id?.let { prefProvider.setValueInt(ORDER_TYPE_ID, it) }
+
+        Log.e(TAG,"checkOrderType  ${model?.orderType}")
+
+
+        if (model?.orderType == DINE_IN) {
+            Log.e(TAG,"InsideDine inNew")
+            dineInCallback?.onDineInClickListener()
+        }else{
+            Log.e(TAG,"InsideDine inNoDine")
+            model?.orderType?.let { prefProvider.setValue(ORDER_TYPE, it) }
+            checkOrderType()
+
+            addObserver()
+        }
+
 
     }
 }

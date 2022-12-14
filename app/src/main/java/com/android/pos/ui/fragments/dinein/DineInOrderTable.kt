@@ -783,9 +783,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             Log.e(TAG, "dineIndorderId:   ${orderId}")
 
             prefProvider.setValueboolean(DINE_IN_UPDATE, true)
-            prefProvider.setValue(Constants.ORDER_TYPE, DINE_IN)
+            prefProvider.setValue(Constants.ORDER_TYPE, prefProvider.getValue(Constants.ORDER_TYPE, ""))
             prefProvider.setValue(ORDER_TYPE_NAME, DINE_IN)
-            prefProvider.setValueInt(Constants.DINE_IN_TABLE_ID, 2)
+            prefProvider.setValueInt(Constants.DINE_IN_TABLE_ID, prefProvider.getValueInt(Constants.ORDER_TYPE_ID, 0))
             prefProvider.setValueboolean(Constants.DINE_IN_STATUS, true)
 
             /*   prefProvider.setValu
@@ -1625,7 +1625,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         dineinCartPaymentModel?.guestSelectedPos = position
         dineinCartPaymentModel?.floorPlanModel = floorPlanModel
 
-        prefProvider.setValue(Constants.ORDER_TYPE, Constants.DINE_IN)
+        prefProvider.setValue(Constants.ORDER_TYPE, prefProvider.getValue(Constants.ORDER_TYPE, ""))
         bundle.putParcelable("dineinPaymentModel", dineinCartPaymentModel)
         cartList = getCartModel(adapterList.toCollection(arrayListOf()))
 
