@@ -1157,7 +1157,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                             if (item != null) {
                                 item.singleItemPrice = item.price
                                 item.modifiers.forEach { it ->
-                                    it.modifier_quantity = it.itemQuantity / item.itemQuantity
+                                    it.modifier_quantity = it.itemQuantity
+                                    it.itemQuantity = it.itemQuantity * item.itemQuantity
                                     item.singleItemPrice += it.price * it.itemQuantity
                                 }
                                 item.isDestroy = false

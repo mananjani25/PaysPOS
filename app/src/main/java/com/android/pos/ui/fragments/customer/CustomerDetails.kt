@@ -430,7 +430,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
                 String.format("%.2f", 0.00)
                     .toDouble()
             } else {
-                String.format("%.2f", orderItemTaxe.rate * item.quantity)
+                String.format("%.2f", orderItemTaxe.rate * item.itemQuantity)
                     .toDouble()
             }
         }
