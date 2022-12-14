@@ -11,6 +11,7 @@ import com.android.pos.data.entities.TbItem
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.ViewCategoryItemBoldBinding
 import com.android.pos.di.PrefProvider
+import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.callback.ItemListner
@@ -99,22 +100,30 @@ class ItemAdapterPagDash(
             }
 
             binding.root.setOnClickListener {
-                try {
-                    getItem(position)?.let {
-                        LogUtil.logE(
-                            "ITemAdapter",
-                            "onClickposition  ${position}  itemname ${it.name}"
-                        )
-                        listener.onItemSelected(it)
-                    }
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
-                if (lastChecked != null) {
-                    lastChecked?.isSelected = false
-                }
-                lastChecked = checkedTextView
 
+                if (prefProvider?.getValue(Constants.ORDER_TYPE, "").equals("")) {
+                    AlertUtils.showCustomAlert(
+                        binding.root.context,
+                        "Please select order type to add item"
+                    )
+                    return@setOnClickListener
+                } else {
+                    try {
+                        getItem(position)?.let {
+                            LogUtil.logE(
+                                "ITemAdapter",
+                                "onClickposition  ${position}  itemname ${it.name}"
+                            )
+                            listener.onItemSelected(it)
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                    if (lastChecked != null) {
+                        lastChecked?.isSelected = false
+                    }
+                    lastChecked = checkedTextView
+                }
 
             }
         }
