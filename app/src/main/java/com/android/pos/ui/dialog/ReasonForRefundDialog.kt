@@ -1,14 +1,22 @@
 package com.android.pos.ui.dialog
 
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
 import android.graphics.Point
 import android.os.Bundle
+import android.os.IBinder
 import android.util.Log
 import android.view.*
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.android.pos.MainApplication
 import com.android.pos.R
+import com.android.pos.aidl.ICallback
+import com.android.pos.aidl.IWoyouService
 import com.android.pos.data.model.requestModel.RefundRequestModel
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
@@ -18,6 +26,7 @@ import com.android.pos.di.ApiModule1
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.fragments.magtek.MagtekRequestUtils
 import com.android.pos.ui.fragments.magtek.PaymentResponse
+import com.android.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.android.pos.ui.fragments.transactions.TransactionDetailsViewModel
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.LogUtil
@@ -31,6 +40,7 @@ import com.epson.eposprint.Print
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.google.gson.JsonArray
+import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import dagger.hilt.android.AndroidEntryPoint
 import retrofit2.Call
 import retrofit2.Callback
@@ -39,7 +49,7 @@ import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class ReasonForRefundDialog : DialogFragment() {
+class ReasonForRefundDialog : DialogFragment(), ICallback {
 
 
     private var customerList: List<PrinterResponse.Data.CustomerReceiptPrinters> = arrayListOf()
@@ -49,6 +59,7 @@ class ReasonForRefundDialog : DialogFragment() {
     private lateinit var binding: DialogRefundReasonBinding
     private lateinit var refundData: RefundRequestModel
     private val viewModel by viewModels<TransactionDetailsViewModel>()
+    private var woyouService: IWoyouService? = null
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -71,7 +82,7 @@ class ReasonForRefundDialog : DialogFragment() {
 
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
-
+        Binding()
         getCustomerPrinters()
         dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
@@ -357,95 +368,247 @@ class ReasonForRefundDialog : DialogFragment() {
                     ) { _, _ ->
                         //  prefProvider.setValueboolean(IS_REFUND, true)
 
-                        customerList.forEach {
-                            PrinterClass.closePrinter()
-                            if (PrinterClass.getPrinter() == null) {
+                        if (paymentType == "Card") {
+                            sendToTransaction()
+                        } else if (customerList.isEmpty()) {
+                            sendToTransaction()
+                        } else {
 
-                                var printer: Print? = Print(requireContext())
-                                val enabled = Print.FALSE
-                                try {
-                                    var interval: Int = 1000
-                                    if (it.printer_type == Constants.BLUETOOTH) {
-                                        interval = PrinterClass.BLUETOOTH_TIMEOUT
-                                    }
-                                    printer?.openPrinter(
+                            val data = customerList
+                            for (i in 0 until data.size) {
+                                if (data[i].name.startsWith("CloudPrint", true)) {
+                                    if (woyouService != null) {
 
-                                        if (it.printer_type == Constants.BLUETOOTH) {
-                                            Print.DEVTYPE_BLUETOOTH
-                                        } else {
-                                            Print.DEVTYPE_TCP
-                                        },
-                                        it.ipAddress,
-                                        enabled,
-                                        1000
-                                    )
-                                    // printer?.setStatusChangeEventCallback(this)
+                                        sendToTransaction()
+                                        woyouService!!.sendRAWData(
+                                            byteArrayOf(0x1B, 0x45, 0x01),
+                                            this
+                                        )
+                                    } else {
+                                        val aa = ByteArray(5)
 
-                                } catch (e: Exception) {
+                                        aa[0] = 0x10
+                                        aa[1] = 0x14
+                                        aa[2] = 0x00
+                                        aa[3] = 0x00
+                                        aa[4] = 0x00
 
-                                    //LogUtil.logE(TAG, "PrinterException: " + e.message)
-                                    printer = null
-                                    e.printStackTrace()
-                                }
-
-                                try {
-
-                                    if (printer != null) {
-                                        PrinterClass.setPrinter(printer)
-
-                                        var builder: Builder? = null
                                         try {
-                                            builder =
-                                                Builder(
-                                                    if (it.name.substring(0, 6)
-                                                            .toString()
-                                                            .lowercase() == "TM-m30".lowercase()
-                                                    ) {
-                                                        "TM-m30"
-                                                    } else {
-                                                        it.name
-                                                    }, PrinterClass.language, requireActivity()
-                                                )
-
-                                            val status = IntArray(1)
-                                            val battery = IntArray(1)
-                                            builder.addPulse(
-                                                com.epson.epos2.printer.Printer.DRAWER_HIGH,
-                                                com.epson.epos2.printer.Printer.PULSE_100
-                                            )
-
-                                            PrinterClass.getPrinter()?.sendData(
-                                                builder,
-                                                PrinterClass.BLUETOOTH_TIMEOUT, status, battery
-                                            )
-                                            PrinterClass.closePrinter()
-
+                                            SunmiPrinterApi.getInstance().sendRawData(aa)
                                         } catch (e: java.lang.Exception) {
                                             e.printStackTrace()
                                         }
+
+                                        try {
+                                            sendToTransaction()
+                                            SunmiPrintHelper.getInstance().openCashBox()
+                                        } catch (e: java.lang.Exception) {
+                                            e.printStackTrace()
+                                            sendToTransaction()
+                                        }
                                     }
 
-                                } catch (e: Exception) {
+                                } else if (data[i].name.startsWith("InnerPrinter", true)) {
 
-                                    e.printStackTrace()
+                                    if (woyouService != null) {
+                                        sendToTransaction()
+                                        woyouService!!.sendRAWData(
+                                            byteArrayOf(0x1B, 0x45, 0x01),
+                                            this
+                                        )
+                                    } else {
+                                        val aa = ByteArray(5)
+
+                                        aa[0] = 0x10
+                                        aa[1] = 0x14
+                                        aa[2] = 0x00
+                                        aa[3] = 0x00
+                                        aa[4] = 0x00
+
+
+                                        try {
+                                            SunmiPrinterApi.getInstance().sendRawData(aa)
+                                        } catch (e: java.lang.Exception) {
+                                            e.printStackTrace()
+                                        }
+                                        try {
+                                            sendToTransaction()
+                                            SunmiPrintHelper.getInstance().openCashBox()
+                                        } catch (e: java.lang.Exception) {
+                                            e.printStackTrace()
+                                            sendToTransaction()
+                                        }
+
+                                    }
+
+                                } else {
+                                    var builder: Builder = Builder(
+                                        if (data[i].name.substring(0, 6).toString()
+                                                .lowercase() == "TM-m30".lowercase()
+                                        ) {
+                                            "TM-m30"
+                                        } else {
+                                            data[i].name
+                                        }, PrinterClass.language, requireActivity()
+                                    )
+
+
+                                    builder.addPulse(
+                                        com.epson.epos2.printer.Printer.DRAWER_HIGH,
+                                        com.epson.epos2.printer.Printer.PULSE_100
+                                    )
+
+                                    val status = IntArray(1)
+                                    val battery = IntArray(1)
+                                    try {
+                                        sendToTransaction()
+                                        PrinterClass.getPrinter()?.sendData(
+                                            builder,
+                                            PrinterClass.BLUETOOTH_TIMEOUT, status, battery
+                                        )
+                                    } catch (e: java.lang.Exception) {
+                                        e.printStackTrace()
+                                        sendToTransaction()
+                                    }
+
+
                                 }
-
                             }
-                        }
-                        val bundle = Bundle().apply {
-                            putInt("orderId", refundData.paymentRefund?.orderId!!)
-                            putInt("paymentId", refundData.paymentRefund?.paymentId!!)
-                        }
 
-                        findNavController().navigate(
-                            R.id.action_reasonForRefundDialog_to_transactionDetailsFragment, bundle
-                        )
+//                            customerList.forEach {
+//                                PrinterClass.closePrinter()
+//                                if (PrinterClass.getPrinter() == null) {
+//
+//                                    var printer: Print? = Print(requireContext())
+//                                    val enabled = Print.FALSE
+//                                    try {
+//                                        var interval: Int = 1000
+//                                        if (it.printer_type == Constants.BLUETOOTH) {
+//                                            interval = PrinterClass.BLUETOOTH_TIMEOUT
+//                                        }
+//                                        printer?.openPrinter(
+//
+//                                            if (it.printer_type == Constants.BLUETOOTH) {
+//                                                Print.DEVTYPE_BLUETOOTH
+//                                            } else {
+//                                                Print.DEVTYPE_TCP
+//                                            },
+//                                            it.ipAddress,
+//                                            enabled,
+//                                            1000
+//                                        )
+//                                        // printer?.setStatusChangeEventCallback(this)
+//
+//                                    } catch (e: Exception) {
+//
+//                                        //LogUtil.logE(TAG, "PrinterException: " + e.message)
+//                                        printer = null
+//                                        e.printStackTrace()
+//                                        sendToTransaction()
+//                                    }
+//
+//                                    try {
+//
+//                                        if (printer != null) {
+//                                            PrinterClass.setPrinter(printer)
+//
+//                                            var builder: Builder? = null
+//                                            try {
+//                                                builder =
+//                                                    Builder(
+//                                                        if (it.name.substring(0, 6)
+//                                                                .toString()
+//                                                                .lowercase() == "TM-m30".lowercase()
+//                                                        ) {
+//                                                            "TM-m30"
+//                                                        } else {
+//                                                            it.name
+//                                                        }, PrinterClass.language, requireActivity()
+//                                                    )
+//
+//                                                val status = IntArray(1)
+//                                                val battery = IntArray(1)
+//                                                builder.addPulse(
+//                                                    com.epson.epos2.printer.Printer.DRAWER_HIGH,
+//                                                    com.epson.epos2.printer.Printer.PULSE_100
+//                                                )
+//                                                sendToTransaction()
+//                                                PrinterClass.getPrinter()?.sendData(
+//                                                    builder,
+//                                                    PrinterClass.BLUETOOTH_TIMEOUT, status, battery
+//                                                )
+//                                                PrinterClass.closePrinter()
+//
+//                                            } catch (e: java.lang.Exception) {
+//                                                e.printStackTrace()
+//                                                sendToTransaction()
+//                                            }
+//                                        }
+//
+//                                    } catch (e: Exception) {
+//
+//                                        e.printStackTrace()
+//                                        sendToTransaction()
+//                                    }
+//
+//                                }
+//                            }
+                        }
                         //  findNavController().navigateUp()
                     }
                 }
             }
         }
 
+    }
+
+
+    private fun sendToTransaction() {
+        val bundle = Bundle().apply {
+            putInt("orderId", refundData.paymentRefund?.orderId!!)
+            putInt("paymentId", refundData.paymentRefund?.paymentId!!)
+        }
+
+        if (findNavController().currentDestination?.id == R.id.reasonForRefundDialog) {
+            findNavController().navigate(
+                R.id.action_reasonForRefundDialog_to_transactionDetailsFragment, bundle
+            )
+        }
+    }
+
+
+    private val serviceConnection: ServiceConnection = object : ServiceConnection {
+        override fun onServiceConnected(p0: ComponentName?, service: IBinder?) {
+            LogUtil.logE("TAG", "onServiceConnected  1")
+            woyouService = IWoyouService.Stub.asInterface(service)
+
+        }
+
+        override fun onServiceDisconnected(p0: ComponentName?) {
+            LogUtil.logE("TAG", "onServiceDisConnected  2")
+            woyouService = null
+
+
+        }
+
+    }
+
+    private fun Binding() {
+        val intent = Intent()
+        intent.setPackage("com.android.pos")
+        intent.action = "com.android.pos.aidl.IWoyouService"
+        MainApplication.getInstance()?.applicationContext?.bindService(
+            intent,
+            serviceConnection,
+            Context.BIND_AUTO_CREATE
+        )
+    }
+
+    override fun asBinder(): IBinder {
+        return woyouService?.asBinder()!!
+    }
+
+    override fun onRunResult(isSuccess: Boolean, code: Int, msg: String?) {
     }
 
 

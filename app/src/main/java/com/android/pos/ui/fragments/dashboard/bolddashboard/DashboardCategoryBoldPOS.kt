@@ -726,7 +726,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                     }
                                 }
 
-                            } else if (it.data[i].name.startsWith("InnerPrinter", true) == true) {
+                            }
+                            else if (it.data[i].name.startsWith("InnerPrinter", true) == true) {
 
                                 if (woyouService != null) {
                                     woyouService!!.sendRAWData(byteArrayOf(0x1B, 0x45, 0x01), this)
@@ -753,7 +754,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                                 }
 
-                            } else {
+                            }
+                            else {
                                 var builder: Builder = Builder(
                                     if (it.data[i].name.substring(0, 6).toString()
                                             .lowercase() == "TM-m30".lowercase()
