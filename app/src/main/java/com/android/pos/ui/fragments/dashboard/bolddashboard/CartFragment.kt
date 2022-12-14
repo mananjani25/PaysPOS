@@ -870,6 +870,9 @@ class CartFragment(
                     prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
                 ).observe(requireActivity()) {
 
+                    saveVisibility()
+
+
                     LogUtil.logE("mAllWords :", "LIST SIZE :" + it.size.toString())
                     LogUtil.logE(
                         "mAllWords",
@@ -1355,6 +1358,14 @@ class CartFragment(
         }
     }
 
+    private fun saveVisibility() {
+        if (prefProvider.getValue(ORDER_TYPE, "") == TAKEOUT) {
+            binding.tvSave.gone()
+        } else {
+            binding.tvSave.visible()
+        }
+    }
+
 
     private fun clearUpdateFlag() {
         isOrderUpdate = false
@@ -1738,7 +1749,7 @@ class CartFragment(
             if (cartlist.isEmpty()) {
                 popupMenu.menu.findItem(R.id.menu_discount).isVisible = false
                 popupMenu.menu.findItem(R.id.menu_order_note).isVisible = false
-                popupMenu.menu.findItem(R.id.menu_clear_cart).isVisible = false
+//                popupMenu.menu.findItem(R.id.menu_clear_cart).isVisible = false
             }
 
             if (prefProvider.getValueInt(CUSTOMER_ID, -1) == -1) {
@@ -2082,7 +2093,8 @@ class CartFragment(
         binding.rvOrderType?.adapter = orderTypeAdapter
 
         viewModel.orderTypes().observe(requireActivity()) {
-            it.data?.let { it1 -> orderTypeAdapter?.addAll(it1) }
+
+            it.data?.let { it1 -> orderTypeAdapter?.addAll(it1.filter { it.primaryOrderType }) }
         }
 
     }
@@ -2093,14 +2105,14 @@ class CartFragment(
 
         model?.id?.let { prefProvider.setValueInt(ORDER_TYPE_ID, it) }
 
-        Log.e(TAG,"checkOrderType  ${model?.orderType}")
+        Log.e(TAG, "checkOrderType  ${model?.orderType}")
 
 
         if (model?.orderType == DINE_IN) {
-            Log.e(TAG,"InsideDine inNew")
+            Log.e(TAG, "InsideDine inNew")
             dineInCallback?.onDineInClickListener()
-        }else{
-            Log.e(TAG,"InsideDine inNoDine")
+        } else {
+            Log.e(TAG, "InsideDine inNoDine")
             model?.orderType?.let { prefProvider.setValue(ORDER_TYPE, it) }
             checkOrderType()
 

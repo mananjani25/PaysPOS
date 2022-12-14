@@ -98,7 +98,7 @@ class DineInFragment : Fragment() {
 
 
 
-        val callback: OnBackPressedCallback =
+        val onBackPressedCallback: OnBackPressedCallback =
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
 
@@ -107,7 +107,7 @@ class DineInFragment : Fragment() {
                 }
 
             }
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, onBackPressedCallback)
 
 
         dineInFloorNameListAdapter.showFloorPlan = {

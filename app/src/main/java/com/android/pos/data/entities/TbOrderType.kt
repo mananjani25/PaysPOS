@@ -27,5 +27,8 @@ data class TbOrderType(
     @SerializedName("updated_at")
     val updatedAt: String,
     @SerializedName("is_deleted")
-    var isDeleted: Boolean = false
+    var isDeleted: Boolean = false,
+     @SerializedName("primary_order_type")
+    var primaryOrderType: Boolean = false,
+
 ) : Parcelable
