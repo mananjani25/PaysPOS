@@ -191,6 +191,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
 
         binding.rvOrderHistory.adapter = orderHistoryAdapter
         orderHistoryAdapter.setListner(this)
+        orderHistoryAdapter.setPrefrenceData(PrefProvider(requireContext()))
     }
 
     private fun initObservers() {

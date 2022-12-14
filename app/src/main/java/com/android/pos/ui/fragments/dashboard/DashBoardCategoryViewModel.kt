@@ -47,6 +47,7 @@ import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER
 import com.android.pos.data.remote.Constants.LOCK_SCREEN_TRANSACTION
 import com.android.pos.data.remote.Constants.ONLINE_ORDER_ENABLE
 import com.android.pos.data.remote.Constants.ONLY_SHOW_PRICE_GREATER_THAN_ZERO
+import com.android.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.REPORT_END_TIME
 import com.android.pos.data.remote.Constants.REPORT_START_TIME
@@ -3659,6 +3660,10 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 prefProvider.setValueboolean(
                                     ONLY_SHOW_PRICE_GREATER_THAN_ZERO,
                                     it.settingData.data.only_show_price_greater_than_zero
+                                )
+                                prefProvider.setValueboolean(
+                                    ORDER_NUMBER_STARTING_FROM_ONE,
+                                    it.settingData.data.order_number_starting_from_one
                                 )
                                 posRepository.addCashDiscountsFromDb(it.settingData.data.cash_discounts)
 //                                taxServiceChargeRepository.deleteTaxFromDb()

@@ -52,6 +52,7 @@ import com.android.pos.data.remote.Constants.IS_GUEST_PAYMNET
 import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.remote.Constants.MERGEDANDOCCUPIED
+import com.android.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
 import com.android.pos.data.remote.Constants.ORDER_TYPE_ID
 import com.android.pos.data.remote.Constants.ORDER_TYPE_NAME
 import com.android.pos.data.remote.Constants.PRINT_DATA_DINE_IN
@@ -3381,7 +3382,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     Builder.COLOR_1
                 )
 
-                builder.addText("OrderID:" + getOrderDetailsResponse?.id)
+                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
+                    builder.addText("OrderID:" + getOrderDetailsResponse?.custom_order_id)
+                } else {
+                    builder.addText("OrderID:" + getOrderDetailsResponse?.id)
+                }
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
                 builder.addFeedLine(2)
@@ -4423,7 +4428,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             if (customerSettingModel.showOrderIdTop) {
 
-                PrintSunmiUtils.orderIdLarge("OrderID:" + getOrderDetailsResponse?.id)
+                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
+                    PrintSunmiUtils.orderIdLarge("OrderID:" + getOrderDetailsResponse?.custom_order_id)
+                } else {
+                    PrintSunmiUtils.orderIdLarge("OrderID:" + getOrderDetailsResponse?.id)
+                }
                 SunmiPrinterApi.getInstance().lineWrap(1)
 
             }
@@ -4917,8 +4926,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             SunmiPrintHelper.getInstance().initPrinter()
 
             if (customerSettingModel.showOrderIdTop) {
-
-                PrintSunmiUtils.headerText("OrderID:" + getOrderDetailsResponse?.id)
+                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE,false)){
+                    PrintSunmiUtils.headerText("OrderID:" + getOrderDetailsResponse?.custom_order_id)
+                }else{
+                    PrintSunmiUtils.headerText("OrderID:" + getOrderDetailsResponse?.id)
+                }
                 SunmiPrintHelper.getInstance().lineWrap(1)
             }
 
@@ -5362,8 +5374,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     Builder.TRUE,
                     Builder.COLOR_1
                 )
-
-                builder.addText("OrderID:" + getOrderDetailsResponse?.id)
+                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE,false)){
+                    builder.addText("OrderID:" + getOrderDetailsResponse?.custom_order_id)
+                }else{
+                    builder.addText("OrderID:" + getOrderDetailsResponse?.id)
+                }
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
                 builder.addFeedLine(2)
@@ -6345,7 +6360,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             PrintSunmiUtils.fontSize(customerSettingModel.fonts)
             if (customerSettingModel.showOrderIdTop) {
 
-                PrintSunmiUtils.orderIdLarge("OrderID:" + getOrderDetailsResponse?.id)
+                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE,false)){
+                    PrintSunmiUtils.orderIdLarge("OrderID:" + getOrderDetailsResponse?.custom_order_id)
+                }else{
+                    PrintSunmiUtils.orderIdLarge("OrderID:" + getOrderDetailsResponse?.id)
+
+                }
                 SunmiPrinterApi.getInstance().lineWrap(1)
 
             }
@@ -6787,8 +6807,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             SunmiPrintHelper.getInstance().initPrinter()
 
             if (customerSettingModel.showOrderIdTop) {
-
-                PrintSunmiUtils.headerText("OrderID:" + getOrderDetailsResponse?.id)
+                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE,false)){
+                    PrintSunmiUtils.headerText("OrderID:" + getOrderDetailsResponse?.custom_order_id)
+                }else{
+                    PrintSunmiUtils.headerText("OrderID:" + getOrderDetailsResponse?.id)
+                }
                 SunmiPrintHelper.getInstance().lineWrap(1)
             }
 
@@ -7902,10 +7925,16 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     Builder.TRUE,
                     Builder.COLOR_1
                 )
+                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE,false)){
+                    builder.addText(
+                        "OrderID:" + getOrderDetailsResponse?.custom_order_id
+                    )
+                }else{
+                    builder.addText(
+                        "OrderID:" + getOrderDetailsResponse?.id
+                    )
+                }
 
-                builder.addText(
-                    "OrderID:" + getOrderDetailsResponse?.id
-                )
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
                 builder.addFeedLine(1)
@@ -8069,7 +8098,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     Builder.COLOR_1
                 )
 
-                builder.addText("OrderID:" + getOrderDetailsResponse?.id)
+                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE,false))
+                {
+                    builder.addText("OrderID:" + getOrderDetailsResponse?.custom_order_id)
+                }else{
+                    builder.addText("OrderID:" + getOrderDetailsResponse?.id)
+                }
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
                 builder.addFeedLine(1)
@@ -8422,7 +8456,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             PrintSunmiUtils.fontSize(kitchenSettingModel.fonts)
             SunmiPrinterApi.getInstance().printerInit()
             SunmiPrinterApi.getInstance().lineWrap(2)
-            PrintSunmiUtils.orderIdLarge("OrderID:" + getOrderDetailsResponse?.id)
+            if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
+                PrintSunmiUtils.orderIdLarge("OrderID:" + getOrderDetailsResponse?.custom_order_id)
+            } else {
+                PrintSunmiUtils.orderIdLarge("OrderID:" + getOrderDetailsResponse?.id)
+            }
             SunmiPrinterApi.getInstance().lineWrap(1)
 
             if (kitchenSettingModel.showOrderType) {
@@ -8513,7 +8551,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             SunmiPrintHelper.getInstance().initPrinter()
             SunmiPrintHelper.getInstance().lineWrap(2)
-            PrintSunmiUtils.headerText("OrderID:" + getOrderDetailsResponse?.id)
+            if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
+                PrintSunmiUtils.headerText("OrderID:" + getOrderDetailsResponse?.custom_order_id)
+            } else {
+                PrintSunmiUtils.headerText("OrderID:" + getOrderDetailsResponse?.id)
+            }
             SunmiPrintHelper.getInstance().lineWrap(1)
 
             if (kitchenSettingModel.showOrderType) {
