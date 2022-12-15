@@ -370,6 +370,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 }
             }
             LogUtil.logE(TAG, "listWTItems ${Gson().toJson(listWT)}")
+            prefProvider.setValue(Constants.ORDER_TYPE, DINE_IN)
 
             var dividedOrderDiscount = 0.0
             totalGuestCount = getOrderDetailsResponse?.guestAttributes?.size!! - 1
@@ -1348,6 +1349,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         prefProvider.setValue(Constants.SERVICE_CHARGE_DINEIN, "")
         prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE_DINEIN, "")
         prefProvider.setValue(Constants.TOTAL_PRICE_DINEIN, "")
+        prefProvider.setValue(Constants.ORDER_TYPE, DINE_IN)
         var modelReq = DineInOrderPayment(dineInOrderModel)
         var model = GuestPaymentRequest(paymentAttr, dineInOrderModel)
 

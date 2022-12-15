@@ -1307,6 +1307,9 @@ class CartFragment(
 
                     if (isFromPayment || isFromPaymentDinein){
                         binding.rvOrderType.gone()
+                        binding.rlCartView.visible()
+
+
                     }
 
                 }

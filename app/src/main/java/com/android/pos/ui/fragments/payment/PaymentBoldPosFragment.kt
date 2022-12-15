@@ -318,13 +318,13 @@ class PaymentBoldPosFragment : Fragment() {
             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
                 removeCustomer()
                 dineInPaymentViewModel.deleteCart()
-                prefProvider.setValue(Constants.ORDER_TYPE, Constants.TAKEOUT)
+                prefProvider.setValue(Constants.ORDER_TYPE, "")
             }
             if (!viewModel.onClickAddCustomer) {
                 if (isFromActiveOrder) {
                     removeCustomer()
                     viewModel.deleteCart()
-                    prefProvider.setValue(Constants.ORDER_TYPE, Constants.TAKEOUT)
+                    prefProvider.setValue(Constants.ORDER_TYPE, "")
 
                 }
             }
