@@ -1812,7 +1812,7 @@ fun addOrdersForKitchen(
                             //builder.addTextPosition(1)
 
 
-                            builder.addText("  " + modifierObj.name.uppercase())
+                            builder.addText("  " +modifierObj.modifierQuantity +"x "+modifierObj.name.uppercase())
 
 
                         }
@@ -1895,7 +1895,7 @@ fun addOrdersForKitchenU220(
                             //builder.addTextPosition(1)
 
 
-                            builder.addText("  " + modifierObj.name.uppercase())
+                            builder.addText("  " +modifierObj.modifierQuantity+"x  " +modifierObj.name.uppercase())
 
 
                         }
@@ -1949,7 +1949,7 @@ fun addOrdersForKitchen(
                     for (j in 0 until obj.orderItemModifiers.size) {
                         val modifierObj = obj.orderItemModifiers.get(j)
 
-                        PrintSunmiUtils.orderTime("  " + modifierObj.name.uppercase())
+                        PrintSunmiUtils.orderTime("  " + modifierObj.modifierQuantity + "x  " + modifierObj.name.uppercase())
 
 
                     }
@@ -2715,7 +2715,11 @@ fun addOrderItems(
 
                 builder.addText(
                     padLineCustomerItem(
-                        if (modifierObj.modifierQuantity == 1){"     "}else {"   "+modifierObj.modifierQuantity.toString() + "x"} + "  " + modifierObj.name ,
+                        if (modifierObj.modifierQuantity == 1) {
+                            "     "
+                        } else {
+                            "   " + modifierObj.modifierQuantity.toString() + "x"
+                        } + "  " + modifierObj.name,
                         "$" + MethodUtils.roundOffAmountString(modifierObj.price.toDouble() * modifierObj.quantity),
                         if (font == Constants.LARGE) {
                             24
@@ -2791,8 +2795,12 @@ fun addOrderItems(
             for (j in 0 until obj.orderItemModifiers.size) {
                 val modifierObj = obj.orderItemModifiers.get(j)
 
-                val modifier =  padLineCustomerItem(
-                    if (modifierObj.modifierQuantity == 1){"     "}else {"   "+modifierObj.modifierQuantity.toString() + "x"} + "  " + modifierObj.name ,
+                val modifier = padLineCustomerItem(
+                    if (modifierObj.modifierQuantity == 1) {
+                        "     "
+                    } else {
+                        "   " + modifierObj.modifierQuantity.toString() + "x"
+                    } + "  " + modifierObj.name,
                     "$" + MethodUtils.roundOffAmountString(modifierObj.price.toDouble() * modifierObj.quantity),
                     if (font == Constants.LARGE) {
                         24
@@ -2842,8 +2850,12 @@ fun addOrderItemsInner(
             for (j in 0 until obj.orderItemModifiers.size) {
                 val modifierObj = obj.orderItemModifiers.get(j)
 
-                val modifier =  padLineCustomerItem(
-                    if (modifierObj.modifierQuantity == 1){"     "}else {"   "+modifierObj.modifierQuantity.toString() + "x"} + "  " + modifierObj.name ,
+                val modifier = padLineCustomerItem(
+                    if (modifierObj.modifierQuantity == 1) {
+                        "     "
+                    } else {
+                        "   " + modifierObj.modifierQuantity.toString() + "x"
+                    } + "  " + modifierObj.name,
                     "$" + MethodUtils.roundOffAmountString(modifierObj.price.toDouble() * modifierObj.quantity),
                     if (font == Constants.LARGE) {
                         22
