@@ -795,7 +795,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             Log.e(TAG, "dineIndorderId:   ${orderId}")
 
             prefProvider.setValueboolean(DINE_IN_UPDATE, true)
-            prefProvider.setValue(Constants.ORDER_TYPE, prefProvider.getValue(Constants.ORDER_TYPE, ""))
+            prefProvider.setValue(Constants.ORDER_TYPE, DINE_IN)
             prefProvider.setValue(ORDER_TYPE_NAME, DINE_IN)
             prefProvider.setValueInt(Constants.DINE_IN_TABLE_ID, prefProvider.getValueInt(Constants.ORDER_TYPE_ID, 0))
             prefProvider.setValueboolean(Constants.DINE_IN_STATUS, true)
