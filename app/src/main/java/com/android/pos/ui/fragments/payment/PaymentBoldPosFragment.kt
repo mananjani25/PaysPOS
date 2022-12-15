@@ -146,6 +146,8 @@ class PaymentBoldPosFragment : Fragment() {
                         requireArguments().getDouble("totalTax"),
                         0.0,
                         requireArguments().getDouble("totalDiscount"),
+                        wholeOrderPassDiscount = requireArguments().getDouble("totalOrderPassDiscount"),
+                        wholeOrderPassSC = requireArguments().getDouble("totalOrderPassSC")
                     )
                     Log.e(TAG, "getDineInDetails  ${Gson().toJson(model)}")
                     prefProvider.setValue(SPLIT_DINEIN_MODEL, Gson().toJson(model))
@@ -263,16 +265,19 @@ class PaymentBoldPosFragment : Fragment() {
                 if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == OPEN_ORDER) {
                     val navController = findNavController()
                     var bundle: Bundle = Bundle()
-                    bundle.putBoolean("update", true)
-                    bundle.putInt("orderId", orderId!!)
-                    bundle.putInt("paymentId", paymentId!!)
-                    bundle.putString("paymentOfflineId", paymentOfflineId)
-                    bundle.putString("orderOfflineId", orderOfflineId)
-                    var bundle1: Bundle = Bundle()
-                    bundle1.putBundle("updateBundle", bundle)
-                    navController.previousBackStackEntry?.savedStateHandle?.set(
-                        "data", bundle1
-                    )
+                    if (orderId != null) {
+                        bundle.putBoolean("update", true)
+                        bundle.putInt("orderId", orderId!!)
+                        bundle.putInt("paymentId", paymentId!!)
+                        bundle.putString("paymentOfflineId", paymentOfflineId)
+                        bundle.putString("orderOfflineId", orderOfflineId)
+                        var bundle1: Bundle = Bundle()
+                        bundle1.putBundle("updateBundle", bundle)
+
+                        navController.previousBackStackEntry?.savedStateHandle?.set(
+                            "data", bundle1
+                        )
+                    }
                     navController.popBackStack()
                 } else {
                     findNavController().popBackStack()
@@ -336,7 +341,7 @@ class PaymentBoldPosFragment : Fragment() {
             putBoolean("isFromPayment", true)
             arguments?.getBoolean("isLoyaltyApplied")?.let { putBoolean("isLoyaltyApplied", it) }
             arguments?.getBoolean("isFromActiveOrder")?.let { putBoolean("isFromActiveOrder", it) }
-            putString(REDIRECT_FROM, arguments?.getString(REDIRECT_FROM))
+            putString(REDIRECT_FROM, prefProvider.getValue(REDIRECT_FROM, ""))
             // putInt("dashboardHeaderId", binding.layoutHeader.rlRoot.id)
         }
         frag.arguments = result
@@ -354,7 +359,7 @@ class PaymentBoldPosFragment : Fragment() {
             putInt("paymentId", paymentId)
             putString("orderOfflineId", orderOfflineId)
             putString("paymentOfflineId", paymentOfflineId)
-            putString(REDIRECT_FROM, arguments?.getString(REDIRECT_FROM))
+            putString(REDIRECT_FROM, prefProvider.getValue(REDIRECT_FROM, ""))
 
         }
         fragment.arguments = bundle

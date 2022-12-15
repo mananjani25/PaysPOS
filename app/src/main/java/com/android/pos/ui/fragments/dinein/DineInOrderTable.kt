@@ -90,6 +90,8 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
+    private var passSCTotal: Double = 0.0
+    private var passDiscountTotal: Double = 0.0
     private val listOfMoveItemIds: ArrayList<Int> = arrayListOf()
     private var wholeTableDiscount: Double = 0.0
     private var cashDiscountGlobal: Double = 0.0
@@ -646,6 +648,15 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             bundle.putParcelable("floorPlan", floorPlanModel)
             bundle.putDouble("totalServiceCharge", MethodUtils.roundOffAmountDouble(serviceCharge))
             bundle.putDouble("totalDiscount", MethodUtils.roundOffAmountDouble(totalDiscount))
+            bundle.putDouble(
+                "totalOrderPassDiscount",
+                MethodUtils.roundOffAmountDouble(passDiscountTotal)
+            )
+
+            bundle.putDouble(
+                "totalOrderPassSC",
+                MethodUtils.roundOffAmountDouble(passSCTotal)
+            )
             bundle.putString("orderOfflineId", offlineId)
             bundle.putString("paymentOfflineId", randomOfflineId())
             bundle.putBoolean("isTotalPayment", true)
@@ -1940,6 +1951,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         viewModel.Basedata.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { baseResponse ->
                 if (baseResponse != null) {
+                    passDiscountTotal = baseResponse.totalDiscount
+                    passSCTotal = baseResponse.totalServiceCharges
                     wholeTableDiscount = 0.0
                     order_note = baseResponse.note
                     globalOrderDiscount = 0.0
@@ -2566,11 +2579,13 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         dineInItems.add(list[j].item!!)
 
                         if (j == (list.size - 1)) {
+                            dineinModel.items = arrayListOf()
                             dineinModel.items.addAll(dineInItems)
                             dineInItems = arrayListOf()
                             break
                         }
                     } else {
+                        dineinModel.items = arrayListOf()
                         dineinModel.items.addAll(dineInItems)
                         dineInItems = arrayListOf()
                         break
@@ -4824,13 +4839,13 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             }
 
-            val str8 = padLine(
-                "Customer Signature",
-                "     _________________________",
-                48
-            ).toString()
+            if (customerSettingModel.fonts == Constants.LARGE) {
+                PrintSunmiUtils.tips("Customer Signature ____")
 
-            PrintSunmiUtils.customerSignature(str8)
+            } else {
+                PrintSunmiUtils.tips("Customer Signature           __________________")
+            }
+            SunmiPrinterApi.getInstance().lineWrap(1)
 
             if (customerSettingModel.showQrCode) {
                 PrintSunmiUtils.qrCode(getOrderDetailsResponse?.digitalReceiptUrl.toString())
@@ -6725,7 +6740,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         customerSettingModel.fonts
                     )
                 }
-                SunmiPrinterApi.getInstance().lineWrap(1)
+                SunmiPrinterApi.getInstance().lineWrap(2)
 
             }
 
@@ -6767,13 +6782,14 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             SunmiPrinterApi.getInstance().lineWrap(2)
 
-            val str8 = padLine(
-                "Customer Signature",
-                "     _________________________",
-                48
-            ).toString()
 
-            PrintSunmiUtils.customerSignature(str8)
+            if (customerSettingModel.fonts == Constants.LARGE) {
+                PrintSunmiUtils.tips("Customer Signature ____")
+            } else {
+                PrintSunmiUtils.tips("Customer Signature           __________________")
+            }
+            SunmiPrinterApi.getInstance().lineWrap(1)
+
             if (customerSettingModel.showQrCode) {
 
                 getOrderDetailsResponse?.digitalReceiptUrl?.let {

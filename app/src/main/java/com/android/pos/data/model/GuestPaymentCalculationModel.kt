@@ -8,5 +8,7 @@ data class GuestPaymentCalculationModel(
     val cashDiscount: Double,
     val totalDiscount: Double,
     val guestId:Int?=null,
-    val model:DineinCartPaymentModel?=null
+    val model:DineinCartPaymentModel?=null,
+    var wholeOrderPassDiscount:Double?=null,
+    var wholeOrderPassSC:Double?=null
 )

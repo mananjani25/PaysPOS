@@ -436,11 +436,7 @@ class CartFragment(
             viewLifecycleOwner
         ) { requestKey: String, bundle: Bundle ->
             var count: Int = bundle.getInt("count")
-            AlertUtils.showCustomAlertWithListenerWithOK(
-                requireContext(), "Guest added successfully."
-            ) { _, _ ->
-                addGuestToOrder(count)
-            }
+            addGuestToOrder(count)
         }
     }
 
@@ -724,7 +720,7 @@ class CartFragment(
 
         LogUtil.logE("CreateCartEmpIdRecd", "" + prefProvider.getValueInt(EMPLOYEE_ID, 0))
 
-        if (arguments?.getString(REDIRECT_FROM) == MANUAL_SALE) {
+        if (prefProvider.getValue(REDIRECT_FROM, "") == MANUAL_SALE) {
             viewModel.manualSaleItems(
                 prefProvider.getValue(ORDER_TYPE, TAKEOUT),
                 prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
@@ -869,9 +865,7 @@ class CartFragment(
                     prefProvider.getValue(ORDER_TYPE, TAKEOUT),
                     prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
                 ).observe(requireActivity()) {
-
                     saveVisibility()
-
 
                     LogUtil.logE("mAllWords :", "LIST SIZE :" + it.size.toString())
                     LogUtil.logE(
@@ -889,6 +883,7 @@ class CartFragment(
 
                             cartlist = it as ArrayList<CartModel>
                             if (isFromPayment) {
+
                                 if (MethodUtils.isEnableCashDiscount(requireContext())) {
                                     binding.linearCashDiscount.visible()
                                     if (prefProvider.getValue(
@@ -923,6 +918,9 @@ class CartFragment(
 
                             if (isFromPaymentDinein) {
                                 LogUtil.logE(TAG, "guestCalModel:  ${Gson().toJson(guestCalModel)}")
+                                viewModelPayment.dineInWholeDiscount =
+                                    guestCalModel?.wholeOrderPassDiscount
+                                viewModelPayment.dineInWholeSC = guestCalModel?.wholeOrderPassSC
                                 viewModel.itemCalculationForDineInPayment(
                                     it[0],
                                     binding.txtTotal,
@@ -1307,6 +1305,10 @@ class CartFragment(
                         binding.txtAddCustomer.visible()
                     }
 
+                    if (isFromPayment || isFromPaymentDinein){
+                        binding.rvOrderType.gone()
+                    }
+
                 }
             }
 
@@ -1638,6 +1640,7 @@ class CartFragment(
 
         binding.relPreoceedToFire.setOnClickListener {
             if (viewModel.restrictedAmount(binding.txtTotal)) {
+                prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
                 //cartlist[0] = viewModel.generateCombinedItems(viewModel.cartModel!!)
 
                 if (cartlist.isNotEmpty()) {
@@ -1820,6 +1823,7 @@ class CartFragment(
 
             if (cartAdapter.cartList.isNotEmpty()) {
                 prefProvider.setValue(ORDER_TYPE, prefProvider.getValue(ORDER_TYPE, ""))
+                prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
                 prefProvider.setValue("PaidAmount", "")
                 prefProvider.setValue(WHOLE_AMOUNT, "")
                 prefProvider.setValueInt("cardCount", 0)
@@ -1858,6 +1862,7 @@ class CartFragment(
         }
         binding.tvSave.setOnClickListener {
             if (cartAdapter.cartList.isNotEmpty()) {
+                prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
 
                 prefProvider.setValue(ORDER_TYPE, prefProvider.getValue(ORDER_TYPE, ""))
                 prefProvider.setValue("PaidAmount", "")
@@ -2117,6 +2122,8 @@ class CartFragment(
             checkOrderType()
 
             addObserver()
+
+            DashboardCategoryBoldPOS.newInstance().keypadShow(true)
         }
 
 

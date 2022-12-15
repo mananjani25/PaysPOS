@@ -49,6 +49,9 @@ open class PaymentViewModel @Inject constructor(
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
 
+    var dineInWholeDiscount: Double? = null
+    var dineInWholeSC: Double? = null
+
     private var _queuePrinter = MutableLiveData<Event<String>>()
     val queuePrinter: LiveData<Event<String>> = _queuePrinter
 
@@ -561,8 +564,8 @@ open class PaymentViewModel @Inject constructor(
 
         if (cartModel.discountId != null && cartModel.discountId != -1)
             orderAttributeRequestModel.discount_id = cartModel.discountId
-        orderAttributeRequestModel.totalDiscount = actual_TotalDiscount
-        orderAttributeRequestModel.totalServiceCharges = actual_TotalServiceCharge
+        orderAttributeRequestModel.totalDiscount = dineInWholeDiscount ?: 0.0
+        orderAttributeRequestModel.totalServiceCharges = dineInWholeSC ?: 0.0
         orderAttributeRequestModel.totalTaxAmount = actual_TotalTax
         orderAttributeRequestModel.totalTips = tipAmount
         orderAttributeRequestModel.is_loyalty_applied = redeemLoyaltyInfo?.needToApplyLoyalty

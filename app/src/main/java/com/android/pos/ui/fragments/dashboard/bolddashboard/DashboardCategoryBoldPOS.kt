@@ -114,6 +114,14 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         fun newInstance() = DashboardCategoryBoldPOS()
     }
 
+    fun keypadShow(b: Boolean) {
+
+        if (b)
+            binding.layoutHeader.txtKeypad.visible()
+        else
+            binding.layoutHeader.txtKeypad.gone()
+    }
+
     fun onlineOrderBadgeDisplay(count: Int) {
         if (count != null) {
             if (count > 0) {
@@ -595,29 +603,33 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         binding.layoutHeader.txtTransaction.setOnClickListener {
             if (rolePermission.hasTransactionPermission(binding.root)) {
                 if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                    prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
                     findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_transactionFragment)
                 }
             }
 
         }
-        binding.layoutHeader.txtDineIn.setOnClickListener {
-            dineInClickEvent()
+        /* binding.layoutHeader.txtDineIn.setOnClickListener {
+              dineInClickEvent(it)
 
 
-        }
+        }*/
         binding.layoutHeader.imgDrawer.setOnClickListener {
             if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
                 findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_menuFragment)
             }
 
         }
         binding.layoutHeader.txtOpenOrder.setOnClickListener {
             if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
                 findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
             }
         }
         binding.layoutHeader.txtOnlineOrder?.setOnClickListener {
             if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
                 findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_onlineOrderFragment)
             }
         }
@@ -627,6 +639,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             bundle.putBoolean("isSwap", true)
             bundle.putBoolean("isDashboard", false)
             if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
                 findNavController().navigate(
                     R.id.action_dashboardCategoryBoldPOS_to_passcode,
                     bundle
@@ -635,16 +648,19 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         }
         binding.layoutHeader.ivLock.setOnClickListener {
             if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
                 findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_reportEODFragment)
             }
         }
         binding.layoutHeaderCheckout.imgDrawer.setOnClickListener {
+            prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
             binding.layoutHeaderCheckout.rlRoot.visibility = View.GONE
             binding.layoutHeader.rlRoot.visibility = View.VISIBLE
             loadCategoryFragment(CategoryFragment(this, binding.layoutHeader.edtSearch))
         }
 
         binding.layoutHeader.imgSync?.setOnClickListener {
+            prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
             viewModel.syncInventoryModule(false)
         }
         binding.layoutHeader.imgCashdDrawer.setOnClickListener {
@@ -672,6 +688,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
      }*/
         binding.layoutHeader.txtKeypad.setOnClickListener {
             if (rolePermission.hasManualSalesPermission(binding.root)) {
+                prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
                 viewModel.deleteManualSaleCart()
                 binding.layoutHeader.txtKeypad.setTextColor(resources.getColor(R.color.btnColor))
                 binding.layoutHeader.txtKeypad.setTypeface(
@@ -971,6 +988,13 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
         ).observe(requireActivity()) {
             Log.e(TAG, "MAllWords:::  ${Gson().toJson(it)}")
+            Log.e(TAG, "OrderTypeCheck ${prefProvider.getValue(ORDER_TYPE, "")}")
+
+            if (prefProvider.getValue(ORDER_TYPE, "").trim().isEmpty()) {
+                binding.layoutHeader.txtKeypad.gone()
+            } else {
+                binding.layoutHeader.txtKeypad.visible()
+            }
             if (it.isEmpty()) {
 
                 cartList.clear()
@@ -989,7 +1013,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                 binding.layoutHeader.txtKeypad.visibility = View.GONE
             } else {
-                binding.layoutHeader.txtKeypad.visibility = View.VISIBLE
+                if (prefProvider.getValue(ORDER_TYPE, "").trim().isEmpty()) {
+                    binding.layoutHeader.txtKeypad.gone()
+                } else {
+                    binding.layoutHeader.txtKeypad.visible()
+                }
             }
 
         }
@@ -3327,6 +3355,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN) {
             Log.e(TAG,"DineinNewCh ORderTypeYES")
             if (cartList.isNotEmpty()) {
+                prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
                 val dList = cartList[0].dineInList ?: arrayListOf()
                 LogUtil.logE(TAG, "dList:  ${Gson().toJson(dList)}")
                 var updateDinein = arguments?.getBoolean("is_dine_in_edit") ?: false
@@ -3350,6 +3379,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             if (rolePermission.hasTablePermission(binding.root)) {
                  prefProvider.setValue(ORDER_TYPE, DINE_IN)
                 prefProvider.setValue(Constants.DINE_IN_UPDATE_LIST, "")
+                prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
                 findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragment)
             }
         }
