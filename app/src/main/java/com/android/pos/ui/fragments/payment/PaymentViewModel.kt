@@ -46,8 +46,17 @@ open class PaymentViewModel @Inject constructor(
     private var paymentOfflineId: String? = null
     public var order_type_id = -1
     private var orderOfflineId: String? = null
-    var totalServiceChargeM = 0.0
-    var totalDiscountM = 0.0
+    private var totalServiceChargeM: Double? = null
+    private var totalDiscountM: Double? = null
+
+    fun setSer(t1: Double) {
+        totalServiceChargeM = t1
+    }
+
+    fun setDis(t1: Double) {
+        totalDiscountM = t1
+    }
+
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
 
@@ -477,7 +486,10 @@ open class PaymentViewModel @Inject constructor(
         cashdiscountType: String,
         tipID: Int? = null,
         isPrinterQueue: Boolean = false,
-        offlineId: String = ""
+        offlineId: String = "",
+        totalServiceChargeM: Double = 0.0,
+        totalDiscountM: Double = 0.0
+
     ): OrderRequestModel {
 
         val orderAttributeRequestModel = OrderAttributeRequestModel()
@@ -569,23 +581,25 @@ open class PaymentViewModel @Inject constructor(
         orderAttributeRequestModel.totalDiscount = if (cartModel.orderType == DINE_IN) {
             dineInWholeDiscount ?: 0.0
         } else {
-            Log.e("CheckForSplit", "totalServiceChargeM ${totalDiscountM}")
-            if (totalDiscountM != 0.0) {
-                totalDiscountM ?: 0.0
+
+            if (actual_TotalDiscount != 0.0) {
+                actual_TotalDiscount
             } else {
-                totalDiscount ?: 0.0
+                totalDiscount
+
             }
+
         }
         orderAttributeRequestModel.totalServiceCharges = if (cartModel.orderType == DINE_IN) {
             dineInWholeSC ?: 0.0
         } else {
-
-            Log.e("CheckForSplit", "totalServiceChargeM ${totalServiceChargeM}")
-            if (totalServiceChargeM != 0.0) {
-                totalServiceChargeM ?: 0.0
+            if (actual_TotalServiceCharge != 0.0) {
+                actual_TotalServiceCharge
             } else {
-                totalServiceCharge ?: 0.0
+                totalServiceCharge
             }
+
+
         }
 
         orderAttributeRequestModel.totalTaxAmount = actual_TotalTax
@@ -854,7 +868,9 @@ open class PaymentViewModel @Inject constructor(
         needToAddPaymentAttributes: Boolean?,
         paymentType: String,
         cashdiscountType: String,
-        tipID: Int? = null
+        tipID: Int? = null,
+        totalServiceChargeM:Double = 0.0,
+        totalDiscountM:Double = 0.0
     ): OrderRequestModel {
 
         val orderAttributeRequestModel = OrderAttributeRequestModel()

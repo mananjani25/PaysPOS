@@ -182,8 +182,9 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 
         Log.e(TAG, "isSplitByAmount:  ${isSplitByAmount}")
 
-        viewModel.totalServiceChargeM = requireArguments().getDouble("totalServiceCharge")
-        viewModel.totalDiscountM = requireArguments().getDouble("totalDiscount")
+        viewModel.setSer(requireArguments().getDouble("totalServiceCharge"))
+        viewModel.setDis(requireArguments().getDouble("totalDiscount"))
+
 
         if (isUpdate) {
 
@@ -264,15 +265,19 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 
         if (prefProvider.getValue(SERVICE_CHARGE, "").isEmpty()) {
             prefProvider.setValue(SERVICE_CHARGE, String.format("%.2f", totalServiceCharge))
+            viewModel.setSer(totalServiceCharge)
         } else {
             totalServiceCharge = prefProvider.getValue(SERVICE_CHARGE, "").toDouble()
+            viewModel.setSer(prefProvider.getValue(SERVICE_CHARGE, "").toDouble())
         }
 
 
         if (prefProvider.getValue(TOTAL_DISCOUNT, "").isEmpty()) {
             prefProvider.setValue(TOTAL_DISCOUNT, String.format("%.2f", totalDiscount))
+            viewModel.setDis(totalDiscount)
         } else {
             totalDiscount = prefProvider.getValue(TOTAL_DISCOUNT, "").toDouble()
+            viewModel.setDis(prefProvider.getValue(TOTAL_DISCOUNT, "").toDouble())
         }
 
 
@@ -1203,7 +1208,9 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     cashDiscountSurcharge / splitValue,
                     true,
                     paymentType, cashDiscountType,
-                    tipID
+                    tipID,
+                    totalServiceChargeM = totalServiceCharge,
+                    totalDiscountM =  totalDiscount
 
                 )
             }
@@ -1421,7 +1428,9 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     true,
                     paymentType,
                     cashDiscountType,
-                    tipID
+                    tipID,
+                    totalServiceChargeM = totalServiceCharge,
+                    totalDiscountM =  totalDiscount
                 )
             }
             LogUtil.logE(TAG, "myRequestSplitNo  ${Gson().toJson(myRequest)}")
