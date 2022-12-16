@@ -90,6 +90,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     private var WholetotalPrice: Double = 0.0
     var tipID = 0
     var totalServiceCharge = 0.0
+    var totalServiceChargeM = 0.0
+    var totalDiscountM = 0.0
     private var future_delivery_date: String = ""
     private var future_delivery_time: String = ""
     var totalDiscount = 0.0
@@ -1440,7 +1442,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 paymentAmount,
                 totalServiceCharge,
                 totalTax,
-                prefProvider.getValue(Constants.ORDER_TYPE,""),
+                prefProvider.getValue(Constants.ORDER_TYPE, ""),
                 future_delivery_date,
                 future_delivery_time,
                 true,

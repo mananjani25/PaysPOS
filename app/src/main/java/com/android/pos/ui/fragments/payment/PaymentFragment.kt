@@ -172,12 +172,19 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
         subTotalPrice = requireArguments().getDouble("subTotalPrice")
         totalTax = requireArguments().getDouble("totalTax")
         totalServiceCharge = requireArguments().getDouble("totalServiceCharge")
+
         totalDiscount = requireArguments().getDouble("totalDiscount")
         cashDiscountType = prefProvider.getValue(Constants.OPTION_TYPE, "")
 
         redeemLoyaltyInfo = requireArguments().getParcelable("redeemLoyalty")
 
         isUpdate = requireArguments().getBoolean("update")
+
+        Log.e(TAG, "isSplitByAmount:  ${isSplitByAmount}")
+
+        viewModel.totalServiceChargeM = requireArguments().getDouble("totalServiceCharge")
+        viewModel.totalDiscountM = requireArguments().getDouble("totalDiscount")
+
         if (isUpdate) {
 
             orderId = requireArguments().getInt("orderId")

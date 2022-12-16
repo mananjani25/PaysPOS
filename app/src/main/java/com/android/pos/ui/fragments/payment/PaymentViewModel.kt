@@ -46,6 +46,8 @@ open class PaymentViewModel @Inject constructor(
     private var paymentOfflineId: String? = null
     public var order_type_id = -1
     private var orderOfflineId: String? = null
+    var totalServiceChargeM = 0.0
+    var totalDiscountM = 0.0
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
 
@@ -564,8 +566,28 @@ open class PaymentViewModel @Inject constructor(
 
         if (cartModel.discountId != null && cartModel.discountId != -1)
             orderAttributeRequestModel.discount_id = cartModel.discountId
-        orderAttributeRequestModel.totalDiscount = if (cartModel.orderType == DINE_IN){ dineInWholeDiscount ?: 0.0} else{totalDiscount}
-        orderAttributeRequestModel.totalServiceCharges = if (cartModel.orderType == DINE_IN){dineInWholeSC ?: 0.0}else{totalServiceCharge}
+        orderAttributeRequestModel.totalDiscount = if (cartModel.orderType == DINE_IN) {
+            dineInWholeDiscount ?: 0.0
+        } else {
+            Log.e("CheckForSplit", "totalServiceChargeM ${totalDiscountM}")
+            if (totalDiscountM != 0.0) {
+                totalDiscountM ?: 0.0
+            } else {
+                totalDiscount ?: 0.0
+            }
+        }
+        orderAttributeRequestModel.totalServiceCharges = if (cartModel.orderType == DINE_IN) {
+            dineInWholeSC ?: 0.0
+        } else {
+
+            Log.e("CheckForSplit", "totalServiceChargeM ${totalServiceChargeM}")
+            if (totalServiceChargeM != 0.0) {
+                totalServiceChargeM ?: 0.0
+            } else {
+                totalServiceCharge ?: 0.0
+            }
+        }
+
         orderAttributeRequestModel.totalTaxAmount = actual_TotalTax
         orderAttributeRequestModel.totalTips = tipAmount
         orderAttributeRequestModel.is_loyalty_applied = redeemLoyaltyInfo?.needToApplyLoyalty
@@ -921,7 +943,7 @@ open class PaymentViewModel @Inject constructor(
 
         val customerId = prefProvider.getValueInt(Constants.CUSTOMER_ID, -1)
         if (customerId != -1) {
-            orderAttributeRequestModel.customer_id = ""+customerId
+            orderAttributeRequestModel.customer_id = "" + customerId
         }
 
 
