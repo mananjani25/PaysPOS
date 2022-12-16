@@ -744,8 +744,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                     }
                                 }
 
-                            }
-                            else if (it.data[i].name.startsWith("InnerPrinter", true) == true) {
+                            } else if (it.data[i].name.startsWith("InnerPrinter", true) == true) {
 
                                 if (woyouService != null) {
                                     woyouService!!.sendRAWData(byteArrayOf(0x1B, 0x45, 0x01), this)
@@ -772,8 +771,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                                 }
 
-                            }
-                            else {
+                            } else {
                                 var builder: Builder = Builder(
                                     if (it.data[i].name.substring(0, 6).toString()
                                             .lowercase() == "TM-m30".lowercase()
@@ -843,6 +841,18 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
     override fun onItemSelected(item: TbItem) {
         Log.e(TAG, "onItemSelectedItem:  ${Gson().toJson(item)}")
+
+        Log.e(
+            TAG,
+            "getCartList  ${Gson().toJson(cartList)} viewmodeCartList ${Gson().toJson(viewModel.cartModel)}"
+        )
+
+        if (cartList.isEmpty() && viewModel.cartModel != null) {
+            viewModel.cartModel?.let {
+
+                cartList.add(it)
+            }
+        }
 
         if (cartList.isEmpty() && viewModel.cartModel != null) {
             cartList = arrayListOf()
@@ -2137,11 +2147,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     Builder.COLOR_1
                 )
 
-                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE,false)){
+                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
                     builder.addText(
                         "OrderID:" + receiptModel.order.custom_order_id
                     )
-                }else{
+                } else {
                     builder.addText(
                         "OrderID:" + receiptModel.order.id
                     )
@@ -2474,11 +2484,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     Builder.COLOR_1
                 )
 
-                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE,false)){
+                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
                     builder.addText(
                         "OrderID:" + receiptModel?.order?.custom_order_id
                     )
-                }else{
+                } else {
                     builder.addText(
                         "OrderID:" + receiptModel?.order?.id
                     )
@@ -2851,9 +2861,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             PrintSunmiUtils.fontSize(kitchenSettingModel.fonts)
             SunmiPrinterApi.getInstance().printerInit()
             SunmiPrinterApi.getInstance().lineWrap(4)
-            if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE,false)){
+            if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
                 PrintSunmiUtils.orderIdLarge("OrderID:" + receiptModel?.order?.custom_order_id)
-            }else{
+            } else {
                 PrintSunmiUtils.orderIdLarge("OrderID:" + receiptModel?.order?.id)
             }
             SunmiPrinterApi.getInstance().lineWrap(1)
@@ -3006,9 +3016,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
             SunmiPrintHelper.getInstance().initPrinter()
             SunmiPrintHelper.getInstance().lineWrap(4)
-            if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE,false)){
+            if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
                 PrintSunmiUtils.headerText("OrderID:" + receiptModel?.order?.custom_order_id)
-            }else{
+            } else {
                 PrintSunmiUtils.headerText("OrderID:" + receiptModel?.order?.id)
             }
             SunmiPrintHelper.getInstance().lineWrap(1)
@@ -3353,7 +3363,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
     fun dineInClickEvent() {
         if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN) {
-            Log.e(TAG,"DineinNewCh ORderTypeYES")
+            Log.e(TAG, "DineinNewCh ORderTypeYES")
             if (cartList.isNotEmpty()) {
                 prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
                 val dList = cartList[0].dineInList ?: arrayListOf()
@@ -3375,9 +3385,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 }
             }
         } else {
-            Log.e(TAG,"DineinNewCh NoOrderType")
+            Log.e(TAG, "DineinNewCh NoOrderType")
             if (rolePermission.hasTablePermission(binding.root)) {
-                 prefProvider.setValue(ORDER_TYPE, DINE_IN)
+                prefProvider.setValue(ORDER_TYPE, DINE_IN)
                 prefProvider.setValue(Constants.DINE_IN_UPDATE_LIST, "")
                 prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
                 findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragment)
