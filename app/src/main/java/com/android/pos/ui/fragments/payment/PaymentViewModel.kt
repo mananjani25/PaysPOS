@@ -564,8 +564,8 @@ open class PaymentViewModel @Inject constructor(
 
         if (cartModel.discountId != null && cartModel.discountId != -1)
             orderAttributeRequestModel.discount_id = cartModel.discountId
-        orderAttributeRequestModel.totalDiscount = dineInWholeDiscount ?: 0.0
-        orderAttributeRequestModel.totalServiceCharges = dineInWholeSC ?: 0.0
+        orderAttributeRequestModel.totalDiscount = if (cartModel.orderType == DINE_IN){ dineInWholeDiscount ?: 0.0} else{totalDiscount}
+        orderAttributeRequestModel.totalServiceCharges = if (cartModel.orderType == DINE_IN){dineInWholeSC ?: 0.0}else{totalServiceCharge}
         orderAttributeRequestModel.totalTaxAmount = actual_TotalTax
         orderAttributeRequestModel.totalTips = tipAmount
         orderAttributeRequestModel.is_loyalty_applied = redeemLoyaltyInfo?.needToApplyLoyalty
