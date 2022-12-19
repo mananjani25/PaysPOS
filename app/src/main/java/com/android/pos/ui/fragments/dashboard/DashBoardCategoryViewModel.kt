@@ -1393,7 +1393,13 @@ class DashBoardCategoryViewModel @Inject constructor(
                         if (item != null) {
                             if (item.modifiers.isNotEmpty()) {
                                 item.modifiers.forEach { mod ->
-                                    mod.modifier_quantity = mod.itemQuantity / item.itemQuantity
+                                    if (item.itemQuantity > mod.itemQuantity) {
+                                        mod.modifier_quantity = mod.itemQuantity
+                                        mod.itemQuantity = item.itemQuantity * mod.itemQuantity
+                                    } else {
+                                        mod.modifier_quantity = mod.itemQuantity / item.itemQuantity
+                                    }
+
                                 }
                             }
                             cartModel?.items = listOf(item)
