@@ -16,6 +16,7 @@ import com.android.pos.data.remote.Constants
 import com.android.pos.di.PrefProvider
 import com.epson.epos2.printer.Printer
 import com.epson.eposprint.Builder
+import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 
 val TAG = "PrinterReceipt"
 
@@ -1812,7 +1813,7 @@ fun addOrdersForKitchen(
                             //builder.addTextPosition(1)
 
 
-                            builder.addText("  " +modifierObj.modifierQuantity +"x "+modifierObj.name.uppercase())
+                            builder.addText("  " + modifierObj.modifierQuantity + "x " + modifierObj.name.uppercase())
 
 
                         }
@@ -1895,7 +1896,7 @@ fun addOrdersForKitchenU220(
                             //builder.addTextPosition(1)
 
 
-                            builder.addText("  " +modifierObj.modifierQuantity+"x  " +modifierObj.name.uppercase())
+                            builder.addText("  " + modifierObj.modifierQuantity + "x  " + modifierObj.name.uppercase())
 
 
                         }
@@ -1949,7 +1950,13 @@ fun addOrdersForKitchen(
                     for (j in 0 until obj.orderItemModifiers.size) {
                         val modifierObj = obj.orderItemModifiers.get(j)
 
-                        PrintSunmiUtils.orderTime("  " + modifierObj.modifierQuantity + "x  " + modifierObj.name.uppercase())
+                        PrintSunmiUtils.orderTime(
+                            if (modifierObj.modifierQuantity == 1) {
+                                "      " + modifierObj.name.uppercase()
+                            } else {
+                                "  " + modifierObj.modifierQuantity + "x  " + modifierObj.name.uppercase()
+                            }
+                        )
 
 
                     }
@@ -1958,6 +1965,7 @@ fun addOrdersForKitchen(
                     PrintSunmiUtils.orderTime("  Note:" + obj.note)
                 }
 
+                SunmiPrinterApi.getInstance().lineWrap(1)
 
             }
         }
