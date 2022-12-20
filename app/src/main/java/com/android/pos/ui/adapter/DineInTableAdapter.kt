@@ -136,8 +136,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                                             itemTaxPrice
                                         } else {
 
-                                            String.format("%.2f", tax.rate * it.itemQuantity)
-                                                .toDouble()
+                                            tax.rate * it.itemQuantity
                                         }
                                     }
                                     guestAmt += tax.rate
@@ -274,8 +273,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             }
 
 
-            var finalAmt =
-                guestSubTotal + totalServiceCharge + totalTaxAmt + (list.get(0).guestDividedAmt)
+            var finalAmt = MethodUtils.roundOffAmountDouble(guestSubTotal) + MethodUtils.roundOffAmountDouble(totalServiceCharge) + MethodUtils.roundOffAmountDouble(totalTaxAmt) + MethodUtils.roundOffAmountDouble(list.get(0).guestDividedAmt)
             LogUtil.logE("TODAY", "guestSubTotal  ${guestSubTotal}")
             LogUtil.logE("TODAY", "totalTaxAmt  ${totalTaxAmt}")
             LogUtil.logE("TODAY", "guestDividedAmt  ${(list.get(0).guestDividedAmt)}")

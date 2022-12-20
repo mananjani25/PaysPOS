@@ -53,6 +53,7 @@ import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.remote.Constants.MERGEDANDOCCUPIED
 import com.android.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
+import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.ORDER_TYPE_ID
 import com.android.pos.data.remote.Constants.ORDER_TYPE_NAME
 import com.android.pos.data.remote.Constants.PRINT_DATA_DINE_IN
@@ -717,9 +718,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
         binding.txtHome.setOnClickListener {
+            prefProvider.setValue(ORDER_TYPE,"")
             findNavController().navigate(R.id.action_dineInOrderTable_to_dashboardCategoryNew)
         }
         binding.txtHomeBottom.setOnClickListener {
+            prefProvider.setValue(ORDER_TYPE,"")
             findNavController().navigate(R.id.action_dineInOrderTable_to_dashboardCategoryNew)
         }
 
