@@ -188,6 +188,8 @@ data class OnlineOrderResponseModel(
                 val price: Double,
                 @SerializedName("quantity")
                 val quantity: Int,
+                @SerializedName("modifier_quantity")
+                val modifier_quantity: Int,
                 @SerializedName("timestamp")
                 val timestamp: Any,
                 @SerializedName("updated_at")

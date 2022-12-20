@@ -21,9 +21,9 @@
             android:layout_height="wrap_content"
             android:background="@color/backgroundColor"
             android:orientation="horizontal"
-            android:paddingTop="@dimen/_3sdp"
+            android:paddingTop="@dimen/_1sdp"
             android:paddingStart="@dimen/_12sdp"
-            android:paddingBottom="@dimen/_3sdp"
+            android:paddingBottom="@dimen/_1sdp"
             android:weightSum="6">
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -32,7 +32,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.7"
-                android:text="@{model.name}"
+                android:text="@{model.modifier_quantity+`x `+model.name}"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_5mdpi"
                 tools:text="Item Name" />
@@ -85,13 +85,6 @@
 
 
         </LinearLayout>
-
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0.3dp"
-            android:background="@color/view"/>
-
     </LinearLayout>
 
 
