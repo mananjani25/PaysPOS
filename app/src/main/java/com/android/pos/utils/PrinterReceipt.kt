@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable
 import android.os.Build
+import android.util.Log
 import androidx.annotation.Nullable
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
@@ -2105,7 +2106,7 @@ fun addOrderItemOpenOrderSunmi(
 
         PrintSunmiUtils.orderTime(
             padLineCustomerItem(
-                obj.quantity.toString() + "x " + obj.itemName,
+                obj.quantity.toString() + "  " + obj.itemName,
                 "$" + MethodUtils.roundOffAmountString(totalPriceOpenOrder(obj)),
                 if (font == Constants.LARGE) {
                     23
@@ -2120,11 +2121,17 @@ fun addOrderItemOpenOrderSunmi(
         if (obj.orderItemModifiers.isNotEmpty() && showModifiers) {
             for (j in 0 until obj.orderItemModifiers.size) {
                 val modifierObj = obj.orderItemModifiers.get(j)
+                var part1 = "   " +if (modifierObj.modifier_quantity == 1){"   "}else{""+modifierObj.modifier_quantity+"x "}+ modifierObj.name
+                var part2 =
+                    "$" + MethodUtils.roundOffAmountString(modifierObj.price.toDouble() * modifierObj.quantity)
+
+                Log.e("CheckPartFM", "part1 ${part1.length}")
+                Log.e("CheckPartFM", "part2 ${part2.length}")
 
                 PrintSunmiUtils.orderTime(
                     padLineCustomerItem(
-                        "   " + modifierObj.name,
-                        "$" + MethodUtils.roundOffAmountString(modifierObj.price.toDouble() * modifierObj.quantity),
+                        part1,
+                        part2,
                         if (font == Constants.LARGE) {
                             23
                         } else {
@@ -2173,10 +2180,16 @@ fun addOrderItemOpenOrderSunmiInner(
             for (j in 0 until obj.orderItemModifiers.size) {
                 val modifierObj = obj.orderItemModifiers.get(j)
 
+                var part1 = "   " + modifierObj.name
+                var part2 =
+                    "$" + MethodUtils.roundOffAmountString(modifierObj.price.toDouble() * modifierObj.quantity)
+                Log.e("CheckPartF", "part1 ${part1.length}")
+                Log.e("CheckPartF", "part2 ${part2.length}")
+
                 PrintSunmiUtils.normalText(
                     padLineCustomerItem(
-                        "   " + modifierObj.name,
-                        "$" + MethodUtils.roundOffAmountString(modifierObj.price.toDouble() * modifierObj.quantity),
+                        part1,
+                        part2,
                         if (font == Constants.LARGE) {
                             23
                         } else {
@@ -2790,7 +2803,7 @@ fun addOrderItems(
 
 
         val item = padLineCustomerItem(
-            obj.quantity.toString() + "x " + obj.itemName,
+            obj.quantity.toString() + "  " + obj.itemName,
             "$" + MethodUtils.roundOffAmountString(totalPrice(obj)),
             if (font == Constants.LARGE) 23 else 48
         )
@@ -2811,7 +2824,7 @@ fun addOrderItems(
                     } + "  " + modifierObj.name,
                     "$" + MethodUtils.roundOffAmountString(modifierObj.price.toDouble() * modifierObj.quantity),
                     if (font == Constants.LARGE) {
-                        24
+                        23
                     } else {
                         48
                     }

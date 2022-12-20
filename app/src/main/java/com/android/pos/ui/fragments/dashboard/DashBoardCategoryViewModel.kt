@@ -1016,10 +1016,10 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         break
 
 
-                                    } else if (list[i].itemId == item.itemId && (!checkVariation(
+                                    } else if ( list[i].itemId == item.itemId && (!checkVariation(
                                             list[i],
                                             item
-                                        ) || !checkModifierNewLogic(list[i], item))
+                                        ) && !checkModifierNewLogic(list[i], item))
                                     ) {
                                         var isBreak: Boolean = false
 
