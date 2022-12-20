@@ -17,10 +17,10 @@ interface OrderTypeDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addAll(tipList: List<TbOrderType>)
 
-    @get:Query("select * from TbOrderType where TbOrderType.isActive = 1")
+    @get:Query("select * from TbOrderType where TbOrderType.isActive = 1 and TbOrderType.isDeleted = 0 ORDER BY TbOrderType.sort ASC")
     val orderTypes: LiveData<List<TbOrderType>>
 
-    @Query("select * from TbOrderType")
+    @Query("select * from TbOrderType where TbOrderType.isActive = 1 and TbOrderType.isDeleted = 0 ORDER BY TbOrderType.sort ASC")
     fun allModulesList(): List<TbOrderType>
 
     @Query("SELECT * from TbOrderType where TbOrderType.id  = :id LIMIT 1")

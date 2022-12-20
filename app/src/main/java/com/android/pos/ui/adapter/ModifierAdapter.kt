@@ -6,12 +6,10 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.entities.Modifier
 import com.android.pos.databinding.ViewModifiersRemoveBinding
-
-import com.android.pos.utils.EditTextWatcher
+import com.android.pos.utils.EditTextWatcher50Limit
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.PriceTextWatcher
 import java.util.*
-import kotlin.collections.ArrayList
 
 class ModifierAdapter(private val isEdit: Boolean) :
     RecyclerView.Adapter<ModifierAdapter.MyViewHolder>() {
@@ -29,10 +27,14 @@ class ModifierAdapter(private val isEdit: Boolean) :
             }else{
                 binding.firstViewCreateModifier.visibility = View.GONE
             }
-            binding.edtName.addTextChangedListener(EditTextWatcher(binding.edtName, item))
+            binding.edtName.addTextChangedListener(EditTextWatcher50Limit(binding.edtName, item))
             binding.llParent.requestFocus()
-            binding.edtName.setText(item.name)
+
+            if (item.name.length < 50) {
+                binding.edtName.setText(item.name)
+            }
             binding.edtName.setSelection(binding.edtName.text!!.length)
+
 
             binding.edtPrice.addTextChangedListener(PriceTextWatcher(binding.edtPrice, item))
             MethodUtils.setPriceEditText(binding.edtPrice, item.price)

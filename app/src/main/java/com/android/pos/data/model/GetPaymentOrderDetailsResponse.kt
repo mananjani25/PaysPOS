@@ -29,6 +29,7 @@ class GetPaymentOrderDetailsResponse(
         @SerializedName("tips") val tips: Double,
         @SerializedName("offline_id") val offline_id: String,
         @SerializedName("order_id") val order_id: Int,
+        @SerializedName("custom_order_id") val custom_order_id: Int,
         @SerializedName("tips_adjusted") val tips_adjusted: Boolean,
         @SerializedName("total_discount") val total_discount: Double,
         @SerializedName("sub_total") val sub_total: Double,

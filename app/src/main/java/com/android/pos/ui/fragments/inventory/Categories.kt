@@ -1,16 +1,13 @@
 package com.android.pos.ui.fragments.inventory
 
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.PopupMenu
-import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -27,7 +24,6 @@ import com.android.pos.ui.adapter.CategoriesListAdapter
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.ProgressUtils
-import com.android.pos.utils.SwipeHelper
 import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.statusUtils.Status
@@ -179,7 +175,7 @@ class Categories(val clickedPosition: Int) : Fragment(),ItemCallback {
                     if (dragFrom == -1) {
                         dragFrom = oldPos
                     }
-                    dragTo = target.layoutPosition
+                    dragTo = target.bindingAdapterPosition
 
                     adapter.onItemMove(
                         viewHolder.bindingAdapterPosition,

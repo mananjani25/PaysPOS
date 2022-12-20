@@ -10,12 +10,10 @@ import android.widget.Filter
 import android.widget.ImageView
 import android.widget.TextView
 import com.android.pos.R
-import com.android.pos.data.entities.TbCategory
 import com.android.pos.data.model.CategorySearchData
 import com.bumptech.glide.Glide
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 
 class CategorySearchAdapter @Inject constructor(
     val mcon: Context,
@@ -84,7 +82,7 @@ class CategorySearchAdapter @Inject constructor(
                     val fList = ArrayList<CategorySearchData>()
                     for (model in list) {
                         if (model.title.lowercase(Locale.getDefault()).trim()
-                                .startsWith(charSequence.toString().lowercase(Locale.getDefault()).trim())
+                                .contains(charSequence.toString().lowercase(Locale.getDefault()).trim())
                         ) {
 
                             fList.add(model)

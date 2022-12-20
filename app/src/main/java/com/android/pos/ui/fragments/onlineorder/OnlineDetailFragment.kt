@@ -30,6 +30,7 @@ import com.android.pos.data.model.responseModel.OnlineOrderStatusUpdateResponse
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
+import com.android.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
 import com.android.pos.data.remote.Constants.SUNMI_PRINTER
 import com.android.pos.databinding.OnlineDetailFragmentBinding
 import com.android.pos.di.PrefProvider
@@ -547,7 +548,7 @@ class OnlineDetailFragment(
             )
         )
 
-        adapter = OnlineOrderAdapter(requireContext())
+        adapter = OnlineOrderAdapter(requireContext(),prefProvider)
         adapter.setCallback(this)
         binding.rvOpenOrder?.adapter = adapter
     }
@@ -854,8 +855,12 @@ class OnlineDetailFragment(
                     Builder.TRUE,
                     Builder.COLOR_1
                 )
+                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE,false)){
+                    builder.addText("OrderID:" + orderData?.data.custom_order_id)
+                }else
+                { builder.addText("OrderID:" + orderData?.data.id)
 
-                builder.addText("OrderID:" + orderData?.data.id)
+                }
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
                 builder.addFeedLine(1)
@@ -1134,7 +1139,12 @@ class OnlineDetailFragment(
                     Builder.COLOR_1
                 )
 
-                builder.addText("OrderID:" + orderData?.data.id)
+                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE,false))
+                {
+                    builder.addText("OrderID:" + orderData?.data.custom_order_id)
+                }else{
+                    builder.addText("OrderID:" + orderData?.data.id)
+                }
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
                 builder.addFeedLine(1)
@@ -1441,9 +1451,16 @@ class OnlineDetailFragment(
 
             PrintSunmiUtils.fontSize(kitchenSettingModel.fonts)
             SunmiPrinterApi.getInstance().lineWrap(2)
-            PrintSunmiUtils.orderIdSunmi(
-                "OrderID:" + orderData?.data.id
-            )
+            if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE,false)){
+                PrintSunmiUtils.orderIdSunmi(
+                    "OrderID:" + orderData?.data.custom_order_id
+                )
+            }else{
+                PrintSunmiUtils.orderIdSunmi(
+                    "OrderID:" + orderData?.data.id
+                )
+            }
+
             SunmiPrinterApi.getInstance().lineWrap(1)
 
             if (kitchenSettingModel.showOrderType) {
@@ -1602,7 +1619,11 @@ class OnlineDetailFragment(
 
             SunmiPrintHelper.getInstance().initPrinter()
             SunmiPrintHelper.getInstance().lineWrap(2)
-            PrintSunmiUtils.headerText("OrderID:" + orderData?.data.id)
+            if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE,false)){
+                PrintSunmiUtils.headerText("OrderID:" + orderData?.data.custom_order_id)
+            }else{
+                PrintSunmiUtils.headerText("OrderID:" + orderData?.data.id)
+            }
             SunmiPrintHelper.getInstance().lineWrap(1)
 
 

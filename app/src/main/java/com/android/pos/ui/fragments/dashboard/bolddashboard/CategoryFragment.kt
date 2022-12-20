@@ -37,6 +37,7 @@ import com.android.pos.utils.callback.ItemListner
 import com.android.pos.utils.extensions.runOnUiThread
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -279,10 +280,12 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
                       itemList.addAll(it1)
                   }*/
 
+                itemAdapter.clearData()
                 lifecycleScope.launch {
-                    viewModel.itemsByCat(categoryList1[tabPos].category.id).collectLatest {
+                    viewModel.itemsByCat(categoryList1[tabPos].category.id).collect {
+
                         itemAdapter.submitData(it)
-                        itemAdapter.notifyDataSetChanged()
+
 
                     }
                 }
@@ -372,22 +375,33 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
 
         binding.rvCategoryParent.smoothScrollToPosition(posParent)
         if (tabPos != -1) {
-            categoryList1[tabPos].inventoryLists?.filter {
+            Log.e(TAG,"gettabPos:  ${tabPos}")
+           categoryList1[tabPos].inventoryLists?.filter {
                 it!!.isHide
             }?.let { it1 ->
                 itemList.addAll(it1)
             }
-            itemAdapter.snapshot().toCollection(arrayListOf()).clear()
+            lifecycleScope.launch {
+                viewModel.itemsByCat(categoryList1[tabPos].category.id).collectLatest{
 
-            itemAdapter.snapshot().toCollection(itemList.toCollection(arrayListOf()))
-            for (i in itemList.indices) {
-                if (itemList[i]?.itemId == model.itemID) {
-                    itemAdapter.setPos(i)
-                    break
+                    itemAdapter.snapshot().toCollection(arrayListOf()).clear()
+
+
+                    itemAdapter.submitData(it)
+                    for (i in itemList.indices) {
+                        if (itemList[i]?.itemId == model.itemID) {
+                            itemAdapter.setPos(i)
+                            break
+                        }
+                    }
+
+                    itemAdapter.notifyDataSetChanged()
+
+
+
                 }
             }
 
-            itemAdapter.notifyDataSetChanged()
 
         }
     }
@@ -489,6 +503,7 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
             categoryParentAdapter.getList()[parentPosition].list[childPosition].id
 
         prefProvider.setValueInt(Constants.CAT_ID_SELECTED, categoryId)
+        Log.e(TAG,"cateSelectedcategoryId  ${categoryId}")
 
         getItemsByCategory(categoryId)
 

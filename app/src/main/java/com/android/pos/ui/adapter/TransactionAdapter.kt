@@ -11,15 +11,17 @@ import android.widget.Filterable
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.model.responseModel.GetTransactionListResponse
+import com.android.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
 import com.android.pos.databinding.ViewPaginationBinding
 import com.android.pos.databinding.ViewTransactionItemBinding
+import com.android.pos.di.PrefProvider
 import com.android.pos.ui.fragments.transactions.TransactionViewModel
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.TimeFormatUtils.convertCurrentDate
 import com.android.pos.utils.TimeFormatUtils.convertCurrentTime
 import com.android.pos.utils.callback.ItemCallback
 
-class TransactionAdapter(val viewModel: TransactionViewModel) :
+class TransactionAdapter(val viewModel: TransactionViewModel, val prefProvider: PrefProvider) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>(), Filterable {
 
     var employeeTimeSheet = ArrayList<GetTransactionListResponse.Data.Payment>()
@@ -104,15 +106,29 @@ class TransactionAdapter(val viewModel: TransactionViewModel) :
 //                itemBinding.txtTransactionId.visibility = View.GONE
 //            }
 
-            if (model.orderId != null) {
-                if (model.orderId != 0) {
-                    itemBinding.txtTransactionId.text = model.orderId.toString()
+
+            if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
+                if (model.custom_order_id!= null) {
+                    if (model.custom_order_id != 0) {
+                        itemBinding.txtTransactionId.text = model.custom_order_id.toString()
+                    } else {
+                        itemBinding.txtTransactionId.text = "-"
+                    }
                 } else {
                     itemBinding.txtTransactionId.text = "-"
                 }
             } else {
-                itemBinding.txtTransactionId.text = "-"
+                if (model.orderId != null) {
+                    if (model.orderId != 0) {
+                        itemBinding.txtTransactionId.text = model.orderId.toString()
+                    } else {
+                        itemBinding.txtTransactionId.text = "-"
+                    }
+                } else {
+                    itemBinding.txtTransactionId.text = "-"
+                }
             }
+
             itemBinding.executePendingBindings()
 
             itemBinding.txtTip.setOnClickListener {

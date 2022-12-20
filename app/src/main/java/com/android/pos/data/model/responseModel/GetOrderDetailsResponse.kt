@@ -54,6 +54,8 @@ data class GetOrderDetailsResponse(
         val futureDeliveryTime: String,
         @SerializedName("id")
         val id: Int,
+        @SerializedName("custom_order_id")
+        val custom_order_id: Int,
         @SerializedName("index_of_date")
         val indexOfDate: String?,
         @SerializedName("integer")

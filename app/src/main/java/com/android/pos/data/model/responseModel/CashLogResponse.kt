@@ -40,6 +40,8 @@ data class CashLogResponse(
             val id: Int,
             @SerializedName("order_id")
             val orderId: Int,
+            @SerializedName("custom_order_id")
+            val custom_order_id: Int,
             @SerializedName("order_type_name")
             val orderTypeName: String,
             @SerializedName("payment_id")

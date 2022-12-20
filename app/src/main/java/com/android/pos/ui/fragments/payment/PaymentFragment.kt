@@ -172,12 +172,20 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
         subTotalPrice = requireArguments().getDouble("subTotalPrice")
         totalTax = requireArguments().getDouble("totalTax")
         totalServiceCharge = requireArguments().getDouble("totalServiceCharge")
+
         totalDiscount = requireArguments().getDouble("totalDiscount")
         cashDiscountType = prefProvider.getValue(Constants.OPTION_TYPE, "")
 
         redeemLoyaltyInfo = requireArguments().getParcelable("redeemLoyalty")
 
         isUpdate = requireArguments().getBoolean("update")
+
+        Log.e(TAG, "isSplitByAmount:  ${isSplitByAmount}")
+
+        viewModel.setSer(requireArguments().getDouble("totalServiceCharge"))
+        viewModel.setDis(requireArguments().getDouble("totalDiscount"))
+
+
         if (isUpdate) {
 
             orderId = requireArguments().getInt("orderId")
@@ -257,15 +265,19 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 
         if (prefProvider.getValue(SERVICE_CHARGE, "").isEmpty()) {
             prefProvider.setValue(SERVICE_CHARGE, String.format("%.2f", totalServiceCharge))
+            viewModel.setSer(totalServiceCharge)
         } else {
             totalServiceCharge = prefProvider.getValue(SERVICE_CHARGE, "").toDouble()
+            viewModel.setSer(prefProvider.getValue(SERVICE_CHARGE, "").toDouble())
         }
 
 
         if (prefProvider.getValue(TOTAL_DISCOUNT, "").isEmpty()) {
             prefProvider.setValue(TOTAL_DISCOUNT, String.format("%.2f", totalDiscount))
+            viewModel.setDis(totalDiscount)
         } else {
             totalDiscount = prefProvider.getValue(TOTAL_DISCOUNT, "").toDouble()
+            viewModel.setDis(prefProvider.getValue(TOTAL_DISCOUNT, "").toDouble())
         }
 
 
@@ -1196,7 +1208,9 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     cashDiscountSurcharge / splitValue,
                     true,
                     paymentType, cashDiscountType,
-                    tipID
+                    tipID,
+                    totalServiceChargeM = totalServiceCharge,
+                    totalDiscountM =  totalDiscount
 
                 )
             }
@@ -1414,7 +1428,9 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     true,
                     paymentType,
                     cashDiscountType,
-                    tipID
+                    tipID,
+                    totalServiceChargeM = totalServiceCharge,
+                    totalDiscountM =  totalDiscount
                 )
             }
             LogUtil.logE(TAG, "myRequestSplitNo  ${Gson().toJson(myRequest)}")

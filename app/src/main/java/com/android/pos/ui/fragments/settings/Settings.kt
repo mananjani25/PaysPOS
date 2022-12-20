@@ -164,6 +164,12 @@ class Settings : Fragment() {
                         binding.txtMarketing.styleNormal()
                         binding.txtEmployee.styleBold()
                         binding.txtReports.styleNormal()
+                        binding.txtBusiness.setBackgroundColor(resources.getColor(R.color.bg_color))
+                        binding.txtHardware.setBackgroundColor(resources.getColor(R.color.bg_color))
+                        binding.txtSecurity.setBackgroundColor(resources.getColor(R.color.bg_color))
+                        binding.txtMarketing.setBackgroundColor(resources.getColor(R.color.bg_color))
+                        binding.txtEmployee.setBackgroundColor(resources.getColor(R.color.btnColor))
+                        binding.txtReports.setBackgroundColor(resources.getColor(R.color.bg_color))
                         binding.rvBusiness.visibility = View.GONE
                         val frag: Fragment = TeamMemberSettings()
                         loadFragment(frag)

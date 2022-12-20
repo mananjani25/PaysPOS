@@ -10,6 +10,8 @@ data class Orders(
     val date: String?,
     @SerializedName("id")
     val id: Int?,
+    @SerializedName("custom_order_id")
+    val custom_order_id: Int?,
     @SerializedName("item_details")
     val itemDetails: String?,
     @SerializedName("payment_details")

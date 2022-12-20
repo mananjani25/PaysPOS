@@ -44,7 +44,7 @@
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi" />
 
-            <TextView
+            <!-- <TextView
                 android:id="@+id/txtDineIn"
                 style="@style/CustomFontRegularStyle"
                 android:layout_width="wrap_content"
@@ -55,8 +55,9 @@
                 android:text="DINE IN"
                 android:textAllCaps="true"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_6mdpi" />
-
+                android:textSize="@dimen/_6mdpi"
+                android:visibility="gone" />
+-->
             <TextView
                 android:id="@+id/txtTransaction"
                 style="@style/CustomFontRegularStyle"

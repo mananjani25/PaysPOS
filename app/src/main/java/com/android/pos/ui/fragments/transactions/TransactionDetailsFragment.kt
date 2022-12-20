@@ -26,6 +26,7 @@ import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.KEY
+import com.android.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
 import com.android.pos.data.remote.Constants.SHIPPING_ADDRESS
 import com.android.pos.data.remote.Constants.SUNMI_INNER_PRINTER
 import com.android.pos.data.remote.Constants.SUNMI_PRINTER
@@ -166,7 +167,6 @@ class TransactionDetailsFragment : Fragment() {
 
             }
         }
-
 
 
     }
@@ -374,7 +374,7 @@ class TransactionDetailsFragment : Fragment() {
     }
 
     private fun tipCall(isCard: Boolean) {
-        paymentDetailsResponse.data.let { viewModel.orderUpdateTip(it.id, tipAmount,isCard) }
+        paymentDetailsResponse.data.let { viewModel.orderUpdateTip(it.id, tipAmount, isCard) }
     }
 
     private fun magtekCall(refundAmount: Double) {
@@ -728,6 +728,15 @@ class TransactionDetailsFragment : Fragment() {
                         context
                     )
 
+
+                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
+                    binding.txtSubTitle.text = "Order ${it.data.custom_order_id}"
+                    binding.orderDetailOrderId.text = it.data.custom_order_id.toString()
+
+                } else {
+                    binding.txtSubTitle.text = "Order ${it.data.order_id}"
+                    binding.orderDetailOrderId.text = it.data.order_id.toString()
+                }
 
                 binding.tvTransactionTime.text =
                     convertCurrentTime(
@@ -1271,7 +1280,11 @@ class TransactionDetailsFragment : Fragment() {
                     Builder.COLOR_1
                 )
 
-                builder.addText("OrderID:" + paymentDetailsResponse.data.order.id)
+                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE,false)){
+                    builder.addText("OrderID:" + paymentDetailsResponse.data.custom_order_id)
+                }else{
+                    builder.addText("OrderID:" + paymentDetailsResponse.data.order_id)
+                }
 
                 builder.addFeedLine(1)
             }
@@ -1798,7 +1811,7 @@ class TransactionDetailsFragment : Fragment() {
                     Builder.COLOR_1
                 )
 
-                if (paymentDetailsResponse?.data?.payment_type.lowercase() == "Card".lowercase()) {
+                if (paymentDetailsResponse?.data?.payment_type.lowercase() == "Card".lowercase() && paymentDetailsResponse.data.cash_discount_type.lowercase() == "SurCharge".lowercase()) {
                     builder.addText(
                         padLine(
                             "SurCharge",
@@ -1815,7 +1828,7 @@ class TransactionDetailsFragment : Fragment() {
                         )
                     )
 
-                } else {
+                } else if (paymentDetailsResponse?.data?.payment_type.lowercase() == "Cash".lowercase() && paymentDetailsResponse.data.cash_discount_type.lowercase() == "CashDiscount".lowercase()) {
 
                     builder.addText(
                         padLine(
@@ -2262,9 +2275,10 @@ class TransactionDetailsFragment : Fragment() {
                     }
 
                     if (customerSettingModel.showCustomerPhone) {
-                        if (paymentDetailsResponse?.data?.order?.customer?.phones?.isNotEmpty() &&  paymentDetailsResponse?.data?.order?.customer?.phones?.get(
+                        if (paymentDetailsResponse?.data?.order?.customer?.phones?.isNotEmpty() && paymentDetailsResponse?.data?.order?.customer?.phones?.get(
                                 paymentDetailsResponse?.data?.order?.customer.phones?.size - 1
-                            ).phoneNumber.isNotEmpty()) {
+                            ).phoneNumber.isNotEmpty()
+                        ) {
                             builder.addTextLineSpace(30)
                             builder.addFeedUnit(30)
                             builder.addTextFont(Builder.FONT_E)
@@ -2464,7 +2478,11 @@ class TransactionDetailsFragment : Fragment() {
             SunmiPrinterApi.getInstance().printerInit()
 
             if (customerSettingModel.showOrderIdTop) {
-                PrintSunmiUtils.orderIdLarge("OrderID:" + paymentDetailsResponse.data.order.id)
+                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE,false)){
+                    PrintSunmiUtils.orderIdLarge("OrderID:" + paymentDetailsResponse.data.custom_order_id)
+                }else{
+                    PrintSunmiUtils.orderIdLarge("OrderID:" + paymentDetailsResponse.data.order_id)
+                }
                 SunmiPrinterApi.getInstance().lineWrap(1)
             }
 
@@ -2679,7 +2697,7 @@ class TransactionDetailsFragment : Fragment() {
 
             if (paymentDetailsResponse.data?.cash_discount_or_surcharge != null) {
 
-                if (paymentDetailsResponse?.data?.payment_type.lowercase() == "Card".lowercase()) {
+                if (paymentDetailsResponse?.data?.payment_type.lowercase() == "Card".lowercase() && paymentDetailsResponse?.data?.cash_discount_type.lowercase() == "SurCharge".lowercase()) {
                     val surCharge =
                         padLine(
                             "SurCharge",
@@ -2693,7 +2711,7 @@ class TransactionDetailsFragment : Fragment() {
                     PrintSunmiUtils.surCharge(surCharge)
 
 
-                } else {
+                } else if (paymentDetailsResponse?.data?.payment_type.lowercase() == "Cash".lowercase() && paymentDetailsResponse?.data?.cash_discount_type.lowercase() == "CashDiscount".lowercase()){
 
 
                     val cashDisc = padLine(
@@ -2931,7 +2949,11 @@ class TransactionDetailsFragment : Fragment() {
             SunmiPrintHelper.getInstance().initPrinter()
 
             if (customerSettingModel.showOrderIdTop) {
-                PrintSunmiUtils.headerText("OrderID:" + paymentDetailsResponse.data.order.id)
+                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE,false)){
+                    PrintSunmiUtils.headerText("OrderID:" + paymentDetailsResponse.data.custom_order_id)
+                }else{
+                    PrintSunmiUtils.headerText("OrderID:" + paymentDetailsResponse.data.order_id)
+                }
             }
 
             if (customerSettingModel.showVenueLogo && prefProvider.getValue(
@@ -3137,7 +3159,7 @@ class TransactionDetailsFragment : Fragment() {
 
             if (paymentDetailsResponse.data?.cash_discount_or_surcharge != null) {
 
-                if (paymentDetailsResponse?.data?.payment_type.lowercase() == "Card".lowercase()) {
+                if (paymentDetailsResponse?.data?.payment_type.lowercase() == "Card".lowercase() && paymentDetailsResponse?.data?.cash_discount_type.lowercase() == "SurCharge".lowercase()) {
                     val surCharge =
                         padLine(
                             "SurCharge",
@@ -3151,7 +3173,7 @@ class TransactionDetailsFragment : Fragment() {
                     PrintSunmiUtils.normalText(surCharge)
 
 
-                } else {
+                } else if (paymentDetailsResponse?.data?.payment_type.lowercase() == "Cash".lowercase() && paymentDetailsResponse?.data?.cash_discount_type.lowercase() == "CashDiscount".lowercase()) {
 
 
                     val cashDisc = padLine(

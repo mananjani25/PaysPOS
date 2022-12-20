@@ -1,18 +1,14 @@
 package com.android.pos.ui.fragments.customer
 
-import `in`.madapps.placesautocomplete.PlaceAPI
-import `in`.madapps.placesautocomplete.adapter.PlacesAutoCompleteAdapter
-import `in`.madapps.placesautocomplete.listener.OnPlacesDetailsListener
-import `in`.madapps.placesautocomplete.model.Place
-import `in`.madapps.placesautocomplete.model.PlaceDetails
 import android.R
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
-import android.location.Geocoder
 import android.os.Build
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
@@ -27,24 +23,20 @@ import com.android.pos.data.model.requestModel.CreateCustomerRequestModel
 import com.android.pos.databinding.FragmentAddEditCustomerBinding
 import com.android.pos.ui.adapter.AddressListAdapter
 import com.android.pos.ui.fragments.settings.business.AutoCompleteAdapter
-import com.android.pos.utils.AlertUtils
-import com.android.pos.utils.LogUtil
-import com.android.pos.utils.MethodUtils
-import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.*
+import com.android.pos.utils.callback.AddressTextChangeListner
 import com.android.pos.utils.extensions.liveSnackBar
-import com.android.pos.utils.extensions.runOnUiThread
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.android.material.snackbar.Snackbar
-import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.*
 
 
 @AndroidEntryPoint
-class AddEditCustomer : Fragment() {
+class AddEditCustomer : Fragment(), AddressTextChangeListner {
     private lateinit var binding: FragmentAddEditCustomerBinding
     private var isEdit = false
     private val TAG = "AddEditCustomer"
@@ -61,6 +53,7 @@ class AddEditCustomer : Fragment() {
     var placesClient: PlacesClient? = null
     var adapter1: AutoCompleteAdapter? = null
     var adapter2: AutoCompleteAdapter? = null
+    var changeField: Boolean = false
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(
@@ -195,16 +188,30 @@ class AddEditCustomer : Fragment() {
             viewModel.addCustomerDetails.value?.data?.enroll_to_loyalty =
                 editModel?.enroll_to_loyalty
 
-            viewModel.addCustomerDetails.value?.data?.same_as_billing_address =
-                editModel?.same_as_billing_address
-
 
 
             viewModel.addCustomerDetails.value?.data?.enroll_to_loyalty?.let {
                 binding.chkIsLoyalty.isChecked = it
             }
-            viewModel.addCustomerDetails.value?.data?.same_as_billing_address?.let {
-                binding.chksameasbilling.isChecked = it
+
+            if (editModel?.addresses?.isNotEmpty() == true) {
+                if (editModel.addresses.size == 2) {
+                    if (editModel.addresses[0].full_address.contentEquals(editModel.addresses[1].full_address)) {
+                        viewModel.addCustomerDetails.value?.data?.same_as_billing_address =
+                            editModel?.same_as_billing_address
+
+                        viewModel.addCustomerDetails.value?.data?.same_as_billing_address?.let {
+                            binding.chksameasbilling.isChecked = it
+                        }
+                    } else {
+                        viewModel.addCustomerDetails.value?.data?.same_as_billing_address =
+                            false
+
+                        viewModel.addCustomerDetails.value?.data?.same_as_billing_address?.let {
+                            binding.chksameasbilling.isChecked = it
+                        }
+                    }
+                }
             }
 
 
@@ -243,51 +250,150 @@ class AddEditCustomer : Fragment() {
 
 
             if (editModel.addresses.isNotEmpty()) {
-                editModel.addresses.forEach {
+                if (editModel.addresses.size == 1) {
                     listAddress.add(
                         CreateCustomerRequestModel.Customer.Addresses(
-                            it.id,
-                            it.address1,
-                            it.address2,
-                            it.city,
-                            it.state,
-                            it.country,
-                            it.postcode,
-                            it.type_of_address,
+                            editModel.addresses[0].id,
+                            editModel.addresses[0].address1,
+                            editModel.addresses[0].address2,
+                            editModel.addresses[0].city,
+                            editModel.addresses[0].state,
+                            editModel.addresses[0].country,
+                            editModel.addresses[0].postcode,
+                            editModel.addresses[0].type_of_address,
                             0.0,
                             0.0,
                             "false"
                         )
                     )
+                } else if (editModel.addresses.size == 2) {
+                    if (editModel.addresses[0].type_of_address == "Shipping") {
+                        listAddress.add(
+                            CreateCustomerRequestModel.Customer.Addresses(
+                                editModel.addresses[0].id,
+                                editModel.addresses[0].address1,
+                                editModel.addresses[0].address2,
+                                editModel.addresses[0].city,
+                                editModel.addresses[0].state,
+                                editModel.addresses[0].country,
+                                editModel.addresses[0].postcode,
+                                editModel.addresses[0].type_of_address,
+                                0.0,
+                                0.0,
+                                "false"
+                            )
+                        )
+                        listAddress.add(
+                            CreateCustomerRequestModel.Customer.Addresses(
+                                editModel.addresses[1].id,
+                                editModel.addresses[1].address1,
+                                editModel.addresses[1].address2,
+                                editModel.addresses[1].city,
+                                editModel.addresses[1].state,
+                                editModel.addresses[1].country,
+                                editModel.addresses[1].postcode,
+                                editModel.addresses[1].type_of_address,
+                                0.0,
+                                0.0,
+                                "false"
+                            )
+                        )
+                    } else {
+                        listAddress.add(
+                            CreateCustomerRequestModel.Customer.Addresses(
+                                editModel.addresses[1].id,
+                                editModel.addresses[1].address1,
+                                editModel.addresses[1].address2,
+                                editModel.addresses[1].city,
+                                editModel.addresses[1].state,
+                                editModel.addresses[1].country,
+                                editModel.addresses[1].postcode,
+                                editModel.addresses[1].type_of_address,
+                                0.0,
+                                0.0,
+                                "false"
+                            )
+                        )
+                        listAddress.add(
+                            CreateCustomerRequestModel.Customer.Addresses(
+                                editModel.addresses[0].id,
+                                editModel.addresses[0].address1,
+                                editModel.addresses[0].address2,
+                                editModel.addresses[0].city,
+                                editModel.addresses[0].state,
+                                editModel.addresses[0].country,
+                                editModel.addresses[0].postcode,
+                                editModel.addresses[0].type_of_address,
+                                0.0,
+                                0.0,
+                                "false"
+                            )
+                        )
+                    }
                 }
                 viewModel.setAddressList(listAddress)
-                binding.edtStreet?.setText(editModel.addresses[0].address1)
-                binding.edtSuite?.setText(editModel.addresses[0].address2)
-                binding.edtCity?.setText(editModel.addresses[0].city)
-                binding.edtState?.setText(editModel.addresses[0].state)
-                binding.edtZip?.setText(editModel.addresses[0].postcode)
-                if (editModel.addresses[0].country == "United States") {
-                    binding.edtAddress?.setSelection(0)
-                } else {
-                    binding.edtAddress?.setSelection(1)
-                }
+                if (editModel.addresses.isNotEmpty()) {
+                    if (editModel.addresses.size == 1) {
+                        if (editModel.addresses[0].type_of_address == "Shipping") {
+                            binding.edtStreet.setText(editModel.addresses[0].address1)
+                            binding.edtSuite.setText(editModel.addresses[0].address2)
+                            binding.edtCity.setText(editModel.addresses[0].city)
+                            binding.edtState.setText(editModel.addresses[0].state)
+                            binding.edtZip.setText(editModel.addresses[0].postcode)
+                            if (editModel.addresses[0].country == "United States") {
+                                binding.edtAddress.setSelection(0)
+                            } else {
+                                binding.edtAddress.setSelection(1)
+                            }
+                        }
+                    } else if (editModel.addresses.size == 2) {
+                        if (editModel.addresses[0].type_of_address == "Shipping") {
+                            binding.edtStreet.setText(editModel.addresses[0].address1)
+                            binding.edtSuite.setText(editModel.addresses[0].address2)
+                            binding.edtCity.setText(editModel.addresses[0].city)
+                            binding.edtState.setText(editModel.addresses[0].state)
+                            binding.edtZip.setText(editModel.addresses[0].postcode)
+                            if (editModel.addresses[0].country == "United States") {
+                                binding.edtAddress.setSelection(0)
+                            } else {
+                                binding.edtAddress.setSelection(1)
+                            }
 
-                if (editModel.addresses.size == 2) {
-                    if (editModel.addresses[1] != null) {
-                        binding.edtStreetDel?.setText(editModel.addresses[1].address1)
-                        binding.edtSuiteDel?.setText(editModel.addresses[1].address2)
-                        binding.edtCityDel?.setText(editModel.addresses[1].city)
-                        binding.edtStateDel?.setText(editModel.addresses[1].state)
-                        binding.edtZipDel?.setText(editModel.addresses[1].postcode)
-                        if (editModel.addresses[1].country == "United States") {
-                            binding.edtAddressDel?.setSelection(0)
+                            binding.edtStreetDel.setText(editModel.addresses[1].address1)
+                            binding.edtSuiteDel.setText(editModel.addresses[1].address2)
+                            binding.edtCityDel.setText(editModel.addresses[1].city)
+                            binding.edtStateDel.setText(editModel.addresses[1].state)
+                            binding.edtZipDel.setText(editModel.addresses[1].postcode)
+                            if (editModel.addresses[1].country == "United States") {
+                                binding.edtAddressDel.setSelection(0)
+                            } else {
+                                binding.edtAddressDel.setSelection(1)
+                            }
                         } else {
-                            binding.edtAddressDel?.setSelection(1)
+                            binding.edtStreet.setText(editModel.addresses[1].address1)
+                            binding.edtSuite.setText(editModel.addresses[1].address2)
+                            binding.edtCity.setText(editModel.addresses[1].city)
+                            binding.edtState.setText(editModel.addresses[1].state)
+                            binding.edtZip.setText(editModel.addresses[1].postcode)
+                            if (editModel.addresses[1].country == "United States") {
+                                binding.edtAddress.setSelection(0)
+                            } else {
+                                binding.edtAddress.setSelection(1)
+                            }
+
+                            binding.edtStreetDel.setText(editModel.addresses[0].address1)
+                            binding.edtSuiteDel.setText(editModel.addresses[0].address2)
+                            binding.edtCityDel.setText(editModel.addresses[0].city)
+                            binding.edtStateDel.setText(editModel.addresses[0].state)
+                            binding.edtZipDel.setText(editModel.addresses[0].postcode)
+                            if (editModel.addresses[0].country == "United States") {
+                                binding.edtAddressDel.setSelection(0)
+                            } else {
+                                binding.edtAddressDel.setSelection(1)
+                            }
                         }
                     }
                 }
-
-
             }
 
 
@@ -307,7 +413,12 @@ class AddEditCustomer : Fragment() {
         }
 
         binding.header.imgBack.setOnClickListener {
-            findNavController().navigateUp()
+            val navControll = findNavController()
+            navControll.previousBackStackEntry?.savedStateHandle?.set(
+                com.android.pos.data.remote.Constants.KEY,
+                com.android.pos.data.remote.Constants.CUSTOMERDETAILS
+            )
+            navControll.popBackStack()
         }
 
         binding.edtBirthDay.setOnClickListener {
@@ -316,13 +427,87 @@ class AddEditCustomer : Fragment() {
 
         }
 
+        setTextWatcherForAddressField(false)
+
+    }
+
+    private fun setTextWatcherForAddressField(onTextChanges: Boolean) {
+        binding.edtZip.addTextChangedListener(
+            CustomerAddressTextWatcher(
+                binding.chksameasbilling,
+                binding.edtZip,
+                changeField,
+                this,
+                onTextChanges
+            )
+        )
+        binding.edtZipDel.addTextChangedListener(
+            CustomerAddressTextWatcher(
+                binding.chksameasbilling,
+                binding.edtZipDel,
+                changeField,
+                this,
+                onTextChanges
+            )
+        )
+        binding.edtSuiteDel.addTextChangedListener(
+            CustomerAddressTextWatcher(
+                binding.chksameasbilling,
+                binding.edtSuiteDel,
+                changeField, this,
+                onTextChanges
+            )
+        )
+        binding.edtCityDel.addTextChangedListener(
+            CustomerAddressTextWatcher(
+                binding.chksameasbilling,
+                binding.edtCityDel,
+                changeField,
+                this,
+                onTextChanges
+            )
+        )
+        binding.edtStateDel.addTextChangedListener(
+            CustomerAddressTextWatcher(
+                binding.chksameasbilling,
+                binding.edtStateDel,
+                changeField,
+                this,
+                onTextChanges
+            )
+        )
+        binding.edtSuite.addTextChangedListener(
+            CustomerAddressTextWatcher(
+                binding.chksameasbilling,
+                binding.edtSuite,
+                changeField,
+                this,
+                onTextChanges
+            )
+        )
+        binding.edtCity.addTextChangedListener(
+            CustomerAddressTextWatcher(
+                binding.chksameasbilling,
+                binding.edtCity,
+                changeField, this,
+                onTextChanges
+            )
+        )
+        binding.edtState.addTextChangedListener(
+            CustomerAddressTextWatcher(
+                binding.chksameasbilling,
+                binding.edtState,
+                changeField, this,
+                onTextChanges
+            )
+        )
     }
 
     private fun decodeLocation(lat: Double, lng: Double, place: String) {
-
     }
 
     private fun setPlaceApi() {
+
 //        placesApi =
 //            PlaceAPI.Builder()
 //                .apiKey(binding.root.context.getString(com.android.pos.R.string.api_key))
@@ -508,6 +693,39 @@ class AddEditCustomer : Fragment() {
 //        }
 
 
+        binding.edtStreet.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                if (binding.edtStreet.text.isNullOrEmpty()) {
+                    binding.chksameasbilling.isChecked = false
+                }
+            }
+
+        })
+        binding.edtStreet2.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                if (binding.edtStreet2.text.isNullOrEmpty()) {
+                    binding.chksameasbilling.isChecked = false
+                }
+            }
+
+        })
+
     }
 
     private val autocompleteClickListener =
@@ -534,7 +752,7 @@ class AddEditCustomer : Fragment() {
                     placesClient!!.fetchPlace(request).addOnSuccessListener { task ->
 
                         MethodUtils.hideKeyboard(requireActivity())
-
+                        binding.chksameasbilling.isChecked = false
                         binding.edtStreet.clearFocus()
                         binding.edtStreet.isFocusableInTouchMode = false;
                         binding.edtStreet.isFocusable = false;
@@ -632,7 +850,7 @@ class AddEditCustomer : Fragment() {
                     placesClient!!.fetchPlace(request).addOnSuccessListener { task ->
 
                         MethodUtils.hideKeyboard(requireActivity())
-
+                        binding.chksameasbilling.isChecked = false
                         binding.edtStreetDel.clearFocus()
                         binding.edtStreetDel.isFocusableInTouchMode = false;
                         binding.edtStreetDel.isFocusable = false;
@@ -785,6 +1003,7 @@ class AddEditCustomer : Fragment() {
 
 
         binding.header.txtSave.setOnClickListener {
+            viewModel.sameAsAddressValueChanges(binding.chksameasbilling.isChecked)
             if (isEdit) {
                 var id1: Int? = null
                 var id2: Int? = null
@@ -807,40 +1026,40 @@ class AddEditCustomer : Fragment() {
 //                }
                 listAddress = arrayListOf()
 
-                if (binding.edtStreet?.text.toString().isNotEmpty())
+                if (binding.edtStreet.text.toString().isNotEmpty())
                     listAddress.add(
                         CreateCustomerRequestModel.Customer.Addresses(
                             id1,
-                            binding.edtStreet?.text.toString(),
-                            "",
-                            binding.edtCity?.text.toString(),
-                            binding.edtState?.text.toString(),
-                            binding.edtAddress?.selectedItem.toString(),
-                            binding.edtZip?.text.toString(),
+                            binding.edtStreet.text.toString(),
+                            binding.edtSuite.text.toString(),
+                            binding.edtCity.text.toString(),
+                            binding.edtState.text.toString(),
+                            binding.edtAddress.selectedItem.toString(),
+                            binding.edtZip.text.toString(),
                             "Shipping",
                             0.0,
                             0.0,
                             "false"
                         )
                     )
-                if (binding.edtStreetDel?.text.toString().isNotEmpty()){
+                if (binding.edtStreetDel.text.toString().isNotEmpty()) {
                     listAddress.add(
                         CreateCustomerRequestModel.Customer.Addresses(
                             id2,
-                            binding.edtStreetDel?.text.toString(),
-                            "",
-                            binding.edtCityDel?.text.toString(),
-                            binding.edtStateDel?.text.toString(),
-                            binding.edtAddressDel?.selectedItem.toString(),
-                            binding.edtZipDel?.text.toString(),
+                            binding.edtStreetDel.text.toString(),
+                            binding.edtSuiteDel.text.toString(),
+                            binding.edtCityDel.text.toString(),
+                            binding.edtStateDel.text.toString(),
+                            binding.edtAddressDel.selectedItem.toString(),
+                            binding.edtZipDel.text.toString(),
                             "Billing",
                             0.0,
                             0.0,
                             "false"
                         )
                     )
-                }else{
-                    if (viewModel.listAddress.size==2){
+                } else {
+                    if (viewModel.listAddress.size == 2) {
                         listAddress.add(
                             CreateCustomerRequestModel.Customer.Addresses(
                                 id2,
@@ -862,32 +1081,32 @@ class AddEditCustomer : Fragment() {
 
             } else {
                 listAddress = arrayListOf()
-                if (binding.edtStreet?.text.toString().isNotEmpty())
+                if (binding.edtStreet.text.toString().isNotEmpty())
                     listAddress.add(
                         CreateCustomerRequestModel.Customer.Addresses(
                             null,
-                            binding.edtStreet?.text.toString(),
-                            "",
-                            binding.edtCity?.text.toString(),
-                            binding.edtState?.text.toString(),
-                            binding.edtAddress?.selectedItem.toString(),
-                            binding.edtZip?.text.toString(),
+                            binding.edtStreet.text.toString(),
+                            binding.edtSuite.text.toString(),
+                            binding.edtCity.text.toString(),
+                            binding.edtState.text.toString(),
+                            binding.edtAddress.selectedItem.toString(),
+                            binding.edtZip.text.toString(),
                             "Shipping",
                             0.0,
                             0.0,
                             "false"
                         )
                     )
-                if (binding.edtStreetDel?.text.toString().isNotEmpty())
+                if (binding.edtStreetDel.text.toString().isNotEmpty())
                     listAddress.add(
                         CreateCustomerRequestModel.Customer.Addresses(
                             null,
-                            binding.edtStreetDel?.text.toString(),
-                            "",
-                            binding.edtCityDel?.text.toString(),
-                            binding.edtStateDel?.text.toString(),
-                            binding.edtAddressDel?.selectedItem.toString(),
-                            binding.edtZipDel?.text.toString(),
+                            binding.edtStreetDel.text.toString(),
+                            binding.edtSuiteDel.text.toString(),
+                            binding.edtCityDel.text.toString(),
+                            binding.edtStateDel.text.toString(),
+                            binding.edtAddressDel.selectedItem.toString(),
+                            binding.edtZipDel.text.toString(),
                             "Billing",
                             0.0,
                             0.0,
@@ -903,6 +1122,8 @@ class AddEditCustomer : Fragment() {
                 binding.edtStreetDel.clearFocus()
                 viewModel.same_as_billing_address.value = binding.chksameasbilling.isChecked
                 if (binding.chksameasbilling.isChecked) {
+                    changeField = true
+                    setTextWatcherForAddressField(true)
                     if (binding.edtStreet.text.toString().trim().isNotEmpty())
                         binding.edtStreetDel.setText(binding.edtStreet.text.toString())
                     binding.edtSuiteDel.setText(binding.edtSuite.text.toString())
@@ -915,6 +1136,8 @@ class AddEditCustomer : Fragment() {
                         binding.edtAddressDel.setSelection(1)
                     }
                 } else {
+                    changeField = false
+                    setTextWatcherForAddressField(false)
                     if (binding.edtStreetDel.text.toString().trim().isNotEmpty())
                         binding.edtStreetDel.text.clear()
                     binding.edtSuiteDel.setText("")
@@ -1024,5 +1247,31 @@ class AddEditCustomer : Fragment() {
         val format = SimpleDateFormat("dd/MM/yyyy")
         val date = format.parse(dat)
         return android.text.format.DateFormat.format("yyyy", date).toString()
+    }
+
+    override fun onTextChanges() {
+        changeField = false
+
+        binding.chksameasbilling.isChecked = false
+
+        //  setTextWatcherForAddressField(true)
+
+    }
+
+    override fun oncheckBox(b: Boolean) {
+        Log.d(TAG, "oncheckBox: ${b}")
+        binding.chksameasbilling.isChecked = b
+    }
+
+    fun checkedAllFieldAreSame(): Boolean {
+        var delivery_Address :StringBuffer = StringBuffer()
+        var billing_Address :StringBuffer = StringBuffer()
+        delivery_Address.append(binding.edtStreet.text.toString())
+        delivery_Address.append(binding.edtSuite.text.toString())
+        delivery_Address.append(binding.edtStreet.text.toString())
+        delivery_Address.append(binding.edtStreet.text.toString())
+        delivery_Address.append(binding.edtStreet.text.toString())
+
+        return false
     }
 }
