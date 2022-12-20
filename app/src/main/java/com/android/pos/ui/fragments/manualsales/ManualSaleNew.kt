@@ -594,6 +594,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
                     } else {
 
+                        prefProvider.setValue(Constants.REDIRECT_FROM, "")
                         val navControll = findNavController()
                         val bundle = Bundle()
                         bundle.putString("manualSale", MANUALSALE)
@@ -636,6 +637,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                     )
 
                 } else {
+                    prefProvider.setValue(Constants.REDIRECT_FROM, "")
                     val navControll = findNavController()
                     navControll.previousBackStackEntry?.savedStateHandle?.set(
                         Constants.KEY,
@@ -662,37 +664,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
         binding.btnPay.setOnClickListener {
             if (cartList?.isNotEmpty() == true) {
-/*
-                if (cartList?.isNotEmpty() == true) {
-                    dashboardViewModel.mAllWords(
-                        prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT).toString(),
-                        prefProvider.getValueInt(
-                            Constants.EMPLOYEE_ID, 0
-                        )
-                    ).observe(
-                        viewLifecycleOwner, nameObserver
-                    )
-                }
-*/
-
-                val bundle = Bundle()
-                bundle.putString(Constants.REDIRECT_FROM, Constants.MANUAL_SALE)
-                /*  bundle.putString(Constants.REDIRECT_FROM,Constants.MANUAL_SALE)
-                  bundle.putDouble(
-                      "totalPrice",
-                      viewModel.redeemLoyaltyInfo.getAmountToBePaid() ?: 0.0
-                  )
-                  bundle.putDouble("subTotalPrice", viewModel.subTotalPrice)
-                  bundle.putDouble("totalTax", viewModel.totalTax)
-                  bundle.putDouble("totalDiscount", viewModel.totalDiscount)
-                  bundle.putDouble("totalServiceCharge", viewModel.totalServiceCharge)
-                  cartList?.get(0)?.customer = assignCustomer
-                  bundle.putParcelable("cartList", cartList?.get(0))
-                  bundle.putString(
-                      "redeemLoyalty",
-                      Gson().toJson(viewModel.redeemLoyaltyInfo)
-                  )*/
-
+                prefProvider.setValue(Constants.REDIRECT_FROM, Constants.MANUAL_SALE)
                 prefProvider.setValue(
                     Constants.ORDER_TYPE,
                     prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT)
@@ -707,8 +679,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 prefProvider.setValue(Constants.TAX_CHARGE, "")
                 prefProvider.setValue(Constants.SERVICE_CHARGE, "")
                 findNavController().navigate(
-                    R.id.action_manualSaleCart_to_paymentBoldPosFragment,
-                    bundle
+                    R.id.action_manualSaleCart_to_paymentBoldPosFragment
                 )
             } else {
 
