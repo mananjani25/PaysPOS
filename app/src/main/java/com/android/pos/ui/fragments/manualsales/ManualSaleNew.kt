@@ -289,12 +289,15 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         binding.layoutHeader.txtUserName.text =
             prefProvider.getValue(Constants.EMPLOYEE_NAME, "")
         binding.layoutHeader.ivLock.setOnClickListener {
+            prefProvider.setValue(Constants.REDIRECT_FROM, "")
             findNavController().navigate(R.id.action_manualSalesNew_to_reportEODFragment)
         }
         binding.layoutHeader.txtDineIn.setOnClickListener {
+            prefProvider.setValue(Constants.REDIRECT_FROM, "")
             findNavController().navigate(R.id.action_manualSalesNew_to_dineInFragment)
         }
         binding.layoutHeader.txtHome.setOnClickListener {
+            prefProvider.setValue(Constants.REDIRECT_FROM, "")
             findNavController().navigateUp()
         }
 
@@ -821,6 +824,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                     getString(R.string.delete_items_message)
                 ) {
                     positiveButton(getString(R.string.tv_delete)) {
+                        prefProvider.setValue(Constants.REDIRECT_FROM, "")
                         viewModel.deleteCart()
                         prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
                         binding.txtTotalAmount.text = "$0.00"
@@ -857,16 +861,20 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
 
         binding.footer.linearMore.setOnClickListener {
+            prefProvider.setValue(Constants.REDIRECT_FROM, "")
             findNavController().navigate(R.id.action_manualSaleNew_to_menuFragment)
             //dialogPOSMenu()
         }
 
         binding.footer.linearTransaction.setOnClickListener {
+
             if (rolePermission.hasTransactionPermission(binding.root)) {
+                prefProvider.setValue(Constants.REDIRECT_FROM, "")
                 findNavController().navigate(R.id.action_manualSaleNew_to_transactionFragment)
             }
         }
         binding.footer.linearOpenOrders.setOnClickListener {
+            prefProvider.setValue(Constants.REDIRECT_FROM, "")
             findNavController().navigate(R.id.action_manualSaleNew_to_orders)
         }
         binding.llInfo.setOnClickListener {
