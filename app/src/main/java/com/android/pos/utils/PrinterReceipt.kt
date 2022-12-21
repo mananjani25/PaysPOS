@@ -1987,6 +1987,8 @@ fun addOrdersForKitchenInner(
             for (j in 0 until obj.orderItemModifiers.size) {
                 val modifierObj = obj.orderItemModifiers.get(j)
 
+
+
                 PrintSunmiUtils.normalTextLarge("  " + modifierObj.name.uppercase())
 
 
@@ -2026,7 +2028,7 @@ fun addOrderItemOpenOrder(
 
         builder.addText(
             padLineCustomerItem(
-                obj.quantity.toString() + "x " + obj.itemName,
+                obj.quantity.toString() + "  " + obj.itemName,
                 "$" + MethodUtils.roundOffAmountString(totalPriceOpenOrder(obj)),
                 if (font == Constants.LARGE) {
                     24
@@ -2052,10 +2054,11 @@ fun addOrderItemOpenOrder(
                     Builder.FALSE,
                     Builder.COLOR_1
                 )
-                builder.addTextPosition(4)
+               // builder.addTextPosition(4)
+
                 builder.addText(
                     padLineCustomerItem(
-                        "   " + modifierObj.name,
+                        "   "+if (modifierObj.modifier_quantity == 1){"   "}else{""+modifierObj.modifier_quantity+"x "} + modifierObj.name,
                         "$" + MethodUtils.roundOffAmountString(modifierObj.price.toDouble() * modifierObj.quantity),
                         if (font == Constants.LARGE) {
                             23
