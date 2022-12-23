@@ -396,6 +396,7 @@ class ActiveOrderFragment(
                     prefProvider.saveCustomerData(TbCustomer.customerMapping(order.customer))
                 }
                 prefProvider.setValue(Constants.OPEN_ORDER_ITEMS, Gson().toJson(order.orderItems))
+                prefProvider.setValueboolean(Constants.OPEN_ORDER_UPDATE_FOR_PRINT,true)
 
                 dashboardViewModel.addCart(
                     cartModel(order)

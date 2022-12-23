@@ -35,6 +35,8 @@ import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER_PAY_OFFLINE_ID
 import com.android.pos.data.remote.Constants.LOYALTY_ADDED
 import com.android.pos.data.remote.Constants.MANUAL_SALE
 import com.android.pos.data.remote.Constants.OPEN_ORDER
+import com.android.pos.data.remote.Constants.OPEN_ORDER_DIRECT_PAY
+import com.android.pos.data.remote.Constants.OPEN_ORDER_UPDATE_FOR_PRINT
 import com.android.pos.data.remote.Constants.OPTION_TYPE
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.ORDER_TYPE_ID
@@ -128,6 +130,7 @@ class CartFragment(
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
         binding = FragmentCartBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
         LogUtil.logE("bundleData", arguments.toString())
@@ -241,6 +244,7 @@ class CartFragment(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        prefProvider.setValueboolean(OPEN_ORDER_DIRECT_PAY, false)
 
         initListeners()
         setCartAdapter()
@@ -1305,7 +1309,7 @@ class CartFragment(
                         binding.txtAddCustomer.visible()
                     }
 
-                    if (isFromPayment || isFromPaymentDinein){
+                    if (isFromPayment || isFromPaymentDinein) {
                         binding.rvOrderType.gone()
                         binding.rlCartView.visible()
 
@@ -1822,6 +1826,10 @@ class CartFragment(
 
         binding.tvPayNow.setOnClickListener {
 
+            if (prefProvider.getValue(ORDER_TYPE, "") == OPEN_ORDER) {
+
+                prefProvider.setValueboolean(OPEN_ORDER_DIRECT_PAY, true)
+            }
             prefProvider.setValueboolean(Constants.TIP_ADDED, false)
 
             if (cartAdapter.cartList.isNotEmpty()) {
@@ -1864,6 +1872,14 @@ class CartFragment(
 
         }
         binding.tvSave.setOnClickListener {
+            prefProvider.setValueboolean(OPEN_ORDER_UPDATE_FOR_PRINT,false)
+            if (isOrderUpdate == false){
+                prefProvider.setValue(
+                    Constants.OPEN_ORDER_ITEMS,
+                    ""
+                )
+
+            }
             if (cartAdapter.cartList.isNotEmpty()) {
                 prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
 

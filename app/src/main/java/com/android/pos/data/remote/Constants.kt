@@ -88,6 +88,7 @@ object Constants {
     const val DINE_INGUEST_SELECTED = "dinein_guestselected"
     const val AMOUNT = "Amount"
     const val IS_ORDER_UPDATE = "isOrderUpdate"
+    const val OPEN_ORDER_UPDATE_FOR_PRINT = "open_order_update_for_print"
     const val BUNDLE_ORDER_ID = "BUNDLE_ORDER_ID"
     const val PAYMENT_ID = "payment_id"
     const val BUNDLE_PAYMENT_ID = "BUNDLE_PAYMENT_ID"
@@ -673,5 +674,7 @@ object Constants {
     const val TIP_ADDED = "TipAdded"
     const val TIP_ADDED_AMOUNT = "TipAddedAmount"
     const val TIP_ADDED_ID = "TipAddedId"
+
+    const val OPEN_ORDER_DIRECT_PAY = "open_order_direct_pay"
 
 }
