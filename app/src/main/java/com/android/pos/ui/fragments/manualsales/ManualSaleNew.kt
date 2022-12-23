@@ -28,6 +28,7 @@ import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER
 import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.data.remote.Constants.LOYALTY_ADDED
 import com.android.pos.data.remote.Constants.MANUALSALE
+import com.android.pos.data.remote.Constants.OPEN_ORDER
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.databinding.FragmentManualSaleNewBinding
@@ -339,6 +340,16 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             ).observe(requireActivity()) {
                 cartList = it
                 LogUtil.logE(TAG, "cartListBeforeTax  ${Gson().toJson(cartList)}")
+                if (prefProvider.getValue(ORDER_TYPE,"") == OPEN_ORDER){
+                    binding.btnPay.gone()
+                    binding.txtSave.visible()
+
+                }
+                else{
+                    binding.btnPay.visible()
+                    binding.txtSave.visible()
+                }
+
                 if (cartList?.isNotEmpty()!!) {
 
                     cartList?.get(0)?.items?.forEach {
@@ -877,9 +888,9 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             prefProvider.setValue(Constants.REDIRECT_FROM, "")
             findNavController().navigate(R.id.action_manualSaleNew_to_orders)
         }
-        binding.llInfo.setOnClickListener {
+        /*binding.llInfo.setOnClickListener {
             showPopupWindow(it)
-        }
+        }*/
 
         binding.txtCrtNewCustomer.setOnClickListener {
             if (prefProvider.getValue(CUSTOMER_NAME, "").toString().isNotEmpty()) {

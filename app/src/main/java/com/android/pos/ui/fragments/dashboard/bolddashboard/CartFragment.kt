@@ -865,6 +865,8 @@ class CartFragment(
                     prefProvider.getValue(ORDER_TYPE, TAKEOUT),
                     prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
                 ).observe(requireActivity()) {
+
+
                     saveVisibility()
 
                     LogUtil.logE("mAllWords :", "LIST SIZE :" + it.size.toString())
@@ -1303,6 +1305,15 @@ class CartFragment(
                         binding.txtAddCustomer.invisible()
                     } else {
                         binding.txtAddCustomer.visible()
+                    }
+
+                    if (prefProvider.getValue(ORDER_TYPE,"") == OPEN_ORDER){
+                        binding.tvSave.visible()
+                        binding.tvPayNow.gone()
+                    }
+                    else if (prefProvider.getValue(ORDER_TYPE,"") == TAKEOUT){
+                        binding.tvSave.gone()
+                        binding.tvPayNow.visible()
                     }
 
                     if (isFromPayment || isFromPaymentDinein){

@@ -574,16 +574,15 @@
                         android:visibility="visible"
                         android:layout_gravity="center"
                         android:gravity="center"
-                        android:weightSum="2">
+                        android:orientation="vertical">
 
                         <TextView
                             android:id="@+id/tvSave"
                             style="@style/CustomFontSemiBold"
-                            android:layout_width="0dp"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/_4sdp"
-                            android:layout_marginEnd="@dimen/_2sdp"
-                            android:layout_weight="1"
+                            android:layout_marginEnd="@dimen/_4sdp"
                             android:background="@color/backgroundColor"
                             android:gravity="center"
                             android:padding="@dimen/_5sdp"
@@ -595,14 +594,14 @@
                         <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/tvPayNow"
                             style="@style/CustomFontBold"
-                            android:layout_width="0dp"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/_2sdp"
+                            android:layout_marginStart="@dimen/_4sdp"
                             android:layout_marginEnd="@dimen/_4sdp"
-                            android:layout_weight="1"
                             android:background="@color/btnColorDark"
                             android:gravity="center"
                             android:padding="@dimen/_5sdp"
+                            android:visibility="gone"
                             android:text="Pay $0.00"
                             android:textColor="@color/white"
                             android:textSize="@dimen/_7mdpi" />
