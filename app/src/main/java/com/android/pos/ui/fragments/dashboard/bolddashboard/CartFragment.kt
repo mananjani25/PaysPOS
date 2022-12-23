@@ -726,6 +726,7 @@ class CartFragment(
                 prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
             ).observe(requireActivity()) {
                 LogUtil.logE(TAG, "listSize  ${Gson().toJson(it)}")
+                Log.d(TAG, "addObserver: ordertype "+prefProvider.getValue(REDIRECT_FROM, "") )
                 if (it.isNotEmpty()) {
                     if (isFromPayment) {
                         viewModel.selectedCustomer = null

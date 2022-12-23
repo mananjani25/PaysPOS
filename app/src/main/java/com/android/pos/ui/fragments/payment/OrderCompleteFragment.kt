@@ -5574,7 +5574,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 bundle.putBoolean("isNextPayment", true)
                 bundle.putInt("splitvalue", splitValue)
                 bundle.putInt("orderId", orderID)
-                prefProvider.setValue(Constants.REDIRECT_FROM, "")
                 bundle.putDouble("splitPaidAmount", paymentAmount)
                 bundle.putDouble("remainingAmount", remainingAmount)
                 bundle.putBoolean("isSplitByNo", isSplitByNo)
@@ -5607,7 +5606,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }
                 bundle.putBoolean("isCustomCash", isCustomCash)
                 //saveDataInPrefrences()
-                prefProvider.setValue(Constants.REDIRECT_FROM, "")
                 prefProvider.setValueInt(PAYMENT_ID, 0)
                 navController.previousBackStackEntry?.savedStateHandle?.set("data", bundle)
                 navController.popBackStack()
