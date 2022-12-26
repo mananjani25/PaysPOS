@@ -35,7 +35,9 @@ import com.android.pos.data.remote.Constants.LARGE
 import com.android.pos.data.remote.Constants.MEDIUM
 import com.android.pos.data.remote.Constants.ONLINE_ORDER_ENABLE
 import com.android.pos.data.remote.Constants.OPEN_ORDER_ITEMS
+import com.android.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
 import com.android.pos.data.remote.Constants.ORDER_TYPE
+import com.android.pos.data.remote.Constants.ORDER_TYPE_ID
 import com.android.pos.data.remote.Constants.SMALL
 import com.android.pos.data.remote.Constants.SPLIT_ENABLE
 import com.android.pos.data.remote.Constants.SUNMI_INNER_PRINTER
@@ -50,6 +52,7 @@ import com.android.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
 import com.android.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.android.pos.ui.fragments.settings.servicecharge.ServiceChargeListViewModel
 import com.android.pos.utils.*
+import com.android.pos.utils.callback.DineInOrderCallBack
 import com.android.pos.utils.callback.ItemClickListner
 import com.android.pos.utils.callback.ItemListner
 import com.android.pos.utils.extensions.gone
@@ -72,7 +75,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
-    ScannerAppEngine.IScannerAppEngineDevEventsDelegate, ICallback {
+    ScannerAppEngine.IScannerAppEngineDevEventsDelegate, ICallback, DineInOrderCallBack {
     private var dineInList: List<DineInModel>? = null
     private var woyouService: IWoyouService? = null
     private var cartList: ArrayList<CartModel> = arrayListOf()
@@ -109,6 +112,14 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     companion object {
         private lateinit var binding: FragmentDashboardCategoryBoldPosBinding
         fun newInstance() = DashboardCategoryBoldPOS()
+    }
+
+    fun keypadShow(b: Boolean) {
+
+        if (b)
+            binding.layoutHeader.txtKeypad.visible()
+        else
+            binding.layoutHeader.txtKeypad.gone()
     }
 
     fun onlineOrderBadgeDisplay(count: Int) {
@@ -172,8 +183,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     }
 
     private fun checkCashDrawerObserver() {
-        viewModel.checkCashDrawerPer.observe(viewLifecycleOwner){
-            if (it){
+        viewModel.checkCashDrawerPer.observe(viewLifecycleOwner) {
+            if (it) {
                 checkCashDrawerPer()
 
             }
@@ -195,7 +206,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     private fun observerSyncItemPriceChange() {
         viewModel.syncInventroyForPriceChange.observe(requireActivity(), Observer {
             if (isAdded) {
-                loadCartFragment(CartFragment(this, this))
+                loadCartFragment(CartFragment(this, this, dineInCallback = this))
                 loadCategoryFragment(CategoryFragment(this, binding.layoutHeader.edtSearch))
             }
         })
@@ -520,7 +531,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_paymentBoldPosFragment)
             }
         } else {
-            loadCartFragment(CartFragment(this, this))
+            loadCartFragment(CartFragment(this, this, dineInCallback = this))
             loadCategoryFragment(CategoryFragment(this, binding.layoutHeader.edtSearch))
         }
         binding.layoutHeader.txtUserName.text =
@@ -592,53 +603,33 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         binding.layoutHeader.txtTransaction.setOnClickListener {
             if (rolePermission.hasTransactionPermission(binding.root)) {
                 if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                    prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
                     findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_transactionFragment)
                 }
             }
 
         }
-        binding.layoutHeader.txtDineIn.setOnClickListener {
-            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
-                if (cartList.isNotEmpty()) {
-                    val dList = cartList[0].dineInList ?: arrayListOf()
-                    LogUtil.logE(TAG, "dList:  ${Gson().toJson(dList)}")
-                    var updateDinein = arguments?.getBoolean("is_dine_in_edit") ?: false
-                    if (!updateDinein) {
-                        if (dList.isNotEmpty()) {
-                            dList[0].floorPlanTable?.id?.let {
-                                viewModel.getTableStatus(
-                                    it, "Available"
-                                )
-                            }
-                            prefProvider.setValue(Constants.DINE_IN_UPDATE_LIST, "")
-                            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragment)
-                        }
-                    } else {
-                        prefProvider.setValue(Constants.DINE_IN_UPDATE_LIST, "")
-                        findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragment)
-                    }
-                }
-            } else {
-                if (rolePermission.hasTablePermission(it)) {
-                    prefProvider.setValue(Constants.DINE_IN_UPDATE_LIST, "")
-                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragment)
-                }
-            }
+        /* binding.layoutHeader.txtDineIn.setOnClickListener {
+              dineInClickEvent(it)
 
-        }
+
+        }*/
         binding.layoutHeader.imgDrawer.setOnClickListener {
             if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
                 findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_menuFragment)
             }
 
         }
         binding.layoutHeader.txtOpenOrder.setOnClickListener {
             if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
                 findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
             }
         }
         binding.layoutHeader.txtOnlineOrder?.setOnClickListener {
             if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
                 findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_onlineOrderFragment)
             }
         }
@@ -648,6 +639,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             bundle.putBoolean("isSwap", true)
             bundle.putBoolean("isDashboard", false)
             if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
                 findNavController().navigate(
                     R.id.action_dashboardCategoryBoldPOS_to_passcode,
                     bundle
@@ -656,16 +648,19 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         }
         binding.layoutHeader.ivLock.setOnClickListener {
             if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
                 findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_reportEODFragment)
             }
         }
         binding.layoutHeaderCheckout.imgDrawer.setOnClickListener {
+            prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
             binding.layoutHeaderCheckout.rlRoot.visibility = View.GONE
             binding.layoutHeader.rlRoot.visibility = View.VISIBLE
             loadCategoryFragment(CategoryFragment(this, binding.layoutHeader.edtSearch))
         }
 
         binding.layoutHeader.imgSync?.setOnClickListener {
+            prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
             viewModel.syncInventoryModule(false)
         }
         binding.layoutHeader.imgCashdDrawer.setOnClickListener {
@@ -693,6 +688,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
      }*/
         binding.layoutHeader.txtKeypad.setOnClickListener {
             if (rolePermission.hasManualSalesPermission(binding.root)) {
+                prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
                 viewModel.deleteManualSaleCart()
                 binding.layoutHeader.txtKeypad.setTextColor(resources.getColor(R.color.btnColor))
                 binding.layoutHeader.txtKeypad.setTypeface(
@@ -846,6 +842,18 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     override fun onItemSelected(item: TbItem) {
         Log.e(TAG, "onItemSelectedItem:  ${Gson().toJson(item)}")
 
+        Log.e(
+            TAG,
+            "getCartList  ${Gson().toJson(cartList)} viewmodeCartList ${Gson().toJson(viewModel.cartModel)}"
+        )
+
+        if (cartList.isEmpty() && viewModel.cartModel != null) {
+            viewModel.cartModel?.let {
+
+                cartList.add(it)
+            }
+        }
+
         if (cartList.isEmpty() && viewModel.cartModel != null) {
             cartList = arrayListOf()
             cartList = viewModel.createCart(cartList)
@@ -990,6 +998,13 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
         ).observe(requireActivity()) {
             Log.e(TAG, "MAllWords:::  ${Gson().toJson(it)}")
+            Log.e(TAG, "OrderTypeCheck ${prefProvider.getValue(ORDER_TYPE, "")}")
+
+            if (prefProvider.getValue(ORDER_TYPE, "").trim().isEmpty()) {
+                binding.layoutHeader.txtKeypad.gone()
+            } else {
+                binding.layoutHeader.txtKeypad.visible()
+            }
             if (it.isEmpty()) {
 
                 cartList.clear()
@@ -1008,7 +1023,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                 binding.layoutHeader.txtKeypad.visibility = View.GONE
             } else {
-                binding.layoutHeader.txtKeypad.visibility = View.VISIBLE
+                if (prefProvider.getValue(ORDER_TYPE, "").trim().isEmpty()) {
+                    binding.layoutHeader.txtKeypad.gone()
+                } else {
+                    binding.layoutHeader.txtKeypad.visible()
+                }
             }
 
         }
@@ -1229,7 +1248,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     bundle.putParcelable("dineInList", baseResponse)
                     bundle.putBoolean("isGuestPaid", false)
                     bundle.putInt("orderId", baseResponse.order.id)
-                    prefProvider.setValue(ORDER_TYPE, TAKEOUT)
+                    prefProvider.setValue(ORDER_TYPE, "")
                     viewModel.deleteCart()
                     findNavController().navigate(
                         R.id.action_dashboardCategoryBoldPOS_to_dineInOrderTable,
@@ -1276,9 +1295,13 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     it.floorPlanTable = orderTableData
                 }
 
-                prefProvider.setValue(ORDER_TYPE, DINE_IN)
+                prefProvider.setValue(ORDER_TYPE, prefProvider.getValue(ORDER_TYPE, ""))
                 prefProvider.setValue(Constants.ORDER_TYPE_NAME, DINE_IN)
-                prefProvider.setValueInt(Constants.ORDER_TYPE_ID, 2)
+                prefProvider.setValueInt(
+                    Constants.ORDER_TYPE_ID, prefProvider.getValueInt(
+                        ORDER_TYPE_ID, 0
+                    )
+                )
 
                 cartList[0].note = arguments?.getString("order_note").toString()
                 LogUtil.logE("AAjeDine", "cartdiscountPrice  ${cartList[0].discountPrice}")
@@ -1328,7 +1351,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 } else {
                     orderId?.let { it1 -> bundle.putInt("orderId", it1) }
                 }*/
-                prefProvider.setValue(ORDER_TYPE, TAKEOUT)
+                prefProvider.setValue(ORDER_TYPE, "")
                 LogUtil.logE(TAG, "deleteCartDineIn")
                 viewModel.deleteCart()
                 clearCustomer()
@@ -1909,7 +1932,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 viewModel.deleteCart()
                 viewModel.updateActiveOrderFlagClear()
                 if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
-                    prefProvider.setValue(ORDER_TYPE, TAKEOUT)
+                    prefProvider.setValue(ORDER_TYPE, "")
                 }
                 LogUtil.logE(TAG, "QueueCreateAgain")
 
@@ -2124,9 +2147,16 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     Builder.COLOR_1
                 )
 
-                builder.addText(
-                    "OrderID:" + receiptModel?.order?.id
-                )
+                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
+                    builder.addText(
+                        "OrderID:" + receiptModel.order.custom_order_id
+                    )
+                } else {
+                    builder.addText(
+                        "OrderID:" + receiptModel.order.id
+                    )
+                }
+
 
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
@@ -2454,9 +2484,16 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     Builder.COLOR_1
                 )
 
-                builder.addText(
-                    "OrderID:" + receiptModel?.order?.id
-                )
+                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
+                    builder.addText(
+                        "OrderID:" + receiptModel?.order?.custom_order_id
+                    )
+                } else {
+                    builder.addText(
+                        "OrderID:" + receiptModel?.order?.id
+                    )
+                }
+
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
                 builder.addFeedLine(1)
@@ -2824,7 +2861,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             PrintSunmiUtils.fontSize(kitchenSettingModel.fonts)
             SunmiPrinterApi.getInstance().printerInit()
             SunmiPrinterApi.getInstance().lineWrap(4)
-            PrintSunmiUtils.orderIdLarge("OrderID:" + receiptModel?.order?.id)
+            if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
+                PrintSunmiUtils.orderIdLarge("OrderID:" + receiptModel?.order?.custom_order_id)
+            } else {
+                PrintSunmiUtils.orderIdLarge("OrderID:" + receiptModel?.order?.id)
+            }
             SunmiPrinterApi.getInstance().lineWrap(1)
 
             if (kitchenSettingModel.showOrderType) {
@@ -2975,7 +3016,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
             SunmiPrintHelper.getInstance().initPrinter()
             SunmiPrintHelper.getInstance().lineWrap(4)
-            PrintSunmiUtils.headerText("OrderID:" + receiptModel?.order?.id)
+            if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
+                PrintSunmiUtils.headerText("OrderID:" + receiptModel?.order?.custom_order_id)
+            } else {
+                PrintSunmiUtils.headerText("OrderID:" + receiptModel?.order?.id)
+            }
             SunmiPrintHelper.getInstance().lineWrap(1)
 
             if (kitchenSettingModel.showOrderType) {
@@ -3310,5 +3355,43 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
     override fun onRunResult(isSuccess: Boolean, code: Int, msg: String?) {
 
+    }
+
+    override fun onDineInClickListener() {
+        dineInClickEvent()
+    }
+
+    fun dineInClickEvent() {
+        if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN) {
+            Log.e(TAG, "DineinNewCh ORderTypeYES")
+            if (cartList.isNotEmpty()) {
+                prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
+                val dList = cartList[0].dineInList ?: arrayListOf()
+                LogUtil.logE(TAG, "dList:  ${Gson().toJson(dList)}")
+                var updateDinein = arguments?.getBoolean("is_dine_in_edit") ?: false
+                if (!updateDinein) {
+                    if (dList.isNotEmpty()) {
+                        dList[0].floorPlanTable?.id?.let {
+                            viewModel.getTableStatus(
+                                it, "Available"
+                            )
+                        }
+                        prefProvider.setValue(Constants.DINE_IN_UPDATE_LIST, "")
+                        findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragment)
+                    }
+                } else {
+                    prefProvider.setValue(Constants.DINE_IN_UPDATE_LIST, "")
+                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragment)
+                }
+            }
+        } else {
+            Log.e(TAG, "DineinNewCh NoOrderType")
+            if (rolePermission.hasTablePermission(binding.root)) {
+                prefProvider.setValue(ORDER_TYPE, DINE_IN)
+                prefProvider.setValue(Constants.DINE_IN_UPDATE_LIST, "")
+                prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
+                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragment)
+            }
+        }
     }
 }

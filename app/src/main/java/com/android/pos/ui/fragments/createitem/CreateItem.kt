@@ -885,6 +885,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback, It
     }
 
     override fun onDeleteCallback(modifierSet: ModifierSet) {
+        Log.e(TAG,"DeleteCallback")
 
 
         if (isEdit) {

@@ -15,20 +15,27 @@ import com.android.pos.data.model.responseModel.orderhistory.Orders
 import com.android.pos.data.model.responseModel.orderhistory.PaymentDetail
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.ViewOrderHistoryBinding
+import com.android.pos.di.PrefProvider
 import com.android.pos.utils.MethodUtils.Companion.getFormattedDateTime
+import com.android.pos.utils.Pref
 
-class OrderHistoryAdapter (val callBack: (View, Orders) -> Unit ) :
+class OrderHistoryAdapter(val callBack: (View, Orders) -> Unit) :
     RecyclerView.Adapter<OrderHistoryAdapter.MyViewHolder>() {
-    lateinit var myOnclickedListner:MyOnclickedListner
+    lateinit var myOnclickedListner: MyOnclickedListner
     private var arrayList = ArrayList<Orders>()
 
     var finalreward = ""
     var enrolltrueloyalty = false
+    var prefProvider: PrefProvider? = null
+    fun setPrefrenceData(temp_prefrence: PrefProvider) {
+        prefProvider = temp_prefrence
+    }
 
     fun setListner(listner: MyOnclickedListner) {
         this.myOnclickedListner = listner
 
     }
+
     inner class MyViewHolder(private val binding: ViewOrderHistoryBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
@@ -42,7 +49,17 @@ class OrderHistoryAdapter (val callBack: (View, Orders) -> Unit ) :
             binding.txtOrderDetails.text = "${order.itemDetails}"
 
             //Id and status
-            setupIdAndStatus(order.id, order.paymentStatus)
+
+            if (prefProvider?.getValueboolean(
+                    Constants.ORDER_NUMBER_STARTING_FROM_ONE,
+                    false
+                ) == true
+            ) {
+                setupIdAndStatus(order.custom_order_id, order.paymentStatus)
+            } else {
+                setupIdAndStatus(order.id, order.paymentStatus)
+            }
+
 
             //amount and pay type
             if (order.paymentDetails?.isNotEmpty() == true) {
@@ -63,7 +80,8 @@ class OrderHistoryAdapter (val callBack: (View, Orders) -> Unit ) :
             //Reorder
             binding.txtReorder.setOnClickListener {
                 myOnclickedListner.onclickedReorder(arrayList[absoluteAdapterPosition])
-            }         }
+            }
+        }
 
         private fun setupAmountPayType(total: Double?, paymentDetails: List<PaymentDetail>?) {
 
@@ -190,7 +208,7 @@ class OrderHistoryAdapter (val callBack: (View, Orders) -> Unit ) :
         notifyDataSetChanged()
     }
 
-    interface MyOnclickedListner{
+    interface MyOnclickedListner {
         fun onclickedReorder(orders: Orders)
     }
 }

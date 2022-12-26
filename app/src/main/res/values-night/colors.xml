@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6700</color>
+    <color name="purple_500">#ef6f67</color>
     <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF6700</color>
+    <color name="teal_200">#ef6f67</color>
     <color name="teal_700">#FF018786</color>
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>
@@ -13,8 +13,8 @@
     <color name="cool_grey">#8d989e</color>
     <!--<color name="hint_color">#4c000000</color>-->
     <color name="hint_color">#656565</color>
-    <color name="btnColorDark">#C35103</color>
-    <color name="btnColor">#FF6700</color>
+        <color name="btnColorDark">#ed5950</color>
+    <color name="btnColor">#ef6f67</color>
     <color name="view">#535353</color>
     <color name="boxColor">#9FA2A9</color>
     <color name="txtColor">#FFFFFF</color>
@@ -29,7 +29,7 @@
     <color name="hint_color_">#656565</color>
     <color name="gray_border_1">#F0F0F2</color>
     <color name="gray_color">#A5A5A5</color>
-    <color name="btnColorDark_">#FF6700</color>
+    <color name="btnColorDark_">#ef6f67</color>
     <color name="color">#F8F8F8</color>
     <color name="background">#EFF0F0</color>
     <color name="colorCB">#CBCBCC</color>
@@ -39,7 +39,7 @@
     <color name="colorE2">#E2E2E2</color>
     <color name="color65">#656565</color>
     <color name="dashBackground">#F3F4F6</color>
-    <color name="txt_color_blue">#FF6700</color>
+    <color name="txt_color_blue">#ef6f67</color>
 
     <color name="colorDashBack">#F3F4F6</color>
     <color name="drawerBack">#292E32</color>
@@ -92,7 +92,7 @@
     <color name="colorA9">#A9A9A9</color>
     <color name="color70">#707070</color>
     <color name="colorM9">#FEFEFE</color>
-    <color name="colorR1">#FF6700</color>
+    <color name="colorR1">#ef6f67</color>
     <color name="colorF">#FAFAFA</color>
     <color name="colorM">#F5FCFF</color>
     <color name="colorM1">#F7F7F7</color>
@@ -100,7 +100,7 @@
     <color name="colorGreen">#11C754</color>
     <color name="delete">#FF3C30</color>
     <color name="addNote">#FA9905</color>
-    <color name="addDiscount">#FF6700</color>
+    <color name="addDiscount">#ef6f67</color>
     <color name="colorM5">#FDFDFD</color>
     <color name="colorE90">#E9090E</color>
     <color name="color0A">#0AB833</color>
@@ -120,7 +120,7 @@
     <color name="bgEditPrinter">#18181A</color>
     <color name="light_gray">#A9A9A9</color>
     <color name="dark_gray">#8F8F8F</color>
-    <color name="dark_btn_Color">#A84C0F</color>
+    <color name="dark_btn_Color">#ed5950</color>
 
     <color name="white_swipe">#FFFFFF</color>
     <color name="swipe_text_color">#FFFFFF</color>

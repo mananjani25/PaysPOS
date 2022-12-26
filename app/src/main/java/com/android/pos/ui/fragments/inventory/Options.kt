@@ -20,7 +20,6 @@ import com.android.pos.R
 import com.android.pos.databinding.FragmentOptionsBinding
 import com.android.pos.ui.adapter.OptionListAdapter
 import com.android.pos.utils.AlertUtils
-import com.android.pos.utils.LogUtil
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.extensions.alert
@@ -30,12 +29,13 @@ import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class Options(val clickedPosition: Int) : Fragment(), TextWatcher,ItemCallback {
+class Options(val clickedPosition: Int) : Fragment(), TextWatcher, ItemCallback {
     private lateinit var binding: FragmentOptionsBinding
     private var isreOrder: Boolean = false
     var dragFrom = -1
     var dragTo = -1
-    var listSize:Int?=0
+    var listSize: Int? = 0
+    private val TAG = "Options"
     private lateinit var adapter: OptionListAdapter
     private val viewModel by viewModels<OptionSetViewModel>()
     override fun onCreateView(
@@ -82,14 +82,14 @@ class Options(val clickedPosition: Int) : Fragment(), TextWatcher,ItemCallback {
                 when (resource.status) {
                     Status.SUCCESS -> {
                         binding.progressCircular.visibility = View.GONE
-                        if(it.data?.isNotEmpty() == true){
+                        if (it.data?.isNotEmpty() == true) {
                             binding.rvOptonList.visibility = View.VISIBLE
                             binding.txtNodata?.gone()
                             it.data?.let { it1 ->
                                 adapter.add(it1)
                                 binding.edtSearch.hint = "Search (" + it1.size + ") Options"
                             }
-                        }else{
+                        } else {
                             binding.rvOptonList.visibility = View.GONE
                             binding.txtNodata?.visible()
                             binding.txtNodata?.text = "No Data Available"
@@ -123,21 +123,21 @@ class Options(val clickedPosition: Int) : Fragment(), TextWatcher,ItemCallback {
                     viewHolder: RecyclerView.ViewHolder,
                     target: RecyclerView.ViewHolder
                 ): Boolean {
-                    val oldPos = viewHolder.layoutPosition
-                    val newPos = target.layoutPosition
-                    LogUtil.logE(
+                    val oldPos = viewHolder.bindingAdapterPosition
+                    val newPos = target.bindingAdapterPosition
+                    Log.e(
                         "reorder after",
-                        viewHolder.layoutPosition.toString() + " :::  " + target.layoutPosition.toString()
+                        viewHolder.bindingAdapterPosition.toString() + " :::  " + target.bindingAdapterPosition.toString()
                     )
 
                     if (dragFrom == -1) {
                         dragFrom = oldPos
                     }
-                    dragTo = newPos
+                    dragTo = target.bindingAdapterPosition
 
                     adapter.onItemMove(
-                        viewHolder.layoutPosition,
-                        target.layoutPosition
+                        viewHolder.bindingAdapterPosition,
+                        target.bindingAdapterPosition
                     )
 
                     return true
@@ -157,13 +157,13 @@ class Options(val clickedPosition: Int) : Fragment(), TextWatcher,ItemCallback {
                 ) {
 
                     if (dragFrom != -1 && dragTo != -1 && dragFrom != dragTo) {
-                        adapter.getItem(dragFrom).sort?.let {
-                            reallyMoved(
-                                it,
-                                adapter.getItem(dragTo).sort!!,
-                                adapter.getItem(viewHolder.layoutPosition).id
-                            )
-                        }
+
+                        reallyMoved(
+                            adapter.getItem(dragFrom).sort,
+                            adapter.getItem(dragTo).sort,
+                            adapter.getItem(viewHolder.layoutPosition).id
+                        )
+
                     }
 
                     dragFrom = -1
@@ -178,8 +178,10 @@ class Options(val clickedPosition: Int) : Fragment(), TextWatcher,ItemCallback {
     private fun reallyMoved(oldPos: Int, newPos: Int, modifierSetId: Int?) {
         if (modifierSetId != null) {
 
+            Log.e(TAG, "newnewPos  ${newPos}")
+            Log.e(TAG, "oldoldPos  ${oldPos}")
             isreOrder = true
-            viewModel.reOrderOption(modifierSetId, oldPos, newPos)
+            viewModel.reOrderOption(modifierSetId, oldPos,newPos)
         }
 
     }
@@ -202,8 +204,8 @@ class Options(val clickedPosition: Int) : Fragment(), TextWatcher,ItemCallback {
 
         viewModel.data.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
-                if (!isreOrder)
-                    AlertUtils.showCustomAlert(requireActivity(), it.message)
+                // if (!isreOrder)
+                AlertUtils.showCustomAlert(requireActivity(), it.message)
 
                 if (isreOrder) {
                     isreOrder = false

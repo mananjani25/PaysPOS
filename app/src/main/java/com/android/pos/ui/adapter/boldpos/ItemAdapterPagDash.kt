@@ -1,21 +1,34 @@
 package com.android.pos.ui.adapter.boldpos
 
 import android.annotation.SuppressLint
+import android.graphics.Color
+import android.graphics.Typeface
+import android.graphics.fonts.FontStyle
+import android.text.Spannable
+import android.text.style.ForegroundColorSpan
+import android.text.style.StrikethroughSpan
+import android.text.style.StyleSpan
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.android.pos.R
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.ViewCategoryItemBoldBinding
 import com.android.pos.di.PrefProvider
+import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.callback.ItemListner
 import com.android.pos.utils.extensions.gone
+import com.android.pos.utils.extensions.strike
 import com.android.pos.utils.extensions.visible
+import com.testfairy.modules.capture.t
+
 
 class ItemAdapterPagDash(
     val listener: ItemListner,
@@ -49,35 +62,51 @@ class ItemAdapterPagDash(
 
         @SuppressLint("ResourceType")
         fun bind(model: TbItem?, position: Int) {
-            var itename_price: StringBuffer = StringBuffer()
 
-            if (model?.name?.length!! >= 30) {
-                if (getItemPriceIsValid(model.price).isNotEmpty()) {
-                    itename_price.append(
+            var itename_price: StringBuffer = StringBuffer()
+            if (model?.hide_status == "HideForToday" || model?.hide_status == "HideForIndefinitely") {
+                if (model.name.length >= 30) {
+                    setItemNameWhileHide(
                         model.name.substring(
                             0,
                             30
-                        ) + "...\n" + getItemPriceIsValid(model.price)
+                        ) + "...", "\nSOLD OUT", binding.txtCategoryName
                     )
-                    binding.txtCategoryName.text = itename_price
                 } else {
-                    itename_price.append(
-                        model.name.substring(
-                            0,
-                            40
-                        ) + "..."
-                    )
-                    binding.txtCategoryName.text = itename_price
+                    setItemNameWhileHide(model.name, "\n\nSOLD OUT", binding.txtCategoryName)
                 }
             } else {
-                if (getItemPriceIsValid(model.price).isNotEmpty()) {
-                    binding.txtCategoryName.text =
-                        "" + model.name + "\n\n" + getItemPriceIsValid(model.price)
+                if (model?.name?.length!! >= 30) {
+                    if (getItemPriceIsValid(model.price).isNotEmpty()) {
+                        itename_price.append(
+                            model.name.substring(
+                                0,
+                                30
+                            ) + "...\n" + getItemPriceIsValid(model.price)
+                        )
+                        binding.txtCategoryName.text = itename_price
+                    } else {
+                        itename_price.append(
+                            model.name.substring(
+                                0,
+                                40
+                            ) + "..."
+                        )
+                        binding.txtCategoryName.text = itename_price
+                    }
                 } else {
-                    binding.txtCategoryName.text = "" + model.name
-                }
+                    if (getItemPriceIsValid(model.price).isNotEmpty()) {
+                        binding.txtCategoryName.text =
+                            "" + model.name + "\n\n" + getItemPriceIsValid(model.price)
+                    } else {
+                        binding.txtCategoryName.text = "" + model.name
+                    }
 
+                }
             }
+
+
+
 
             if (model.modifier_set_ids.isNotEmpty()) {
                 binding.viewLineFormodifier.visible()
@@ -99,21 +128,34 @@ class ItemAdapterPagDash(
             }
 
             binding.root.setOnClickListener {
-                try {
-                    getItem(position)?.let {
-                        LogUtil.logE(
-                            "ITemAdapter",
-                            "onClickposition  ${position}  itemname ${it.name}"
-                        )
-                        listener.onItemSelected(it)
+
+                if (prefProvider?.getValue(Constants.ORDER_TYPE, "").equals("")) {
+                    AlertUtils.showCustomAlert(
+                        binding.root.context,
+                        "Please select order type to add item"
+                    )
+                    return@setOnClickListener
+                } else if (model?.hide_status == "HideForToday" || model?.hide_status == "HideForIndefinitely") {
+                    AlertUtils.showCustomAlert(binding.root.context, model.name + " is sold out.")
+                    return@setOnClickListener
+                } else {
+                    try {
+                        getItem(position)?.let {
+                            LogUtil.logE(
+                                "ITemAdapter",
+                                "onClickposition  ${position}  itemname ${it.name}"
+                            )
+                            listener.onItemSelected(it)
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
                     }
-                } catch (e: Exception) {
-                    e.printStackTrace()
+                    if (lastChecked != null) {
+                        lastChecked?.isSelected = false
+                    }
+                    lastChecked = checkedTextView
                 }
-                if (lastChecked != null) {
-                    lastChecked?.isSelected = false
-                }
-                lastChecked = checkedTextView
+
 
 
             }
@@ -156,6 +198,16 @@ class ItemAdapterPagDash(
         }
 
 
+    }
+
+    fun setItemNameWhileHide(first: String, next: String, txtCategoryName: TextView) {
+        txtCategoryName.setText(first + next, TextView.BufferType.SPANNABLE)
+        val s: Spannable = txtCategoryName.text as Spannable
+        val start: Int = first.length
+        val end: Int = start + next.length
+        s.setSpan(ForegroundColorSpan(Color.RED), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        s.setSpan(StyleSpan(Typeface.BOLD), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        s.setSpan(StrikethroughSpan(), 0, start, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
     }
 
     fun setPos(selectedId: Int) {

@@ -389,7 +389,7 @@ class Passcode : Fragment() {
                     binding.tvWelcomeTag.text = getString(R.string.tv_clock_in)
                     AlertUtils.showCustomAlert(requireContext(), validationmsg)
                 } else {
-                    prefProvider.setValue(ORDER_TYPE, TAKEOUT)
+                    prefProvider.setValue(ORDER_TYPE, "")
                     findNavController().navigate(R.id.action_passcode_to_dashboardCategoryBoldPOS)
                 }
             }

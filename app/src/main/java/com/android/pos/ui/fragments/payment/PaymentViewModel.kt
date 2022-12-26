@@ -46,8 +46,22 @@ open class PaymentViewModel @Inject constructor(
     private var paymentOfflineId: String? = null
     public var order_type_id = -1
     private var orderOfflineId: String? = null
+    private var totalServiceChargeM: Double? = null
+    private var totalDiscountM: Double? = null
+
+    fun setSer(t1: Double) {
+        totalServiceChargeM = t1
+    }
+
+    fun setDis(t1: Double) {
+        totalDiscountM = t1
+    }
+
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
+
+    var dineInWholeDiscount: Double? = null
+    var dineInWholeSC: Double? = null
 
     private var _queuePrinter = MutableLiveData<Event<String>>()
     val queuePrinter: LiveData<Event<String>> = _queuePrinter
@@ -472,7 +486,10 @@ open class PaymentViewModel @Inject constructor(
         cashdiscountType: String,
         tipID: Int? = null,
         isPrinterQueue: Boolean = false,
-        offlineId: String = ""
+        offlineId: String = "",
+        totalServiceChargeM: Double = 0.0,
+        totalDiscountM: Double = 0.0
+
     ): OrderRequestModel {
 
         val orderAttributeRequestModel = OrderAttributeRequestModel()
@@ -561,8 +578,30 @@ open class PaymentViewModel @Inject constructor(
 
         if (cartModel.discountId != null && cartModel.discountId != -1)
             orderAttributeRequestModel.discount_id = cartModel.discountId
-        orderAttributeRequestModel.totalDiscount = actual_TotalDiscount
-        orderAttributeRequestModel.totalServiceCharges = actual_TotalServiceCharge
+        orderAttributeRequestModel.totalDiscount = if (cartModel.orderType == DINE_IN) {
+            dineInWholeDiscount ?: 0.0
+        } else {
+
+            if (actual_TotalDiscount != 0.0) {
+                actual_TotalDiscount
+            } else {
+                totalDiscount
+
+            }
+
+        }
+        orderAttributeRequestModel.totalServiceCharges = if (cartModel.orderType == DINE_IN) {
+            dineInWholeSC ?: 0.0
+        } else {
+            if (actual_TotalServiceCharge != 0.0) {
+                actual_TotalServiceCharge
+            } else {
+                totalServiceCharge
+            }
+
+
+        }
+
         orderAttributeRequestModel.totalTaxAmount = actual_TotalTax
         orderAttributeRequestModel.totalTips = tipAmount
         orderAttributeRequestModel.is_loyalty_applied = redeemLoyaltyInfo?.needToApplyLoyalty
@@ -829,7 +868,9 @@ open class PaymentViewModel @Inject constructor(
         needToAddPaymentAttributes: Boolean?,
         paymentType: String,
         cashdiscountType: String,
-        tipID: Int? = null
+        tipID: Int? = null,
+        totalServiceChargeM:Double = 0.0,
+        totalDiscountM:Double = 0.0
     ): OrderRequestModel {
 
         val orderAttributeRequestModel = OrderAttributeRequestModel()
@@ -918,7 +959,7 @@ open class PaymentViewModel @Inject constructor(
 
         val customerId = prefProvider.getValueInt(Constants.CUSTOMER_ID, -1)
         if (customerId != -1) {
-            orderAttributeRequestModel.customer_id = ""+customerId
+            orderAttributeRequestModel.customer_id = "" + customerId
         }
 
 

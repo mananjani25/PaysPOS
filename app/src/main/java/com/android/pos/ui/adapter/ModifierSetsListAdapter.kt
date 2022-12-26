@@ -1,5 +1,6 @@
 package com.android.pos.ui.adapter
 
+import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.entities.ModifierSet
 import com.android.pos.databinding.ViewModifierSetsBinding
 import com.android.pos.utils.callback.ItemCallback
-import com.android.pos.utils.callback.ModifierLongClickCallback
 import java.util.*
 
 class ModifierSetsListAdapter(val isCreateItem: Boolean) :
@@ -19,6 +19,7 @@ class ModifierSetsListAdapter(val isCreateItem: Boolean) :
     var selectedItemList = ArrayList<ModifierSet>()
     private var mCallback: ItemCallback? = null
     private var deleteCallback: ModifierCallback? = null
+    private var onModDelete: ModifierDeleteCallback? = null
     fun setCallback(callback: ItemCallback) {
         mCallback = callback
     }
@@ -26,6 +27,10 @@ class ModifierSetsListAdapter(val isCreateItem: Boolean) :
     fun setDeleteCallback(callback: ModifierCallback) {
         deleteCallback = callback
 
+    }
+
+    fun onDelteCallbackMod(callback: ModifierDeleteCallback) {
+        onModDelete = callback
     }
 
     inner class MyViewHolder(private val binding: ViewModifierSetsBinding) :
@@ -83,10 +88,7 @@ class ModifierSetsListAdapter(val isCreateItem: Boolean) :
             }
 
             binding.imgDelete.setOnClickListener {
-                var mod = filterList.get(bindingAdapterPosition)
-                deleteCallback?.onDeleteCallback(mod)
-                filterList.removeAt(bindingAdapterPosition)
-                notifyDataSetChanged()
+                onModDelete?.onDelete(bindingAdapterPosition)
 
             }
 
@@ -178,11 +180,79 @@ class ModifierSetsListAdapter(val isCreateItem: Boolean) :
         return false
     }
 
+ /*   fun onItemMove(fromPosition: Int?, toPosition: Int?): Boolean {
+        fromPosition?.let {
+            toPosition?.let {
+                if (fromPosition < toPosition) {
+                    for (i in fromPosition until toPosition) {
+                        Collections.swap(filterList, i, i + 1)
+
+
+                        val order1: Int = filterList[i].sort
+                        val order2: Int = filterList[i + 1].sort
+                        filterList[i].sort = order2
+                        filterList[i + 1].sort = order1
+                    }
+                } else {
+                    for (i in fromPosition downTo toPosition + 1) {
+                        Collections.swap(filterList, i, i - 1)
+
+                        val order1: Int = filterList[i].sort
+                        val order2: Int = filterList[i - 1].sort
+                        filterList[i].sort = (order2)
+                        filterList[i - 1].sort = (order1)
+                    }
+                }
+                notifyItemMoved(fromPosition, toPosition)
+                return true
+            }
+        }
+        return false
+    }
+*/
     fun getAll(): ArrayList<ModifierSet> {
         return filterList
     }
-
     override fun getFilter(): Filter {
+        return object : Filter() {
+            override fun performFiltering(charSequence: CharSequence): FilterResults {
+                val charString = charSequence.toString()
+                if (charString.isEmpty()) {
+                    filterList = list
+                } else {
+                    val fList = ArrayList<ModifierSet>()
+                    for (row in list) {
+
+
+                        if (!TextUtils.isEmpty(row.name) && row.name?.lowercase(Locale.getDefault())!!
+                                .contains(charString.lowercase(Locale.getDefault()))
+                        ) {
+                            fList.add(row)
+                        }
+
+                    }
+                    filterList = fList
+                }
+
+                val filterResults = FilterResults()
+                filterResults.values = filterList
+                return filterResults
+            }
+
+            override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
+
+
+                if (results != null && results.count > 0) {
+                    filterList = results.values as ArrayList<ModifierSet>
+                }
+
+                notifyDataSetChanged()
+
+            }
+        }
+    }
+
+    /*override fun getFilter(): Filter {
         return object : Filter() {
             override fun performFiltering(charSequence: CharSequence): FilterResults {
                 val charString = charSequence.toString().lowercase(Locale.getDefault())
@@ -206,9 +276,13 @@ class ModifierSetsListAdapter(val isCreateItem: Boolean) :
 
             }
         }
-    }
+    }*/
 
     interface ModifierCallback {
         fun onDeleteCallback(modifierSet: ModifierSet)
+    }
+
+    interface ModifierDeleteCallback {
+        fun onDelete(pos: Int)
     }
 }

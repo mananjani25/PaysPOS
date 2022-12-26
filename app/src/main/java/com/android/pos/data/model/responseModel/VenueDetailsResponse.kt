@@ -106,6 +106,8 @@ data class VenueDetailsResponse(
         val show_table_name: Boolean,
         @SerializedName("only_show_price_greater_than_zero")
         val only_show_price_greater_than_zero: Boolean,
+        @SerializedName("order_number_starting_from_one")
+        val order_number_starting_from_one: Boolean,
         @SerializedName("report_start_time")
         val report_start_time: String,
         @SerializedName("report_end_time")

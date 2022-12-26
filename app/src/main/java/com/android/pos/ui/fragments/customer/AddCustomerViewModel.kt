@@ -71,6 +71,9 @@ class AddCustomerViewModel @Inject constructor(
     var isEmptyAddress = false
 
 
+    fun sameAsAddressValueChanges(boolean: Boolean){
+        this.same_as_billing_address.value = boolean
+    }
     fun setAddress1(adr: String) {
         this.straddress1 = adr
     }

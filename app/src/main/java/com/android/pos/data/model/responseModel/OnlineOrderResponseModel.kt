@@ -50,6 +50,8 @@ data class OnlineOrderResponseModel(
         val futureDeliveryTime: String,
         @SerializedName("id")
         val id: Int,
+        @SerializedName("custom_order_id")
+        val custom_order_id: Int,
         @SerializedName("index_of_date")
         val indexOfDate: Any,
         @SerializedName("integer")
