@@ -38,6 +38,7 @@ import com.android.pos.data.remote.Constants.OPEN_ORDER
 import com.android.pos.data.remote.Constants.OPTION_TYPE
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.ORDER_TYPE_ID
+import com.android.pos.data.remote.Constants.PHONE_ORDER
 import com.android.pos.data.remote.Constants.REDIRECT_FROM
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.remote.Constants.WHOLE_AMOUNT
@@ -1305,7 +1306,7 @@ class CartFragment(
                         binding.txtAddCustomer.visible()
                     }
 
-                    if (isFromPayment || isFromPaymentDinein){
+                    if (isFromPayment || isFromPaymentDinein) {
                         binding.rvOrderType.gone()
                         binding.rlCartView.visible()
 
@@ -2119,6 +2120,9 @@ class CartFragment(
         if (model?.orderType == DINE_IN) {
             Log.e(TAG, "InsideDine inNew")
             dineInCallback?.onDineInClickListener()
+        } else if (model?.orderType == PHONE_ORDER) {
+            Log.e(TAG, "PHONE_ORDER")
+
         } else {
             Log.e(TAG, "InsideDine inNoDine")
             model?.orderType?.let { prefProvider.setValue(ORDER_TYPE, it) }
