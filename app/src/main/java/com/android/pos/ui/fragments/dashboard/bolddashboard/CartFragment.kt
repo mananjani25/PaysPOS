@@ -73,6 +73,7 @@ class CartFragment(
     val guestCalModel: GuestPaymentCalculationModel? = null,
     val isGuestPayment: Boolean = false,
     val dineInCallback: DineInOrderCallBack? = null,
+    val phonePayCallback: PhonePayOrderCallBack? = null,
 ) :
     Fragment(), MyCallback,
     DineInAdapter.DineInCallback, ItemCallback {
@@ -2099,7 +2100,7 @@ class CartFragment(
     private fun getOrderTypes() {
         orderTypeAdapter = OrderTypeAdapter()
         orderTypeAdapter?.setCallback(this)
-        binding.rvOrderType?.adapter = orderTypeAdapter
+        binding.rvOrderType.adapter = orderTypeAdapter
 
         viewModel.orderTypes().observe(requireActivity()) {
 
@@ -2121,7 +2122,12 @@ class CartFragment(
             Log.e(TAG, "InsideDine inNew")
             dineInCallback?.onDineInClickListener()
         } else if (model?.orderType == PHONE_ORDER) {
-            Log.e(TAG, "PHONE_ORDER")
+
+
+            findNavController().navigate(
+                R.id.action_manualSaleNew_to_addNoteDialog
+            )
+
 
         } else {
             Log.e(TAG, "InsideDine inNoDine")

@@ -1561,6 +1561,9 @@
         <action
             android:id="@+id/action_dashboardCategoryBoldPOS_to_createItem"
             app:destination="@id/createItem" />
+        <action
+            android:id="@+id/action_dashboardCategoryBoldPOS_to_phoneOrderFragment"
+            app:destination="@id/phoneOrderFragment" />
 
 
     </fragment>
