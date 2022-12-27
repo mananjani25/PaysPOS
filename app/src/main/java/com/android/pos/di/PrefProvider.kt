@@ -24,6 +24,7 @@ import javax.inject.Singleton
 class PrefProvider @Inject constructor(@ApplicationContext context: Context) {
 
     internal var sharedPreferences: SharedPreferences? = null
+    internal var loginRememberPreferences: SharedPreferences? = null
     internal var mContext = context
 
     fun openPref() {
@@ -33,6 +34,32 @@ class PrefProvider @Inject constructor(@ApplicationContext context: Context) {
         )
     }
 
+    fun openPrefForLogin() {
+        loginRememberPreferences = mContext.getSharedPreferences(
+            "LoginRememberPref",
+            Context.MODE_PRIVATE
+        )
+    }
+    fun getValueForLogin(
+        key: String,
+        defaultValue: String
+    ): String {
+        openPrefForLogin()
+        val result = loginRememberPreferences?.getString(key, defaultValue)
+        loginRememberPreferences = null
+        return result ?: ""
+    }
+
+    fun setValueForLogin(
+        key: String,
+        value: String
+    ) {
+        openPrefForLogin()
+        val prefsPrivateEditor = loginRememberPreferences!!.edit()
+        prefsPrivateEditor!!.putString(key, value)
+        prefsPrivateEditor.apply()
+        loginRememberPreferences = null
+    }
     fun getValue(
         key: String,
         defaultValue: String
@@ -162,6 +189,10 @@ class PrefProvider @Inject constructor(@ApplicationContext context: Context) {
 
     fun getEmployeeRoleId(): Int {
         return getValueInt(Constants.EMPLOYEE_ROLE_ID, 0)
+    }
+
+    fun getTerminalId(): Int {
+        return getValueInt(Constants.TERMINAL_ID, 0)
     }
 
     fun getEmployeeRole(): String {
