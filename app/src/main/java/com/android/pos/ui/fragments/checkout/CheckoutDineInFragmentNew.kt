@@ -1716,7 +1716,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
     private fun paymentAttributesRequest(myRequest: OrderRequestModel) {
         val orderId = prefProvider.getValueInt("ORDER_ID", -1)
         if (orderId == -1) {
-            if (myRequest.order.totalAmount>0){
+            if (myRequest.order.totalAmount!=0.0){
                 myRequest.completed_all_payments = isSelectedCount <= 1
             }else{
                 myRequest.completed_all_payments = true
@@ -1744,7 +1744,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
                 paymentviewModel.splitByOrder(aa, true)
             } else {
-                if (myRequest.order.totalAmount>0){
+                if (myRequest.order.totalAmount!=0.0){
                     myRequest.completed_all_payments = isSelectedCount <= 1
                 }else{
                     myRequest.completed_all_payments = true

@@ -1470,7 +1470,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         val orderId = prefProvider.getValueInt("ORDER_ID", -1)
         LogUtil.logE(TAG, "orderIdmyRequestOriginal ${orderId}")
         if (orderId == -1) {
-            if (myRequest.order.totalAmount>0){
+            if (myRequest.order.totalAmount!=0.0){
                 myRequest.completed_all_payments = isSelectedCount <= 1
             }else{
                 myRequest.completed_all_payments = true
