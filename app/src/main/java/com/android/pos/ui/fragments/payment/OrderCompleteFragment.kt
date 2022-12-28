@@ -8279,6 +8279,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 addHorizontalKitchenLine(builder)
 
+
                 receiptModel?.order?.orderItems?.let {
                     addOrdersForKitchen(
                         builder!!,

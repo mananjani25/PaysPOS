@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable
 import android.os.Build
+import android.util.Log
 import androidx.annotation.Nullable
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
@@ -1774,6 +1775,7 @@ fun addOrdersForKitchen(
 ): Builder {
     for (i in 0 until list.size) {
         printerCat?.forEach {
+            Log.e("PrinterReceipt", "checkPrinterItemN:   ${list.get(i).itemName}")
             if (it?.id == list[i].categoryId) {
                 if (it.categoryActive && it.printerEnable) {
 
