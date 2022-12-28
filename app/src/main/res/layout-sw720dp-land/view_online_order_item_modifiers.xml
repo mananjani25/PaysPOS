@@ -32,7 +32,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.7"
-                android:text="@{model.modifier_quantity+`x `+model.name}"
+                android:text="@{model.name}"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_5mdpi"
                 tools:text="Item Name" />
@@ -45,10 +45,11 @@
                 android:layout_weight="1"
                 android:layout_gravity="center_vertical"
                 android:gravity="center_vertical"
-                android:text="@{@string/cross+``+model.quantity}"
+                android:visibility="invisible"
+                android:text="@{``+model.quantity}"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_5mdpi"
-                tools:text="X 1" />
+                 />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtPrice"

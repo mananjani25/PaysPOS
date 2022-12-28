@@ -28,7 +28,7 @@ class ManualSaleCartAdapter : RecyclerView.Adapter<ManualSaleCartAdapter.MyViewH
 
         fun bind(model: TbItem, pos: Int) {
            // viewBinderHelper.bind(binding.swipeLayout,absoluteAdapterPosition.toString())
-            binding.txtQuantity.text = "x ${model.itemQuantity}"
+            binding.txtQuantity.text = model.itemQuantity.toString()
             binding.txtEachQntPrice.text = "$"+MethodUtils.roundOffAmountString(model.price)
             binding.txtTotalPrice.text = "$"+MethodUtils.roundOffAmountString((model.price * model.itemQuantity))
 

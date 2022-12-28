@@ -48,13 +48,13 @@
                     android:orientation="vertical">
 
                     <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/modifer_name"
                         style="@style/CustomFontRegularStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="start"
                         android:gravity="start"
                         android:paddingStart="@dimen/_14sdp"
-                        android:text="@{`x`+model.modifier_quantity+` `+model.name}"
                         android:textColor="@color/txtColor"
                         android:textSize="@dimen/_5mdpi"
                         tools:text="Item" />
@@ -83,6 +83,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="start"
                         android:gravity="start"
+                        android:visibility="invisible"
                         android:text="@{``+model.itemQuantity}"
                         android:textColor="@color/btnColorDark"
                         android:textSize="@dimen/_5mdpi"

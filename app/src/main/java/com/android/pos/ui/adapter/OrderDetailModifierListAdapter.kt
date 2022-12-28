@@ -17,8 +17,16 @@ class OrderDetailModifierListAdapter :
     inner class MyViewHolder(private val binding: ViewOrderModifierListBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(item: GetOrderDetailsResponse.Data.OrderItem.OrderItemModifier) {
-            binding.tvItemName.text = "x${item.modifier_quantity} ${item.name}"
-            binding.tvQuantity.setText("x " + item.quantity.toString())
+            if (item.modifier_quantity!! > 1) {
+                if (item.modifier_quantity>9){
+                    binding.tvItemName.text = "${item.modifier_quantity}x ${item.name}"
+                }else{
+                    binding.tvItemName.text = "${item.modifier_quantity}x   ${item.name}"
+                }
+            }else{
+                binding.tvItemName.text = "       ${item.name}"
+            }
+            binding.tvQuantity.text = item.quantity.toString()
             binding.tvRate.text = MethodUtils.roundOffAmount(item.price)
             var totalPrice = item.price * item.quantity
             binding.tvTotal.text = MethodUtils.roundOffAmount(totalPrice)
