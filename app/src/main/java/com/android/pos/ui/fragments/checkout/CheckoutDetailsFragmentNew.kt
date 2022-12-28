@@ -54,6 +54,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragment(), magtekCallback,
     DeleteOptionCallback, IDeviceListCallback {
+    private var textToPay: Boolean = false
     private var cardNumber: String = ""
     private var isError: Boolean = false
     private var isCardRev: Boolean = false
@@ -817,6 +818,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     }
 
     private fun paymentClick() {
+
         binding.llCreditCard.setOnSingleClickListener {
 
             val device = prefProvider.getValueInt(Constants.MAGTEK_HARDWARE, 0)
@@ -897,6 +899,17 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         }
         binding.tvPaymentLink.setOnSingleClickListener {
+            textToPay = true
+
+            custom_paymentAmount = 0.0
+
+            paymentviewModel.totalPayAmount(
+                binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
+            )
+            paymentAmount = binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
+            cashPaymentWithVariation()
+
+
 
         }
 
@@ -1428,6 +1441,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
 
         paymentviewModel.saveOrder(false)
+        paymentviewModel.textPay(textToPay)
         Log.d("yash", "makeCashPayment: total Price : " + paymentAmount)
         Log.d("yash", "makeCashPayment: sub_total   : " + subTotalPrice)
         Log.d("yash", "makeCashPayment: totaltax    : " + totalTax)
@@ -1440,7 +1454,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 paymentAmount,
                 totalServiceCharge,
                 totalTax,
-                prefProvider.getValue(Constants.ORDER_TYPE,""),
+                prefProvider.getValue(Constants.ORDER_TYPE, ""),
                 future_delivery_date,
                 future_delivery_time,
                 true,
@@ -1455,7 +1469,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             )
         }
         LogUtil.logE(TAG, "myRequestOriginal ${Gson().toJson(myRequest)}")
-        LogUtil.logE("ORDER TYPE 1", prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT))
+        LogUtil.logE("ORDER TYPE 1", prefProvider.getValue(Constants.ORDER_TYPE, ""))
         if (myRequest != null) {
             if (custom_paymentAmount != 0.0) {
                 paymentviewModel.totalPayAmount(custom_paymentAmount)
@@ -1467,8 +1481,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     private fun paymentAttributesRequest(myRequest: OrderRequestModel) {
         val orderId = prefProvider.getValueInt("ORDER_ID", -1)
         LogUtil.logE(TAG, "orderIdmyRequestOriginal ${orderId}")
+        Log.e("textToPay", textToPay.toString())
         if (orderId == -1) {
-            myRequest.completed_all_payments = isSelectedCount <= 1
+            if (textToPay) {
+                myRequest.completed_all_payments = false
+            } else {
+                myRequest.completed_all_payments = isSelectedCount <= 1
+            }
             paymentviewModel.submit(myRequest)
         } else {
             val paymentReq = myRequest.order.paymentAttributes

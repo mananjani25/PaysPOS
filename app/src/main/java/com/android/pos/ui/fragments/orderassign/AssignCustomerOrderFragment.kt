@@ -159,7 +159,7 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
         binding.txtHome.setOnClickListener {
             if(arguments!=null){
 
-                var bundle :Bundle = Bundle()
+                val bundle = Bundle()
                 bundle.putBoolean("update",arguments?.getBoolean("update")?:false)
                 bundle.putInt("orderId",arguments?.getInt("orderId")!!)
                 bundle.putInt("paymentId",arguments?.getInt("paymentId")!!)
@@ -248,9 +248,9 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
             setFragmentResult("request_key_customer", result)
         }
 
-        val navController = findNavController()
-        navController.previousBackStackEntry?.savedStateHandle?.set("data",result)
-        navController.popBackStack()
+//        val navController =
+//        navController.previousBackStackEntry?.savedStateHandle?.set("data",result)
+        findNavController().popBackStack()
 
 
     }

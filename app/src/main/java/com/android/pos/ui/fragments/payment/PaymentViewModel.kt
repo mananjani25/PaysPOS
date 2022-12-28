@@ -14,6 +14,7 @@ import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.android.pos.data.remote.Constants.PAYMENT_ID
+import com.android.pos.data.remote.Constants.PHONE_ORDER
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
@@ -36,6 +37,7 @@ open class PaymentViewModel @Inject constructor(
     private val prefProvider: PrefProvider
 ) : ViewModel() {
 
+    private var textToPay: Boolean = false
     private var cardNumberLast4: String = ""
     private val TAG = "PaymentViewModel"
     var isUpdateOrder: Boolean = false
@@ -175,7 +177,7 @@ open class PaymentViewModel @Inject constructor(
                                     _queueStart.value = Event(createOrderResponse)
 
                                 } else {
-                                    if (createOrderResponse.data.order.orderType != "Dine In" && response.data.order.payments[response.data.order.payments.size - 1].paymentType != "Card") {
+                                    if (createOrderResponse.data.order.orderType != "Dine In" && createOrderResponse.data.order.orderType != PHONE_ORDER && response.data.order.payments[response.data.order.payments.size - 1].paymentType != "Card") {
                                         cashLogApi(createOrderResponse, "in")
                                         LogUtil.logE("QueueCheck", "CashLogAPI")
                                     } else {
@@ -183,7 +185,7 @@ open class PaymentViewModel @Inject constructor(
                                         LogUtil.logE("QueueCheck", "CreateOrderData")
                                     }
 
-                                    if (createOrderResponse.data.order.orderType != "Dine In") {
+                                    if (createOrderResponse.data.order.orderType != "Dine In" && createOrderResponse.data.order.orderType != PHONE_ORDER ) {
                                         _queueStartTakeOut.value = Event(createOrderResponse)
                                         LogUtil.logE("QueueCheck", "QueueStart")
                                     }
@@ -238,9 +240,9 @@ open class PaymentViewModel @Inject constructor(
 
     private fun cashPaymentTypeSplit(orderRequestModel: SpitByOrderRequestModel): Boolean {
 
-        if (orderRequestModel.amount_tab.payments_attributes.isEmpty()) return true
+        if (orderRequestModel.amount_tab.payments_attributes?.isEmpty() == true) return true
 
-        return orderRequestModel.amount_tab.payments_attributes[0].paymentType.equals(
+        return orderRequestModel.amount_tab.payments_attributes?.get(0)?.paymentType.equals(
             "Cash",
             ignoreCase = true
         )
@@ -485,9 +487,14 @@ open class PaymentViewModel @Inject constructor(
             orderAttributeRequestModel.id = orderId
 
 
+        if (prefProvider.getValue(Constants.ORDER_TYPE, "")
+                .equals(PHONE_ORDER, ignoreCase = true)
+        ) {
+            orderAttributeRequestModel.send_payment_link = true
+        }
 
         orderAttributeRequestModel.openOrderType =
-            prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT)
+            prefProvider.getValue(Constants.ORDER_TYPE, "")
 
         orderAttributeRequestModel.orderTypeId = order_type_id
         orderAttributeRequestModel.date = TimeFormatUtils.getCurrentDate()
@@ -556,7 +563,12 @@ open class PaymentViewModel @Inject constructor(
 
 
         LogUtil.logE(TAG, "openOrderType: " + cartModel.orderType)
-        orderAttributeRequestModel.paymentStatus = if (isPaid) 1 else 0
+
+        if (textToPay) {
+            orderAttributeRequestModel.paymentStatus = 0
+        } else
+            orderAttributeRequestModel.paymentStatus = if (isPaid) 1 else 0
+
         orderAttributeRequestModel.serviceChargeEnabled = true
         orderAttributeRequestModel.taxEnabled = true
         orderAttributeRequestModel.subTotal = actual_SubTotal
@@ -584,8 +596,12 @@ open class PaymentViewModel @Inject constructor(
             orderAttributeRequestModel.customer_id = "" + customerId
         }
 
+        var needPaymentAttributes = needToAddPaymentAttributes
+        if (textToPay) {
+            needPaymentAttributes = false
+        }
 
-        orderAttributeRequestModel.paymentAttributes = if (needToAddPaymentAttributes == true) {
+        orderAttributeRequestModel.paymentAttributes = if (needPaymentAttributes == true) {
             paymentAttributes(
                 cartModel,
                 totalPrice,
@@ -624,7 +640,22 @@ open class PaymentViewModel @Inject constructor(
 //            orderAttributeRequestModel.customerAttributes = customerAttributes(cartModel)
 
 
-        val orderRequestModel = OrderRequestModel(isPaid, orderAttributeRequestModel)
+        var sendPaymentLink = false
+        val isPaidOrder: Boolean
+        if (prefProvider.getValue(Constants.ORDER_TYPE, "")
+                .equals(PHONE_ORDER, ignoreCase = true)
+        ) {
+            orderAttributeRequestModel.send_payment_link = true
+            sendPaymentLink = true
+            isPaidOrder = false
+        } else {
+            isPaidOrder = isPaid
+        }
+
+        Log.e("isPaidOrder", isPaidOrder.toString())
+
+        val orderRequestModel =
+            OrderRequestModel(isPaidOrder, orderAttributeRequestModel, sendPaymentLink)
 
         LogUtil.logE("orderRequestModel", ":  ${Gson().toJson(orderRequestModel)}")
 
@@ -921,7 +952,7 @@ open class PaymentViewModel @Inject constructor(
 
         val customerId = prefProvider.getValueInt(Constants.CUSTOMER_ID, -1)
         if (customerId != -1) {
-            orderAttributeRequestModel.customer_id = ""+customerId
+            orderAttributeRequestModel.customer_id = "" + customerId
         }
 
 
@@ -1985,5 +2016,9 @@ open class PaymentViewModel @Inject constructor(
     @JvmName("setServiceChargeListApplied1")
     fun setServiceChargeListApplied(temp_serviceChargeApplied: ArrayList<OrderServiceChargesAttribute>) {
         this.serviceChargeListApplied = temp_serviceChargeApplied
+    }
+
+    fun textPay(tPay: Boolean) {
+        textToPay = tPay
     }
 }

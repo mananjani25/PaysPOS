@@ -14,6 +14,7 @@
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
+        android:background="@color/bg_color"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
@@ -41,10 +42,10 @@
                 android:padding="@dimen/_4sdp"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi"
-                tools:text="Select Order Type" />
+                android:text="@string/select_your_order_type" />
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/txtSave"
+                android:id="@+id/txtHome"
                 style="@style/CustomFontSemiBold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -56,7 +57,7 @@
                 android:paddingTop="@dimen/_7sdp"
                 android:paddingEnd="@dimen/_15sdp"
                 android:paddingBottom="@dimen/_7sdp"
-                android:text="@string/save"
+                android:text="@string/tv_home"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi"
                 tools:ignore="RelativeOverlap" />
@@ -92,10 +93,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:background="@drawable/edt_border_light_gray"
                         android:gravity="center"
-                        android:orientation="horizontal"
-                        android:padding="1dp">
+                        android:orientation="horizontal">
 
                         <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/txtPickup"
@@ -105,7 +104,8 @@
                             android:layout_weight="1"
                             android:background="@drawable/button_action_hover"
                             android:gravity="center"
-                            android:padding="@dimen/_5sdp"
+                            android:padding="@dimen/_7sdp"
+                            android:layout_marginEnd="@dimen/_10sdp"
                             android:text="@string/pick_up"
                             android:textAllCaps="true"
                             android:textColor="@color/white"
@@ -117,9 +117,9 @@
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
                             android:layout_weight="1"
-                            android:background="@color/bg_color"
+                            android:background="@drawable/background_square_border_grey"
                             android:gravity="center"
-                            android:padding="@dimen/_5sdp"
+                            android:padding="@dimen/_7sdp"
                             android:text="@string/delivery"
                             android:textAllCaps="true"
                             android:textColor="@color/txtColor"
@@ -145,6 +145,7 @@
 
                     <androidx.appcompat.widget.AppCompatImageView
                         android:layout_width="wrap_content"
+                        android:padding="@dimen/_5sdp"
                         android:layout_height="wrap_content"
                         app:srcCompat="@drawable/ic_search" />
 
@@ -173,7 +174,7 @@
                     android:padding="@dimen/_10sdp"
                     android:text="@string/add_new_customer"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_10mdpi" />
+                    android:textSize="@dimen/_8mdpi" />
 
 
                 <LinearLayout
@@ -275,7 +276,7 @@
                     android:paddingVertical="@dimen/_10sdp"
                     android:text="@string/delivery_address"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_10mdpi" />
+                    android:textSize="@dimen/_8mdpi" />
 
 
                 <androidx.appcompat.widget.LinearLayoutCompat
@@ -380,7 +381,8 @@
                     android:layout_marginTop="@dimen/_15sdp"
                     android:background="@drawable/button_action_hover"
                     android:gravity="center"
-                    android:padding="@dimen/_5sdp"
+                    android:padding="@dimen/_7sdp"
+                    android:layout_marginBottom="@dimen/_20sdp"
                     android:text="@string/tv_next"
                     android:textAllCaps="true"
                     android:textColor="@color/white"

@@ -1637,10 +1637,14 @@
             android:id="@+id/action_cardRederDialog_to_magtekProFragment"
             app:destination="@id/magtekProFragment" />
     </dialog>
-    <dialog
+    <fragment
         android:id="@+id/phoneOrderFragment"
         android:name="com.android.pos.ui.fragments.phoneOrder.PhoneOrderFragment"
-        android:label="PhoneOrderFragment" />
+        android:label="PhoneOrderFragment" >
+        <action
+            android:id="@+id/action_phoneOrderFragment_to_assignCustomerOrderFragment"
+            app:destination="@id/assignCustomerOrderFragment" />
+    </fragment>
 
 
 </navigation>

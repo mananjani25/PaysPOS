@@ -2,27 +2,29 @@ package com.android.pos.ui.fragments.phoneOrder
 
 import android.content.ClipboardManager
 import android.content.Context
+import android.graphics.Point
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.text.style.UnderlineSpan
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.AdapterView
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.*
 import androidx.navigation.fragment.findNavController
 import com.android.pos.BuildConfig
 import com.android.pos.R
+import com.android.pos.data.entities.TbAddress
+import com.android.pos.data.entities.TbCustomer
+import com.android.pos.data.entities.TbPhones
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.AUTH_TOKEN
+import com.android.pos.data.remote.Constants.DELIVERY
 import com.android.pos.data.remote.Constants.IS_CLOCKOUT
 import com.android.pos.data.remote.Constants.ORDER_COMPLETED
+import com.android.pos.data.remote.Constants.PICK_UP
 import com.android.pos.databinding.FragmentLoginBinding
 import com.android.pos.databinding.FragmentPhoneOrderBinding
 import com.android.pos.di.ApiModule.BASE_URL
@@ -31,6 +33,7 @@ import com.android.pos.di.PrefProvider
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.fragments.loginscreen.LoginViewModel
 import com.android.pos.ui.fragments.settings.business.AutoCompleteAdapter
+import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
@@ -44,14 +47,17 @@ import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.ArrayList
 import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class PhoneOrderFragment : DialogFragment() {
+class PhoneOrderFragment : Fragment() {
 
 
-    private var isPickUp: Int = 1
+    private var isDelivey = false
+    private var customerID: Int? = null
+    private var isPickUp = true
     private lateinit var binding: FragmentPhoneOrderBinding
 
     private val viewModel by viewModels<LoginViewModel>()
@@ -74,15 +80,48 @@ class PhoneOrderFragment : DialogFragment() {
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_phone_order, container, false)
         binding.lifecycleOwner = this
-
+        resultListener()
         placesClientInit()
         setupSnackbar()
         observeShowProgress()
         navigate()
         clickEvent()
 
+
         return binding.root
     }
+
+    private fun resultListener() {
+
+        setFragmentResultListener("request_key_customer") { requestKey: String, bundle: Bundle ->
+            val result = bundle.getParcelable<TbCustomer>("data")
+            if (result != null) {
+
+                setupCustomer(result)
+            }
+        }
+    }
+
+    private fun setupCustomer(customer: TbCustomer) {
+
+        customerID = customer.id
+
+        binding.edtFName.setText(customer.first_name)
+        binding.edtLName.setText(customer.last_name)
+        binding.edtPhoneNo.setText(AlertUtils.usNumberFormat(customer.phones[0].phone_number))
+        binding.edtEmail.setText(customer.email)
+
+        if (customer.addresses.isNotEmpty()) {
+            binding.edtStreet.setText(customer.addresses[0].street)
+            binding.edtSuite.setText(customer.addresses[0].address2)
+            binding.edtCity.setText(customer.addresses[0].city)
+            binding.edtState.setText(customer.addresses[0].state)
+            binding.edtZip.setText(customer.addresses[0].postcode)
+        }
+
+
+    }
+
 
     private fun placesClientInit() {
 
@@ -106,12 +145,104 @@ class PhoneOrderFragment : DialogFragment() {
 
         binding.txtPickup.setOnSingleClickListener {
 
-            isPickUp = 1
+            isPickUp = true
+            isDelivey = false
+            binding.txtPickup.setBackgroundResource(R.drawable.button_action_hover)
+            binding.txtDelivery.setBackgroundResource(R.drawable.background_square_border_grey)
+
         }
         binding.txtDelivery.setOnSingleClickListener {
-            isPickUp = 2
+            isDelivey = true
+            isPickUp = false
+            binding.txtPickup.setBackgroundResource(R.drawable.background_square_border_grey)
+            binding.txtDelivery.setBackgroundResource(R.drawable.button_action_hover)
         }
 
+        binding.llSearch.setOnSingleClickListener {
+
+            findNavController().navigate(R.id.action_phoneOrderFragment_to_assignCustomerOrderFragment)
+        }
+        binding.etSearch.setOnSingleClickListener {
+
+            findNavController().navigate(R.id.action_phoneOrderFragment_to_assignCustomerOrderFragment)
+        }
+
+        binding.txtNext.setOnSingleClickListener {
+            if (binding.edtFName.text.toString().trim().isEmpty()) {
+                AlertUtils.showAlert(requireContext(), getString(R.string.phone_validate))
+
+            } else if (binding.edtPhoneNo.rawText.toString().trim().isEmpty()) {
+                AlertUtils.showAlert(requireContext(), getString(R.string.phone_validate))
+
+            } else if (binding.edtPhoneNo.rawText.toString().trim().length < 10) {
+                AlertUtils.showAlert(requireContext(), getString(R.string.valid_phone_validate))
+            } else if (isDelivey && binding.edtStreet.text.toString().trim().isEmpty()) {
+                AlertUtils.showAlert(requireContext(), "Please enter address")
+            } else {
+
+                val phonesList: ArrayList<TbPhones> =
+                    arrayListOf()
+
+                if (binding.edtPhoneNo.text?.isNotEmpty()!!) {
+
+                    val phone = TbPhones(
+                        null, binding.edtPhoneNo.text.toString().trim().replace(
+                            ("[\\D]").toRegex(),
+                            ""
+                        )
+                    )
+                    phonesList.add(phone)
+                }
+
+
+                val list: ArrayList<TbAddress> = arrayListOf()
+
+                if (binding.edtStreet.text.toString().trim().isNotEmpty()) {
+
+                    val address = TbAddress(
+                        null,
+                        binding.edtStreet.text.toString().trim(),
+                        binding.edtSuite.text.toString().trim(),
+                        binding.edtCity.text.toString().trim(),
+                        binding.edtState.text.toString().trim(),
+                        if (isPickUp) PICK_UP else DELIVERY,
+                        binding.edtZip.text.toString().trim(),
+                        "",
+                        "0.0",
+                        "0.0",
+                        "Shipping",
+                        "",
+                        binding.edtStreet.text.toString().trim(),
+                    )
+                    list.add(address)
+                }
+
+
+                val customer = TbCustomer(
+                    customerID,
+                    MethodUtils.getText(binding.edtFName),
+                    MethodUtils.getText(binding.edtLName),
+                    "",
+                    MethodUtils.getText(binding.edtEmail),
+                    false,
+                    false,
+                    0,
+                    "",
+                    phonesList,
+                    list
+                )
+
+
+                val result = Bundle().apply {
+                    putParcelable("data", customer)
+                    putBoolean("OPEN_ORDER", true)
+                }
+                prefProvider?.setValue(Constants.ORDER_TYPE, Constants.PHONE_ORDER)
+                setFragmentResult("request_key_customer", result)
+
+                findNavController().navigateUp()
+            }
+        }
     }
 
 

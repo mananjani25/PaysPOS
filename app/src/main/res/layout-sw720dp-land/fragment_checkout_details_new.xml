@@ -352,7 +352,7 @@
                             android:text="@string/tv_other"
                             android:textColor="@color/txtColor"
                             android:textSize="@dimen/_7mdpi"
-                            android:visibility="gone" />
+                            android:visibility="visible" />
 
                         <androidx.appcompat.widget.LinearLayoutCompat
                             android:id="@+id/llPaymentLink"
@@ -361,7 +361,7 @@
                             android:layout_below="@+id/tvOther"
                             android:layout_marginTop="@dimen/_5sdp"
                             android:orientation="horizontal"
-                            android:visibility="gone"
+                            android:visibility="visible"
                             android:weightSum="3">
 
                             <androidx.appcompat.widget.AppCompatTextView
@@ -376,7 +376,7 @@
                                 android:gravity="center_horizontal"
                                 android:orientation="horizontal"
                                 android:paddingVertical="@dimen/_10sdp"
-                                android:text="Text Payment Link"
+                                android:text="Text To Pay"
                                 android:textColor="@color/txtColor"
                                 android:textSize="@dimen/_7mdpi" />
 
