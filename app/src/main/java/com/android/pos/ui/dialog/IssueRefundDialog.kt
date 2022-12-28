@@ -442,7 +442,24 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                 item_total_price_included =
                     (temp_totalPrice + itemServiceCharge + itemTotalTax) - itemwiseOrderDiscount
                 if (paymentOrderDetailsResponse.data.loyalty_amount!! > 0) {
-                    selectedLoyaltyPointDivided += (paymentOrderDetailsResponse.data.loyalty_amount!! * item_total_price_included) / (paymentOrderDetailsResponse.data.sub_total + paymentOrderDetailsResponse.data.service_charge_amount + paymentOrderDetailsResponse.data.tax_amount)
+                    if (paymentOrderDetailsResponse.data.order.order_items.size > 1) {
+                        selectedLoyaltyPointDivided += (paymentOrderDetailsResponse.data.loyalty_amount!! * item_total_price_included) / (paymentOrderDetailsResponse.data.sub_total + paymentOrderDetailsResponse.data.service_charge_amount + paymentOrderDetailsResponse.data.tax_amount)
+                    } else if (MethodUtils.roundOffAmountDouble(paymentOrderDetailsResponse.data.loyalty_amount)
+                            .equals(
+                                MethodUtils.roundOffAmountDouble(
+                                    item_total_price_included
+                                )
+                            )
+                    ) {
+                        selectedLoyaltyPointDivided = item_total_price_included
+                    } else {
+                        selectedCashDiscountDivided =
+                            MethodUtils.roundOffAmountDouble(
+                                item_total_price_included
+                            ) - MethodUtils.roundOffAmountDouble(
+                                paymentOrderDetailsResponse.data.loyalty_amount
+                            )
+                    }
                 }
                 if (paymentOrderDetailsResponse.data.tips > 0) {
                     if (item_total_price_included == 0.0) {
@@ -483,8 +500,8 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                 totalItemPrice += selectedTipDivided
             } else if (totalItemPrice == 0.0) {
                 totalItemPrice += paymentOrderDetailsResponse.data.tips / paymentOrderDetailsResponse.data.order.order_items.size
-            }else{
-                totalItemPrice+=paymentOrderDetailsResponse.data.tips
+            } else {
+                totalItemPrice += paymentOrderDetailsResponse.data.tips
             }
         }
         val nf3: NumberFormat = NumberFormat.getNumberInstance()
