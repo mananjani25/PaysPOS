@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -1369,6 +1370,12 @@ class CartFragment(
     private fun saveVisibility() {
         if (prefProvider.getValue(ORDER_TYPE, "") == TAKEOUT) {
             binding.tvSave.gone()
+            val param: LinearLayout.LayoutParams = LinearLayout.LayoutParams(
+                0,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                2.0f
+            )
+            binding.tvPayNow.layoutParams = param
         } else {
             binding.tvSave.visible()
         }
