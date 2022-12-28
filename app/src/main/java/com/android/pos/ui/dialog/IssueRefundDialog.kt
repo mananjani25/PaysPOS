@@ -480,7 +480,9 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
             }
 
         }
-        totalItemPrice += (totalServiceCharge + totalTax)
+        totalItemPrice += (String.format("%.2f", totalServiceCharge)
+            .toDouble() + String.format("%.2f", totalTax)
+            .toDouble())
         val nf6: NumberFormat = NumberFormat.getNumberInstance()
         nf6.maximumFractionDigits = 2
         val rounded6: String = nf6.format(selectedOrderDiscountDivided)
