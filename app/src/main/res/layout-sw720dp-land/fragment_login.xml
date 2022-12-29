@@ -22,11 +22,13 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:gravity="center"
+
             android:orientation="vertical">
 
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:layout_width="@dimen/_80sdp"
+                android:layout_marginTop="@dimen/_10sdp"
                 android:layout_height="@dimen/_25sdp"
                 android:src="@drawable/snacklogo" />
 
@@ -107,13 +109,15 @@
                     </com.google.android.material.textfield.TextInputLayout>
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
+
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="wrap_content"
-                    android:orientation="horizontal"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="start"
                     android:layout_marginTop="@dimen/_5sdp"
-                    android:visibility="visible"
-                    android:layout_height="wrap_content">
+                    android:orientation="horizontal"
+                    android:visibility="visible">
+
                     <androidx.appcompat.widget.AppCompatImageView
                         android:id="@+id/imgCheckBox"
                         android:layout_width="@dimen/_12sdp"
@@ -123,14 +127,15 @@
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:textSize="@dimen/_7sdp"
-                        android:textColor="@color/txtColor"
-                        android:fontFamily="@font/sf_pro_display_regular"
                         android:layout_marginStart="@dimen/_5sdp"
+                        android:fontFamily="@font/sf_pro_display_regular"
                         android:text="@string/remember_me"
-                        android:layout_height="wrap_content"/>
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_7sdp" />
                 </androidx.appcompat.widget.LinearLayoutCompat>
+
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtSignIn"
                     style="@style/CustomFontSemiBold"
@@ -144,6 +149,7 @@
                     android:text="@string/tv_login"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_7mdpi" />
+
                 <TextView
                     android:id="@+id/txtForgotPass"
                     android:layout_width="wrap_content"
@@ -156,51 +162,46 @@
                     android:textSize="@dimen/_6mdpi" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/CustomFontSemiBold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:gravity="bottom|center"
+                android:padding="@dimen/_5sdp"
+                android:text="@string/terminal_login_id_tap_to_copy_unique_id"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_6mdpi" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/terminal_id"
+                style="@style/CustomFontSemiBold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="bottom|center"
+                android:padding="@dimen/_5sdp"
+                android:textColor="@color/btnColor"
+                android:textSize="@dimen/_6mdpi"
+                tools:text="dfdgfgfhgh" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtBottom"
+                style="@style/CustomFontMediumStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="bottom|center"
+                android:padding="@dimen/_5sdp"
+                android:text="@string/tv_pos_2021"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_6mdpi" />
         </LinearLayout>
 
 
-        <androidx.appcompat.widget.AppCompatTextView
-            style="@style/CustomFontSemiBold"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/terminal_id"
-            android:layout_below="@+id/linearLogin"
-            android:layout_centerHorizontal="true"
-            android:layout_gravity="center"
-            android:gravity="bottom|center"
-            android:padding="@dimen/_5sdp"
-            android:text="@string/terminal_login_id_tap_to_copy_unique_id"
-            android:textColor="@color/txtColor"
-            android:textSize="@dimen/_6mdpi" />
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/terminal_id"
-            style="@style/CustomFontSemiBold"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/txtBottom"
-            android:layout_centerInParent="true"
-            android:layout_gravity="center"
-
-            android:gravity="bottom|center"
-            android:padding="@dimen/_5sdp"
-            android:textColor="@color/btnColor"
-            android:textSize="@dimen/_6mdpi"
-            tools:text="dfdgfgfhgh" />
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/txtBottom"
-            style="@style/CustomFontMediumStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_centerInParent="true"
-            android:layout_gravity="center"
-            android:gravity="bottom|center"
-            android:padding="@dimen/_5sdp"
-            android:text="@string/tv_pos_2021"
-            android:textColor="@color/txtColor"
-            android:textSize="@dimen/_6mdpi" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/txtVersion"

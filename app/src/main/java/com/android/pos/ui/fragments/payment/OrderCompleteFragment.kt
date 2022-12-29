@@ -8533,25 +8533,25 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     .toString().lowercase()
                 LogUtil.logE(TAG, "LowerCAse ${tmps.trimmedLength()}")
 
-                if (receiptModel?.order?.orderType.toString().lowercase() == "OpenOrder".trim()
-                        .toString().lowercase() || receiptModel?.order?.orderType.toString()
-                        .lowercase() == "Open Order".trim()
-                        .toString().lowercase()
-                ) {
-                    builder.addFeedLine(1)
-                    builder.addTextFont(Builder.FONT_E)
-                    builder.addTextLang(Builder.LANG_EN)
-                    builder.addTextSize(fontSizeH, fontSizeW)
-                    builder.addTextStyle(
-                        Builder.FALSE,
-                        Builder.FALSE,
-                        Builder.TRUE,
-                        Builder.COLOR_1
-                    )
-                    builder.addTextAlign(Builder.ALIGN_CENTER)
-
-                    addBuilderText(builder, receiptModel?.order?.deliveryType.toString())
-                }
+//                if (receiptModel?.order?.orderType.toString().lowercase() == "OpenOrder".trim()
+//                        .toString().lowercase() || receiptModel?.order?.orderType.toString()
+//                        .lowercase() == "Open Order".trim()
+//                        .toString().lowercase()
+//                ) {
+//                    builder.addFeedLine(1)
+//                    builder.addTextFont(Builder.FONT_E)
+//                    builder.addTextLang(Builder.LANG_EN)
+//                    builder.addTextSize(fontSizeH, fontSizeW)
+//                    builder.addTextStyle(
+//                        Builder.FALSE,
+//                        Builder.FALSE,
+//                        Builder.TRUE,
+//                        Builder.COLOR_1
+//                    )
+//                    builder.addTextAlign(Builder.ALIGN_CENTER)
+//
+//                    addBuilderText(builder, receiptModel?.order?.deliveryType.toString())
+//                }
 
 
 //                builder.addTextLineSpace(30)
