@@ -6257,7 +6257,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             )
             builder.addTextAlign(Builder.ALIGN_CENTER)
             builder.addText(receiptModel?.order?.orderType + "\n")
-            if (receiptModel?.order?.orderType?.lowercase() == OPEN_ORDER.lowercase()
+            /*if (receiptModel?.order?.orderType?.lowercase() == OPEN_ORDER.lowercase()
                 || receiptModel?.order?.orderType?.lowercase() == OPEN_ORDER.lowercase()
             ) {
 
@@ -6278,7 +6278,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 //   builder.addText(receiptModel?.order?.deliveryType + "\n")
 
 
-            }
+            }*/
 
 
 
@@ -9459,12 +9459,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             receiptModel?.order?.orderType?.trim()?.let { PrintSunmiUtils.printOrderType(it) }
 
 
-            if (receiptModel?.order?.orderType?.lowercase() == OPEN_ORDER.lowercase()
+            /*if (receiptModel?.order?.orderType?.lowercase() == OPEN_ORDER.lowercase()
                 || receiptModel?.order?.orderType?.lowercase() == OPEN_ORDER.lowercase()
             ) {
 
                 //  receiptModel?.order?.deliveryType?.let { PrintSunmiUtils.deliveryType(it) }
-            }
+            }*/
 
 
 
@@ -10125,13 +10125,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             receiptModel?.order?.orderType?.trim()?.let { PrintSunmiUtils.headerText(it) }
             SunmiPrintHelper.getInstance().lineWrap(1)
 
-            if (receiptModel?.order?.orderType?.lowercase() == OPEN_ORDER.lowercase()
+        /*    if (receiptModel?.order?.orderType?.lowercase() == OPEN_ORDER.lowercase()
                 || receiptModel?.order?.orderType?.lowercase() == OPEN_ORDER.lowercase()
             ) {
 
                 //  receiptModel?.order?.deliveryType?.let { PrintSunmiUtils.headerText(it) }
             }
-
+*/
 
 
             if (customerSettingModel.fonts == LARGE) {
