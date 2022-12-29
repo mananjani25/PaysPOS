@@ -1422,8 +1422,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                     } else {
                         txtQty.setText("")
                     }
-                } else if (s.toString().trim().isNotEmpty() && s.toString().toInt() > 10000) {
-                    txtQty.setText("10000")
+                } else if (s.toString().trim().isNotEmpty() && s.toString().toInt() > 15) {
+                    txtQty.setText("15")
                 }
 
             }
