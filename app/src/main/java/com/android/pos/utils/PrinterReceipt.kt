@@ -1051,8 +1051,6 @@ fun addOrdersForKitchenCustoemrPrinter(
 
     list.forEach { obj ->
         printerCat?.forEach {
-            LogUtil.logE(TAG, "printerListCat ${it.id}")
-            LogUtil.logE(TAG, "printerCategoryID ${obj.categoryId}")
             if (it.id == obj.categoryId && it.printerEnable && it.categoryActive) {
 
 
@@ -1090,7 +1088,11 @@ fun addOrdersForKitchenCustoemrPrinter(
                         //builder.addTextPosition(1)
 
 
-                        builder.addText("  " + modifierObj.name)
+                        builder.addText( "  " + if (modifierObj.modifier_quantity == 1) {
+                            "   "
+                        } else {
+                            "" + modifierObj.modifier_quantity + "x "
+                        } + modifierObj.name.uppercase())
 
 
                     }
@@ -1238,13 +1240,18 @@ fun addOrdersForKitchenDineIn(
                         )
                         //builder.addTextPosition(1)
 
-
-                        if (modifierObj.modifier_quantity == 1){}else{""+modifierObj.modifier_quantity+"x "}
-                        builder.addText("  " + modifierObj.name.uppercase())
+                        builder.addText(
+                            "  " + if (modifierObj.modifier_quantity == 1) {
+                                "   "
+                            } else {
+                                "" + modifierObj.modifier_quantity + "x "
+                            } + modifierObj.name.uppercase()
+                        )
 
 
                     }
                 }
+
                 if (obj.note.isNotEmpty()) {
                     builder.addTextLineSpace(30)
                     builder.addFeedUnit(30)
@@ -1314,8 +1321,13 @@ fun addOrdersForKitchenDineInU220(
                         //builder.addTextPosition(1)
 
 
-
-                        builder.addText("  "+if (modifierObj.modifier_quantity == 1){"   "}else{""+modifierObj.modifier_quantity+"x "} + modifierObj.name.uppercase())
+                        builder.addText(
+                            "  " + if (modifierObj.modifier_quantity == 1) {
+                                "   "
+                            } else {
+                                "" + modifierObj.modifier_quantity + "x "
+                            } + modifierObj.name.uppercase()
+                        )
 
 
                     }
