@@ -442,7 +442,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                 item_total_price_included =
                     (temp_totalPrice + itemServiceCharge + itemTotalTax) - itemwiseOrderDiscount
                 if (paymentOrderDetailsResponse.data.loyalty_amount!! > 0) {
-                    selectedLoyaltyPointDivided += (paymentOrderDetailsResponse.data.loyalty_amount!! * item_total_price_included) / (paymentOrderDetailsResponse.data.sub_total + paymentOrderDetailsResponse.data.service_charge_amount + paymentOrderDetailsResponse.data.tax_amount)
+                    selectedLoyaltyPointDivided += (paymentOrderDetailsResponse.data.loyalty_amount!! * item_total_price_included) / (paymentOrderDetailsResponse.data.sub_total + paymentOrderDetailsResponse.data.service_charge_amount + paymentOrderDetailsResponse.data.tax_amount+ paymentOrderDetailsResponse.data.loyalty_amount!!)
                 }
                 if (paymentOrderDetailsResponse.data.tips > 0) {
                     if (item_total_price_included == 0.0) {
@@ -463,7 +463,9 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
             }
 
         }
-        totalItemPrice += (totalServiceCharge + totalTax)
+        totalItemPrice += (String.format("%.2f", totalServiceCharge)
+            .toDouble() + String.format("%.2f", totalTax)
+            .toDouble())
         val nf6: NumberFormat = NumberFormat.getNumberInstance()
         nf6.maximumFractionDigits = 2
         val rounded6: String = nf6.format(selectedOrderDiscountDivided)
@@ -483,8 +485,8 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                 totalItemPrice += selectedTipDivided
             } else if (totalItemPrice == 0.0) {
                 totalItemPrice += paymentOrderDetailsResponse.data.tips / paymentOrderDetailsResponse.data.order.order_items.size
-            }else{
-                totalItemPrice+=paymentOrderDetailsResponse.data.tips
+            } else {
+                totalItemPrice += paymentOrderDetailsResponse.data.tips
             }
         }
         val nf3: NumberFormat = NumberFormat.getNumberInstance()

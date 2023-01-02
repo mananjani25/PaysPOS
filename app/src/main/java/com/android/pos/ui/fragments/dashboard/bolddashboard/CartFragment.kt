@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -35,6 +36,8 @@ import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER_PAY_OFFLINE_ID
 import com.android.pos.data.remote.Constants.LOYALTY_ADDED
 import com.android.pos.data.remote.Constants.MANUAL_SALE
 import com.android.pos.data.remote.Constants.OPEN_ORDER
+import com.android.pos.data.remote.Constants.OPEN_ORDER_DIRECT_PAY
+import com.android.pos.data.remote.Constants.OPEN_ORDER_UPDATE_FOR_PRINT
 import com.android.pos.data.remote.Constants.OPTION_TYPE
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.ORDER_TYPE_ID
@@ -241,6 +244,7 @@ class CartFragment(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        prefProvider.setValueboolean(OPEN_ORDER_DIRECT_PAY, false)
 
         initListeners()
         setCartAdapter()
@@ -1318,7 +1322,7 @@ class CartFragment(
                         binding.txtAddCustomer.visible()
                     }
 
-                    if (isFromPayment || isFromPaymentDinein){
+                    if (isFromPayment || isFromPaymentDinein) {
                         binding.rvOrderType.gone()
                         binding.rlCartView.visible()
 
@@ -1379,6 +1383,12 @@ class CartFragment(
     private fun saveVisibility() {
         if (prefProvider.getValue(ORDER_TYPE, "") == TAKEOUT) {
             binding.tvSave.gone()
+            val param: LinearLayout.LayoutParams = LinearLayout.LayoutParams(
+                0,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                2.0f
+            )
+            binding.tvPayNow.layoutParams = param
         } else {
             binding.tvSave.visible()
         }
@@ -1836,6 +1846,10 @@ class CartFragment(
 
         binding.tvPayNow.setOnClickListener {
 
+            if (prefProvider.getValue(ORDER_TYPE, "") == OPEN_ORDER) {
+
+                prefProvider.setValueboolean(OPEN_ORDER_DIRECT_PAY, true)
+            }
             prefProvider.setValueboolean(Constants.TIP_ADDED, false)
 
             if (cartAdapter.cartList.isNotEmpty()) {
@@ -1878,6 +1892,14 @@ class CartFragment(
 
         }
         binding.tvSave.setOnClickListener {
+            prefProvider.setValueboolean(OPEN_ORDER_UPDATE_FOR_PRINT,false)
+            if (isOrderUpdate == false){
+                prefProvider.setValue(
+                    Constants.OPEN_ORDER_ITEMS,
+                    ""
+                )
+
+            }
             if (cartAdapter.cartList.isNotEmpty()) {
                 prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
 

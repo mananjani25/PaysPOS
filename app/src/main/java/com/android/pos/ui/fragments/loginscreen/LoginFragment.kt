@@ -19,7 +19,11 @@ import com.android.pos.BuildConfig
 import com.android.pos.R
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.AUTH_TOKEN
+import com.android.pos.data.remote.Constants.EMAIL
 import com.android.pos.data.remote.Constants.IS_CLOCKOUT
+import com.android.pos.data.remote.Constants.LOGIN_EMAIL
+import com.android.pos.data.remote.Constants.LOGIN_PASSWORD
+import com.android.pos.data.remote.Constants.LOGIN_REMEMBER
 import com.android.pos.data.remote.Constants.ORDER_COMPLETED
 import com.android.pos.databinding.FragmentLoginBinding
 import com.android.pos.di.ApiModule.BASE_URL
@@ -44,6 +48,8 @@ class LoginFragment : Fragment() {
     private val viewModel by viewModels<LoginViewModel>()
 
     var device_token: String = ""
+
+    var isRemember = false
 
     @set:Inject
     internal var prefProvider: PrefProvider? = null
@@ -85,19 +91,35 @@ class LoginFragment : Fragment() {
         setupSnackbar()
         observeShowProgress()
         navigate()
+        if (prefProvider?.getValueForLogin(LOGIN_REMEMBER, "") == LOGIN_REMEMBER) {
+            var old_email = prefProvider?.getValueForLogin(LOGIN_EMAIL, "")
+            var old_password = prefProvider?.getValueForLogin(LOGIN_PASSWORD, "")
+            Log.d("yash", "onCreateView: "+old_email)
+            Log.d("yash", "onCreateView: "+old_password)
+            viewModel.loginDetails.value?.emailAddress = old_email
+            viewModel.loginDetails.value?.password = old_password
+//            binding.edtEmail.setText(old_email.toString())
+//            binding.edtPassword.setText(old_password.toString())
+
+        }
 
         binding.txtForgotPass.setOnClickListener {
             findNavController().navigate(R.id.action_login_to_forgotPasswordFragment)
         }
 
-        binding.txtTerminalTitle.setOnClickListener {
 
-            copy()
-        }
         binding.terminalId.setOnClickListener {
             copy()
         }
 
+        binding.imgCheckBox.setOnClickListener {
+            isRemember = !isRemember
+            if (isRemember) {
+                binding.imgCheckBox.setImageResource(R.drawable.ic_check_box)
+            } else {
+                binding.imgCheckBox.setImageResource(R.drawable.ic_check_box_unchecked)
+            }
+        }
         prefProvider?.setUniqueId((requireActivity() as MainActivity).getDeviceId())
         binding.terminalId.text = prefProvider?.getUniqueId()
         binding.edtEmail.addTextChangedListener(object : TextWatcher {
@@ -191,6 +213,21 @@ class LoginFragment : Fragment() {
                 if (it) {
                     val bundle = Bundle().apply {
                         putBoolean("isLogin", true)
+                    }
+                    if (isRemember) {
+                        prefProvider?.setValueForLogin(LOGIN_EMAIL, binding.edtEmail.text.toString())
+                        prefProvider?.setValueForLogin(
+                            LOGIN_PASSWORD,
+                            binding.edtPassword.text.toString()
+                        )
+                        prefProvider?.setValueForLogin(LOGIN_REMEMBER, LOGIN_REMEMBER)
+                    }else{
+                        prefProvider?.setValueForLogin(LOGIN_EMAIL, "")
+                        prefProvider?.setValueForLogin(
+                            LOGIN_PASSWORD,
+                            ""
+                        )
+                        prefProvider?.setValueForLogin(LOGIN_REMEMBER, "")
                     }
                     // hostSelectionInterceptor?.setHostBaseUrl()
                     findNavController().navigate(R.id.action_login_to_passcode, bundle)

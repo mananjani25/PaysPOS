@@ -163,7 +163,8 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
                         val itemTaxPrice =
                             (tax.rate * totalItemPrice) / 100
                         Log.e("itemTaxPrice", "" + itemTaxPrice)
-                        itemTaxPrice
+                        String.format("%.2f", itemTaxPrice)
+                            .toDouble()
                     }
 
                 } else {
@@ -184,6 +185,8 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
             serviceChargeList.forEach {
                 totalServiceCharge += (totalItemPrice * it.percentage) / 100
             }
+            String.format("%.2f", totalServiceCharge)
+                .toDouble()
             Log.d(
                 "yash",
                 "bind: [$absoluteAdapterPosition] totalServiceCharge : $totalServiceCharge"

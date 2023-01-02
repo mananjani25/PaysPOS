@@ -1619,7 +1619,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 /* if (receiptModel?.order?.orderType.trim().lowercase() == "OpenOrder".trim()
                      .lowercase()
                ) {*/
-                builder.addFeedLine(1)
+                /*builder.addFeedLine(1)
                 builder.addTextFont(Builder.FONT_E)
                 builder.addTextLang(Builder.LANG_EN)
                 builder.addTextSize(fontSizeH, fontSizeW)
@@ -1632,7 +1632,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 builder.addTextAlign(Builder.ALIGN_CENTER)
 
                 addBuilderTextForU220(builder, receiptModel?.order?.deliveryType.toString())
-
+*/
 
                 if (kitchenSettingModel.showTeamMember) {
 
@@ -2181,7 +2181,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 /* if (receiptModel?.order?.orderType.trim().lowercase() == "OpenOrder".trim()
                      .lowercase()
                ) {*/
-                builder.addFeedLine(1)
+             /*   builder.addFeedLine(1)
                 builder.addTextFont(Builder.FONT_E)
                 builder.addTextLang(Builder.LANG_EN)
                 builder.addTextSize(fontSizeH, fontSizeW)
@@ -2193,7 +2193,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 )
                 builder.addTextAlign(Builder.ALIGN_CENTER)
 
-                addBuilderText(builder, receiptModel?.order?.deliveryType.toString())
+                addBuilderText(builder, receiptModel?.order?.deliveryType.toString())*/
 
                 /*}*/
 
@@ -2518,7 +2518,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 /* if (receiptModel?.order?.orderType.trim().lowercase() == "OpenOrder".trim()
                      .lowercase()
                ) {*/
-                builder.addFeedLine(1)
+             /*   builder.addFeedLine(1)
                 builder.addTextFont(Builder.FONT_E)
                 builder.addTextLang(Builder.LANG_EN)
                 builder.addTextSize(fontSizeH, fontSizeW)
@@ -2530,7 +2530,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 )
                 builder.addTextAlign(Builder.ALIGN_CENTER)
 
-                addBuilderText(builder, receiptModel?.order?.deliveryType.toString())
+                addBuilderText(builder, receiptModel?.order?.deliveryType.toString())*/
 
                 /*}*/
 
@@ -2871,7 +2871,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             if (kitchenSettingModel.showOrderType) {
                 PrintSunmiUtils.printOrderType(receiptModel?.order?.orderType.toString())
             }
-            PrintSunmiUtils.printOrderType(receiptModel?.order?.deliveryType.toString())
+        //    PrintSunmiUtils.printOrderType(receiptModel?.order?.deliveryType.toString())
 
 
             if (kitchenSettingModel.showTeamMember) {
@@ -3027,7 +3027,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                 PrintSunmiUtils.headerText(receiptModel?.order?.orderType.toString())
             }
-            PrintSunmiUtils.headerText(receiptModel?.order?.deliveryType.toString())
+         //   PrintSunmiUtils.headerText(receiptModel?.order?.deliveryType.toString())
 
             SunmiPrintHelper.getInstance().lineWrap(1)
 

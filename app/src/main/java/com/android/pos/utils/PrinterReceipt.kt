@@ -1837,6 +1837,7 @@ fun addOrdersForKitchen(
 ): Builder {
     for (i in 0 until list.size) {
         printerCat?.forEach {
+            Log.e("PrinterReceipt", "checkPrinterItemN:   ${list.get(i).itemName}")
             if (it?.id == list[i].categoryId) {
                 if (it.categoryActive && it.printerEnable) {
 

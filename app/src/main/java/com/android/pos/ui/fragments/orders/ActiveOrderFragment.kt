@@ -396,6 +396,7 @@ class ActiveOrderFragment(
                     prefProvider.saveCustomerData(TbCustomer.customerMapping(order.customer))
                 }
                 prefProvider.setValue(Constants.OPEN_ORDER_ITEMS, Gson().toJson(order.orderItems))
+                prefProvider.setValueboolean(Constants.OPEN_ORDER_UPDATE_FOR_PRINT,true)
 
                 dashboardViewModel.addCart(
                     cartModel(order)
@@ -1296,7 +1297,7 @@ class ActiveOrderFragment(
             builder.addTextAlign(Builder.ALIGN_CENTER)
             builder.addText(receiptModel?.orderType + "\n")
 
-            if (receiptModel?.orderType?.lowercase() == Constants.OPEN_ORDER.lowercase()
+            /*if (receiptModel?.orderType?.lowercase() == Constants.OPEN_ORDER.lowercase()
                 || receiptModel?.orderType?.lowercase() == Constants.OPEN_ORDER.lowercase()
             ) {
 
@@ -1317,7 +1318,7 @@ class ActiveOrderFragment(
 //                builder.addText(receiptModel?.deliveryType + "\n")
 
 
-            }
+            }*/
 
 
 
