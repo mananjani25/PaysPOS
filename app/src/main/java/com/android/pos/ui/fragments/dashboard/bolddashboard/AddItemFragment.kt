@@ -360,6 +360,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
             } else {
                 if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
                     val dineInList = cartList[0].dineInList
+                    Log.e(TAG,"checkCartIsEmpty  ${cartList.size}")
                     LogUtil.logE(TAG, "dineInList:  ${Gson().toJson(dineInList)}")
                     if (dineInList?.isNotEmpty() == true && dineInList != null) {
                         dineInList[0].selectedPosition = viewModel.dineInHeaderPosition

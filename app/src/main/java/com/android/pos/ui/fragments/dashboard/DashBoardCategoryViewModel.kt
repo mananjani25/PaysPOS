@@ -740,6 +740,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     list.add(item)
                                 }
                             }
+                            cartList[0].items = list
                         } else if (type == UPDATE) {
                             var index = -1
                             var list = dineInList[selectedHeader].items
@@ -1297,7 +1298,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     if (cartModel?.reorder == false && list[i].itemId == item.itemId && item.modifiers.isEmpty() && checkVariation(
                                             list[i],
                                             item
-                                        )
+                                        ) && item.id == list[i].id
                                     ) {
                                         index = i
                                         Log.d(TAG, "newCartLogicModifier normal item: ${i}")
