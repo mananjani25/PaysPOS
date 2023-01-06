@@ -2265,7 +2265,12 @@ fun addOrderItemOpenOrderSunmiInner(
             for (j in 0 until obj.orderItemModifiers.size) {
                 val modifierObj = obj.orderItemModifiers.get(j)
 
-                var part1 = "   " + modifierObj.name
+                var part1 = "   " + if (modifierObj.modifier_quantity == 1) {
+                    "   "
+                } else {
+                    "" + modifierObj.modifier_quantity + "x "
+                } + modifierObj.name
+
                 var part2 =
                     "$" + MethodUtils.roundOffAmountString(modifierObj.price.toDouble() * modifierObj.quantity)
                 Log.e("CheckPartF", "part1 ${part1.length}")

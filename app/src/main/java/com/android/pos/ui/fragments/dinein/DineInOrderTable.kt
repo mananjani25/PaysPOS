@@ -2051,158 +2051,162 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         for (j in 0 until baseResponse.guestAttributes.get(i).guestItemAttributes.size) {
                             if (baseResponse.orderItems.isNotEmpty()) {
                                 baseResponse.orderItems.forEach {
-                                    if (it.timestamp.trim()
-                                            .lowercase() == guestItem[j].timestamp.trim()
-                                            .lowercase()
-                                    ) {
+                                    if (guestItem[j].timestamp != null) {
+                                        if (it.timestamp.trim()
+                                                .lowercase() == guestItem[j].timestamp.trim()
+                                                .lowercase()
+                                        ) {
 //                                        val guestAttr = baseResponse.guestAttributes.get(j)
-                                        //Whole Table Calculation
-                                        totalItemDiscount += it.discountAmount
+                                            //Whole Table Calculation
+                                            totalItemDiscount += it.discountAmount
 
-                                        /*     if (baseResponse.guestAttributes.get(i).isPaid) {
+                                            /*     if (baseResponse.guestAttributes.get(i).isPaid) {
                                                  notPayAnyAmount = true
                                              }*/
 
-                                        //for add item in tbItem List and extract/convert data from API
-                                        val itemDineIn: DineInModel = DineInModel()
-                                        val item = TbItem()
-                                        item.isPaid = it.isPaid
-                                        item.discountPrice = it.discountAmount
-                                        item.discountId = it.discountId
-                                        item.discountType = it.discountType.toString()
+                                            //for add item in tbItem List and extract/convert data from API
+                                            val itemDineIn: DineInModel = DineInModel()
+                                            val item = TbItem()
+                                            item.isPaid = it.isPaid
+                                            item.discountPrice = it.discountAmount
+                                            item.discountId = it.discountId
+                                            item.discountType = it.discountType.toString()
 
-                                        item.name = it.itemName
-                                        item.itemId = it.itemId
-                                        item.categoryId = it.categoryId
-                                        item.guestItemId = guestItem[j].id
+                                            item.name = it.itemName
+                                            item.itemId = it.itemId
+                                            item.categoryId = it.categoryId
+                                            item.guestItemId = guestItem[j].id
 
-                                        var listTaxes: ArrayList<TaxData> = arrayListOf()
-                                        it.orderItemTaxes.forEach {
-                                            listTaxes.add(
-                                                TaxData(
-                                                    createdAt = it.createdAt,
-                                                    id = it.id,
-                                                    locationId = prefProvider.getValueInt(
-                                                        LOCATION_ID,
-                                                        0
-                                                    ),
-                                                    name = it.name,
-                                                    rate = it.rate,
-                                                    taxType = it.taxType,
-                                                    updatedAt = it.updatedAt,
-                                                    isActive = true,
-                                                    isDefault = it.isDefault,
-                                                    isCustomAmount = false,
-                                                    itemPricing = "",
-                                                    itemIds = arrayListOf(),
-                                                    orderTaxId = it.taxId
+                                            var listTaxes: ArrayList<TaxData> = arrayListOf()
+                                            it.orderItemTaxes.forEach {
+                                                listTaxes.add(
+                                                    TaxData(
+                                                        createdAt = it.createdAt,
+                                                        id = it.id,
+                                                        locationId = prefProvider.getValueInt(
+                                                            LOCATION_ID,
+                                                            0
+                                                        ),
+                                                        name = it.name,
+                                                        rate = it.rate,
+                                                        taxType = it.taxType,
+                                                        updatedAt = it.updatedAt,
+                                                        isActive = true,
+                                                        isDefault = it.isDefault,
+                                                        isCustomAmount = false,
+                                                        itemPricing = "",
+                                                        itemIds = arrayListOf(),
+                                                        orderTaxId = it.taxId
+                                                    )
                                                 )
-                                            )
-                                        }
-                                        item.taxes = listTaxes
-                                        if (it.orderItemModifiers.isNotEmpty()) {
-                                            var modifiers: ArrayList<Modifier> = arrayListOf()
-                                            it.orderItemModifiers.forEach { mod ->
-                                                val model = Modifier()
-                                                model.id = mod.modifierId
-                                                model.itemQuantity = mod.quantity
-                                                model.name = mod.name
-                                                model.orderModifierId = mod.id
-                                                model.price = mod.price
-                                                model.modifierSetId = mod.modifier_set_id
-                                                model.modifier_quantity = mod.modifier_quantity!!
-
-
-                                                if (mod.orderItemTaxes.isNotEmpty()) {
-                                                    model.orderItemTaxes = mod.orderItemTaxes
-                                                }
-
-                                                modifiers.add(model)
-
-
                                             }
-                                            item.modifiers = modifiers
-
-                                        }
-                                        item.price = it.price
-                                        item.itemQuantity = it.quantity
-                                        item.orderItemId = it.id
-                                        item.note = it.note
-                                        item.isFired = guestItem.get(j).is_fired
-                                        item.timeStamp = it.timestamp
-                                        if (it.orderItemModifiers.isNotEmpty()) {
-                                            item.modifier_set_ids =
-                                                modifiersIds(it.orderItemModifiers)
-                                        }
-                                        if (it.order_item_variation != null) {
-                                            item.variationsAttributes =
-                                                variationAtt(it.order_item_variation!!)
-                                        }
-                                        itemDineIn.isHeader = 1
-                                        itemDineIn.item = item
-                                        itemDineIn.empName =
-                                            baseResponse.floorPlanTable.lockByName.toString()
-
-                                        dineInList.add(itemDineIn)
-
-
-                                        if (!it.isPaid) {
-
-                                            totalSubTotal += (it.quantity * it.price) - it.discountAmount
+                                            item.taxes = listTaxes
                                             if (it.orderItemModifiers.isNotEmpty()) {
+                                                var modifiers: ArrayList<Modifier> = arrayListOf()
                                                 it.orderItemModifiers.forEach { mod ->
-                                                    totalSubTotal += mod.price * mod.quantity
+                                                    val model = Modifier()
+                                                    model.id = mod.modifierId
+                                                    model.itemQuantity = mod.quantity
+                                                    model.name = mod.name
+                                                    model.orderModifierId = mod.id
+                                                    model.price = mod.price
+                                                    model.modifierSetId = mod.modifier_set_id
+                                                    model.modifier_quantity =
+                                                        mod.modifier_quantity!!
+
+
+                                                    if (mod.orderItemTaxes.isNotEmpty()) {
+                                                        model.orderItemTaxes = mod.orderItemTaxes
+                                                    }
+
+                                                    modifiers.add(model)
+
 
                                                 }
+                                                item.modifiers = modifiers
+
                                             }
+                                            item.price = it.price
+                                            item.itemQuantity = it.quantity
+                                            item.orderItemId = it.id
+                                            item.note = it.note
+                                            item.isFired = guestItem.get(j).is_fired
+                                            item.timeStamp = it.timestamp
+                                            if (it.orderItemModifiers.isNotEmpty()) {
+                                                item.modifier_set_ids =
+                                                    modifiersIds(it.orderItemModifiers)
+                                            }
+                                            if (it.order_item_variation != null) {
+                                                item.variationsAttributes =
+                                                    variationAtt(it.order_item_variation!!)
+                                            }
+                                            itemDineIn.isHeader = 1
+                                            itemDineIn.item = item
+                                            itemDineIn.empName =
+                                                baseResponse.floorPlanTable.lockByName.toString()
 
-                                            if (it.orderItemTaxes.isNotEmpty()) {
-                                                it.orderItemTaxes.forEach { tax ->
-                                                    if (!it.isPaid) {
-                                                        totalTaxAmount += if (tax.taxType == "Percentage") {
+                                            dineInList.add(itemDineIn)
 
-                                                            var modifierPrice = 0.0
-                                                            val price =
-                                                                (it.price * it.quantity) - it.discountAmount
 
-                                                            it.orderItemModifiers.forEach {
-                                                                modifierPrice += (it.price * it.quantity)
-                                                            }
+                                            if (!it.isPaid) {
 
-                                                            val totalPrice = price + modifierPrice
-
-                                                            val itemTaxPrice =
-                                                                (tax.rate * totalPrice) / 100
-                                                            LogUtil.logE(
-                                                                "itemTaxPrice",
-                                                                "" + itemTaxPrice
-                                                            )
-                                                            String.format("%.2f", itemTaxPrice)
-                                                                .toDouble()
-                                                        } else {
-
-                                                            String.format(
-                                                                "%.2f",
-                                                                tax.rate * it.quantity
-                                                            )
-                                                                .toDouble()
-                                                        }
-
+                                                totalSubTotal += (it.quantity * it.price) - it.discountAmount
+                                                if (it.orderItemModifiers.isNotEmpty()) {
+                                                    it.orderItemModifiers.forEach { mod ->
+                                                        totalSubTotal += mod.price * mod.quantity
 
                                                     }
                                                 }
 
+                                                if (it.orderItemTaxes.isNotEmpty()) {
+                                                    it.orderItemTaxes.forEach { tax ->
+                                                        if (!it.isPaid) {
+                                                            totalTaxAmount += if (tax.taxType == "Percentage") {
+
+                                                                var modifierPrice = 0.0
+                                                                val price =
+                                                                    (it.price * it.quantity) - it.discountAmount
+
+                                                                it.orderItemModifiers.forEach {
+                                                                    modifierPrice += (it.price * it.quantity)
+                                                                }
+
+                                                                val totalPrice =
+                                                                    price + modifierPrice
+
+                                                                val itemTaxPrice =
+                                                                    (tax.rate * totalPrice) / 100
+                                                                LogUtil.logE(
+                                                                    "itemTaxPrice",
+                                                                    "" + itemTaxPrice
+                                                                )
+                                                                String.format("%.2f", itemTaxPrice)
+                                                                    .toDouble()
+                                                            } else {
+
+                                                                String.format(
+                                                                    "%.2f",
+                                                                    tax.rate * it.quantity
+                                                                )
+                                                                    .toDouble()
+                                                            }
+
+
+                                                        }
+                                                    }
+
+                                                }
                                             }
-                                        }
 
-                                        if (!it.isPaid) {
-                                            isPaid = it.isPaid
-                                        }
-                                        if (!it.isFired) {
-                                            isAllFired = false
-                                        }
+                                            if (!it.isPaid) {
+                                                isPaid = it.isPaid
+                                            }
+                                            if (!it.isFired) {
+                                                isAllFired = false
+                                            }
 
 
+                                        }
                                     }
 
                                 }
