@@ -1181,7 +1181,6 @@ class DashBoardCategoryViewModel @Inject constructor(
                         var index = -1
 
 
-
                         for (i in list.indices) {
                             if (item != null) {
                                 if (item.isManualSales) {
@@ -1194,60 +1193,11 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     }
 
                                 } else {
-                                    if (list[i].id == item.id && list[i].itemId == item.itemId ) {
-                                        var isBreak = false
-                                        list.forEachIndexed { inde, it ->
-                                            if (it.itemId == item.itemId && checkVariation(
-                                                    it,
-                                                    item
-                                                ) && checkModifierNewLogic(it, item)
-                                            ) {
-                                                var listTmp =
-                                                    combineItem(list.toCollection(arrayListOf()), item, inde)
-                                                list.clear()
-                                                Log.d(
-                                                    TAG,
-                                                    "newCartLogicModifier: position of selected Item " + item.id
-                                                )
-                                                var indexJ = -1
-
-                                                for (j in 0 until listTmp.size) {
-                                                    if (listTmp[j].id == item.id
-                                                    ) {
-                                                        indexJ = j
-                                                        break
-                                                    }
-
-                                                }
-                                                var ttempllist =
-                                                    ArrayList(listTmp).apply {
-                                                        if (indexJ != -1) {
-                                                            Log.e(TAG, "GETIndexJ  ${indexJ}")
-                                                            removeAt(indexJ)
-                                                        }
-                                                    }
-                                                list.addAll(ttempllist.toMutableList())
-                                                index = -2
-
-                                                isBreak = true
-                                                return@forEachIndexed
-                                            }
-
-                                        }
-                                        if (isBreak){
-                                            break
-                                        }
-
-                                        if (isBreak == false) {
-
-
-                                            Log.d(TAG, "cartLogic: " + i)
-                                            index = i
-                                            break
-                                        }
-                                    }
-
-                                    else if (list[i].itemId == item.itemId && checkVariation(
+                                    if (list[i].id == item.id && list[i].itemId == item.itemId) {
+                                        Log.d(TAG, "cartLogic: " + i)
+                                        index = i
+                                        break
+                                    } else if (list[i].itemId == item.itemId && checkVariation(
                                             list[i],
                                             item
                                         ) && checkModifierNewLogic(list[i], item)
@@ -2298,8 +2248,8 @@ class DashBoardCategoryViewModel @Inject constructor(
         var listOfDataMod: ArrayList<Int> = arrayListOf()
         var tbMod: HashMap<Int, Int> = hashMapOf()
         var itemMod: HashMap<Int, Int> = hashMapOf()
-        Log.e(TAG,"checkItemTbMod  ${Gson().toJson(tbItem.modifiers)}")
-        Log.e(TAG,"checkItemMod  ${Gson().toJson(item.modifiers)}")
+        Log.e(TAG, "checkItemTbMod  ${Gson().toJson(tbItem.modifiers)}")
+        Log.e(TAG, "checkItemMod  ${Gson().toJson(item.modifiers)}")
 
         if (tbItem.modifiers.isNotEmpty()) {
             tbItem.modifiers.forEach {

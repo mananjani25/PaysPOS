@@ -2563,6 +2563,22 @@ fun addWholeTbItemToGuestInner(
         ).toString()
     )
 
+    if (obj.modifiers.isNotEmpty()){
+
+        obj.modifiers.forEach {
+            PrintSunmiUtils.normalText(
+                padLineCustomerItem(
+                    if (it.modifier_quantity == 1){"      "+obj.name}else{"   "+it.modifier_quantity + "x " + obj.name},
+                    "" + MethodUtils.roundOffAmount(it.price * it.itemQuantity),
+                    if (font == Constants.LARGE) 23 else 48
+                ).toString()
+            )
+        }
+
+
+
+    }
+
 }
 
 fun isInRange(minn: Int, maxx: Int, value: Int): Boolean {
