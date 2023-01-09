@@ -2063,7 +2063,7 @@ fun addOrdersForKitchenInner(
 
 
 
-                PrintSunmiUtils.normalTextLarge("  " + modifierObj.name.uppercase())
+                PrintSunmiUtils.normalTextLarge(if (modifierObj.modifierQuantity == 1){"     " + modifierObj.name.uppercase()} else{"  "+modifierObj.modifierQuantity+"x " + modifierObj.name.uppercase()})
 
 
             }
@@ -2399,7 +2399,7 @@ fun addWholeTbItemToGuest(
     var finalAmt = MethodUtils.roundOffAmount((subTotal) / guestCount)
     builder.addText(
         padLineCustomerItem(
-            obj.itemQuantity.toString() + "x " + obj.name,
+            obj.itemQuantity.toString() + "  " + obj.name,
             "" + finalAmt,
             if (font == Constants.LARGE) {
                 24
@@ -2557,7 +2557,7 @@ fun addWholeTbItemToGuestInner(
 
     PrintSunmiUtils.normalText(
         padLineCustomerItem(
-            obj.itemQuantity.toString() + "x " + obj.name,
+            obj.itemQuantity.toString() + "  " + obj.name,
             "" + finalAmt,
             if (font == Constants.LARGE) 23 else 48
         ).toString()
@@ -2690,7 +2690,7 @@ fun addOrderItemForDineIn(
 
     PrintSunmiUtils.orderTime(
         padLineCustomerItem(
-            obj.itemQuantity.toString() + "x " + obj.name,
+            obj.itemQuantity.toString() + "  " + obj.name,
             "$" + MethodUtils.roundOffAmountString(totalPriceDineInItem(obj)),
             if (font == Constants.LARGE) 23 else 48
         ).toString()
@@ -2705,7 +2705,7 @@ fun addOrderItemForDineIn(
 
             PrintSunmiUtils.orderTime(
                 padLineCustomerItem(
-                    "   " + modifierObj.name,
+                    if (modifierObj.modifier_quantity == 1){"     " + modifierObj.name}else{"  "+modifierObj.modifier_quantity+"x " + modifierObj.name},
                     "$" + MethodUtils.roundOffAmountString(modifierObj.price.toDouble() * modifierObj.itemQuantity),
                     if (font == Constants.LARGE) 23 else 48
                 ).toString()
@@ -2736,7 +2736,7 @@ fun addOrderItemForDineInInner(
 
     PrintSunmiUtils.normalTextDineInItem(
         padLineCustomerItem(
-            obj.itemQuantity.toString() + "x " + obj.name,
+            obj.itemQuantity.toString() + "  " + obj.name,
             "$" + MethodUtils.roundOffAmountString(totalPriceDineInItem(obj)),
             if (font == Constants.LARGE) 23 else 48
         ).toString()
@@ -2751,7 +2751,7 @@ fun addOrderItemForDineInInner(
 
             PrintSunmiUtils.normalText(
                 padLineCustomerItem(
-                    "   " + modifierObj.name,
+                    if (modifierObj.modifier_quantity == 1){"     " + modifierObj.name}else{"  "+modifierObj.modifier_quantity+"x " + modifierObj.name},
                     "$" + MethodUtils.roundOffAmountString(modifierObj.price.toDouble() * modifierObj.itemQuantity),
                     if (font == Constants.LARGE) 23 else 48
                 ).toString()
