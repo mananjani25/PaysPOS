@@ -161,7 +161,8 @@
                         android:padding="@dimen/_5sdp"
                         android:textColor="@color/txtColor"
                         android:textColorHint="@color/hintColor"
-                        android:textSize="@dimen/_5mdpi" />
+                        android:textSize="@dimen/_5mdpi"
+                        tools:ignore="TouchTargetSizeCheck" />
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
 

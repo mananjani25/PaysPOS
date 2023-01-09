@@ -117,6 +117,9 @@ class PosRepository @Inject constructor(
     suspend fun deletePrinter(id: Int, status: String? = null) =
         apiHelperNew.deletePrinter(id, status)
 
+  suspend fun textPaySplit(id: Int) =
+        apiHelperNew.textPaySplit(id)
+
     suspend fun deleteQueuePrinter(id: Int) = apiHelperNew.deleteQueuePrinter(id)
 
     suspend fun deleteAllQueuePrinter(id: Array<Int>) = apiHelperNew.deleteAllQueuePrinter(id)
@@ -836,6 +839,19 @@ class PosRepository @Inject constructor(
             )
         })
 
+    fun getPhoneOrders(
+        paymentStatus: String,
+        startDate: String,
+        endDate: String
+    ): LiveData<Resource<OpenOrderResponse>> =
+        performGetOperationNew(networkCall = {
+            if (paymentStatus == "Upcoming") apiHelperNew.getUpcomingOpenOrders() else apiHelperNew.getPhoneOrders(
+                paymentStatus,
+                startDate,
+                endDate
+            )
+        })
+
 
     suspend fun refundPaymentOnline(data: RefundRequestModelOnlineOrder) =
         apiHelperNew.refundPaymentOnline(data)
@@ -1005,8 +1021,8 @@ class PosRepository @Inject constructor(
 
     }
 
-    fun orderCounts(startDate: String?, endDate: String?) =
-        performGetOperationNew(networkCall = { apiHelperNew.orderCounts(startDate, endDate) })
+    fun orderCounts(startDate: String?, endDate: String?, isOpenOrder: Boolean) =
+        performGetOperationNew(networkCall = { apiHelperNew.orderCounts(startDate, endDate,isOpenOrder) })
 
     fun onlineOrderCounts(startDate: String?, endDate: String?) =
         performGetOperationNew(networkCall = { apiHelperNew.onlineOrderCounts(startDate, endDate) })

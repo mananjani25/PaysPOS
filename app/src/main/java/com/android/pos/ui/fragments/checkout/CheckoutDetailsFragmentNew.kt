@@ -769,6 +769,14 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
             }
         }
+
+        paymentviewModel.data.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let {
+
+            }
+        }
+
+
     }
 
     private fun observeShowProgress() {
@@ -908,7 +916,6 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             )
             paymentAmount = binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
             cashPaymentWithVariation()
-
 
 
         }
@@ -1490,19 +1497,26 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             }
             paymentviewModel.submit(myRequest)
         } else {
-            val paymentReq = myRequest.order.paymentAttributes
-            if (paymentReq != null) {
-                paymentReq.order_id = orderId
+
+            if (textToPay) {
+
+                paymentviewModel.textPaySplit(orderId)
+
+            } else {
+
+                val paymentReq = myRequest.order.paymentAttributes
+                if (paymentReq != null) {
+                    paymentReq.order_id = orderId
+                }
+
+                // total amount - (hal pay amoutn + alredy pay )
+                val aa = SpitByOrderRequestModel(
+                    orderId, isSelectedCount <= 1,
+                    SpitByOrderPaymentModel(listOf(paymentReq) as List<PaymentAttributes>)
+                )
+
+                paymentviewModel.splitByOrder(aa, false)
             }
-
-            // total amount - (hal pay amoutn + alredy pay )
-            val aa = SpitByOrderRequestModel(
-                orderId, isSelectedCount <= 1,
-                SpitByOrderPaymentModel(listOf(paymentReq) as List<PaymentAttributes>)
-            )
-
-            paymentviewModel.splitByOrder(aa, false)
-
         }
     }
 

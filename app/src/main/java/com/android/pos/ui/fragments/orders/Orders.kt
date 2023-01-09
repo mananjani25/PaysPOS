@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,12 +24,16 @@ import com.android.pos.di.RolePermission
 import com.android.pos.ui.adapter.InventoryAdapter
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
+import com.android.pos.utils.extensions.gone
+import com.android.pos.utils.extensions.setOnSingleClickListener
+import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class Orders : Fragment() {
+    private var isOpenOrder: Boolean = true
     private var mPos: Int = 0
     private var activeOrdersCount: Int? = 0
     private var cancelledOrdersCount: Int? = 0
@@ -38,8 +41,8 @@ class Orders : Fragment() {
     private var upcomingOrdersCount: Int? = 0
     val TAG = this.javaClass.name
     private lateinit var binding: FragmentInventoryBinding
-    var startDate:String?=null
-    var endDate:String?=null
+    var startDate: String? = null
+    var endDate: String? = null
 
     @Inject
     lateinit var rolePermission: RolePermission
@@ -55,9 +58,10 @@ class Orders : Fragment() {
         binding.lifecycleOwner = this
 
         configureToolbar()
+        setupClickEvent()
         changePosition(0)
         // setAdapter(0)
-        getOrderCountsObserver("","")
+        getOrderCountsObserver("", "")
         requireContext().registerReceiver(broadcastReceiver, IntentFilter("cancelled"));
         findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<String>(KEY)
             ?.observe(viewLifecycleOwner) { it ->
@@ -71,7 +75,7 @@ class Orders : Fragment() {
                         changePosition(1)
                         setAdapter(1)
                     }
-                    CANCELED_ORDER ->  {
+                    CANCELED_ORDER -> {
                         changePosition(2)
                         setAdapter(2)
                     }
@@ -82,6 +86,27 @@ class Orders : Fragment() {
         return binding.root
     }
 
+    private fun setupClickEvent() {
+
+        binding.commonToolbar.txtOpenOrder.setOnSingleClickListener {
+
+            isOpenOrder = true
+            binding.commonToolbar.txtOpenOrder.setBackgroundResource(R.drawable.button_action_hover)
+            binding.commonToolbar.txtPhoneOrder.setBackgroundResource(R.drawable.background_square_border_grey)
+            changePosition(0)
+            setAdapter(mPos)
+
+        }
+        binding.commonToolbar.txtPhoneOrder.setOnSingleClickListener {
+            isOpenOrder = false
+            binding.commonToolbar.txtOpenOrder.setBackgroundResource(R.drawable.background_square_border_grey)
+            binding.commonToolbar.txtPhoneOrder.setBackgroundResource(R.drawable.button_action_hover)
+            changePosition(0)
+            getOrderCountsObserver("", "")
+        }
+
+    }
+
 
     var broadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -90,7 +115,7 @@ class Orders : Fragment() {
             startDate = intent?.getStringExtra("start_date")
             endDate = intent?.getStringExtra("end_date")
 
-            getOrderCountsObserver(startDate,endDate)
+            getOrderCountsObserver(startDate, endDate)
 
             if (isCount == true) {
 
@@ -134,7 +159,7 @@ class Orders : Fragment() {
     private fun getOrderCountsObserver(startDate: String?, endDate: String?) {
         try {
             if (view != null) {
-                viewModel.orderCounts(startDate, endDate).observe(viewLifecycleOwner) {
+                viewModel.orderCounts(startDate, endDate,isOpenOrder).observe(viewLifecycleOwner) {
                     it?.let { resource ->
                         when (resource.status) {
                             Status.SUCCESS -> {
@@ -158,7 +183,7 @@ class Orders : Fragment() {
                 }
             }
 
-        }catch (e:Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
         }
     }
@@ -169,6 +194,9 @@ class Orders : Fragment() {
     }
 
     private fun configureToolbar() {
+
+        binding.commonToolbar.llOrders.visible()
+        binding.commonToolbar.txtSubTitle.gone()
         binding.commonToolbar.imgDrawer.setOnClickListener {
             if (MethodUtils.isDoubleClick()) return@setOnClickListener
             findNavController().navigate(R.id.action_orders_to_menuposbold)
@@ -186,29 +214,55 @@ class Orders : Fragment() {
 
     private fun changePosition(position: Int) {
         mPos = position
-        when (position) {
-            0 -> {
-                val activeOrders = ActiveOrderFragment("0",startDate,endDate)
-                loadFragment(activeOrders)
-                binding.commonToolbar.txtSetItem.visibility = View.GONE
-                binding.commonToolbar.txtSubTitle.text = "Active Orders"
-            }
-            1 -> {
-                val modifier: Fragment = ActiveOrderFragment("1",startDate,endDate)
-                loadFragment(modifier)
-                binding.commonToolbar.txtSetItem.visibility = View.GONE
-                binding.commonToolbar.txtSubTitle.text = "Completed"
+
+        if (isOpenOrder) {
+            when (position) {
+                0 -> {
+                    val activeOrders = ActiveOrderFragment("0", startDate, endDate)
+                    loadFragment(activeOrders)
+                    binding.commonToolbar.txtSetItem.visibility = View.GONE
+                    binding.commonToolbar.txtSubTitle.text = "Active Orders"
+                }
+                1 -> {
+                    val modifier: Fragment = ActiveOrderFragment("1", startDate, endDate)
+                    loadFragment(modifier)
+                    binding.commonToolbar.txtSetItem.visibility = View.GONE
+                    binding.commonToolbar.txtSubTitle.text = "Completed"
+                }
+
+                2 -> {
+                    val cancelled = ActiveOrderFragment("2", startDate, endDate)
+                    loadFragment(cancelled)
+                    binding.commonToolbar.txtSetItem.visibility = View.GONE
+                    binding.commonToolbar.txtSubTitle.text = "Cancelled Orders"
+                }
+
             }
 
-            2 -> {
-                val cancelled = ActiveOrderFragment("2",startDate,endDate)
-                loadFragment(cancelled)
-                binding.commonToolbar.txtSetItem.visibility = View.GONE
-                binding.commonToolbar.txtSubTitle.text = "Cancelled Orders"
-            }
+        } else {
+            when (position) {
+                0 -> {
+                    val activeOrders = PhoneOrderListFragment("0", startDate, endDate)
+                    loadFragment(activeOrders)
+                    binding.commonToolbar.txtSetItem.visibility = View.GONE
+                    binding.commonToolbar.txtSubTitle.text = "Active Orders"
+                }
+                1 -> {
+                    val modifier: Fragment = PhoneOrderListFragment("1", startDate, endDate)
+                    loadFragment(modifier)
+                    binding.commonToolbar.txtSetItem.visibility = View.GONE
+                    binding.commonToolbar.txtSubTitle.text = "Completed"
+                }
 
+                2 -> {
+                    val cancelled = PhoneOrderListFragment("2", startDate, endDate)
+                    loadFragment(cancelled)
+                    binding.commonToolbar.txtSetItem.visibility = View.GONE
+                    binding.commonToolbar.txtSubTitle.text = "Cancelled Orders"
+                }
+
+            }
         }
-
 
     }
 
@@ -223,26 +277,49 @@ class Orders : Fragment() {
         mPos = pos
 
         val list: ArrayList<InventoryItemModel> = arrayListOf()
-        when (pos) {
-            0 -> {
-                list.add(InventoryItemModel(0, "Active Orders ",activeOrdersCount, true))
-//                list.add(InventoryItemModel(0, "Upcoming Orders ",upcomingOrdersCount))
-                list.add(InventoryItemModel(0, "Completed ",completedOrdersCount))
-                list.add(InventoryItemModel(0, "Cancelled Orders ",cancelledOrdersCount))
-            }
-            1 -> {
-                list.add(InventoryItemModel(0, "Active Orders ",activeOrdersCount))
-//                list.add(InventoryItemModel(0, "Upcoming Orders ",upcomingOrdersCount))
-                list.add(InventoryItemModel(0, "Completed ",completedOrdersCount ,true))
-                list.add(InventoryItemModel(0, "Cancelled Orders ",cancelledOrdersCount))
+        if (!isOpenOrder) {
+            when (pos) {
 
-            }
-            2 -> {
-                list.add(InventoryItemModel(0, "Active Orders ",activeOrdersCount))
-//                list.add(InventoryItemModel(0, "Upcoming Orders ",upcomingOrdersCount))
-                list.add(InventoryItemModel(0, "Completed ",completedOrdersCount))
-                list.add(InventoryItemModel(0, "Cancelled Orders ",cancelledOrdersCount, true))
 
+                0 -> {
+                    list.add(InventoryItemModel(0, "Phone Orders ", activeOrdersCount, true))
+                    list.add(InventoryItemModel(0, "Completed ", completedOrdersCount))
+                    list.add(InventoryItemModel(0, "Cancelled Orders ", cancelledOrdersCount))
+                }
+                1 -> {
+                    list.add(InventoryItemModel(0, "Phone Orders ", activeOrdersCount))
+                    list.add(InventoryItemModel(0, "Completed ", completedOrdersCount, true))
+                    list.add(InventoryItemModel(0, "Cancelled Orders ", cancelledOrdersCount))
+
+                }
+                2 -> {
+                    list.add(InventoryItemModel(0, "Phone Orders ", activeOrdersCount))
+                    list.add(InventoryItemModel(0, "Completed ", completedOrdersCount))
+                    list.add(InventoryItemModel(0, "Cancelled Orders ", cancelledOrdersCount, true))
+
+                }
+            }
+        } else {
+            when (pos) {
+
+
+                0 -> {
+                    list.add(InventoryItemModel(0, "Active Orders ", activeOrdersCount, true))
+                    list.add(InventoryItemModel(0, "Completed ", completedOrdersCount))
+                    list.add(InventoryItemModel(0, "Cancelled Orders ", cancelledOrdersCount))
+                }
+                1 -> {
+                    list.add(InventoryItemModel(0, "Active Orders ", activeOrdersCount))
+                    list.add(InventoryItemModel(0, "Completed ", completedOrdersCount, true))
+                    list.add(InventoryItemModel(0, "Cancelled Orders ", cancelledOrdersCount))
+
+                }
+                2 -> {
+                    list.add(InventoryItemModel(0, "Active Orders ", activeOrdersCount))
+                    list.add(InventoryItemModel(0, "Completed ", completedOrdersCount))
+                    list.add(InventoryItemModel(0, "Cancelled Orders ", cancelledOrdersCount, true))
+
+                }
             }
         }
         binding.recyclerViewItemsList.adapter =

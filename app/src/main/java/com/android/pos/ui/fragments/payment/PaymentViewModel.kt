@@ -60,6 +60,9 @@ open class PaymentViewModel @Inject constructor(
     private var _queueCreateSaveOrder = MutableLiveData<Event<Boolean?>>()
     val QueueCreateSaveOrder: LiveData<Event<Boolean?>> = _queueCreateSaveOrder
 
+    private var _textToPaySpit = MutableLiveData<Event<Boolean?>>()
+    val textToPaySpit: LiveData<Event<Boolean?>> = _textToPaySpit
+
     private val _queueStartSaveOrder = MutableLiveData<Event<CreateOrderResponse?>>()
     val queueStartSaveOrder: LiveData<Event<CreateOrderResponse?>> = _queueStartSaveOrder
 
@@ -185,7 +188,7 @@ open class PaymentViewModel @Inject constructor(
                                         LogUtil.logE("QueueCheck", "CreateOrderData")
                                     }
 
-                                    if (createOrderResponse.data.order.orderType != "Dine In" && createOrderResponse.data.order.orderType != PHONE_ORDER ) {
+                                    if (createOrderResponse.data.order.orderType != "Dine In" && createOrderResponse.data.order.orderType != PHONE_ORDER) {
                                         _queueStartTakeOut.value = Event(createOrderResponse)
                                         LogUtil.logE("QueueCheck", "QueueStart")
                                     }
@@ -2020,5 +2023,32 @@ open class PaymentViewModel @Inject constructor(
 
     fun textPay(tPay: Boolean) {
         textToPay = tPay
+    }
+
+    fun textPaySplit(orderId: Int) {
+
+        _showProgress.value = Event(true)
+        viewModelScope.launch {
+            val resource = posRepository.textPaySplit(orderId)
+
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    _showProgress.value = Event(false)
+                    _textToPaySpit.value = Event(true)
+
+                }
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+
+                }
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message)
+                    _showProgress.value = Event(false)
+                }
+            }
+
+
+        }
+
     }
 }
