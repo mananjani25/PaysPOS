@@ -28,10 +28,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
-import androidx.work.Data
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.PeriodicWorkRequest
-import androidx.work.WorkManager
 import com.android.pos.R
 import com.android.pos.data.model.PrinterQueueModel
 import com.android.pos.data.model.responseModel.GetKitchenReceiptSettingsResponse
@@ -52,7 +48,6 @@ import com.android.pos.utils.*
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.statusUtils.Status
 import com.android.pos.utils.workmanager.ThreadPoolManager
-import com.android.pos.utils.workmanager.UploadWorker
 import com.epson.epos2.ConnectionListener
 import com.epson.epos2.printer.Printer
 import com.epson.epos2.printer.PrinterStatusInfo
@@ -75,7 +70,6 @@ import java.io.IOException
 import java.net.URI
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 
@@ -729,7 +723,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         super.onCreate(savedInstanceState)
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN)
 
-       // connectionActionCable()
+        // connectionActionCable()
         val intentFilter = IntentFilter("PrinterQueue")
         registerReceiver(wifiStateReceiver, intentFilter)
         getCustomerReceiptSettings()
@@ -897,25 +891,25 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
         if (subscription != null) {
             subscription?.onConnected {
-                ToastUtil.showNormalToast(this,"Connected")
+                ToastUtil.showNormalToast(this, "Connected")
                 Log.e(TAG, "onActionConnected")
 
 
             }?.onRejected {
-                ToastUtil.showNormalToast(this,"Connected")
+                ToastUtil.showNormalToast(this, "Connected")
                 Log.e(TAG, "onActiononRejected")
 
             }?.onReceived {
-                ToastUtil.showNormalToast(this,"Connected")
+                ToastUtil.showNormalToast(this, "Connected")
                 Log.e(TAG, "onActiononReceived  " + Gson().toJson(it))
 
 
             }?.onDisconnected {
-                ToastUtil.showNormalToast(this,"Connected")
+                ToastUtil.showNormalToast(this, "Connected")
                 Log.e(TAG, "onActiononDisconnected")
 
             }?.onFailed {
-                ToastUtil.showNormalToast(this,"Connected")
+                ToastUtil.showNormalToast(this, "Connected")
                 Log.e(TAG, "onActiononFailed")
                 //subscription = consumer?.subscriptions?.create(appearanceChannel)
                 try {
@@ -967,7 +961,8 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         @SuppressLint("RestrictedApi")
         override fun onReceive(context: Context, intent: Intent) {
 //            LogUtil.logE(TAG,"customerPrinterList  ${Gson().toJson(customerPrinterList)}")
-            kitchenPrinterList.forEach {
+
+            /*kitchenPrinterList.forEach {
                 println("customerPrinterList " + it.name)
             }
 
@@ -997,6 +992,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 LogUtil.logE(TAG, "printerQueueLog  ${e.message.toString()}")
                 e.printStackTrace()
             }
+        */
         }
     }
 
