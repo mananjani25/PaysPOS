@@ -812,8 +812,10 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         model.name = item.name
                                         model.price = item.price
                                         model.variationsAttributes = item.variationsAttributes
+
                                         if (item.isEdited) {
                                             model.isEdited = item.isEdited
+                                            model.guestItemId = item.guestItemId
                                         }
                                         if (prefProvider.getValueboolean(
                                                 DINE_IN_UPDATE,
@@ -844,6 +846,10 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         model.itemQuantity = item.itemQuantity
                                         model.modifiers = item.modifiers
                                         model.isDestroy = false
+                                        item.orderItemId?.let {
+                                            model.orderItemId = it
+                                        }
+                                        model.taxes = item.taxes
                                         itemDiscountApply(model, item)
 
                                     }
@@ -3739,6 +3745,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     private fun getGuestsAttributes(cartModel: CartModel): List<GuestsAttributes> {
         val orderItemsAttributeList: ArrayList<GuestsAttributes> = arrayListOf()
+        Log.e(TAG, "dineInListData:   ${Gson().toJson(cartModel.dineInList)}")
         cartModel.dineInList?.forEach { it ->
             val model = GuestsAttributes()
             model.name = it.title.toString()
@@ -3754,20 +3761,36 @@ class DashBoardCategoryViewModel @Inject constructor(
                 var totalAmount = 0.0
                 it.items.forEach { tb ->
 
+                    if (tb.id != 0) {
+                        listItems.add(
+                            GuestItemsAttributes(
+                                id = tb.guestItemId,
+                                orderItemId = tb.orderItemId,
+                                quantity = tb.itemQuantity,
+                                itemId = tb.itemId,
+                                amount = tb.price,
+                                timestamp = tb.timeStamp,
+                                guestId = it.id?.let { it }
 
-                    listItems.add(
-                        GuestItemsAttributes(
-                            id = tb.guestItemId,
-                            orderItemId = tb.orderItemId,
-                            quantity = tb.itemQuantity,
-                            itemId = tb.itemId,
-                            amount = tb.price,
-                            timestamp = tb.timeStamp,
-                            guestId = it.id?.let { it }
+                            )
 
                         )
 
-                    )
+                    } else {
+                        listItems.add(
+                            GuestItemsAttributes(
+                                id = tb.guestItemId,
+                                orderItemId = tb.orderItemId,
+                                quantity = tb.itemQuantity,
+                                itemId = tb.itemId,
+                                amount = tb.price,
+                                timestamp = tb.timeStamp,
+                                guestId = it.id?.let { it }
+
+                            )
+
+                        )
+                    }
 
 
 
