@@ -62,6 +62,8 @@ import com.android.pos.utils.extensions.*
 import com.android.pos.utils.statusUtils.Resource
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -192,24 +194,23 @@ class CartFragment(
             }
 
 
-
-
         setUpData()
         return binding.root
     }
 
     private fun checkOrderType() {
 
+
         if (prefProvider.getValue(ORDER_TYPE, "").isEmpty()) {
-            binding.rlCartView?.gone()
-            binding.rvOrderType?.visible()
-            binding.orderTypeDisplay?.text =
+            binding.rlCartView.gone()
+            binding.rvOrderType.visible()
+            binding.orderTypeDisplay.text =
                 getString(R.string.current_order)
         } else {
-            binding.rlCartView?.visible()
-            binding.rvOrderType?.gone()
+            binding.rlCartView.visible()
+            binding.rvOrderType.gone()
 
-            binding.orderTypeDisplay?.text =
+            binding.orderTypeDisplay.text =
                 getString(R.string.current_order) + " : " + prefProvider.getValue(ORDER_TYPE, "")
         }
     }
@@ -865,10 +866,18 @@ class CartFragment(
 
         } else {
             if (view != null) {
+
+
+
                 viewModel.mAllWords(
                     prefProvider.getValue(ORDER_TYPE, TAKEOUT),
                     prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
                 ).observe(requireActivity()) {
+
+                    Log.e("All LOG : ORDER_TYPE", prefProvider.getValue(ORDER_TYPE, TAKEOUT))
+                    Log.e("All LOG :EMPLOYEE_ID", prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0).toString())
+
+
                     saveVisibility()
 
                     LogUtil.logE("mAllWords :", "LIST SIZE :" + it.size.toString())
@@ -1099,6 +1108,9 @@ class CartFragment(
 
 
                     } else {
+
+
+
                         binding.rvCartDineIn.gone()
                         binding.rvCartList.visible()
 
@@ -1106,6 +1118,10 @@ class CartFragment(
 
 
                         if (it.isNotEmpty()) {
+
+                            binding.rlCartView.visible()
+                            binding.rvOrderType.gone()
+
                             Log.e("mAllWords", "listSize ITEM ${it.get(0).items?.size}")
                             viewModel.destroyedList.clear()
                             it[0].items?.filter { item -> item.isDestroy }?.let {
@@ -1252,6 +1268,7 @@ class CartFragment(
 
 
                         } else {
+
                             cartlist = arrayListOf()
                             binding.liinearInfoLayout.layoutParams.height =
                                 resources.getDimension(R.dimen._50sdp).toInt()
@@ -2151,6 +2168,31 @@ class CartFragment(
             DashboardCategoryBoldPOS.newInstance().keypadShow(true)
         }
 
+
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        org.greenrobot.eventbus.EventBus.getDefault().register(this)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        org.greenrobot.eventbus.EventBus.getDefault().unregister(this)
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onMessageEvent(event: String?) {
+        // Do something
+        if (event != null) {
+            Log.e("onMessageEvent",event)
+        }
+        checkOrderType()
+
+        addObserver()
+
+        DashboardCategoryBoldPOS.newInstance().keypadShow(true)
 
     }
 }
