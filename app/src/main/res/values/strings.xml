@@ -825,6 +825,7 @@
     <string name="add_guest">Add Guest</string>
     <string name="add_reason">Add Reason</string>
     <string name="remember_me">Remember me</string>
+    <string name="text_customer_receipt">Text Customer Receipt</string>
 
 </resources>
 
