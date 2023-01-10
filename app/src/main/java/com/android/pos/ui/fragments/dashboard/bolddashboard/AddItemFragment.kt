@@ -347,7 +347,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 
                     if (checkVar()) {
 
-                        LogUtil.logE("NewItem", "ItemSame ${Gson().toJson(mainItem)}")
+                        LogUtil.logE("NewItem", "ItemSame ${Gson().toJson(item)}")
                         viewModel.newCartLogicModifier(cartList, item, Constants.UPDATE, false)
 
                     } else {

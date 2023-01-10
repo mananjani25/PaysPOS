@@ -1186,6 +1186,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                     } else if (type == UPDATE) {
                         var index = -1
 
+                        var idsF  = list.filter { it.itemId == item?.itemId }
+                        Log.e("CheckUpdate","checkIdsfSize  ${idsF.size}")
+
 
                         for (i in list.indices) {
                             if (item != null) {
@@ -1199,11 +1202,11 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     }
 
                                 } else {
-                                    if (list[i].id == item.id && list[i].itemId == item.itemId) {
-                                        Log.d(TAG, "cartLogic: " + i)
-                                        index = i
-                                        break
-                                    } else if (list[i].itemId == item.itemId && checkVariation(
+
+
+
+
+                                      if (idsF.size >1  && list[i].itemId == item.itemId && checkVariation(
                                             list[i],
                                             item
                                         ) && checkModifierNewLogic(list[i], item)
@@ -1211,8 +1214,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         var listTmp =
                                             combineItem(list.toCollection(arrayListOf()), item, i)
                                         list.clear()
-                                        Log.d(
-                                            TAG,
+                                        Log.e(
+                                            "CheckUpdate",
                                             "newCartLogicModifier: position of selected Item " + item.id
                                         )
                                         var indexJ = -1
@@ -1228,7 +1231,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         var ttempllist =
                                             ArrayList(listTmp).apply {
                                                 if (indexJ != -1) {
-                                                    Log.e(TAG, "GETIndexJ  ${indexJ}")
+                                                    Log.e("CheckUpdate", "GETIndexJ  ${indexJ}")
                                                     removeAt(indexJ)
                                                 }
                                             }
@@ -1236,6 +1239,70 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         index = -2
                                         break
                                     }
+                                    else if (list[i].id == item.id && list[i].itemId == item.itemId) {
+
+                                       var  isBreakInside = false
+
+
+                                          if (idsF.size > 1) {
+
+                                              for (k in i until list.size) {
+                                                  if (list[k].id != item.id && list[k].itemId == item.itemId && checkVariation(
+                                                          list[k],
+                                                          item
+                                                      ) && checkModifierNewLogic(list[k], item)
+                                                  ) {
+
+                                                      var listTmp =
+                                                          combineItem(
+                                                              list.toCollection(arrayListOf()),
+                                                              item,
+                                                              k
+                                                          )
+                                                      list.clear()
+                                                      Log.e(
+                                                          "CheckUpdate",
+                                                          "newCartLogicModifier: position of selected Item " + item.id
+                                                      )
+                                                      var indexJ = -1
+
+                                                      for (j in 0 until listTmp.size) {
+                                                          if (listTmp[j].id == item.id
+                                                          ) {
+                                                              indexJ = j
+                                                              break
+                                                          }
+
+                                                      }
+                                                      var ttempllist =
+                                                          ArrayList(listTmp).apply {
+                                                              if (indexJ != -1) {
+                                                                  Log.e(
+                                                                      "CheckUpdate",
+                                                                      "GETIndexJ  ${indexJ}"
+                                                                  )
+                                                                  removeAt(indexJ)
+                                                              }
+                                                          }
+                                                      list.addAll(ttempllist.toMutableList())
+                                                      index = -2
+                                                      isBreakInside = true
+                                                      break
+
+                                                  }
+
+                                              }
+                                          }
+                                         if (isBreakInside){
+                                             break
+                                         }
+
+                                          if (isBreakInside == false) {
+                                              Log.e("CheckUpdate", "cartLogicFInd: " + i)
+                                              index = i
+                                              break
+                                          }
+                                      }
 
                                 }
 
@@ -1245,7 +1312,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                         } else if (index != -1) {
                             val model = cartList[0].items?.get(index)
-                            Log.d(TAG, "cartLogic: " + index)
+                            Log.e("CheckUpdate", "cartLogic: " + index)
                             if (model != null) {
                                 if (item != null) {
                                     model.name = item.name
