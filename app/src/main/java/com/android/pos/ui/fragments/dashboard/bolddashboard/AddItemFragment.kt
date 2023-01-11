@@ -98,6 +98,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
         binding.rvVariationList.adapter = variationAdapter
         variationAdapter.setCallback(this)
         isUpdateItem = requireArguments().getBoolean(Constants.IS_UPDATE_ITEM)
+        Log.e("GetDataAdd","isUpdateItem:    ${isUpdateItem}")
 
         return binding.root
     }
@@ -109,8 +110,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
         getCartList()
         findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<VariationsAttribute>(
             Constants.DIALOG_KEY_VARIATION_DETAILS
-        )
-            ?.observe(viewLifecycleOwner) { it ->
+        )?.observe(viewLifecycleOwner) { it ->
                 if (variationAdapter.variationList.size > 0) {
                     variationAdapter.updateVariation(it)
                     var variation: VariationsAttribute? = null
@@ -531,12 +531,16 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
         binding.txtItem.text = "" + item?.name
         binding.txtPrice.text = MethodUtils.roundOffAmount(item.price)
         if (view != null) {
+            Log.e(TAG,"checkItemID:  ${item.itemId}")
             viewModel.getItemsbyId(item.itemId).observe(viewLifecycleOwner) {
 
                 it?.let { resource ->
                     when (resource.status) {
                         Status.SUCCESS -> {
                             it.data?.let {
+                                Log.e(TAG,"getItemForMos  ${Gson().toJson(it)}")
+
+
                                 binding.rvVariationList.visibility = View.VISIBLE
 
                                 intArray = IntArray(it.modifier_set_ids.size) { i ->

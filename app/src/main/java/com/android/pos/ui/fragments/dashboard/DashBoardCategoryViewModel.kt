@@ -744,6 +744,10 @@ class DashBoardCategoryViewModel @Inject constructor(
                         } else if (type == UPDATE) {
                             var index = -1
                             var list = dineInList[selectedHeader].items
+                            val selectedHeader = dineInList.get(0).selectedPosition
+
+
+
                             for (i in list.indices) {
                                 if (item != null) {
                                     if (item.isManualSales) {
@@ -803,6 +807,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 }
                             }
                             if (index == -2) {
+                                Log.e(TAG,"Itis NotMinus  ")
 
                             } else if (index != -1) {
                                 val model = cartList[0].items?.get(index)
@@ -811,11 +816,12 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     if (item != null) {
                                         model.name = item.name
                                         model.price = item.price
+                                        Log.e("CheckDineinBug","variationsAttributesSize  ${item.variationsAttributes.size}")
                                         model.variationsAttributes = item.variationsAttributes
 
                                         if (item.isEdited) {
                                             model.isEdited = item.isEdited
-                                            model.guestItemId = item.guestItemId
+//                                            model.guestItemId = item.guestItemId
                                         }
                                         if (prefProvider.getValueboolean(
                                                 DINE_IN_UPDATE,
@@ -838,6 +844,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                                                     it.itemQuantity =
                                                         (it.modifier_quantity * item.itemQuantity)
+                                                    it.isChecked = item.isChecked
                                                 }
                                             }
                                             item.singleItemPrice += it.price * it.modifier_quantity
@@ -850,11 +857,16 @@ class DashBoardCategoryViewModel @Inject constructor(
                                             model.orderItemId = it
                                         }
                                         model.taxes = item.taxes
+                                        model.modifier_set_ids = item.modifier_set_ids
+                                        model.itemId = item.itemId
+                                        model.guestItemId = item.guestItemId
+                                        model.timeStamp = item.timeStamp
                                         itemDiscountApply(model, item)
 
                                     }
                                     Log.d(TAG, "cartLogic:itemname " + model.name)
-                                    list[index] = model
+                                    list.set(index,model)
+//                                    list[index] = model
 
                                 }
                             }
@@ -950,6 +962,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 type, false
                             )
                         }
+                        cartModel.items = list
                     } else {
                         if (item != null) {
                             cartModel = taxBifurcationCalculation(item!!, cartModel, type, false)
@@ -3829,19 +3842,25 @@ class DashBoardCategoryViewModel @Inject constructor(
                 it.items.forEach { tb ->
 
                     if (tb.id != 0) {
-                        listItems.add(
-                            GuestItemsAttributes(
-                                id = tb.guestItemId,
-                                orderItemId = tb.orderItemId,
-                                quantity = tb.itemQuantity,
-                                itemId = tb.itemId,
-                                amount = tb.price,
-                                timestamp = tb.timeStamp,
-                                guestId = it.id?.let { it }
 
-                            )
+                        cartModel.items?.forEach {
+                            if (it.name.lowercase() == tb.name.lowercase()){
+                                listItems.add(
+                                    GuestItemsAttributes(
+                                        id = it.guestItemId,
+                                        orderItemId = tb.orderItemId,
+                                        quantity = tb.itemQuantity,
+                                        itemId = tb.itemId,
+                                        amount = tb.price,
+                                        timestamp = tb.timeStamp,
+                                        guestId = it.id?.let { it }
 
-                        )
+                                    ))
+
+
+                            }
+                        }
+
 
                     } else {
                         listItems.add(
