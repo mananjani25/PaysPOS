@@ -326,7 +326,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                         }
                     }
 
-                    Log.e(TAG, "dineInListWhenUpdate:  ${Gson().toJson(dineInList)}")
+                    Log.e(TAG, "dineInListWhenUpdate:  ${Gson().toJson(cartList)}")
                     viewModel.newCartLogicModifier(
                         cartList,
                         item,

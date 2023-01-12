@@ -831,7 +831,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 Log.e(TAG,"Itis NotMinus  ")
 
                             } else if (index != -1) {
-                                val model = cartList[0].items?.get(index)
+                                val model = list.get(index)
                                 Log.d(TAG, "cartLogic: " + index)
                                 if (model != null) {
                                     if (item != null) {
