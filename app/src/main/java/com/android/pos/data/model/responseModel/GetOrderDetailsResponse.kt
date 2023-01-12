@@ -249,7 +249,7 @@ data class GetOrderDetailsResponse(
             @SerializedName("category_id")
             val categoryId: Int,
             @SerializedName("custom_item_id")
-            val custom_item_id: Int,
+            var custom_item_id: Int,
             @SerializedName("completed_in_kitchen")
             val completedInKitchen: Boolean,
             @SerializedName("discount_amount")

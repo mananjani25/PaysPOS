@@ -683,6 +683,29 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                                     }
 
                                                 }
+
+                                                if (prefProvider.getValue(ORDER_TYPE,"") == DINE_IN){
+                                                    it.data.forEach { modifierSet ->
+                                                        modifierSet.modifiers.forEach { modifier ->
+                                                            item.modifiers.forEach { oldmodifier ->
+
+                                                                if (oldmodifier.name.lowercase() == modifier.name.lowercase()){
+                                                                    modifier.isChecked = true
+                                                                    modifier.itemQuantity =
+                                                                        oldmodifier.itemQuantity
+                                                                    modifier.modifier_quantity =
+                                                                        oldmodifier.modifier_quantity
+                                                                }
+                                                               /* if (oldmodifier.id == modifier.id) {
+
+                                                                }*/
+                                                            }
+                                                        }
+
+                                                    }
+
+
+                                                }
                                             }
                                             var dataMod =
                                                 MethodUtils.convertSortListForModifierSet(

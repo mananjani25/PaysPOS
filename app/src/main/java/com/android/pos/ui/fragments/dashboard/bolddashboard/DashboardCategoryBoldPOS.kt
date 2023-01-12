@@ -1312,12 +1312,14 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     "dineTotalDiscount  ${arguments?.getDouble("totalDiscount")}"
                 )
                 cartList[0].discountPrice = arguments?.getDouble("totalDiscount") ?: 0.0
+                Log.e(TAG,"wsfaklnlbsaf ${cartList.size}")
                 viewModel.newCartLogicModifier(
                     cartList,
                     null,
                     Constants.ADD,
                     false,
-                    dineInList = dineInList
+                    dineInList = dineInList,
+                    isFromDineInScreen = true
                 )
                 // viewModel.orderItemDiscount = arguments?.getDouble("totalDiscount") ?: 0.0
 

@@ -504,10 +504,13 @@ class DashBoardCategoryViewModel @Inject constructor(
         item: TbItem?,
         type: String,
         isManualSales: Boolean,
-        dineInList: List<DineInModel> = arrayListOf()
+        dineInList: List<DineInModel> = arrayListOf(),
+        isFromDineInScreen:Boolean = false
     ) {
         if (cartList != null && cartList.isEmpty()) {
             // empty cart hoy to new cart create kare
+
+
             var cartModel = item?.let { addCartModel(it, isManualSales) }
             if (item != null) {
                 if (type == UPDATE) {
@@ -534,6 +537,8 @@ class DashBoardCategoryViewModel @Inject constructor(
             if (cartList?.get(0)?.orderType == DINE_IN) {
                 var cartModel = cartList[0]
                 order_note = cartList[0].note
+
+
                 cartModel.dineInList = dineInList
                 var dinein = dineInList
                 if (dinein.isNotEmpty() && dinein != null) {
@@ -661,6 +666,21 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 }
                             }
 
+                            if (isFromDineInScreen){
+                                list.forEach { it1->
+                                    var listd = list.filter { it.itemId == it1.itemId }
+                                    if (listd.size > 1){
+                                        it1.customItemID = kotlin.random.Random.nextInt(10,10000)
+
+                                    }
+
+
+                                }
+
+
+
+                            }
+
                             if (index != -1 && index != -2) {
                                 val model = cartList[0].items?.get(index)
                                 Log.d(TAG, "cartLogic: " + index)
@@ -740,6 +760,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     list.add(item)
                                 }
                             }
+                            Log.e("GEtDineInData","getList  ${Gson().toJson(list)}")
                             cartList[0].items = list
                         } else if (type == UPDATE) {
                             var index = -1
@@ -760,11 +781,11 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         }
 
                                     } else {
-                                        if (list[i].id == item.id && list[i].itemId == item.itemId) {
+                                        if (list[i].id == item.id && list[i].itemId == item.itemId && list[i].timeStamp == item.timeStamp) {
                                             Log.d(TAG, "cartLogic: " + i)
                                             index = i
                                             break
-                                        } else if (list[i].itemId == item.itemId && checkVariation(
+                                        } else if ( list[i].itemId == item.itemId && checkVariation(
                                                 list[i],
                                                 item
                                             ) && checkModifierNewLogic(list[i], item)
@@ -3841,28 +3862,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 var totalAmount = 0.0
                 it.items.forEach { tb ->
 
-                    if (tb.id != 0) {
 
-                        cartModel.items?.forEach {
-                            if (it.name.lowercase() == tb.name.lowercase()){
-                                listItems.add(
-                                    GuestItemsAttributes(
-                                        id = it.guestItemId,
-                                        orderItemId = tb.orderItemId,
-                                        quantity = tb.itemQuantity,
-                                        itemId = tb.itemId,
-                                        amount = tb.price,
-                                        timestamp = tb.timeStamp,
-                                        guestId = it.id?.let { it }
-
-                                    ))
-
-
-                            }
-                        }
-
-
-                    } else {
                         listItems.add(
                             GuestItemsAttributes(
                                 id = tb.guestItemId,
@@ -3876,7 +3876,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                             )
 
                         )
-                    }
+
 
 
 
