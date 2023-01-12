@@ -1035,7 +1035,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 } else {
                                     Log.e("AddedInElse", "GotMod")
 
-                                    if (list[i].itemId == item.itemId && checkVariation(
+                                    if ( list[i].itemId == item.itemId && checkVariation(
                                             list[i],
                                             item
                                         ) && checkModifierNewLogic(list[i], item)
@@ -1223,7 +1223,6 @@ class DashBoardCategoryViewModel @Inject constructor(
                         var idsF  = list.filter { it.itemId == item?.itemId }
                         Log.e("CheckUpdate","checkIdsfSize  ${idsF.size}")
 
-
                         for (i in list.indices) {
                             if (item != null) {
                                 if (item.isManualSales) {
@@ -1240,11 +1239,13 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
 
-                                      if (idsF.size >1  && list[i].itemId == item.itemId && checkVariation(
+                                      if (  idsF.size >1  && list[i].itemId == item.itemId && checkVariation(
                                             list[i],
                                             item
-                                        ) && checkModifierNewLogic(list[i], item)
+                                        ) && checkModifierNewLogic(list[i], item) && item.id != list[i].id
                                     ) {
+
+
                                         var listTmp =
                                             combineItem(list.toCollection(arrayListOf()), item, i)
                                         list.clear()
@@ -2380,7 +2381,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         Log.e(TAG, "checkModSize  ${tbMod.size}")
         Log.e(TAG, "checkModSizeItemMod  ${itemMod.size}")
 
-        if (tbMod.size == itemMod.size) {
+        if (listOfDataMod.size == listOfDataModSelected.size) {
 
             isSame = true
             Log.e(TAG, "Item.modifiers  ${Gson().toJson(item.modifiers)}")
@@ -2388,6 +2389,9 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
             var selectedList: ArrayList<Boolean> = arrayListOf()
+
+            Log.e("CheckModData","checktbMod:  ${Gson().toJson(tbMod)}")
+            Log.e("CheckModData","checkContaine  ${Gson().toJson(itemMod)}")
             tbMod.forEach {
                 Log.e(TAG, "GetKey ${it.key}  GetValue ${it.value}")
                 if (itemMod.containsKey(it.key) && it.value == itemMod.get(it.key)) {
@@ -2398,6 +2402,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 }
             }
 
+            Log.e(TAG,"selectedList:  ${Gson().toJson(selectedList)}")
             if (selectedList.contains(false)) {
                 isSame = false
             }
