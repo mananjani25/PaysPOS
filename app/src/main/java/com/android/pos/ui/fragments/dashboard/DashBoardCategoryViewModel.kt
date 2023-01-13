@@ -561,9 +561,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     } else {
                                         Log.e("AddedInElse", "GotMod")
 
-                                        if (list[i].itemId == item.itemId && checkVariation(
+                                        if ( list[i].itemId == item.itemId && checkVariation(
                                                 list[i],
-                                                item
+                                                  item
                                             ) && checkModifierNewLogic(list[i], item)
                                         ) {
                                             Log.d(TAG, "cartLogic: " + i)
@@ -575,7 +575,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                     i
                                                 )
                                             list.clear()
-                                            Log.d(
+                                            Log.e(
                                                 TAG,
                                                 "newCartLogicModifier: position of selected Item " + item.id
                                             )
@@ -590,9 +590,12 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         } else if (list[i].itemId == item.itemId && (!checkVariation(
                                                 list[i],
                                                 item
-                                            ) || !checkModifierNewLogic(list[i], item))
+                                            ) && !checkModifierNewLogic(list[i], item))
                                         ) {
                                             var isBreak: Boolean = false
+
+
+
 
                                             list[i].modifiers.forEach { modifier ->
                                                 item.modifiers.forEach { mod ->
@@ -600,7 +603,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                         if (list[i].variationsAttributes.isNotEmpty() && list[i].variationsAttributes[0].id == item.variationsAttributes[0].id) {
                                                             item.id += 1
                                                             isBreak = true
-                                                            Log.d(
+                                                            Log.e(
                                                                 TAG,
                                                                 "newCartLogicModifier: isBreak"
                                                             )
@@ -618,7 +621,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                     } else if (mod.id == modifier.id && mod.modifier_quantity != modifier.modifier_quantity) {
                                                         item.id += 1
                                                         isBreak = false
-                                                        Log.d(TAG, "newCartLogicModifier: isBreak")
+                                                        Log.e(TAG, "newCartLogicModifier: isBreak")
 
                                                         return@forEach
                                                     }
@@ -797,7 +800,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                     i
                                                 )
                                             list.clear()
-                                            Log.d(
+                                            Log.e(
                                                 TAG,
                                                 "newCartLogicModifier: position of selected Item " + item.id
                                             )
@@ -907,7 +910,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         if (cartModel?.reorder == false && list[i].itemId == item.itemId && item.modifiers.isEmpty() && checkVariation(
                                                 list[i],
                                                 item
-                                            )
+                                            ) && list[i].id == item.id
                                         ) {
                                             index = i
                                             Log.d(TAG, "newCartLogicModifier normal item: ${i}")
