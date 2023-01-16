@@ -16,7 +16,7 @@ android {
         applicationId "com.internetsoft.pos"
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 25
+        versionCode 22
         versionName "3.1"
 
 
