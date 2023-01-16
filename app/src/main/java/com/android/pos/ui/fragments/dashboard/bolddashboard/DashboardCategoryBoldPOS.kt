@@ -563,6 +563,14 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        if (prefProvider.getValueboolean(Constants.IS_SYNC_MARKUP,false)){
+            viewModel.markupInventory()
+        }
+    }
+
     private fun loadCategoryFragment(fragment: Fragment) {
         val fm: FragmentManager = requireActivity().supportFragmentManager
         fm.beginTransaction().replace(binding.frameLayout.id, fragment).commit()

@@ -104,6 +104,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 ) : ViewModel() {
 
 
+    private var syncMarkeup: Boolean = false
     var dineInHeaderPosition: Int = 0
     var dineInSelectedItemHeaderPos: Int = 0
     var selectedItemPositionDine: Int = 0
@@ -3305,8 +3306,10 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun markupInventory() {
 
-        if (prefProvider.getValue(ORDER_TYPE, "").isEmpty()) {
-            prefProvider.setValueboolean(IS_SYNC_MARKUP, true)
+        prefProvider.setValueboolean(IS_SYNC_MARKUP, true)
+
+        if (prefProvider.getValue(ORDER_TYPE, "").isEmpty() && !syncMarkeup) {
+            syncMarkeup = true
             syncInventoryModule(true)
         }
     }
@@ -3468,6 +3471,11 @@ class DashBoardCategoryViewModel @Inject constructor(
                             appDatabase.optionSetDao().addAll(mData.optionSets)
 
                             prefProvider.setValue(SYNC_TIME_STAMP, response.data.timeStamp)
+
+                            if (syncMarkeup) {
+                                syncMarkeup = false
+                                prefProvider.setValueboolean(IS_SYNC_MARKUP, false)
+                            }
 
                         } else {
                             _tableStatus.value = response?.let { Event(it.message) }
