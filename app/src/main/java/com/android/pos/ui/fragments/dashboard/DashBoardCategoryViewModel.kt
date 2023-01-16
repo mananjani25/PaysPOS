@@ -43,6 +43,7 @@ import com.android.pos.data.remote.Constants.DINE_IN_LIST_EDIT
 import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
+import com.android.pos.data.remote.Constants.IS_SYNC_MARKUP
 import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER
 import com.android.pos.data.remote.Constants.LOCK_SCREEN_TRANSACTION
 import com.android.pos.data.remote.Constants.ONLINE_ORDER_ENABLE
@@ -207,7 +208,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     val enableOnlineOrder: LiveData<Event<Boolean>> = _enableOnlineOrder
 
     private val _checkCashDrawerPermission = MutableLiveData<Boolean>()
-    val checkCashDrawerPer :LiveData<Boolean> = _checkCashDrawerPermission
+    val checkCashDrawerPer: LiveData<Boolean> = _checkCashDrawerPermission
 
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
@@ -3302,6 +3303,14 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     }
 
+    fun markupInventory() {
+
+        if (prefProvider.getValue(ORDER_TYPE, "").isEmpty()) {
+            prefProvider.setValueboolean(IS_SYNC_MARKUP, true)
+            syncInventoryModule(true)
+        }
+    }
+
 
     fun syncInventoryModule(b: Boolean) {
         _showProgress.value = Event(true)
@@ -3539,7 +3548,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 if (it.settingData.data.teamRoles.isNotEmpty()) {
                                     posRepository.addTeamRoleFromDb(it.settingData.data.teamRoles)
                                     rolePermission.findCurrentUserRoleAndSave(it.settingData.data.teamRoles)
-                                    _checkCashDrawerPermission.value= true
+                                    _checkCashDrawerPermission.value = true
                                 } else {
 
                                     ThreadPoolManager.instance.executeTask(Runnable {

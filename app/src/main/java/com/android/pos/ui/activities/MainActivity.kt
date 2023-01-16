@@ -181,6 +181,15 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             LogUtil.logEN("onReceive", "" + p1?.action)
             dashBoardCategoryViewModel.syncSettingModule()
 
+        }
+
+    }
+
+    private var syncMarkupReceiver = object : BroadcastReceiver() {
+        override fun onReceive(p0: Context?, p1: Intent?) {
+
+            LogUtil.logEN("syncMarkupReceiver", "" + p1?.action)
+            dashBoardCategoryViewModel.markupInventory()
 
         }
 
@@ -729,7 +738,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         super.onCreate(savedInstanceState)
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN)
 
-       // connectionActionCable()
+        // connectionActionCable()
         val intentFilter = IntentFilter("PrinterQueue")
         registerReceiver(wifiStateReceiver, intentFilter)
         getCustomerReceiptSettings()
@@ -769,6 +778,11 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         registerReceiver(
             syncSettingReceiver,
             IntentFilter(Constants.SYNC_SETTING_NOTIFICATION)
+        )
+
+        registerReceiver(
+            syncMarkupReceiver,
+            IntentFilter(Constants.SYNC_MARKUP)
         )
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
@@ -897,25 +911,25 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
         if (subscription != null) {
             subscription?.onConnected {
-                ToastUtil.showNormalToast(this,"Connected")
+                ToastUtil.showNormalToast(this, "Connected")
                 Log.e(TAG, "onActionConnected")
 
 
             }?.onRejected {
-                ToastUtil.showNormalToast(this,"Connected")
+                ToastUtil.showNormalToast(this, "Connected")
                 Log.e(TAG, "onActiononRejected")
 
             }?.onReceived {
-                ToastUtil.showNormalToast(this,"Connected")
+                ToastUtil.showNormalToast(this, "Connected")
                 Log.e(TAG, "onActiononReceived  " + Gson().toJson(it))
 
 
             }?.onDisconnected {
-                ToastUtil.showNormalToast(this,"Connected")
+                ToastUtil.showNormalToast(this, "Connected")
                 Log.e(TAG, "onActiononDisconnected")
 
             }?.onFailed {
-                ToastUtil.showNormalToast(this,"Connected")
+                ToastUtil.showNormalToast(this, "Connected")
                 Log.e(TAG, "onActiononFailed")
                 //subscription = consumer?.subscriptions?.create(appearanceChannel)
                 try {
