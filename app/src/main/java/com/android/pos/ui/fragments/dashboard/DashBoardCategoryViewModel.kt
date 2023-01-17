@@ -3306,9 +3306,11 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun markupInventory() {
 
-        prefProvider.setValueboolean(IS_SYNC_MARKUP, true)
 
         if (prefProvider.getValue(ORDER_TYPE, "").isEmpty() && !syncMarkeup) {
+            prefProvider.setValue(
+                SYNC_TIME_STAMP, ""
+            )
             syncMarkeup = true
             syncInventoryModule(true)
         }
@@ -3502,45 +3504,6 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
     }
 
-
-    fun syncInventoryModuleN() {
-        _showProgress.value = Event(true)
-        viewModelScope.launch {
-            val resource =
-                posRepository.syncInventory(prefProvider.getValueInt(TERMINAL_ID, -1), "")
-            when (resource.status) {
-                Status.SUCCESS -> {
-                    Log.e("SyncInventory", "SyncSuccess")
-
-                    resource.data.let { response ->
-                        if (response?.status == 200) {
-                            _showProgress.value = Event(false)
-                            posRepository.saveDatabase(response)
-
-
-                        } else {
-                            _tableStatus.value = response?.let { Event(it.message) }
-                        }
-
-//                        syncSettingModule()
-
-                    }
-                }
-
-                Status.ERROR -> {
-                    Log.e("SyncInventory", "SyncError")
-                    _snackbarText.value = Event(resource.message.toString())
-                    _showProgress.value = Event(false)
-                }
-
-                Status.LOADING -> {
-                    Log.e("SyncInventory", "SyncLoading")
-                    _showProgress.value = Event(true)
-                }
-            }
-
-        }
-    }
 
     fun syncSettingModule() {
         viewModelScope.launch {

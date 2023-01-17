@@ -11,6 +11,7 @@ import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.android.pos.R
+import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.ONLINE_ORDER_GET_NOTIFICATION
 import com.android.pos.data.remote.Constants.SEND_CLOCKOUT_NOTIFICATION
@@ -67,6 +68,8 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                     intent.action = SYNC_SETTING_NOTIFICATION
                     sendBroadcast(intent)
                 } else if (type == "MarkupSync") {
+
+                    prefProvider.setValueboolean(Constants.IS_SYNC_MARKUP, true)
                     val intent = Intent()
                     intent.action = SYNC_MARKUP
                     sendBroadcast(intent)
