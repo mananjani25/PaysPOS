@@ -1129,7 +1129,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         setupPaymentScreen(isSelectedCount)
 
 
-        MethodUtils.setPriceTextView(
+        MethodUtils.setPriceTextViewDown(
             binding.tvAmount,
             getCalCashDiscWithAmount(
                 prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble(), true
@@ -1186,7 +1186,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             )
             binding.tvCash.text = "Cash (" + binding.tvCash.text + ")"
             binding.tvCard.text = "Card (" + binding.tvCard.text + ")"
-            MethodUtils.setPriceTextView(
+            MethodUtils.setPriceTextViewDown(
                 binding.tvAmount,
                 getCalCashDiscWithAmount(
                     prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble(), true
@@ -1219,7 +1219,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 binding.tvCash2,
                 binding.tvCash3
             )
-            MethodUtils.setPriceTextView(
+            MethodUtils.setPriceTextViewDown(
                 binding.tvAmount,
                 (getCalCashDiscWithAmount(
                     prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble(), true
@@ -1258,14 +1258,14 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     private fun tipsetupGlobal(tipAmount: Double, isSelectCount: Int) {
         if (tipAmount == 0.0) {
             binding.tvsplittip?.gone()
-            MethodUtils.setPriceTextView(
+            MethodUtils.setPriceTextViewDown(
                 binding.tvAmount,
                 getCalCashDiscWithAmount(
                     prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble(), true
                 ) / isSelectCount
             )
         } else {
-            MethodUtils.setPriceTextView(
+            MethodUtils.setPriceTextViewDown(
                 binding.tvAmount,
                 (getCalCashDiscWithAmount(
                     prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble(), true

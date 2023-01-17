@@ -113,6 +113,13 @@ class MethodUtils {
 
         }
 
+        @SuppressLint("SetTextI18n")
+        fun setPriceTextViewDown(appCompatTextView: TextView, price: Double) {
+            appCompatTextView.text = MainApplication.getInstance()!!.getText(R.string.symbole)
+                .toString() + MethodUtils.roundOffAmountDown(price)
+
+        }
+
 
         @SuppressLint("SetTextI18n")
         fun setRefundPriceTextView(appCompatTextView: AppCompatTextView, price: Double) {
