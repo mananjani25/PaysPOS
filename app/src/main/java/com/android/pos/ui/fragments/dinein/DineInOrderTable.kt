@@ -746,6 +746,19 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                     for (j in i + 1 until list.size) {
                         if (list[j].isHeader == 1) {
+
+
+                          /*  for (m in j until list.size){
+                                if(list.get(m).isHeader == 1 && list.get(m).item?.itemId == list[j].item?.itemId){
+
+                                    list[j].item?.customItemID = kotlin.random.Random.nextInt(1,10000)
+                                }
+                                else{
+                                    break
+                                }
+                            }*/
+
+
                             list[j].item?.let { it1 ->
                                 if (it1.discountPrice != 0.0) {
                                     it1.discountPrice =
@@ -768,12 +781,16 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
             }
+
+
+
             LogUtil.logE(TAG, "listOfMoveItemIds:  ${listOfMoveItemIds.size}")
             newList[0].listOfItemsMoved.addAll(listOfMoveItemIds.toCollection(arrayListOf()))
 
             //   prefProvider.setValue(Constants.DINE_IN_UPDATE_LIST, Gson().toJson(newList))
 
 
+            Log.e(TAG,"newListDineIn  ${Gson().toJson(newList)}")
             val bundle = Bundle()
             bundle.putBoolean("is_dine_in_edit", true)
             bundle.putParcelableArrayList(

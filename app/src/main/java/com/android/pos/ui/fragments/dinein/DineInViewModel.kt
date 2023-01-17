@@ -552,8 +552,12 @@ class DineInViewModel @Inject constructor(
             total_tips += list[i].total_tips
             total_service_charges += list[i].total_service_charges
 
-            list.get(i).order_items.forEach {
+            list.get(i).order_items.forEachIndexed { index, it ->
+
+
                 var model = OrderItemsAttribute()
+
+
                 model.timestamp = it.timestamp
                 model.category_id = it.categoryId
                 model.discountAmount = it.discountAmount
@@ -570,6 +574,7 @@ class DineInViewModel @Inject constructor(
                 model.totalPrice = it.totalPrice
                 model.price = it.price
                 model.isFired = it.isFired
+                model.custom_item_id = index
 
 
                 var modifierList: ArrayList<OrderItemModifierAttribute> = arrayListOf()
@@ -578,8 +583,10 @@ class DineInViewModel @Inject constructor(
                     //  orderModifier.id = modifier.id
                     orderModifier.price = modifier.price
                     orderModifier.quantity = modifier.quantity
+                    orderModifier.modifier_quantity = modifier.modifier_quantity ?: 1
                     orderModifier.name = modifier.name
                     orderModifier.totalPrice = modifier.price
+                    modifier.modifier_set_id?.let { orderModifier.modifier_set_id = it }
                     var itemTaxes: ArrayList<OrderModifierTaxesAttribute> = arrayListOf()
                     modifier.orderItemTaxes.forEach { tax ->
                         var modifierTax = OrderModifierTaxesAttribute()
@@ -605,9 +612,10 @@ class DineInViewModel @Inject constructor(
 
                     modifierList.add(orderModifier)
 
-                    model.orderItemModifiersAttributes = modifierList
+
                 }
 
+                model.orderItemModifiersAttributes = modifierList
                 var itemTaxList: ArrayList<OrderItemTaxesAttribute> = arrayListOf()
 
                 it.orderItemTaxes.forEach {
@@ -624,6 +632,7 @@ class DineInViewModel @Inject constructor(
                 }
 
                 model.orderItemTaxesAttributes = itemTaxList
+
 
 
                 orderItemsAttr.add(model)
@@ -771,6 +780,13 @@ class DineInViewModel @Inject constructor(
 
         guestModelWT.guestItemsAttributes = listWholeTbItems
         listGuestAttr.add(0, guestModelWT)
+       /* for (m in 0 until orderItemsAttr.size) {
+            val obj = orderItemsAttr.get(m)
+
+            obj.custom_item_id = m
+
+        }
+*/
 
 
         model.orderItemsAttributes = orderItemsAttr
@@ -1001,7 +1017,7 @@ class DineInViewModel @Inject constructor(
         model.totalServiceCharges = orderDetails.total_service_charges
         model.totalTaxAmount = orderDetails.total_tax_amount
         model.totalTips = orderDetails.total_tips
-        model.customer_id = ""+orderDetails.customer_id
+        model.customer_id = "" + orderDetails.customer_id
         model.discount_id = orderDetails.discount_id
 /*
         model.loyalty_program_id = orderDetails.loyalty_program_id
