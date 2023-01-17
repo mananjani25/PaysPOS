@@ -193,7 +193,7 @@ class OrderCompleteViewModel @Inject constructor(
     fun addSplitToDatabase(title: String, amount: Double, remainingAmt: Double) {
 
         val model =
-            SplitDetailListModel(title = title, amount = amount, remainingAmt = MethodUtils.roundOffAmountDown(remainingAmt))
+            SplitDetailListModel(title = title, amount = amount, remainingAmt =  MethodUtils.roundOffAmountDown(remainingAmt))
         viewModelScope.launch {
             posRepository.addSplitAmount(model)
         }

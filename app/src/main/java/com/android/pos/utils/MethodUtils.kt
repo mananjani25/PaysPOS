@@ -116,7 +116,7 @@ class MethodUtils {
         @SuppressLint("SetTextI18n")
         fun setPriceTextViewDown(appCompatTextView: TextView, price: Double) {
             appCompatTextView.text = MainApplication.getInstance()!!.getText(R.string.symbole)
-                .toString() + MethodUtils.roundOffAmountDown(price)
+                .toString() + roundOffAmountDown(price)
 
         }
 
@@ -140,7 +140,7 @@ class MethodUtils {
         fun roundOffAmountDown(price:Double):Double{
             var valueFormat = DecimalFormat("##.##")
             valueFormat.roundingMode = RoundingMode.DOWN
-           return valueFormat.format(price).toDouble()
+           return   valueFormat.format(price).toDouble()
 
 
 
