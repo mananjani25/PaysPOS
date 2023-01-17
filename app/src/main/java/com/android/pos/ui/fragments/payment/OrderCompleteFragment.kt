@@ -441,10 +441,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                         LogUtil.logE("Change 5", binding.txtChangeAmount.text.toString())
                         binding.txtPaymentAmount.text =
-                            ""+(paidAmount + tipAmount) + " payment successful"
+                            ""+MethodUtils.roundOffAmountDown(paidAmount + tipAmount) + " payment successful"
                     } else {
                         binding.txtPaymentAmount.text =
-                            ""+(paidAmount + tipAmount) + " payment successful"
+                            ""+MethodUtils.roundOffAmountDown(paidAmount + tipAmount) + " payment successful"
                     }
                 }
             } else {

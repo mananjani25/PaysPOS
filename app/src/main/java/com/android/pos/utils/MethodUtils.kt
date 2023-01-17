@@ -28,6 +28,8 @@ import com.google.i18n.phonenumbers.Phonenumber
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import java.io.File
+import java.math.RoundingMode
+import java.text.DecimalFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
@@ -126,6 +128,15 @@ class MethodUtils {
         fun roundOffAmount(price: Double): String {
             return MainApplication.getInstance()!!.getText(R.string.symbole)
                 .toString() + String.format("%.2f", price)
+        }
+
+        fun roundOffAmountDown(price:Double):Double{
+            var valueFormat = DecimalFormat("##.##")
+            valueFormat.roundingMode = RoundingMode.DOWN
+           return valueFormat.format(price).toDouble()
+
+
+
         }
 
         fun roundOffAmountDouble(price: Double?): Double {

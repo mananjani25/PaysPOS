@@ -17,6 +17,7 @@ import com.android.pos.data.remote.Constants
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
+import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -58,7 +59,7 @@ class OrderCompleteViewModel @Inject constructor(
     suspend fun addPrinterQueueData(queueData: PrinterQueueModel) =
         posRepository.addPrinterQueueData(queueData)
 
-      fun checkQueueExist(id:Int) = posRepository.checkQueueExist(id)
+    fun checkQueueExist(id: Int) = posRepository.checkQueueExist(id)
 
 
     fun submit(type: String, email: String, phoneNumber: String, orderID: Int) {
@@ -176,7 +177,7 @@ class OrderCompleteViewModel @Inject constructor(
 
     fun deleteCart() {
         viewModelScope.launch {
-            posRepository.deleteCart(prefProvider.getValueInt(Constants.EMPLOYEE_ID,0))
+            posRepository.deleteCart(prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0))
         }
     }
 
@@ -190,15 +191,16 @@ class OrderCompleteViewModel @Inject constructor(
 
 
     fun addSplitToDatabase(title: String, amount: Double, remainingAmt: Double) {
+
         val model =
-            SplitDetailListModel(title = title, amount = amount, remainingAmt = remainingAmt)
+            SplitDetailListModel(title = title, amount = amount, remainingAmt = MethodUtils.roundOffAmountDown(remainingAmt))
         viewModelScope.launch {
             posRepository.addSplitAmount(model)
         }
     }
 
-    suspend fun updateStatusPrinterQueue(listIds:List<Int>,id:Int) {
-        appDatabase.printerQueueDao().updatePrinterQueue(listIds,id)
+    suspend fun updateStatusPrinterQueue(listIds: List<Int>, id: Int) {
+        appDatabase.printerQueueDao().updatePrinterQueue(listIds, id)
 
     }
 
