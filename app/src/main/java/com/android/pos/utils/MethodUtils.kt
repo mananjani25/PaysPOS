@@ -120,6 +120,14 @@ class MethodUtils {
 
         }
 
+        @SuppressLint("SetTextI18n")
+        fun setPriceTextViewUP(appCompatTextView: TextView, price: Double) {
+            appCompatTextView.text = MainApplication.getInstance()!!.getText(R.string.symbole)
+                .toString() + roundOffAmountUp(price)
+
+        }
+
+
 
         @SuppressLint("SetTextI18n")
         fun setRefundPriceTextView(appCompatTextView: AppCompatTextView, price: Double) {
@@ -143,6 +151,13 @@ class MethodUtils {
            return   valueFormat.format(price).toDouble()
 
 
+
+        }
+
+        fun roundOffAmountUp(price:Double):Double{
+            var valueFormat = DecimalFormat("##.##")
+            valueFormat.roundingMode = RoundingMode.UP
+            return   valueFormat.format(price).toDouble()
 
         }
 

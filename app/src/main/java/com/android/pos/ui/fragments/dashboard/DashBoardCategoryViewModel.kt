@@ -2886,7 +2886,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                             }
                         }
                     }
-                    String.format("%.2f", totalTax).toDouble()
+                    totalTax =   MethodUtils.roundOffAmountDown(totalTax)
+                //    String.format("%.2f", totalTax).toDouble()
 //                    taxDynamicList = cartModel.taxlistDynamic!!.toCollection(ArrayList())
                     Log.d(TAG, "itemCalculationCartModel: " + taxDynamicList)
                     serviceChargeCalculationModel(cartModel)
