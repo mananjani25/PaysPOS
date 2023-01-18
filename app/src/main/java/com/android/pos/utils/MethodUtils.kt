@@ -147,7 +147,7 @@ class MethodUtils {
 
         fun roundOffAmountDown(price:Double):Double{
             var valueFormat = DecimalFormat("##.##")
-            valueFormat.roundingMode = RoundingMode.DOWN
+            valueFormat.roundingMode = RoundingMode.CEILING
            return   valueFormat.format(price).toDouble()
 
 
@@ -156,7 +156,7 @@ class MethodUtils {
 
         fun roundOffAmountUp(price:Double):Double{
             var valueFormat = DecimalFormat("##.##")
-            valueFormat.roundingMode = RoundingMode.UP
+            valueFormat.roundingMode = RoundingMode.CEILING
             return   valueFormat.format(price).toDouble()
 
         }

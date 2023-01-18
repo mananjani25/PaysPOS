@@ -2886,6 +2886,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                             }
                         }
                     }
+                    Log.e(TAG,"getTTtotalTax  ${totalTax}")
                     totalTax =   MethodUtils.roundOffAmountDown(totalTax)
                 //    String.format("%.2f", totalTax).toDouble()
 //                    taxDynamicList = cartModel.taxlistDynamic!!.toCollection(ArrayList())
