@@ -2886,9 +2886,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                             }
                         }
                     }
-                    Log.e(TAG,"getTTtotalTax  ${totalTax}")
-                    totalTax =   MethodUtils.roundOffAmountDown(totalTax)
-                //    String.format("%.2f", totalTax).toDouble()
+                    String.format("%.2f", totalTax).toDouble()
 //                    taxDynamicList = cartModel.taxlistDynamic!!.toCollection(ArrayList())
                     Log.d(TAG, "itemCalculationCartModel: " + taxDynamicList)
                     serviceChargeCalculationModel(cartModel)
@@ -3335,8 +3333,11 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     private fun taxCalculation(item: TbItem, discountPrice: Double) {
+
+        Log.e("CheckManualTax","checkItem:  ${Gson().toJson(item)}")
         item.taxes?.forEach { tax ->
             if (tax.isActive && !tax.isDeleted) {
+
 
                 var modifierPrice = 0.0
                 val price =
@@ -3362,7 +3363,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                         val itemTaxPrice =
                             (tax.rate * totalPrice) / 100
                         Log.e("itemTaxPrice", "" + itemTaxPrice)
-                        itemTaxPrice
+                        MethodUtils.roundOffAmountUp(itemTaxPrice)
                     }
 
                 } else {
@@ -3379,6 +3380,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                 }
             }
         }
+
+        Log.e("CheckTotalTax","totalTax:   ${totalTax}")
     }
 
     private fun taxCalculationReorder(item: TbItem) {

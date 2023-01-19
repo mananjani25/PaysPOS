@@ -267,7 +267,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
         }
         binding.layoutHeader.imgSync.setOnClickListener {
-            //  viewModel.syncInventoryModule(requireActivity())
+          //  viewModel.syncInventoryModule(requireActivity())
         }
         binding.layoutHeader.imgDrawer.setOnClickListener {
             findNavController().navigate(R.id.action_manualSalesNew_to_menuFragment)
@@ -339,15 +339,15 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             ).observe(requireActivity()) {
                 cartList = it
                 LogUtil.logE(TAG, "cartListBeforeTax  ${Gson().toJson(cartList)}")
-                /* if (prefProvider.getValue(ORDER_TYPE,"") == OPEN_ORDER){
-                     binding.btnPay.gone()
-                     binding.txtSave.visible()
+               /* if (prefProvider.getValue(ORDER_TYPE,"") == OPEN_ORDER){
+                    binding.btnPay.gone()
+                    binding.txtSave.visible()
 
-                 }
-                 else{
-                     binding.btnPay.visible()
-                     binding.txtSave.visible()
-                 }*/
+                }
+                else{
+                    binding.btnPay.visible()
+                    binding.txtSave.visible()
+                }*/
 
                 if (cartList?.isNotEmpty()!!) {
 
@@ -415,8 +415,6 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             "%.2f",
             viewModel.totalDiscount
         )
-
-        Log.e("ManualSale", "totalPriceCal:  ${viewModel.totalPrice}")
         binding.txtTotalAmount.text = "$" + String.format(
             "%.2f",
             viewModel.totalPrice
@@ -811,17 +809,14 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                             bundle.putDouble("itemOrderDiscount", perItemDiscount)
                             bundle.putInt("totalquantity", totalItemswithQuantity)
                         }
-                        bundle.putString("isFrom", "orderDiscountManual")
-                        if (prefProvider.isAdmin() || prefProvider.isManager()) {
+                        bundle.putString("isFrom","orderDiscountManual")
+                        if (prefProvider.isAdmin() || prefProvider.isManager()){
                             if (findNavController().currentDestination?.id != R.id.addDiscountDialog) {
-                                findNavController().navigate(
-                                    R.id.action_manualSaleNew__to_addDiscountDialog,
-                                    bundle
-                                )
+                                findNavController().navigate(R.id.action_manualSaleNew__to_addDiscountDialog, bundle)
                             }
-                        } else {
+                        }else{
                             findNavController().navigate(
-                                R.id.action_manualSaleNew_to_pascodeManagerDailog, bundle
+                                R.id.action_manualSaleNew_to_pascodeManagerDailog,bundle
                             )
                         }
                     }
@@ -1175,10 +1170,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 }
             }
 
-            LogUtil.logE(
-                "orderTypeId",
-                prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1).toString()
-            )
+            LogUtil.logE("orderTypeId", prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1).toString())
 
             viewModel.manualSalecartLogic(cartList, tabItemMOdel, ADD)
             binding.llKeypad.edtItemName.text?.clear()
@@ -1450,7 +1442,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         if (model.discountPrice != 0.0) {
             txtTitle.text = model.name + "  $" + String.format(
                 "%.2f",
-                ((model.price * model.itemQuantity) - (model.discountPrice * model.itemQuantity))
+                ((model.price * model.itemQuantity) - (model.discountPrice* model.itemQuantity))
             )
         } else {
             txtTitle.text = model.name + "  $" + String.format(
@@ -1468,7 +1460,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             val itemCost = model.price
 
             if (model.discountPrice != 0.0) {
-                val dis = (model.discountPrice * model.itemQuantity) / model.itemQuantity
+                val dis = (model.discountPrice*model.itemQuantity) / model.itemQuantity
 
                 model.discountPrice =
                     String.format("%.2f", (dis)).toDouble()
@@ -1548,7 +1540,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                         viewModel.manualSalecartLogic(cartList, model, Constants.UPDATE)
                         txtTitle.text = model.name + "  $" + String.format(
                             "%.2f",
-                            ((model.price * totalquantity) - model.discountPrice * totalquantity)
+                            ((model.price * totalquantity) - model.discountPrice*totalquantity)
                         )
 
                     } else if (result.discountType == "Amount") {
@@ -1568,7 +1560,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                         viewModel.manualSalecartLogic(cartList, model, Constants.UPDATE)
                         txtTitle.text = model.name + "  $" + String.format(
                             "%.2f",
-                            ((model.price * totalquantity) - model.discountPrice * totalquantity)
+                            ((model.price * totalquantity) - model.discountPrice*totalquantity)
                         )
                     } else {
                         model.discountPrice = 0.0
@@ -1646,18 +1638,15 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 }
                 putParcelable("model", model)
             }
-            bundle.putString("isFrom", "itemDiscountManual")
-            if (prefProvider.isAdmin() || prefProvider.isManager()) {
+            bundle.putString("isFrom","itemDiscountManual")
+            if (prefProvider.isAdmin() || prefProvider.isManager()){
 
                 if (findNavController().currentDestination?.id != R.id.addDiscountDialog) {
-                    findNavController().navigate(
-                        R.id.action_manualSaleNew_to_addDiscountDialog,
-                        bundle
-                    )
+                    findNavController().navigate(R.id.action_manualSaleNew_to_addDiscountDialog, bundle)
                 }
-            } else {
+            }else{
                 findNavController().navigate(
-                    R.id.action_manualSaleNew_to_pascodeManagerDailog, bundle
+                    R.id.action_manualSaleNew_to_pascodeManagerDailog,bundle
                 )
             }
 
