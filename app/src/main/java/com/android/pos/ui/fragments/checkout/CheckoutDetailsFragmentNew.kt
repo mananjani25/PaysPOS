@@ -1150,7 +1150,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             binding.tvCash2,
             binding.tvCash3
         )
-        MethodUtils.setPriceTextView(
+        MethodUtils.setPriceTextViewDown(
             binding.tvCash,
             getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount
         )
@@ -1172,7 +1172,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             binding.tvsplittip?.gone()
             binding.tvtipcard?.gone()
             binding.tvtipcash?.gone()
-            MethodUtils.setPriceTextView(
+            MethodUtils.setPriceTextViewDown(
                 binding.tvCash,
                 getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectedCount
             )
@@ -1193,7 +1193,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 )
             )
         } else {
-            MethodUtils.setPriceTextView(
+            MethodUtils.setPriceTextViewDown(
                 binding.tvCash,
                 (getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectedCount) + tipAmount
             )
