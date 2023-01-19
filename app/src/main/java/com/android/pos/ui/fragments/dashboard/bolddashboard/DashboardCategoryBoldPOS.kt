@@ -186,7 +186,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         viewModel.checkCashDrawerPer.observe(viewLifecycleOwner) {
             if (it) {
                 checkCashDrawerPer()
-
             }
         }
     }
