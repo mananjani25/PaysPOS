@@ -57,6 +57,7 @@ object Constants {
     const val PASSCODE = "passcode"
     const val CAT_ID_SELECTED = "cate_id_selected"
     const val LOCATION_ID = "locationId"
+    const val LOCATION_NAME = "location_name"
     const val EMAIL = "email"
     const val LOGIN_EMAIL = "login_email"
     const val LOGIN_REMEMBER = "login_remember"
