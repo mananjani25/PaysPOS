@@ -192,4 +192,5 @@ dependencies {
     implementation "androidx.work:work-runtime-ktx:2.7.1"
     implementation 'com.sunmi:external-printerlibrary:1.0.10'
     implementation 'com.sunmi:printerlibrary:1.0.18'
+    implementation 'org.greenrobot:eventbus:3.3.1'
 }
