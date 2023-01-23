@@ -980,14 +980,16 @@ class DashBoardCategoryViewModel @Inject constructor(
                     }
                     var cartModel = cartList[0]
                     if (type == UPDATE) {
-                        var list = dineInList[selectedHeader].items
-                        list.forEach { itemData ->
+                        var list = cartList[0].items
+                        list?.forEach { itemData ->
                             cartModel = taxBifurcationCalculation(
                                 itemData,
                                 cartModel,
                                 type, false
                             )
                         }
+
+                        Log.e(TAG,"taxlistDynamicData:  ${Gson().toJson(cartModel.taxlistDynamic)}")
                         cartModel.items = list
                     } else {
                         if (item != null) {
@@ -3334,7 +3336,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     private fun taxCalculation(item: TbItem, discountPrice: Double) {
 
-        Log.e("CheckManualTax","checkItem:  ${Gson().toJson(item)}")
+        Log.e("CheckManualTax", "checkItem:  ${Gson().toJson(item)}")
         item.taxes?.forEach { tax ->
             if (tax.isActive && !tax.isDeleted) {
 
@@ -3350,6 +3352,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 val totalPrice =
                     price + modifierPrice /*- (discountPrice * item.itemQuantity)*/
 
+                Log.e("GetTaxTotalPrice", "totalPrice:   ${totalPrice}")
 
                 totalTax += if (tax.taxType == "Percentage") {
                     Log.d("yash", "taxCalculation: " + tax.taxType)
@@ -3381,7 +3384,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             }
         }
 
-        Log.e("CheckTotalTax","totalTax:   ${totalTax}")
+        Log.e("CheckTotalTax", "totalTax:   ${totalTax}")
     }
 
     private fun taxCalculationReorder(item: TbItem) {

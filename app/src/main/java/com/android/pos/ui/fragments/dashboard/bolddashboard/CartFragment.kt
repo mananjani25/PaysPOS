@@ -1041,6 +1041,12 @@ class CartFragment(
                             } else {
                                 binding.txtDineInProceed.setText("Proceed To Fire")
                             }
+
+                            Log.e("CheckCalculation","taxlistDynamic: ${Gson().toJson(it[0].taxlistDynamic)}")
+
+                            var listOfTax:ArrayList<TaxData> = arrayListOf()
+
+                            it[0].taxlistDynamic?.let { it1 -> listOfTax.addAll(it1) }
                             setTaxBifurcationData(it[0].taxlistDynamic as ArrayList<TaxData>)
                             binding.txtSubTotal.text =
                                 MethodUtils.roundOffAmount(viewModel.subTotalPrice)
