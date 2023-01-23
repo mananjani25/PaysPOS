@@ -608,6 +608,8 @@ object Constants {
     const val ONLINE_ORDER_REFRESH = "online_order_refresh"
     const val SYNC_NOTIFICATION = "sync_notification"
     const val SYNC_SETTING_NOTIFICATION = "sync_setting_notification"
+    const val SYNC_MARKUP = "MarkupSync"
+    const val IS_SYNC_MARKUP = "is_markup_sync"
 
 
     // dinein

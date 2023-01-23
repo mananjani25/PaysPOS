@@ -188,7 +188,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         viewModel.checkCashDrawerPer.observe(viewLifecycleOwner) {
             if (it) {
                 checkCashDrawerPer()
-
             }
         }
     }
@@ -562,6 +561,14 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
         } else {
             viewModel.getOnlineOrderCount()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        if (prefProvider.getValueboolean(Constants.IS_SYNC_MARKUP,false)){
+            viewModel.markupInventory()
         }
     }
 

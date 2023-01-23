@@ -175,6 +175,15 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             LogUtil.logEN("onReceive", "" + p1?.action)
             dashBoardCategoryViewModel.syncSettingModule()
 
+        }
+
+    }
+
+    private var syncMarkupReceiver = object : BroadcastReceiver() {
+        override fun onReceive(p0: Context?, p1: Intent?) {
+
+            LogUtil.logEN("syncMarkupReceiver", "" + p1?.action)
+            dashBoardCategoryViewModel.markupInventory()
 
         }
 
@@ -763,6 +772,11 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         registerReceiver(
             syncSettingReceiver,
             IntentFilter(Constants.SYNC_SETTING_NOTIFICATION)
+        )
+
+        registerReceiver(
+            syncMarkupReceiver,
+            IntentFilter(Constants.SYNC_MARKUP)
         )
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR

@@ -43,6 +43,7 @@ import com.android.pos.data.remote.Constants.DINE_IN_LIST_EDIT
 import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
+import com.android.pos.data.remote.Constants.IS_SYNC_MARKUP
 import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER
 import com.android.pos.data.remote.Constants.LOCK_SCREEN_TRANSACTION
 import com.android.pos.data.remote.Constants.ONLINE_ORDER_ENABLE
@@ -103,6 +104,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 ) : ViewModel() {
 
 
+    private var syncMarkeup: Boolean = false
     var dineInHeaderPosition: Int = 0
     var dineInSelectedItemHeaderPos: Int = 0
     var selectedItemPositionDine: Int = 0
@@ -4513,6 +4515,18 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     }
 
+    fun markupInventory() {
+
+
+        if (prefProvider.getValue(ORDER_TYPE, "").isEmpty() && !syncMarkeup) {
+            prefProvider.setValue(
+                SYNC_TIME_STAMP, ""
+            )
+            syncMarkeup = true
+            syncInventoryModule(true)
+        }
+    }
+
 
     fun syncInventoryModule(b: Boolean) {
         _showProgress.value = Event(true)
@@ -4671,6 +4685,11 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                             prefProvider.setValue(SYNC_TIME_STAMP, response.data.timeStamp)
 
+                            if (syncMarkeup) {
+                                syncMarkeup = false
+                                prefProvider.setValueboolean(IS_SYNC_MARKUP, false)
+                            }
+
                         } else {
                             _tableStatus.value = response?.let { Event(it.message) }
                         }
@@ -4696,45 +4715,6 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
     }
 
-
-    fun syncInventoryModuleN() {
-        _showProgress.value = Event(true)
-        viewModelScope.launch {
-            val resource =
-                posRepository.syncInventory(prefProvider.getValueInt(TERMINAL_ID, -1), "")
-            when (resource.status) {
-                Status.SUCCESS -> {
-                    Log.e("SyncInventory", "SyncSuccess")
-
-                    resource.data.let { response ->
-                        if (response?.status == 200) {
-                            _showProgress.value = Event(false)
-                            posRepository.saveDatabase(response)
-
-
-                        } else {
-                            _tableStatus.value = response?.let { Event(it.message) }
-                        }
-
-//                        syncSettingModule()
-
-                    }
-                }
-
-                Status.ERROR -> {
-                    Log.e("SyncInventory", "SyncError")
-                    _snackbarText.value = Event(resource.message.toString())
-                    _showProgress.value = Event(false)
-                }
-
-                Status.LOADING -> {
-                    Log.e("SyncInventory", "SyncLoading")
-                    _showProgress.value = Event(true)
-                }
-            }
-
-        }
-    }
 
     fun syncSettingModule() {
         viewModelScope.launch {
