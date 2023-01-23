@@ -3469,7 +3469,7 @@ class ActiveOrderFragment(
         viewModel.endDateSelection.observe(requireActivity()) { event ->
             event.getContentIfNotHandled()?.let {
                 //currentPage = 1
-                DatePickerDialog(
+                val dialog = DatePickerDialog(
                     requireActivity(),
                     android.R.style.Theme_Material_Light_Dialog,
                     endDate,
@@ -3478,7 +3478,9 @@ class ActiveOrderFragment(
                     myCalendar1.get(Calendar.MONTH),
                     myCalendar1.get(Calendar.DAY_OF_MONTH)
 
-                ).show()
+                )
+                dialog.datePicker.maxDate = Date().time
+                dialog.show()
             }
         }
     }

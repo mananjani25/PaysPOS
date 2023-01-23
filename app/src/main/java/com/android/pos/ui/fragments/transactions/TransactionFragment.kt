@@ -50,6 +50,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 import kotlin.math.abs
+import kotlin.time.Duration.Companion.minutes
 
 @AndroidEntryPoint
 class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, ItemCallback {
@@ -134,7 +135,6 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
         setUpTipTypeSpinnerAdapter()
 
 
-
         startTime = TimePickerDialog.OnTimeSetListener { view, hour, minute ->
             val timecalender = Calendar.getInstance()
             timecalender.set(Calendar.HOUR_OF_DAY, hour)
@@ -169,7 +169,6 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                 ) { _, _ ->
                 }
             }
-
         }
 
         startDate = DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
@@ -439,7 +438,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
         viewModel.endDateSelection.observe(requireActivity()) { event ->
             event.getContentIfNotHandled()?.let {
                 currentPage = 1
-                DatePickerDialog(
+                val dialog = DatePickerDialog(
                     requireActivity(),
                     android.R.style.Theme_Material_Light_Dialog,
                     endDate,
@@ -448,7 +447,9 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                     myCalendar1.get(Calendar.MONTH),
                     myCalendar1.get(Calendar.DAY_OF_MONTH)
 
-                ).show()
+                )
+                dialog.datePicker.maxDate = Date().time
+                dialog.show()
             }
         }
     }

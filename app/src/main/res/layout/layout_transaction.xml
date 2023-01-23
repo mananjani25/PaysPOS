@@ -116,7 +116,7 @@
                 android:layout_gravity="center"
                 android:layout_marginLeft="@dimen/_5sdp"
                 android:layout_marginRight="@dimen/_5sdp"
-                android:text="@string/tv_start_date"
+                android:text="@string/tv_start_date_and_time"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/text_size_medium" />
 
@@ -157,7 +157,7 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/_8sdp"
                 android:layout_marginEnd="@dimen/_5sdp"
-                android:text="@string/tv_end_date"
+                android:text="@string/tv_end_date_and_time"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi" />
 

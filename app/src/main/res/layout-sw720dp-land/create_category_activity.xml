@@ -22,72 +22,77 @@
             layout="@layout/view_header_toolbar_inventory" />
 
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@color/grayBackgroundColor"
+                android:gravity="center">
+
+                <include
+                    android:id="@+id/ilImage"
+                    layout="@layout/label_box" />
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
-                <androidx.appcompat.widget.LinearLayoutCompat
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:background="@color/grayBackgroundColor"
-                    android:gravity="center">
-                    <include android:id="@+id/ilImage" layout="@layout/label_box" />
-                </androidx.appcompat.widget.LinearLayoutCompat>
+                android:layout_marginStart="@dimen/_50sdp"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_marginEnd="@dimen/_50sdp"
+                android:background="@drawable/background_square_border_grey">
 
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_marginStart="@dimen/_50sdp"
-                    android:layout_marginTop="@dimen/_10sdp"
-                    android:background="@drawable/background_square_border_grey"
-                    android:layout_marginEnd="@dimen/_50sdp"
-                    android:layout_height="wrap_content">
                 <androidx.appcompat.widget.AppCompatEditText
                     style="@style/CustomFontSemiBold"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@null"
-
-                    android:hint="@string/add_category_name"
+                    android:digits="@string/disable_emoji_string"
+                    android:hint="@string/category_name"
                     android:imeOptions="actionDone"
+                    android:inputType="textVisiblePassword"
+                    android:maxLength="50"
                     android:paddingHorizontal="@dimen/_4sdp"
                     android:paddingVertical="@dimen/_7sdp"
                     android:singleLine="true"
-                    android:inputType="textVisiblePassword"
                     android:text="@={createCategoryViewModel.categoryDetails.name}"
                     android:textColor="@color/txtColor"
                     android:textColorHint="@color/hintColor"
-                    android:textSize="@dimen/_6mdpi"
-                    android:digits="@string/disable_emoji_string"/>
-                </LinearLayout>
-                <androidx.appcompat.widget.AppCompatTextView
-                    style="@style/CustomFontMediumStyle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/_50sdp"
-                    android:layout_marginTop="@dimen/_10sdp"
-                    android:layout_marginEnd="@dimen/_50sdp"
-                    android:layout_marginBottom="@dimen/_5sdp"
-                    android:text="@string/assign_item_to_category"
-                    android:textColor="@color/txtColor"
-                    android:textColorHint="@color/hintColor"
-                    android:textSize="@dimen/_6mdpi"
-                    app:textAllCaps="true" />
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recyclerViewItemsList"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/_50sdp"
-                    android:layout_marginEnd="@dimen/_50sdp"
-                    android:layout_marginBottom="@dimen/_10sdp"
-                    android:orientation="vertical"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    tools:listitem="@layout/view_assign_item_to_category" />
-
+                    android:textSize="@dimen/_6mdpi" />
             </LinearLayout>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/CustomFontMediumStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_50sdp"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_marginEnd="@dimen/_50sdp"
+                android:layout_marginBottom="@dimen/_5sdp"
+                android:text="@string/assign_item_to_category"
+                android:textColor="@color/txtColor"
+                android:textColorHint="@color/hintColor"
+                android:textSize="@dimen/_6mdpi"
+                app:textAllCaps="true" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerViewItemsList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_50sdp"
+                android:layout_marginEnd="@dimen/_50sdp"
+                android:layout_marginBottom="@dimen/_10sdp"
+                android:orientation="vertical"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/view_assign_item_to_category" />
+
+        </LinearLayout>
 
 
     </androidx.appcompat.widget.LinearLayoutCompat>

@@ -10,7 +10,7 @@
     <string name="tv_info_provider">If you forgot password, please <font color='#00A3E0'>contact</font> your sales provider</string>
     <string name="tv_pos_2021">&#169; SNACK POS 2022</string>
     <string name="save">Save</string>
-    <string name="add_category_name">Add Category Name <font color='#E90C0C'>*</font></string>
+    <string name="category_name">Category Name <font color='#E90C0C'>*</font></string>
     <string name="assign_item_to_category">Assign Item to category</string>
     <string name="tap_to_edit">Tap to Edit</string>
     <string name="edit_item_title">Update Item Title</string>
@@ -164,7 +164,7 @@
     <string name="create_item">Create Item</string>
     <string name="add_new_items">+ Add New Item</string>
     <string name="add_new_itemswithoutplus">Add New Item</string>
-    <string name="add_new_itemswithstar">Add New Item <font color='#E90C0C'>*</font></string>
+    <string name="item_name_withstar">Item Name<font color='#E90C0C'>*</font></string>
     <string name="add_tax_name">Add Tax Name</string>
     <string name="add_tax_name_">Add Tax Name<font color='#E90C0C'>*</font></string>
     <string name="add_tax__percentage">Add Tax Percentages (%)</string>
@@ -392,8 +392,8 @@
     <!--<string name="api_key">AIzaSyC1x5a06yKDyurLe3vASM_UCFZc0iT4Jfw</string>-->
     <string name="api_key">AIzaSyDph2a960YrPD2iEBip4A220sjVAKm2auo</string>
     <string name="tv_team_member_timesheet">Employee TimeSheet</string>
-    <string name="tv_start_date">Start Date</string>
-    <string name="tv_end_date">End Date</string>
+    <string name="tv_start_date_and_time">Start Date &amp; Time</string>
+    <string name="tv_end_date_and_time">End Date &amp; Time</string>
     <string name="tv_customer">Customer</string>
     <string name="tv_total_hours">Total Hours</string>
     <string name="tv_total_wage">Total Wages</string>
