@@ -980,7 +980,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                     }
                     var cartModel = cartList[0]
                     if (type == UPDATE) {
-                        var list = cartList[0].items
+                        Log.e("CheckSelectedHeaderPos","CheckPOS ${selectedHeader}")
+                        var list = dineInList.get(selectedHeader)?.items
                         list?.forEach { itemData ->
                             cartModel = taxBifurcationCalculation(
                                 itemData,
