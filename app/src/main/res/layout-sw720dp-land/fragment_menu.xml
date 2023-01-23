@@ -97,7 +97,6 @@
                         android:layout_width="@dimen/_12sdp"
                         android:layout_height="@dimen/_12sdp"
                         android:src="@drawable/ic_settings"
-
                         app:tint="@color/txtColor" />
 
                     <TextView
@@ -206,8 +205,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_10sdp"
-                android:layout_marginEnd="@dimen/_5sdp"
-                android:gravity="start"
+                android:gravity="center"
                 android:orientation="horizontal"
                 android:weightSum="4">
 
@@ -298,31 +296,23 @@
 
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_10sdp"
-                android:gravity="center"
-                android:orientation="horizontal"
-                android:weightSum="3">
 
                 <androidx.appcompat.widget.LinearLayoutCompat
-                    android:id="@+id/linearCashLog"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/_10sdp"
-                    android:layout_weight="0.9"
+                    android:layout_weight="1"
                     android:background="@drawable/menu_hover"
                     android:gravity="center"
                     android:orientation="horizontal"
-                    android:paddingVertical="@dimen/_10sdp">
+
+                    android:paddingVertical="@dimen/_10sdp"
+                    android:visibility="invisible">
 
                     <ImageView
                         android:layout_width="@dimen/_14sdp"
                         android:layout_height="@dimen/_12sdp"
-                        android:src="@drawable/ic_payment_history"
+                        android:src="@drawable/ic_logout"
                         app:tint="@color/txtColor" />
 
                     <TextView
@@ -330,18 +320,29 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/_5sdp"
-                        android:text="@string/cash_log"
+                        android:text="@string/logout"
                         android:textAllCaps="true"
                         android:textSize="@dimen/_6mdpi" />
 
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:gravity="start"
+                android:orientation="horizontal"
+                android:weightSum="4">
+
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:id="@+id/linearCustomers"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.9"
+                    android:layout_marginEnd="@dimen/_10sdp"
+                    android:layout_weight="1"
                     android:background="@drawable/menu_hover"
                     android:gravity="center"
                     android:orientation="horizontal"
@@ -366,22 +367,11 @@
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/_19sdp"
-                android:layout_marginTop="@dimen/_10sdp"
-                android:gravity="center"
-                android:orientation="horizontal"
-                android:weightSum="2">
-
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:id="@+id/linearSupport"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="@dimen/_5sdp"
+                    android:layout_marginEnd="@dimen/_10sdp"
                     android:layout_weight="1"
                     android:background="@drawable/menu_hover"
                     android:gravity="center"
@@ -407,15 +397,45 @@
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
                 <androidx.appcompat.widget.LinearLayoutCompat
-                    android:id="@+id/linearLogout"
+                    android:id="@+id/linearCashLog"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/_5sdp"
+                    android:layout_marginEnd="@dimen/_10sdp"
                     android:layout_weight="1"
                     android:background="@drawable/menu_hover"
                     android:gravity="center"
                     android:orientation="horizontal"
                     android:paddingVertical="@dimen/_10sdp">
+
+                    <ImageView
+                        android:layout_width="@dimen/_14sdp"
+                        android:layout_height="@dimen/_12sdp"
+                        android:src="@drawable/ic_payment_history"
+                        app:tint="@color/txtColor" />
+
+                    <TextView
+                        style="@style/CustomFontRegularStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/_5sdp"
+                        android:text="@string/cash_log"
+                        android:textAllCaps="true"
+                        android:textSize="@dimen/_6mdpi" />
+
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/_10sdp"
+                    android:layout_weight="1"
+                    android:background="@drawable/menu_hover"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:paddingVertical="@dimen/_10sdp"
+                    android:visibility="invisible">
 
                     <ImageView
                         android:layout_width="@dimen/_14sdp"
@@ -434,6 +454,61 @@
 
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llClockOut"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_15sdp"
+                android:background="@drawable/button_action_hover"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="@dimen/_10sdp">
+
+                <ImageView
+                    android:layout_width="@dimen/_14sdp"
+                    android:layout_height="@dimen/_12sdp"
+                    android:src="@drawable/ic_clock_out"
+                    app:tint="@color/txtColor" />
+
+                <TextView
+                    style="@style/CustomFontBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:text="@string/tv_clock_out"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_8mdpi" />
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/linearLogout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_15sdp"
+                android:background="@drawable/button_action_hover"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="@dimen/_10sdp">
+
+                <ImageView
+                    android:layout_width="@dimen/_14sdp"
+                    android:layout_height="@dimen/_12sdp"
+                    android:src="@drawable/ic_logout"
+                    app:tint="@color/txtColor" />
+
+                <TextView
+                    style="@style/CustomFontBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:text="@string/logout"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_8mdpi" />
 
 
             </LinearLayout>
