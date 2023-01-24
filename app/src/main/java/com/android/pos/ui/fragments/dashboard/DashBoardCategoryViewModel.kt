@@ -982,12 +982,14 @@ class DashBoardCategoryViewModel @Inject constructor(
                     if (type == UPDATE) {
                         Log.e("CheckSelectedHeaderPos","CheckPOS ${selectedHeader}")
                         var list = dineInList.get(selectedHeader)?.items
-                        list?.forEach { itemData ->
-                            cartModel = taxBifurcationCalculation(
-                                itemData,
-                                cartModel,
-                                type, false
-                            )
+                        dineInList?.forEach { itemData ->
+                            itemData.items.forEach {
+                                cartModel = taxBifurcationCalculation(
+                                    it,
+                                    cartModel,
+                                    type, false
+                                )
+                            }
                         }
 
                         Log.e(TAG,"taxlistDynamicData:  ${Gson().toJson(cartModel.taxlistDynamic)}")
