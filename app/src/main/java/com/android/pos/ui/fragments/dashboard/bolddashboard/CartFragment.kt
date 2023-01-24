@@ -1060,7 +1060,10 @@ class CartFragment(
                                 if (prefProvider.getValue(
                                         ORDER_TYPE,
                                         ""
-                                    ) == DINE_IN && listItems.isEmpty()
+                                    ) == DINE_IN && listItems.isEmpty() && prefProvider.getValueboolean(
+                                        Constants.DINE_IN_UPDATE,
+                                        false
+                                    ) == false
                                 ) {
                                     listOfTax.addAll(arrayListOf())
                                     setTaxBifurcationData(arrayListOf())
