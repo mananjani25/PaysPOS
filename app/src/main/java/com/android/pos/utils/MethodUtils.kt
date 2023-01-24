@@ -138,9 +138,18 @@ class MethodUtils {
 
         }
 
-        fun roundOffAmount(price: Double): String {
+     /*   fun roundOffAmount(price: Double): String {
             return MainApplication.getInstance()!!.getText(R.string.symbole)
                 .toString() + String.format("%.2f", price)
+        }
+*/
+        fun roundOffAmount(price: Double): String {
+            return MainApplication.getInstance()!!.getText(R.string.symbole)
+                .toString() + getTwoDecimal(price)
+        }
+
+        fun roundOffTwoDec(price:Double):String{
+            return MainApplication.getInstance()!!.getText(R.string.symbole).toString() + getTwoDecimal(price)
         }
 
         fun roundOffAmountDown(price: Double): Double {
@@ -158,14 +167,24 @@ class MethodUtils {
 
         }
 
-        fun roundOffAmountDouble(price: Double?): Double {
+   /*     fun roundOffAmountDouble(price: Double?): Double {
             return String.format("%.2f", price).toDouble()
+        }*/
+
+        fun roundOffAmountDouble(price: Double?): Double {
+            if (price != null)
+            return getTwoDecimal(price)
+            else
+                return  String.format("%.2f", price).toDouble()
         }
+
+       /* fun roundOffAmountString(price: Double): String {
+            return String.format("%.2f", price)
+        }*/
 
         fun roundOffAmountString(price: Double): String {
-            return String.format("%.2f", price)
+            return getTwoDecimal(price).toString()
         }
-
         fun roundOffAmountStringToDouble(price: String): String {
 
             if (price.isEmpty() || price == "0.0" || price == "0.00") {

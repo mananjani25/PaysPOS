@@ -1147,6 +1147,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             totalDiscount
         )
 
+        Log.e("DineInOrderTable","finalTaxAmt:  ${finalTaxAmt}")
 
         txtTotalAmount.text = binding.txtTotalAmountNew.text.toString()
         txtTotalTax.text = "$" + String.format(
@@ -2399,6 +2400,15 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     }
 
 
+                    totalSubTotal = MethodUtils.getTwoDecimal(totalSubTotal)
+                    totalTaxAmount = MethodUtils.getTwoDecimal(totalTaxAmount)
+                    totalServiceChargeAmount = MethodUtils.getTwoDecimal(totalServiceChargeAmount)
+
+                    Log.e("JAN2023","totalSubTotal  ${totalSubTotal}")
+                    Log.e("JAN2023","totalTaxAmount  ${totalTaxAmount}")
+                    Log.e("JAN2023","totalServiceChargeAmount  ${totalServiceChargeAmount}")
+                    Log.e("JAN2023","orderDiscount  ${orderDiscount}")
+
                     var finalAmount =
                         totalSubTotal + totalTaxAmount + totalServiceChargeAmount - orderDiscount
                     LogUtil.logE("TODO", "finalAmount  ${finalAmount}")
@@ -2427,7 +2437,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     serviceCharge = totalServiceChargeAmount
                     totalDiscount = orderDiscount + totalItemDiscount
                     finalTaxAmt = totalTaxAmount
-                    LogUtil.logE(TAG, "GotsubTotalDInin  ${subTotalDInin}")
+                    LogUtil.logE(TAG, "GotsubTotalDIninfinalAmount  ${finalAmount}")
                     binding.txtTotalAmountNew.text = MethodUtils.roundOffAmount(
                         finalAmount
                     )
