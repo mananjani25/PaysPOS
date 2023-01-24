@@ -1042,12 +1042,36 @@ class CartFragment(
                                 binding.txtDineInProceed.setText("Proceed To Fire")
                             }
 
-                            Log.e("CheckCalculation","taxlistDynamic: ${Gson().toJson(it[0].taxlistDynamic)}")
+                            Log.e(
+                                "CheckCalculation",
+                                "taxlistDynamic: ${Gson().toJson(it[0].taxlistDynamic)}"
+                            )
 
-                            var listOfTax:ArrayList<TaxData> = arrayListOf()
+                            var listOfTax: ArrayList<TaxData> = arrayListOf()
+                            var noItem = false
+                            var listItems: ArrayList<TbItem> = arrayListOf()
+                            it[0].dineInList?.forEach {
 
-                            it[0].taxlistDynamic?.let { it1 -> listOfTax.addAll(it1) }
-                            setTaxBifurcationData(it[0].taxlistDynamic as ArrayList<TaxData>)
+                                listItems.addAll(it.items)
+
+                            }
+
+                            it[0].taxlistDynamic?.let { it1 ->
+                                if (prefProvider.getValue(
+                                        ORDER_TYPE,
+                                        ""
+                                    ) == DINE_IN && listItems.isEmpty()
+                                ) {
+                                    listOfTax.addAll(arrayListOf())
+                                    setTaxBifurcationData(arrayListOf())
+
+                                } else {
+                                    listOfTax.addAll(it1)
+                                    setTaxBifurcationData(it[0].taxlistDynamic as ArrayList<TaxData>)
+                                }
+
+                            }
+
                             binding.txtSubTotal.text =
                                 MethodUtils.roundOffAmount(viewModel.subTotalPrice)
                             binding.txtTax.text = MethodUtils.roundOffAmount(viewModel.totalTax)
@@ -1898,8 +1922,8 @@ class CartFragment(
 
         }
         binding.tvSave.setOnClickListener {
-            prefProvider.setValueboolean(OPEN_ORDER_UPDATE_FOR_PRINT,false)
-            if (isOrderUpdate == false){
+            prefProvider.setValueboolean(OPEN_ORDER_UPDATE_FOR_PRINT, false)
+            if (isOrderUpdate == false) {
                 prefProvider.setValue(
                     Constants.OPEN_ORDER_ITEMS,
                     ""

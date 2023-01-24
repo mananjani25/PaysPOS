@@ -949,7 +949,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         if (list[i].manualSaleId == item.manualSaleId) {
                                             index = i
                                             break
-                                        } else if (cartModel?.reorder == true) {
+                                        } else if (cartModel.reorder == true) {
                                             if (list[i].orderItemId == item.orderItemId) {
                                                 index = i
                                                 Log.e(TAG, "indexReorder23:  ${index}")
@@ -975,12 +975,21 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 }
                             } else {
                                 //list.remove(item)
+
                             }
+
+                            cartModel.items = list
+                            Log.e("ModNewLogic","dineInList:   ${Gson().toJson(cartModel.dineInList)}")
+                            Log.e("ModNewLogic","checkItems:  ${Gson().toJson(cartModel.items)}")
+
+                        //cartModel.dineInList = dinein
+
+
                         }
                     }
                     var cartModel = cartList[0]
                     if (type == UPDATE) {
-                        Log.e("CheckSelectedHeaderPos","CheckPOS ${selectedHeader}")
+                        Log.e("CheckSelectedHeaderPos", "CheckPOS ${selectedHeader}")
                         var list = dineInList.get(selectedHeader)?.items
                         dineInList?.forEach { itemData ->
                             itemData.items.forEach {
@@ -992,11 +1001,14 @@ class DashBoardCategoryViewModel @Inject constructor(
                             }
                         }
 
-                        Log.e(TAG,"taxlistDynamicData:  ${Gson().toJson(cartModel.taxlistDynamic)}")
+                        Log.e(
+                            TAG,
+                            "taxlistDynamicData:  ${Gson().toJson(cartModel.taxlistDynamic)}"
+                        )
                         cartModel.items = list
                     } else {
                         if (item != null) {
-                            cartModel = taxBifurcationCalculation(item!!, cartModel, type, false)
+                            cartModel = taxBifurcationCalculation(item, cartModel, type, false)
                         }
                     }
                     addCart(cartModel)
