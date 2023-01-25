@@ -1006,9 +1006,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 val itemTaxPrice =
                     (itemtype.rate * totalPrice) / 100
                 LogUtil.logE("itemTaxPrice", "" + itemTaxPrice)
-                MethodUtils.getTwoDecimal(itemTaxPrice)
-                /* String.format("%.2f", itemTaxPrice)
-                     .toDouble()*/
+               // MethodUtils.getTwoDecimal(itemTaxPrice)
+                 String.format("%.2f", itemTaxPrice)
+                     .toDouble()
             }
 
         } else {
@@ -1017,9 +1017,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 String.format("%.2f", 0.00)
                     .toDouble()
             } else {
-                MethodUtils.getTwoDecimal(itemtype.rate * item.itemQuantity)
-                /* String.format("%.2f", itemtype.rate * item.itemQuantity)
-                     .toDouble()*/
+               // MethodUtils.getTwoDecimal(itemtype.rate * item.itemQuantity)
+                 String.format("%.2f", itemtype.rate * item.itemQuantity)
+                     .toDouble()
             }
 
         }
