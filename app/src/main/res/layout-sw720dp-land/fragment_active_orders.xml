@@ -162,7 +162,7 @@
                     android:layout_marginEnd="@dimen/_5sdp"
                     android:layout_toStartOf="@+id/imgOptionMenu"
                     android:background="@null"
-                    android:digits="@string/disable_emoji_string"
+                    android:digits="@string/numbers_digits_string"
                     android:fontFamily="@font/sf_pro_display_regular"
                     android:hint="Search by Order Id , Employees"
                     android:imeOptions="actionDone"

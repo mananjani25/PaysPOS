@@ -106,6 +106,7 @@ class CashLogFragment : Fragment(), AdapterView.OnItemSelectedListener {
             viewModel.startDate.value = timeCalculateForStartEndTime(hour, minute, "isstart")
             if (differnceTrue(viewModel.startDate.value!!, viewModel.endDate.value) <= 30) {
                 currentPage = 1
+                adapter.clear()
                 viewModel.apiCallTimeSheet(
                     getTerminalId(binding.spTerminals.selectedItemPosition).toString(),
                     currentPage
@@ -126,6 +127,7 @@ class CashLogFragment : Fragment(), AdapterView.OnItemSelectedListener {
             viewModel.endDate.value = timeCalculateForStartEndTime(hour, minute, "isend")
             if (differnceTrue(viewModel.endDate.value!!, viewModel.startDate.value) <= 30) {
                 currentPage = 1
+                adapter.clear()
                 viewModel.apiCallTimeSheet(
                     getTerminalId(binding.spTerminals.selectedItemPosition).toString(),
                     currentPage

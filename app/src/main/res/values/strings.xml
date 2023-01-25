@@ -483,6 +483,7 @@
     <string name="how_would_the_customer_like_their_receipt">How would the customer like their receipt?</string>
     <string name="no_receipt">No Receipt</string>
     <string name="text_message">Text Message</string>
+    <string name="text_customer_receipt">Text Customer Receipt</string>
     <string name="print">Print</string>
     <string name="email_receipt">Email Receipt</string>
     <string name="phone_number">Mobile Number</string>
@@ -594,6 +595,7 @@
     <string name="event_type">Event Type</string>
     <string name="reason">Reason</string>
     <string name="employee_name">Employee Name</string>
+    <string name="employee_id">Employee ID</string>
     <string name="add_note_cart">Note: </string>
     <string name="tv_variation_name">Variation Name</string>
     <string name="tv_variation_name_mand">Variation Name<font color='#E90C0C'>*</font></string>
@@ -749,7 +751,7 @@
     <string name="send_receipt">Send Receipt</string>
     <string name="please_choos_a_role">Please choose a Role</string>
     <string name="please_enter_passcode">Please enter passcode</string>
-    <string name="character_String">qwertzuiopasdfghjklyxcvbnmQWERTZUIOPASDFGHJKLYXCVBNM</string>
+    <string name="character_String">"qwertzuiopasdfghjklyxcvbnmQWERTZUIOPASDFGHJKLYXCVBNM "</string>
     <string name="rename">Rename</string>
     <string name="last_name_teammember">Last Name<font color='#E90C0C'>*</font></string>
     <string name="email_address_teammember">Email Address<font color='#E90C0C'>*</font></string>

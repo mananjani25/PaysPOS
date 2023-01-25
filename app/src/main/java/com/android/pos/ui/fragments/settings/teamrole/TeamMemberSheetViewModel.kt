@@ -1,6 +1,5 @@
 package com.android.pos.ui.fragments.settings.teamrole
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -11,6 +10,7 @@ import com.android.pos.data.model.responseModel.GetEmployeeTimeSheetDetailsRespo
 import com.android.pos.data.model.responseModel.GetEmployeesTimeSheetResponse
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.data.repositories.TaxServiceChargeRepository
+import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.statusUtils.Resource
@@ -64,17 +64,18 @@ class TeamMemberSheetViewModel @Inject constructor(
          posRepository.employeesTimeSheet(startDate.value.toString(), endDate.value.toString(),roleId)*/
     val getTeamRoleList = taxServiceChargeRepository.getTeamRoleList()
 
+
     fun setCurrentDate(myCalendar: Calendar) {
         val myFormat = "MM/dd/yyyy" //In which you need put here
         val sdf = SimpleDateFormat(myFormat, Locale.getDefault())
-        myCalendar.add(Calendar.DATE,-6)
-        startDate.value = sdf.format(myCalendar.time) + " " + SimpleDateFormat(
-            "hh:mm a",
-            Locale.getDefault()
-        ).format(Date())
+        /* startDate.value = sdf.format(myCalendar.time) + " " + SimpleDateFormat(
+             "hh:mm a",
+             Locale.getDefault()
+         ).format(Date(System.currentTimeMillis() - 60000 * 30))*/
 
+        startDate.value = sdf.format(myCalendar.time) + " " + "12:00 AM"
 
-        endDate.value = sdf.format(Date()) + " " + SimpleDateFormat(
+        endDate.value = sdf.format(myCalendar.time) + " " + SimpleDateFormat(
             "hh:mm a",
             Locale.getDefault()
         ).format(Date())
@@ -195,7 +196,7 @@ class TeamMemberSheetViewModel @Inject constructor(
 
             LogUtil.logE("startDate", startDate.value ?: "")
             LogUtil.logE("endDate", endDate.value ?: "")
-            var resource: Resource<BaseResponse>?= null
+            var resource: Resource<BaseResponse>? = null
             if (teamId.isNotEmpty()) {
                 resource =
                     posRepository.sendEmailReportSummary(
@@ -209,7 +210,7 @@ class TeamMemberSheetViewModel @Inject constructor(
                     posRepository.sendEmailReportSummary(
                         startDate = startDate.value.toString(),
                         endDate = endDate.value.toString(),
-                        employee_id ="",
+                        employee_id = "",
                         email = emailId
                     )
             }
