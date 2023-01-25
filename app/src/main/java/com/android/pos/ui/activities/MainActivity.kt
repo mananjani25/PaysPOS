@@ -46,6 +46,8 @@ import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.dashboard.bolddashboard.DashboardCategoryBoldPOS
+import com.android.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
+import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.ui.fragments.payment.OrderCompleteViewModel
 import com.android.pos.ui.fragments.settings.hardware.Hardware
 import com.android.pos.utils.*
@@ -82,7 +84,8 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     StatusChangeListener {
-
+    private val dashboardViewModel: DashBoardCategoryViewModel by viewModels()
+    private val passcodeViewModel: PasscodeViewModel by viewModels()
     private var printerQueueModelGlobal: PrinterQueueModel? = null
     private var isPrinterQueueRun: Boolean = false
     private var kitchenPrinterList: List<PrinterResponse.Data.KitchenReceiptPrinters> =
@@ -725,6 +728,14 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         unregisterReceiver(broadcastReceiveronlineOrder)
     }
 
+    private lateinit var presentation: CustomDisplay
+
+    private fun initCustomerDisplay() {
+        getCustomerDisplay(this)?.let { display ->
+            presentation = CustomDisplay(display, this, this,dashboardViewModel, passcodeViewModel)
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN)
@@ -775,6 +786,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             window.statusBarColor = getColor(R.color.txtColorGray)
         }
         binding = DataBindingUtil.setContentView(this, R.layout.parent_activity)
+        initCustomerDisplay()
         supportActionBar?.hide()
         binding.lifecycleOwner = this
 
@@ -1008,6 +1020,10 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
     override fun onResume() {
         super.onResume()
+        if (this::presentation.isInitialized) {
+            presentation.show()
+            presentation.onDisplayChanged()
+        }
         prefProvider?.setValue(UNIQUE_ID, getDeviceId())
 
         navController?.addOnDestinationChangedListener(listner)
@@ -1015,6 +1031,10 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
     override fun onPause() {
         super.onPause()
+        if (this::presentation.isInitialized) {
+            presentation.hide()
+            presentation.onDisplayChanged()
+        }
         navController?.removeOnDestinationChangedListener(listner)
     }
 

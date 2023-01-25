@@ -52,11 +52,9 @@ import com.android.pos.ui.adapter.boldpos.CartAdapter
 import com.android.pos.ui.adapter.boldpos.TaxBirfurcationAdapter
 import com.android.pos.ui.fragments.checkout.CheckoutDineInPaymentViewModel
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.ui.fragments.payment.PaymentViewModel
-import com.android.pos.utils.AlertUtils
-import com.android.pos.utils.LogUtil
-import com.android.pos.utils.MethodUtils
-import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.*
 import com.android.pos.utils.callback.*
 import com.android.pos.utils.extensions.*
 import com.android.pos.utils.statusUtils.Resource
@@ -78,6 +76,7 @@ class CartFragment(
 ) :
     Fragment(), MyCallback,
     DineInAdapter.DineInCallback, ItemCallback {
+    private lateinit var presentation: CustomDisplay
     private var isSaveOrder: Boolean = false
     private lateinit var binding: FragmentCartBinding
     var fragmentId: Int? = null
@@ -125,6 +124,8 @@ class CartFragment(
     lateinit var prefProvider: PrefProvider
     private val TAG = "CartFragment"
 
+    private val passcodeViewModel by activityViewModels<PasscodeViewModel>()
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -134,6 +135,17 @@ class CartFragment(
         binding = FragmentCartBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
         LogUtil.logE("bundleData", arguments.toString())
+
+        getCustomerDisplay(requireContext())?.let { display ->
+            presentation = CustomDisplay(
+                display,
+                requireContext(),
+                viewLifecycleOwner,
+                viewModel,
+                passcodeViewModel
+            )
+            //presentation.show()
+        }
 
         checkOrderType()
 
@@ -299,6 +311,11 @@ class CartFragment(
                     }
                     binding.imgDropdown.setImageResource(R.drawable.ic_solid_up_arrow)
                     binding.relativeDynamicTax.visible()
+                    if(this::presentation.isInitialized){
+                        presentation.show()
+                        presentation.onTaxClicked(true)
+                        presentation.onDisplayChanged()
+                    }
                 } else {
                     if (binding.relativeLoylatyPoints.isVisible()) {
                         binding.liinearInfoLayout.layoutParams.height =
@@ -310,6 +327,11 @@ class CartFragment(
                     taxClickable = false
                     binding.imgDropdown.setImageResource(R.drawable.ic_arrow_drop_down)
                     binding.relativeDynamicTax.gone()
+                    if(this::presentation.isInitialized){
+                        presentation.show()
+                        presentation.onTaxClicked(false)
+                        presentation.onDisplayChanged()
+                    }
                 }
             }
 
@@ -421,6 +443,10 @@ class CartFragment(
             prefProvider.setValueboolean(Constants.LOYALTY_ADDED, p1)
             prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED, p1)
             addObserver()
+            if (this::presentation.isInitialized) {
+                presentation.show()
+                presentation.onDisplayChanged()
+            }
         }
 
     }
