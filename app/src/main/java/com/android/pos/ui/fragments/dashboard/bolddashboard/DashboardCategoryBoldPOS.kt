@@ -647,12 +647,12 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 )
             }
         }
-        binding.layoutHeader.ivLock.setOnClickListener {
-            if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
-                prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
-                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_reportEODFragment)
-            }
-        }
+//        binding.layoutHeader.ivLock.setOnClickListener {
+//            if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+//                prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
+//                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_reportEODFragment)
+//            }
+//        }
         binding.layoutHeaderCheckout.imgDrawer.setOnClickListener {
             prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
             binding.layoutHeaderCheckout.rlRoot.visibility = View.GONE
