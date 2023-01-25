@@ -1622,6 +1622,7 @@ class CartFragment(
 
                     itemClickListner?.onDineInOrderCleared()
 
+                    viewModel.deleteOrderAfterMarkup()
 
                 } else {
                     clearCustomer()
@@ -1633,6 +1634,8 @@ class CartFragment(
                     itemClickListner?.onDineInOrderCleared()
                     uiSave()
                     getOrderTypes()
+
+                    viewModel.deleteOrderAfterMarkup()
 
                 }
             }
