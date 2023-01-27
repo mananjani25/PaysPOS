@@ -630,6 +630,8 @@
     <string name="tv_option_set">Option Set <font color='#E90C0C'>*</font></string>
     <string name="please_select_order_type_to_add_item">Please select order type to add item</string>
     <string name="merge_tables">Merge Tables</string>
+    <string name="transfer_tables">Transfer Tables</string>
+
     <string name="cancel">Cancel</string>
     <string name="assign_customer">Assign Customer</string>
     <string name="tv_choose_photo">Choose Photo</string>
@@ -798,7 +800,9 @@
     <string name="charge">Charge</string>
     <string name="add_tip_">Add Tip(%)<font color='#E90C0C'>*</font></string>
     <string name="primary_table">Primary Table</string>
+    <string name="from_table">From Table</string>
     <string name="secondary_table">Secondary Table</string>
+    <string name="to_table">To Table</string>
     <string name="note_title_">Note Title<font color='#E90C0C'>*</font></string>
     <string name="add_order">Add Order</string>
     <string name="hide">Hide</string>

@@ -817,6 +817,9 @@ interface ApiService {
     @GET(Constants.FLOOR_PLAN_TABLE_DETAILS)
     suspend fun getFloorPlanTableDetails(): GetFloorPlanDetailResponse
 
+    @GET(Constants.AVAILABLE_TRANSFER_TABLE_LIST)
+    suspend fun getAvailableTransferTableList():AvailableTransferTableList
+
 
     @GET(REPORT_SUMMARY)
     suspend fun getReportSummary(

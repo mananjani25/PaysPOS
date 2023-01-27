@@ -97,7 +97,6 @@ class DineInFragment : Fragment() {
         binding.layoutHeader.txtDineinordere.setTextColor(resources.getColor(R.color.btnColor))*/
 
 
-
         val onBackPressedCallback: OnBackPressedCallback =
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
@@ -107,7 +106,10 @@ class DineInFragment : Fragment() {
                 }
 
             }
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, onBackPressedCallback)
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            onBackPressedCallback
+        )
 
 
         dineInFloorNameListAdapter.showFloorPlan = {
@@ -135,6 +137,12 @@ class DineInFragment : Fragment() {
     }
 
     private fun onClick() {
+        binding.layoutHeader.imgTransferTable?.setOnClickListener {
+            loadTransferTableDetails()
+
+
+        }
+
         binding.layoutHeader.txtTransaction.setOnClickListener {
             if (rolePermission.hasTransactionPermission(binding.root)) {
                 findNavController().navigate(R.id.action_dineInFragment_to_transactionFragment)
@@ -237,6 +245,46 @@ class DineInFragment : Fragment() {
         }
     }
 
+    private fun loadTransferTableDetails() {
+        viewModel.getAvailableTransferTableList().observe(viewLifecycleOwner) {
+            it?.let { resource ->
+                when (resource.status) {
+                    Status.SUCCESS -> {
+                        ProgressUtils.dismissProgressDialog()
+                        val bundle = Bundle()
+                        if (resource.data?.status == 200) {
+                            bundle.putParcelable("floorList",it.data)
+                            if (findNavController().currentDestination?.id == R.id.dineInFragment) {
+                                findNavController().navigate(
+                                    R.id.action_dineInFragment_to_transferTableDialog,
+                                    bundle
+                                )
+                            }
+
+                        } else {
+                            AlertUtils.showCustomAlertWithListenerWithOK(
+                                requireContext(), it.message.toString()
+                            ) { _, _ ->
+                                val navController = findNavController()
+                                navController.popBackStack()
+                            }
+
+                        }
+
+                    }
+                    Status.ERROR -> {
+                        ProgressUtils.dismissProgressDialog()
+                        binding.root.showAlert(resource.message)
+
+                    }
+                    Status.LOADING -> {
+                        ProgressUtils.showProgressDialog(requireActivity())
+                    }
+                }
+            }
+        }
+
+    }
     private fun loadFloorPlanDetails() {
         viewModel.getFloorPlanDetails().observe(viewLifecycleOwner) {
             it?.let { resource ->

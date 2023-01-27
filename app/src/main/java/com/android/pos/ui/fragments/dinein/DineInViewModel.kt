@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.android.pos.data.model.DineInOrderDetailAttributes
 import com.android.pos.data.model.MergeTableModel
 import com.android.pos.data.model.requestModel.*
+import com.android.pos.data.model.responseModel.AvailableTransferTableList
 import com.android.pos.data.model.responseModel.CreateNoteResponse
 import com.android.pos.data.model.responseModel.GetFloorPlanDetailResponse
 import com.android.pos.data.model.responseModel.GetFloorPlanResponse
@@ -61,6 +62,10 @@ class DineInViewModel @Inject constructor(
 
     fun getFloorPlanDetails(): LiveData<Resource<GetFloorPlanDetailResponse>> {
         return posRepository.getFloorPlanTableDetails()
+    }
+
+    fun getAvailableTransferTableList(): LiveData<Resource<AvailableTransferTableList>> {
+        return posRepository.getAvailableTransferTableList()
     }
 
     fun mergeTable(
@@ -780,13 +785,13 @@ class DineInViewModel @Inject constructor(
 
         guestModelWT.guestItemsAttributes = listWholeTbItems
         listGuestAttr.add(0, guestModelWT)
-       /* for (m in 0 until orderItemsAttr.size) {
-            val obj = orderItemsAttr.get(m)
+        /* for (m in 0 until orderItemsAttr.size) {
+             val obj = orderItemsAttr.get(m)
 
-            obj.custom_item_id = m
+             obj.custom_item_id = m
 
-        }
-*/
+         }
+ */
 
 
         model.orderItemsAttributes = orderItemsAttr

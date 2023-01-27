@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MissingDefaultResource">
-
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -37,7 +35,7 @@
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:padding="@dimen/_5sdp"
-                android:text="@string/merge_tables"
+                android:text="@string/transfer_tables"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi" />
 
@@ -72,7 +70,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="@string/primary_table"
+                    android:text="@string/from_table"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_7mdpi"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -122,8 +120,8 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
-                        android:gravity="end"
                         android:layout_toEndOf="@+id/txtFloorPlanLabel"
+                        android:gravity="end"
                         android:paddingVertical="@dimen/_2sdp">
 
                         <androidx.appcompat.widget.AppCompatSpinner
@@ -159,7 +157,6 @@
                     android:layout_marginEnd="@dimen/_25sdp"
                     android:layout_weight="1"
                     android:background="@drawable/background_square_border_grey"
-
                     android:paddingVertical="@dimen/_1sdp"
                     app:layout_constraintTop_toBottomOf="@+id/relFloorPlan">
 
@@ -174,7 +171,7 @@
                         android:layout_marginStart="@dimen/_5sdp"
                         android:gravity="center"
                         android:padding="@dimen/_5sdp"
-                        android:text="Select Primary Table"
+                        android:text="Select Table"
                         android:textColor="@color/txtColor"
                         android:textSize="@dimen/_6mdpi" />
 
@@ -216,7 +213,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_20sdp"
-                    android:text="@string/secondary_table"
+                    android:text="@string/to_table"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_7mdpi"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -236,21 +233,132 @@
                     app:layout_constraintTop_toBottomOf="@+id/txtSecondaryLabel" />
 
 
-                <androidx.recyclerview.widget.RecyclerView
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/rvTableList"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/_25sdp"
-                    android:layout_marginEnd="@dimen/_25sdp"
-                    android:orientation="vertical"
-                    android:visibility="visible"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    app:layout_constrainedHeight="true"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/llDivider3"
-                    tools:itemCount="3"
-                    tools:listitem="@layout/view_merge_table_list" />
+                    app:layout_constraintTop_toBottomOf="@+id/llDivider3">
+                    <RelativeLayout
+                        android:id="@+id/relFloorPlan1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/_25sdp"
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:layout_marginEnd="@dimen/_25sdp"
+                        android:layout_weight="1"
+                        android:background="@drawable/background_square_border_grey"
+                        android:paddingVertical="@dimen/_1sdp"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/txtFloorPlanLabel1"
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentStart="true"
+                            android:layout_centerInParent="true"
+                            android:layout_gravity="center"
+                            android:layout_marginStart="@dimen/_5sdp"
+                            android:gravity="center"
+                            android:padding="@dimen/_5sdp"
+                            android:text="Select Floor Plan"
+                            android:textColor="@color/txtColor"
+                            android:textSize="@dimen/_6mdpi" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:layout_toEndOf="@+id/txtFloorPlanLabel1"
+                            android:gravity="end"
+                            android:paddingVertical="@dimen/_2sdp">
+
+                            <androidx.appcompat.widget.AppCompatSpinner
+                                android:id="@+id/spnFloorName1"
+                                style="@style/CustomFontSemiBold"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="end"
+                                android:layout_marginStart="@dimen/_5sdp"
+                                android:background="@null"
+                                android:gravity="end"
+                                android:padding="@dimen/_5sdp"
+                                android:spinnerMode="dialog"
+                                android:textColor="@color/color96"
+                                android:textSize="@dimen/_5mdpi" />
+
+                            <androidx.appcompat.widget.AppCompatImageView
+                                android:layout_width="14dp"
+                                android:layout_height="19dp"
+                                android:layout_gravity="center"
+                                android:layout_marginStart="@dimen/_5sdp"
+                                android:layout_marginEnd="@dimen/_10sdp"
+                                app:srcCompat="@drawable/ic_down_solid_arrow" />
+
+                        </LinearLayout>
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/relPrimaryTable1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/_25sdp"
+                        android:layout_marginEnd="@dimen/_25sdp"
+                        android:layout_weight="1"
+                        android:background="@drawable/background_square_border_grey"
+                        android:paddingVertical="@dimen/_1sdp"
+                        app:layout_constraintTop_toBottomOf="@+id/relFloorPlan1">
+
+                        <androidx.appcompat.widget.AppCompatTextView
+
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentStart="true"
+                            android:layout_centerInParent="true"
+                            android:layout_gravity="center"
+                            android:layout_marginStart="@dimen/_5sdp"
+                            android:gravity="center"
+                            android:padding="@dimen/_5sdp"
+                            android:text="Select Table"
+                            android:textColor="@color/txtColor"
+                            android:textSize="@dimen/_6mdpi" />
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:paddingVertical="@dimen/_2sdp">
+
+                            <Spinner
+                                android:id="@+id/spnTableName1"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_marginStart="@dimen/_5sdp"
+                                android:background="@null"
+                                android:gravity="start"
+                                android:padding="@dimen/_5sdp"
+                                android:spinnerMode="dialog"
+                                android:textColor="@color/color96"
+                                android:textSize="@dimen/_5mdpi" />
+
+                            <androidx.appcompat.widget.AppCompatImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_marginStart="@dimen/_5sdp"
+                                android:layout_marginEnd="@dimen/_10sdp"
+                                app:srcCompat="@drawable/ic_down_solid_arrow" />
+
+                        </LinearLayout>
+                    </RelativeLayout>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
 
                 <androidx.appcompat.widget.LinearLayoutCompat
@@ -265,28 +373,9 @@
 
 
                     <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/txtAddMore"
-                        style="@style/CustomFontSemiBold"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_gravity="center"
-                        android:layout_weight="1"
-                        android:background="@drawable/button_hover_blue"
-                        android:gravity="center"
-                        android:paddingStart="@dimen/_15sdp"
-                        android:paddingTop="@dimen/_7sdp"
-                        android:paddingEnd="@dimen/_15sdp"
-                        android:paddingBottom="@dimen/_7sdp"
-                        android:text="+Add More Table"
-                        android:textColor="@color/white"
-                        android:textSize="@dimen/_6mdpi" />
-
-
-                    <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txtSave"
                         style="@style/CustomFontSemiBold"
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_gravity="center"
@@ -312,5 +401,4 @@
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 </layout>
