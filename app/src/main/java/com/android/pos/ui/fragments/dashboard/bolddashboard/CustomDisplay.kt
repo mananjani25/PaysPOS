@@ -3,7 +3,6 @@ package com.android.pos.ui.fragments.dashboard.bolddashboard
 import android.app.Presentation
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.Display
 import android.view.View
 import android.view.Window
@@ -119,8 +118,8 @@ class CustomDisplay(
                     cartList[0].items?.toCollection(arrayListOf())?.let { it1 ->
                         cartAdapter.setList(it1)
                     }
+                    displayCustomer()
                 }
-                displayCustomer()
                 setupTotals(cartList)
 
             }
@@ -146,30 +145,6 @@ class CustomDisplay(
                 taxBirfurcationAdapter.setList(cartList[0].taxlistDynamic as ArrayList<TaxData>)
             }
 
-            val data: TbCustomer? = prefProvider.getCustomerData()
-            if (data != null) {
-                if (loyaltyPointCondition(data) && redeemLoyaltyInfo.needToApplyLoyalty) {
-                    binding.liinearInfoLayout.layoutParams.height =
-                        resources.getDimension(R.dimen._70sdp).toInt()
-                    binding.relativeLoylatyPoints.visibility = View.VISIBLE
-                    binding.lblLoyaltyPoints.visibility = View.VISIBLE
-
-                    binding.txtLabelLoyaltyAmounts.visibility = View.VISIBLE
-                    binding.checkloylaty.visibility = View.GONE
-                    binding.txtLoyaltyAmount.text = "- $${
-                        String.format(
-                            "%.2f", redeemLoyaltyInfo.usedLoyaltyAmount
-                        )
-                    }"
-                    binding.txtLoyaltyPoints.text = "${redeemLoyaltyInfo.usedLoyaltyPoints}"
-                } else {
-                    binding.liinearInfoLayout.layoutParams.height =
-                        resources.getDimension(R.dimen._50sdp).toInt()
-                    binding.relativeLoylatyPoints.visibility = View.GONE
-                    binding.lblLoyaltyPoints.visibility = View.GONE
-                }
-            }
-
             itemCalculation(cartList, binding.txtTotal, context)
         }
     }
@@ -178,13 +153,43 @@ class CustomDisplay(
 
         val name = prefProvider.getValue(Constants.CUSTOMER_NAME, "")
         if (name.isNotEmpty()) {
+            binding.txtCustomerName.visible()
             binding.txtLoyaltyPointsLabel.visible()
             binding.txtLoyaltyPointsLabel.text =
                 "Loyalty Points: ${dashBoardCategoryViewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
             binding.txtCustomerName.text = name
+            dashBoardCategoryViewModel.apply {
+                val data: TbCustomer? = prefProvider.getCustomerData()
+                if (data != null) {
+                    if (loyaltyPointCondition(data) && redeemLoyaltyInfo.needToApplyLoyalty) {
+                        binding.liinearInfoLayout.layoutParams.height =
+                            resources.getDimension(R.dimen._70sdp).toInt()
+                        binding.relativeLoylatyPoints.visibility = View.VISIBLE
+                        binding.lblLoyaltyPoints.visibility = View.VISIBLE
+
+                        binding.txtLabelLoyaltyAmounts.visibility = View.VISIBLE
+                        binding.checkloylaty.visibility = View.GONE
+                        binding.txtLoyaltyAmount.text = "- $${
+                            String.format(
+                                "%.2f", redeemLoyaltyInfo.usedLoyaltyAmount
+                            )
+                        }"
+                        binding.txtLoyaltyPoints.text = "${redeemLoyaltyInfo.usedLoyaltyPoints}"
+                    } else {
+                        binding.liinearInfoLayout.layoutParams.height =
+                            resources.getDimension(R.dimen._50sdp).toInt()
+                        binding.relativeLoylatyPoints.visibility = View.GONE
+                        binding.lblLoyaltyPoints.visibility = View.GONE
+                    }
+                }
+            }
         } else {
             binding.txtLoyaltyPointsLabel.invisible()
-            binding.txtCustomerName.text = "Customer Name"
+            binding.txtCustomerName.invisible()
+            binding.liinearInfoLayout.layoutParams.height =
+                resources.getDimension(R.dimen._50sdp).toInt()
+            binding.relativeLoylatyPoints.visibility = View.GONE
+            binding.lblLoyaltyPoints.visibility = View.GONE
         }
 
     }
