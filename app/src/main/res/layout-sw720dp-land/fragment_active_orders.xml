@@ -20,7 +20,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/view"/>
+            android:background="@color/view" />
 
 
         <RelativeLayout
@@ -29,129 +29,124 @@
             android:layout_gravity="start"
             android:layout_marginVertical="@dimen/_5sdp"
             android:gravity="center"
-            android:visibility="visible"
             android:orientation="horizontal"
+            android:visibility="visible"
             android:weightSum="3">
 
 
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/llDateTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="2.5"
+                android:orientation="horizontal">
 
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="@dimen/_5sdp"
+                    android:layout_marginRight="@dimen/_5sdp"
+                    android:text="@string/start_date_amp_time"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_5mdpi" />
 
-          <androidx.appcompat.widget.LinearLayoutCompat
-              android:id="@+id/llDateTime"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:orientation="horizontal"
-              android:layout_weight="2.5">
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/background_square_border_grey"
+                    android:onClick="@{() -> viewModel.datePicker(true)}"
+                    android:orientation="horizontal"
+                    android:paddingVertical="@dimen/_5sdp"
+                    android:paddingLeft="@dimen/_5sdp"
+                    android:paddingRight="@dimen/_10sdp">
 
-              <androidx.appcompat.widget.AppCompatTextView
-                  style="@style/CustomFontSemiBold"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:layout_gravity="center"
-                  android:layout_marginLeft="@dimen/_5sdp"
-                  android:layout_marginRight="@dimen/_5sdp"
-                  android:text="@string/start_date_amp_time"
-                  android:textColor="@color/txtColor"
-                  android:textSize="@dimen/_5mdpi" />
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginEnd="@dimen/_5sdp"
+                        app:srcCompat="@drawable/ic_calendar"
+                        tools:ignore="ContentDescription" />
 
-              <LinearLayout
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:background="@drawable/background_square_border_grey"
-                  android:onClick="@{() -> viewModel.datePicker(true)}"
-                  android:orientation="horizontal"
-                  android:paddingLeft="@dimen/_5sdp"
-                  android:paddingRight="@dimen/_10sdp"
-                  android:paddingVertical="@dimen/_5sdp"
-                  >
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvStartDate"
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:text="@{viewModel.startDate}"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_5mdpi"
+                        tools:text="2021-08-10" />
+                </LinearLayout>
 
-                  <ImageView
-                      android:layout_width="wrap_content"
-                      android:layout_height="wrap_content"
-                      android:layout_gravity="center"
-                      android:layout_marginEnd="@dimen/_5sdp"
-                      app:srcCompat="@drawable/ic_calendar"
-                      tools:ignore="ContentDescription" />
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="@dimen/_8sdp"
+                    android:layout_marginEnd="@dimen/_5sdp"
+                    android:text="@string/end_date_amp_time"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_5mdpi" />
 
-                  <androidx.appcompat.widget.AppCompatTextView
-                      android:id="@+id/tvStartDate"
-                      style="@style/CustomFontSemiBold"
-                      android:layout_width="wrap_content"
-                      android:layout_height="wrap_content"
-                      android:layout_gravity="center"
-                      android:gravity="center"
-                      android:text="@{viewModel.startDate}"
-                      android:textColor="@color/txtColor"
-                      android:textSize="@dimen/_5mdpi"
-                      tools:text="2021-08-10" />
-              </LinearLayout>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/background_square_border_grey"
+                    android:onClick="@{() -> viewModel.datePicker(false)}"
+                    android:orientation="horizontal"
+                    android:paddingVertical="@dimen/_5sdp"
+                    android:paddingLeft="@dimen/_5sdp"
+                    android:paddingRight="@dimen/_10sdp">
 
-              <androidx.appcompat.widget.AppCompatTextView
-                  style="@style/CustomFontSemiBold"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:layout_gravity="center"
-                  android:layout_marginStart="@dimen/_8sdp"
-                  android:layout_marginEnd="@dimen/_5sdp"
-                  android:text="@string/end_date_amp_time"
-                  android:textColor="@color/txtColor"
-                  android:textSize="@dimen/_5mdpi" />
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginEnd="@dimen/_5sdp"
+                        app:srcCompat="@drawable/ic_calendar"
+                        tools:ignore="ContentDescription" />
 
-              <LinearLayout
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:background="@drawable/background_square_border_grey"
-                  android:onClick="@{() -> viewModel.datePicker(false)}"
-                  android:orientation="horizontal"
-                  android:paddingLeft="@dimen/_5sdp"
-                  android:paddingRight="@dimen/_10sdp"
-                  android:paddingVertical="@dimen/_5sdp"
-                  >
-
-                  <ImageView
-                      android:layout_width="wrap_content"
-                      android:layout_height="wrap_content"
-                      android:layout_gravity="center"
-                      android:layout_marginEnd="@dimen/_5sdp"
-                      app:srcCompat="@drawable/ic_calendar"
-                      tools:ignore="ContentDescription" />
-
-                  <androidx.appcompat.widget.AppCompatTextView
-                      android:id="@+id/tvEndDate"
-                      style="@style/CustomFontSemiBold"
-                      android:layout_width="wrap_content"
-                      android:layout_height="wrap_content"
-                      android:layout_gravity="center"
-                      android:text="@{viewModel.endDate}"
-                      android:textColor="@color/txtColor"
-                      android:textSize="@dimen/_5mdpi"
-                      tools:text="2021-08-10" />
-              </LinearLayout>
-          </androidx.appcompat.widget.LinearLayoutCompat>
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvEndDate"
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="@{viewModel.endDate}"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_5mdpi"
+                        tools:text="2021-08-10" />
+                </LinearLayout>
+            </androidx.appcompat.widget.LinearLayoutCompat>
 
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:id="@+id/linearSearchView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_weight="0.5"
                 android:layout_centerVertical="true"
                 android:layout_gravity="end|center_vertical"
-                android:gravity="end|center_vertical"
-                android:layout_toRightOf="@+id/llDateTime"
                 android:layout_marginHorizontal="@dimen/_3sdp"
-                >
+                android:layout_toRightOf="@+id/llDateTime"
+                android:layout_weight="0.5"
+                android:gravity="end|center_vertical"
+                android:orientation="horizontal">
 
                 <ImageView
                     android:id="@+id/imgSearch"
                     android:layout_width="@dimen/_10sdp"
                     android:layout_height="@dimen/_10sdp"
                     android:layout_centerVertical="true"
+                    android:layout_marginRight="@dimen/_2sdp"
                     android:layout_toStartOf="@+id/autoSearch"
                     android:contentDescription="@string/search"
-                    android:src="@drawable/ic_search"
-                    android:layout_marginRight="@dimen/_2sdp"/>
+                    android:src="@drawable/ic_search" />
 
                 <EditText
                     android:id="@+id/autoSearch"
@@ -171,11 +166,9 @@
                     android:textColor="@color/txtColor"
                     android:textColorHint="@color/hint_color"
                     android:textSize="@dimen/_6mdpi"
-                    tools:ignore="Autofill"
-                    />
+                    tools:ignore="Autofill" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
-
 
 
         </RelativeLayout>
@@ -187,8 +180,8 @@
             android:background="@drawable/background_square_border_solid_grey"
             android:orientation="horizontal"
             android:paddingVertical="@dimen/_10sdp"
-            android:weightSum="6"
-            android:paddingStart="@dimen/_18sdp">
+            android:paddingStart="@dimen/_18sdp"
+            android:weightSum="6">
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontMediumStyle"
@@ -196,10 +189,9 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/tv_order_id"
-                android:textColor="@color/white"
                 android:textAllCaps="true"
-                android:textSize="@dimen/text_size_medium"
-                />
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_medium" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontMediumStyle"
@@ -218,8 +210,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/payment_status"
-                android:textColor="@color/white"
                 android:textAllCaps="true"
+                android:textColor="@color/white"
 
                 android:textSize="@dimen/text_size_medium" />
 
@@ -229,9 +221,9 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
                 android:text="@string/tv_order_type"
+                android:textAllCaps="true"
                 android:textColor="@color/white"
                 android:textSize="@dimen/text_size_medium"
-                android:textAllCaps="true"
                 android:visibility="gone" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -240,8 +232,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/tv_total_amount"
-                android:textColor="@color/white"
                 android:textAllCaps="true"
+                android:textColor="@color/white"
 
                 android:textSize="@dimen/text_size_medium" />
 
@@ -251,9 +243,9 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/tv_tip_amount"
+                android:textAllCaps="true"
                 android:textColor="@color/white"
                 android:textSize="@dimen/text_size_medium"
-                android:textAllCaps="true"
 
                 android:visibility="gone" />
 
@@ -263,8 +255,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/tv_customer_name"
-                android:textColor="@color/white"
                 android:textAllCaps="true"
+                android:textColor="@color/white"
 
                 android:textSize="@dimen/text_size_medium" />
 
@@ -274,53 +266,56 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/tv_team_member"
-                android:textColor="@color/white"
                 android:textAllCaps="true"
+                android:textColor="@color/white"
 
                 android:textSize="@dimen/text_size_medium" />
 
         </LinearLayout>
 
 
-
-        <LinearLayout
+        <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:id="@+id/ll_no_data"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:layout_marginTop="@dimen/_70sdp">
+            android:layout_height="match_parent"
+            android:gravity="center">
 
-            <androidx.appcompat.widget.AppCompatImageView
-                android:layout_width="@dimen/_35sdp"
-                android:layout_height="@dimen/_35sdp"
-                android:src="@drawable/ic_empty_orders" />
-
-            <TextView
-                android:id="@+id/txt_nodata"
-                style="@style/CustomFontBold"
+            <LinearLayout
+                android:id="@+id/ll_no_data"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text=""
-                android:layout_marginTop="@dimen/_5sdp"
-                android:textColor="@color/txtColor"
-                android:textSize="@dimen/_6sdp"
-                android:visibility="visible" />
+                android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/txt_order_will_appear"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:text="Incoming order will appear here."
-                android:textColor="@color/txtColorGray"
-                android:textSize="@dimen/_6sdp"
-                android:layout_marginTop="@dimen/_3sdp"
-                android:visibility="visible" />
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="@dimen/_35sdp"
+                    android:layout_height="@dimen/_35sdp"
+                    android:src="@drawable/ic_empty_orders" />
 
-        </LinearLayout>
+                <TextView
+                    android:id="@+id/txt_nodata"
+                    style="@style/CustomFontBold"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:gravity="center"
+                    android:text=""
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_6sdp"
+                    android:visibility="visible" />
+
+                <TextView
+                    android:id="@+id/txt_order_will_appear"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="@dimen/_3sdp"
+                    android:gravity="center"
+                    android:text="Incoming order will appear here."
+                    android:textColor="@color/txtColorGray"
+                    android:textSize="@dimen/_6sdp"
+                    android:visibility="visible" />
+
+            </LinearLayout>
+        </androidx.appcompat.widget.LinearLayoutCompat>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvOpenOrder"
