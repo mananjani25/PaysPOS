@@ -8,8 +8,8 @@
         <item name="android:layout_marginHorizontal">@dimen/_10sdp</item>
         <item name="android:layout_marginVertical">@dimen/_5sdp</item>
         <item name="android:layout_height">@dimen/_30sdp</item>
-        <item name="android:layout_width">@dimen/_30sdp</item>
-        <item name="android:background">@drawable/passcode_selector</item>
+        <item name="android:layout_width">@dimen/_50sdp</item>
+        <item name="android:background">@drawable/passcode_selector_new</item>
 
 
     </style>

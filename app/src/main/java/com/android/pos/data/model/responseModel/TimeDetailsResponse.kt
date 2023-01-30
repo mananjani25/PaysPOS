@@ -11,6 +11,8 @@ class TimeDetailsResponse(
         @SerializedName("time")
         val time: String,
         @SerializedName("date")
-        val date: String
+        val date: String,
+        @SerializedName("location_name")
+        val locationName: String
     )
 }
