@@ -51,6 +51,9 @@ class DineInViewModel @Inject constructor(
     val _mergeStatus = MutableLiveData<Event<String>>()
     val mergeStatusChange: LiveData<Event<String>> = _mergeStatus
 
+    val _transferTableStatus = MutableLiveData<Event<String>>()
+    val transferTableStatusChange: LiveData<Event<String>> = _transferTableStatus
+
     val _unMergeStatus = MutableLiveData<Event<String>>()
     val unMergeStatusUpdate: LiveData<Event<String>> = _unMergeStatus
 
@@ -107,6 +110,40 @@ class DineInViewModel @Inject constructor(
             }
 
         }
+    }
+
+    fun transferTable(
+        orderId: Int? = null,
+        floorPlanId: Int? = null,
+        floorPlanTableId: Int? = null
+    ) {
+        _showProgress.value = Event(true)
+            if (orderId != null && floorPlanId != null && floorPlanTableId != null)
+        viewModelScope.launch {
+            val resource =
+                posRepository.transferTable(orderId, floorPlanId, floorPlanTableId)
+
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    _showProgress.value = Event(false)
+                    resource.message?.let {
+                        _transferTableStatus.value = Event(it)
+                    }
+                }
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+                }
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message.toString())
+                    _showProgress.value = Event(false)
+                }
+
+
+            }
+
+        }
+
+
     }
 
     fun unMergeTable(id: Int) {

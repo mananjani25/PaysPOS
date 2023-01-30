@@ -17,7 +17,8 @@ data class OccupiedTable(
         @SerializedName("table_name") val tableName: String,
         @SerializedName("table_number") val tableNumber: String,
         @SerializedName("status") val status: String,
-        @SerializedName("floor_plan_id") val floorPlanId: Int
+        @SerializedName("floor_plan_id") val floorPlanId: Int,
+        @SerializedName("order_id")val orderId:Int
 
     ) : Parcelable {
         override fun toString(): String {

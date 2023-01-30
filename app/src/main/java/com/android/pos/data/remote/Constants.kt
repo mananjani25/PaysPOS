@@ -309,6 +309,7 @@ object Constants {
     const val FLOOR_PLAN_STATUS = "floor_plan_tables/{id}/check_employee_table_lock"
     const val MERGE_FLOOR_TABLE = "floor_plan_tables/{id}/merge_floor_plan_tables"
     const val UNMERGE_TABLE = "floor_plan_tables/{id}/unmerge_floor_plan_tables"
+    const val TRASNFER_TABLE = "floor_plans/transfer_table"
 
     const val REPORT_SUMMARY = "reports/report_summary"
     const val REPORT_EOD_SUMMARY = "reports/employee_eod_report"

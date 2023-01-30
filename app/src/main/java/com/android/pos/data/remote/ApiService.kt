@@ -106,6 +106,7 @@ import com.android.pos.data.remote.Constants.TIPS
 import com.android.pos.data.remote.Constants.TIPS_ACTIVE
 import com.android.pos.data.remote.Constants.TIPS_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.TRANSACTION_LIST
+import com.android.pos.data.remote.Constants.TRASNFER_TABLE
 import com.android.pos.data.remote.Constants.UNMERGE_TABLE
 import com.android.pos.data.remote.Constants.UPDATE_LOCK_SCREEN_PERMISSION
 import com.android.pos.data.remote.Constants.UPDATE_ONLINE_ORDER
@@ -790,6 +791,13 @@ interface ApiService {
         @Body orderReq: MergeTableRequest?
     ): MergeTableResponse
 
+    @PUT(TRASNFER_TABLE)
+    suspend fun transferTable(
+        @Query("order_id") orderId: Int,
+        @Query("floor_plan_id") floorId: Int,
+        @Query("floor_plan_table_id") tableId: Int
+    ): BaseResponse
+
     @DELETE(UNMERGE_TABLE)
     suspend fun unMergeTable(
         @Path("id") Id: Int,
@@ -818,7 +826,7 @@ interface ApiService {
     suspend fun getFloorPlanTableDetails(): GetFloorPlanDetailResponse
 
     @GET(Constants.AVAILABLE_TRANSFER_TABLE_LIST)
-    suspend fun getAvailableTransferTableList():AvailableTransferTableList
+    suspend fun getAvailableTransferTableList(): AvailableTransferTableList
 
 
     @GET(REPORT_SUMMARY)

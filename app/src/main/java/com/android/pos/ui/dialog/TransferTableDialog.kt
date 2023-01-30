@@ -8,13 +8,21 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.setFragmentResult
+import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.model.responseModel.AvailableStatu
 import com.android.pos.data.model.responseModel.AvailableTransferTableList
 import com.android.pos.data.model.responseModel.OccupiedTable
 import com.android.pos.databinding.DialogTransferTableSelectionBinding
+import com.android.pos.ui.fragments.dinein.DineInViewModel
+import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.ProgressUtils
 import com.google.gson.Gson
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class TransferTableDialog : DialogFragment() {
     private lateinit var binding: DialogTransferTableSelectionBinding
     private var floorDetails: AvailableTransferTableList? = null
@@ -23,6 +31,7 @@ class TransferTableDialog : DialogFragment() {
     private lateinit var tableOccupiedAdapter: ArrayAdapter<OccupiedTable.TableList>
     private lateinit var floorAvailableAdapter: ArrayAdapter<AvailableStatu>
     private lateinit var tableAvailableAdapter: ArrayAdapter<AvailableStatu.TableList>
+    private val viewModel by viewModels<DineInViewModel>()
 
 
     override fun onCreateView(
@@ -36,6 +45,8 @@ class TransferTableDialog : DialogFragment() {
             container,
             false
         )
+        observeShowProgress()
+        observeTransferTable()
         dialog?.setCanceledOnTouchOutside(false)
         return binding.root
     }
@@ -44,6 +55,40 @@ class TransferTableDialog : DialogFragment() {
         super.onViewCreated(view, savedInstanceState)
         onClick()
         setData()
+
+    }
+
+    private fun observeShowProgress() {
+
+        viewModel.showProgress.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it) {
+                    ProgressUtils.showProgressDialog(requireActivity())
+                } else {
+                    ProgressUtils.dismissProgressDialog()
+                }
+            }
+        })
+
+
+    }
+
+    private fun observeTransferTable() {
+        viewModel.transferTableStatusChange.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let { status ->
+                AlertUtils.showCustomAlertWithListenerWithOK(
+                    requireContext(), status.toString()
+                ) { _, _ ->
+                    val bundle = Bundle()
+                    bundle.putBoolean("merge_done", true)
+                    setFragmentResult("request_key_table_selection", bundle)
+                    val navController = findNavController()
+                    navController.popBackStack()
+                }
+
+
+            }
+        }
     }
 
     private fun onClick() {
@@ -51,7 +96,21 @@ class TransferTableDialog : DialogFragment() {
             dismiss()
         }
 
-        binding.txtSave
+        binding.txtSave.setOnClickListener {
+            if (floorOccupiedAdapter.getItem(binding.spnFloorName.selectedItemPosition)?.id == 0 || floorAvailableAdapter.getItem(binding.spnFloorName1.selectedItemPosition)?.id == 0) {
+
+                AlertUtils.showCustomAlertWithListenerWithOK(
+                    requireContext(), "Please select Floor and Table"
+                ) { _, _ ->
+
+                }
+            }
+            else{
+                viewModel.transferTable(tableOccupiedAdapter.getItem(binding.spnTableName.selectedItemPosition)?.orderId,tableAvailableAdapter.getItem(binding.spnTableName1.selectedItemPosition)?.id,tableAvailableAdapter.getItem(binding.spnTableName1.selectedItemPosition)?.floorPlanId)
+            }
+
+
+        }
     }
 
     private fun setData() {
@@ -60,7 +119,6 @@ class TransferTableDialog : DialogFragment() {
 
         //This is for First Part for Ocuupied Floor and Table (as mentioned in header from table part in UI)
         var occupiedFloorList: ArrayList<OccupiedTable> = arrayListOf()
-        var occupiedTableList: ArrayList<OccupiedTable.TableList> = arrayListOf()
 
 
         occupiedFloorList.add(
@@ -90,7 +148,8 @@ class TransferTableDialog : DialogFragment() {
                             tableName = "Please Select Table",
                             tableNumber = "",
                             status = "",
-                            floorPlanId = 0
+                            floorPlanId = 0,
+                            orderId = 0
                         )
                     )
                     tableOccupiedAdapter.notifyDataSetChanged()
@@ -126,19 +185,6 @@ class TransferTableDialog : DialogFragment() {
         //This is for Second Part for Available Floor and Table (as mentioned in the second lable from table part in UI)
 
         var availableFloorList: ArrayList<AvailableStatu> = arrayListOf()
-        var availableTableList: ArrayList<AvailableStatu.TableList> = arrayListOf()
-
-
-
-        availableTableList.add(
-            AvailableStatu.TableList(
-                id = 0,
-                tableName = "Please Select Table",
-                tableNumber = "",
-                status = "",
-                floorPlanId = 0
-            )
-        )
 
         availableFloorList.add(
             AvailableStatu(

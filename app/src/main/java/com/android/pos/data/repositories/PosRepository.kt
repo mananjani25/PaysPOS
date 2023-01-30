@@ -281,7 +281,7 @@ class PosRepository @Inject constructor(
 
     fun getSingleItem(id: Int) = appDatabase.itemDao().itemOne(id)
 
-     fun getItemList()=appDatabase.cartDao().allItemMod(prefProvider.getValueInt(EMPLOYEE_ID,0))
+    fun getItemList() = appDatabase.cartDao().allItemMod(prefProvider.getValueInt(EMPLOYEE_ID, 0))
 
     fun getSingleModifier(id: Int) = appDatabase.modifierSetDao().itemOne(id)
 
@@ -933,6 +933,9 @@ class PosRepository @Inject constructor(
     ) =
         apiHelperNew.mergeFloorTable(parentTableId, childIds, orderModel, childOrderIds, orderId)
 
+    suspend fun transferTable(orderId: Int, floorPlanId: Int, floorPlanTableId: Int) =
+        apiHelperNew.transferTable(orderId, floorPlanId, floorPlanTableId)
+
     suspend fun unMergeTable(id: Int) = apiHelperNew.unMergeTable(id)
     suspend fun payByGuest(
         id: Int,
@@ -949,7 +952,8 @@ class PosRepository @Inject constructor(
     fun getFloorPlanTableDetails() =
         performGetOperationNew(networkCall = { apiHelperNew.getFloorPlanTableDetails() })
 
-    fun getAvailableTransferTableList() = performGetOperationNew(networkCall = {apiHelperNew.getAvailableTransferTableList()})
+    fun getAvailableTransferTableList() =
+        performGetOperationNew(networkCall = { apiHelperNew.getAvailableTransferTableList() })
 
     suspend fun employeeClockOut(data: HashMap<String, String>) =
         apiHelperNew.employeeClockOut(data)
