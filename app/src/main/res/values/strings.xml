@@ -630,7 +630,7 @@
     <string name="tv_option_set">Option Set <font color='#E90C0C'>*</font></string>
     <string name="please_select_order_type_to_add_item">Please select order type to add item</string>
     <string name="merge_tables">Merge Tables</string>
-    <string name="transfer_tables">Transfer Tables</string>
+    <string name="transfer_tables">Transfer Table</string>
 
     <string name="cancel">Cancel</string>
     <string name="assign_customer">Assign Customer</string>

@@ -19,5 +19,14 @@ data class AvailableStatu(
         @SerializedName("status") val status: String,
         @SerializedName("floor_plan_id") val floorPlanId: Int
 
-    ) : Parcelable {}
+    ) : Parcelable {
+
+        override fun toString(): String {
+            return tableName.toString()
+        }
+    }
+
+    override fun toString(): String {
+        return name.toString()
+    }
 }

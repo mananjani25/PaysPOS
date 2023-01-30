@@ -9,7 +9,7 @@ data class OccupiedTable(
     @SerializedName("floor_plan_tables") val floor_plan_tables: List<TableList>,
     @SerializedName("id") val id: Int,
     @SerializedName("name") val name: String
-):Parcelable{
+) : Parcelable {
 
     @Parcelize
     data class TableList(
@@ -19,6 +19,15 @@ data class OccupiedTable(
         @SerializedName("status") val status: String,
         @SerializedName("floor_plan_id") val floorPlanId: Int
 
-    ) : Parcelable {}
+    ) : Parcelable {
+        override fun toString(): String {
+            return tableName
+        }
+    }
+
+
+    override fun toString(): String {
+        return name
+    }
 
 }
