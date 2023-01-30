@@ -515,6 +515,7 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtVersion"
+                android:visibility="gone"
                 style="@style/CustomFontBold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
