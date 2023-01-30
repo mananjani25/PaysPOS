@@ -18,7 +18,7 @@ data class VariationsAttribute(
     var optionIds: List<Int>? = null,
     @SerializedName("option_set_id")
     var optionSetIds: List<Int>? = null,
-    @SerializedName("price")
+    @SerializedName("price_without_markup")
     var price: Double? = null,
     @SerializedName("price_type")
     var priceType: String = "",
