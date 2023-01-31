@@ -795,7 +795,8 @@ interface ApiService {
     suspend fun transferTable(
         @Query("order_id") orderId: Int,
         @Query("floor_plan_id") floorId: Int,
-        @Query("floor_plan_table_id") tableId: Int
+        @Query("floor_plan_table_id") tableId: Int,
+        @Query("old_floor_plan_table_id") oldFloorPlanTableId: Int
     ): BaseResponse
 
     @DELETE(UNMERGE_TABLE)

@@ -573,8 +573,8 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
             )
         }
 
-    suspend fun transferTable(orderId: Int, floorId: Int, tableId: Int) =
-        getResult { apiService.transferTable(orderId, floorId, tableId) }
+    suspend fun transferTable(orderId: Int, floorId: Int, tableId: Int,oldFloorPlanTableId:Int) =
+        getResult { apiService.transferTable(orderId, floorId, tableId,oldFloorPlanTableId) }
 
     suspend fun unMergeTable(id: Int) = getResult { apiService.unMergeTable(id) }
 

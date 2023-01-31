@@ -132,6 +132,7 @@ class DineInFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         onClick()
+        binding.layoutHeader.imgTransferTable?.visible()
         binding.layoutHeader.txtUserName.text = prefProvider.getValue(Constants.EMPLOYEE_NAME, "")
 
     }
@@ -253,7 +254,7 @@ class DineInFragment : Fragment() {
                         ProgressUtils.dismissProgressDialog()
                         val bundle = Bundle()
                         if (resource.data?.status == 200) {
-                            bundle.putParcelable("floorList",it.data)
+                            bundle.putParcelable("floorList", it.data)
                             if (findNavController().currentDestination?.id == R.id.dineInFragment) {
                                 findNavController().navigate(
                                     R.id.action_dineInFragment_to_transferTableDialog,
@@ -285,6 +286,7 @@ class DineInFragment : Fragment() {
         }
 
     }
+
     private fun loadFloorPlanDetails() {
         viewModel.getFloorPlanDetails().observe(viewLifecycleOwner) {
             it?.let { resource ->

@@ -61,7 +61,9 @@ class TransferTableDialog : DialogFragment() {
     private fun observeShowProgress() {
 
         viewModel.showProgress.observe(viewLifecycleOwner, { event ->
+
             event.getContentIfNotHandled()?.let {
+
                 if (it) {
                     ProgressUtils.showProgressDialog(requireActivity())
                 } else {
@@ -75,7 +77,10 @@ class TransferTableDialog : DialogFragment() {
 
     private fun observeTransferTable() {
         viewModel.transferTableStatusChange.observe(viewLifecycleOwner) { event ->
+            Log.e(TAG, "getObserveTransferTable")
             event.getContentIfNotHandled()?.let { status ->
+                Log.e(TAG, "eventBoolean  ${status}")
+
                 AlertUtils.showCustomAlertWithListenerWithOK(
                     requireContext(), status.toString()
                 ) { _, _ ->
@@ -97,16 +102,23 @@ class TransferTableDialog : DialogFragment() {
         }
 
         binding.txtSave.setOnClickListener {
-            if (floorOccupiedAdapter.getItem(binding.spnFloorName.selectedItemPosition)?.id == 0 || floorAvailableAdapter.getItem(binding.spnFloorName1.selectedItemPosition)?.id == 0) {
+            if (floorOccupiedAdapter.getItem(binding.spnFloorName.selectedItemPosition)?.id == 0 || floorAvailableAdapter.getItem(
+                    binding.spnFloorName1.selectedItemPosition
+                )?.id == 0
+            ) {
 
                 AlertUtils.showCustomAlertWithListenerWithOK(
                     requireContext(), "Please select Floor and Table"
                 ) { _, _ ->
 
                 }
-            }
-            else{
-                viewModel.transferTable(tableOccupiedAdapter.getItem(binding.spnTableName.selectedItemPosition)?.orderId,tableAvailableAdapter.getItem(binding.spnTableName1.selectedItemPosition)?.id,tableAvailableAdapter.getItem(binding.spnTableName1.selectedItemPosition)?.floorPlanId)
+            } else {
+                viewModel.transferTable(
+                    tableOccupiedAdapter.getItem(binding.spnTableName.selectedItemPosition)?.orderId,
+                    tableAvailableAdapter.getItem(binding.spnTableName1.selectedItemPosition)?.floorPlanId,
+                    tableAvailableAdapter.getItem(binding.spnTableName1.selectedItemPosition)?.id,
+                    tableOccupiedAdapter.getItem(binding.spnTableName.selectedItemPosition)?.id
+                )
             }
 
 

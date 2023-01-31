@@ -933,8 +933,8 @@ class PosRepository @Inject constructor(
     ) =
         apiHelperNew.mergeFloorTable(parentTableId, childIds, orderModel, childOrderIds, orderId)
 
-    suspend fun transferTable(orderId: Int, floorPlanId: Int, floorPlanTableId: Int) =
-        apiHelperNew.transferTable(orderId, floorPlanId, floorPlanTableId)
+    suspend fun transferTable(orderId: Int, floorPlanId: Int, floorPlanTableId: Int,oldFloorPlanTableId:Int) =
+        apiHelperNew.transferTable(orderId, floorPlanId, floorPlanTableId,oldFloorPlanTableId)
 
     suspend fun unMergeTable(id: Int) = apiHelperNew.unMergeTable(id)
     suspend fun payByGuest(

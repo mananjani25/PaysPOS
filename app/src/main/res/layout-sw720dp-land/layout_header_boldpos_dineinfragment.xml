@@ -59,7 +59,7 @@
                 android:layout_width="@dimen/_22sdp"
                 android:layout_height="@dimen/_18sdp"
                 android:layout_gravity="center"
-
+                android:visibility="gone"
                 android:background="?attr/selectableItemBackground"
                 android:padding="@dimen/_2sdp"
                 android:src="@drawable/transfer_table_icon"

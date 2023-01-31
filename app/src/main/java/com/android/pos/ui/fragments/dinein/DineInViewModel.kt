@@ -93,7 +93,7 @@ class DineInViewModel @Inject constructor(
             when (resource.status) {
                 Status.SUCCESS -> {
                     _showProgress.value = Event(false)
-                    (resource.data?.message?.let {
+                    (resource.message?.let {
                         _mergeStatus.value = Event(it)
                     })
                 }
@@ -115,33 +115,38 @@ class DineInViewModel @Inject constructor(
     fun transferTable(
         orderId: Int? = null,
         floorPlanId: Int? = null,
-        floorPlanTableId: Int? = null
+        floorPlanTableId: Int? = null,
+        oldFloorPlanTableId: Int? = null
     ) {
         _showProgress.value = Event(true)
-            if (orderId != null && floorPlanId != null && floorPlanTableId != null)
-        viewModelScope.launch {
-            val resource =
-                posRepository.transferTable(orderId, floorPlanId, floorPlanTableId)
+        if (orderId != null && floorPlanId != null && floorPlanTableId != null && oldFloorPlanTableId != null)
+            viewModelScope.launch {
+                val resource =
+                    posRepository.transferTable(
+                        orderId,
+                        floorPlanId,
+                        floorPlanTableId,
+                        oldFloorPlanTableId
+                    )
 
-            when (resource.status) {
-                Status.SUCCESS -> {
-                    _showProgress.value = Event(false)
-                    resource.message?.let {
-                        _transferTableStatus.value = Event(it)
+                when (resource.status) {
+                    Status.SUCCESS -> {
+                        _showProgress.value = Event(false)
+                        _transferTableStatus.value = Event(resource.data?.message.toString())
+
                     }
-                }
-                Status.LOADING -> {
-                    _showProgress.value = Event(true)
-                }
-                Status.ERROR -> {
-                    _snackbarText.value = Event(resource.message.toString())
-                    _showProgress.value = Event(false)
-                }
+                    Status.LOADING -> {
+                        _showProgress.value = Event(true)
+                    }
+                    Status.ERROR -> {
+                        _snackbarText.value = Event(resource.message.toString())
+                        _showProgress.value = Event(false)
+                    }
 
+
+                }
 
             }
-
-        }
 
 
     }
