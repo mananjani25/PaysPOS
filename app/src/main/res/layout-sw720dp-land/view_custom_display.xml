@@ -5,7 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/mainCartLayout"
         android:layout_width="match_parent"
@@ -649,6 +648,58 @@
             app:layout_constraintTop_toBottomOf="@id/current_time"
             tools:text="Tuesday, 17 Jan" />
 
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/thankYouLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#1D1D1F"
+        android:visibility="gone">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/txtPaidAmount"
+            style="@style/CustomFontMediumStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/_15sdp"
+            android:gravity="center"
+            android:padding="@dimen/_5sdp"
+            android:textColor="@color/txtColor"
+            android:textSize="@dimen/_14mdpi"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@id/imageViewThankYou"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:text="Paid $103.89" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/imageViewThankYou"
+            style="@style/CustomFontMediumStyle"
+            android:layout_width="@dimen/_45sdp"
+            android:layout_height="@dimen/_45sdp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_check_thank_you" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/txtThankYou"
+            style="@style/CustomFontMediumStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:gravity="center"
+            android:padding="@dimen/_5sdp"
+            android:text="Thank you!"
+            android:textColor="@color/txtColor"
+            android:textSize="@dimen/_10mdpi"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/imageViewThankYou" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

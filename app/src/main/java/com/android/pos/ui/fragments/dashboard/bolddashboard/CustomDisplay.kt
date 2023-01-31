@@ -126,6 +126,25 @@ class CustomDisplay(
         }
     }
 
+    fun showSurcharge(isInCheckout: Boolean) {
+        if (isInCheckout) {
+            if (MethodUtils.isEnableCashDiscount(context)) {
+                binding.linearCashDiscount.visible()
+                if (prefProvider.getValue(
+                        Constants.OPTION_TYPE,
+                        "CashDiscount"
+                    ) == "CashDiscount"
+                ) {
+                    binding.labelCashSurcharge.text = "Cash Discount"
+                } else {
+                    binding.labelCashSurcharge.text = "SurCharge"
+                }
+            } else {
+                binding.linearCashDiscount.gone()
+            }
+        }
+    }
+
     private fun setupTotals(cartList: List<CartModel>) {
         dashBoardCategoryViewModel.apply {
             binding.txtSubTotal.text = MethodUtils.roundOffAmount(subTotalPrice)
@@ -134,6 +153,7 @@ class CustomDisplay(
             binding.txtServiceCharge.text = MethodUtils.roundOffAmount(totalServiceCharge)
             binding.txtDiscount.text = "-" + MethodUtils.roundOffAmount(totalDiscount)
             binding.txtNoncashAdj.text = MethodUtils.roundOffAmount(cashdiscountAmount)
+            showSurcharge(false)
 
             if (taxBirfurcationAdapter.taxlist.size == 0) {
                 binding.imgDropdown.gone()
@@ -225,4 +245,14 @@ class CustomDisplay(
     override fun onCustomerClicked(position: Int, isRemoved: Boolean) {}
 
     override fun onItemDelete(position: Int, itemPosition: Int, data: TbItem) {}
+
+    fun showThankYou(paidAmount: Double) {
+        binding.apply {
+            mainCartLayout.gone()
+            splashLayout.gone()
+
+            thankYouLayout.visible()
+            txtPaidAmount.text = "Paid ${MethodUtils.roundOffAmount(paidAmount)}"
+        }
+    }
 }
