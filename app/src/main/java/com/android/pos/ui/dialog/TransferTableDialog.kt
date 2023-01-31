@@ -102,8 +102,8 @@ class TransferTableDialog : DialogFragment() {
         }
 
         binding.txtSave.setOnClickListener {
-            if (floorOccupiedAdapter.getItem(binding.spnFloorName.selectedItemPosition)?.id == 0 || floorAvailableAdapter.getItem(
-                    binding.spnFloorName1.selectedItemPosition
+            if (tableOccupiedAdapter.getItem(binding.spnTableName.selectedItemPosition)?.id == 0 || tableAvailableAdapter.getItem(
+                    binding.spnTableName1.selectedItemPosition
                 )?.id == 0
             ) {
 

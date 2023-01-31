@@ -586,8 +586,8 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
 
     suspend fun getFloorPlanTableDetails() = getResult { apiService.getFloorPlanTableDetails() }
 
-    suspend fun getAvailableTransferTableList() =
-        getResult { apiService.getAvailableTransferTableList() }
+    suspend fun getAvailableTransferTableList(empId:Int) =
+        getResult { apiService.getAvailableTransferTableList(empId) }
 
     suspend fun payByGuest(id: Int, payAll: Boolean, model: GuestPaymentRequest) = getResult {
         apiService.payByGuest(id, payAll, model)

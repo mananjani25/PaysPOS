@@ -827,7 +827,7 @@ interface ApiService {
     suspend fun getFloorPlanTableDetails(): GetFloorPlanDetailResponse
 
     @GET(Constants.AVAILABLE_TRANSFER_TABLE_LIST)
-    suspend fun getAvailableTransferTableList(): AvailableTransferTableList
+    suspend fun getAvailableTransferTableList(@Query("employee_id")employeeId:Int): AvailableTransferTableList
 
 
     @GET(REPORT_SUMMARY)

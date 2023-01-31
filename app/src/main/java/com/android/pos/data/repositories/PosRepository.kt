@@ -933,8 +933,13 @@ class PosRepository @Inject constructor(
     ) =
         apiHelperNew.mergeFloorTable(parentTableId, childIds, orderModel, childOrderIds, orderId)
 
-    suspend fun transferTable(orderId: Int, floorPlanId: Int, floorPlanTableId: Int,oldFloorPlanTableId:Int) =
-        apiHelperNew.transferTable(orderId, floorPlanId, floorPlanTableId,oldFloorPlanTableId)
+    suspend fun transferTable(
+        orderId: Int,
+        floorPlanId: Int,
+        floorPlanTableId: Int,
+        oldFloorPlanTableId: Int
+    ) =
+        apiHelperNew.transferTable(orderId, floorPlanId, floorPlanTableId, oldFloorPlanTableId)
 
     suspend fun unMergeTable(id: Int) = apiHelperNew.unMergeTable(id)
     suspend fun payByGuest(
@@ -953,7 +958,13 @@ class PosRepository @Inject constructor(
         performGetOperationNew(networkCall = { apiHelperNew.getFloorPlanTableDetails() })
 
     fun getAvailableTransferTableList() =
-        performGetOperationNew(networkCall = { apiHelperNew.getAvailableTransferTableList() })
+        performGetOperationNew(networkCall = {
+            apiHelperNew.getAvailableTransferTableList(
+                prefProvider.getValueInt(
+                    EMPLOYEE_ID, 0
+                )
+            )
+        })
 
     suspend fun employeeClockOut(data: HashMap<String, String>) =
         apiHelperNew.employeeClockOut(data)
