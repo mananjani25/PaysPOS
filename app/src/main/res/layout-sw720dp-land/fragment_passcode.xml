@@ -98,8 +98,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/_5sdp"
-                        android:text="@string/blockchain_point_of_sale"
+                        tools:text="@string/blockchain_point_of_sale"
                         android:textColor="@color/white"
+                        android:padding="@dimen/_5sdp"
                         android:textSize="@dimen/_8sdp"
                         android:textStyle="normal" />
 
@@ -110,7 +111,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_gravity="center_horizontal"
-                    android:layout_weight="1.5"
+                    android:layout_weight="1"
                     android:gravity="center"
                     android:orientation="vertical">
 
@@ -155,7 +156,7 @@
                     android:id="@+id/txtVersion"
                     style="@style/CustomFontBold"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="0dp"
                     android:layout_weight="0.5"
                     android:layout_gravity="center"
                     android:layout_marginTop="@dimen/_10sdp"

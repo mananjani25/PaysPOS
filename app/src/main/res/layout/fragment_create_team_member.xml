@@ -422,7 +422,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:background="@drawable/background_square_border_grey"
-                        android:digits="@string/numbers_digits_string"
+                        android:digits="0123456789"
                         android:hint="@string/tv_personal_passcode_"
                         android:inputType="number"
                         android:maxLength="4"

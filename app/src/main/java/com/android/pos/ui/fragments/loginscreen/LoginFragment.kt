@@ -14,6 +14,7 @@ import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.android.pos.BuildConfig
 import com.android.pos.R
@@ -30,12 +31,17 @@ import com.android.pos.di.ApiModule.BASE_URL
 import com.android.pos.di.HostSelectionInterceptor
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.activities.MainActivity
+import com.android.pos.utils.AdvertisingInfo
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.snackbar.Snackbar
+import com.google.common.util.concurrent.FutureCallback
+import com.google.common.util.concurrent.Futures.addCallback
 import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
+import java.util.concurrent.Executors
 import javax.inject.Inject
 
 
@@ -63,6 +69,7 @@ class LoginFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
+//       determineAdvertisingInfo()
 
         if (prefProvider?.getValue(AUTH_TOKEN, "").toString().isNotEmpty()) {
             if (!prefProvider?.getValueboolean(IS_CLOCKOUT, false)!!) {
@@ -246,4 +253,14 @@ class LoginFragment : Fragment() {
     }
 
 
+    private fun determineAdvertisingInfo() {
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            prefProvider?.setUniqueId(AdvertisingInfo(requireContext()).getAdvertisingId().toString())
+            binding.terminalId.text = AdvertisingInfo(requireContext()).getAdvertisingId().toString()
+            Log.e("onSuccess", AdvertisingInfo(requireContext()).getAdvertisingId().toString())
+
+        }
+
+    }
 }
