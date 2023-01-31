@@ -11,6 +11,8 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.*
@@ -62,6 +64,7 @@ import com.android.pos.utils.extensions.*
 import com.android.pos.utils.statusUtils.Resource
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.text.SimpleDateFormat
@@ -880,14 +883,16 @@ class CartFragment(
             if (view != null) {
 
 
-
                 viewModel.mAllWords(
                     prefProvider.getValue(ORDER_TYPE, TAKEOUT),
                     prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
                 ).observe(requireActivity()) {
 
                     Log.e("All LOG : ORDER_TYPE", prefProvider.getValue(ORDER_TYPE, TAKEOUT))
-                    Log.e("All LOG :EMPLOYEE_ID", prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0).toString())
+                    Log.e(
+                        "All LOG :EMPLOYEE_ID",
+                        prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0).toString()
+                    )
 
 
                     saveVisibility()
@@ -1121,7 +1126,6 @@ class CartFragment(
 
 
                     } else {
-
 
 
                         binding.rvCartDineIn.gone()
@@ -1912,8 +1916,8 @@ class CartFragment(
 
         }
         binding.tvSave.setOnClickListener {
-            prefProvider.setValueboolean(OPEN_ORDER_UPDATE_FOR_PRINT,false)
-            if (isOrderUpdate == false){
+            prefProvider.setValueboolean(OPEN_ORDER_UPDATE_FOR_PRINT, false)
+            if (isOrderUpdate == false) {
                 prefProvider.setValue(
                     Constants.OPEN_ORDER_ITEMS,
                     ""
@@ -2183,6 +2187,7 @@ class CartFragment(
             addObserver()
 
             DashboardCategoryBoldPOS.newInstance().keypadShow(true)
+            increaseOnGoingOrderCounter()
         }
 
 
@@ -2203,7 +2208,7 @@ class CartFragment(
     fun onMessageEvent(event: String?) {
         // Do something
         if (event != null) {
-            Log.e("onMessageEvent",event)
+            Log.e("onMessageEvent", event)
         }
         checkOrderType()
 
@@ -2211,6 +2216,15 @@ class CartFragment(
 
         DashboardCategoryBoldPOS.newInstance().keypadShow(true)
 
+        increaseOnGoingOrderCounter()
+
+
+    }
+
+    private fun increaseOnGoingOrderCounter() {
+        lifecycleScope.launch {
+            viewModel.increaseOnGoingOrderCounter()
+        }
     }
 }
 

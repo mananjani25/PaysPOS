@@ -159,6 +159,9 @@ object Constants {
     const val UPDATE_SERVICECHARGE = "locations/{id}/enable_service_charge"
     const val CREATE_QUEUE_PRINTER = "printer_queues"
 
+    const val INCREASE_ONGOING_ORDER_COUNTER = "locations/increase_ongoing_order_counter"
+    const val DECREASE_ONGOING_ORDER_COUNTER = "locations/decrease_ongoing_order_counter"
+
 
     const val TAXES = "taxes"
     const val TAX_UPDATE_DELETE = "taxes/{id}"

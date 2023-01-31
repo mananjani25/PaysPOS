@@ -16,7 +16,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.android.pos.BuildConfig
 import com.android.pos.R
@@ -24,10 +26,12 @@ import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.databinding.FragmentPasscodeBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.activities.MainActivity
+import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.ProgressUtils
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -37,6 +41,7 @@ class Passcode : Fragment() {
     private var isLogin: Boolean = false
     private lateinit var binding: FragmentPasscodeBinding
     private val viewModel by viewModels<PasscodeViewModel>()
+    private val viewModelDashboard by activityViewModels<DashBoardCategoryViewModel>()
     var isDashboard: Boolean = false
     var isClockOut: Boolean = false
     var isSwap: Boolean = false
@@ -363,6 +368,13 @@ class Passcode : Fragment() {
                     binding.passcodeView.circlePin.setText("")
                     binding.tvWelcomeTag.text = getString(R.string.tv_clock_in)
                     AlertUtils.showCustomAlert(requireContext(), validationmsg)
+
+                    if (prefProvider.getValue(ORDER_TYPE, "").isNotEmpty()) {
+                        viewLifecycleOwner.lifecycleScope.launch {
+                            viewModelDashboard.decreaseOnGoingOrderCounter()
+                        }
+                    }
+
                 } else {
                     prefProvider.setValue(ORDER_TYPE, "")
                     findNavController().navigate(R.id.action_passcode_to_dashboardCategoryBoldPOS)

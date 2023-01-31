@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.android.pos.BuildConfig
 import com.android.pos.R
@@ -20,6 +21,7 @@ import com.android.pos.ui.fragments.dashboard.bolddashboard.DashboardCategoryBol
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.alert
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -72,6 +74,11 @@ class MenuFragment : DialogFragment() {
             event.getContentIfNotHandled()?.let {
                 if (it) {
 
+                    if (prefProvider.getValue(Constants.ORDER_TYPE, "").isNotEmpty()) {
+                        viewLifecycleOwner.lifecycleScope.launch {
+                            viewModel.decreaseOnGoingOrderCounter()
+                        }
+                    }
                     viewModel.clearTableAll()
                     viewModel.clearTable()
                     prefProvider.setClear()

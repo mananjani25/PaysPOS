@@ -4522,6 +4522,53 @@ class DashBoardCategoryViewModel @Inject constructor(
             syncMarkeup = false
             markupInventory()
         }
+
+
+        viewModelScope.launch {
+            decreaseOnGoingOrderCounter()
+        }
+
+    }
+
+     suspend fun increaseOnGoingOrderCounter() {
+
+        _showProgress.value = Event(true)
+
+        val resource = posRepository.increaseOnGoingOrderCounter()
+        when (resource.status) {
+            Status.SUCCESS -> {
+                _showProgress.value = Event(false)
+            }
+            Status.ERROR -> {
+                _snackbarText.value = Event(resource.message)
+                _showProgress.value = Event(false)
+            }
+
+            Status.LOADING -> {
+                _showProgress.value = Event(true)
+            }
+
+        }
+    }
+
+     suspend fun decreaseOnGoingOrderCounter() {
+        _showProgress.value = Event(true)
+
+        val resource = posRepository.decreaseOnGoingOrderCounter()
+        when (resource.status) {
+            Status.SUCCESS -> {
+                _showProgress.value = Event(false)
+            }
+            Status.ERROR -> {
+                _snackbarText.value = Event(resource.message)
+                _showProgress.value = Event(false)
+            }
+
+            Status.LOADING -> {
+                _showProgress.value = Event(true)
+            }
+
+        }
     }
 
     fun markupInventory() {
