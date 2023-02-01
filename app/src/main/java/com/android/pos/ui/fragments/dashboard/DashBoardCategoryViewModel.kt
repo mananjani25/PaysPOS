@@ -217,6 +217,9 @@ class DashBoardCategoryViewModel @Inject constructor(
     private val _logout = MutableLiveData<Event<Boolean>>()
     val logout: LiveData<Event<Boolean>> = _logout
 
+    private val _increaseCounter = MutableLiveData<Event<Boolean>>()
+    val increaseCounter: LiveData<Event<Boolean>> = _increaseCounter
+
     private val _onlineOrderCount = MutableLiveData<Event<OnlineOrderNotificationCount.Data>>()
     val onlineOrderCount: LiveData<Event<OnlineOrderNotificationCount.Data>> = _onlineOrderCount
 
@@ -4530,7 +4533,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     }
 
-     suspend fun increaseOnGoingOrderCounter() {
+    suspend fun increaseOnGoingOrderCounter() {
 
         _showProgress.value = Event(true)
 
@@ -4538,6 +4541,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         when (resource.status) {
             Status.SUCCESS -> {
                 _showProgress.value = Event(false)
+                _increaseCounter.value = Event(false)
             }
             Status.ERROR -> {
                 _snackbarText.value = Event(resource.message)
@@ -4551,7 +4555,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
     }
 
-     suspend fun decreaseOnGoingOrderCounter(b: Boolean) {
+    suspend fun decreaseOnGoingOrderCounter(b: Boolean) {
         _showProgress.value = Event(true)
 
         val resource = posRepository.decreaseOnGoingOrderCounter()
@@ -4559,7 +4563,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             Status.SUCCESS -> {
                 _showProgress.value = Event(false)
 
-                if (b){
+                if (b) {
                     logoutAPI()
                 }
 

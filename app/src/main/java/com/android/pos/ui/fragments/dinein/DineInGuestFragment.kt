@@ -9,6 +9,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.TbServiceCharge
@@ -31,6 +32,7 @@ import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.statusUtils.Resource
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -67,23 +69,41 @@ class DineInGuestFragment : Fragment(), GuestListAdapter.GuestListner {
     private fun tableStatusSucess() {
         viewModel.tableCheckSuccess.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { status ->
-                prefProvider.setValue(ORDER_TYPE, DINE_IN)
-                prefProvider.setValue(ORDER_TYPE_NAME, DINE_IN)
-                val bundle = bundleOf(
-                    "isFromDineIn" to true,
-                    "numberOfGuest" to guestCount,
-                    "floorplan" to dineInFloorTableModel
-                )
-                prefProvider.setValueInt(DINE_IN_TABLE_ID, dineInFloorTableModel.id)
-                prefProvider.setValueboolean(Constants.DINE_IN_STATUS, true)
-                if (findNavController().currentDestination?.id == R.id.dineInGuestFragment) {
-                    findNavController().navigate(
-                        R.id.action_dineInGuestFragment_to_dashboardCategoryNew,
-                        bundle
-                    )
+
+                Log.e("tableCheckSuccess",""+status)
+
+                viewLifecycleOwner.lifecycleScope.launch {
+                    viewModelDash.increaseOnGoingOrderCounter()
                 }
+
+
+
+
             }
 
+        }
+    }
+
+    private fun gotoDashboard() {
+        prefProvider.setValue(ORDER_TYPE, DINE_IN)
+        prefProvider.setValue(ORDER_TYPE_NAME, DINE_IN)
+        val bundle = bundleOf(
+            "isFromDineIn" to true,
+            "numberOfGuest" to guestCount,
+            "floorplan" to dineInFloorTableModel
+        )
+        prefProvider.setValueInt(DINE_IN_TABLE_ID, dineInFloorTableModel.id)
+        prefProvider.setValueboolean(Constants.DINE_IN_STATUS, true)
+
+
+
+        if (findNavController().currentDestination?.id == R.id.dineInGuestFragment) {
+
+
+            findNavController().navigate(
+                R.id.action_dineInGuestFragment_to_dashboardCategoryNew,
+                bundle
+            )
         }
     }
 
@@ -175,7 +195,7 @@ class DineInGuestFragment : Fragment(), GuestListAdapter.GuestListner {
 
     private fun observeShowProgress() {
 
-        viewModel.showProgress.observe(viewLifecycleOwner, { event ->
+        viewModel.showProgress.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
                     ProgressUtils.showProgressDialog(requireActivity())
@@ -183,19 +203,36 @@ class DineInGuestFragment : Fragment(), GuestListAdapter.GuestListner {
                     ProgressUtils.dismissProgressDialog()
                 }
             }
-        })
+        }
 
-        viewModel.snackbarText.observe(viewLifecycleOwner, { event ->
+        viewModel.snackbarText.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 AlertUtils.showCustomAlert(requireContext(), it)
             }
-        })
+        }
+
+
+        viewModelDash.showProgress.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it) {
+                    ProgressUtils.showProgressDialog(requireActivity())
+                } else {
+                    ProgressUtils.dismissProgressDialog()
+                }
+            }
+        }
+
+        viewModelDash.increaseCounter.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let {
+                gotoDashboard()
+            }
+        }
 
 
     }
 
     private fun observeUnMergeTable() {
-        viewModel.unMergeStatusUpdate.observe(viewLifecycleOwner, { event ->
+        viewModel.unMergeStatusUpdate.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { status ->
                 LogUtil.logE(TAG, "AnyStatus:  ${status}")
                 AlertUtils.showCustomAlertWithListenerWithOK(
@@ -206,7 +243,7 @@ class DineInGuestFragment : Fragment(), GuestListAdapter.GuestListner {
 
 
             }
-        })
+        }
     }
 
 
