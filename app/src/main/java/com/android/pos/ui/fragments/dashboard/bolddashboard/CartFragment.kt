@@ -313,8 +313,8 @@ class CartFragment(
                     binding.relativeDynamicTax.visible()
                     if(this::presentation.isInitialized){
                         presentation.show()
-                        presentation.onTaxClicked(true)
                         presentation.onDisplayChanged()
+                        presentation.onTaxClicked(true)
                     }
                 } else {
                     if (binding.relativeLoylatyPoints.isVisible()) {
@@ -329,8 +329,8 @@ class CartFragment(
                     binding.relativeDynamicTax.gone()
                     if(this::presentation.isInitialized){
                         presentation.show()
-                        presentation.onTaxClicked(false)
                         presentation.onDisplayChanged()
+                        presentation.onTaxClicked(false)
                     }
                 }
             }
