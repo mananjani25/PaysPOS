@@ -598,6 +598,9 @@ class PosRepository @Inject constructor(
     suspend fun updateCategoryCall(id: Int, data: CreateCategoryRequestModel) =
         apiHelperNew.updateCategoryCall(id, data)
 
+    suspend fun updateCategoryItems(id: Int, itemIdsList: List<Int>) =
+        appDatabase.categoryDao().updateCategoryList(id, itemIdsList)
+
     suspend fun createCategory(category: TbCategory) =
         appDatabase.categoryDao().add(category)
 

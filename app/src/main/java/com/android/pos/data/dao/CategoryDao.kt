@@ -46,6 +46,8 @@ interface CategoryDao {
     @Query("DELETE FROM TbCategory where TbCategory.id  = :id")
     suspend fun deleteCategoryById(id: Int?)
 
+    @Query("UPDATE TbCategory SET item_ids = :itemsIdList WHERE  TbCategory.id = :catId ")
+    suspend fun updateCategoryList(catId: Int, itemsIdList : List<Int>)
 
     @Query("DELETE FROM TbCategory")
     suspend fun delete()

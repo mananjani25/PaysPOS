@@ -253,6 +253,7 @@
                         android:inputType="text"
                         android:overlapAnchor="false"
                         android:spinnerMode="dropdown"
+                        android:paddingEnd="@dimen/_10ssp"
                         android:textSize="@dimen/_5mdpi"
                         tools:ignore="NestedWeights" />
 

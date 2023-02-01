@@ -1,7 +1,9 @@
 package com.android.pos.ui.fragments.settings.teamrole
 
 import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,12 +17,17 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.pos.R
 import com.android.pos.data.model.responseModel.GetEmployeesTimeSheetResponse
 import com.android.pos.databinding.FragmentSingleTeamMemberTimeSheetBinding
+import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.SingleTeamMemberTimeSheetAdapter
+import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.MethodUtils
+import com.android.pos.utils.TimeFormatUtils.prefProvider
 import com.android.pos.utils.extensions.liveSnackBar
 import com.android.pos.utils.statusUtils.Status
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import java.lang.Math.abs
+import java.text.SimpleDateFormat
 import java.util.*
 
 
@@ -33,8 +40,12 @@ class SingleTeamMemberTimeSheetFragment : Fragment() {
     private val viewModel by viewModels<TeamMemberSheetViewModel>()
     private lateinit var startDate: DatePickerDialog.OnDateSetListener
     private lateinit var endDate: DatePickerDialog.OnDateSetListener
+    private lateinit var startTime: TimePickerDialog.OnTimeSetListener
+    private lateinit var endTime: TimePickerDialog.OnTimeSetListener
     val myCalendar = Calendar.getInstance()
     val myCalendar1 = Calendar.getInstance()
+    val myCalendar2 = Calendar.getInstance()
+    val myCalendar3 = Calendar.getInstance()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -86,7 +97,8 @@ class SingleTeamMemberTimeSheetFragment : Fragment() {
 
         }
         setFragmentResultListener("request_key_timesheet") { _: String, bundle: Bundle ->
-            bundle.getString("email")?.let { viewModel.sendEmailTimeSheet(it, employeeModel.teamId.toString()) }
+            bundle.getString("email")
+                ?.let { viewModel.sendEmailTimeSheet(it, employeeModel.teamId.toString()) }
         }
 
         binding.includeView.txtHome.setOnClickListener {
@@ -105,8 +117,19 @@ class SingleTeamMemberTimeSheetFragment : Fragment() {
                 myCalendar.set(Calendar.MONTH, monthOfYear)
                 myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
 
-                viewModel.updateLabel(myCalendar)
-                viewModel.apiCallTimeSheetDetails(employeeModel.teamId.toString())
+
+                TimePickerDialog(
+                    requireActivity(),
+                    android.R.style.Theme_Material_Light_Dialog,
+                    startTime,
+                    myCalendar2.get(2),
+                    myCalendar2.get(2),
+                    false
+                ).show()
+
+
+//                viewModel.updateLabel(myCalendar)
+//                viewModel.apiCallTimeSheetDetails(employeeModel.teamId.toString())
             }
 
         endDate =
@@ -115,11 +138,51 @@ class SingleTeamMemberTimeSheetFragment : Fragment() {
                 myCalendar1.set(Calendar.MONTH, monthOfYear)
                 myCalendar1.set(Calendar.DAY_OF_MONTH, dayOfMonth)
 
-                viewModel.updateLabel(myCalendar1)
-                viewModel.apiCallTimeSheetDetails(employeeModel.teamId.toString())
+                TimePickerDialog(
+                    requireActivity(),
+                    android.R.style.Theme_Material_Light_Dialog,
+                    endTime,
+                    myCalendar1.get(Calendar.HOUR),
+                    myCalendar1.get(Calendar.MINUTE),
+                    false
+                ).show()
+//                viewModel.updateLabel(myCalendar1)
+//                viewModel.apiCallTimeSheetDetails(employeeModel.teamId.toString())
             }
 
-        viewModel.setCurrentDate(myCalendar)
+
+        startTime = TimePickerDialog.OnTimeSetListener { view, hour, minute ->
+            val timecalender = Calendar.getInstance()
+            timecalender.set(Calendar.HOUR_OF_DAY, hour)
+            timecalender.set(Calendar.MINUTE, minute)
+            viewModel.startDate.value = timeCalculateForStartEndTime(hour, minute, "isstart")
+            if (differnceTrue(viewModel.startDate.value!!, viewModel.endDate.value) <= 30) {
+                viewModel.apiCallTimeSheetDetails(employeeModel.teamId.toString())
+            } else {
+                AlertUtils.showCustomAlertWithListenerWithOK(
+                    requireActivity(),
+                    "Please Select date in 30 Days."
+                ) { _, _ ->
+                }
+            }
+        }
+
+        endTime = TimePickerDialog.OnTimeSetListener { view, hour, minute ->
+            val timecalender = Calendar.getInstance()
+            timecalender.set(Calendar.HOUR_OF_DAY, hour)
+            timecalender.set(Calendar.MINUTE, minute)
+            viewModel.endDate.value = timeCalculateForStartEndTime(hour, minute, "isend")
+            if (differnceTrue(viewModel.endDate.value!!, viewModel.startDate.value) <= 30) {
+                viewModel.apiCallTimeSheetDetails(employeeModel.teamId.toString())
+            } else {
+                AlertUtils.showCustomAlertWithListenerWithOK(
+                    requireActivity(),
+                    "Please Select date in 30 Days."
+                ) { _, _ ->
+                }
+            }
+
+        }
 
         viewModel.apiCallTimeSheetDetails(employeeModel.teamId.toString())
 
@@ -129,6 +192,90 @@ class SingleTeamMemberTimeSheetFragment : Fragment() {
 
         return binding.root
     }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel.setCurrentDate(
+            myCalendar
+        )
+    }
+
+    fun timeCalculateForStartEndTime(hour: Int, minute: Int, isStart: String): String {
+        var timestring = ""
+        var hoursfinal: Int = 0
+        if ((hour == 12 && minute > 0) || (hour > 12 && minute > 0) || (hour > 12 && minute == 0)) {
+            if (hour == 12) {
+                hoursfinal = hour
+            } else {
+                hoursfinal = hour - 12
+            }
+            if (hoursfinal < 10) {
+                if (minute < 10) {
+                    timestring = "0$hoursfinal:0$minute PM"
+                } else {
+                    timestring = "0$hoursfinal:$minute PM"
+                }
+            } else {
+                if (minute < 10) {
+                    timestring = "$hoursfinal:0$minute PM"
+                } else {
+                    timestring = "$hoursfinal:$minute PM"
+                }
+            }
+        } else {
+            if (hour == 0) {
+                if (minute < 10) {
+                    timestring = "${hour.plus(12)}:0$minute AM"
+                } else {
+                    timestring = "${hour.plus(12)}:$minute AM"
+                }
+            } else {
+                if (hour < 10) {
+                    if (minute < 10) {
+                        timestring = "0$hour:0$minute AM"
+                    } else {
+                        timestring = "0$hour:$minute AM"
+                    }
+                } else {
+                    if (minute < 10) {
+                        timestring = "$hour:0$minute AM"
+                    } else {
+                        timestring = "$hour:$minute AM"
+                    }
+                }
+            }
+
+        }
+
+        val myFormat = "MM/dd/yyyy" //In which you need put here
+        val sdf = SimpleDateFormat(myFormat, Locale.getDefault())
+        var startDatestring = ""
+        if (isStart == "isstart") {
+            startDatestring = sdf.format(myCalendar.time)
+        } else {
+            startDatestring = sdf.format(myCalendar1.time)
+        }
+        return "$startDatestring $timestring"
+    }
+
+    private fun differnceTrue(date1: String, date2: String?): Long {
+        var dateType1: Date
+        var dateType2: Date
+        var daydifference = "0".toLong()
+//        11/30/2021 09:40 AM
+        try {
+            var dates = SimpleDateFormat("MM/dd/yyyy")
+            dateType1 = dates.parse(date1.substringBefore(" "))
+            dateType2 = dates.parse(date2?.substringBefore(" "))
+            var differencedate = abs(dateType1.time - dateType2.time)
+            daydifference = differencedate / (24 * 60 * 60 * 1000)
+            Log.d("yash", "differnceTrue: " + daydifference)
+            return daydifference
+        } catch (e: Exception) {
+        }
+        return daydifference
+    }
+
     private fun setupSnackbar() =
         binding.root.liveSnackBar(this, viewModel.snackbarText, Snackbar.LENGTH_SHORT)
 
@@ -136,7 +283,7 @@ class SingleTeamMemberTimeSheetFragment : Fragment() {
         viewModel.startDateSelection.observe(requireActivity(), { event ->
             event.getContentIfNotHandled()?.let {
 
-                DatePickerDialog(
+                val dialog = DatePickerDialog(
                     requireActivity(),
                     android.R.style.Theme_Material_Light_Dialog,
                     startDate,
@@ -145,7 +292,9 @@ class SingleTeamMemberTimeSheetFragment : Fragment() {
                     myCalendar.get(Calendar.MONTH),
                     myCalendar.get(Calendar.DAY_OF_MONTH)
 
-                ).show()
+                )
+                dialog.datePicker.maxDate = Date().time
+                dialog.show()
             }
 
         })
@@ -155,7 +304,7 @@ class SingleTeamMemberTimeSheetFragment : Fragment() {
         viewModel.endDateSelection.observe(requireActivity(), { event ->
             event.getContentIfNotHandled()?.let {
 
-                DatePickerDialog(
+                val dialog = DatePickerDialog(
                     requireActivity(),
                     android.R.style.Theme_Material_Light_Dialog,
                     endDate,
@@ -164,7 +313,9 @@ class SingleTeamMemberTimeSheetFragment : Fragment() {
                     myCalendar1.get(Calendar.MONTH),
                     myCalendar1.get(Calendar.DAY_OF_MONTH)
 
-                ).show()
+                )
+                dialog.datePicker.maxDate = Date().time
+                dialog.show()
             }
         })
     }
@@ -187,7 +338,8 @@ class SingleTeamMemberTimeSheetFragment : Fragment() {
                 binding.rvSingleTimeSheet.visibility = View.VISIBLE
                 binding.includeView.spinnerLayoutTimesheet.visibility = View.GONE
                 teamMemberTimeSheetAdapter.teamTimesheetDetailsList(
-                    timeSheet.data
+                    timeSheet.data,
+                    employeeModel.teamId
                 )
                 binding.tvEmployeeTotalHours.text =
                     "Employees Total Hours : " + timeSheet.employeTotalHours

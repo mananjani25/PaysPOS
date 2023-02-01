@@ -75,7 +75,7 @@
                 android:layout_marginLeft="@dimen/_5sdp"
                 android:layout_weight="0.5"
                 android:gravity="center"
-                android:text="@string/tv_hash"
+                android:text="@string/employee_id"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi"
                 app:textAllCaps="true" />

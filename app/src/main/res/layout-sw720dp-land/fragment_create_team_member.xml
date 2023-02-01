@@ -223,7 +223,7 @@
                         android:layout_gravity="center"
                         android:background="@drawable/background_square_border_grey"
                         android:digits="@string/disable_emoji_string"
-                        android:hint="@string/tv_email_star"
+                        android:hint="@string/tv_email"
                         android:imeOptions="actionNext"
                         android:inputType="textVisiblePassword"
                         android:padding="@dimen/_9sdp"

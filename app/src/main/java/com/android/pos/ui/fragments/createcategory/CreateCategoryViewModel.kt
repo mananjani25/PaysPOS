@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.R
 import com.android.pos.data.entities.TbCategory
+import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.requestModel.CreateCategoryRequestModel
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.repositories.PosRepository
@@ -56,7 +57,33 @@ class CreateCategoryViewModel @Inject constructor(
 
     //  val getInventory = catId.value?.let { posRepository.getInventory(it) }
 
-    fun submit(ids: ArrayList<Int>, imagePath: String?, nameFromUpdate: String) {
+    private fun removeIdsFromOldCategories(
+        ids: ArrayList<Int>,
+        tbItemsList: ArrayList<TbItem>,
+    ) {
+        viewModelScope.launch {
+            val oldIds = posRepository.getItemsByCategory(catId)
+            ids.forEach { id ->
+                tbItemsList.filter { item ->
+                    item.itemId == id && !oldIds?.contains(id)!!
+                }.forEach {
+                    val itemIds: ArrayList<Int?>? =
+                        posRepository.getItemsByCategory(it.categoryId) as ArrayList<Int?>?
+                    if (itemIds != null && itemIds.size > 0) {
+                        itemIds.remove(id)
+                        posRepository.updateCategoryItems(it.categoryId, itemIds as List<Int>)
+                    }
+                }
+            }
+        }
+    }
+
+    fun submit(
+        ids: ArrayList<Int>,
+        imagePath: String?,
+        nameFromUpdate: String,
+        tbItemsList: ArrayList<TbItem>
+    ) {
 
 //        if (isEdit) {
 //            if (categoryDetails.value?.name?.trim()?.isEmpty() == true) {
@@ -102,11 +129,10 @@ class CreateCategoryViewModel @Inject constructor(
                 when (resource.status) {
                     SUCCESS -> {
                         _showProgress.value = Event(false)
-
                         resource.data.let { categoryResponse ->
                             if (categoryResponse?.status == 200) {
                                 resource.data?.let {
-
+                                    removeIdsFromOldCategories(ids, tbItemsList)
                                     val category = TbCategory().apply {
                                         name = it.data.name
                                         id = it.data.id
@@ -116,10 +142,10 @@ class CreateCategoryViewModel @Inject constructor(
                                         createdAt = it.data.createdAt
                                         updatedAt = it.data.updatedAt
                                         thumbImgUrl = it.data.thumbImgUrl
+                                        item_ids = ids
                                         originalImgUrl = it.data.originalImgUrl
                                     }
                                     posRepository.createCategory(category)
-
 
                                     if (isEdit) {
                                         val oldIds = posRepository.getItemsByCategory(category.id)
