@@ -63,7 +63,7 @@ class CreateModifierViewModel @Inject constructor(
             val modifierSets = CreateModifierRequest().apply {
 
                 val modifierSets = ModifierSet().apply {
-                    name = data?.modifierName.toString()
+                    name = data?.modifierName!!.trim()
                     locationId = prefProvider.getValueInt(Constants.LOCATION_ID, -1)
                     itemIds = itemIdsViewModel
 

@@ -90,7 +90,7 @@ class CreateServiceChargeViewModel @Inject constructor(
             if (isEdit) {
                 serviceChargeData = CreateServiceChargeRequestModel().apply {
                     serviceCharge = CreateServiceChargeRequestModel.ServiceCharge().apply {
-                        name = value!!.name
+                        name = value!!.name.trim()
                         percentage = value.percentage
                         isEnabled = enableSerChargeViewModel
                         locationId = prefProvider.getValueInt(LOCATION_ID, -1)
@@ -102,7 +102,7 @@ class CreateServiceChargeViewModel @Inject constructor(
             } else {
                 serviceChargeData = CreateServiceChargeRequestModel().apply {
                     serviceCharge = CreateServiceChargeRequestModel.ServiceCharge().apply {
-                        name = value!!.name
+                        name = value!!.name.trim()
                         percentage = value.percentage
                         isEnabled = enableSerChargeViewModel
                         locationId = prefProvider.getValueInt(LOCATION_ID, -1)

@@ -65,7 +65,7 @@
                     android:textColorHint="@color/hintColor"
                     android:textSize="@dimen/_6mdpi"
                     android:maxLength="50"
-                    android:digits="@string/disable_emoji_string"/>
+                    android:digits="@string/character_digits_String"/>
                 </LinearLayout>
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontMediumStyle"

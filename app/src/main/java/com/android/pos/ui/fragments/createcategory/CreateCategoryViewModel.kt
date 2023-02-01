@@ -102,7 +102,7 @@ class CreateCategoryViewModel @Inject constructor(
             if (isEdit) {
                 createCategoryRequestModel = CreateCategoryRequestModel().apply {
                     id = catId
-                    name = categoryDetails.value?.name.toString()
+                    name = categoryDetails.value?.name!!.trim()
                     active = true
                     location_id = prefProvider.getValueInt(Constants.LOCATION_ID, -1)
                     item_ids = ids
@@ -110,7 +110,7 @@ class CreateCategoryViewModel @Inject constructor(
                 }
             } else {
                 createCategoryRequestModel = CreateCategoryRequestModel().apply {
-                    name = categoryDetails.value?.name.toString()
+                    name = categoryDetails.value?.name!!.trim()
                     active = true
                     location_id = prefProvider.getValueInt(Constants.LOCATION_ID, -1)
                     item_ids = ids
@@ -134,7 +134,7 @@ class CreateCategoryViewModel @Inject constructor(
                                 resource.data?.let {
                                     removeIdsFromOldCategories(ids, tbItemsList)
                                     val category = TbCategory().apply {
-                                        name = it.data.name
+                                        name = it.data.name.trim()
                                         id = it.data.id
                                         locationId = it.data.locationId
                                         active = it.data.active

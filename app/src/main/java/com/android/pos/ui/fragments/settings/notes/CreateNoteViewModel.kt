@@ -66,14 +66,14 @@ class CreateNoteViewModel @Inject constructor(
 
             if (isEdit) {
                 noteData = CreateNoteRequest().apply {
-                    note.name = value.note.name
+                    note.name = value.note.name.trim()
                     note.isActive = true
                     note.locationId = prefProvider.getValueInt(LOCATION_ID, -1)
                 }
             } else {
                 noteData = CreateNoteRequest().apply {
 
-                    note.name = value.note.name
+                    note.name = value.note.name.trim()
                     note.isActive = true
                     note.locationId = prefProvider.getValueInt(LOCATION_ID, -1)
                 }

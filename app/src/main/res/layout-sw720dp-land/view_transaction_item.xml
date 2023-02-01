@@ -61,13 +61,13 @@
 
 
             <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvOrderType"
                 style="@style/CustomFontBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:gravity="left"
-                android:text="@{itemSheetModel.orderDetails.orderTypeName}"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/text_size_medium"
                 app:textAllCaps="true"

@@ -53,7 +53,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@null"
-                    android:digits="@string/disable_emoji_string"
+                    android:digits="@string/character_digits_String"
                     android:hint="@string/category_name"
                     android:imeOptions="actionDone"
                     android:inputType="textVisiblePassword"

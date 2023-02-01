@@ -156,6 +156,7 @@
                                     android:imeOptions="actionNext"
                                     android:inputType="textCapWords|textVisiblePassword"
                                     android:padding="@dimen/_7sdp"
+                                    android:digits="@string/character_digits_String"
                                     android:maxLength="60"
                                     android:text="@={viewModel.createDiscountDetails.name}"
                                     android:textColor="@color/txtColor"
