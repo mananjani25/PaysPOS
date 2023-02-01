@@ -17,7 +17,6 @@ import com.android.pos.di.ApiModule.BASE_URL
 import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
-import com.android.pos.ui.fragments.dashboard.bolddashboard.DashboardCategoryBoldPOS
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.alert
 import dagger.hilt.android.AndroidEntryPoint
@@ -74,11 +73,7 @@ class MenuFragment : DialogFragment() {
             event.getContentIfNotHandled()?.let {
                 if (it) {
 
-                    if (prefProvider.getValue(Constants.ORDER_TYPE, "").isNotEmpty()) {
-                        viewLifecycleOwner.lifecycleScope.launch {
-                            viewModel.decreaseOnGoingOrderCounter()
-                        }
-                    }
+
                     viewModel.clearTableAll()
                     viewModel.clearTable()
                     prefProvider.setClear()
@@ -157,7 +152,15 @@ class MenuFragment : DialogFragment() {
         binding.linearLogout.setOnClickListener {
             alert("", "Are you sure you want to Logout?") {
                 this.positiveButton("Logout") {
-                    viewModel.logoutAPI()
+
+                    if (prefProvider.getValue(Constants.ORDER_TYPE, "").isNotEmpty()) {
+                        viewLifecycleOwner.lifecycleScope.launch {
+                            viewModel.decreaseOnGoingOrderCounter(true)
+                        }
+                    }else{
+                        viewModel.logoutAPI()
+                    }
+
                 }
                 this.negativeButton("Cancel") {
                 }

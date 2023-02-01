@@ -4525,7 +4525,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
         viewModelScope.launch {
-            decreaseOnGoingOrderCounter()
+            decreaseOnGoingOrderCounter(false)
         }
 
     }
@@ -4551,13 +4551,18 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
     }
 
-     suspend fun decreaseOnGoingOrderCounter() {
+     suspend fun decreaseOnGoingOrderCounter(b: Boolean) {
         _showProgress.value = Event(true)
 
         val resource = posRepository.decreaseOnGoingOrderCounter()
         when (resource.status) {
             Status.SUCCESS -> {
                 _showProgress.value = Event(false)
+
+                if (b){
+                    logoutAPI()
+                }
+
             }
             Status.ERROR -> {
                 _snackbarText.value = Event(resource.message)

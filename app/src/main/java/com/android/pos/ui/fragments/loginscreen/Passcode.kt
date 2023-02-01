@@ -371,7 +371,7 @@ class Passcode : Fragment() {
 
                     if (prefProvider.getValue(ORDER_TYPE, "").isNotEmpty()) {
                         viewLifecycleOwner.lifecycleScope.launch {
-                            viewModelDashboard.decreaseOnGoingOrderCounter()
+                            viewModelDashboard.decreaseOnGoingOrderCounter(false)
                         }
                     }
 
