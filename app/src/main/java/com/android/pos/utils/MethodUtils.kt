@@ -28,6 +28,7 @@ import com.google.i18n.phonenumbers.Phonenumber
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import java.io.File
+import java.math.RoundingMode
 import java.text.DecimalFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -600,11 +601,17 @@ class MethodUtils {
                 var tmp = value.toString()
                 var tmpIndex = tmp.indexOf(".", 0, true)
                 if (tmp.length > tmpIndex + 3) {
-                    tmp = tmp.substring(0, tmpIndex + 3)
+
+                    var valueFormat = DecimalFormat("##.##")
+                    valueFormat.roundingMode = RoundingMode.UP
+
+
+                    return String.format("%.2f", value).toDouble()
+                    /*tmp = tmp.substring(0, tmpIndex + 3)
 
                     Log.e("CheckValue", "checkData   ${tmp.toDouble()}")
-                    return tmp.toDouble()
-                }  else {
+                    return tmp.toDouble()*/
+                } else {
 
                     return value
 

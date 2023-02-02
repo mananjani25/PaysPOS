@@ -3381,7 +3381,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                         val itemTaxPrice =
                             (tax.rate * totalPrice) / 100
                         Log.e("itemTaxPrice", "" + itemTaxPrice)
-                        MethodUtils.roundOffAmountUp(itemTaxPrice)
+                        MethodUtils.getTwoDecimal(itemTaxPrice)
                     }
 
                 } else {
@@ -3391,8 +3391,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                         String.format("%.2f", 0.00)
                             .toDouble()
                     } else {
-                        String.format("%.2f", tax.rate * item.itemQuantity)
-                            .toDouble()
+                        MethodUtils.getTwoDecimal(tax.rate * item.itemQuantity)
+                        /*String.format("%.2f", tax.rate * item.itemQuantity)
+                            .toDouble()*/
                     }
 
                 }
