@@ -979,10 +979,13 @@ class DashBoardCategoryViewModel @Inject constructor(
                             }
 
                             cartModel.items = list
-                            Log.e("ModNewLogic","dineInList:   ${Gson().toJson(cartModel.dineInList)}")
-                            Log.e("ModNewLogic","checkItems:  ${Gson().toJson(cartModel.items)}")
+                            Log.e(
+                                "ModNewLogic",
+                                "dineInList:   ${Gson().toJson(cartModel.dineInList)}"
+                            )
+                            Log.e("ModNewLogic", "checkItems:  ${Gson().toJson(cartModel.items)}")
 
-                        //cartModel.dineInList = dinein
+                            //cartModel.dineInList = dinein
 
 
                         }
@@ -2772,7 +2775,12 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
             var finalTotal = 0.0
+            Log.e("FEB2023","subTotalPrice:  ${subTotalPrice}")
+            Log.e("FEB2023","totalTax:  ${totalTax}")
+            Log.e("FEB2023","totalServiceCharge:  ${totalServiceCharge}")
             finalTotal = (subTotalPrice + totalTax + totalServiceCharge)
+            Log.e("FEB2023","finalTotal:  ${finalTotal}")
+
             cashDiscountType = prefProvider.getValue(Constants.OPTION_TYPE, "")
             //loyalty point and price calculation
             amountToBePaid = finalTotal
@@ -2918,6 +2926,9 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
                     order_note = cartModel.note
+                    Log.e("FEB2023", "subTotalPrice:  ${subTotalPrice}")
+                    Log.e("FEB2023", "subTotalPrice:  ${totalTax}")
+                    Log.e("FEB2023", "subTotalPrice:  ${totalServiceCharge}")
 
                     var finalTotal = 0.0
                     finalTotal = (subTotalPrice + totalTax + totalServiceCharge)
