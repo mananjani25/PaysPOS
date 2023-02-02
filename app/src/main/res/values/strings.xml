@@ -745,13 +745,14 @@
     <string name="product_code">Product Code</string>
     <string name="open_orders">Open Orders</string>
 
-    <string name="same_category_name">Category Name has already been taken.</string>
     <string name="disable_emoji_string">android:digits="0,1,2,3,4,5,6,7,8,9,@,.,#,$,(,),_,-,!,&amp;,%,/,\,+,?,\u003E, &gt;,&lt;,\\,^,uFE64,,,*,qwertzuiopasdfghjklyxcvbnm,QWERTZUIOPASDFGHJKLYXCVBNM"</string>
     <string name="numbers_digits_string">android:digits="0,1,2,3,4,5,6,7,8,9"</string>
     <string name="send_receipt">Send Receipt</string>
     <string name="please_choos_a_role">Please choose a Role</string>
     <string name="please_enter_passcode">Please enter passcode</string>
     <string name="please_enter_passcode_length">Please enter 4 digit passcode</string>
+    <string name="character_digits_String">"aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyY zZ0123456789"</string>
+    <string name="character_digits_without_space_String">"aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ0123456789"</string>
     <string name="character_String">"qwertzuiopasdfghjklyxcvbnmQWERTZUIOPASDFGHJKLYXCVBNM "</string>
     <string name="rename">Rename</string>
     <string name="last_name_teammember">Last Name<font color='#E90C0C'>*</font></string>
