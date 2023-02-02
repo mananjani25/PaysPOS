@@ -846,16 +846,16 @@ class CartFragment(
                     viewModel.clearListTax()
                     cartAdapter.clearList()
                     reSetTaxBifurcationData()
-                    binding.txtTotal.text = MethodUtils.roundOffAmount(0.0)
-                    binding.txtSubTotal.text = MethodUtils.roundOffAmount(0.0)
-                    binding.txtTax.text = MethodUtils.roundOffAmount(0.0)
-                    binding.txtDiscount.text = "-" + MethodUtils.roundOffAmount(0.0)
+                    binding.txtTotal.text = MethodUtils.roundOffAmount(0.00)
+                    binding.txtSubTotal.text = MethodUtils.roundOffAmount(0.00)
+                    binding.txtTax.text = MethodUtils.roundOffAmount(0.00)
+                    binding.txtDiscount.text = "-" + MethodUtils.roundOffAmount(0.00)
                     binding.txtNoncashAdj.text =
-                        MethodUtils.roundOffAmount(0.0)
+                        MethodUtils.roundOffAmount(0.00)
                     binding.relativeOrderNotes?.visibility = View.GONE
                     binding.txtServiceCharge.text =
-                        MethodUtils.roundOffAmount(0.0)
-                    binding.tvPayNow.text = "Pay " + MethodUtils.roundOffAmount(0.0)
+                        MethodUtils.roundOffAmount(0.00)
+                    binding.tvPayNow.text = "Pay " + MethodUtils.roundOffAmount(0.00)
                     var data: TbCustomer? = prefProvider.getCustomerData()
                     if (data != null) {
                         if (viewModel.loyaltyPointCondition(data)) {
@@ -1309,15 +1309,15 @@ class CartFragment(
                             cartAdapter.clearList()
                             reSetTaxBifurcationData()
                             binding.relativeOrderNotes?.visibility = View.GONE
-                            binding.txtTotal.text = MethodUtils.roundOffAmount(0.0)
-                            binding.txtSubTotal.text = MethodUtils.roundOffAmount(0.0)
+                            binding.txtTotal.text = MethodUtils.roundOffAmount(0.00)
+                            binding.txtSubTotal.text = MethodUtils.roundOffAmount(0.00)
                             binding.txtTax.text = MethodUtils.roundOffAmount(0.0)
-                            binding.txtDiscount.text = "-" + MethodUtils.roundOffAmount(0.0)
+                            binding.txtDiscount.text = "-" + MethodUtils.roundOffAmount(0.00)
                             binding.txtNoncashAdj.text =
-                                MethodUtils.roundOffAmount(0.0)
+                                MethodUtils.roundOffAmount(0.00)
                             binding.txtServiceCharge.text =
-                                MethodUtils.roundOffAmount(0.0)
-                            binding.tvPayNow.text = "Pay " + MethodUtils.roundOffAmount(0.0)
+                                MethodUtils.roundOffAmount(0.00)
+                            binding.tvPayNow.text = "Pay " + MethodUtils.roundOffAmount(0.00)
                             var data: TbCustomer? = prefProvider.getCustomerData()
                             if (data != null) {
                                 if (viewModel.loyaltyPointCondition(data)) {

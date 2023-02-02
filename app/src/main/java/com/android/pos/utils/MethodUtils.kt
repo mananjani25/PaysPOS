@@ -138,18 +138,19 @@ class MethodUtils {
 
         }
 
-     /*   fun roundOffAmount(price: Double): String {
-            return MainApplication.getInstance()!!.getText(R.string.symbole)
-                .toString() + String.format("%.2f", price)
-        }
-*/
+        /*   fun roundOffAmount(price: Double): String {
+               return MainApplication.getInstance()!!.getText(R.string.symbole)
+                   .toString() + String.format("%.2f", price)
+           }
+   */
         fun roundOffAmount(price: Double): String {
             return MainApplication.getInstance()!!.getText(R.string.symbole)
                 .toString() + getTwoDecimal(price)
         }
 
-        fun roundOffTwoDec(price:Double):String{
-            return MainApplication.getInstance()!!.getText(R.string.symbole).toString() + getTwoDecimal(price)
+        fun roundOffTwoDec(price: Double): String {
+            return MainApplication.getInstance()!!.getText(R.string.symbole)
+                .toString() + getTwoDecimal(price)
         }
 
         fun roundOffAmountDown(price: Double): Double {
@@ -167,24 +168,25 @@ class MethodUtils {
 
         }
 
-   /*     fun roundOffAmountDouble(price: Double?): Double {
-            return String.format("%.2f", price).toDouble()
-        }*/
+        /*     fun roundOffAmountDouble(price: Double?): Double {
+                 return String.format("%.2f", price).toDouble()
+             }*/
 
         fun roundOffAmountDouble(price: Double?): Double {
             if (price != null)
-            return getTwoDecimal(price)
+                return getTwoDecimal(price)
             else
-                return  String.format("%.2f", price).toDouble()
+                return String.format("%.2f", price).toDouble()
         }
 
-       /* fun roundOffAmountString(price: Double): String {
-            return String.format("%.2f", price)
-        }*/
+        /* fun roundOffAmountString(price: Double): String {
+             return String.format("%.2f", price)
+         }*/
 
         fun roundOffAmountString(price: Double): String {
             return getTwoDecimal(price).toString()
         }
+
         fun roundOffAmountStringToDouble(price: String): String {
 
             if (price.isEmpty() || price == "0.0" || price == "0.00") {
@@ -602,11 +604,13 @@ class MethodUtils {
 
                     Log.e("CheckValue", "checkData   ${tmp.toDouble()}")
                     return tmp.toDouble()
-                } else {
-                    Log.e("CheckValue", "checkData 2  ${value.toDouble()}")
+                }  else {
+
                     return value
+
                 }
-            }catch (e:java.lang.Exception){
+            } catch (e: java.lang.Exception) {
+                Log.e("CheckDecCrash", "checkData ${e.message}")
                 return value
             }
 
