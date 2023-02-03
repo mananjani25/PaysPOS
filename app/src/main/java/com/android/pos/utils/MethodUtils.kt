@@ -600,11 +600,13 @@ class MethodUtils {
                 var tmp = value.toString()
                 var tmpIndex = tmp.indexOf(".", 0, true)
                 if (tmp.length > tmpIndex + 3) {
-                    return String.format("%.2f", value).toDouble()
+
+
+                    return String.format("%.2f", value).toBigDecimal().toDouble()
 
                 } else {
 
-                    return String.format("%.2f", value).toDouble()
+                    return String.format("%.2f", value).toBigDecimal().toDouble()
 
                 }
             } catch (e: java.lang.Exception) {
