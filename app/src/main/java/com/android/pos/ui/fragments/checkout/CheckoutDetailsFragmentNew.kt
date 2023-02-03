@@ -1129,7 +1129,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         setupPaymentScreen(isSelectedCount)
 
 
-        MethodUtils.setPriceTextView(
+        MethodUtils.setPriceTextViewDown(
             binding.tvAmount,
             getCalCashDiscWithAmount(
                 prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble(), true
@@ -1150,7 +1150,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             binding.tvCash2,
             binding.tvCash3
         )
-        MethodUtils.setPriceTextView(
+        MethodUtils.setPriceTextViewDown(
             binding.tvCash,
             getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount
         )
@@ -1159,6 +1159,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount
         )
         binding.tvCash.text = "Cash (" + binding.tvCash.text + ")"
+        Log.e(TAG, "WholetotalPrice:   ${WholetotalPrice}")
         MethodUtils.setPriceTextView(
             binding.tvCard,
             getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectCount
@@ -1171,7 +1172,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             binding.tvsplittip?.gone()
             binding.tvtipcard?.gone()
             binding.tvtipcash?.gone()
-            MethodUtils.setPriceTextView(
+            MethodUtils.setPriceTextViewDown(
                 binding.tvCash,
                 getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectedCount
             )
@@ -1185,14 +1186,14 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             )
             binding.tvCash.text = "Cash (" + binding.tvCash.text + ")"
             binding.tvCard.text = "Card (" + binding.tvCard.text + ")"
-            MethodUtils.setPriceTextView(
+            MethodUtils.setPriceTextViewDown(
                 binding.tvAmount,
                 getCalCashDiscWithAmount(
                     prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble(), true
                 )
             )
         } else {
-            MethodUtils.setPriceTextView(
+            MethodUtils.setPriceTextViewDown(
                 binding.tvCash,
                 (getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectedCount) + tipAmount
             )
@@ -1218,7 +1219,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 binding.tvCash2,
                 binding.tvCash3
             )
-            MethodUtils.setPriceTextView(
+            MethodUtils.setPriceTextViewDown(
                 binding.tvAmount,
                 (getCalCashDiscWithAmount(
                     prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble(), true
@@ -1257,14 +1258,14 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     private fun tipsetupGlobal(tipAmount: Double, isSelectCount: Int) {
         if (tipAmount == 0.0) {
             binding.tvsplittip?.gone()
-            MethodUtils.setPriceTextView(
+            MethodUtils.setPriceTextViewDown(
                 binding.tvAmount,
                 getCalCashDiscWithAmount(
                     prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble(), true
                 ) / isSelectCount
             )
         } else {
-            MethodUtils.setPriceTextView(
+            MethodUtils.setPriceTextViewDown(
                 binding.tvAmount,
                 (getCalCashDiscWithAmount(
                     prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble(), true
@@ -1470,9 +1471,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         val orderId = prefProvider.getValueInt("ORDER_ID", -1)
         LogUtil.logE(TAG, "orderIdmyRequestOriginal ${orderId}")
         if (orderId == -1) {
-            if (myRequest.order.totalAmount!=0.0){
+            if (myRequest.order.totalAmount != 0.0) {
                 myRequest.completed_all_payments = isSelectedCount <= 1
-            }else{
+            } else {
                 myRequest.completed_all_payments = true
             }
             paymentviewModel.submit(myRequest)

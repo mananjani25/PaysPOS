@@ -11,6 +11,8 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.*
@@ -62,6 +64,9 @@ import com.android.pos.utils.extensions.*
 import com.android.pos.utils.statusUtils.Resource
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -192,24 +197,23 @@ class CartFragment(
             }
 
 
-
-
         setUpData()
         return binding.root
     }
 
     private fun checkOrderType() {
 
+
         if (prefProvider.getValue(ORDER_TYPE, "").isEmpty()) {
-            binding.rlCartView?.gone()
-            binding.rvOrderType?.visible()
-            binding.orderTypeDisplay?.text =
+            binding.rlCartView.gone()
+            binding.rvOrderType.visible()
+            binding.orderTypeDisplay.text =
                 getString(R.string.current_order)
         } else {
-            binding.rlCartView?.visible()
-            binding.rvOrderType?.gone()
+            binding.rlCartView.visible()
+            binding.rvOrderType.gone()
 
-            binding.orderTypeDisplay?.text =
+            binding.orderTypeDisplay.text =
                 getString(R.string.current_order) + " : " + prefProvider.getValue(ORDER_TYPE, "")
         }
     }
@@ -846,16 +850,16 @@ class CartFragment(
                     viewModel.clearListTax()
                     cartAdapter.clearList()
                     reSetTaxBifurcationData()
-                    binding.txtTotal.text = MethodUtils.roundOffAmount(0.0)
-                    binding.txtSubTotal.text = MethodUtils.roundOffAmount(0.0)
-                    binding.txtTax.text = MethodUtils.roundOffAmount(0.0)
-                    binding.txtDiscount.text = "-" + MethodUtils.roundOffAmount(0.0)
+                    binding.txtTotal.text = MethodUtils.roundOffAmount(0.00)
+                    binding.txtSubTotal.text = MethodUtils.roundOffAmount(0.00)
+                    binding.txtTax.text = MethodUtils.roundOffAmount(0.00)
+                    binding.txtDiscount.text = "-" + MethodUtils.roundOffAmount(0.00)
                     binding.txtNoncashAdj.text =
-                        MethodUtils.roundOffAmount(0.0)
+                        MethodUtils.roundOffAmount(0.00)
                     binding.relativeOrderNotes?.visibility = View.GONE
                     binding.txtServiceCharge.text =
-                        MethodUtils.roundOffAmount(0.0)
-                    binding.tvPayNow.text = "Pay " + MethodUtils.roundOffAmount(0.0)
+                        MethodUtils.roundOffAmount(0.00)
+                    binding.tvPayNow.text = "Pay " + MethodUtils.roundOffAmount(0.00)
                     var data: TbCustomer? = prefProvider.getCustomerData()
                     if (data != null) {
                         if (viewModel.loyaltyPointCondition(data)) {
@@ -877,10 +881,20 @@ class CartFragment(
 
         } else {
             if (view != null) {
+
+
                 viewModel.mAllWords(
                     prefProvider.getValue(ORDER_TYPE, TAKEOUT),
                     prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
                 ).observe(requireActivity()) {
+
+                    Log.e("All LOG : ORDER_TYPE", prefProvider.getValue(ORDER_TYPE, TAKEOUT))
+                    Log.e(
+                        "All LOG :EMPLOYEE_ID",
+                        prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0).toString()
+                    )
+
+
                     saveVisibility()
 
                     LogUtil.logE("mAllWords :", "LIST SIZE :" + it.size.toString())
@@ -1041,7 +1055,40 @@ class CartFragment(
                             } else {
                                 binding.txtDineInProceed.setText("Proceed To Fire")
                             }
-                            setTaxBifurcationData(it[0].taxlistDynamic as ArrayList<TaxData>)
+
+                            Log.e(
+                                "CheckCalculation",
+                                "taxlistDynamic: ${Gson().toJson(it[0].taxlistDynamic)}"
+                            )
+
+                            var listOfTax: ArrayList<TaxData> = arrayListOf()
+                            var noItem = false
+                            var listItems: ArrayList<TbItem> = arrayListOf()
+                            it[0].dineInList?.forEach {
+
+                                listItems.addAll(it.items)
+
+                            }
+
+                            it[0].taxlistDynamic?.let { it1 ->
+                                if (prefProvider.getValue(
+                                        ORDER_TYPE,
+                                        ""
+                                    ) == DINE_IN && listItems.isEmpty() && prefProvider.getValueboolean(
+                                        Constants.DINE_IN_UPDATE,
+                                        false
+                                    ) == false
+                                ) {
+                                    listOfTax.addAll(arrayListOf())
+                                    setTaxBifurcationData(arrayListOf())
+
+                                } else {
+                                    listOfTax.addAll(it1)
+                                    setTaxBifurcationData(it[0].taxlistDynamic as ArrayList<TaxData>)
+                                }
+
+                            }
+
                             binding.txtSubTotal.text =
                                 MethodUtils.roundOffAmount(viewModel.subTotalPrice)
                             binding.txtTax.text = MethodUtils.roundOffAmount(viewModel.totalTax)
@@ -1112,6 +1159,8 @@ class CartFragment(
 
 
                     } else {
+
+
                         binding.rvCartDineIn.gone()
                         binding.rvCartList.visible()
 
@@ -1119,6 +1168,10 @@ class CartFragment(
 
 
                         if (it.isNotEmpty()) {
+
+                            binding.rlCartView.visible()
+                            binding.rvOrderType.gone()
+
                             Log.e("mAllWords", "listSize ITEM ${it.get(0).items?.size}")
                             viewModel.destroyedList.clear()
                             it[0].items?.filter { item -> item.isDestroy }?.let {
@@ -1265,6 +1318,7 @@ class CartFragment(
 
 
                         } else {
+
                             cartlist = arrayListOf()
                             binding.liinearInfoLayout.layoutParams.height =
                                 resources.getDimension(R.dimen._50sdp).toInt()
@@ -1276,15 +1330,15 @@ class CartFragment(
                             cartAdapter.clearList()
                             reSetTaxBifurcationData()
                             binding.relativeOrderNotes?.visibility = View.GONE
-                            binding.txtTotal.text = MethodUtils.roundOffAmount(0.0)
-                            binding.txtSubTotal.text = MethodUtils.roundOffAmount(0.0)
+                            binding.txtTotal.text = MethodUtils.roundOffAmount(0.00)
+                            binding.txtSubTotal.text = MethodUtils.roundOffAmount(0.00)
                             binding.txtTax.text = MethodUtils.roundOffAmount(0.0)
-                            binding.txtDiscount.text = "-" + MethodUtils.roundOffAmount(0.0)
+                            binding.txtDiscount.text = "-" + MethodUtils.roundOffAmount(0.00)
                             binding.txtNoncashAdj.text =
-                                MethodUtils.roundOffAmount(0.0)
+                                MethodUtils.roundOffAmount(0.00)
                             binding.txtServiceCharge.text =
-                                MethodUtils.roundOffAmount(0.0)
-                            binding.tvPayNow.text = "Pay " + MethodUtils.roundOffAmount(0.0)
+                                MethodUtils.roundOffAmount(0.00)
+                            binding.tvPayNow.text = "Pay " + MethodUtils.roundOffAmount(0.00)
                             var data: TbCustomer? = prefProvider.getCustomerData()
                             if (data != null) {
                                 if (viewModel.loyaltyPointCondition(data)) {
@@ -1605,6 +1659,7 @@ class CartFragment(
 
                     itemClickListner?.onDineInOrderCleared()
 
+                    viewModel.deleteOrderAfterMarkup()
 
                 } else {
                     clearCustomer()
@@ -1616,6 +1671,8 @@ class CartFragment(
                     itemClickListner?.onDineInOrderCleared()
                     uiSave()
                     getOrderTypes()
+
+                    viewModel.deleteOrderAfterMarkup()
 
                 }
             }
@@ -1892,8 +1949,8 @@ class CartFragment(
 
         }
         binding.tvSave.setOnClickListener {
-            prefProvider.setValueboolean(OPEN_ORDER_UPDATE_FOR_PRINT,false)
-            if (isOrderUpdate == false){
+            prefProvider.setValueboolean(OPEN_ORDER_UPDATE_FOR_PRINT, false)
+            if (isOrderUpdate == false) {
                 prefProvider.setValue(
                     Constants.OPEN_ORDER_ITEMS,
                     ""
@@ -2163,9 +2220,44 @@ class CartFragment(
             addObserver()
 
             DashboardCategoryBoldPOS.newInstance().keypadShow(true)
+            increaseOnGoingOrderCounter()
         }
 
 
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        org.greenrobot.eventbus.EventBus.getDefault().register(this)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        org.greenrobot.eventbus.EventBus.getDefault().unregister(this)
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onMessageEvent(event: String?) {
+        // Do something
+        if (event != null) {
+            Log.e("onMessageEvent", event)
+        }
+        checkOrderType()
+
+        addObserver()
+
+        DashboardCategoryBoldPOS.newInstance().keypadShow(true)
+
+        increaseOnGoingOrderCounter()
+
+
+    }
+
+    private fun increaseOnGoingOrderCounter() {
+        lifecycleScope.launch {
+            viewModel.increaseOnGoingOrderCounter()
+        }
     }
 }
 

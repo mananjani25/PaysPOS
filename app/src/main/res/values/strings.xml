@@ -20,7 +20,7 @@
     <string name="tv_clock_in_out">Clock In/Out</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="tv_enter_your_passcode">Enter passcode</string>
+    <string name="tv_enter_your_passcode">Enter Passcode</string>
 
     <string name="loading">Loading…</string>
     <string name="no_internet">Internet is required for the application to work. Please enable the internet and try again.</string>
@@ -750,6 +750,7 @@
     <string name="send_receipt">Send Receipt</string>
     <string name="please_choos_a_role">Please choose a Role</string>
     <string name="please_enter_passcode">Please enter passcode</string>
+    <string name="please_enter_passcode_length">Please enter 4 digit passcode</string>
     <string name="character_digits_String">"aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyY zZ0123456789"</string>
     <string name="character_digits_without_space_String">"aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ0123456789"</string>
     <string name="character_String">"qwertzuiopasdfghjklyxcvbnmQWERTZUIOPASDFGHJKLYXCVBNM "</string>
@@ -828,6 +829,8 @@
     <string name="add_guest">Add Guest</string>
     <string name="add_reason">Add Reason</string>
     <string name="remember_me">Remember me</string>
+    <string name="search_by_item">Search by item</string>
+    <string name="online_orders">ONLINE ORDERS</string>
 
 </resources>
 
