@@ -2778,7 +2778,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             Log.e("FEB2023","subTotalPrice:  ${subTotalPrice}")
             Log.e("FEB2023","totalTax:  ${totalTax}")
             Log.e("FEB2023","totalServiceCharge:  ${totalServiceCharge}")
-            finalTotal = (subTotalPrice + totalTax + totalServiceCharge)
+            finalTotal = (MethodUtils.getTwoDecimal(subTotalPrice) + MethodUtils.getTwoDecimal(totalTax) + MethodUtils.getTwoDecimal(totalServiceCharge))
             Log.e("FEB2023","finalTotal:  ${finalTotal}")
 
             cashDiscountType = prefProvider.getValue(Constants.OPTION_TYPE, "")
