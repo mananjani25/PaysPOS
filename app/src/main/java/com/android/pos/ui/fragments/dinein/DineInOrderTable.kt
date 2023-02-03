@@ -462,8 +462,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                             val itemTaxPrice =
                                 (taxData.rate * totalPrice) / 100
                             LogUtil.logE("itemTaxPrice", "" + itemTaxPrice)
-                            String.format("%.2f", itemTaxPrice)
-                                .toDouble()
+                            MethodUtils.getTwoDecimal(itemTaxPrice)
+                            /* String.format("%.2f", itemTaxPrice)
+                                 .toDouble()*/
                         }
 
                     } else {
@@ -472,8 +473,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                             String.format("%.2f", 0.00)
                                 .toDouble()
                         } else {
-                            String.format("%.2f", taxData.rate * wholetableitems.itemQuantity)
-                                .toDouble()
+
+                            MethodUtils.getTwoDecimal(taxData.rate * wholetableitems.itemQuantity)
+                            /*  String.format("%.2f", taxData.rate * wholetableitems.itemQuantity)
+                                  .toDouble()*/
                         }
 
                     }
@@ -560,15 +563,17 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                 val itemTaxPrice =
                                     (tax.rate * totalPrice) / 100
                                 LogUtil.logE("itemTaxPrice", "" + itemTaxPrice)
-                                String.format("%.2f", itemTaxPrice)
-                                    .toDouble()
+                                MethodUtils.getTwoDecimal(itemTaxPrice)
+                                /* String.format("%.2f", itemTaxPrice)
+                                     .toDouble()*/
                             } else {
+                                MethodUtils.getTwoDecimal(tax.rate * it.quantity)
 
-                                String.format(
-                                    "%.2f",
-                                    tax.rate * it.quantity
-                                )
-                                    .toDouble()
+                                /* String.format(
+                                     "%.2f",
+                                     tax.rate * it.quantity
+                                 )
+                                     .toDouble()*/
                             }
 
 
@@ -718,11 +723,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
         binding.txtHome.setOnClickListener {
-            prefProvider.setValue(ORDER_TYPE,"")
+            prefProvider.setValue(ORDER_TYPE, "")
             findNavController().navigate(R.id.action_dineInOrderTable_to_dashboardCategoryNew)
         }
         binding.txtHomeBottom.setOnClickListener {
-            prefProvider.setValue(ORDER_TYPE,"")
+            prefProvider.setValue(ORDER_TYPE, "")
             findNavController().navigate(R.id.action_dineInOrderTable_to_dashboardCategoryNew)
         }
 
@@ -748,15 +753,15 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         if (list[j].isHeader == 1) {
 
 
-                          /*  for (m in j until list.size){
-                                if(list.get(m).isHeader == 1 && list.get(m).item?.itemId == list[j].item?.itemId){
+                            /*  for (m in j until list.size){
+                                  if(list.get(m).isHeader == 1 && list.get(m).item?.itemId == list[j].item?.itemId){
 
-                                    list[j].item?.customItemID = kotlin.random.Random.nextInt(1,10000)
-                                }
-                                else{
-                                    break
-                                }
-                            }*/
+                                      list[j].item?.customItemID = kotlin.random.Random.nextInt(1,10000)
+                                  }
+                                  else{
+                                      break
+                                  }
+                              }*/
 
 
                             list[j].item?.let { it1 ->
@@ -790,7 +795,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             //   prefProvider.setValue(Constants.DINE_IN_UPDATE_LIST, Gson().toJson(newList))
 
 
-            Log.e(TAG,"newListDineIn  ${Gson().toJson(newList)}")
+            Log.e(TAG, "newListDineIn  ${Gson().toJson(newList)}")
             val bundle = Bundle()
             bundle.putBoolean("is_dine_in_edit", true)
             bundle.putParcelableArrayList(
@@ -818,7 +823,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             prefProvider.setValueboolean(DINE_IN_UPDATE, true)
             prefProvider.setValue(Constants.ORDER_TYPE, DINE_IN)
             prefProvider.setValue(ORDER_TYPE_NAME, DINE_IN)
-            prefProvider.setValueInt(Constants.DINE_IN_TABLE_ID, prefProvider.getValueInt(Constants.ORDER_TYPE_ID, 0))
+            prefProvider.setValueInt(
+                Constants.DINE_IN_TABLE_ID,
+                prefProvider.getValueInt(Constants.ORDER_TYPE_ID, 0)
+            )
             prefProvider.setValueboolean(Constants.DINE_IN_STATUS, true)
 
             /*   prefProvider.setValu
@@ -998,8 +1006,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 val itemTaxPrice =
                     (itemtype.rate * totalPrice) / 100
                 LogUtil.logE("itemTaxPrice", "" + itemTaxPrice)
-                String.format("%.2f", itemTaxPrice)
-                    .toDouble()
+               // MethodUtils.getTwoDecimal(itemTaxPrice)
+                 String.format("%.2f", itemTaxPrice)
+                     .toDouble()
             }
 
         } else {
@@ -1008,8 +1017,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 String.format("%.2f", 0.00)
                     .toDouble()
             } else {
-                String.format("%.2f", itemtype.rate * item.itemQuantity)
-                    .toDouble()
+               // MethodUtils.getTwoDecimal(itemtype.rate * item.itemQuantity)
+                 String.format("%.2f", itemtype.rate * item.itemQuantity)
+                     .toDouble()
             }
 
         }
@@ -1119,14 +1129,14 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
         if (prefProvider.getValueboolean(Constants.CASHDIS_SURCHARGEENABLE, false)) {
             linear_NonCashDiscount.visibility = View.VISIBLE
-            txtTotalcashAdj.text = "$" + String.format(
-                "%.2f",
+            txtTotalcashAdj.text = "$" + MethodUtils.getTwoDecimal(
                 MethodUtils.calculateCashDiscount(
                     toFinalAmt,
                     prefProvider,
                     requireContext()
                 )
             )
+
         } else {
             linear_NonCashDiscount.visibility = View.GONE
         }
@@ -1147,6 +1157,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             totalDiscount
         )
 
+        Log.e("DineInOrderTable", "finalTaxAmt:  ${finalTaxAmt}")
 
         txtTotalAmount.text = binding.txtTotalAmountNew.text.toString()
         txtTotalTax.text = "$" + String.format(
@@ -2197,15 +2208,19 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                                                     "itemTaxPrice",
                                                                     "" + itemTaxPrice
                                                                 )
-                                                                String.format("%.2f", itemTaxPrice)
-                                                                    .toDouble()
-                                                            } else {
 
-                                                                String.format(
+                                                                MethodUtils.getTwoDecimal(itemTaxPrice)
+                                                               /* String.format("%.2f", itemTaxPrice)
+                                                                    .toDouble()*/
+
+
+                                                            } else {
+                                                                MethodUtils.getTwoDecimal(tax.rate * it.quantity)
+
+                                                               /* String.format(
                                                                     "%.2f",
                                                                     tax.rate * it.quantity
-                                                                )
-                                                                    .toDouble()
+                                                                ).toDouble()*/
                                                             }
 
 
@@ -2283,18 +2298,21 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                                         val itemTaxPrice =
                                                             (tax.rate * totalPrice) / 100
 
-                                                        String.format("%.2f", itemTaxPrice)
-                                                            .toDouble()
+                                                        MethodUtils.getTwoDecimal(itemTaxPrice)
+
+                                                        /*  String.format("%.2f", itemTaxPrice)
+                                                              .toDouble()*/
                                                     } else {
                                                         if (totalPrice <= 0.0) {
                                                             String.format("%.2f", 0.00)
                                                                 .toDouble()
                                                         } else {
-                                                            String.format(
+                                                            MethodUtils.getTwoDecimal(tax.rate * oi.quantity)
+                                                            /*String.format(
                                                                 "%.2f",
                                                                 tax.rate * oi.quantity
                                                             )
-                                                                .toDouble()
+                                                                .toDouble()*/
                                                         }
                                                     }
 
@@ -2399,11 +2417,20 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     }
 
 
+                    totalSubTotal = MethodUtils.getTwoDecimal(totalSubTotal)
+                    totalTaxAmount = MethodUtils.getTwoDecimal(totalTaxAmount)
+                    totalServiceChargeAmount = MethodUtils.getTwoDecimal(totalServiceChargeAmount)
+
+                    Log.e("JAN2023", "totalSubTotal  ${totalSubTotal}")
+                    Log.e("JAN2023", "totalTaxAmount  ${totalTaxAmount}")
+                    Log.e("JAN2023", "totalServiceChargeAmount  ${totalServiceChargeAmount}")
+                    Log.e("JAN2023", "orderDiscount  ${orderDiscount}")
+
                     var finalAmount =
                         totalSubTotal + totalTaxAmount + totalServiceChargeAmount - orderDiscount
                     LogUtil.logE("TODO", "finalAmount  ${finalAmount}")
                     LogUtil.logE("TODO", "guestShareTotal  ${guestShareTotal}")
-                    dineInList.get(0).guestDividedAmt = guestShareTotal
+                    dineInList.get(0).guestDividedAmt = String.format("%.2f",guestShareTotal).toDouble()
                     dineInList.get(0).totalGuestCount = baseResponse.guestAttributes.size - 1
                     dineInList.get(0).wholeTableSubTotal =
                         subTotalWT / (baseResponse.guestAttributes.size - 1)
@@ -2427,7 +2454,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     serviceCharge = totalServiceChargeAmount
                     totalDiscount = orderDiscount + totalItemDiscount
                     finalTaxAmt = totalTaxAmount
-                    LogUtil.logE(TAG, "GotsubTotalDInin  ${subTotalDInin}")
+                    LogUtil.logE(TAG, "GotsubTotalDIninfinalAmount  ${finalAmount}")
                     binding.txtTotalAmountNew.text = MethodUtils.roundOffAmount(
                         finalAmount
                     )
@@ -2738,15 +2765,17 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                     val itemTaxPrice =
                                         (tax.rate * totalPrice) / 100
                                     LogUtil.logE("itemTaxPrice", "" + itemTaxPrice)
-                                    String.format("%.2f", itemTaxPrice)
-                                        .toDouble()
+                                    MethodUtils.getTwoDecimal(itemTaxPrice)
+                                    /* String.format("%.2f", itemTaxPrice)
+                                         .toDouble()*/
                                 } else {
+                                    MethodUtils.getTwoDecimal(tax.rate * it.itemQuantity)
 
-                                    String.format(
-                                        "%.2f",
-                                        tax.rate * it.itemQuantity
-                                    )
-                                        .toDouble()
+                                    /* String.format(
+                                         "%.2f",
+                                         tax.rate * it.itemQuantity
+                                     )
+                                         .toDouble()*/
                                 }
                             }
                         }
@@ -3349,12 +3378,14 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         val itemTaxPrice =
                             (tax.rate * totalPrice) / 100
 
-                        String.format("%.2f", itemTaxPrice)
-                            .toDouble()
+                        MethodUtils.getTwoDecimal(itemTaxPrice)
+                        /* String.format("%.2f", itemTaxPrice)
+                             .toDouble()*/
                     } else {
 
-                        String.format("%.2f", tax.rate * it.itemQuantity)
-                            .toDouble()
+                        MethodUtils.getTwoDecimal(tax.rate * it.itemQuantity)
+                        /*   String.format("%.2f", tax.rate * it.itemQuantity)
+                               .toDouble()*/
                     }
                 }
 
@@ -4438,12 +4469,14 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         val itemTaxPrice =
                             (tax.rate * totalPrice) / 100
 
-                        String.format("%.2f", itemTaxPrice)
-                            .toDouble()
+                        MethodUtils.getTwoDecimal(itemTaxPrice)
+                        /*  String.format("%.2f", itemTaxPrice)
+                              .toDouble()*/
                     } else {
 
-                        String.format("%.2f", tax.rate * it.itemQuantity)
-                            .toDouble()
+                        MethodUtils.getTwoDecimal(tax.rate * it.itemQuantity)
+                        /*String.format("%.2f", tax.rate * it.itemQuantity)
+                            .toDouble()*/
                     }
                 }
 
@@ -4935,12 +4968,15 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         val itemTaxPrice =
                             (tax.rate * totalPrice) / 100
 
+                        MethodUtils.getTwoDecimal(itemTaxPrice)
+/*
                         String.format("%.2f", itemTaxPrice)
-                            .toDouble()
+                            .toDouble()*/
                     } else {
 
-                        String.format("%.2f", tax.rate * it.itemQuantity)
-                            .toDouble()
+                        MethodUtils.getTwoDecimal(tax.rate * it.itemQuantity)
+                        /*   String.format("%.2f", tax.rate * it.itemQuantity)
+                               .toDouble()*/
                     }
                 }
 
@@ -4968,9 +5004,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             SunmiPrintHelper.getInstance().initPrinter()
 
             if (customerSettingModel.showOrderIdTop) {
-                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE,false)){
+                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
                     PrintSunmiUtils.headerText("OrderID:" + getOrderDetailsResponse?.custom_order_id)
-                }else{
+                } else {
                     PrintSunmiUtils.headerText("OrderID:" + getOrderDetailsResponse?.id)
                 }
                 SunmiPrintHelper.getInstance().lineWrap(1)
@@ -5416,9 +5452,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     Builder.TRUE,
                     Builder.COLOR_1
                 )
-                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE,false)){
+                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
                     builder.addText("OrderID:" + getOrderDetailsResponse?.custom_order_id)
-                }else{
+                } else {
                     builder.addText("OrderID:" + getOrderDetailsResponse?.id)
                 }
                 builder.addTextLineSpace(30)
@@ -6402,9 +6438,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             PrintSunmiUtils.fontSize(customerSettingModel.fonts)
             if (customerSettingModel.showOrderIdTop) {
 
-                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE,false)){
+                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
                     PrintSunmiUtils.orderIdLarge("OrderID:" + getOrderDetailsResponse?.custom_order_id)
-                }else{
+                } else {
                     PrintSunmiUtils.orderIdLarge("OrderID:" + getOrderDetailsResponse?.id)
 
                 }
@@ -6850,9 +6886,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             SunmiPrintHelper.getInstance().initPrinter()
 
             if (customerSettingModel.showOrderIdTop) {
-                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE,false)){
+                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
                     PrintSunmiUtils.headerText("OrderID:" + getOrderDetailsResponse?.custom_order_id)
-                }else{
+                } else {
                     PrintSunmiUtils.headerText("OrderID:" + getOrderDetailsResponse?.id)
                 }
                 SunmiPrintHelper.getInstance().lineWrap(1)
@@ -7968,11 +8004,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     Builder.TRUE,
                     Builder.COLOR_1
                 )
-                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE,false)){
+                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
                     builder.addText(
                         "OrderID:" + getOrderDetailsResponse?.custom_order_id
                     )
-                }else{
+                } else {
                     builder.addText(
                         "OrderID:" + getOrderDetailsResponse?.id
                     )
@@ -8141,10 +8177,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     Builder.COLOR_1
                 )
 
-                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE,false))
-                {
+                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
                     builder.addText("OrderID:" + getOrderDetailsResponse?.custom_order_id)
-                }else{
+                } else {
                     builder.addText("OrderID:" + getOrderDetailsResponse?.id)
                 }
                 builder.addTextLineSpace(30)
@@ -8904,7 +8939,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                             modifiers.price = it.price
                                             modifiers.name = it.name
                                             modifiers.itemQuantity = it.quantity
-                                            modifiers.modifier_quantity= it.modifier_quantity!!
+                                            modifiers.modifier_quantity = it.modifier_quantity!!
                                             modifierList.add(modifiers)
                                         }
                                         tbItem.modifiers = modifierList
