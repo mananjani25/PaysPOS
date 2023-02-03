@@ -73,9 +73,10 @@ class DineInGuestFragment : Fragment(), GuestListAdapter.GuestListner {
                 Log.e("tableCheckSuccess",""+status)
 
                 viewLifecycleOwner.lifecycleScope.launch {
-                    viewModelDash.increaseOnGoingOrderCounter()
+                    viewModel.increaseOnGoingOrderCounter()
                 }
 
+//                gotoDashboard()
 
 
 
@@ -222,9 +223,9 @@ class DineInGuestFragment : Fragment(), GuestListAdapter.GuestListner {
             }
         }
 
-        viewModelDash.increaseCounter.observe(viewLifecycleOwner) { event ->
+        viewModel.increaseCounter.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
-                gotoDashboard()
+               gotoDashboard()
             }
         }
 

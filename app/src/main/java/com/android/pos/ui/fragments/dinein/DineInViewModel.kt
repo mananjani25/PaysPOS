@@ -53,6 +53,10 @@ class DineInViewModel @Inject constructor(
     val _unMergeStatus = MutableLiveData<Event<String>>()
     val unMergeStatusUpdate: LiveData<Event<String>> = _unMergeStatus
 
+    private val _increaseCounter = MutableLiveData<Event<Boolean>>()
+    val increaseCounter: LiveData<Event<Boolean>> = _increaseCounter
+
+
     fun getFloorPlan(): LiveData<Resource<GetFloorPlanResponse>> {
         return posRepository.getFloorPlan(prefProvider.getValueInt(LOCATION_ID, 0))
     }
@@ -61,6 +65,28 @@ class DineInViewModel @Inject constructor(
 
     fun getFloorPlanDetails(): LiveData<Resource<GetFloorPlanDetailResponse>> {
         return posRepository.getFloorPlanTableDetails()
+    }
+
+    suspend fun increaseOnGoingOrderCounter() {
+
+        _showProgress.value = Event(true)
+
+        val resource = posRepository.increaseOnGoingOrderCounter()
+        when (resource.status) {
+            Status.SUCCESS -> {
+                _showProgress.value = Event(false)
+                _increaseCounter.value = Event(false)
+            }
+            Status.ERROR -> {
+                _snackbarText.value = Event(resource.message)
+                _showProgress.value = Event(false)
+            }
+
+            Status.LOADING -> {
+                _showProgress.value = Event(true)
+            }
+
+        }
     }
 
     fun mergeTable(
