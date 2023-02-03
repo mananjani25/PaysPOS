@@ -746,7 +746,7 @@
     <string name="open_orders">Open Orders</string>
 
     <string name="disable_emoji_string">android:digits="0,1,2,3,4,5,6,7,8,9,@,.,#,$,(,),_,-,!,&amp;,%,/,\,+,?,\u003E, &gt;,&lt;,\\,^,uFE64,,,*,qwertzuiopasdfghjklyxcvbnm,QWERTZUIOPASDFGHJKLYXCVBNM"</string>
-    <string name="numbers_digits_string">android:digits="0,1,2,3,4,5,6,7,8,9"</string>
+    <string name="numbers_digits_string">"0123456789"</string>
     <string name="send_receipt">Send Receipt</string>
     <string name="please_choos_a_role">Please choose a Role</string>
     <string name="please_enter_passcode">Please enter passcode</string>
