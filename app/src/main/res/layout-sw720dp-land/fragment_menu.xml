@@ -465,7 +465,7 @@
                 android:background="@drawable/button_action_hover"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:padding="@dimen/_10sdp">
+                android:padding="@dimen/_5sdp">
 
                 <ImageView
                     android:layout_width="@dimen/_14sdp"
@@ -493,7 +493,7 @@
                 android:background="@drawable/button_action_hover"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:padding="@dimen/_10sdp">
+                android:padding="@dimen/_5sdp">
 
                 <ImageView
                     android:layout_width="@dimen/_14sdp"
