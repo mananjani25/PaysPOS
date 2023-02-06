@@ -605,7 +605,7 @@
     <string name="tv_unit_fixed">Fixed</string>
     <string name="add_tips">Add Tip</string>
     <string name="cancel_order_message">Are you sure, you want to cancel this order?</string>
-    <string name="cancel_order_reason_message">Please enter the reason for cancelling order</string>
+    <string name="cancel_order_reason_message">Please provide reason for cancelling this order</string>
     <string name="yes">YES</string>
     <string name="no">NO</string>
     <string name="tv_issue_refund">Issue Refund</string>
