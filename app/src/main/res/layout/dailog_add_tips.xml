@@ -75,7 +75,7 @@
                         android:editable="true"
                         android:enabled="false"
                         android:gravity="center"
-                        android:maxLength="11"
+                        android:maxLength="8"
                         android:text="$0.00"
                         android:textColor="@color/btnColor"
                         android:textSize="@dimen/_6sdp"

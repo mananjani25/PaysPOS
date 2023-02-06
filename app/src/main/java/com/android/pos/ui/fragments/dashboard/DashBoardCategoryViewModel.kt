@@ -954,7 +954,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         if (list[i].manualSaleId == item.manualSaleId) {
                                             index = i
                                             break
-                                        } else if (cartModel?.reorder == true) {
+                                        } else if (cartModel.reorder == true) {
                                             if (list[i].orderItemId == item.orderItemId) {
                                                 index = i
                                                 Log.e(TAG, "indexReorder23:  ${index}")
@@ -980,23 +980,43 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 }
                             } else {
                                 //list.remove(item)
+
                             }
+
+                            cartModel.items = list
+                            Log.e(
+                                "ModNewLogic",
+                                "dineInList:   ${Gson().toJson(cartModel.dineInList)}"
+                            )
+                            Log.e("ModNewLogic", "checkItems:  ${Gson().toJson(cartModel.items)}")
+
+                            //cartModel.dineInList = dinein
+
+
                         }
                     }
                     var cartModel = cartList[0]
                     if (type == UPDATE) {
-                        var list = dineInList[selectedHeader].items
-                        list.forEach { itemData ->
-                            cartModel = taxBifurcationCalculation(
-                                itemData,
-                                cartModel,
-                                type, false
-                            )
+                        Log.e("CheckSelectedHeaderPos", "CheckPOS ${selectedHeader}")
+                        var list = dineInList.get(selectedHeader)?.items
+                        dineInList?.forEach { itemData ->
+                            itemData.items.forEach {
+                                cartModel = taxBifurcationCalculation(
+                                    it,
+                                    cartModel,
+                                    type, false
+                                )
+                            }
                         }
+
+                        Log.e(
+                            TAG,
+                            "taxlistDynamicData:  ${Gson().toJson(cartModel.taxlistDynamic)}"
+                        )
                         cartModel.items = list
                     } else {
                         if (item != null) {
-                            cartModel = taxBifurcationCalculation(item!!, cartModel, type, false)
+                            cartModel = taxBifurcationCalculation(item, cartModel, type, false)
                         }
                     }
                     addCart(cartModel)
@@ -2602,6 +2622,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 totalPrice = (subTotalPrice + totalTax + totalServiceCharge)
                 amountToBePaid = totalPrice - totalDiscount
+                Log.e("ManualSale", "amountToBePaid:   ${amountToBePaid}")
 
                 MethodUtils.setPriceTextView(txtTotalAmount, amountToBePaid)
             } else {
@@ -2759,7 +2780,12 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
             var finalTotal = 0.0
-            finalTotal = (subTotalPrice + totalTax + totalServiceCharge)
+            Log.e("FEB2023","subTotalPrice:  ${subTotalPrice}")
+            Log.e("FEB2023","totalTax:  ${totalTax}")
+            Log.e("FEB2023","totalServiceCharge:  ${totalServiceCharge}")
+            finalTotal = (MethodUtils.getTwoDecimal(subTotalPrice) + MethodUtils.getTwoDecimal(totalTax) + MethodUtils.getTwoDecimal(totalServiceCharge))
+            Log.e("FEB2023","finalTotal:  ${finalTotal}")
+
             cashDiscountType = prefProvider.getValue(Constants.OPTION_TYPE, "")
             //loyalty point and price calculation
             amountToBePaid = finalTotal
@@ -2905,6 +2931,9 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
                     order_note = cartModel.note
+                    Log.e("FEB2023", "subTotalPrice:  ${subTotalPrice}")
+                    Log.e("FEB2023", "subTotalPrice:  ${totalTax}")
+                    Log.e("FEB2023", "subTotalPrice:  ${totalServiceCharge}")
 
                     var finalTotal = 0.0
                     finalTotal = (subTotalPrice + totalTax + totalServiceCharge)
@@ -3337,8 +3366,11 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     private fun taxCalculation(item: TbItem, discountPrice: Double) {
+
+        Log.e("CheckManualTax", "checkItem:  ${Gson().toJson(item)}")
         item.taxes?.forEach { tax ->
             if (tax.isActive && !tax.isDeleted) {
+
 
                 var modifierPrice = 0.0
                 val price =
@@ -3351,6 +3383,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 val totalPrice =
                     price + modifierPrice /*- (discountPrice * item.itemQuantity)*/
 
+                Log.e("GetTaxTotalPrice", "totalPrice:   ${totalPrice}")
 
                 totalTax += if (tax.taxType == "Percentage") {
                     Log.d("yash", "taxCalculation: " + tax.taxType)
@@ -3364,7 +3397,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                         val itemTaxPrice =
                             (tax.rate * totalPrice) / 100
                         Log.e("itemTaxPrice", "" + itemTaxPrice)
-                        itemTaxPrice
+                        MethodUtils.getTwoDecimal(itemTaxPrice)
                     }
 
                 } else {
@@ -3374,13 +3407,16 @@ class DashBoardCategoryViewModel @Inject constructor(
                         String.format("%.2f", 0.00)
                             .toDouble()
                     } else {
-                        String.format("%.2f", tax.rate * item.itemQuantity)
-                            .toDouble()
+                        MethodUtils.getTwoDecimal(tax.rate * item.itemQuantity)
+                        /*String.format("%.2f", tax.rate * item.itemQuantity)
+                            .toDouble()*/
                     }
 
                 }
             }
         }
+
+        Log.e("CheckTotalTax", "totalTax:   ${totalTax}")
     }
 
     private fun taxCalculationReorder(item: TbItem) {
