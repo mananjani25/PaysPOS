@@ -83,8 +83,20 @@ class ReasonForCancelOrderDialog : DialogFragment() {
         binding.txtDone.setOnClickListener {
 
             val reason = binding.etReason.text.toString().trim()
-            if (reason.isNotEmpty()) {
 
+            if (reason.isEmpty()) {
+                alert(
+                    getString(R.string.app_name),
+                    getString(R.string.cancel_order_reason_message)
+                ) {
+                    positiveButton(getString(R.string.tv_ok)) {
+
+                    }
+                    negativeButton(R.string.cancel) {
+                        // Do negative stuff here
+                    }
+                }
+            } else {
                 alert(
                     getString(R.string.app_name),
                     getString(R.string.cancel_order_message)
@@ -96,20 +108,6 @@ class ReasonForCancelOrderDialog : DialogFragment() {
                         // Do negative stuff here
                     }
                 }
-
-            } else {
-                alert(
-                    getString(R.string.app_name),
-                    getString(R.string.cancel_order_message)
-                ) {
-                    positiveButton(getString(R.string.yes)) {
-                        viewModel.cancelOrder(orderId!!, "", null)
-                    }
-                    negativeButton(R.string.no) {
-                        // Do negative stuff here
-                    }
-                }
-
             }
 
         }

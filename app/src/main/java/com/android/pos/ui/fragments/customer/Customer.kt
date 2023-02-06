@@ -6,7 +6,6 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.*
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.os.bundleOf
@@ -38,8 +37,6 @@ import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
-import kotlin.collections.LinkedHashMap
 
 @AndroidEntryPoint
 class Customer : Fragment(), ItemCallback {
@@ -62,6 +59,7 @@ class Customer : Fragment(), ItemCallback {
     private var deletedPos: Int? = null
     var isIn = false
     val data = LinkedHashMap<String, String>()
+    var isEmptyString = true
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -309,15 +307,22 @@ class Customer : Fragment(), ItemCallback {
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-
+                if (s.toString() == " ") {
+                    binding.autoSearch.setText("")
+                    isEmptyString = true
+                }
             }
 
             override fun afterTextChanged(s: Editable?) {
                 try {
                     if (s?.trim()?.isNotEmpty() == true) {
+                        isEmptyString = false
                         searchByText(s?.trim().toString())
                     } else {
-                        loadCustomerLocalList(1)
+                        if (!isEmptyString) {
+                            isEmptyString = true
+                            loadCustomerLocalList(1)
+                        }
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
