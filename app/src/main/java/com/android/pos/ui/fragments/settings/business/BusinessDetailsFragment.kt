@@ -203,7 +203,7 @@ class BusinessDetailsFragment : Fragment() {
 
             val model = TbBusinessDetails()
             model.id = prefProvider.getLocationId()
-            model.business_name = binding.edtBusinessName.text.toString()
+            model.business_name = binding.edtBusinessName.text.toString().trim().replace("\\s+".toRegex(), " ")
             model.business_website = binding.edtWebSite.text.toString()
             model.phone_number = binding.edtPhoneNo.text.toString()
             model.phone_number_1_country = binding.spPhone.selectedItem.toString()
