@@ -229,8 +229,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
             @RequiresApi(Build.VERSION_CODES.M)
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-
-
+                if (p0.toString() == " ") {
+                    binding.layoutHeader.edtSearch.setText("")
+                }
                 if (requireActivity().supportFragmentManager.findFragmentById(R.id.frameLayout)?.javaClass?.name.equals(
                         "com.android.pos.ui.fragments.dashboard.bolddashboard.AddItemFragment", true
                     )
@@ -854,7 +855,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
         Log.e(
             TAG,
-            "getCartList  ${Gson().toJson(cartList)} viewmodeCartList ${Gson().toJson(viewModel.cartModel)}"
+            "getCartList  ${Gson().toJson(cartList)}"
         )
 
         if (cartList.isEmpty() && viewModel.cartModel != null) {
