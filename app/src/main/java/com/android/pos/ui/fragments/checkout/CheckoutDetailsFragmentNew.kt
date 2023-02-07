@@ -138,7 +138,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 viewLifecycleOwner,
                 dashboardViewModel,
                 passcodeViewModel
-            )
+            ){}
         }
 
         val device = prefProvider.getValueInt(Constants.MAGTEK_HARDWARE, 0)

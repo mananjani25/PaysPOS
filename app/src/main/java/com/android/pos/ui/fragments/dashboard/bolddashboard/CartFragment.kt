@@ -143,7 +143,9 @@ class CartFragment(
                 viewLifecycleOwner,
                 viewModel,
                 passcodeViewModel
-            )
+            ) {
+                binding.tvPayNow.performClick()
+            }
             //presentation.show()
         }
 
@@ -311,7 +313,7 @@ class CartFragment(
                     }
                     binding.imgDropdown.setImageResource(R.drawable.ic_solid_up_arrow)
                     binding.relativeDynamicTax.visible()
-                    if(this::presentation.isInitialized){
+                    if (this::presentation.isInitialized) {
                         presentation.show()
                         presentation.onDisplayChanged()
                         presentation.onTaxClicked(true)
@@ -327,7 +329,7 @@ class CartFragment(
                     taxClickable = false
                     binding.imgDropdown.setImageResource(R.drawable.ic_arrow_drop_down)
                     binding.relativeDynamicTax.gone()
-                    if(this::presentation.isInitialized){
+                    if (this::presentation.isInitialized) {
                         presentation.show()
                         presentation.onDisplayChanged()
                         presentation.onTaxClicked(false)
@@ -1904,8 +1906,8 @@ class CartFragment(
 
         }
         binding.tvSave.setOnClickListener {
-            prefProvider.setValueboolean(OPEN_ORDER_UPDATE_FOR_PRINT,false)
-            if (isOrderUpdate == false){
+            prefProvider.setValueboolean(OPEN_ORDER_UPDATE_FOR_PRINT, false)
+            if (isOrderUpdate == false) {
                 prefProvider.setValue(
                     Constants.OPEN_ORDER_ITEMS,
                     ""

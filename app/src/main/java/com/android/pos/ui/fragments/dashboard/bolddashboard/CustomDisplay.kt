@@ -3,9 +3,11 @@ package com.android.pos.ui.fragments.dashboard.bolddashboard
 import android.app.Presentation
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.Display
 import android.view.View
 import android.view.Window
+import android.widget.Toast
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.pos.R
@@ -18,7 +20,7 @@ import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.ViewCustomDisplayBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.DineInAdapter
-import com.android.pos.ui.adapter.boldpos.CartAdapter
+import com.android.pos.ui.adapter.boldpos.CartAdapterCustomerDisplay
 import com.android.pos.ui.adapter.boldpos.TaxBirfurcationAdapter
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
@@ -33,12 +35,13 @@ class CustomDisplay(
     context: Context,
     val lifecycleOwner: LifecycleOwner,
     val dashBoardCategoryViewModel: DashBoardCategoryViewModel,
-    val passcodeViewModel: PasscodeViewModel
+    val passcodeViewModel: PasscodeViewModel,
+    val onPayNowClick: () -> Unit
 ) : Presentation(context, display), MyCallback, DineInAdapter.DineInCallback {
 
     private lateinit var dineInCartAdapter: DineInAdapter
     private lateinit var taxBirfurcationAdapter: TaxBirfurcationAdapter
-    private lateinit var cartAdapter: CartAdapter
+    private lateinit var cartAdapter: CartAdapterCustomerDisplay
     private lateinit var binding: ViewCustomDisplayBinding
     lateinit var prefProvider: PrefProvider
 
@@ -50,6 +53,12 @@ class CustomDisplay(
         prefProvider = PrefProvider(context)
         setupList()
         setupTaxAdapter()
+        binding.tvPayNow.setOnClickListener {
+//            onDisplayChanged()
+//            onPayNowClick
+            Log.d("TAGGER", "PAY NOW CALLED")
+        //Toast.makeText(context, "HELLO", Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onDisplayChanged() {
@@ -67,7 +76,7 @@ class CustomDisplay(
 
     private fun setupList() {
 
-        cartAdapter = CartAdapter()
+        cartAdapter = CartAdapterCustomerDisplay()
         cartAdapter.setCallback(this)
 
         dineInCartAdapter = DineInAdapter()
@@ -115,6 +124,16 @@ class CustomDisplay(
                         )
                     }
                 } else {
+                    if (MethodUtils.isEnableCashDiscount(context)) {
+                        binding.txtTotalLabel.gone()
+                        binding.txtCashLabel.visible()
+                        binding.txtCardLabel.visible()
+                    } else {
+                        binding.txtTotalLabel.visible()
+                        binding.txtCashLabel.gone()
+                        binding.txtCardLabel.gone()
+
+                    }
                     cartList[0].items?.toCollection(arrayListOf())?.let { it1 ->
                         cartAdapter.setList(it1)
                     }
@@ -153,6 +172,7 @@ class CustomDisplay(
             binding.txtServiceCharge.text = MethodUtils.roundOffAmount(totalServiceCharge)
             binding.txtDiscount.text = "-" + MethodUtils.roundOffAmount(totalDiscount)
             binding.txtNoncashAdj.text = MethodUtils.roundOffAmount(cashdiscountAmount)
+
             showSurcharge(false)
 
             if (taxBirfurcationAdapter.taxlist.size == 0) {
@@ -166,6 +186,7 @@ class CustomDisplay(
             }
 
             itemCalculation(cartList, binding.txtTotal, context)
+            binding.tvPayNow.text = "Pay " + binding.txtTotal.text.toString()
         }
     }
 
