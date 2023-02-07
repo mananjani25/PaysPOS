@@ -855,7 +855,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
         Log.e(
             TAG,
-            "getCartList  ${Gson().toJson(cartList)}"
+            "getCartList  ${Gson().toJson(cartList)} viewmodeCartList ${Gson().toJson(viewModel.cartModel)}"
         )
 
         if (cartList.isEmpty() && viewModel.cartModel != null) {
