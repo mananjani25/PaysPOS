@@ -161,7 +161,7 @@ class LoyaltyPointViewModel @Inject constructor(
                     amount = loyaltyAmount,
                     id = if (isEdit) loyaltyId else null,
                     isEnable = isEnableLp,
-                    name = loyaltyName,
+                    name = loyaltyName?.trim(),
                     rewardPoint = loyaltyTarget,
                     rewardType = loyaltyPointType,
                     locationId = prefProvider.getValueInt(Constants.LOCATION_ID, -1)

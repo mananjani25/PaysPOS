@@ -15,6 +15,7 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
+import androidx.core.os.bundleOf
 import androidx.fragment.app.*
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -72,6 +73,7 @@ import com.sunmi.externalprinterlibrary.api.SunmiPrinter
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import com.zebra.scannercontrol.FirmwareUpdateEvent
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -199,7 +201,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         viewModel.checkCashDrawerPer.observe(viewLifecycleOwner) {
             if (it) {
                 checkCashDrawerPer()
-
             }
         }
     }
@@ -357,7 +358,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         item.discountId = result.id
                         item.discountType = result.discountType
 
-                        viewModel.cartLogic(cartList, item, Constants.UPDATE, false)
+                        viewModel.newCartLogicModifier(cartList, item, Constants.UPDATE, false)
 
                     }
                     "Amount" -> {
@@ -367,14 +368,14 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         item?.discountType = result.discountType
 
 
-                        viewModel.cartLogic(cartList, item, Constants.UPDATE, false)
+                        viewModel.newCartLogicModifier(cartList, item, Constants.UPDATE, false)
                     }
                     else -> {
                         item?.discountPrice = result.percentage
                         item?.discountId = 0
                         item?.discountType = result.discountType
 
-                        viewModel.cartLogic(cartList, item, Constants.UPDATE, false)
+                        viewModel.newCartLogicModifier(cartList, item, Constants.UPDATE, false)
 
                     }
                 }
@@ -416,7 +417,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 singleItem?.note = note.toString()
                 singleItem?.let {
                     dineInArrayList?.let { it1 ->
-                        viewModel.cartLogic(
+                        viewModel.newCartLogicModifier(
                             cartList,
                             it,
                             Constants.UPDATE,
@@ -576,6 +577,14 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        if (prefProvider.getValueboolean(Constants.IS_SYNC_MARKUP,false)){
+            viewModel.markupInventory()
+        }
+    }
+
     private fun loadCategoryFragment(fragment: Fragment) {
         val fm: FragmentManager = requireActivity().supportFragmentManager
         fm.beginTransaction().replace(binding.frameLayout.id, fragment).commit()
@@ -659,12 +668,12 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 )
             }
         }
-        binding.layoutHeader.ivLock.setOnClickListener {
-            if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
-                prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
-                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_reportEODFragment)
-            }
-        }
+//        binding.layoutHeader.ivLock.setOnClickListener {
+//            if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+//                prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
+//                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_reportEODFragment)
+//            }
+//        }
         binding.layoutHeaderCheckout.imgDrawer.setOnClickListener {
             prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
             binding.layoutHeaderCheckout.rlRoot.visibility = View.GONE
@@ -854,6 +863,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
     override fun onItemSelected(item: TbItem) {
         Log.e(TAG, "onItemSelectedItem:  ${Gson().toJson(item)}")
+        item.timeStamp = randomOfflineId()
 
         Log.e(
             TAG,
@@ -893,7 +903,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 .setReorderingAllowed(true)
                 .addToBackStack(backStateName).commit()
             //  loadCategoryFragment(fragment)
-        } else {
+        }
+        else {
             Log.e(TAG, "cartListItemAddSize: ${cartList.size}")
             if (cartList.isEmpty()) {
                 viewModel.createCart(cartList)
@@ -916,7 +927,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     if (cartList[0].dineInList?.isNotEmpty() == true) {
                         var dineInList = cartList[0].dineInList
                         dineInList!![0]?.selectedPosition = viewModel.dineInHeaderPosition
-                        viewModel.cartLogic(
+                        viewModel.newCartLogicModifier(
                             cartList,
                             item,
                             Constants.ADD,
@@ -925,11 +936,14 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         )
                     }
                 } else {
-                    viewModel.cartLogic(cartList, item, Constants.ADD, false)
+                    viewModel.newCartLogicModifier(cartList, item, Constants.ADD, false)
                 }
             }
 
         }
+
+
+
     }
 
 
@@ -1251,7 +1265,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
         cartList.get(0).orderType = Constants.DINE_IN
 
-        viewModel.cartLogic(cartList, null, Constants.ADD, false, dineInList = dineInList)
+        viewModel.newCartLogicModifier(cartList, null, Constants.ADD, false, dineInList = dineInList)
 
 
     }
@@ -1328,12 +1342,14 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     "dineTotalDiscount  ${arguments?.getDouble("totalDiscount")}"
                 )
                 cartList[0].discountPrice = arguments?.getDouble("totalDiscount") ?: 0.0
-                viewModel.cartLogic(
+                Log.e(TAG,"wsfaklnlbsaf ${cartList.size}")
+                viewModel.newCartLogicModifier(
                     cartList,
                     null,
                     Constants.ADD,
                     false,
-                    dineInList = dineInList
+                    dineInList = dineInList,
+                    isFromDineInScreen = true
                 )
                 // viewModel.orderItemDiscount = arguments?.getDouble("totalDiscount") ?: 0.0
 
@@ -3343,7 +3359,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 viewModel.setServiceCharges(serviceChargesList)
             }
 
-            viewModel.cartLogic(cartList, item, Constants.ADD, false)
+            viewModel.newCartLogicModifier(cartList, item, Constants.ADD, false)
 
         } else {
             item?.itemQuantity = -1
@@ -3411,5 +3427,29 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragment)
             }
         }
+    }
+
+    fun randomOfflineId(): String {
+
+        val locationId = prefProvider.getValueInt(Constants.LOCATION_ID, -1).toString()
+        val timestamp = System.currentTimeMillis().toString()
+        val ss = locationId + timestamp.takeLast(4)
+        val reqLent = 12 - ss.length
+        val Alphabet = getSaltString(reqLent)
+        val timeStampFinal = Alphabet + ss
+        LogUtil.logE("timeStampFinal", timeStampFinal)
+
+        return timeStampFinal
+    }
+
+     fun getSaltString(reqLent: Int): String? {
+        val SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
+        val salt = StringBuilder()
+        val rnd = Random()
+        while (salt.length < reqLent) { // length of the random string.
+            val index = (rnd.nextFloat() * SALTCHARS.length).toInt()
+            salt.append(SALTCHARS[index])
+        }
+        return salt.toString()
     }
 }

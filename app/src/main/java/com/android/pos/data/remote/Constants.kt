@@ -57,6 +57,7 @@ object Constants {
     const val PASSCODE = "passcode"
     const val CAT_ID_SELECTED = "cate_id_selected"
     const val LOCATION_ID = "locationId"
+    const val LOCATION_NAME = "location_name"
     const val EMAIL = "email"
     const val LOGIN_EMAIL = "login_email"
     const val LOGIN_REMEMBER = "login_remember"
@@ -157,6 +158,9 @@ object Constants {
     const val UPDATE_PRINTER_STATUS = "printers/{id}/update_printer_status"
     const val UPDATE_SERVICECHARGE = "locations/{id}/enable_service_charge"
     const val CREATE_QUEUE_PRINTER = "printer_queues"
+
+    const val INCREASE_ONGOING_ORDER_COUNTER = "locations/increase_ongoing_order_counter"
+    const val DECREASE_ONGOING_ORDER_COUNTER = "locations/decrease_ongoing_order_counter"
 
 
     const val TAXES = "taxes"
@@ -608,6 +612,8 @@ object Constants {
     const val ONLINE_ORDER_REFRESH = "online_order_refresh"
     const val SYNC_NOTIFICATION = "sync_notification"
     const val SYNC_SETTING_NOTIFICATION = "sync_setting_notification"
+    const val SYNC_MARKUP = "MarkupSync"
+    const val IS_SYNC_MARKUP = "is_markup_sync"
 
 
     // dinein

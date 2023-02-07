@@ -17,6 +17,7 @@ import com.android.pos.data.remote.Constants
 import com.android.pos.di.PrefProvider
 import com.epson.epos2.printer.Printer
 import com.epson.eposprint.Builder
+import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 
 val TAG = "PrinterReceipt"
 
@@ -843,7 +844,7 @@ fun addBuilderText(
 }
 
 fun addBuilderTextForU220(
-    builder:Printer,
+    builder: Printer,
     text: String
 ): Printer {
     builder.addText(text)
@@ -1050,8 +1051,6 @@ fun addOrdersForKitchenCustoemrPrinter(
 
     list.forEach { obj ->
         printerCat?.forEach {
-            LogUtil.logE(TAG, "printerListCat ${it.id}")
-            LogUtil.logE(TAG, "printerCategoryID ${obj.categoryId}")
             if (it.id == obj.categoryId && it.printerEnable && it.categoryActive) {
 
 
@@ -1089,7 +1088,11 @@ fun addOrdersForKitchenCustoemrPrinter(
                         //builder.addTextPosition(1)
 
 
-                        builder.addText("  " + modifierObj.name)
+                        builder.addText( "  " + if (modifierObj.modifier_quantity == 1) {
+                            "   "
+                        } else {
+                            "" + modifierObj.modifier_quantity + "x "
+                        } + modifierObj.name.uppercase())
 
 
                     }
@@ -1237,12 +1240,18 @@ fun addOrdersForKitchenDineIn(
                         )
                         //builder.addTextPosition(1)
 
-
-                        builder.addText("  " + modifierObj.name.uppercase())
+                        builder.addText(
+                            "  " + if (modifierObj.modifier_quantity == 1) {
+                                "   "
+                            } else {
+                                "" + modifierObj.modifier_quantity + "x "
+                            } + modifierObj.name.uppercase()
+                        )
 
 
                     }
                 }
+
                 if (obj.note.isNotEmpty()) {
                     builder.addTextLineSpace(30)
                     builder.addFeedUnit(30)
@@ -1312,7 +1321,13 @@ fun addOrdersForKitchenDineInU220(
                         //builder.addTextPosition(1)
 
 
-                        builder.addText("  " + modifierObj.name.uppercase())
+                        builder.addText(
+                            "  " + if (modifierObj.modifier_quantity == 1) {
+                                "   "
+                            } else {
+                                "" + modifierObj.modifier_quantity + "x "
+                            } + modifierObj.name.uppercase()
+                        )
 
 
                     }
@@ -1387,7 +1402,13 @@ fun addOrdersForKitchenOnlineOrder(
                         //builder.addTextPosition(1)
 
 
-                        builder.addText("  " + modifierObj.name.uppercase())
+                        builder.addText(
+                            "  " + if (modifierObj.modifier_quantity == 1) {
+                                "   "
+                            } else {
+                                "" + modifierObj.modifier_quantity + "x "
+                            } + modifierObj.name.uppercase()
+                        )
 
 
                     }
@@ -1435,7 +1456,14 @@ fun addOrdersForKitchenOnlineOrderSunmi(
                     for (j in 0 until obj.orderItemModifiers.size) {
                         val modifierObj = obj.orderItemModifiers.get(j)
 
-                        PrintSunmiUtils.orderTime("  " + modifierObj.name.uppercase())
+
+                        PrintSunmiUtils.orderTime(
+                            "  " + if (modifierObj.modifier_quantity == 1) {
+                                "   "
+                            } else {
+                                "" + modifierObj.modifier_quantity + "x "
+                            } + modifierObj.name.uppercase()
+                        )
 
 
                     }
@@ -1465,7 +1493,14 @@ fun addOrdersForKitchenOnlineOrderSunmiInner(
             for (j in 0 until obj.orderItemModifiers.size) {
                 val modifierObj = obj.orderItemModifiers.get(j)
 
-                PrintSunmiUtils.normalTextLarge("  " + modifierObj.name.uppercase())
+
+                PrintSunmiUtils.normalTextLarge(
+                    "  " + if (modifierObj.modifier_quantity == 1) {
+                        "   "
+                    } else {
+                        "" + modifierObj.modifier_quantity + "x "
+                    } + modifierObj.name.uppercase()
+                )
 
 
             }
@@ -1497,7 +1532,14 @@ fun addOrdersForKitchenDineIn(
                     for (j in 0 until obj.modifiers.size) {
                         val modifierObj = obj.modifiers.get(j)
 
-                        PrintSunmiUtils.orderTime("  " + modifierObj.name.uppercase())
+
+                        PrintSunmiUtils.orderTime(
+                            "  " + if (modifierObj.modifier_quantity == 1) {
+                                "   "
+                            } else {
+                                "" + modifierObj.modifier_quantity + "x "
+                            } + modifierObj.name.uppercase()
+                        )
 
 
                     }
@@ -1527,7 +1569,15 @@ fun addOrdersForKitchenDineInInner(
             for (j in 0 until obj.modifiers.size) {
                 val modifierObj = obj.modifiers.get(j)
 
-                PrintSunmiUtils.normalTextLarge("  " + modifierObj.name.uppercase())
+
+
+                PrintSunmiUtils.normalTextLarge(
+                    "  " + if (modifierObj.modifier_quantity == 1) {
+                        "   "
+                    } else {
+                        "" + modifierObj.modifier_quantity + "x "
+                    } + modifierObj.name.uppercase()
+                )
 
 
             }
@@ -1588,7 +1638,13 @@ fun addOrdersForKitchenCustomer(
                             //builder.addTextPosition(1)
 
 
-                            builder.addText("  " + modifierObj.name.uppercase())
+                            builder.addText(
+                                "  " + if (modifierObj.modifierQuantity == 1) {
+                                    "   "
+                                } else {
+                                    "" + modifierObj.modifierQuantity + "x "
+                                } + modifierObj.name.uppercase()
+                            )
 
 
                         }
@@ -1660,7 +1716,13 @@ fun addOrdersForKitchenCustomerNewPrinter(
                 //builder.addTextPosition(1)
 
 
-                builder.addText("  " + modifierObj.name.uppercase())
+                builder.addText(
+                    "  " + if (modifierObj.modifierQuantity == 1) {
+                        "   "
+                    } else {
+                        "" + modifierObj.modifierQuantity + "x "
+                    } + modifierObj.name.uppercase()
+                )
 
 
             }
@@ -1814,7 +1876,13 @@ fun addOrdersForKitchen(
                             //builder.addTextPosition(1)
 
 
-                            builder.addText("  " + modifierObj.name.uppercase())
+                            builder.addText(
+                                "  " + if (modifierObj.modifierQuantity == 1) {
+                                    "   "
+                                } else {
+                                    "" + modifierObj.modifierQuantity + "x "
+                                } + modifierObj.name.uppercase()
+                            )
 
 
                         }
@@ -1897,7 +1965,13 @@ fun addOrdersForKitchenU220(
                             //builder.addTextPosition(1)
 
 
-                            builder.addText("  " + modifierObj.name.uppercase())
+                            builder.addText(
+                                "  " + if (modifierObj.modifierQuantity == 1) {
+                                    "   "
+                                } else {
+                                    "" + modifierObj.modifierQuantity + "x "
+                                } + modifierObj.name.uppercase()
+                            )
 
 
                         }
@@ -1951,7 +2025,13 @@ fun addOrdersForKitchen(
                     for (j in 0 until obj.orderItemModifiers.size) {
                         val modifierObj = obj.orderItemModifiers.get(j)
 
-                        PrintSunmiUtils.orderTime("  " + modifierObj.name.uppercase())
+                        PrintSunmiUtils.orderTime(
+                            if (modifierObj.modifierQuantity == 1) {
+                                "      " + modifierObj.name.uppercase()
+                            } else {
+                                "  " + modifierObj.modifierQuantity + "x  " + modifierObj.name.uppercase()
+                            }
+                        )
 
 
                     }
@@ -1960,6 +2040,7 @@ fun addOrdersForKitchen(
                     PrintSunmiUtils.orderTime("  Note:" + obj.note)
                 }
 
+                SunmiPrinterApi.getInstance().lineWrap(1)
 
             }
         }
@@ -1980,7 +2061,9 @@ fun addOrdersForKitchenInner(
             for (j in 0 until obj.orderItemModifiers.size) {
                 val modifierObj = obj.orderItemModifiers.get(j)
 
-                PrintSunmiUtils.normalTextLarge("  " + modifierObj.name.uppercase())
+
+
+                PrintSunmiUtils.normalTextLarge(if (modifierObj.modifierQuantity == 1){"     " + modifierObj.name.uppercase()} else{"  "+modifierObj.modifierQuantity+"x " + modifierObj.name.uppercase()})
 
 
             }
@@ -2019,7 +2102,7 @@ fun addOrderItemOpenOrder(
 
         builder.addText(
             padLineCustomerItem(
-                obj.quantity.toString() + "x " + obj.itemName,
+                obj.quantity.toString() + "  " + obj.itemName,
                 "$" + MethodUtils.roundOffAmountString(totalPriceOpenOrder(obj)),
                 if (font == Constants.LARGE) {
                     24
@@ -2045,10 +2128,15 @@ fun addOrderItemOpenOrder(
                     Builder.FALSE,
                     Builder.COLOR_1
                 )
-                builder.addTextPosition(4)
+                // builder.addTextPosition(4)
+
                 builder.addText(
                     padLineCustomerItem(
-                        "   " + modifierObj.name,
+                        "   " + if (modifierObj.modifier_quantity == 1) {
+                            "   "
+                        } else {
+                            "" + modifierObj.modifier_quantity + "x "
+                        } + modifierObj.name,
                         "$" + MethodUtils.roundOffAmountString(modifierObj.price.toDouble() * modifierObj.quantity),
                         if (font == Constants.LARGE) {
                             23
@@ -2099,7 +2187,7 @@ fun addOrderItemOpenOrderSunmi(
 
         PrintSunmiUtils.orderTime(
             padLineCustomerItem(
-                obj.quantity.toString() + "x " + obj.itemName,
+                obj.quantity.toString() + "  " + obj.itemName,
                 "$" + MethodUtils.roundOffAmountString(totalPriceOpenOrder(obj)),
                 if (font == Constants.LARGE) {
                     23
@@ -2114,11 +2202,21 @@ fun addOrderItemOpenOrderSunmi(
         if (obj.orderItemModifiers.isNotEmpty() && showModifiers) {
             for (j in 0 until obj.orderItemModifiers.size) {
                 val modifierObj = obj.orderItemModifiers.get(j)
+                var part1 = "   " + if (modifierObj.modifier_quantity == 1) {
+                    "   "
+                } else {
+                    "" + modifierObj.modifier_quantity + "x "
+                } + modifierObj.name
+                var part2 =
+                    "$" + MethodUtils.roundOffAmountString(modifierObj.price.toDouble() * modifierObj.quantity)
+
+                Log.e("CheckPartFM", "part1 ${part1.length}")
+                Log.e("CheckPartFM", "part2 ${part2.length}")
 
                 PrintSunmiUtils.orderTime(
                     padLineCustomerItem(
-                        "   " + modifierObj.name,
-                        "$" + MethodUtils.roundOffAmountString(modifierObj.price.toDouble() * modifierObj.quantity),
+                        part1,
+                        part2,
                         if (font == Constants.LARGE) {
                             23
                         } else {
@@ -2167,10 +2265,21 @@ fun addOrderItemOpenOrderSunmiInner(
             for (j in 0 until obj.orderItemModifiers.size) {
                 val modifierObj = obj.orderItemModifiers.get(j)
 
+                var part1 = "   " + if (modifierObj.modifier_quantity == 1) {
+                    "   "
+                } else {
+                    "" + modifierObj.modifier_quantity + "x "
+                } + modifierObj.name
+
+                var part2 =
+                    "$" + MethodUtils.roundOffAmountString(modifierObj.price.toDouble() * modifierObj.quantity)
+                Log.e("CheckPartF", "part1 ${part1.length}")
+                Log.e("CheckPartF", "part2 ${part2.length}")
+
                 PrintSunmiUtils.normalText(
                     padLineCustomerItem(
-                        "   " + modifierObj.name,
-                        "$" + MethodUtils.roundOffAmountString(modifierObj.price.toDouble() * modifierObj.quantity),
+                        part1,
+                        part2,
                         if (font == Constants.LARGE) {
                             23
                         } else {
@@ -2290,7 +2399,7 @@ fun addWholeTbItemToGuest(
     var finalAmt = MethodUtils.roundOffAmount((subTotal) / guestCount)
     builder.addText(
         padLineCustomerItem(
-            obj.itemQuantity.toString() + "x " + obj.name,
+            obj.itemQuantity.toString() + "  " + obj.name,
             "" + finalAmt,
             if (font == Constants.LARGE) {
                 24
@@ -2448,11 +2557,27 @@ fun addWholeTbItemToGuestInner(
 
     PrintSunmiUtils.normalText(
         padLineCustomerItem(
-            obj.itemQuantity.toString() + "x " + obj.name,
+            obj.itemQuantity.toString() + "  " + obj.name,
             "" + finalAmt,
             if (font == Constants.LARGE) 23 else 48
         ).toString()
     )
+
+    if (obj.modifiers.isNotEmpty()){
+
+        obj.modifiers.forEach {
+            PrintSunmiUtils.normalText(
+                padLineCustomerItem(
+                    if (it.modifier_quantity == 1){"      "+obj.name}else{"   "+it.modifier_quantity + "x " + obj.name},
+                    "" + MethodUtils.roundOffAmount(it.price * it.itemQuantity),
+                    if (font == Constants.LARGE) 23 else 48
+                ).toString()
+            )
+        }
+
+
+
+    }
 
 }
 
@@ -2581,7 +2706,7 @@ fun addOrderItemForDineIn(
 
     PrintSunmiUtils.orderTime(
         padLineCustomerItem(
-            obj.itemQuantity.toString() + "x " + obj.name,
+            obj.itemQuantity.toString() + "  " + obj.name,
             "$" + MethodUtils.roundOffAmountString(totalPriceDineInItem(obj)),
             if (font == Constants.LARGE) 23 else 48
         ).toString()
@@ -2596,7 +2721,7 @@ fun addOrderItemForDineIn(
 
             PrintSunmiUtils.orderTime(
                 padLineCustomerItem(
-                    "   " + modifierObj.name,
+                    if (modifierObj.modifier_quantity == 1){"     " + modifierObj.name}else{"  "+modifierObj.modifier_quantity+"x " + modifierObj.name},
                     "$" + MethodUtils.roundOffAmountString(modifierObj.price.toDouble() * modifierObj.itemQuantity),
                     if (font == Constants.LARGE) 23 else 48
                 ).toString()
@@ -2627,7 +2752,7 @@ fun addOrderItemForDineInInner(
 
     PrintSunmiUtils.normalTextDineInItem(
         padLineCustomerItem(
-            obj.itemQuantity.toString() + "x " + obj.name,
+            obj.itemQuantity.toString() + "  " + obj.name,
             "$" + MethodUtils.roundOffAmountString(totalPriceDineInItem(obj)),
             if (font == Constants.LARGE) 23 else 48
         ).toString()
@@ -2642,7 +2767,7 @@ fun addOrderItemForDineInInner(
 
             PrintSunmiUtils.normalText(
                 padLineCustomerItem(
-                    "   " + modifierObj.name,
+                    if (modifierObj.modifier_quantity == 1){"     " + modifierObj.name}else{"  "+modifierObj.modifier_quantity+"x " + modifierObj.name},
                     "$" + MethodUtils.roundOffAmountString(modifierObj.price.toDouble() * modifierObj.itemQuantity),
                     if (font == Constants.LARGE) 23 else 48
                 ).toString()
@@ -2687,7 +2812,7 @@ fun addOrderItems(
 
         builder.addText(
             padLineCustomerItem(
-                obj.quantity.toString() + "x " + obj.itemName,
+                obj.quantity.toString() + "  " + obj.itemName,
                 "$" + MethodUtils.roundOffAmountString(totalPrice(obj)),
                 if (font == Constants.LARGE) {
                     24
@@ -2713,19 +2838,37 @@ fun addOrderItems(
                     Builder.FALSE,
                     Builder.COLOR_1
                 )
-                builder.addTextPosition(4)
+
+
                 builder.addText(
                     padLineCustomerItem(
-                        "   " + modifierObj.name,
+                        if (modifierObj.modifierQuantity == 1) {
+                            "     "
+                        } else {
+                            "   " + modifierObj.modifierQuantity.toString() + "x"
+                        } + "  " + modifierObj.name,
                         "$" + MethodUtils.roundOffAmountString(modifierObj.price.toDouble() * modifierObj.quantity),
                         if (font == Constants.LARGE) {
-                            23
+                            24
                         } else {
-                            47
+                            48
                         }
                     )
                 )
 
+
+                /*builder.addText(
+                    padLineCustomerItem(
+                         modifierObj.quantity.toString() + "x" + "    " + modifierObj.name + " x" + modifierObj.modifierQuantity ,
+                        "$" + MethodUtils.roundOffAmountString(modifierObj.price.toDouble() * modifierObj.quantity),
+                        if (font == Constants.LARGE) {
+                            24
+                        } else {
+                            48
+                        }
+                    )
+                )
+*/
 
             }
 
@@ -2766,7 +2909,7 @@ fun addOrderItems(
 
 
         val item = padLineCustomerItem(
-            obj.quantity.toString() + "x " + obj.itemName,
+            obj.quantity.toString() + "  " + obj.itemName,
             "$" + MethodUtils.roundOffAmountString(totalPrice(obj)),
             if (font == Constants.LARGE) 23 else 48
         )
@@ -2780,9 +2923,17 @@ fun addOrderItems(
                 val modifierObj = obj.orderItemModifiers.get(j)
 
                 val modifier = padLineCustomerItem(
-                    "   " + modifierObj.name,
+                    if (modifierObj.modifierQuantity == 1) {
+                        "     "
+                    } else {
+                        "   " + modifierObj.modifierQuantity.toString() + "x"
+                    } + "  " + modifierObj.name,
                     "$" + MethodUtils.roundOffAmountString(modifierObj.price.toDouble() * modifierObj.quantity),
-                    if (font == Constants.LARGE) 22 else 48
+                    if (font == Constants.LARGE) {
+                        23
+                    } else {
+                        48
+                    }
                 )
 
                 PrintSunmiUtils.orderTime(modifier.toString())
@@ -2827,11 +2978,25 @@ fun addOrderItemsInner(
                 val modifierObj = obj.orderItemModifiers.get(j)
 
                 val modifier = padLineCustomerItem(
+                    if (modifierObj.modifierQuantity == 1) {
+                        "     "
+                    } else {
+                        "   " + modifierObj.modifierQuantity.toString() + "x"
+                    } + "  " + modifierObj.name,
+                    "$" + MethodUtils.roundOffAmountString(modifierObj.price.toDouble() * modifierObj.quantity),
+                    if (font == Constants.LARGE) {
+                        22
+                    } else {
+                        48
+                    }
+                )
+
+                /*val modifier = padLineCustomerItem(
                     "   " + modifierObj.name,
                     "$" + MethodUtils.roundOffAmountString(modifierObj.price.toDouble() * modifierObj.quantity),
                     if (font == Constants.LARGE) 22 else 48
                 )
-
+*/
                 PrintSunmiUtils.normalText(modifier.toString())
 
             }

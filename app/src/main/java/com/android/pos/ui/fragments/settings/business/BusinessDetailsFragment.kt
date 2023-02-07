@@ -3,7 +3,6 @@ package com.android.pos.ui.fragments.settings.business
 import android.R
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,7 +13,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.android.pos.data.entities.BusinessAddress
 import com.android.pos.data.entities.TbBusinessDetails
-import com.android.pos.data.model.requestModel.BusinessModel
 import com.android.pos.databinding.FragmentAddBusnessDetailsBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.AlertUtils
@@ -29,7 +27,6 @@ import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -203,7 +200,7 @@ class BusinessDetailsFragment : Fragment() {
 
             val model = TbBusinessDetails()
             model.id = prefProvider.getLocationId()
-            model.business_name = binding.edtBusinessName.text.toString()
+            model.business_name = binding.edtBusinessName.text.toString().trim().replace("\\s+".toRegex(), " ")
             model.business_website = binding.edtWebSite.text.toString()
             model.phone_number = binding.edtPhoneNo.text.toString()
             model.phone_number_1_country = binding.spPhone.selectedItem.toString()

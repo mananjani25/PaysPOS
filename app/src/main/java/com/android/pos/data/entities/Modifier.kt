@@ -18,7 +18,7 @@ class Modifier : Parcelable {
     @SerializedName("name")
     var name: String = ""
 
-    @SerializedName("price")
+    @SerializedName("price_without_markup")
     var price: Double = 0.00
 
     @SerializedName("sort")
@@ -36,7 +36,11 @@ class Modifier : Parcelable {
     @SerializedName("itemQuantity")
     var itemQuantity: Int = 1
 
+    @SerializedName("modifier_quantity")
+    var modifier_quantity: Int = 1
+
     var orderModifierId: Int? = null
+
 
     var orderItemTaxes: List<GetOrderDetailsResponse.Data.OrderItem.OrderItemModifier.OrderItemTaxe?> =
         emptyList()

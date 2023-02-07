@@ -87,6 +87,10 @@ class CategoryListItemAdapter :
 
     }
 
+    fun getTbItemsList() : ArrayList<TbItem>{
+        return inventory
+    }
+
     override fun getItemId(position: Int): Long {
         return position.toLong()
     }

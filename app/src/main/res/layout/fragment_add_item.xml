@@ -345,23 +345,50 @@
 
 
             <androidx.appcompat.widget.LinearLayoutCompat
-                android:id="@+id/linear_donemodifier"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_30sdp"
+                android:orientation="horizontal"
                 android:layout_alignParentBottom="true"
-                android:background="@drawable/btn_background_selector"
-                android:gravity="center">
+                android:layout_height="wrap_content">
 
-                <androidx.appcompat.widget.AppCompatTextView
-                    style="@style/CustomFontBold"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:text="@string/tv_done"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/_10ssp"
-                    android:visibility="visible" />
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/linear_cancelmodifier"
+                    android:layout_width="0dp"
+                    android:layout_weight="5"
+                    android:layout_height="@dimen/_30sdp"
+                    android:background="@color/switchTrackColor"
+                    android:gravity="center">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/CustomFontBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:text="@string/cancel"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_10ssp"
+                        android:visibility="visible" />
+                </androidx.appcompat.widget.LinearLayoutCompat>
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/linear_donemodifier"
+                    android:layout_width="0dp"
+                    android:layout_weight="5"
+                    android:layout_marginHorizontal="@dimen/_10sdp"
+                    android:layout_height="@dimen/_30sdp"
+                    android:background="@drawable/btn_background_selector"
+                    android:gravity="center">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/CustomFontBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:text="@string/tv_done"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_10ssp"
+                        android:visibility="visible" />
+                </androidx.appcompat.widget.LinearLayoutCompat>
             </androidx.appcompat.widget.LinearLayoutCompat>
         </RelativeLayout>
     </RelativeLayout>

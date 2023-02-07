@@ -463,7 +463,7 @@
                                     android:gravity="center"
                                     android:minWidth="@dimen/_80sdp"
                                     android:padding="@dimen/_12sdp"
-                                    android:text="@string/text_message"
+                                    android:text="@string/text_customer_receipt"
                                     android:textColor="@color/txtColor"
                                     android:textSize="@dimen/_7mdpi" />
 

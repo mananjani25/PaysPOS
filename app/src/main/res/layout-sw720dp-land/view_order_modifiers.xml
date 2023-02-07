@@ -75,7 +75,7 @@
             android:layout_gravity="top"
             android:gravity="center"
             android:padding="@dimen/_1sdp"
-            android:text="@{Integer.toString(model.itemQuantity)}"
+            android:text="@{Integer.toString(model.modifier_quantity)}"
             android:textColor="@{model.isChecked ? @color/btnColor: @color/white}"
             android:textSize="@dimen/_5mdpi"
             android:visibility="gone" />
