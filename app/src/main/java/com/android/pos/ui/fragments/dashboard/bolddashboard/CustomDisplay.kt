@@ -20,6 +20,7 @@ import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.ViewCustomDisplayBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.DineInAdapter
+import com.android.pos.ui.adapter.DineInAdapterCustomerDisplay
 import com.android.pos.ui.adapter.boldpos.CartAdapterCustomerDisplay
 import com.android.pos.ui.adapter.boldpos.TaxBirfurcationAdapter
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
@@ -37,9 +38,9 @@ class CustomDisplay(
     val dashBoardCategoryViewModel: DashBoardCategoryViewModel,
     val passcodeViewModel: PasscodeViewModel,
     val onPayNowClick: () -> Unit
-) : Presentation(context, display), MyCallback, DineInAdapter.DineInCallback {
+) : Presentation(context, display), MyCallback, DineInAdapterCustomerDisplay.DineInCallback {
 
-    private lateinit var dineInCartAdapter: DineInAdapter
+    private lateinit var dineInCartAdapter: DineInAdapterCustomerDisplay
     private lateinit var taxBirfurcationAdapter: TaxBirfurcationAdapter
     private lateinit var cartAdapter: CartAdapterCustomerDisplay
     private lateinit var binding: ViewCustomDisplayBinding
@@ -79,7 +80,7 @@ class CustomDisplay(
         cartAdapter = CartAdapterCustomerDisplay()
         cartAdapter.setCallback(this)
 
-        dineInCartAdapter = DineInAdapter()
+        dineInCartAdapter = DineInAdapterCustomerDisplay()
         dineInCartAdapter.setListner(this)
 
         binding.rvCartList.layoutManager = LinearLayoutManager(context)
