@@ -122,6 +122,8 @@ data class OpenOrderResponse(
             data class OrderItem(
                 @SerializedName("category_id")
                 val categoryId: Int,
+                @SerializedName("custom_item_id")
+                val custom_item_id: Int,
                 @SerializedName("completed_in_kitchen")
                 val completedInKitchen: Boolean,
                 @SerializedName("discount_amount")
@@ -181,6 +183,8 @@ data class OpenOrderResponse(
                     val modifierId: Int,
                     @SerializedName("modifier_set_id")
                     val modifierSetId: Int,
+                    @SerializedName("modifier_quantity")
+                    val modifier_quantity: Int,
                     @SerializedName("name")
                     val name: String,
                     @SerializedName("order_id")

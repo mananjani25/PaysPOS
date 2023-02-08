@@ -5,15 +5,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.android.pos.R
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.entities.BusinessAddress
 import com.android.pos.data.entities.TbBusinessDetails
-import com.android.pos.data.entities.TbCustomer
-import com.android.pos.data.model.requestModel.BusinessModel
-import com.android.pos.data.model.responseModel.*
+import com.android.pos.data.model.responseModel.BaseResponse
+import com.android.pos.data.model.responseModel.BusinessResponse
 import com.android.pos.data.repositories.PosRepository
-import com.android.pos.data.repositories.TipDiscountRepository
 import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -57,6 +54,15 @@ class BusniessDetailsViewModel @Inject constructor(
             }
             TextUtils.isEmpty(model.phone_number?.trim()) -> {
                 _snackbarText.value = Event("Please enter business phone number")
+            }
+            (model.phone_number?.replace("[^0-9]".toRegex(), "")!!.length < 10) -> {
+                _snackbarText.value = Event("Please enter valid business phone number")
+            }
+            (!TextUtils.isEmpty(model.phone_number_2?.trim()) && (model.phone_number_2?.replace(
+                "[^0-9]".toRegex(),
+                ""
+            )!!.length < 10)) -> {
+                _snackbarText.value = Event("Please enter valid business phone number2")
             }
             TextUtils.isEmpty(model.customer_contact_email?.trim()) -> {
                 _snackbarText.value = Event("Please enter business email address")

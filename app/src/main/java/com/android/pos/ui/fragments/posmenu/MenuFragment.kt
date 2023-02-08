@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.android.pos.BuildConfig
 import com.android.pos.R
@@ -19,6 +20,7 @@ import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.alert
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -70,6 +72,7 @@ class MenuFragment : DialogFragment() {
         viewModel.logout.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
+
 
                     viewModel.clearTableAll()
                     viewModel.clearTable()
@@ -149,7 +152,15 @@ class MenuFragment : DialogFragment() {
         binding.linearLogout.setOnClickListener {
             alert("", "Are you sure you want to Logout?") {
                 this.positiveButton("Logout") {
-                    viewModel.logoutAPI()
+
+                    if (prefProvider.getValue(Constants.ORDER_TYPE, "").isNotEmpty()) {
+                        viewLifecycleOwner.lifecycleScope.launch {
+                            viewModel.decreaseOnGoingOrderCounter(true)
+                        }
+                    }else{
+                        viewModel.logoutAPI()
+                    }
+
                 }
                 this.negativeButton("Cancel") {
                 }
@@ -159,6 +170,12 @@ class MenuFragment : DialogFragment() {
             // closeDialog(dialog)
         }
 
+        binding.llClockOut.setOnClickListener {
+//            if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+//                prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
+            findNavController().navigate(R.id.action_menuFragment_to_reportEODFragment)
+//            }
+        }
 
     }
 

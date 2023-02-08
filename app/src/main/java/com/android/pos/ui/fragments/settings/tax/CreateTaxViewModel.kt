@@ -102,7 +102,7 @@ class CreateTaxViewModel @Inject constructor(
 
             taxData = CreateTaxRequestModel().apply {
                 if (isEdit) id = taxId
-                name = value!!.name
+                name = value!!.name.trim()
                 rate = rates
                 isDefault = enableTaxViewModel
                 isCustomAmount = customAmountViewModel

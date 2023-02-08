@@ -51,11 +51,17 @@ interface DBItemDao {
     @Query("SELECT * from TbItem where TbItem.itemId  = :id and TbItem.name != 'Manual Item' and TbItem.isDeleted = 0 LIMIT 1")
     fun itemById(id: Int?): LiveData<TbItem>?
 
+    @Query("SELECT * from TbItem where TbItem.id  = :id and TbItem.manualSaleId = :manualSetId and TbItem.name != 'Manual Item' and TbItem.isDeleted = 0 LIMIT 1")
+    fun itemByIdMod(id: Int?,manualSetId:String?):TbItem?
+
     @Query("SELECT * from TbItem where TbItem.sku  = :productCode and TbItem.name != 'Manual Item' and TbItem.isDeleted = 0 LIMIT 1")
     fun itemByProductCode(productCode: String): LiveData<TbItem>?
 
     @Query("SELECT * from TbItem  where TbItem.itemId = :id LIMIT 1")
-    fun itemOne(id: Int): TbItem?
+     fun itemOne(id: Int): TbItem?
+
+
+
 
     @Query("SELECT * from TbItem where TbItem.itemId  = :restId  and TbItem.isDeleted = 0 LIMIT 1")
     fun itemByInventoryId(restId: Int?): TbItem?

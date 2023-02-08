@@ -28,7 +28,6 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1.5"
-            android:text="@{model.name}"
             android:textColor="@color/color88"
             android:textSize="@dimen/_6mdpi" />
 
@@ -40,7 +39,8 @@
             android:layout_gravity="start"
             android:layout_weight="0.5"
             android:gravity="center"
-            android:text="@{`x `+model.itemQuantity}"
+            android:visibility="invisible"
+            android:text="@{``+model.itemQuantity}"
             android:textColor="@color/color88"
             android:textSize="@dimen/_6mdpi" />
 

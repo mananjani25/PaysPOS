@@ -18,6 +18,15 @@ class CartItemModifierAdapter :
         fun bind(item: Modifier) {
             binding.model = item
             binding.executePendingBindings()
+            if (item.modifier_quantity > 1) {
+                if (item.modifier_quantity>9){
+                    binding.txtName.text = "${item.modifier_quantity}x ${item.name}"
+                }else{
+                    binding.txtName.text = "${item.modifier_quantity}x   ${item.name}"
+                }
+            }else{
+                binding.txtName.text = "       ${item.name}"
+            }
         }
 
     }

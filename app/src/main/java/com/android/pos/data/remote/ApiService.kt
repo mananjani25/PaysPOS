@@ -27,6 +27,7 @@ import com.android.pos.data.remote.Constants.CUSTOMERS_SEARCH
 import com.android.pos.data.remote.Constants.CUSTOMER_RECEIPTS_UPDATE_SETTINGS
 import com.android.pos.data.remote.Constants.CUSTOMER_RECEIPT_SETTINGS
 import com.android.pos.data.remote.Constants.CUSTOMER_UPDATE
+import com.android.pos.data.remote.Constants.DECREASE_ONGOING_ORDER_COUNTER
 import com.android.pos.data.remote.Constants.DELETE_ALL_QUEUE_PRINTER
 import com.android.pos.data.remote.Constants.DELETE_QUEUE_PRINTER
 import com.android.pos.data.remote.Constants.DELETE_UPDATE_PRINTER
@@ -48,6 +49,7 @@ import com.android.pos.data.remote.Constants.GET_PRINTERS
 import com.android.pos.data.remote.Constants.GET_TEAM_MODULE
 import com.android.pos.data.remote.Constants.HIDE_CATEGORY
 import com.android.pos.data.remote.Constants.HIDE_ITEM
+import com.android.pos.data.remote.Constants.INCREASE_ONGOING_ORDER_COUNTER
 import com.android.pos.data.remote.Constants.INVENTORY_COUNTS
 import com.android.pos.data.remote.Constants.ITEMS
 import com.android.pos.data.remote.Constants.ITEM_UPDATE_DELETE
@@ -192,6 +194,14 @@ interface ApiService {
         @Path("id") Id: Int,
         @Body model: CreatePrinterRequestModel
     ): DeletePrinterResponseModel
+
+    @PUT(INCREASE_ONGOING_ORDER_COUNTER)
+    suspend fun increaseOnGoingOrderCounter(
+    ): BaseResponse
+
+    @PUT(DECREASE_ONGOING_ORDER_COUNTER)
+    suspend fun decreaseOnGoingOrderCounter(
+    ): BaseResponse
 
 
     @PUT(UPDATE_PRINTER_STATUS)

@@ -1,5 +1,6 @@
 package com.android.pos.ui.fragments.loginscreen
 
+import android.annotation.SuppressLint
 import android.graphics.Typeface
 import android.os.Bundle
 import android.text.Editable
@@ -15,18 +16,22 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.android.pos.BuildConfig
 import com.android.pos.R
 import com.android.pos.data.remote.Constants.ORDER_TYPE
-import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.databinding.FragmentPasscodeBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.activities.MainActivity
+import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.ProgressUtils
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -36,6 +41,7 @@ class Passcode : Fragment() {
     private var isLogin: Boolean = false
     private lateinit var binding: FragmentPasscodeBinding
     private val viewModel by viewModels<PasscodeViewModel>()
+    private val viewModelDashboard by activityViewModels<DashBoardCategoryViewModel>()
     var isDashboard: Boolean = false
     var isClockOut: Boolean = false
     var isSwap: Boolean = false
@@ -46,6 +52,7 @@ class Passcode : Fragment() {
     @Inject
     lateinit var prefProvider: PrefProvider
 
+    @SuppressLint("SetTextI18n")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -68,7 +75,7 @@ class Passcode : Fragment() {
 
         binding.lifecycleOwner = this
         binding.passcodeViewModel = viewModel
-        setTimeandDate()
+        setTimeAndDate()
 
         isDashboard = arguments?.getBoolean("isDashboard")!!
         isSwap = arguments?.getBoolean("isSwap")!!
@@ -90,49 +97,22 @@ class Passcode : Fragment() {
         observeShowProgress()
         navigate()
 
-
+        binding.txtVersion?.text =
+            "Snack v." + BuildConfig.VERSION_NAME + "(" + BuildConfig.VERSION_CODE + ")"
         isLogin = arguments?.getBoolean("isLogin") ?: false
-
-//        if (isLogin)
-//            viewModel.defaultTerminalCall(
-//                prefProvider.getValue("device_token", ""),
-//                prefProvider.getValue(UNIQUE_ID, ""),
-//            )
-
 
         return binding.root
     }
 
 
-    private fun setTimeandDate() {
-        /*val sdf = SimpleDateFormat("hh:mm aa")
-        val currentDate = sdf.format(Calendar.getInstance().time)
-        binding.currentTime.text = currentDate
-        val date = Date()
-        val formatter = SimpleDateFormat("EEEE, dd MMMM");
-        val strDate = formatter.format(date);
-        binding.currentDate.text = strDate*/
-
-
-/*
-        viewModel.data.observe(viewLifecycleOwner) { event ->
-            event.getContentIfNotHandled()?.let {
-*/
-/*
-                if (it) {
-                    //findNavController().navigate(R.id.action_login_to_passcode)
-                }
-*//*
-
-            }
-        }
-*/
+    private fun setTimeAndDate() {
 
         viewModel.timeDetails.observe(requireActivity()) {
             it.data?.let {
                 LogUtil.logE("TAG", "timeDetails ${it.data}")
                 binding.currentTime.text = it.data.time
                 binding.currentDate.text = it.data.date
+                binding.txtLocationName?.text = it.data.locationName
             }
         }
     }
@@ -388,6 +368,13 @@ class Passcode : Fragment() {
                     binding.passcodeView.circlePin.setText("")
                     binding.tvWelcomeTag.text = getString(R.string.tv_clock_in)
                     AlertUtils.showCustomAlert(requireContext(), validationmsg)
+
+                    if (prefProvider.getValue(ORDER_TYPE, "").isNotEmpty()) {
+                        viewLifecycleOwner.lifecycleScope.launch {
+                            viewModelDashboard.decreaseOnGoingOrderCounter(false)
+                        }
+                    }
+
                 } else {
                     prefProvider.setValue(ORDER_TYPE, "")
                     findNavController().navigate(R.id.action_passcode_to_dashboardCategoryBoldPOS)
