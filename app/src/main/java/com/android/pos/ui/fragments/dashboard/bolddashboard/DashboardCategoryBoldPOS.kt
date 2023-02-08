@@ -15,7 +15,6 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
-import androidx.core.os.bundleOf
 import androidx.fragment.app.*
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -580,7 +579,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     override fun onResume() {
         super.onResume()
 
-        if (prefProvider.getValueboolean(Constants.IS_SYNC_MARKUP,false)){
+        if (prefProvider.getValueboolean(Constants.IS_SYNC_MARKUP, false)) {
             viewModel.markupInventory()
         }
     }
@@ -903,8 +902,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 .setReorderingAllowed(true)
                 .addToBackStack(backStateName).commit()
             //  loadCategoryFragment(fragment)
-        }
-        else {
+        } else {
             Log.e(TAG, "cartListItemAddSize: ${cartList.size}")
             if (cartList.isEmpty()) {
                 viewModel.createCart(cartList)
@@ -941,7 +939,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             }
 
         }
-
 
 
     }
@@ -1265,7 +1262,13 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
         cartList.get(0).orderType = Constants.DINE_IN
 
-        viewModel.newCartLogicModifier(cartList, null, Constants.ADD, false, dineInList = dineInList)
+        viewModel.newCartLogicModifier(
+            cartList,
+            null,
+            Constants.ADD,
+            false,
+            dineInList = dineInList
+        )
 
 
     }
@@ -1342,7 +1345,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     "dineTotalDiscount  ${arguments?.getDouble("totalDiscount")}"
                 )
                 cartList[0].discountPrice = arguments?.getDouble("totalDiscount") ?: 0.0
-                Log.e(TAG,"wsfaklnlbsaf ${cartList.size}")
+                Log.e(TAG, "wsfaklnlbsaf ${cartList.size}")
                 viewModel.newCartLogicModifier(
                     cartList,
                     null,
@@ -1404,6 +1407,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     override fun onPause() {
         arguments?.clear()
         super.onPause()
+        if (this::presentation.isInitialized) {
+            presentation.show()
+            //presentation.onDisplayChanged()
+            presentation.onLogOutOrClockOut()
+        }
     }
 
     private fun initKitchenPrinter(
@@ -2215,19 +2223,19 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 /* if (receiptModel?.order?.orderType.trim().lowercase() == "OpenOrder".trim()
                      .lowercase()
                ) {*/
-             /*   builder.addFeedLine(1)
-                builder.addTextFont(Builder.FONT_E)
-                builder.addTextLang(Builder.LANG_EN)
-                builder.addTextSize(fontSizeH, fontSizeW)
-                builder.addTextStyle(
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.TRUE,
-                    Builder.COLOR_1
-                )
-                builder.addTextAlign(Builder.ALIGN_CENTER)
+                /*   builder.addFeedLine(1)
+                   builder.addTextFont(Builder.FONT_E)
+                   builder.addTextLang(Builder.LANG_EN)
+                   builder.addTextSize(fontSizeH, fontSizeW)
+                   builder.addTextStyle(
+                       Builder.FALSE,
+                       Builder.FALSE,
+                       Builder.TRUE,
+                       Builder.COLOR_1
+                   )
+                   builder.addTextAlign(Builder.ALIGN_CENTER)
 
-                addBuilderText(builder, receiptModel?.order?.deliveryType.toString())*/
+                   addBuilderText(builder, receiptModel?.order?.deliveryType.toString())*/
 
                 /*}*/
 
@@ -2552,19 +2560,19 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 /* if (receiptModel?.order?.orderType.trim().lowercase() == "OpenOrder".trim()
                      .lowercase()
                ) {*/
-             /*   builder.addFeedLine(1)
-                builder.addTextFont(Builder.FONT_E)
-                builder.addTextLang(Builder.LANG_EN)
-                builder.addTextSize(fontSizeH, fontSizeW)
-                builder.addTextStyle(
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.TRUE,
-                    Builder.COLOR_1
-                )
-                builder.addTextAlign(Builder.ALIGN_CENTER)
+                /*   builder.addFeedLine(1)
+                   builder.addTextFont(Builder.FONT_E)
+                   builder.addTextLang(Builder.LANG_EN)
+                   builder.addTextSize(fontSizeH, fontSizeW)
+                   builder.addTextStyle(
+                       Builder.FALSE,
+                       Builder.FALSE,
+                       Builder.TRUE,
+                       Builder.COLOR_1
+                   )
+                   builder.addTextAlign(Builder.ALIGN_CENTER)
 
-                addBuilderText(builder, receiptModel?.order?.deliveryType.toString())*/
+                   addBuilderText(builder, receiptModel?.order?.deliveryType.toString())*/
 
                 /*}*/
 
@@ -2905,7 +2913,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             if (kitchenSettingModel.showOrderType) {
                 PrintSunmiUtils.printOrderType(receiptModel?.order?.orderType.toString())
             }
-        //    PrintSunmiUtils.printOrderType(receiptModel?.order?.deliveryType.toString())
+            //    PrintSunmiUtils.printOrderType(receiptModel?.order?.deliveryType.toString())
 
 
             if (kitchenSettingModel.showTeamMember) {
@@ -3061,7 +3069,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                 PrintSunmiUtils.headerText(receiptModel?.order?.orderType.toString())
             }
-         //   PrintSunmiUtils.headerText(receiptModel?.order?.deliveryType.toString())
+            //   PrintSunmiUtils.headerText(receiptModel?.order?.deliveryType.toString())
 
             SunmiPrintHelper.getInstance().lineWrap(1)
 
@@ -3442,7 +3450,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         return timeStampFinal
     }
 
-     fun getSaltString(reqLent: Int): String? {
+    fun getSaltString(reqLent: Int): String? {
         val SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
         val salt = StringBuilder()
         val rnd = Random()

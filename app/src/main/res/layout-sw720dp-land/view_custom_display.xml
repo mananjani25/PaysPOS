@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:background="@color/backgroundColor"
     android:layout_height="match_parent">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -60,6 +61,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:padding="@dimen/_5sdp"
+            android:background="@color/backgroundColor"
             app:layout_constraintTop_toBottomOf="@id/topLayout">
 
             <TextView
@@ -132,7 +134,7 @@
             android:id="@+id/linearBottom"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/bg_color"
+            android:background="#1d1d1f"
             app:layout_constraintBottom_toBottomOf="parent">
 
             <LinearLayout
@@ -615,7 +617,7 @@
         <androidx.appcompat.widget.AppCompatImageView
             android:layout_width="190dp"
             android:layout_height="100dp"
-            android:src="@drawable/snacklogo"
+            android:src="@drawable/snacklogo_new"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -666,7 +668,7 @@
             android:layout_marginBottom="@dimen/_15sdp"
             android:gravity="center"
             android:padding="@dimen/_5sdp"
-            android:textColor="@color/txtColor"
+            android:textColor="@color/white"
             android:textSize="@dimen/_14mdpi"
             android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@id/imageViewThankYou"
@@ -683,7 +685,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_check_thank_you" />
+            app:srcCompat="@drawable/ic_txn_done" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/txtThankYou"
@@ -694,7 +696,7 @@
             android:gravity="center"
             android:padding="@dimen/_5sdp"
             android:text="Thank you!"
-            android:textColor="@color/txtColor"
+            android:textColor="@color/white"
             android:textSize="@dimen/_10mdpi"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"

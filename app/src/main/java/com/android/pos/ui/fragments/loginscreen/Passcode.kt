@@ -27,9 +27,11 @@ import com.android.pos.databinding.FragmentPasscodeBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.android.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.getCustomerDisplay
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -37,6 +39,10 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class Passcode : Fragment() {
+
+    private lateinit var presentation: CustomDisplay
+    private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
+    private val passcodeViewModel by activityViewModels<PasscodeViewModel>()
 
     private var isLogin: Boolean = false
     private lateinit var binding: FragmentPasscodeBinding
@@ -101,9 +107,27 @@ class Passcode : Fragment() {
             "Snack v." + BuildConfig.VERSION_NAME + "(" + BuildConfig.VERSION_CODE + ")"
         isLogin = arguments?.getBoolean("isLogin") ?: false
 
+        getCustomerDisplay(requireContext())?.let { display ->
+            presentation = CustomDisplay(
+                display,
+                requireContext(),
+                viewLifecycleOwner,
+                dashboardViewModel,
+                passcodeViewModel
+            )
+        }
+
         return binding.root
     }
 
+    override fun onResume() {
+        super.onResume()
+        if(this::presentation.isInitialized){
+            presentation.show()
+            presentation.onDisplayChanged()
+            presentation.onLogOutOrClockOut()
+        }
+    }
 
     private fun setTimeAndDate() {
 

@@ -3,6 +3,7 @@ package com.android.pos.ui.fragments.dashboard.bolddashboard
 import android.app.Presentation
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.Display
 import android.view.View
 import android.view.Window
@@ -26,6 +27,7 @@ import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.callback.MyCallback
 import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.invisible
+import com.android.pos.utils.extensions.isVisible
 import com.android.pos.utils.extensions.visible
 
 class CustomDisplay(
@@ -147,8 +149,61 @@ class CustomDisplay(
 
     private fun setupTotals(cartList: List<CartModel>) {
         dashBoardCategoryViewModel.apply {
-            binding.txtSubTotal.text = MethodUtils.roundOffAmount(subTotalPrice)
+            if (taxBirfurcationAdapter.taxlist.size > 0) {
+                Log.d(TAG, "onViewCreated: " + taxBirfurcationAdapter.taxlist.size)
+                if (taxBirfurcationAdapter.taxlist.size == 1) {
+                    if (order_note.isNotEmpty()) {
+                        binding.liinearInfoLayout.layoutParams.height =
+                            resources.getDimension(R.dimen._70sdp).toInt()
+                    } else {
+                        if (binding.relativeLoylatyPoints.isVisible()) {
+                            binding.liinearInfoLayout.layoutParams.height =
+                                resources.getDimension(R.dimen._70sdp).toInt()
+                        } else {
+                            binding.liinearInfoLayout.layoutParams.height =
+                                resources.getDimension(R.dimen._60sdp).toInt()
+                        }
+                    }
+                } else if (taxBirfurcationAdapter.taxlist.size == 2) {
+                    if (order_note.isNotEmpty()) {
+                        binding.liinearInfoLayout.layoutParams.height =
+                            resources.getDimension(R.dimen._80sdp).toInt()
+                    } else {
+                        binding.liinearInfoLayout.layoutParams.height =
+                            resources.getDimension(R.dimen._70sdp).toInt()
+                    }
+                } else {
+                    if (order_note.isNotEmpty()) {
+                        binding.liinearInfoLayout.layoutParams.height =
+                            resources.getDimension(R.dimen._100sdp).toInt()
+                    } else {
+                        binding.liinearInfoLayout.layoutParams.height =
+                            resources.getDimension(R.dimen._95sdp).toInt()
+                    }
 
+                }
+
+
+            } else {
+                if (binding.relativeLoylatyPoints.isVisible()) {
+                    binding.liinearInfoLayout.layoutParams.height =
+                        resources.getDimension(R.dimen._70sdp).toInt()
+                } else {
+                    binding.liinearInfoLayout.layoutParams.height =
+                        resources.getDimension(R.dimen._50sdp).toInt()
+                }
+
+
+            }
+
+            if (order_note.isNotEmpty()) {
+                binding.relativeOrderNotes.visibility = View.VISIBLE
+                binding.txtOrderNote.text = order_note
+            } else {
+                binding.relativeOrderNotes.visibility = View.GONE
+            }
+
+            binding.txtSubTotal.text = MethodUtils.roundOffAmount(subTotalPrice)
             binding.txtTax.text = MethodUtils.roundOffAmount(totalTax)
             binding.txtServiceCharge.text = MethodUtils.roundOffAmount(totalServiceCharge)
             binding.txtDiscount.text = "-" + MethodUtils.roundOffAmount(totalDiscount)
@@ -253,6 +308,14 @@ class CustomDisplay(
 
             thankYouLayout.visible()
             txtPaidAmount.text = "Paid ${MethodUtils.roundOffAmount(paidAmount)}"
+        }
+    }
+
+    fun onLogOutOrClockOut() {
+        binding.apply {
+            mainCartLayout.gone()
+            thankYouLayout.gone()
+            splashLayout.visible()
         }
     }
 }
