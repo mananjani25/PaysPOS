@@ -28,6 +28,7 @@ import com.google.i18n.phonenumbers.Phonenumber
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import java.io.File
+import java.math.RoundingMode
 import java.text.DecimalFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -36,8 +37,7 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.regex.Matcher
 import java.util.regex.Pattern
-import kotlin.math.ceil
-import kotlin.math.floor
+import kotlin.math.*
 
 
 class MethodUtils {
@@ -145,7 +145,7 @@ class MethodUtils {
    */
         fun roundOffAmount(price: Double): String {
             return MainApplication.getInstance()!!.getText(R.string.symbole)
-                .toString() + getTwoDecimal(price)
+                .toString() + getTwoDecimal(price).toPrecision(2)
         }
 
         fun roundOffTwoDec(price: Double): String {
@@ -154,16 +154,16 @@ class MethodUtils {
         }
 
         fun roundOffAmountDown(price: Double): Double {
-            var valueFormat = DecimalFormat("##.##")
-            //  valueFormat.roundingMode = RoundingMode.UNNECESSARY
+            var valueFormat = DecimalFormat("#.##")
+            valueFormat.roundingMode = RoundingMode.DOWN
             return valueFormat.format(price).toDouble()
 
 
         }
 
         fun roundOffAmountUp(price: Double): Double {
-            var valueFormat = DecimalFormat("##.##")
-//            valueFormat.roundingMode = RoundingMode.CEILING
+            var valueFormat = DecimalFormat("#.##")
+            valueFormat.roundingMode = RoundingMode.DOWN
             return valueFormat.format(price).toDouble()
 
         }
@@ -273,7 +273,8 @@ class MethodUtils {
             createItemRequestMap["location_id"] =
                 data.locationId.toString().toMultiPartRequestBody()
             createItemRequestMap["name"] = data.name.toString().toMultiPartRequestBody()
-            createItemRequestMap["price_without_markup"] = data.price.toString().toMultiPartRequestBody()
+            createItemRequestMap["price_without_markup"] =
+                data.price.toString().toMultiPartRequestBody()
             createItemRequestMap["priceType"] = data.priceType.toString().toMultiPartRequestBody()
             createItemRequestMap["product_code"] =
                 data.productCode.toString().toMultiPartRequestBody()
@@ -601,8 +602,9 @@ class MethodUtils {
                 var tmpIndex = tmp.indexOf(".", 0, true)
                 if (tmp.length > tmpIndex + 3) {
 
+                   // return String.format("%.2f", value).toBigDecimal().toDouble()
 
-                    return String.format("%.2f", value).toBigDecimal().toDouble()
+                    return roundOffAmountUp(value)
 
                 } else {
 
@@ -616,6 +618,19 @@ class MethodUtils {
 
 
         }
+
+        fun Double.toPrecision(precision: Int) =
+            if (precision < 1) {
+                "${this.roundToInt()}"
+            } else {
+                val p = 10.0.pow(precision)
+                val v = (abs(this) * p).roundToInt()
+                val i = floor(v / p)
+                var f = "${floor(v - (i * p)).toInt()}"
+                while (f.length < precision) f = "0$f"
+                val s = if (this < 0) "-" else ""
+                "$s${i.toInt()}.$f"
+            }
     }
 
 
