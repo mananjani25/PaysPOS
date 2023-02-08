@@ -48,7 +48,7 @@ class MenuFragment : DialogFragment() {
     }
 
     private fun setUpHeader() {
-        binding.header.txtTitle.text = getString(R.string.menu)
+        binding.header.txtTitle.text = "Settings"
         binding.header.txtSave.text = getString(R.string.tv_home)
     }
 
