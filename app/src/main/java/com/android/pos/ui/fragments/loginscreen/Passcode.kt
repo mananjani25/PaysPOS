@@ -81,6 +81,17 @@ class Passcode : Fragment() {
 
         binding.lifecycleOwner = this
         binding.passcodeViewModel = viewModel
+
+        getCustomerDisplay(requireContext())?.let { display ->
+            presentation = CustomDisplay(
+                display,
+                requireContext(),
+                viewLifecycleOwner,
+                dashboardViewModel,
+                passcodeViewModel
+            )
+        }
+
         setTimeAndDate()
 
         isDashboard = arguments?.getBoolean("isDashboard")!!
@@ -107,26 +118,17 @@ class Passcode : Fragment() {
             "Snack v." + BuildConfig.VERSION_NAME + "(" + BuildConfig.VERSION_CODE + ")"
         isLogin = arguments?.getBoolean("isLogin") ?: false
 
-        getCustomerDisplay(requireContext())?.let { display ->
-            presentation = CustomDisplay(
-                display,
-                requireContext(),
-                viewLifecycleOwner,
-                dashboardViewModel,
-                passcodeViewModel
-            )
-        }
+
 
         return binding.root
     }
 
     override fun onResume() {
         super.onResume()
-        if(this::presentation.isInitialized){
-            presentation.show()
-            presentation.onDisplayChanged()
-            presentation.onLogOutOrClockOut()
-        }
+//        if(this::presentation.isInitialized){
+//            presentation.show()
+//            presentation.onLogOutOrClockOut()
+//        }
     }
 
     private fun setTimeAndDate() {

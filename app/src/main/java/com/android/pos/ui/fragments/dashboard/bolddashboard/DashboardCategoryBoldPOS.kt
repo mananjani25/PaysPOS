@@ -1407,9 +1407,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     override fun onPause() {
         arguments?.clear()
         super.onPause()
-        if (this::presentation.isInitialized) {
+        if(this::presentation.isInitialized){
             presentation.show()
-            //presentation.onDisplayChanged()
             presentation.onLogOutOrClockOut()
         }
     }

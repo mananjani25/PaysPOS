@@ -66,6 +66,9 @@ import com.android.pos.databinding.FragmentDineInOrderTableBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.DineInTableAdapter
 import com.android.pos.ui.fragments.checkout.CheckoutDineInPaymentViewModel
+import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.android.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
+import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
 import com.android.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.android.pos.utils.*
@@ -91,6 +94,11 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
+
+    private lateinit var presentation: CustomDisplay
+    private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
+    private val passcodeViewModel by activityViewModels<PasscodeViewModel>()
+
     private var passSCTotal: Double = 0.0
     private var passDiscountTotal: Double = 0.0
     private val listOfMoveItemIds: ArrayList<Int> = arrayListOf()
@@ -164,6 +172,17 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             false
         )
         binding.lifecycleOwner = this
+
+        getCustomerDisplay(requireContext())?.let { display ->
+            presentation = CustomDisplay(
+                display,
+                requireContext(),
+                viewLifecycleOwner,
+                dashboardViewModel,
+                passcodeViewModel
+            )
+        }
+
         progressDialog()
         optionType = prefProvider.getValue(Constants.OPTION_TYPE, "")
         observeShowProgress()
@@ -190,6 +209,14 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             addGuestToOrder(count)
         }
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+//        if (this::presentation.isInitialized) {
+//            presentation.show()
+//            presentation.onDisplayChanged()
+//        }
     }
 
     private fun observeAddGuest() {
@@ -1006,9 +1033,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 val itemTaxPrice =
                     (itemtype.rate * totalPrice) / 100
                 LogUtil.logE("itemTaxPrice", "" + itemTaxPrice)
-               // MethodUtils.getTwoDecimal(itemTaxPrice)
-                 String.format("%.2f", itemTaxPrice)
-                     .toDouble()
+                // MethodUtils.getTwoDecimal(itemTaxPrice)
+                String.format("%.2f", itemTaxPrice)
+                    .toDouble()
             }
 
         } else {
@@ -1017,9 +1044,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 String.format("%.2f", 0.00)
                     .toDouble()
             } else {
-               // MethodUtils.getTwoDecimal(itemtype.rate * item.itemQuantity)
-                 String.format("%.2f", itemtype.rate * item.itemQuantity)
-                     .toDouble()
+                // MethodUtils.getTwoDecimal(itemtype.rate * item.itemQuantity)
+                String.format("%.2f", itemtype.rate * item.itemQuantity)
+                    .toDouble()
             }
 
         }
@@ -2209,18 +2236,20 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                                                     "" + itemTaxPrice
                                                                 )
 
-                                                                MethodUtils.getTwoDecimal(itemTaxPrice)
-                                                               /* String.format("%.2f", itemTaxPrice)
-                                                                    .toDouble()*/
+                                                                MethodUtils.getTwoDecimal(
+                                                                    itemTaxPrice
+                                                                )
+                                                                /* String.format("%.2f", itemTaxPrice)
+                                                                     .toDouble()*/
 
 
                                                             } else {
                                                                 MethodUtils.getTwoDecimal(tax.rate * it.quantity)
 
-                                                               /* String.format(
-                                                                    "%.2f",
-                                                                    tax.rate * it.quantity
-                                                                ).toDouble()*/
+                                                                /* String.format(
+                                                                     "%.2f",
+                                                                     tax.rate * it.quantity
+                                                                 ).toDouble()*/
                                                             }
 
 
@@ -2430,7 +2459,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         totalSubTotal + totalTaxAmount + totalServiceChargeAmount - orderDiscount
                     LogUtil.logE("TODO", "finalAmount  ${finalAmount}")
                     LogUtil.logE("TODO", "guestShareTotal  ${guestShareTotal}")
-                    dineInList.get(0).guestDividedAmt = String.format("%.2f",guestShareTotal).toDouble()
+                    dineInList.get(0).guestDividedAmt =
+                        String.format("%.2f", guestShareTotal).toDouble()
                     dineInList.get(0).totalGuestCount = baseResponse.guestAttributes.size - 1
                     dineInList.get(0).wholeTableSubTotal =
                         subTotalWT / (baseResponse.guestAttributes.size - 1)
@@ -2573,6 +2603,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                     if (dineInList.isNotEmpty()) {
                         dineInTableAdapter.setList(dineInList)
+                        if(this::presentation.isInitialized){
+                            //presentation.show()
+                            //presentation.onDisplayChanged()
+                            //presentation.showTableDetails(dineInList)
+                        }
                         checkForAutoFire(true)
 
 
@@ -9039,6 +9074,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         super.onPause()
         if (pd != null && pd.isShowing) {
             pd.dismiss()
+        }
+        if (this::presentation.isInitialized) {
+            presentation.show()
+            presentation.onLogOutOrClockOut()
         }
     }
 

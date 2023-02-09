@@ -14,6 +14,7 @@ import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.TaxData
 import com.android.pos.data.entities.TbCustomer
 import com.android.pos.data.entities.TbItem
+import com.android.pos.data.model.DineInModel
 import com.android.pos.data.model.responseModel.TimeDetailsResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.ViewCustomDisplayBinding
@@ -61,6 +62,7 @@ class CustomDisplay(
             prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT),
             prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
         ).observe(lifecycleOwner) {
+            Log.d("TAG-HER", "onDisplayChanged: ${it.size}")
             it?.let {
                 updateCustomerDisplay(it)
             }
@@ -149,52 +151,6 @@ class CustomDisplay(
 
     private fun setupTotals(cartList: List<CartModel>) {
         dashBoardCategoryViewModel.apply {
-            if (taxBirfurcationAdapter.taxlist.size > 0) {
-                Log.d(TAG, "onViewCreated: " + taxBirfurcationAdapter.taxlist.size)
-                if (taxBirfurcationAdapter.taxlist.size == 1) {
-                    if (order_note.isNotEmpty()) {
-                        binding.liinearInfoLayout.layoutParams.height =
-                            resources.getDimension(R.dimen._70sdp).toInt()
-                    } else {
-                        if (binding.relativeLoylatyPoints.isVisible()) {
-                            binding.liinearInfoLayout.layoutParams.height =
-                                resources.getDimension(R.dimen._70sdp).toInt()
-                        } else {
-                            binding.liinearInfoLayout.layoutParams.height =
-                                resources.getDimension(R.dimen._60sdp).toInt()
-                        }
-                    }
-                } else if (taxBirfurcationAdapter.taxlist.size == 2) {
-                    if (order_note.isNotEmpty()) {
-                        binding.liinearInfoLayout.layoutParams.height =
-                            resources.getDimension(R.dimen._80sdp).toInt()
-                    } else {
-                        binding.liinearInfoLayout.layoutParams.height =
-                            resources.getDimension(R.dimen._70sdp).toInt()
-                    }
-                } else {
-                    if (order_note.isNotEmpty()) {
-                        binding.liinearInfoLayout.layoutParams.height =
-                            resources.getDimension(R.dimen._100sdp).toInt()
-                    } else {
-                        binding.liinearInfoLayout.layoutParams.height =
-                            resources.getDimension(R.dimen._95sdp).toInt()
-                    }
-
-                }
-
-
-            } else {
-                if (binding.relativeLoylatyPoints.isVisible()) {
-                    binding.liinearInfoLayout.layoutParams.height =
-                        resources.getDimension(R.dimen._70sdp).toInt()
-                } else {
-                    binding.liinearInfoLayout.layoutParams.height =
-                        resources.getDimension(R.dimen._50sdp).toInt()
-                }
-
-
-            }
 
             if (order_note.isNotEmpty()) {
                 binding.relativeOrderNotes.visibility = View.VISIBLE
@@ -277,12 +233,56 @@ class CustomDisplay(
 
     fun onTaxClicked(shouldShow: Boolean) {
         if (this::binding.isInitialized && this::taxBirfurcationAdapter.isInitialized) {
-            if (!shouldShow) {
-                binding.imgDropdown.setImageResource(R.drawable.ic_arrow_drop_down)
-                binding.relativeDynamicTax.gone()
-            } else {
+            if (shouldShow) {
+
+                if (taxBirfurcationAdapter.taxlist.size == 1) {
+                    if (dashBoardCategoryViewModel.order_note.isNotEmpty()) {
+                        binding.liinearInfoLayout.layoutParams.height =
+                            resources.getDimension(R.dimen._70sdp).toInt()
+                    } else {
+                        if (binding.relativeLoylatyPoints.isVisible()) {
+                            binding.liinearInfoLayout.layoutParams.height =
+                                resources.getDimension(R.dimen._70sdp).toInt()
+                        } else {
+                            binding.liinearInfoLayout.layoutParams.height =
+                                resources.getDimension(R.dimen._60sdp).toInt()
+                        }
+                    }
+                } else if (taxBirfurcationAdapter.taxlist.size == 2) {
+                    if (dashBoardCategoryViewModel.order_note.isNotEmpty()) {
+                        binding.liinearInfoLayout.layoutParams.height =
+                            resources.getDimension(R.dimen._80sdp).toInt()
+                    } else {
+                        binding.liinearInfoLayout.layoutParams.height =
+                            resources.getDimension(R.dimen._70sdp).toInt()
+                    }
+                } else {
+                    if (dashBoardCategoryViewModel.order_note.isNotEmpty()) {
+                        binding.liinearInfoLayout.layoutParams.height =
+                            resources.getDimension(R.dimen._100sdp).toInt()
+                    } else {
+                        binding.liinearInfoLayout.layoutParams.height =
+                            resources.getDimension(R.dimen._95sdp).toInt()
+                    }
+
+                }
+
                 binding.imgDropdown.setImageResource(R.drawable.ic_solid_up_arrow)
                 binding.relativeDynamicTax.visible()
+
+            } else {
+
+                if (binding.relativeLoylatyPoints.isVisible()) {
+                    binding.liinearInfoLayout.layoutParams.height =
+                        resources.getDimension(R.dimen._70sdp).toInt()
+                } else {
+                    binding.liinearInfoLayout.layoutParams.height =
+                        resources.getDimension(R.dimen._50sdp).toInt()
+                }
+
+                binding.imgDropdown.setImageResource(R.drawable.ic_arrow_drop_down)
+                binding.relativeDynamicTax.gone()
+
             }
         }
     }
@@ -317,5 +317,11 @@ class CustomDisplay(
             thankYouLayout.gone()
             splashLayout.visible()
         }
+    }
+
+    fun showTableDetails(dineInListItems: java.util.ArrayList<DineInModel>) {
+        val cartlist: java.util.ArrayList<CartModel> = arrayListOf()
+        cartlist.add(CartModel().apply { dineInList = dineInListItems })
+        updateCustomerDisplay(cartlist)
     }
 }

@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/backgroundColor"
-        android:visibility="visible">
+        android:visibility="gone">
 
         <LinearLayout
             android:id="@+id/topLayout"
@@ -70,7 +70,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1.5"
                 android:text="Item Name"
-                android:textColor="@color/txtColor"
+                android:textColor="@color/white"
                 android:textSize="@dimen/_6mdpi" />
 
             <TextView
@@ -81,7 +81,7 @@
                 android:layout_weight="0.5"
                 android:gravity="center"
                 android:text="Qty"
-                android:textColor="@color/txtColor"
+                android:textColor="@color/white"
                 android:textSize="@dimen/_6mdpi" />
 
             <TextView
@@ -92,7 +92,7 @@
                 android:layout_weight="1"
                 android:gravity="end"
                 android:text="Each"
-                android:textColor="@color/txtColor"
+                android:textColor="@color/white"
                 android:textSize="@dimen/_6mdpi" />
 
             <TextView
@@ -103,7 +103,7 @@
                 android:layout_weight="0.7"
                 android:gravity="end"
                 android:text="Total"
-                android:textColor="@color/txtColor"
+                android:textColor="@color/white"
                 android:textSize="@dimen/_6mdpi" />
 
 
@@ -195,7 +195,7 @@
                                     android:maxLines="2"
                                     android:singleLine="false"
                                     android:text=""
-                                    android:textColor="@color/txtColor"
+                                    android:textColor="@color/white"
                                     android:textSize="@dimen/text_size_medium" />
                             </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -227,7 +227,7 @@
                                     android:layout_marginEnd="@dimen/_3sdp"
                                     android:gravity="end"
                                     android:text="@string/_0_00"
-                                    android:textColor="@color/txtColor"
+                                    android:textColor="@color/white"
                                     android:textSize="@dimen/text_size_medium" />
                             </RelativeLayout>
 
@@ -260,7 +260,7 @@
                                         android:layout_width="@dimen/_10sdp"
                                         android:layout_height="@dimen/_10sdp"
                                         android:src="@drawable/ic_arrow_drop_down"
-                                        app:tint="@color/txtColor" />
+                                        app:tint="@color/white" />
                                 </androidx.appcompat.widget.LinearLayoutCompat>
 
 
@@ -274,7 +274,7 @@
                                     android:layout_marginEnd="@dimen/_3sdp"
                                     android:gravity="end"
                                     android:text="@string/_0_00"
-                                    android:textColor="@color/txtColor"
+                                    android:textColor="@color/white"
                                     android:textSize="@dimen/text_size_medium" />
                             </RelativeLayout>
 
@@ -322,7 +322,38 @@
                                     android:layout_marginEnd="@dimen/_3sdp"
                                     android:gravity="end"
                                     android:text="@string/_0_00"
-                                    android:textColor="@color/txtColor"
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/text_size_medium" />
+                            </RelativeLayout>
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/_1sdp"
+                                android:layout_marginBottom="@dimen/_1sdp"
+                                android:orientation="horizontal"
+                                android:padding="@dimen/_1sdp">
+
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    style="@style/CustomFontMediumStyle"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentStart="true"
+                                    android:layout_marginStart="@dimen/_3sdp"
+                                    android:text="Tip (%)"
+                                    android:textColor="@color/dark_gray"
+                                    android:textSize="@dimen/_6mdpi" />
+
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    android:id="@+id/txtTipGiven"
+                                    style="@style/CustomFontSemiBold"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_marginEnd="@dimen/_3sdp"
+                                    android:gravity="end"
+                                    android:text="@string/_0_00"
+                                    android:textColor="@color/white"
                                     android:textSize="@dimen/text_size_medium" />
                             </RelativeLayout>
 
@@ -501,7 +532,7 @@
                                 android:layout_alignParentStart="true"
                                 android:layout_marginStart="@dimen/_3sdp"
                                 android:text="@string/tv_total"
-                                android:textColor="@color/txtColor"
+                                android:textColor="@color/white"
                                 android:textSize="@dimen/_6mdpi" />
 
                             <androidx.appcompat.widget.AppCompatTextView
@@ -513,7 +544,7 @@
                                 android:layout_marginEnd="@dimen/_5sdp"
                                 android:gravity="end"
                                 android:text="@string/_0_00"
-                                android:textColor="@color/txtColor"
+                                android:textColor="@color/white"
                                 android:textSize="@dimen/text_size_medium" />
                         </RelativeLayout>
 
@@ -612,7 +643,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#1D1D1F"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <androidx.appcompat.widget.AppCompatImageView
             android:layout_width="190dp"

@@ -175,6 +175,14 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
     }
 
+    override fun onPause() {
+        super.onPause()
+        if(this::presentation.isInitialized){
+            presentation.show()
+            presentation.onLogOutOrClockOut()
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         getDataFromPref()
