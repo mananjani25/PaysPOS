@@ -2,6 +2,7 @@ package com.android.pos.ui.fragments.customer
 
 import android.text.TextUtils
 import android.util.Log
+import android.util.Patterns
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -158,6 +159,10 @@ class AddCustomerViewModel @Inject constructor(
             )?.phone_number?.length != 10
         ) {
             _snackbarText.value = Event(R.string.valid_phone_no_validate)
+        }else if (!TextUtils.isEmpty(value?.data?.email?.trim()) && !Patterns.EMAIL_ADDRESS.matcher(value.data?.email?.trim())
+                .matches()
+        ) {
+            _snackbarText.value = Event(R.string.valid_email_validate)
         }
 
         /*else if (TextUtils.isEmpty(value?.data?.last_name?.trim())) {

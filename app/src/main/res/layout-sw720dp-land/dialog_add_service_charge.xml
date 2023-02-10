@@ -132,6 +132,7 @@
                                 android:digits="@string/character_digits_String"
                                 android:maxLength="60"
                                 android:hint="@string/tv_service_charge_"
+                                android:maxLines="1"
                                 android:imeOptions="actionNext"
                                 android:inputType="textVisiblePassword"
                                 android:padding="@dimen/_9sdp"
@@ -175,7 +176,7 @@
                                 android:layout_gravity="center_vertical"
                                 android:layout_marginLeft="@dimen/_32sdp"
                                 android:fontFamily="@font/sf_pro_display_bold"
-                                android:text="@string/percentage_symbol"
+                                android:text="@string/percentage_symbol_"
                                 android:textColor="@color/dark_gray"
                                 android:textSize="@dimen/_7sdp"
                                 android:textStyle="bold" />

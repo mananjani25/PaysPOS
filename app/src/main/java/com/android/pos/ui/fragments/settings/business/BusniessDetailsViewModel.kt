@@ -1,6 +1,7 @@
 package com.android.pos.ui.fragments.settings.business
 
 import android.text.TextUtils
+import android.util.Patterns
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -78,6 +79,9 @@ class BusniessDetailsViewModel @Inject constructor(
             }
             TextUtils.isEmpty(model.businessAddress[0].postcode.trim()) -> {
                 _snackbarText.value = Event("Please enter business address postcode")
+            }
+            (!TextUtils.isEmpty(model.business_website?.trim()) && !Patterns.WEB_URL.matcher(model.business_website?.trim().toString()).matches())-> {
+                _snackbarText.value = Event("Please enter valid business website")
             }
             else -> {
                 _showProgress.value = Event(true)

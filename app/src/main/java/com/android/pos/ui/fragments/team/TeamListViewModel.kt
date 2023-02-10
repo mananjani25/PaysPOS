@@ -36,6 +36,7 @@ class TeamListViewModel @Inject constructor(
 
     fun employeeData() = posRepository.employeesList(locationId)
 
+    fun searchEmployees(query: String) = posRepository.searchEmployeesDatabase(query)
 
     fun delete(id: Int) {
         _showProgress.value = Event(true)

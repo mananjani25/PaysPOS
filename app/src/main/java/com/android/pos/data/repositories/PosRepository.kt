@@ -543,6 +543,9 @@ class PosRepository @Inject constructor(
     suspend fun searchCustomer(query: String) =
         apiHelperNew.searchCustomers(query)
 
+    fun searchEmployeesDatabase(query: String) =
+        performGetOperationDatabase(databaseQuery = { appDatabase.employeeDao().getEmployeeSearchResults(query) })
+
     suspend fun deleteEmployeeDatabase(employeeId: Int) =
         appDatabase.employeeDao().deleteEmployeeById(employeeId)
 

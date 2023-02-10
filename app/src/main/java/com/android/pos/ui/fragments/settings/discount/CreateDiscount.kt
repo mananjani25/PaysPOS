@@ -17,6 +17,7 @@ import com.android.pos.data.entities.TbDiscount
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentCreateDiscountBinding
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.DecimalDigitsCountFilter
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
@@ -80,6 +81,9 @@ class CreateDiscount : Fragment() {
         observeShowProgress()
         addTextChangeListner()
         navigate()
+
+        binding.edtDiscount.filters = arrayOf(DecimalDigitsCountFilter(2));
+
         binding.edtDiscount.addTextChangedListener(object :TextWatcher{
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
 
@@ -124,16 +128,17 @@ class CreateDiscount : Fragment() {
             }
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-
-                if (binding.edtDiscount.text?.toString()
-                        ?.isNotEmpty() == true && viewModel.discountTypeViewModel.equals(
-                        "Percentage",
-                        true
-                    ) && binding.edtDiscount.text.toString().toDouble() > 100.00
-                ) {
-                    binding.edtDiscount.setText("100")
-                    binding.edtDiscount.setSelection(binding.edtDiscount.length())
-
+                try {
+                    if (binding.edtDiscount.text?.toString()
+                            ?.isNotEmpty() == true && viewModel.discountTypeViewModel.equals(
+                            "Percentage",
+                            true
+                        ) && binding.edtDiscount.text.toString().toDouble() > 100.00
+                    ) {
+                        binding.edtDiscount.setText("100")
+                        binding.edtDiscount.setSelection(binding.edtDiscount.length())
+                    }
+                } catch (_: Exception) {
                 }
             }
 
@@ -166,6 +171,7 @@ class CreateDiscount : Fragment() {
     }
 
     private fun backPressManage() {
+        MethodUtils.hideKeyboard(requireActivity())
         val navControll = findNavController()
         navControll.previousBackStackEntry?.savedStateHandle?.set(
             Constants.KEY,

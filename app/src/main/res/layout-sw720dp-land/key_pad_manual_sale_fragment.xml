@@ -46,7 +46,7 @@
                     <androidx.appcompat.widget.AppCompatEditText
                         android:id="@+id/edtItemName"
                         style="@style/CustomFontRegularStyle"
-                        android:layout_width="0dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/_10sdp"
                         android:layout_weight="1"
@@ -55,17 +55,19 @@
                         android:hint="@string/add_custom_item_name"
                         android:imeOptions="actionDone"
                         android:singleLine="true"
+                        android:ellipsize="end"
                         android:maxLength="60"
+                        android:layout_marginEnd="@dimen/_10sdp"
+                        android:layout_marginStart="@dimen/_5sdp"
                         android:padding="@dimen/_5sdp"
                         android:textColor="@color/txtColor"
                         android:textColorHint="@color/hintColor"
                         android:textSize="@dimen/_10mdpi" />
 
                     <LinearLayout
-                        android:layout_width="0dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="@dimen/_10sdp"
-                        android:layout_weight="1"
                         android:gravity="end"
                         android:orientation="horizontal"
                         android:padding="@dimen/_5sdp">

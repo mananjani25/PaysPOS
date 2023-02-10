@@ -46,6 +46,7 @@
                 android:padding="@dimen/_5sdp"
                 android:text="@string/tax_rates_can_be_applied_to_specific_items_and_will_be_automatically_calculated_at_purchase"
                 android:textColor="@color/view"
+                android:visibility="gone"
                 android:textSize="@dimen/_5mdpi"
                 app:textAllCaps="false" />
 

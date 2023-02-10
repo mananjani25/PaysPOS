@@ -1445,10 +1445,10 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 ((model.price * model.itemQuantity) - (model.discountPrice* model.itemQuantity))
             )
         } else {
-            txtTitle.text = model.name + "  $" + String.format(
+            txtTitle.text = model.name /*+ "  $" + String.format(
                 "%.2f",
                 (model.price * model.itemQuantity)
-            )
+            )*/
         }
 
         imgClose.setOnClickListener {

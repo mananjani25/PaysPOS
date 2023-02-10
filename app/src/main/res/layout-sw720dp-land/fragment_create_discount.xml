@@ -46,8 +46,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/_75sdp"
                     android:background="@color/backgroundColor"
-
-                    >
+                    android:visibility="gone">
 
                     <RelativeLayout
                         android:layout_width="@dimen/_47sdp"
@@ -263,7 +262,7 @@
                         android:layout_marginBottom="@dimen/_10sdp"
                         android:gravity="center"
                         android:singleLine="false"
-
+                        android:visibility="gone"
                         android:padding="@dimen/_5sdp"
                         android:text="@string/leave_the_discount_amount_blank_to_enter_at_the_time_of_sale_n_discount_are_applied_to_the_ticket_before_tax_is_calculated"
                         android:textColor="@color/hint_color"
