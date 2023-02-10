@@ -242,7 +242,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         if (this::presentation.isInitialized) {
             presentation.show()
             presentation.onDisplayChanged()
-            presentation.showThankYou(paidAmount)
+            presentation.showThankYou(
+                binding.txtPaymentAmount.text.toString().replace(" payment successful", "")
+            )
+
+            //binding.txtPaymentAmount.text.toString(
+            //                    " payment successful",
+            //                    ""
+            //                )
         }
     }
 
@@ -415,7 +422,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         binding.txtChangeAmount.text =
                             MethodUtils.roundOffAmount(if ((paidAmount - WholetotalPrice) > 0) paidAmount - WholetotalPrice else 0.00) + " Change"
                         binding.txtPaymentAmount.text =
-                            ""+MainApplication.getInstance()!!.getText(R.string.symbole)+MethodUtils.roundOffAmountDown(paidAmount + tipAmount) + " payment successful"
+                            "" + MainApplication.getInstance()!!
+                                .getText(R.string.symbole) + MethodUtils.roundOffAmountDown(
+                                paidAmount + tipAmount
+                            ) + " payment successful"
 
                         LogUtil.logE("Change 1", binding.txtChangeAmount.text.toString())
 
@@ -433,7 +443,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         binding.txtChangeAmount.text =
                             MethodUtils.roundOffAmount(if (splitChange > 0) splitChange else 0.00) + " Change"
                         binding.txtPaymentAmount.text =
-                            ""+MainApplication.getInstance()!!.getText(R.string.symbole)+MethodUtils.roundOffAmountDown(paidAmount + tipAmount) + " payment successful"
+                            "" + MainApplication.getInstance()!!
+                                .getText(R.string.symbole) + MethodUtils.roundOffAmountDown(
+                                paidAmount + tipAmount
+                            ) + " payment successful"
 
                         LogUtil.logE("Change 2", binding.txtChangeAmount.text.toString())
                     } else {
@@ -455,7 +468,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             LogUtil.logE("Change 4", binding.txtChangeAmount.text.toString())
                         }
                         binding.txtPaymentAmount.text =
-                            ""+MainApplication.getInstance()!!.getText(R.string.symbole)+MethodUtils.roundOffAmountDown(paidAmount + tipAmount) + " payment successful"
+                            "" + MainApplication.getInstance()!!
+                                .getText(R.string.symbole) + MethodUtils.roundOffAmountDown(
+                                paidAmount + tipAmount
+                            ) + " payment successful"
                     }
                 } else {
                     if (isCustomCash && splitChange != 0.0) {
@@ -466,10 +482,16 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                         LogUtil.logE("Change 5", binding.txtChangeAmount.text.toString())
                         binding.txtPaymentAmount.text =
-                            ""+MainApplication.getInstance()!!.getText(R.string.symbole)+MethodUtils.roundOffAmountDown(paidAmount + tipAmount) + " payment successful"
+                            "" + MainApplication.getInstance()!!
+                                .getText(R.string.symbole) + MethodUtils.roundOffAmountDown(
+                                paidAmount + tipAmount
+                            ) + " payment successful"
                     } else {
                         binding.txtPaymentAmount.text =
-                            ""+MainApplication.getInstance()!!.getText(R.string.symbole)+MethodUtils.roundOffAmountDown(paidAmount + tipAmount) + " payment successful"
+                            "" + MainApplication.getInstance()!!
+                                .getText(R.string.symbole) + MethodUtils.roundOffAmountDown(
+                                paidAmount + tipAmount
+                            ) + " payment successful"
                     }
                 }
             } else {
@@ -491,13 +513,15 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     binding.txtTitle.text =
                         MethodUtils.roundOffAmount(paidAmount)
                     binding.txtPaymentAmount.text =
-                        ""+MainApplication.getInstance()!!.getText(R.string.symbole)+MethodUtils.roundOffAmountDown(paidAmount) + " payment successful"
+                        "" + MainApplication.getInstance()!!
+                            .getText(R.string.symbole) + MethodUtils.roundOffAmountDown(paidAmount) + " payment successful"
 
                 } else {
                     binding.txtTitle.text =
                         MethodUtils.roundOffAmount(paidAmount + tipAmount)
                     binding.txtPaymentAmount.text =
-                      ""+MainApplication.getInstance()!!.getText(R.string.symbole) + MethodUtils.roundOffAmountDown(paidAmount + tipAmount) + " payment successful"
+                        "" + MainApplication.getInstance()!!
+                            .getText(R.string.symbole) + MethodUtils.roundOffAmountDown(paidAmount + tipAmount) + " payment successful"
                 }
 
 
@@ -563,7 +587,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         binding.txtChangeAmount.text =
                             MethodUtils.roundOffAmount(if (splitChange > 0) splitChange else 0.00) + " Change"
                         binding.txtPaymentAmount.text =
-                          ""+MainApplication.getInstance()!!.getText(R.string.symbole)+  MethodUtils.roundOffAmountDown(paidAmount + tipAmount) + " payment successful"
+                            "" + MainApplication.getInstance()!!
+                                .getText(R.string.symbole) + MethodUtils.roundOffAmountDown(
+                                paidAmount + tipAmount
+                            ) + " payment successful"
 
                         LogUtil.logE("Change 8", binding.txtChangeAmount.text.toString())
                     } else {
@@ -580,7 +607,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             LogUtil.logE("Change 9", binding.txtChangeAmount.text.toString())
                         }
                         binding.txtPaymentAmount.text =
-                            ""+MainApplication.getInstance()!!.getText(R.string.symbole)+MethodUtils.roundOffAmountDown(paidAmount + tipAmount) + " payment successful"
+                            "" + MainApplication.getInstance()!!
+                                .getText(R.string.symbole) + MethodUtils.roundOffAmountDown(
+                                paidAmount + tipAmount
+                            ) + " payment successful"
                     }
 
                 } else {
@@ -592,10 +622,16 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                         LogUtil.logE("Change 10", binding.txtChangeAmount.text.toString())
                         binding.txtPaymentAmount.text =
-                            ""+MainApplication.getInstance()!!.getText(R.string.symbole)+MethodUtils.roundOffAmountDown(paidAmount + tipAmount) + " payment successful"
+                            "" + MainApplication.getInstance()!!
+                                .getText(R.string.symbole) + MethodUtils.roundOffAmountDown(
+                                paidAmount + tipAmount
+                            ) + " payment successful"
                     } else {
                         binding.txtPaymentAmount.text =
-                            ""+MainApplication.getInstance()!!.getText(R.string.symbole)+MethodUtils.roundOffAmountDown(paidAmount + tipAmount) + " payment successful"
+                            "" + MainApplication.getInstance()!!
+                                .getText(R.string.symbole) + MethodUtils.roundOffAmountDown(
+                                paidAmount + tipAmount
+                            ) + " payment successful"
                     }
                 }
             } else {
@@ -650,8 +686,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }
 
                 binding.txtPaymentAmount.text =
-                    ""+MainApplication.getInstance()!!.getText(R.string.symbole)+MethodUtils.roundOffAmountDown(paidAmount + tipAmount)+ " payment successful"
-
+                    "" + MainApplication.getInstance()!!
+                        .getText(R.string.symbole) + MethodUtils.roundOffAmountDown(paidAmount + tipAmount) + " payment successful"
 
 
             }

@@ -1225,6 +1225,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 )
             )
         } else {
+            if(this::presentation.isInitialized){
+                presentation.show()
+                presentation.showTipsAdded(tipAmount,WholetotalPrice)
+            }
             MethodUtils.setPriceTextViewDown(
                 binding.tvCash,
                 (getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectedCount) + tipAmount

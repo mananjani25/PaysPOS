@@ -3,7 +3,6 @@ package com.android.pos.ui.fragments.dashboard.bolddashboard
 import android.app.Presentation
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.Display
 import android.view.View
 import android.view.Window
@@ -62,7 +61,6 @@ class CustomDisplay(
             prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT),
             prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
         ).observe(lifecycleOwner) {
-            Log.d("TAG-HER", "onDisplayChanged: ${it.size}")
             it?.let {
                 updateCustomerDisplay(it)
             }
@@ -164,7 +162,33 @@ class CustomDisplay(
             binding.txtServiceCharge.text = MethodUtils.roundOffAmount(totalServiceCharge)
             binding.txtDiscount.text = "-" + MethodUtils.roundOffAmount(totalDiscount)
             binding.txtNoncashAdj.text = MethodUtils.roundOffAmount(cashdiscountAmount)
-            showSurcharge(false)
+            //showSurcharge(true)
+
+            dashBoardCategoryViewModel.apply {
+                val data: TbCustomer? = prefProvider.getCustomerData()
+                if (data != null) {
+                    if (loyaltyPointCondition(data) && redeemLoyaltyInfo.needToApplyLoyalty) {
+                        binding.liinearInfoLayout.layoutParams.height =
+                            resources.getDimension(R.dimen._80sdp).toInt()
+                        binding.relativeLoylatyPoints.visibility = View.VISIBLE
+                        binding.lblLoyaltyPoints.visibility = View.VISIBLE
+
+                        binding.txtLabelLoyaltyAmounts.visibility = View.VISIBLE
+                        binding.checkloylaty.visibility = View.GONE
+                        binding.txtLoyaltyAmount.text = "- $${
+                            String.format(
+                                "%.2f", redeemLoyaltyInfo.usedLoyaltyAmount
+                            )
+                        }"
+                        binding.txtLoyaltyPoints.text = "${redeemLoyaltyInfo.usedLoyaltyPoints}"
+                    } else {
+                        binding.liinearInfoLayout.layoutParams.height =
+                            resources.getDimension(R.dimen._60sdp).toInt()
+                        binding.relativeLoylatyPoints.visibility = View.GONE
+                        binding.lblLoyaltyPoints.visibility = View.GONE
+                    }
+                }
+            }
 
             if (taxBirfurcationAdapter.taxlist.size == 0) {
                 binding.imgDropdown.gone()
@@ -189,38 +213,11 @@ class CustomDisplay(
             binding.txtLoyaltyPointsLabel.text =
                 "Loyalty Points: ${dashBoardCategoryViewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
             binding.txtCustomerName.text = name
-            dashBoardCategoryViewModel.apply {
-                val data: TbCustomer? = prefProvider.getCustomerData()
-                if (data != null) {
-                    if (loyaltyPointCondition(data) && redeemLoyaltyInfo.needToApplyLoyalty) {
-                        binding.liinearInfoLayout.layoutParams.height =
-                            resources.getDimension(R.dimen._70sdp).toInt()
-                        binding.relativeLoylatyPoints.visibility = View.VISIBLE
-                        binding.lblLoyaltyPoints.visibility = View.VISIBLE
 
-                        binding.txtLabelLoyaltyAmounts.visibility = View.VISIBLE
-                        binding.checkloylaty.visibility = View.GONE
-                        binding.txtLoyaltyAmount.text = "- $${
-                            String.format(
-                                "%.2f", redeemLoyaltyInfo.usedLoyaltyAmount
-                            )
-                        }"
-                        binding.txtLoyaltyPoints.text = "${redeemLoyaltyInfo.usedLoyaltyPoints}"
-                    } else {
-                        binding.liinearInfoLayout.layoutParams.height =
-                            resources.getDimension(R.dimen._50sdp).toInt()
-                        binding.relativeLoylatyPoints.visibility = View.GONE
-                        binding.lblLoyaltyPoints.visibility = View.GONE
-                    }
-                }
-            }
         } else {
             binding.txtLoyaltyPointsLabel.invisible()
             binding.txtCustomerName.invisible()
-            binding.liinearInfoLayout.layoutParams.height =
-                resources.getDimension(R.dimen._50sdp).toInt()
-            binding.relativeLoylatyPoints.visibility = View.GONE
-            binding.lblLoyaltyPoints.visibility = View.GONE
+
         }
 
     }
@@ -238,31 +235,31 @@ class CustomDisplay(
                 if (taxBirfurcationAdapter.taxlist.size == 1) {
                     if (dashBoardCategoryViewModel.order_note.isNotEmpty()) {
                         binding.liinearInfoLayout.layoutParams.height =
-                            resources.getDimension(R.dimen._70sdp).toInt()
+                            resources.getDimension(R.dimen._60sdp).toInt()
                     } else {
                         if (binding.relativeLoylatyPoints.isVisible()) {
                             binding.liinearInfoLayout.layoutParams.height =
-                                resources.getDimension(R.dimen._70sdp).toInt()
+                                resources.getDimension(R.dimen._80sdp).toInt()
                         } else {
                             binding.liinearInfoLayout.layoutParams.height =
-                                resources.getDimension(R.dimen._60sdp).toInt()
+                                resources.getDimension(R.dimen._70sdp).toInt()
                         }
                     }
                 } else if (taxBirfurcationAdapter.taxlist.size == 2) {
                     if (dashBoardCategoryViewModel.order_note.isNotEmpty()) {
                         binding.liinearInfoLayout.layoutParams.height =
-                            resources.getDimension(R.dimen._80sdp).toInt()
+                            resources.getDimension(R.dimen._110sdp).toInt()
                     } else {
                         binding.liinearInfoLayout.layoutParams.height =
-                            resources.getDimension(R.dimen._70sdp).toInt()
+                            resources.getDimension(R.dimen._100sdp).toInt()
                     }
                 } else {
                     if (dashBoardCategoryViewModel.order_note.isNotEmpty()) {
                         binding.liinearInfoLayout.layoutParams.height =
-                            resources.getDimension(R.dimen._100sdp).toInt()
+                            resources.getDimension(R.dimen._110sdp).toInt()
                     } else {
                         binding.liinearInfoLayout.layoutParams.height =
-                            resources.getDimension(R.dimen._95sdp).toInt()
+                            resources.getDimension(R.dimen._100sdp).toInt()
                     }
 
                 }
@@ -274,10 +271,10 @@ class CustomDisplay(
 
                 if (binding.relativeLoylatyPoints.isVisible()) {
                     binding.liinearInfoLayout.layoutParams.height =
-                        resources.getDimension(R.dimen._70sdp).toInt()
+                        resources.getDimension(R.dimen._80sdp).toInt()
                 } else {
                     binding.liinearInfoLayout.layoutParams.height =
-                        resources.getDimension(R.dimen._50sdp).toInt()
+                        resources.getDimension(R.dimen._60sdp).toInt()
                 }
 
                 binding.imgDropdown.setImageResource(R.drawable.ic_arrow_drop_down)
@@ -301,13 +298,13 @@ class CustomDisplay(
 
     override fun onItemDelete(position: Int, itemPosition: Int, data: TbItem) {}
 
-    fun showThankYou(paidAmount: Double) {
+    fun showThankYou(paidAmount: String) {
         binding.apply {
             mainCartLayout.gone()
             splashLayout.gone()
 
             thankYouLayout.visible()
-            txtPaidAmount.text = "Paid ${MethodUtils.roundOffAmount(paidAmount)}"
+            txtPaidAmount.text = "Paid $paidAmount"
         }
     }
 
@@ -323,5 +320,24 @@ class CustomDisplay(
         val cartlist: java.util.ArrayList<CartModel> = arrayListOf()
         cartlist.add(CartModel().apply { dineInList = dineInListItems })
         updateCustomerDisplay(cartlist)
+    }
+
+    fun showTipsAdded(tipAmount: Double, WholetotalPrice: Double) {
+        if (tipAmount == 0.00) {
+            binding.tipLayout.gone()
+        } else {
+            binding.tipLayout.visible()
+            val percentageTip = String.format(
+                "%.0f", MethodUtils.calculatePercentageFromAmount(
+                    tipAmount,
+                    WholetotalPrice
+                )
+            )
+
+            binding.tipPercentLabel.text = "Tip ($percentageTip%)"
+            binding.txtTipGiven.text = "" + MethodUtils.roundOffAmount(tipAmount)
+
+        }
+
     }
 }

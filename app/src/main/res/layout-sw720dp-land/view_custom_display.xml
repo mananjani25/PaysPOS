@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:background="@color/backgroundColor"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/backgroundColor">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/mainCartLayout"
@@ -59,9 +59,9 @@
             android:id="@+id/rowHeaderLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@color/backgroundColor"
             android:orientation="horizontal"
             android:padding="@dimen/_5sdp"
-            android:background="@color/backgroundColor"
             app:layout_constraintTop_toBottomOf="@id/topLayout">
 
             <TextView
@@ -134,6 +134,7 @@
             android:id="@+id/linearBottom"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/_5sdp"
             android:background="#1d1d1f"
             app:layout_constraintBottom_toBottomOf="parent">
 
@@ -146,7 +147,7 @@
                 <LinearLayout
                     android:id="@+id/liinear_info_layout"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/_50sdp"
+                    android:layout_height="@dimen/_60sdp"
                     android:orientation="horizontal"
                     android:weightSum="2">
 
@@ -327,14 +328,17 @@
                             </RelativeLayout>
 
                             <RelativeLayout
+                                android:id="@+id/tipLayout"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="@dimen/_1sdp"
                                 android:layout_marginBottom="@dimen/_1sdp"
                                 android:orientation="horizontal"
-                                android:padding="@dimen/_1sdp">
+                                android:padding="@dimen/_1sdp"
+                                android:visibility="gone">
 
                                 <androidx.appcompat.widget.AppCompatTextView
+                                    android:id="@+id/tipPercentLabel"
                                     style="@style/CustomFontMediumStyle"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"

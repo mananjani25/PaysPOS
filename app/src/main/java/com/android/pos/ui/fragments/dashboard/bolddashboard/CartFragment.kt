@@ -213,6 +213,14 @@ class CartFragment(
         return binding.root
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (this::presentation.isInitialized) {
+            presentation.show()
+            presentation.onDisplayChanged()
+        }
+    }
+
     private fun checkOrderType() {
 
 
