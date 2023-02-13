@@ -602,11 +602,11 @@ class MethodUtils {
                 if (tmp.length > tmpIndex + 3) {
 
 
-                    return String.format("%.2f", value).toBigDecimal().toDouble()
+                    return String.format("%.2f", value).toDouble()
 
                 } else {
 
-                    return String.format("%.2f", value).toBigDecimal().toDouble()
+                    return String.format("%.2f", value).toDouble()
 
                 }
             } catch (e: java.lang.Exception) {
