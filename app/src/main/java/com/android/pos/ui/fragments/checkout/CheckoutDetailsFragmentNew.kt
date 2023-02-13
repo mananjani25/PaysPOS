@@ -1111,7 +1111,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         LogUtil.logE("ORDER_TYPE", prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT))
 
         viewModel.ordertypelist.forEach {
-            if (prefProvider.getValue(Constants.ORDER_TYPE, "") == it.orderType) {
+            if (prefProvider.getValue(Constants.ORDER_TYPE_NAME, "") == it.name) {
                 paymentviewModel.setOrderTypeId(it.id)
             }
         }

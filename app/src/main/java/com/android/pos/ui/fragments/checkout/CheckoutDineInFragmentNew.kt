@@ -1330,7 +1330,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         Log.e("ORDER_TYPE", prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT))
         paymentviewModel.setServiceChargeListApplied(serviceChargeAppliedList)
         viewModel.ordertypelist.forEach {
-            if (prefProvider.getValue(Constants.ORDER_TYPE, Constants.DINE_IN) == it.orderType) {
+            if (prefProvider.getValue(Constants.ORDER_TYPE_NAME, Constants.DINE_IN) == it.name) {
                 paymentviewModel.setOrderTypeId(it.id)
             }
         }

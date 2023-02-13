@@ -50,6 +50,7 @@ import com.android.pos.data.remote.Constants.ONLINE_ORDER_ENABLE
 import com.android.pos.data.remote.Constants.ONLY_SHOW_PRICE_GREATER_THAN_ZERO
 import com.android.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
 import com.android.pos.data.remote.Constants.ORDER_TYPE
+import com.android.pos.data.remote.Constants.ORDER_TYPE_NAME
 import com.android.pos.data.remote.Constants.REPORT_END_TIME
 import com.android.pos.data.remote.Constants.REPORT_START_TIME
 import com.android.pos.data.remote.Constants.SERVICECHARGE_DINEIN_ORDER
@@ -5234,7 +5235,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             model.serviceCharge = serviceChargesList
             // model.orderTypeId = 1
             ordertypelist.forEach {
-                if (it.orderType.lowercase() == prefProvider.getValue(ORDER_TYPE, "").lowercase()) {
+                if (it.name.lowercase() == prefProvider.getValue(ORDER_TYPE_NAME, "").lowercase()) {
                     model.orderTypeId = it.id
                 }
             }
