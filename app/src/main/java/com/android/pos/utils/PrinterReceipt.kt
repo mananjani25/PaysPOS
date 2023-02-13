@@ -2568,7 +2568,7 @@ fun addWholeTbItemToGuestInner(
         obj.modifiers.forEach {
             PrintSunmiUtils.normalText(
                 padLineCustomerItem(
-                    if (it.modifier_quantity == 1){"      "+obj.name}else{"   "+it.modifier_quantity + "x " + obj.name},
+                    if (it.modifier_quantity == 1){"      "+it.name}else{"   "+it.modifier_quantity + "x " + it.name},
                     "" + MethodUtils.roundOffAmount(it.price * it.itemQuantity),
                     if (font == Constants.LARGE) 23 else 48
                 ).toString()
