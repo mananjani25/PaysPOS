@@ -106,6 +106,7 @@ class CashLogFragment : Fragment(), AdapterView.OnItemSelectedListener {
             viewModel.startDate.value = timeCalculateForStartEndTime(hour, minute, "isstart")
             if (differnceTrue(viewModel.startDate.value!!, viewModel.endDate.value) <= 30) {
                 currentPage = 1
+                adapter.clear()
                 viewModel.apiCallTimeSheet(
                     getTerminalId(binding.spTerminals.selectedItemPosition).toString(),
                     currentPage
@@ -126,6 +127,7 @@ class CashLogFragment : Fragment(), AdapterView.OnItemSelectedListener {
             viewModel.endDate.value = timeCalculateForStartEndTime(hour, minute, "isend")
             if (differnceTrue(viewModel.endDate.value!!, viewModel.startDate.value) <= 30) {
                 currentPage = 1
+                adapter.clear()
                 viewModel.apiCallTimeSheet(
                     getTerminalId(binding.spTerminals.selectedItemPosition).toString(),
                     currentPage
@@ -197,7 +199,10 @@ class CashLogFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 currentPage += 1
                 if (currentPage <= TOTAL_PAGES) {
                     isLoading = true
-                    viewModel.apiCallTimeSheet(getTerminalId(binding.spTerminals.selectedItemPosition).toString(),currentPage)
+                    viewModel.apiCallTimeSheet(
+                        getTerminalId(binding.spTerminals.selectedItemPosition).toString(),
+                        currentPage
+                    )
 
                 } else {
                     adapter.showLoading(false)
@@ -298,7 +303,7 @@ class CashLogFragment : Fragment(), AdapterView.OnItemSelectedListener {
             )
         )
 
-        adapter = CashLogAdapter(context,prefProvider)
+        adapter = CashLogAdapter(context, prefProvider)
         binding.rvOpenOrder.adapter = adapter
     }
 
@@ -307,7 +312,7 @@ class CashLogFragment : Fragment(), AdapterView.OnItemSelectedListener {
         viewModel.startDateSelection.observe(requireActivity()) { event ->
             event.getContentIfNotHandled()?.let {
 
-                DatePickerDialog(
+                val dialog = DatePickerDialog(
                     requireActivity(),
                     android.R.style.Theme_Material_Light_Dialog,
                     startDate,
@@ -316,7 +321,9 @@ class CashLogFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     myCalendar.get(Calendar.MONTH),
                     myCalendar.get(Calendar.DAY_OF_MONTH)
 
-                ).show()
+                )
+                dialog.datePicker.maxDate = Date().time
+                dialog.show()
             }
 
         }
@@ -326,7 +333,7 @@ class CashLogFragment : Fragment(), AdapterView.OnItemSelectedListener {
         viewModel.endDateSelection.observe(requireActivity()) { event ->
             event.getContentIfNotHandled()?.let {
 
-                DatePickerDialog(
+                val dialog = DatePickerDialog(
                     requireActivity(),
                     android.R.style.Theme_Material_Light_Dialog,
                     endDate,
@@ -335,7 +342,9 @@ class CashLogFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     myCalendar1.get(Calendar.MONTH),
                     myCalendar1.get(Calendar.DAY_OF_MONTH)
 
-                ).show()
+                )
+                dialog.datePicker.maxDate = Date().time
+                dialog.show()
             }
         }
     }
@@ -483,7 +492,10 @@ class CashLogFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
         terminalListGlobal.forEachIndexed { index, item ->
             if (item.id == prefProvider.getValueInt(Constants.TERMINAL_ID, 0)) {
-                LogUtil.logE("TerminalId", prefProvider.getValueInt(Constants.TERMINAL_ID, 0).toString())
+                LogUtil.logE(
+                    "TerminalId",
+                    prefProvider.getValueInt(Constants.TERMINAL_ID, 0).toString()
+                )
                 LogUtil.logE("TerminalId name", item.name)
                 binding.spTerminals.setSelection(index)
             }

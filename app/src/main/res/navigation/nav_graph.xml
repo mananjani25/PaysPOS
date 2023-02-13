@@ -1472,6 +1472,9 @@
             app:destination="@id/customer"
             app:enterAnim="@anim/nav_default_enter_anim"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_menuFragment_to_reportEODFragment"
+            app:destination="@id/reportEODFragment" />
     </dialog>
     <fragment
         android:id="@+id/dummyFragment"

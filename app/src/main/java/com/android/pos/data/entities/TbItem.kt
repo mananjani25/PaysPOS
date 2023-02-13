@@ -122,6 +122,13 @@ class TbItem : Parcelable {
         }
         val removeItems: ArrayList<TaxData> = arrayListOf()
 
+        var itemListIds: ArrayList<Int> = arrayListOf()
+
+        for (m in 0 until itemList.size) {
+
+            itemListIds.add(itemList[m].id)
+        }
+
         item.taxes?.forEachIndexed { index, it ->
 
             for (i in 0 until itemList.size) {
@@ -134,8 +141,20 @@ class TbItem : Parcelable {
 
                 }
             }
-            if (!itemList.contains(it) && !it.isDeleted && it.isActive) {
+
+
+            if (!itemList.contains(it) && !it.isDeleted && it.isActive && !itemListIds.contains(it.id)) {
                 itemList.add(it)
+            }
+
+            //for update the tax
+            else if (itemListIds.contains(it.id) && !it.isDeleted && it.isActive) {
+
+                for (m in 0 until itemList.size) {
+                    if (itemList.get(m).id == it.id) {
+                        itemList.set(m, it)
+                    }
+                }
             }
         }
         //remove items from list

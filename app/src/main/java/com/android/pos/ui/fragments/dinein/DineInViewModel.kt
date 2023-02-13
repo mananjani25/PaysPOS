@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.android.pos.data.model.DineInOrderDetailAttributes
 import com.android.pos.data.model.MergeTableModel
 import com.android.pos.data.model.requestModel.*
-import com.android.pos.data.model.responseModel.AvailableTransferTableList
 import com.android.pos.data.model.responseModel.CreateNoteResponse
 import com.android.pos.data.model.responseModel.GetFloorPlanDetailResponse
 import com.android.pos.data.model.responseModel.GetFloorPlanResponse
@@ -57,6 +56,10 @@ class DineInViewModel @Inject constructor(
     val _unMergeStatus = MutableLiveData<Event<String>>()
     val unMergeStatusUpdate: LiveData<Event<String>> = _unMergeStatus
 
+    private val _increaseCounter = MutableLiveData<Event<Boolean>>()
+    val increaseCounter: LiveData<Event<Boolean>> = _increaseCounter
+
+
     fun getFloorPlan(): LiveData<Resource<GetFloorPlanResponse>> {
         return posRepository.getFloorPlan(prefProvider.getValueInt(LOCATION_ID, 0))
     }
@@ -69,6 +72,28 @@ class DineInViewModel @Inject constructor(
 
     fun getAvailableTransferTableList(): LiveData<Resource<AvailableTransferTableList>> {
         return posRepository.getAvailableTransferTableList()
+    }
+
+    suspend fun increaseOnGoingOrderCounter() {
+
+        _showProgress.value = Event(true)
+
+        val resource = posRepository.increaseOnGoingOrderCounter()
+        when (resource.status) {
+            Status.SUCCESS -> {
+                _showProgress.value = Event(false)
+                _increaseCounter.value = Event(false)
+            }
+            Status.ERROR -> {
+                _snackbarText.value = Event(resource.message)
+                _showProgress.value = Event(false)
+            }
+
+            Status.LOADING -> {
+                _showProgress.value = Event(true)
+            }
+
+        }
     }
 
     fun mergeTable(
@@ -93,7 +118,7 @@ class DineInViewModel @Inject constructor(
             when (resource.status) {
                 Status.SUCCESS -> {
                     _showProgress.value = Event(false)
-                    (resource.message?.let {
+                    (resource.data?.message?.let {
                         _mergeStatus.value = Event(it)
                     })
                 }
@@ -827,13 +852,13 @@ class DineInViewModel @Inject constructor(
 
         guestModelWT.guestItemsAttributes = listWholeTbItems
         listGuestAttr.add(0, guestModelWT)
-        /* for (m in 0 until orderItemsAttr.size) {
-             val obj = orderItemsAttr.get(m)
+       /* for (m in 0 until orderItemsAttr.size) {
+            val obj = orderItemsAttr.get(m)
 
-             obj.custom_item_id = m
+            obj.custom_item_id = m
 
-         }
- */
+        }
+*/
 
 
         model.orderItemsAttributes = orderItemsAttr

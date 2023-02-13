@@ -620,6 +620,8 @@ class DineInFragment : Fragment() {
         return View.OnClickListener { v ->
             val dineInFloorTableModel = v.tag as GetFloorPlanResponse.Data.FloorPlanTable
             LogUtil.logE(TAG, "dineInFloorTableModel:  ${Gson().toJson(dineInFloorTableModel)}")
+            LogUtil.logE(TAG, "dineInFloorTableModelEmployeeId:  ${prefProvider.getValueInt(
+                EMPLOYEE_ID,0)}")
             if (dineInFloorTableModel.status == OCCUPIED) {
                 if (dineInFloorTableModel.lock_by_id == prefProvider.getValueInt(
                         EMPLOYEE_ID,

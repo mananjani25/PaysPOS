@@ -361,15 +361,15 @@
                         android:textColor="@color/txtColor"
                         android:textSize="@dimen/text_size_medium" />
 
-                    <View
+                   <!-- <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:layout_marginTop="@dimen/_10sdp"
-                        android:background="@color/view" />
+                        android:background="@color/view" />-->
 
                 </LinearLayout>
 
-                <LinearLayout
+                <!--<LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
@@ -397,7 +397,7 @@
                         android:layout_marginBottom="@dimen/_10sdp"/>
 
 
-                </LinearLayout>
+                </LinearLayout>-->
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
 

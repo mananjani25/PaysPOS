@@ -254,6 +254,7 @@
                         android:overlapAnchor="false"
                         android:spinnerMode="dropdown"
                         android:textSize="@dimen/_5mdpi"
+                        android:paddingEnd="@dimen/_10sdp"
                         tools:ignore="NestedWeights" />
 
                     <androidx.appcompat.widget.AppCompatImageView

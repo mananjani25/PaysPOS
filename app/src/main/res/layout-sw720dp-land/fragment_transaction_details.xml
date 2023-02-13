@@ -1083,7 +1083,7 @@
                     android:layout_marginTop="@dimen/_10sdp"
                     android:paddingHorizontal="@dimen/_7sdp"
                     android:paddingVertical="@dimen/_10sdp"
-                    android:text="@string/text_message"
+                    android:text="@string/text_customer_receipt"
                     android:textColor="@color/white"
                     android:textSize="@dimen/text_size_large"
                     android:visibility="visible"  />

@@ -505,6 +505,8 @@ class OnlineDetailFragment(
                     var temp_calender = Calendar.getInstance()
                     temp_calender.add(Calendar.DATE, 7)
                     datePickerDialog.datePicker.maxDate = temp_calender.timeInMillis
+                } else {
+                    datePickerDialog.datePicker.maxDate = Date().time
                 }
 
 
@@ -532,6 +534,8 @@ class OnlineDetailFragment(
                 )
                 if (param1 == "4") {
                     datePickerDialog.datePicker.minDate =myCalendar1.timeInMillis
+                } else {
+                    datePickerDialog.datePicker.maxDate = Date().time
                 }
                 datePickerDialog.show()
             }
@@ -1723,7 +1727,7 @@ class OnlineDetailFragment(
 
             }
 
-            PrintSunmiUtils.cutPaper()
+            PrintSunmiUtils.cutPaperInner()
         } catch (e: Exception) {
             // printerDialog.dismiss()
             e.printStackTrace()

@@ -43,6 +43,7 @@ import com.android.pos.data.remote.Constants.DINE_IN_LIST_EDIT
 import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
+import com.android.pos.data.remote.Constants.IS_SYNC_MARKUP
 import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER
 import com.android.pos.data.remote.Constants.LOCK_SCREEN_TRANSACTION
 import com.android.pos.data.remote.Constants.ONLINE_ORDER_ENABLE
@@ -103,6 +104,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 ) : ViewModel() {
 
 
+    private var syncMarkeup: Boolean = false
     var dineInHeaderPosition: Int = 0
     var dineInSelectedItemHeaderPos: Int = 0
     var selectedItemPositionDine: Int = 0
@@ -214,6 +216,9 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     private val _logout = MutableLiveData<Event<Boolean>>()
     val logout: LiveData<Event<Boolean>> = _logout
+
+    private val _increaseCounter = MutableLiveData<Event<Boolean>>()
+    val increaseCounter: LiveData<Event<Boolean>> = _increaseCounter
 
     private val _onlineOrderCount = MutableLiveData<Event<OnlineOrderNotificationCount.Data>>()
     val onlineOrderCount: LiveData<Event<OnlineOrderNotificationCount.Data>> = _onlineOrderCount
@@ -505,7 +510,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         type: String,
         isManualSales: Boolean,
         dineInList: List<DineInModel> = arrayListOf(),
-        isFromDineInScreen:Boolean = false
+        isFromDineInScreen: Boolean = false
     ) {
         if (cartList != null && cartList.isEmpty()) {
             // empty cart hoy to new cart create kare
@@ -561,9 +566,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     } else {
                                         Log.e("AddedInElse", "GotMod")
 
-                                        if ( list[i].itemId == item.itemId && checkVariation(
+                                        if (list[i].itemId == item.itemId && checkVariation(
                                                 list[i],
-                                                  item
+                                                item
                                             ) && checkModifierNewLogic(list[i], item)
                                         ) {
                                             Log.d(TAG, "cartLogic: " + i)
@@ -669,17 +674,16 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 }
                             }
 
-                            if (isFromDineInScreen){
-                                list.forEach { it1->
+                            if (isFromDineInScreen) {
+                                list.forEach { it1 ->
                                     var listd = list.filter { it.itemId == it1.itemId }
-                                    if (listd.size > 1){
-                                        it1.customItemID = kotlin.random.Random.nextInt(10,10000)
+                                    if (listd.size > 1) {
+                                        it1.customItemID = kotlin.random.Random.nextInt(10, 10000)
 
                                     }
 
 
                                 }
-
 
 
                             }
@@ -763,7 +767,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     list.add(item)
                                 }
                             }
-                            Log.e("GEtDineInData","getList  ${Gson().toJson(list)}")
+                            Log.e("GEtDineInData", "getList  ${Gson().toJson(list)}")
                             cartList[0].items = list
                         } else if (type == UPDATE) {
                             var index = -1
@@ -788,7 +792,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                             Log.d(TAG, "cartLogic: " + i)
                                             index = i
                                             break
-                                        } else if ( list[i].itemId == item.itemId && checkVariation(
+                                        } else if (list[i].itemId == item.itemId && checkVariation(
                                                 list[i],
                                                 item
                                             ) && checkModifierNewLogic(list[i], item)
@@ -831,7 +835,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 }
                             }
                             if (index == -2) {
-                                Log.e(TAG,"Itis NotMinus  ")
+                                Log.e(TAG, "Itis NotMinus  ")
 
                             } else if (index != -1) {
                                 val model = list.get(index)
@@ -840,7 +844,10 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     if (item != null) {
                                         model.name = item.name
                                         model.price = item.price
-                                        Log.e("CheckDineinBug","variationsAttributesSize  ${item.variationsAttributes.size}")
+                                        Log.e(
+                                            "CheckDineinBug",
+                                            "variationsAttributesSize  ${item.variationsAttributes.size}"
+                                        )
                                         model.variationsAttributes = item.variationsAttributes
 
                                         if (item.isEdited) {
@@ -889,7 +896,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                                     }
                                     Log.d(TAG, "cartLogic:itemname " + model.name)
-                                    list.set(index,model)
+                                    list.set(index, model)
 //                                    list[index] = model
 
                                 }
@@ -947,7 +954,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         if (list[i].manualSaleId == item.manualSaleId) {
                                             index = i
                                             break
-                                        } else if (cartModel?.reorder == true) {
+                                        } else if (cartModel.reorder == true) {
                                             if (list[i].orderItemId == item.orderItemId) {
                                                 index = i
                                                 Log.e(TAG, "indexReorder23:  ${index}")
@@ -973,23 +980,43 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 }
                             } else {
                                 //list.remove(item)
+
                             }
+
+                            cartModel.items = list
+                            Log.e(
+                                "ModNewLogic",
+                                "dineInList:   ${Gson().toJson(cartModel.dineInList)}"
+                            )
+                            Log.e("ModNewLogic", "checkItems:  ${Gson().toJson(cartModel.items)}")
+
+                            //cartModel.dineInList = dinein
+
+
                         }
                     }
                     var cartModel = cartList[0]
                     if (type == UPDATE) {
-                        var list = dineInList[selectedHeader].items
-                        list.forEach { itemData ->
-                            cartModel = taxBifurcationCalculation(
-                                itemData,
-                                cartModel,
-                                type, false
-                            )
+                        Log.e("CheckSelectedHeaderPos", "CheckPOS ${selectedHeader}")
+                        var list = dineInList.get(selectedHeader)?.items
+                        dineInList?.forEach { itemData ->
+                            itemData.items.forEach {
+                                cartModel = taxBifurcationCalculation(
+                                    it,
+                                    cartModel,
+                                    type, false
+                                )
+                            }
                         }
+
+                        Log.e(
+                            TAG,
+                            "taxlistDynamicData:  ${Gson().toJson(cartModel.taxlistDynamic)}"
+                        )
                         cartModel.items = list
                     } else {
                         if (item != null) {
-                            cartModel = taxBifurcationCalculation(item!!, cartModel, type, false)
+                            cartModel = taxBifurcationCalculation(item, cartModel, type, false)
                         }
                     }
                     addCart(cartModel)
@@ -1038,7 +1065,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 } else {
                                     Log.e("AddedInElse", "GotMod")
 
-                                    if ( list[i].itemId == item.itemId && checkVariation(
+                                    if (list[i].itemId == item.itemId && checkVariation(
                                             list[i],
                                             item
                                         ) && checkModifierNewLogic(list[i], item)
@@ -1223,8 +1250,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                     } else if (type == UPDATE) {
                         var index = -1
 
-                        var idsF  = list.filter { it.itemId == item?.itemId }
-                        Log.e("CheckUpdate","checkIdsfSize  ${idsF.size}")
+                        var idsF = list.filter { it.itemId == item?.itemId }
+                        Log.e("CheckUpdate", "checkIdsfSize  ${idsF.size}")
 
                         for (i in list.indices) {
                             if (item != null) {
@@ -1240,12 +1267,13 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 } else {
 
 
-
-
-                                      if (  idsF.size >1  && list[i].itemId == item.itemId && checkVariation(
+                                    if (idsF.size > 1 && list[i].itemId == item.itemId && checkVariation(
                                             list[i],
                                             item
-                                        ) && checkModifierNewLogic(list[i], item) && item.id != list[i].id
+                                        ) && checkModifierNewLogic(
+                                            list[i],
+                                            item
+                                        ) && item.id != list[i].id
                                     ) {
 
 
@@ -1276,71 +1304,70 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         list.addAll(ttempllist.toMutableList())
                                         index = -2
                                         break
+                                    } else if (list[i].id == item.id && list[i].itemId == item.itemId) {
+
+                                        var isBreakInside = false
+
+
+                                        if (idsF.size > 1) {
+
+                                            for (k in i until list.size) {
+                                                if (list[k].id != item.id && list[k].itemId == item.itemId && checkVariation(
+                                                        list[k],
+                                                        item
+                                                    ) && checkModifierNewLogic(list[k], item)
+                                                ) {
+
+                                                    var listTmp =
+                                                        combineItem(
+                                                            list.toCollection(arrayListOf()),
+                                                            item,
+                                                            k
+                                                        )
+                                                    list.clear()
+                                                    Log.e(
+                                                        "CheckUpdate",
+                                                        "newCartLogicModifier: position of selected Item " + item.id
+                                                    )
+                                                    var indexJ = -1
+
+                                                    for (j in 0 until listTmp.size) {
+                                                        if (listTmp[j].id == item.id
+                                                        ) {
+                                                            indexJ = j
+                                                            break
+                                                        }
+
+                                                    }
+                                                    var ttempllist =
+                                                        ArrayList(listTmp).apply {
+                                                            if (indexJ != -1) {
+                                                                Log.e(
+                                                                    "CheckUpdate",
+                                                                    "GETIndexJ  ${indexJ}"
+                                                                )
+                                                                removeAt(indexJ)
+                                                            }
+                                                        }
+                                                    list.addAll(ttempllist.toMutableList())
+                                                    index = -2
+                                                    isBreakInside = true
+                                                    break
+
+                                                }
+
+                                            }
+                                        }
+                                        if (isBreakInside) {
+                                            break
+                                        }
+
+                                        if (isBreakInside == false) {
+                                            Log.e("CheckUpdate", "cartLogicFInd: " + i)
+                                            index = i
+                                            break
+                                        }
                                     }
-                                    else if (list[i].id == item.id && list[i].itemId == item.itemId) {
-
-                                       var  isBreakInside = false
-
-
-                                          if (idsF.size > 1) {
-
-                                              for (k in i until list.size) {
-                                                  if (list[k].id != item.id && list[k].itemId == item.itemId && checkVariation(
-                                                          list[k],
-                                                          item
-                                                      ) && checkModifierNewLogic(list[k], item)
-                                                  ) {
-
-                                                      var listTmp =
-                                                          combineItem(
-                                                              list.toCollection(arrayListOf()),
-                                                              item,
-                                                              k
-                                                          )
-                                                      list.clear()
-                                                      Log.e(
-                                                          "CheckUpdate",
-                                                          "newCartLogicModifier: position of selected Item " + item.id
-                                                      )
-                                                      var indexJ = -1
-
-                                                      for (j in 0 until listTmp.size) {
-                                                          if (listTmp[j].id == item.id
-                                                          ) {
-                                                              indexJ = j
-                                                              break
-                                                          }
-
-                                                      }
-                                                      var ttempllist =
-                                                          ArrayList(listTmp).apply {
-                                                              if (indexJ != -1) {
-                                                                  Log.e(
-                                                                      "CheckUpdate",
-                                                                      "GETIndexJ  ${indexJ}"
-                                                                  )
-                                                                  removeAt(indexJ)
-                                                              }
-                                                          }
-                                                      list.addAll(ttempllist.toMutableList())
-                                                      index = -2
-                                                      isBreakInside = true
-                                                      break
-
-                                                  }
-
-                                              }
-                                          }
-                                         if (isBreakInside){
-                                             break
-                                         }
-
-                                          if (isBreakInside == false) {
-                                              Log.e("CheckUpdate", "cartLogicFInd: " + i)
-                                              index = i
-                                              break
-                                          }
-                                      }
 
                                 }
 
@@ -2393,8 +2420,8 @@ class DashBoardCategoryViewModel @Inject constructor(
 
             var selectedList: ArrayList<Boolean> = arrayListOf()
 
-            Log.e("CheckModData","checktbMod:  ${Gson().toJson(tbMod)}")
-            Log.e("CheckModData","checkContaine  ${Gson().toJson(itemMod)}")
+            Log.e("CheckModData", "checktbMod:  ${Gson().toJson(tbMod)}")
+            Log.e("CheckModData", "checkContaine  ${Gson().toJson(itemMod)}")
             tbMod.forEach {
                 Log.e(TAG, "GetKey ${it.key}  GetValue ${it.value}")
                 if (itemMod.containsKey(it.key) && it.value == itemMod.get(it.key)) {
@@ -2405,7 +2432,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 }
             }
 
-            Log.e(TAG,"selectedList:  ${Gson().toJson(selectedList)}")
+            Log.e(TAG, "selectedList:  ${Gson().toJson(selectedList)}")
             if (selectedList.contains(false)) {
                 isSame = false
             }
@@ -2595,6 +2622,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 totalPrice = (subTotalPrice + totalTax + totalServiceCharge)
                 amountToBePaid = totalPrice - totalDiscount
+                Log.e("ManualSale", "amountToBePaid:   ${amountToBePaid}")
 
                 MethodUtils.setPriceTextView(txtTotalAmount, amountToBePaid)
             } else {
@@ -2752,7 +2780,12 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
             var finalTotal = 0.0
-            finalTotal = (subTotalPrice + totalTax + totalServiceCharge)
+            Log.e("FEB2023","subTotalPrice:  ${subTotalPrice}")
+            Log.e("FEB2023","totalTax:  ${totalTax}")
+            Log.e("FEB2023","totalServiceCharge:  ${totalServiceCharge}")
+            finalTotal = (MethodUtils.getTwoDecimal(subTotalPrice) + MethodUtils.getTwoDecimal(totalTax) + MethodUtils.getTwoDecimal(totalServiceCharge))
+            Log.e("FEB2023","finalTotal:  ${finalTotal}")
+
             cashDiscountType = prefProvider.getValue(Constants.OPTION_TYPE, "")
             //loyalty point and price calculation
             amountToBePaid = finalTotal
@@ -2883,7 +2916,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                             }
                         }
                     }
-                    String.format("%.2f", totalTax).toDouble()
+                 //   String.format("%.2f", totalTax).toDouble()
 //                    taxDynamicList = cartModel.taxlistDynamic!!.toCollection(ArrayList())
                     Log.d(TAG, "itemCalculationCartModel: " + taxDynamicList)
                     serviceChargeCalculationModel(cartModel)
@@ -2898,6 +2931,9 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
                     order_note = cartModel.note
+                    Log.e("FEB2023", "subTotalPrice:  ${subTotalPrice}")
+                    Log.e("FEB2023", "subTotalPrice:  ${totalTax}")
+                    Log.e("FEB2023", "subTotalPrice:  ${totalServiceCharge}")
 
                     var finalTotal = 0.0
                     finalTotal = (subTotalPrice + totalTax + totalServiceCharge)
@@ -3330,8 +3366,11 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     private fun taxCalculation(item: TbItem, discountPrice: Double) {
+
+        Log.e("CheckManualTax", "checkItem:  ${Gson().toJson(item)}")
         item.taxes?.forEach { tax ->
             if (tax.isActive && !tax.isDeleted) {
+
 
                 var modifierPrice = 0.0
                 val price =
@@ -3344,6 +3383,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 val totalPrice =
                     price + modifierPrice /*- (discountPrice * item.itemQuantity)*/
 
+                Log.e("GetTaxTotalPrice", "totalPrice:   ${totalPrice}")
 
                 totalTax += if (tax.taxType == "Percentage") {
                     Log.d("yash", "taxCalculation: " + tax.taxType)
@@ -3357,7 +3397,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                         val itemTaxPrice =
                             (tax.rate * totalPrice) / 100
                         Log.e("itemTaxPrice", "" + itemTaxPrice)
-                        itemTaxPrice
+                        MethodUtils.getTwoDecimal(itemTaxPrice)
                     }
 
                 } else {
@@ -3367,13 +3407,16 @@ class DashBoardCategoryViewModel @Inject constructor(
                         String.format("%.2f", 0.00)
                             .toDouble()
                     } else {
-                        String.format("%.2f", tax.rate * item.itemQuantity)
-                            .toDouble()
+                        MethodUtils.getTwoDecimal(tax.rate * item.itemQuantity)
+                        /*String.format("%.2f", tax.rate * item.itemQuantity)
+                            .toDouble()*/
                     }
 
                 }
             }
         }
+
+        Log.e("CheckTotalTax", "totalTax:   ${totalTax}")
     }
 
     private fun taxCalculationReorder(item: TbItem) {
@@ -3871,19 +3914,19 @@ class DashBoardCategoryViewModel @Inject constructor(
                 it.items.forEach { tb ->
 
 
-                        listItems.add(
-                            GuestItemsAttributes(
-                                id = tb.guestItemId,
-                                orderItemId = tb.orderItemId,
-                                quantity = tb.itemQuantity,
-                                itemId = tb.itemId,
-                                amount = tb.price,
-                                timestamp = tb.timeStamp,
-                                guestId = it.id?.let { it }
-
-                            )
+                    listItems.add(
+                        GuestItemsAttributes(
+                            id = tb.guestItemId,
+                            orderItemId = tb.orderItemId,
+                            quantity = tb.itemQuantity,
+                            itemId = tb.itemId,
+                            amount = tb.price,
+                            timestamp = tb.timeStamp,
+                            guestId = it.id?.let { it }
 
                         )
+
+                    )
 
 
 
@@ -4513,6 +4556,78 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     }
 
+    fun deleteOrderAfterMarkup() {
+        if (prefProvider.getValueboolean(IS_SYNC_MARKUP, false)) {
+            syncMarkeup = false
+            markupInventory()
+        }
+
+
+        viewModelScope.launch {
+            decreaseOnGoingOrderCounter(false)
+        }
+
+    }
+
+    suspend fun increaseOnGoingOrderCounter() {
+
+        _showProgress.value = Event(true)
+
+        val resource = posRepository.increaseOnGoingOrderCounter()
+        when (resource.status) {
+            Status.SUCCESS -> {
+                _showProgress.value = Event(false)
+                _increaseCounter.value = Event(false)
+            }
+            Status.ERROR -> {
+                _snackbarText.value = Event(resource.message)
+                _showProgress.value = Event(false)
+            }
+
+            Status.LOADING -> {
+                _showProgress.value = Event(true)
+            }
+
+        }
+    }
+
+    suspend fun decreaseOnGoingOrderCounter(b: Boolean) {
+        _showProgress.value = Event(true)
+
+        val resource = posRepository.decreaseOnGoingOrderCounter()
+        when (resource.status) {
+            Status.SUCCESS -> {
+                _showProgress.value = Event(false)
+
+                if (b) {
+                    logoutAPI()
+                }
+
+            }
+            Status.ERROR -> {
+                _snackbarText.value = Event(resource.message)
+                _showProgress.value = Event(false)
+            }
+
+            Status.LOADING -> {
+                _showProgress.value = Event(true)
+            }
+
+        }
+    }
+
+    fun markupInventory() {
+
+
+        if (prefProvider.getValue(ORDER_TYPE, "").isEmpty() && !syncMarkeup) {
+            prefProvider.setValue(
+                SYNC_TIME_STAMP, ""
+            )
+            syncMarkeup = true
+            syncInventoryModule(true)
+        }
+    }
+
 
     fun syncInventoryModule(b: Boolean) {
         _showProgress.value = Event(true)
@@ -4671,6 +4786,11 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                             prefProvider.setValue(SYNC_TIME_STAMP, response.data.timeStamp)
 
+                            if (syncMarkeup) {
+                                syncMarkeup = false
+                                prefProvider.setValueboolean(IS_SYNC_MARKUP, false)
+                            }
+
                         } else {
                             _tableStatus.value = response?.let { Event(it.message) }
                         }
@@ -4696,45 +4816,6 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
     }
 
-
-    fun syncInventoryModuleN() {
-        _showProgress.value = Event(true)
-        viewModelScope.launch {
-            val resource =
-                posRepository.syncInventory(prefProvider.getValueInt(TERMINAL_ID, -1), "")
-            when (resource.status) {
-                Status.SUCCESS -> {
-                    Log.e("SyncInventory", "SyncSuccess")
-
-                    resource.data.let { response ->
-                        if (response?.status == 200) {
-                            _showProgress.value = Event(false)
-                            posRepository.saveDatabase(response)
-
-
-                        } else {
-                            _tableStatus.value = response?.let { Event(it.message) }
-                        }
-
-//                        syncSettingModule()
-
-                    }
-                }
-
-                Status.ERROR -> {
-                    Log.e("SyncInventory", "SyncError")
-                    _snackbarText.value = Event(resource.message.toString())
-                    _showProgress.value = Event(false)
-                }
-
-                Status.LOADING -> {
-                    Log.e("SyncInventory", "SyncLoading")
-                    _showProgress.value = Event(true)
-                }
-            }
-
-        }
-    }
 
     fun syncSettingModule() {
         viewModelScope.launch {

@@ -3,9 +3,10 @@ package com.android.pos.ui.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.android.pos.MainApplication
+import com.android.pos.R
 import com.android.pos.data.model.SplitDetailListModel
 import com.android.pos.databinding.ViewSplitListBinding
-import com.android.pos.utils.MethodUtils
 
 class SplitListAdapter() : RecyclerView.Adapter<SplitListAdapter.MyViewHolder>() {
     private var list: ArrayList<SplitDetailListModel> = arrayListOf()
@@ -21,10 +22,10 @@ class SplitListAdapter() : RecyclerView.Adapter<SplitListAdapter.MyViewHolder>()
         fun bind(model: SplitDetailListModel) {
             binding.model = model
             binding.executePendingBindings()
-            binding.txtSplitAmount.text =
-                "" + MethodUtils.roundOffAmount(list.get(bindingAdapterPosition).amount)
+            binding.txtSplitAmount.text =""+
+                MainApplication.getInstance()!!.getText(R.string.symbole) + list.get(bindingAdapterPosition).amount
             binding.txtRemainingAmount.text =
-                "" + MethodUtils.roundOffAmount(list.get(bindingAdapterPosition).remainingAmt)
+                ""+MainApplication.getInstance()!!.getText(R.string.symbole) + list.get(bindingAdapterPosition).remainingAmt
             binding.txtTitle.text =
                 list[bindingAdapterPosition].title + " " + (bindingAdapterPosition + 1)
 

@@ -37,7 +37,7 @@ class RolePermission @Inject constructor(
         }
     }
 
-     fun checkPermission(root: View?, moduleName: String): Boolean {
+     private fun checkPermission(root: View?, moduleName: String): Boolean {
         prefProvider.getCurrentEmployeeRole()?.let {
             if (it.modulePermission?.isNotEmpty() == true) {
                 it.modulePermission.forEach { modulePermission ->
@@ -51,7 +51,7 @@ class RolePermission @Inject constructor(
         return false
     }
 
-    fun checkPermissionForCashDrawer( moduleName: String): Boolean {
+    private fun checkPermissionForCashDrawer(moduleName: String): Boolean {
         prefProvider.getCurrentEmployeeRole()?.let {
             if (it.modulePermission?.isNotEmpty() == true) {
                 it.modulePermission.forEach { modulePermission ->

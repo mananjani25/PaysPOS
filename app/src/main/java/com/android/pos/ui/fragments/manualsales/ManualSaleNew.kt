@@ -1126,8 +1126,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             count++
             tabItemMOdel.customItemCount = count
             tabItemMOdel.name = "Custom Item ${count}"
-            if (binding.llKeypad.edtItemName.text?.isNotEmpty() == true) {
-                tabItemMOdel.name = binding.llKeypad.edtItemName.text.toString()
+            if (binding.llKeypad.edtItemName.text?.trim()?.isNotEmpty() == true) {
+                tabItemMOdel.name = binding.llKeypad.edtItemName.text!!.trim().toString()
                 count--
                 tabItemMOdel.customItemCount = count
             }

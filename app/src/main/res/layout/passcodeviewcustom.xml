@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
@@ -29,7 +30,7 @@
                 android:layout_marginTop="@dimen/_5sdp"
                 android:gravity="center"
                 android:text="@string/tv_enter_your_passcode"
-                android:textColor="@color/white"
+                android:textColor="@color/cool_grey"
                 android:textSize="@dimen/_8mdpi" />
 
             <com.poovam.pinedittextfield.CirclePinField
@@ -41,8 +42,8 @@
                 android:layout_marginBottom="@dimen/_5sdp"
                 android:inputType="number"
                 android:textColorLink="@color/white"
-                android:textSize="16sp"
-                app:circleRadius="15dp"
+                android:textSize="14sp"
+                app:circleRadius="10dp"
                 app:fieldColor="@color/white"
                 app:fillerColor="@color/white"
                 app:highlightColor="@color/white"
@@ -135,17 +136,19 @@
                 <TextView
                     android:id="@+id/zero"
                     style="@style/passcodeviewStyle"
-                    android:text="0" />
+                    android:text="0"
+                    tools:ignore="HardcodedText" />
 
                 <ImageView
                     android:id="@+id/backspace"
-                    android:layout_width="@dimen/_30sdp"
+                    android:layout_width="@dimen/_50sdp"
+
                     android:layout_height="@dimen/_30sdp"
                     android:layout_marginHorizontal="@dimen/_10sdp"
                     android:layout_marginVertical="@dimen/_5sdp"
-                    android:background="@drawable/passcode_viewunselected"
+                    android:background="@drawable/passcode_view_unselected_new"
                     android:gravity="center"
-                    android:padding="@dimen/_7sdp"
+                    android:padding="@dimen/_10sdp"
                     android:src="@drawable/backspase" />
             </TableRow>
         </TableLayout>
