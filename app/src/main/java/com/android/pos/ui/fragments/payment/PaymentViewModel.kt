@@ -1660,7 +1660,7 @@ open class PaymentViewModel @Inject constructor(
         return PaymentAttributes().apply {
 //            if (isUpdateOrder)
 //                id = paymentId
-            val totalPP = MethodUtils.roundOffAmountDouble(totalPrice)
+            val totalPP =totalPrice
             val totalDC = MethodUtils.roundOffAmountDouble(tipAmount)
             val totalAM = totalPP /*- totalDC*/
             amount = totalAM
