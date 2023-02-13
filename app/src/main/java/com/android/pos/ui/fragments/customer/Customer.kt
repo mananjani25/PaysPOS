@@ -49,6 +49,7 @@ class Customer : Fragment(), ItemCallback {
     private var dialog: Dialog? = null
     private val TAG = "Customer"
     private var currentpage = 1
+    var isFromSearch: Boolean = false
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -89,6 +90,7 @@ class Customer : Fragment(), ItemCallback {
         prefProvider = PrefProvider(requireContext())
         setUpRecyclerView()
         observeCustomerDelete()
+        isFromSearch = false
         loadCustomerLocalList(currentpage)
 
         val layoutManager =
@@ -170,7 +172,9 @@ class Customer : Fragment(), ItemCallback {
                 when (resource.status) {
                     Status.SUCCESS -> {
 
-                        ProgressUtils.dismissProgressDialog()
+                        if (!isFromSearch) {
+                            ProgressUtils.dismissProgressDialog()
+                        }
                         var data: ArrayList<TbCustomer>
                         if (resource.data != null) {
                             data =
@@ -227,11 +231,14 @@ class Customer : Fragment(), ItemCallback {
 
                     }
                     Status.LOADING -> {
-
-                        ProgressUtils.showProgressDialog(requireActivity())
+                        if (!isFromSearch) {
+                            ProgressUtils.showProgressDialog(requireActivity())
+                        }
                     }
                     Status.ERROR -> {
-                        ProgressUtils.dismissProgressDialog()
+                        if (!isFromSearch) {
+                            ProgressUtils.dismissProgressDialog()
+                        }
                         binding.root.showAlert(resource.message)
 
                     }
@@ -321,6 +328,7 @@ class Customer : Fragment(), ItemCallback {
                     } else {
                         if (!isEmptyString) {
                             isEmptyString = true
+                            isFromSearch = true
                             loadCustomerLocalList(1)
                         }
                     }
@@ -347,7 +355,7 @@ class Customer : Fragment(), ItemCallback {
 
     private fun loadFragment(model: TbCustomer) {
         firstDetailLoad = true
-        val frag = CustomerDetails.newInstance(model)
+        val frag = CustomerDetails.newInstance(model, isFromSearch)
         val fm: FragmentManager = requireActivity().supportFragmentManager
         fm.beginTransaction().replace(binding.frameContainer.id, frag, "Customer").commit()
     }

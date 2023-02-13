@@ -5,7 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.data.entities.TbCustomer
-import com.android.pos.data.model.CustomerListResponse
 import com.android.pos.data.model.CustomerSearchList
 import com.android.pos.data.model.responseModel.BaseResponse
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
@@ -14,7 +13,6 @@ import com.android.pos.data.remote.Constants
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
-import com.android.pos.utils.TimeFormatUtils.prefProvider
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -161,9 +159,11 @@ public class CustomerListViewModel @Inject constructor(
 
     }
 
-    fun getReportSummary() {
+    fun getReportSummary(isFromSearch: Boolean) {
 
-        _showProgress.value = Event(true)
+        if (!isFromSearch) {
+            _showProgress.value = Event(true)
+        }
         viewModelScope.launch {
 
             val resourceReport =
@@ -172,7 +172,9 @@ public class CustomerListViewModel @Inject constructor(
                 )
             when (resourceReport.status) {
                 Status.SUCCESS -> {
-                    _showProgress.value = Event(false)
+                    if (!isFromSearch) {
+                        _showProgress.value = Event(false)
+                    }
                     resourceReport.data.let {
                         _orderHistory.postValue(Event(it?.data?.ordersList))
                     }
@@ -180,11 +182,15 @@ public class CustomerListViewModel @Inject constructor(
 
                 Status.ERROR -> {
                     _snackbarText.value = Event(resourceReport.message)
-                    _showProgress.value = Event(false)
+                    if (!isFromSearch) {
+                        _showProgress.value = Event(false)
+                    }
                 }
 
                 Status.LOADING -> {
-                    _showProgress.value = Event(true)
+                    if (!isFromSearch) {
+                        _showProgress.value = Event(true)
+                    }
                 }
             }
         }

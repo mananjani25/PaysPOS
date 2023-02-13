@@ -47,6 +47,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
     lateinit var listOfTbItem: List<TbItem>
     lateinit var listOfItemsId: ArrayList<Int>
     lateinit var listOfServiceCharge: ArrayList<TbServiceCharge>
+    var isFromSearch: Boolean = false
 
     private val orderHistoryAdapter by lazy {
         OrderHistoryAdapter { view, order ->
@@ -62,9 +63,10 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
 
     companion object {
         private val CUSTOMER_MODEL = "customer_model"
-        fun newInstance(model: TbCustomer): CustomerDetails {
+        fun newInstance(model: TbCustomer,  isFromSearch: Boolean): CustomerDetails {
             val args = Bundle()
             args.putParcelable(CUSTOMER_MODEL, model)
+            args.putBoolean("isFromSearch", isFromSearch)
             val fragment = CustomerDetails()
             fragment.arguments = args
             return fragment
@@ -89,7 +91,9 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
         initObservers()
 
         //call initial api
-        viewModel.getReportSummary()
+        viewModel.getReportSummary(
+            isFromSearch
+        )
     }
 
     private fun observerServiceCharge() {
@@ -125,6 +129,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
             requireArguments().getParcelable<TbCustomer>(
                 CUSTOMER_MODEL
             )!!
+        isFromSearch = requireArguments().getBoolean("isFromSearch")
 
         if (customerModel.birth_date?.isNotEmpty() == true) {
             val inputFormat = SimpleDateFormat("MM/dd/yyyy")
