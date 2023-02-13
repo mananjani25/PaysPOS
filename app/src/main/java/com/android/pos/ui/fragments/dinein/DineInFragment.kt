@@ -248,12 +248,12 @@ class DineInFragment : Fragment() {
 
     private fun loadTransferTableDetails() {
         viewModel.getAvailableTransferTableList().observe(viewLifecycleOwner) {
-            it?.let { resource ->
-                when (resource.status) {
+            it?.let {
+                when (it.status) {
                     Status.SUCCESS -> {
                         ProgressUtils.dismissProgressDialog()
                         val bundle = Bundle()
-                        if (resource.data?.status == 200) {
+                        if (it.data?.status == 200) {
                             bundle.putParcelable("floorList", it.data)
                             if (findNavController().currentDestination?.id == R.id.dineInFragment) {
                                 findNavController().navigate(
@@ -275,7 +275,7 @@ class DineInFragment : Fragment() {
                     }
                     Status.ERROR -> {
                         ProgressUtils.dismissProgressDialog()
-                        binding.root.showAlert(resource.message)
+                        binding.root.showAlert(it.message)
 
                     }
                     Status.LOADING -> {

@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.android.pos.data.model.DineInOrderDetailAttributes
 import com.android.pos.data.model.MergeTableModel
 import com.android.pos.data.model.requestModel.*
+import com.android.pos.data.model.responseModel.AvailableTransferTableList
 import com.android.pos.data.model.responseModel.CreateNoteResponse
 import com.android.pos.data.model.responseModel.GetFloorPlanDetailResponse
 import com.android.pos.data.model.responseModel.GetFloorPlanResponse
