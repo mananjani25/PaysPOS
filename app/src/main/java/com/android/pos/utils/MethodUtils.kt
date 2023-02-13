@@ -28,7 +28,6 @@ import com.google.i18n.phonenumbers.Phonenumber
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import java.io.File
-import java.math.RoundingMode
 import java.text.DecimalFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -154,16 +153,16 @@ class MethodUtils {
         }
 
         fun roundOffAmountDown(price: Double): Double {
-            var valueFormat = DecimalFormat("#.##")
-            valueFormat.roundingMode = RoundingMode.DOWN
+            var valueFormat = DecimalFormat("##.##")
+            //  valueFormat.roundingMode = RoundingMode.UNNECESSARY
             return valueFormat.format(price).toDouble()
 
 
         }
 
         fun roundOffAmountUp(price: Double): Double {
-            var valueFormat = DecimalFormat("#.##")
-            valueFormat.roundingMode = RoundingMode.DOWN
+            var valueFormat = DecimalFormat("##.##")
+//            valueFormat.roundingMode = RoundingMode.CEILING
             return valueFormat.format(price).toDouble()
 
         }
@@ -184,7 +183,7 @@ class MethodUtils {
          }*/
 
         fun roundOffAmountString(price: Double): String {
-            return getTwoDecimal(price).toString()
+            return getTwoDecimal(price).toDouble().toPrecision(2)
         }
 
         fun roundOffAmountStringToDouble(price: String): String {
@@ -602,9 +601,8 @@ class MethodUtils {
                 var tmpIndex = tmp.indexOf(".", 0, true)
                 if (tmp.length > tmpIndex + 3) {
 
-                   // return String.format("%.2f", value).toBigDecimal().toDouble()
 
-                    return roundOffAmountUp(value)
+                    return String.format("%.2f", value).toBigDecimal().toDouble()
 
                 } else {
 
