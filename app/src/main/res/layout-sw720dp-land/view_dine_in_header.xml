@@ -96,11 +96,11 @@
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtPay"
                     style="@style/CustomFontSemiBold"
-                    android:layout_width="@dimen/_100sdp"
+                    android:layout_width="@dimen/_60sdp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:gravity="center"
-                    android:paddingHorizontal="@dimen/_10sdp"
+                    android:paddingHorizontal="@dimen/_6sdp"
                     android:paddingVertical="@dimen/_4sdp"
                     android:text="@string/pay_now"
                     android:textColor="@color/white"
