@@ -125,10 +125,10 @@ class Passcode : Fragment() {
 
     override fun onResume() {
         super.onResume()
-//        if(this::presentation.isInitialized){
-//            presentation.show()
-//            presentation.onLogOutOrClockOut()
-//        }
+        if(this::presentation.isInitialized){
+            presentation.show()
+            presentation.onLogOutOrClockOut()
+        }
     }
 
     private fun setTimeAndDate() {

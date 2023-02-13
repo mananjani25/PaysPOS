@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
@@ -20,8 +21,12 @@ import com.android.pos.di.PrefProvider
 
 import com.android.pos.di.RolePermission
 import com.android.pos.ui.adapter.InventoryAdapter
+import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.android.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
+import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.TAG
+import com.android.pos.utils.getCustomerDisplay
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
@@ -48,6 +53,10 @@ class OnlineOrderFragment : Fragment() {
     @set:Inject
     internal var prefProvider: PrefProvider? = null
 
+    private lateinit var presentation: CustomDisplay
+    private val passcodeViewModel by activityViewModels<PasscodeViewModel>()
+    private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -57,7 +66,25 @@ class OnlineOrderFragment : Fragment() {
         requireContext().registerReceiver(broadcastReceiver, IntentFilter("onlineOrder"));
         configureToolbar()
         getOrderCountsObserver(startDate, endDate)
+
+        getCustomerDisplay(requireContext())?.let { display ->
+            presentation = CustomDisplay(
+                display,
+                requireContext(),
+                viewLifecycleOwner,
+                dashboardViewModel,
+                passcodeViewModel
+            )
+        }
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (this::presentation.isInitialized) {
+            presentation.show()
+            presentation.onLogOutOrClockOut()
+        }
     }
 
     override fun onDestroy() {

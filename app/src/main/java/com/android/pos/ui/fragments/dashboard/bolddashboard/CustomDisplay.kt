@@ -169,7 +169,7 @@ class CustomDisplay(
                 if (data != null) {
                     if (loyaltyPointCondition(data) && redeemLoyaltyInfo.needToApplyLoyalty) {
                         binding.liinearInfoLayout.layoutParams.height =
-                            resources.getDimension(R.dimen._80sdp).toInt()
+                            resources.getDimension(R.dimen._90sdp).toInt()
                         binding.relativeLoylatyPoints.visibility = View.VISIBLE
                         binding.lblLoyaltyPoints.visibility = View.VISIBLE
 
@@ -190,7 +190,7 @@ class CustomDisplay(
                 }
             }
 
-            if (taxBirfurcationAdapter.taxlist.size == 0) {
+            if (taxBirfurcationAdapter.taxlist.size < 2) {
                 binding.imgDropdown.gone()
             } else {
                 binding.imgDropdown.visible()
@@ -235,7 +235,7 @@ class CustomDisplay(
                 if (taxBirfurcationAdapter.taxlist.size == 1) {
                     if (dashBoardCategoryViewModel.order_note.isNotEmpty()) {
                         binding.liinearInfoLayout.layoutParams.height =
-                            resources.getDimension(R.dimen._60sdp).toInt()
+                            resources.getDimension(R.dimen._80sdp).toInt()
                     } else {
                         if (binding.relativeLoylatyPoints.isVisible()) {
                             binding.liinearInfoLayout.layoutParams.height =
@@ -248,10 +248,17 @@ class CustomDisplay(
                 } else if (taxBirfurcationAdapter.taxlist.size == 2) {
                     if (dashBoardCategoryViewModel.order_note.isNotEmpty()) {
                         binding.liinearInfoLayout.layoutParams.height =
-                            resources.getDimension(R.dimen._110sdp).toInt()
+                            resources.getDimension(R.dimen._100sdp).toInt()
                     } else {
                         binding.liinearInfoLayout.layoutParams.height =
-                            resources.getDimension(R.dimen._100sdp).toInt()
+                            resources.getDimension(R.dimen._90sdp).toInt()
+//                        if (binding.relativeLoylatyPoints.isVisible()) {
+//                            binding.liinearInfoLayout.layoutParams.height =
+//                                resources.getDimension(R.dimen._110sdp).toInt()
+//                        } else {
+//                            binding.liinearInfoLayout.layoutParams.height =
+//                                resources.getDimension(R.dimen._70sdp).toInt()
+//                        }
                     }
                 } else {
                     if (dashBoardCategoryViewModel.order_note.isNotEmpty()) {
@@ -259,7 +266,7 @@ class CustomDisplay(
                             resources.getDimension(R.dimen._110sdp).toInt()
                     } else {
                         binding.liinearInfoLayout.layoutParams.height =
-                            resources.getDimension(R.dimen._100sdp).toInt()
+                            resources.getDimension(R.dimen._105sdp).toInt()
                     }
 
                 }

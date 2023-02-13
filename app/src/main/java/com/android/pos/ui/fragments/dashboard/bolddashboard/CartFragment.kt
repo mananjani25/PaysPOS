@@ -12,7 +12,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.*
@@ -213,14 +212,6 @@ class CartFragment(
         return binding.root
     }
 
-    override fun onResume() {
-        super.onResume()
-        if (this::presentation.isInitialized) {
-            presentation.show()
-            presentation.onDisplayChanged()
-        }
-    }
-
     private fun checkOrderType() {
 
 
@@ -323,7 +314,7 @@ class CartFragment(
                     }
                     binding.imgDropdown.setImageResource(R.drawable.ic_solid_up_arrow)
                     binding.relativeDynamicTax.visible()
-                    if(this::presentation.isInitialized){
+                    if (this::presentation.isInitialized) {
                         presentation.show()
                         presentation.onDisplayChanged()
                         presentation.onTaxClicked(true)
@@ -339,7 +330,7 @@ class CartFragment(
                     taxClickable = false
                     binding.imgDropdown.setImageResource(R.drawable.ic_arrow_drop_down)
                     binding.relativeDynamicTax.gone()
-                    if(this::presentation.isInitialized){
+                    if (this::presentation.isInitialized) {
                         presentation.show()
                         presentation.onDisplayChanged()
                         presentation.onTaxClicked(false)
@@ -928,6 +919,10 @@ class CartFragment(
                         prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0).toString()
                     )
 
+                    if (this::presentation.isInitialized) {
+                        presentation.show()
+                        presentation.onDisplayChanged()
+                    }
 
                     saveVisibility()
 
@@ -2235,6 +2230,11 @@ class CartFragment(
     }
 
     override fun onItemClickListener(view: View?, pos: Int) {
+
+        if (this::presentation.isInitialized) {
+            presentation.show()
+            presentation.onDisplayChanged()
+        }
 
         val model = orderTypeAdapter?.getItem(pos)
 
