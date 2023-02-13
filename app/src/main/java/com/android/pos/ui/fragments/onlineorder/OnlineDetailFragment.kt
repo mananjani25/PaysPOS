@@ -1727,7 +1727,7 @@ class OnlineDetailFragment(
 
             }
 
-            PrintSunmiUtils.cutPaper()
+            PrintSunmiUtils.cutPaperInner()
         } catch (e: Exception) {
             // printerDialog.dismiss()
             e.printStackTrace()

@@ -36,8 +36,7 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.regex.Matcher
 import java.util.regex.Pattern
-import kotlin.math.ceil
-import kotlin.math.floor
+import kotlin.math.*
 
 
 class MethodUtils {
@@ -145,7 +144,7 @@ class MethodUtils {
    */
         fun roundOffAmount(price: Double): String {
             return MainApplication.getInstance()!!.getText(R.string.symbole)
-                .toString() + getTwoDecimal(price)
+                .toString() + getTwoDecimal(price).toPrecision(2)
         }
 
         fun roundOffTwoDec(price: Double): String {
@@ -184,7 +183,7 @@ class MethodUtils {
          }*/
 
         fun roundOffAmountString(price: Double): String {
-            return getTwoDecimal(price).toString()
+            return getTwoDecimal(price).toDouble().toPrecision(2)
         }
 
         fun roundOffAmountStringToDouble(price: String): String {
@@ -273,7 +272,8 @@ class MethodUtils {
             createItemRequestMap["location_id"] =
                 data.locationId.toString().toMultiPartRequestBody()
             createItemRequestMap["name"] = data.name.toString().toMultiPartRequestBody()
-            createItemRequestMap["price_without_markup"] = data.price.toString().toMultiPartRequestBody()
+            createItemRequestMap["price_without_markup"] =
+                data.price.toString().toMultiPartRequestBody()
             createItemRequestMap["priceType"] = data.priceType.toString().toMultiPartRequestBody()
             createItemRequestMap["product_code"] =
                 data.productCode.toString().toMultiPartRequestBody()
@@ -620,6 +620,19 @@ class MethodUtils {
 
 
         }
+
+        fun Double.toPrecision(precision: Int) =
+            if (precision < 1) {
+                "${this.roundToInt()}"
+            } else {
+                val p = 10.0.pow(precision)
+                val v = (abs(this) * p).roundToInt()
+                val i = floor(v / p)
+                var f = "${floor(v - (i * p)).toInt()}"
+                while (f.length < precision) f = "0$f"
+                val s = if (this < 0) "-" else ""
+                "$s${i.toInt()}.$f"
+            }
     }
 
 
