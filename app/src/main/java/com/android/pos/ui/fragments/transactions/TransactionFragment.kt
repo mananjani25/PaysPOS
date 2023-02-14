@@ -11,6 +11,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -23,12 +24,16 @@ import com.android.pos.data.entities.TeamRole
 import com.android.pos.data.model.responseModel.GetTransactionListResponse
 import com.android.pos.data.model.responseModel.MagtekOnlineOrderRefundResponse
 import com.android.pos.data.model.responseModel.VenueDetailsResponse
+import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.databinding.FragmentTransactionBinding
 import com.android.pos.di.ApiModule1
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.TransactionAdapter
+import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.android.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
+import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.ui.fragments.magtek.MagtekRequestUtils
 import com.android.pos.ui.fragments.magtek.PaymentResponse
 import com.android.pos.utils.AlertUtils
@@ -38,6 +43,7 @@ import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.callback.PaginationScrollListener
 import com.android.pos.utils.extensions.liveSnackBar
 import com.android.pos.utils.extensions.showAlert
+import com.android.pos.utils.getCustomerDisplay
 import com.android.pos.utils.statusUtils.Status
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
@@ -96,6 +102,10 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
     private var currentPage = PAGE_START
     private var isLastPage = false
 
+    private lateinit var presentation: CustomDisplay
+    private val passcodeViewModel by activityViewModels<PasscodeViewModel>()
+    private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -110,7 +120,15 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
         binding.lifecycleOwner = this
 
-
+        getCustomerDisplay(requireContext())?.let { display ->
+            presentation = CustomDisplay(
+                display,
+                requireContext(),
+                viewLifecycleOwner,
+                dashboardViewModel,
+                passcodeViewModel
+            )
+        }
 
 
         startDatePickerObserver()
@@ -311,6 +329,17 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                 }
         }
         return binding.root
+    }
+
+    @Inject
+    lateinit var apiService: ApiService
+
+    override fun onResume() {
+        super.onResume()
+        if (this::presentation.isInitialized) {
+            presentation.show()
+            presentation.onLogOutOrClockOutWithApiService(apiService)
+        }
     }
 
     private fun tipCall(isCard: Boolean) {

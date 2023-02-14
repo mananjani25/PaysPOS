@@ -433,6 +433,10 @@ class MethodUtils {
             return (price * rate) / 100
         }
 
+        fun calculatePercentageFromAmount(amount: Double, total: Double): Double {
+            return (amount / total) * 100
+        }
+
         @SuppressLint("SetTextI18n")
         fun getCashPaymentOptionList(
             totalPrice: Double,

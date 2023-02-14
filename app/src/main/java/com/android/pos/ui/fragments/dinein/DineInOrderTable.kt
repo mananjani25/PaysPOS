@@ -36,6 +36,7 @@ import com.android.pos.data.model.DineinCartPaymentModel
 import com.android.pos.data.model.GuestDataModel
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.*
+import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.DINE_IN_ADAPTER_LIST
@@ -66,6 +67,9 @@ import com.android.pos.databinding.FragmentDineInOrderTableBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.DineInTableAdapter
 import com.android.pos.ui.fragments.checkout.CheckoutDineInPaymentViewModel
+import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.android.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
+import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
 import com.android.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.android.pos.utils.*
@@ -91,6 +95,11 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
+
+    private lateinit var presentation: CustomDisplay
+    private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
+    private val passcodeViewModel by activityViewModels<PasscodeViewModel>()
+
     private var passSCTotal: Double = 0.0
     private var passDiscountTotal: Double = 0.0
     private val listOfMoveItemIds: ArrayList<Int> = arrayListOf()
@@ -164,6 +173,17 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             false
         )
         binding.lifecycleOwner = this
+
+        getCustomerDisplay(requireContext())?.let { display ->
+            presentation = CustomDisplay(
+                display,
+                requireContext(),
+                viewLifecycleOwner,
+                dashboardViewModel,
+                passcodeViewModel
+            )
+        }
+
         progressDialog()
         optionType = prefProvider.getValue(Constants.OPTION_TYPE, "")
         observeShowProgress()
@@ -190,6 +210,14 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             addGuestToOrder(count)
         }
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+//        if (this::presentation.isInitialized) {
+//            presentation.show()
+//            presentation.onDisplayChanged()
+//        }
     }
 
     private fun observeAddGuest() {
@@ -2572,6 +2600,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                     if (dineInList.isNotEmpty()) {
                         dineInTableAdapter.setList(dineInList)
+                        if(this::presentation.isInitialized){
+                            //presentation.show()
+                            //presentation.onDisplayChanged()
+                            //presentation.showTableDetails(dineInList)
+                        }
                         checkForAutoFire(true)
 
 
@@ -9034,10 +9067,17 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
     }
 
+    @Inject
+    lateinit var apiService: ApiService
+
     override fun onPause() {
         super.onPause()
         if (pd != null && pd.isShowing) {
             pd.dismiss()
+        }
+        if (this::presentation.isInitialized) {
+            presentation.show()
+            presentation.onLogOutOrClockOutWithApiService(apiService)
         }
     }
 

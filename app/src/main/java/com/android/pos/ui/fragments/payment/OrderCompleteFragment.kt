@@ -80,6 +80,8 @@ import com.android.pos.databinding.FragmentOrderCompletBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.SplitListAdapter
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.android.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
+import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
 import com.android.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.android.pos.utils.*
@@ -115,6 +117,9 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEventListener,
     BatteryStatusChangeEventListener, ICallback {
+    private lateinit var presentation: CustomDisplay
+    private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
+    private val passcodeViewModel by activityViewModels<PasscodeViewModel>()
     private var tipAmount: Double = 0.0
     private var dineInList: ArrayList<DineInModel> = arrayListOf()
     private var customerPrinterDineIn: List<PrinterResponse.Data.CustomerReceiptPrinters>? = null
@@ -184,6 +189,17 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     ): View? {
         binding = FragmentOrderCompletBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
+
+        getCustomerDisplay(requireContext())?.let { display ->
+            presentation = CustomDisplay(
+                display,
+                requireContext(),
+                viewLifecycleOwner,
+                dashboardViewModel,
+                passcodeViewModel
+            )
+        }
+
         printerDialog = PrinterDialog()
         progressDialog()
 
@@ -219,6 +235,22 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             MethodUtils.roundOffAmountDouble(requireArguments().getDouble("noCashAdj"))
 
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (this::presentation.isInitialized) {
+            presentation.show()
+            presentation.onDisplayChanged()
+            presentation.showThankYou(
+                binding.txtPaymentAmount.text.toString().replace(" payment successful", "")
+            )
+
+            //binding.txtPaymentAmount.text.toString(
+            //                    " payment successful",
+            //                    ""
+            //                )
+        }
     }
 
     private fun observeSplitList() {
@@ -316,7 +348,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             orderID = requireArguments().getInt("orderID")
             receiptModel = requireArguments().getParcelable("receiptData")
             receiptModelForOpenORder = requireArguments().getParcelable("receiptData")
-            Log.e(TAG,"checkreceiptModel:   ${Gson().toJson(receiptModel)}")
+            Log.e(TAG, "checkreceiptModel:   ${Gson().toJson(receiptModel)}")
             splitValue = requireArguments().getInt("splitValue")
             isSpilt = requireArguments().getBoolean("isSpilt")
             isSplitByNo = requireArguments().getBoolean("isSplitByNo")
@@ -390,7 +422,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         binding.txtChangeAmount.text =
                             MethodUtils.roundOffAmount(if ((paidAmount - WholetotalPrice) > 0) paidAmount - WholetotalPrice else 0.00) + " Change"
                         binding.txtPaymentAmount.text =
-                            ""+MainApplication.getInstance()!!.getText(R.string.symbole)+MethodUtils.roundOffAmountDown(paidAmount + tipAmount) + " payment successful"
+                            "" + MainApplication.getInstance()!!
+                                .getText(R.string.symbole) + MethodUtils.roundOffAmountDown(
+                                paidAmount + tipAmount
+                            ) + " payment successful"
 
                         LogUtil.logE("Change 1", binding.txtChangeAmount.text.toString())
 
@@ -408,7 +443,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         binding.txtChangeAmount.text =
                             MethodUtils.roundOffAmount(if (splitChange > 0) splitChange else 0.00) + " Change"
                         binding.txtPaymentAmount.text =
-                            ""+MainApplication.getInstance()!!.getText(R.string.symbole)+MethodUtils.roundOffAmountDown(paidAmount + tipAmount) + " payment successful"
+                            "" + MainApplication.getInstance()!!
+                                .getText(R.string.symbole) + MethodUtils.roundOffAmountDown(
+                                paidAmount + tipAmount
+                            ) + " payment successful"
 
                         LogUtil.logE("Change 2", binding.txtChangeAmount.text.toString())
                     } else {
@@ -430,7 +468,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             LogUtil.logE("Change 4", binding.txtChangeAmount.text.toString())
                         }
                         binding.txtPaymentAmount.text =
-                            ""+MainApplication.getInstance()!!.getText(R.string.symbole)+MethodUtils.roundOffAmountDown(paidAmount + tipAmount) + " payment successful"
+                            "" + MainApplication.getInstance()!!
+                                .getText(R.string.symbole) + MethodUtils.roundOffAmountDown(
+                                paidAmount + tipAmount
+                            ) + " payment successful"
                     }
                 } else {
                     if (isCustomCash && splitChange != 0.0) {
@@ -441,10 +482,16 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                         LogUtil.logE("Change 5", binding.txtChangeAmount.text.toString())
                         binding.txtPaymentAmount.text =
-                            ""+MainApplication.getInstance()!!.getText(R.string.symbole)+MethodUtils.roundOffAmountDown(paidAmount + tipAmount) + " payment successful"
+                            "" + MainApplication.getInstance()!!
+                                .getText(R.string.symbole) + MethodUtils.roundOffAmountDown(
+                                paidAmount + tipAmount
+                            ) + " payment successful"
                     } else {
                         binding.txtPaymentAmount.text =
-                            ""+MainApplication.getInstance()!!.getText(R.string.symbole)+MethodUtils.roundOffAmountDown(paidAmount + tipAmount) + " payment successful"
+                            "" + MainApplication.getInstance()!!
+                                .getText(R.string.symbole) + MethodUtils.roundOffAmountDown(
+                                paidAmount + tipAmount
+                            ) + " payment successful"
                     }
                 }
             } else {
@@ -466,13 +513,15 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     binding.txtTitle.text =
                         MethodUtils.roundOffAmount(paidAmount)
                     binding.txtPaymentAmount.text =
-                        ""+MainApplication.getInstance()!!.getText(R.string.symbole)+MethodUtils.roundOffAmountDown(paidAmount) + " payment successful"
+                        "" + MainApplication.getInstance()!!
+                            .getText(R.string.symbole) + MethodUtils.roundOffAmountDown(paidAmount) + " payment successful"
 
                 } else {
                     binding.txtTitle.text =
                         MethodUtils.roundOffAmount(paidAmount + tipAmount)
                     binding.txtPaymentAmount.text =
-                      ""+MainApplication.getInstance()!!.getText(R.string.symbole) + MethodUtils.roundOffAmountDown(paidAmount + tipAmount) + " payment successful"
+                        "" + MainApplication.getInstance()!!
+                            .getText(R.string.symbole) + MethodUtils.roundOffAmountDown(paidAmount + tipAmount) + " payment successful"
                 }
 
 
@@ -538,7 +587,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         binding.txtChangeAmount.text =
                             MethodUtils.roundOffAmount(if (splitChange > 0) splitChange else 0.00) + " Change"
                         binding.txtPaymentAmount.text =
-                          ""+MainApplication.getInstance()!!.getText(R.string.symbole)+  MethodUtils.roundOffAmountDown(paidAmount + tipAmount) + " payment successful"
+                            "" + MainApplication.getInstance()!!
+                                .getText(R.string.symbole) + MethodUtils.roundOffAmountDown(
+                                paidAmount + tipAmount
+                            ) + " payment successful"
 
                         LogUtil.logE("Change 8", binding.txtChangeAmount.text.toString())
                     } else {
@@ -555,7 +607,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             LogUtil.logE("Change 9", binding.txtChangeAmount.text.toString())
                         }
                         binding.txtPaymentAmount.text =
-                            ""+MainApplication.getInstance()!!.getText(R.string.symbole)+MethodUtils.roundOffAmountDown(paidAmount + tipAmount) + " payment successful"
+                            "" + MainApplication.getInstance()!!
+                                .getText(R.string.symbole) + MethodUtils.roundOffAmountDown(
+                                paidAmount + tipAmount
+                            ) + " payment successful"
                     }
 
                 } else {
@@ -567,10 +622,16 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                         LogUtil.logE("Change 10", binding.txtChangeAmount.text.toString())
                         binding.txtPaymentAmount.text =
-                            ""+MainApplication.getInstance()!!.getText(R.string.symbole)+MethodUtils.roundOffAmountDown(paidAmount + tipAmount) + " payment successful"
+                            "" + MainApplication.getInstance()!!
+                                .getText(R.string.symbole) + MethodUtils.roundOffAmountDown(
+                                paidAmount + tipAmount
+                            ) + " payment successful"
                     } else {
                         binding.txtPaymentAmount.text =
-                            ""+MainApplication.getInstance()!!.getText(R.string.symbole)+MethodUtils.roundOffAmountDown(paidAmount + tipAmount) + " payment successful"
+                            "" + MainApplication.getInstance()!!
+                                .getText(R.string.symbole) + MethodUtils.roundOffAmountDown(
+                                paidAmount + tipAmount
+                            ) + " payment successful"
                     }
                 }
             } else {
@@ -625,8 +686,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }
 
                 binding.txtPaymentAmount.text =
-                    ""+MainApplication.getInstance()!!.getText(R.string.symbole)+MethodUtils.roundOffAmountDown(paidAmount + tipAmount)+ " payment successful"
-
+                    "" + MainApplication.getInstance()!!
+                        .getText(R.string.symbole) + MethodUtils.roundOffAmountDown(paidAmount + tipAmount) + " payment successful"
 
 
             }
@@ -5691,7 +5752,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     if (it.data != null) {
 
 
-                        Log.e(TAG,"CheckORderRypoe ${prefProvider.getValue(ORDER_TYPE, "")}")
+                        Log.e(TAG, "CheckORderRypoe ${prefProvider.getValue(ORDER_TYPE, "")}")
                         kitchenPrinterList = it.data
                         val remain = requireArguments().getDouble("remainingAmount")
                         if (requireArguments().getBoolean("isDineIn")) {
@@ -5711,16 +5772,36 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                     if (receiptModel?.order?.orderType == OPEN_ORDER
                                     ) {
 
-                                        var noItem:Boolean = false
-                                        Log.e(TAG,"checkUpdateORder  ${prefProvider.getValueboolean(OPEN_ORDER_UPDATE_FOR_PRINT,false)}")
-                                        if (prefProvider.getValueboolean(OPEN_ORDER_UPDATE_FOR_PRINT,false) == true){
-                                            var list  = checkOrderItemsForOpenORderUpdate()
-                                            Log.e(TAG,"checkEmpy:  ${list.size}")
-                                            if (list.isEmpty()){
+                                        var noItem: Boolean = false
+                                        Log.e(
+                                            TAG,
+                                            "checkUpdateORder  ${
+                                                prefProvider.getValueboolean(
+                                                    OPEN_ORDER_UPDATE_FOR_PRINT,
+                                                    false
+                                                )
+                                            }"
+                                        )
+                                        if (prefProvider.getValueboolean(
+                                                OPEN_ORDER_UPDATE_FOR_PRINT,
+                                                false
+                                            ) == true
+                                        ) {
+                                            var list = checkOrderItemsForOpenORderUpdate()
+                                            Log.e(TAG, "checkEmpy:  ${list.size}")
+                                            if (list.isEmpty()) {
                                                 noItem = true
                                             }
                                         }
-                                        Log.e(TAG,"checkOrderType  ${prefProvider.getValue(ORDER_TYPE,"")}")
+                                        Log.e(
+                                            TAG,
+                                            "checkOrderType  ${
+                                                prefProvider.getValue(
+                                                    ORDER_TYPE,
+                                                    ""
+                                                )
+                                            }"
+                                        )
                                         if (kitchenPrinterList.isNotEmpty() && noItem == false) {
                                             for (i in 0 until kitchenPrinterList.size) {
                                                 if (kitchenPrinterList[i].status) {
@@ -5736,16 +5817,19 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                 ) {
 
 
-
                                                                     if (checkItemsforPrinter(
-                                                                         receiptModel?.order?.orderItems?: arrayListOf(),
+                                                                            receiptModel?.order?.orderItems
+                                                                                ?: arrayListOf(),
                                                                             kitchenPrinterList[i].printerCategories.toCollection(
                                                                                 arrayListOf()
                                                                             )
                                                                         )
                                                                     ) {
 
-                                                                        Log.e(TAG,"checkIsUpdateORder:  ${viewModelDashBoard.isOrderUpdate}")
+                                                                        Log.e(
+                                                                            TAG,
+                                                                            "checkIsUpdateORder:  ${viewModelDashBoard.isOrderUpdate}"
+                                                                        )
 
                                                                         LogUtil.logE(
                                                                             TAG,
@@ -5818,7 +5902,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         pd.dismiss()
 
 
-
                     }
 
 
@@ -5839,7 +5922,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private fun checkOrderItemsForOpenORderUpdate(): ArrayList<CreateOrderResponse.Data.Order.OrderItem> {
         var printOrderItems: ArrayList<CreateOrderResponse.Data.Order.OrderItem> =
             arrayListOf()
-        var orderItemsToPrint :ArrayList<CreateOrderResponse.Data.Order.OrderItem> = arrayListOf()
+        var orderItemsToPrint: ArrayList<CreateOrderResponse.Data.Order.OrderItem> = arrayListOf()
         receiptModel?.order?.orderItems?.let { orderItemsToPrint.addAll(it) }
 
         val serializedObject: String =
@@ -5875,7 +5958,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }"
             )
 
-            Log.e(TAG,"updafwwewe  ${Gson().toJson(Gson().toJson(receiptModel?.order?.orderItems))}")
+            Log.e(
+                TAG,
+                "updafwwewe  ${Gson().toJson(Gson().toJson(receiptModel?.order?.orderItems))}"
+            )
             var itemIds: ArrayList<Int> =
                 arrayListOf()
             arrayItems.forEach {
@@ -5890,34 +5976,33 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     )
                 ) {
 
-                        arrayItems.forEachIndexed { index, orderItemJ ->
+                    arrayItems.forEachIndexed { index, orderItemJ ->
 
-                            if (orderItemJ.itemId == orderItem.itemId) {
-                                if (orderItemJ.quantity != orderItem.quantity) {
-                                    if (orderItem.quantity > orderItemJ.quantity) {
-                                        orderItem.quantity =
-                                            orderItem.quantity - orderItemJ.quantity
+                        if (orderItemJ.itemId == orderItem.itemId) {
+                            if (orderItemJ.quantity != orderItem.quantity) {
+                                if (orderItem.quantity > orderItemJ.quantity) {
+                                    orderItem.quantity =
+                                        orderItem.quantity - orderItemJ.quantity
 
-                                        Log.e(TAG,"ItemColdQty ${orderItemJ.quantity}")
-                                        Log.e(TAG,"ItemCnewQty ${orderItem.quantity}")
-                                        Log.e(TAG,"FinalOrderItemQty  ${orderItem.quantity}")
-                                        if (!printOrderItems.contains(
-                                                orderItem
-                                            )
-                                        ) {
-                                            printOrderItems.add(
-                                                orderItem
-                                            )
-                                            return@forEachIndexed
+                                    Log.e(TAG, "ItemColdQty ${orderItemJ.quantity}")
+                                    Log.e(TAG, "ItemCnewQty ${orderItem.quantity}")
+                                    Log.e(TAG, "FinalOrderItemQty  ${orderItem.quantity}")
+                                    if (!printOrderItems.contains(
+                                            orderItem
+                                        )
+                                    ) {
+                                        printOrderItems.add(
+                                            orderItem
+                                        )
+                                        return@forEachIndexed
 
-                                        }
                                     }
                                 }
-
-
                             }
-                        }
 
+
+                        }
+                    }
 
 
                 } else {
@@ -5929,12 +6014,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             }
         }
-      /*  prefProvider.setValue(
-            Constants.OPEN_ORDER_ITEMS,
-            ""
-        )*/
+        /*  prefProvider.setValue(
+              Constants.OPEN_ORDER_ITEMS,
+              ""
+          )*/
 
-        Log.e(TAG,"ReturnListForPrint  ${Gson().toJson(printOrderItems)}")
+        Log.e(TAG, "ReturnListForPrint  ${Gson().toJson(printOrderItems)}")
 
         return printOrderItems
 
@@ -8938,12 +9023,20 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             PrintSunmiUtils.addHorizontal()
             SunmiPrinterApi.getInstance().lineWrap(1)
 
-            Log.e(TAG,"getValueUpdate:  ${prefProvider.getValueboolean(OPEN_ORDER_UPDATE_FOR_PRINT,false)}")
-            if (prefProvider.getValueboolean(OPEN_ORDER_UPDATE_FOR_PRINT,false) == true){
+            Log.e(
+                TAG,
+                "getValueUpdate:  ${
+                    prefProvider.getValueboolean(
+                        OPEN_ORDER_UPDATE_FOR_PRINT,
+                        false
+                    )
+                }"
+            )
+            if (prefProvider.getValueboolean(OPEN_ORDER_UPDATE_FOR_PRINT, false) == true) {
                 receiptModel?.order?.orderItems?.let {
-                var printOrderItems =    checkOrderItemsForOpenORderUpdate()
+                    var printOrderItems = checkOrderItemsForOpenORderUpdate()
 
-                    Log.e(TAG,"printeOrderItems  ${Gson().toJson(printOrderItems)}")
+                    Log.e(TAG, "printeOrderItems  ${Gson().toJson(printOrderItems)}")
 
 
                     addOrdersForKitchen(
@@ -8953,13 +9046,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }
 
 
-            }
-            else {
+            } else {
 
                 receiptModel?.order?.orderItems?.let {
 
                     addOrdersForKitchen(
-                         it,
+                        it,
                         customerReceiptPrinters.printerCategories.toCollection(arrayListOf())
                     )
                 }
@@ -9372,7 +9464,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         if (pd != null && pd.isShowing) {
             pd.dismiss()
         }
-
+        if (this::presentation.isInitialized) {
+            presentation.hide()
+        }
     }
 
     private fun sunmiPrinterInit(ipAddress: String) {
@@ -10126,13 +10220,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             receiptModel?.order?.orderType?.trim()?.let { PrintSunmiUtils.headerText(it) }
             SunmiPrintHelper.getInstance().lineWrap(1)
 
-        /*    if (receiptModel?.order?.orderType?.lowercase() == OPEN_ORDER.lowercase()
-                || receiptModel?.order?.orderType?.lowercase() == OPEN_ORDER.lowercase()
-            ) {
+            /*    if (receiptModel?.order?.orderType?.lowercase() == OPEN_ORDER.lowercase()
+                    || receiptModel?.order?.orderType?.lowercase() == OPEN_ORDER.lowercase()
+                ) {
 
-                //  receiptModel?.order?.deliveryType?.let { PrintSunmiUtils.headerText(it) }
-            }
-*/
+                    //  receiptModel?.order?.deliveryType?.let { PrintSunmiUtils.headerText(it) }
+                }
+    */
 
 
             if (customerSettingModel.fonts == LARGE) {

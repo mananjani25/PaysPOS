@@ -19,6 +19,7 @@ import com.android.pos.data.entities.RedeemLoyaltyInfo
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.CreateOrderResponse
+import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.TIP_ADDED
 import com.android.pos.data.remote.Constants.TIP_ADDED_AMOUNT
@@ -27,6 +28,8 @@ import com.android.pos.di.ApiModule1
 import com.android.pos.di.MagtekModule
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.android.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
+import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.ui.fragments.magtek.MagtekRequestUtils
 import com.android.pos.ui.fragments.magtek.PaymentResponse
 import com.android.pos.ui.fragments.magtekPro.MTParser
@@ -54,6 +57,9 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragment(), magtekCallback,
     DeleteOptionCallback, IDeviceListCallback {
+    private lateinit var presentation: CustomDisplay
+    private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
+    private val passcodeViewModel by activityViewModels<PasscodeViewModel>()
     private var cardNumber: String = ""
     private var isError: Boolean = false
     private var isCardRev: Boolean = false
@@ -126,6 +132,16 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         binding = FragmentCheckoutDetailsNewBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
 
+        getCustomerDisplay(requireContext())?.let { display ->
+            presentation = CustomDisplay(
+                display,
+                requireContext(),
+                viewLifecycleOwner,
+                dashboardViewModel,
+                passcodeViewModel
+            )
+        }
+
         val device = prefProvider.getValueInt(Constants.MAGTEK_HARDWARE, 0)
 
         if (device == 0) {
@@ -149,6 +165,26 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
 
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (this::presentation.isInitialized) {
+            presentation.show()
+            presentation.onDisplayChanged()
+            presentation.showSurcharge(true)
+        }
+    }
+
+    @Inject
+    lateinit var apiService: ApiService
+
+    override fun onPause() {
+        super.onPause()
+        if (this::presentation.isInitialized) {
+            presentation.show()
+            presentation.onLogOutOrClockOutWithApiService(apiService)
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -891,7 +927,6 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
             )
             paymentAmount = binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
-            Log.e("PaymentAmount", "paymentAmount:  ${paymentAmount}")
             cashPaymentWithVariation()
         }
         binding.tvCash1.setOnSingleClickListener {
@@ -1218,6 +1253,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 )
             )
         } else {
+            if(this::presentation.isInitialized){
+                presentation.show()
+                presentation.showTipsAdded(tipAmount,WholetotalPrice)
+            }
+            MethodUtils.setPriceTextViewDown(
             MethodUtils.setPriceTextView(
                 binding.tvCash,
                 (getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectedCount) + tipAmount

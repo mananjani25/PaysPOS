@@ -15,7 +15,6 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
-import androidx.core.os.bundleOf
 import androidx.fragment.app.*
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -28,6 +27,7 @@ import com.android.pos.data.model.DineInModel
 import com.android.pos.data.model.requestModel.CreateQueuePrinterRequestModel
 import com.android.pos.data.model.requestModel.OrderAttributeRequestModel
 import com.android.pos.data.model.responseModel.*
+import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
@@ -48,6 +48,7 @@ import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.ui.fragments.payment.PaymentViewModel
 import com.android.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
 import com.android.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
@@ -78,12 +79,15 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     ScannerAppEngine.IScannerAppEngineDevEventsDelegate, ICallback, DineInOrderCallBack {
+
+    private lateinit var presentation: CustomDisplay
     private var dineInList: List<DineInModel>? = null
     private var woyouService: IWoyouService? = null
     private var cartList: ArrayList<CartModel> = arrayListOf()
     private val viewModelServiceCharge by viewModels<ServiceChargeListViewModel>()
     private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
     private val viewModelPayment by activityViewModels<PaymentViewModel>()
+    private val passcodeViewModel by activityViewModels<PasscodeViewModel>()
     private var serviceChargesList: ArrayList<TbServiceCharge>? = null
     private var serviceChargesObserve: Observer<Resource<List<TbServiceCharge>>>? = null
     private var orderTypeObserver: Observer<Resource<List<TbOrderType>>>? = null
@@ -147,6 +151,15 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         Binding()
 
         binding = FragmentDashboardCategoryBoldPosBinding.inflate(inflater, container, false)
+        getCustomerDisplay(requireContext())?.let { display ->
+            presentation = CustomDisplay(
+                display,
+                requireContext(),
+                viewLifecycleOwner,
+                viewModel,
+                passcodeViewModel
+            )
+        }
         val callback: OnBackPressedCallback =
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
@@ -567,7 +580,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     override fun onResume() {
         super.onResume()
 
-        if (prefProvider.getValueboolean(Constants.IS_SYNC_MARKUP,false)){
+        if (prefProvider.getValueboolean(Constants.IS_SYNC_MARKUP, false)) {
             viewModel.markupInventory()
         }
     }
@@ -890,8 +903,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 .setReorderingAllowed(true)
                 .addToBackStack(backStateName).commit()
             //  loadCategoryFragment(fragment)
-        }
-        else {
+        } else {
             Log.e(TAG, "cartListItemAddSize: ${cartList.size}")
             if (cartList.isEmpty()) {
                 viewModel.createCart(cartList)
@@ -928,7 +940,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             }
 
         }
-
 
 
     }
@@ -1031,6 +1042,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 cartList.clear()
                 cartList = arrayListOf()
                 cartList.addAll(it.toCollection(arrayListOf()))
+            }
+
+            if (this::presentation.isInitialized) {
+                presentation.show()
+                presentation.onDisplayChanged()
             }
 
             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
@@ -1247,7 +1263,13 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
         cartList.get(0).orderType = Constants.DINE_IN
 
-        viewModel.newCartLogicModifier(cartList, null, Constants.ADD, false, dineInList = dineInList)
+        viewModel.newCartLogicModifier(
+            cartList,
+            null,
+            Constants.ADD,
+            false,
+            dineInList = dineInList
+        )
 
 
     }
@@ -1324,7 +1346,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     "dineTotalDiscount  ${arguments?.getDouble("totalDiscount")}"
                 )
                 cartList[0].discountPrice = arguments?.getDouble("totalDiscount") ?: 0.0
-                Log.e(TAG,"wsfaklnlbsaf ${cartList.size}")
+                Log.e(TAG, "wsfaklnlbsaf ${cartList.size}")
                 viewModel.newCartLogicModifier(
                     cartList,
                     null,
@@ -1383,9 +1405,16 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
     }
 
+    @Inject
+    lateinit var apiService: ApiService
+
     override fun onPause() {
         arguments?.clear()
         super.onPause()
+        if(this::presentation.isInitialized){
+            presentation.show()
+            presentation.onLogOutOrClockOutWithApiService(apiService)
+        }
     }
 
     private fun initKitchenPrinter(
@@ -2197,19 +2226,19 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 /* if (receiptModel?.order?.orderType.trim().lowercase() == "OpenOrder".trim()
                      .lowercase()
                ) {*/
-             /*   builder.addFeedLine(1)
-                builder.addTextFont(Builder.FONT_E)
-                builder.addTextLang(Builder.LANG_EN)
-                builder.addTextSize(fontSizeH, fontSizeW)
-                builder.addTextStyle(
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.TRUE,
-                    Builder.COLOR_1
-                )
-                builder.addTextAlign(Builder.ALIGN_CENTER)
+                /*   builder.addFeedLine(1)
+                   builder.addTextFont(Builder.FONT_E)
+                   builder.addTextLang(Builder.LANG_EN)
+                   builder.addTextSize(fontSizeH, fontSizeW)
+                   builder.addTextStyle(
+                       Builder.FALSE,
+                       Builder.FALSE,
+                       Builder.TRUE,
+                       Builder.COLOR_1
+                   )
+                   builder.addTextAlign(Builder.ALIGN_CENTER)
 
-                addBuilderText(builder, receiptModel?.order?.deliveryType.toString())*/
+                   addBuilderText(builder, receiptModel?.order?.deliveryType.toString())*/
 
                 /*}*/
 
@@ -2534,19 +2563,19 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 /* if (receiptModel?.order?.orderType.trim().lowercase() == "OpenOrder".trim()
                      .lowercase()
                ) {*/
-             /*   builder.addFeedLine(1)
-                builder.addTextFont(Builder.FONT_E)
-                builder.addTextLang(Builder.LANG_EN)
-                builder.addTextSize(fontSizeH, fontSizeW)
-                builder.addTextStyle(
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.TRUE,
-                    Builder.COLOR_1
-                )
-                builder.addTextAlign(Builder.ALIGN_CENTER)
+                /*   builder.addFeedLine(1)
+                   builder.addTextFont(Builder.FONT_E)
+                   builder.addTextLang(Builder.LANG_EN)
+                   builder.addTextSize(fontSizeH, fontSizeW)
+                   builder.addTextStyle(
+                       Builder.FALSE,
+                       Builder.FALSE,
+                       Builder.TRUE,
+                       Builder.COLOR_1
+                   )
+                   builder.addTextAlign(Builder.ALIGN_CENTER)
 
-                addBuilderText(builder, receiptModel?.order?.deliveryType.toString())*/
+                   addBuilderText(builder, receiptModel?.order?.deliveryType.toString())*/
 
                 /*}*/
 
@@ -2887,7 +2916,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             if (kitchenSettingModel.showOrderType) {
                 PrintSunmiUtils.printOrderType(receiptModel?.order?.orderType.toString())
             }
-        //    PrintSunmiUtils.printOrderType(receiptModel?.order?.deliveryType.toString())
+            //    PrintSunmiUtils.printOrderType(receiptModel?.order?.deliveryType.toString())
 
 
             if (kitchenSettingModel.showTeamMember) {
@@ -3043,7 +3072,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                 PrintSunmiUtils.headerText(receiptModel?.order?.orderType.toString())
             }
-         //   PrintSunmiUtils.headerText(receiptModel?.order?.deliveryType.toString())
+            //   PrintSunmiUtils.headerText(receiptModel?.order?.deliveryType.toString())
 
             SunmiPrintHelper.getInstance().lineWrap(1)
 
@@ -3424,7 +3453,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         return timeStampFinal
     }
 
-     fun getSaltString(reqLent: Int): String? {
+    fun getSaltString(reqLent: Int): String? {
         val SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
         val salt = StringBuilder()
         val rnd = Random()

@@ -13,11 +13,13 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.android.pos.BuildConfig
 import com.android.pos.R
+import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.AUTH_TOKEN
 import com.android.pos.data.remote.Constants.EMAIL
@@ -31,9 +33,12 @@ import com.android.pos.di.ApiModule.BASE_URL
 import com.android.pos.di.HostSelectionInterceptor
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.activities.MainActivity
+import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.android.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
 import com.android.pos.utils.AdvertisingInfo
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
+import com.android.pos.utils.getCustomerDisplay
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.snackbar.Snackbar
 import com.google.common.util.concurrent.FutureCallback
@@ -48,6 +53,9 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class LoginFragment : Fragment() {
 
+    private lateinit var presentation: CustomDisplay
+    private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
+    private val passcodeViewModel by activityViewModels<PasscodeViewModel>()
 
     private lateinit var binding: FragmentLoginBinding
 
@@ -93,6 +101,16 @@ class LoginFragment : Fragment() {
 
         binding.lifecycleOwner = this
         binding.loginViewModel = viewModel
+
+        getCustomerDisplay(requireContext())?.let { display ->
+            presentation = CustomDisplay(
+                display,
+                requireContext(),
+                viewLifecycleOwner,
+                dashboardViewModel,
+                passcodeViewModel
+            )
+        }
 
         versionDisplay()
         setupSnackbar()
@@ -149,6 +167,14 @@ class LoginFragment : Fragment() {
 
         });
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if(this::presentation.isInitialized){
+            presentation.show()
+            presentation.onLogOutOrClockOut()
+        }
     }
 
     private fun versionDisplay() {
