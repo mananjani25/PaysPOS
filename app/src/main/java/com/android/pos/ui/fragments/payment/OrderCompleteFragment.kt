@@ -85,6 +85,7 @@ import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
 import com.android.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.android.pos.utils.*
+import com.android.pos.utils.MethodUtils.Companion.toPrecision
 import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.liveSnackBar
 import com.android.pos.utils.extensions.visible
@@ -425,7 +426,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             "" + MainApplication.getInstance()!!
                                 .getText(R.string.symbole) + MethodUtils.roundOffAmountDown(
                                 paidAmount + tipAmount
-                            ) + " payment successful"
+                            ).toDouble().toPrecision(2) + " payment successful"
 
                         LogUtil.logE("Change 1", binding.txtChangeAmount.text.toString())
 
@@ -446,7 +447,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             "" + MainApplication.getInstance()!!
                                 .getText(R.string.symbole) + MethodUtils.roundOffAmountDown(
                                 paidAmount + tipAmount
-                            ) + " payment successful"
+                            ).toDouble().toPrecision(2) + " payment successful"
 
                         LogUtil.logE("Change 2", binding.txtChangeAmount.text.toString())
                     } else {
@@ -471,7 +472,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             "" + MainApplication.getInstance()!!
                                 .getText(R.string.symbole) + MethodUtils.roundOffAmountDown(
                                 paidAmount + tipAmount
-                            ) + " payment successful"
+                            ).toDouble().toPrecision(2) + " payment successful"
                     }
                 } else {
                     if (isCustomCash && splitChange != 0.0) {
@@ -485,13 +486,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             "" + MainApplication.getInstance()!!
                                 .getText(R.string.symbole) + MethodUtils.roundOffAmountDown(
                                 paidAmount + tipAmount
-                            ) + " payment successful"
+                            ).toDouble().toPrecision(2) + " payment successful"
                     } else {
                         binding.txtPaymentAmount.text =
                             "" + MainApplication.getInstance()!!
                                 .getText(R.string.symbole) + MethodUtils.roundOffAmountDown(
                                 paidAmount + tipAmount
-                            ) + " payment successful"
+                            ).toDouble().toPrecision(2) + " payment successful"
                     }
                 }
             } else {
@@ -514,14 +515,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         MethodUtils.roundOffAmount(paidAmount)
                     binding.txtPaymentAmount.text =
                         "" + MainApplication.getInstance()!!
-                            .getText(R.string.symbole) + MethodUtils.roundOffAmountDown(paidAmount) + " payment successful"
+                            .getText(R.string.symbole) + MethodUtils.roundOffAmountDown(paidAmount).toDouble().toPrecision(2) + " payment successful"
 
                 } else {
                     binding.txtTitle.text =
                         MethodUtils.roundOffAmount(paidAmount + tipAmount)
                     binding.txtPaymentAmount.text =
                         "" + MainApplication.getInstance()!!
-                            .getText(R.string.symbole) + MethodUtils.roundOffAmountDown(paidAmount + tipAmount) + " payment successful"
+                            .getText(R.string.symbole) + MethodUtils.roundOffAmountDown(paidAmount + tipAmount).toDouble().toPrecision(2) + " payment successful"
                 }
 
 
@@ -590,7 +591,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             "" + MainApplication.getInstance()!!
                                 .getText(R.string.symbole) + MethodUtils.roundOffAmountDown(
                                 paidAmount + tipAmount
-                            ) + " payment successful"
+                            ).toDouble().toPrecision(2) + " payment successful"
 
                         LogUtil.logE("Change 8", binding.txtChangeAmount.text.toString())
                     } else {
@@ -610,7 +611,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             "" + MainApplication.getInstance()!!
                                 .getText(R.string.symbole) + MethodUtils.roundOffAmountDown(
                                 paidAmount + tipAmount
-                            ) + " payment successful"
+                            ).toDouble().toPrecision(2) + " payment successful"
                     }
 
                 } else {
@@ -625,13 +626,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             "" + MainApplication.getInstance()!!
                                 .getText(R.string.symbole) + MethodUtils.roundOffAmountDown(
                                 paidAmount + tipAmount
-                            ) + " payment successful"
+                            ).toDouble().toPrecision(2) + " payment successful"
                     } else {
                         binding.txtPaymentAmount.text =
                             "" + MainApplication.getInstance()!!
                                 .getText(R.string.symbole) + MethodUtils.roundOffAmountDown(
                                 paidAmount + tipAmount
-                            ) + " payment successful"
+                            ).toDouble().toPrecision(2) + " payment successful"
                     }
                 }
             } else {
@@ -687,7 +688,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 binding.txtPaymentAmount.text =
                     "" + MainApplication.getInstance()!!
-                        .getText(R.string.symbole) + MethodUtils.roundOffAmountDown(paidAmount + tipAmount) + " payment successful"
+                        .getText(R.string.symbole) + MethodUtils.roundOffAmountDown(paidAmount + tipAmount).toDouble().toPrecision(2) + " payment successful"
 
 
             }

@@ -114,7 +114,7 @@ class MethodUtils {
         @SuppressLint("SetTextI18n")
         fun setPriceTextViewDown(appCompatTextView: TextView, price: Double) {
             appCompatTextView.text = MainApplication.getInstance()!!.getText(R.string.symbole)
-                .toString() + getTwoDecimal(price)
+                .toString() + getTwoDecimal(price).toPrecision(2)
 
         }
 

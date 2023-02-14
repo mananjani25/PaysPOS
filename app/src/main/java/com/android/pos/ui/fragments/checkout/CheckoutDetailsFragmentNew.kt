@@ -840,7 +840,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     }
 
     private fun cashPaymentWithVariation() {
-        paymentAmount = getTwoDecimal(WholetotalPrice / isSelectedCount)
+        paymentAmount = String.format("%.2f", WholetotalPrice / isSelectedCount).toDouble()
         Log.e(
             "checkPaymentAmount",
             "checkPrice   ${paymentAmount}"
