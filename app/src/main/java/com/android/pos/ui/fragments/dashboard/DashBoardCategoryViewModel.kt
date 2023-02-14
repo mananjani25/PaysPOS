@@ -2780,11 +2780,14 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
             var finalTotal = 0.0
-            Log.e("FEB2023","subTotalPrice:  ${subTotalPrice}")
-            Log.e("FEB2023","totalTax:  ${totalTax}")
-            Log.e("FEB2023","totalServiceCharge:  ${totalServiceCharge}")
-            finalTotal = (MethodUtils.getTwoDecimal(subTotalPrice) + MethodUtils.getTwoDecimal(totalTax) + MethodUtils.getTwoDecimal(totalServiceCharge))
-            Log.e("FEB2023","finalTotal:  ${finalTotal}")
+            Log.e("FEB2023", "subTotalPrice:  ${subTotalPrice}")
+            Log.e("FEB2023", "totalTax:  ${totalTax}")
+            Log.e("FEB2023", "totalServiceCharge:  ${totalServiceCharge}")
+            finalTotal =
+                (MethodUtils.getTwoDecimal(subTotalPrice) + MethodUtils.getTwoDecimal(totalTax) + MethodUtils.getTwoDecimal(
+                    totalServiceCharge
+                ))
+            Log.e("FEB2023", "finalTotal:  ${finalTotal}")
 
             cashDiscountType = prefProvider.getValue(Constants.OPTION_TYPE, "")
             //loyalty point and price calculation
@@ -2916,7 +2919,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                             }
                         }
                     }
-                 //   String.format("%.2f", totalTax).toDouble()
+                    //   String.format("%.2f", totalTax).toDouble()
 //                    taxDynamicList = cartModel.taxlistDynamic!!.toCollection(ArrayList())
                     Log.d(TAG, "itemCalculationCartModel: " + taxDynamicList)
                     serviceChargeCalculationModel(cartModel)
@@ -3397,7 +3400,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                         val itemTaxPrice =
                             (tax.rate * totalPrice) / 100
                         Log.e("itemTaxPrice", "" + itemTaxPrice)
-                        MethodUtils.getTwoDecimal(itemTaxPrice)
+                        //String.format("%.2f",itemTaxPrice).toDouble()
+                        itemTaxPrice
+                        //  MethodUtils.getTwoDecimal(itemTaxPrice)
                     }
 
                 } else {
@@ -3407,14 +3412,18 @@ class DashBoardCategoryViewModel @Inject constructor(
                         String.format("%.2f", 0.00)
                             .toDouble()
                     } else {
-                        MethodUtils.getTwoDecimal(tax.rate * item.itemQuantity)
+                        //   MethodUtils.getTwoDecimal(tax.rate * item.itemQuantity)
                         /*String.format("%.2f", tax.rate * item.itemQuantity)
                             .toDouble()*/
+
+                        tax.rate * item.itemQuantity
                     }
 
                 }
             }
         }
+        String.format("%.2f", totalTax)
+            .toDouble()
 
         Log.e("CheckTotalTax", "totalTax:   ${totalTax}")
     }

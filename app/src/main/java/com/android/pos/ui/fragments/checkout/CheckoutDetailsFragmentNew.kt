@@ -804,7 +804,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     }
 
     private fun cashPaymentWithVariation() {
-        paymentAmount = String.format("%.2f", WholetotalPrice / isSelectedCount).toDouble()
+        paymentAmount = getTwoDecimal(WholetotalPrice / isSelectedCount)
+        Log.e(
+            "checkPaymentAmount",
+            "checkPrice   ${paymentAmount}"
+        )
         subTotalPrice = String.format("%.2f", subTotalPrice / isSelectedCount).toDouble()
         totalServiceCharge =
             String.format("%.2f", totalServiceCharge / isSelectedCount).toDouble()
@@ -816,6 +820,26 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             paymentAmount -= cashDiscountSurcharge
         }
         makeCashPayment()
+    }
+
+    private fun getTwoDecimal(value: Double): Double {
+        Log.e("csafa", "oewenvalue     ${value}")
+
+        try {
+            var tmp = value.toString()
+            var tmpIndex = tmp.indexOf(".", 0, true)
+
+            if (tmp.length > tmpIndex + 3) {
+                var data = tmp.substring(0, tmpIndex + 3)
+                return String.format("%.2f", data.toDouble()).toDouble()
+            } else {
+                return String.format("%.2f", value).toDouble()
+            }
+        } catch (e: Exception) {
+            return value
+        }
+
+
     }
 
     private fun paymentClick() {
@@ -867,6 +891,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
             )
             paymentAmount = binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
+            Log.e("PaymentAmount", "paymentAmount:  ${paymentAmount}")
             cashPaymentWithVariation()
         }
         binding.tvCash1.setOnSingleClickListener {
@@ -1172,7 +1197,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             binding.tvsplittip?.gone()
             binding.tvtipcard?.gone()
             binding.tvtipcash?.gone()
-            MethodUtils.setPriceTextViewDown(
+            MethodUtils.setPriceTextView(
                 binding.tvCash,
                 getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectedCount
             )
@@ -1193,7 +1218,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 )
             )
         } else {
-            MethodUtils.setPriceTextViewDown(
+            MethodUtils.setPriceTextView(
                 binding.tvCash,
                 (getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectedCount) + tipAmount
             )
@@ -1223,7 +1248,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 binding.tvAmount,
                 (getCalCashDiscWithAmount(
                     prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble(), true
-                ) / isSelectedCount) + tipAmount
+                ) / isSelectedCount).toDouble() + tipAmount
             )
             binding.tvAmount.text =
                 binding.tvAmount.text.toString()
