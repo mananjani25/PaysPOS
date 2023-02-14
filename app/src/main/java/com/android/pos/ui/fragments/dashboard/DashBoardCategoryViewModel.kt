@@ -27,6 +27,7 @@ import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.model.responseModel.OnlineOrderNotificationCount
 import com.android.pos.data.model.responseModel.PrinterResponse
+import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ADD
 import com.android.pos.data.remote.Constants.BASE_URL_NEW
@@ -103,6 +104,9 @@ class DashBoardCategoryViewModel @Inject constructor(
     private val networkConnectionInterceptor: NetworkConnectionInterceptor
 ) : ViewModel() {
 
+    fun getRepository():PosRepository{
+        return posRepository
+    }
 
     private var syncMarkeup: Boolean = false
     var dineInHeaderPosition: Int = 0

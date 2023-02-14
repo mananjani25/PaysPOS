@@ -36,6 +36,7 @@ import com.android.pos.data.model.DineinCartPaymentModel
 import com.android.pos.data.model.GuestDataModel
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.*
+import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.DINE_IN_ADAPTER_LIST
@@ -9070,6 +9071,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
     }
 
+    @Inject
+    lateinit var apiService: ApiService
+
     override fun onPause() {
         super.onPause()
         if (pd != null && pd.isShowing) {
@@ -9077,7 +9081,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         }
         if (this::presentation.isInitialized) {
             presentation.show()
-            presentation.onLogOutOrClockOut()
+            presentation.onLogOutOrClockOutWithApiService(apiService)
         }
     }
 

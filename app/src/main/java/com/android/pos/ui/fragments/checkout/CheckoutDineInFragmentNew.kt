@@ -23,6 +23,7 @@ import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.CheckOutDineInDataModel
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.GuestPaymentAttributes
+import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN_ADAPTER_LIST
 import com.android.pos.data.remote.Constants.DINE_IN_GUEST_PAYMENT_DATA
@@ -201,11 +202,14 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         }
     }
 
+    @Inject
+    lateinit var apiService: ApiService
+
     override fun onPause() {
         super.onPause()
-        if(this::presentation.isInitialized){
+        if (this::presentation.isInitialized) {
             presentation.show()
-            presentation.onLogOutOrClockOut()
+            presentation.onLogOutOrClockOutWithApiService(apiService)
         }
     }
 

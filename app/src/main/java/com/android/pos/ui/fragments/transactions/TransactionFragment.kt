@@ -24,6 +24,7 @@ import com.android.pos.data.entities.TeamRole
 import com.android.pos.data.model.responseModel.GetTransactionListResponse
 import com.android.pos.data.model.responseModel.MagtekOnlineOrderRefundResponse
 import com.android.pos.data.model.responseModel.VenueDetailsResponse
+import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.databinding.FragmentTransactionBinding
@@ -330,11 +331,14 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
         return binding.root
     }
 
+    @Inject
+    lateinit var apiService: ApiService
+
     override fun onResume() {
         super.onResume()
         if (this::presentation.isInitialized) {
             presentation.show()
-            presentation.onLogOutOrClockOut()
+            presentation.onLogOutOrClockOutWithApiService(apiService)
         }
     }
 

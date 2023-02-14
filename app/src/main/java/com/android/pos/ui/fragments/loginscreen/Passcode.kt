@@ -22,6 +22,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.android.pos.BuildConfig
 import com.android.pos.R
+import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.databinding.FragmentPasscodeBinding
 import com.android.pos.di.PrefProvider
@@ -54,6 +55,9 @@ class Passcode : Fragment() {
     var isExit: Boolean = false
     var validationmsg: String = ""
     var selectedList: ArrayList<TextView> = arrayListOf()
+
+    @Inject
+    lateinit var apiService: ApiService
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -127,7 +131,7 @@ class Passcode : Fragment() {
         super.onResume()
         if(this::presentation.isInitialized){
             presentation.show()
-            presentation.onLogOutOrClockOut()
+            presentation.onLogOutOrClockOutWithApiService(apiService)
         }
     }
 

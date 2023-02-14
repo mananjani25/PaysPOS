@@ -16,6 +16,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.model.InventoryItemModel
+import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants.ACTIVE_ORDER
 import com.android.pos.data.remote.Constants.CANCELED_ORDER
 import com.android.pos.data.remote.Constants.COMPLETED_ORDER
@@ -99,11 +100,14 @@ class Orders : Fragment() {
         return binding.root
     }
 
+    @Inject
+    lateinit var apiService: ApiService
+
     override fun onResume() {
         super.onResume()
         if (this::presentation.isInitialized) {
             presentation.show()
-            presentation.onLogOutOrClockOut()
+            presentation.onLogOutOrClockOutWithApiService(apiService)
         }
     }
 

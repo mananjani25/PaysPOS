@@ -27,6 +27,7 @@ import com.android.pos.data.model.DineInModel
 import com.android.pos.data.model.requestModel.CreateQueuePrinterRequestModel
 import com.android.pos.data.model.requestModel.OrderAttributeRequestModel
 import com.android.pos.data.model.responseModel.*
+import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
@@ -1404,12 +1405,15 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
     }
 
+    @Inject
+    lateinit var apiService: ApiService
+
     override fun onPause() {
         arguments?.clear()
         super.onPause()
         if(this::presentation.isInitialized){
             presentation.show()
-            presentation.onLogOutOrClockOut()
+            presentation.onLogOutOrClockOutWithApiService(apiService)
         }
     }
 

@@ -20,6 +20,7 @@ import com.android.pos.data.model.DineInOrderDetailAttributes
 import com.android.pos.data.model.GuestPaymentCalculationModel
 import com.android.pos.data.model.responseModel.GetFloorPlanResponse
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
+import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.CUSTOMER_ID
 import com.android.pos.data.remote.Constants.DINE_IN
@@ -80,6 +81,10 @@ class CartFragment(
 ) :
     Fragment(), MyCallback,
     DineInAdapter.DineInCallback, ItemCallback {
+
+    @Inject
+    lateinit var apiService: ApiService
+
     private lateinit var presentation: CustomDisplay
     private var isSaveOrder: Boolean = false
     private lateinit var binding: FragmentCartBinding
@@ -921,7 +926,11 @@ class CartFragment(
 
                     if (this::presentation.isInitialized) {
                         presentation.show()
-                        presentation.onDisplayChanged()
+                        if (it.isNotEmpty()) {
+                            presentation.onDisplayChanged()
+                        } else {
+                            presentation.onLogOutOrClockOutWithApiService(apiService)
+                        }
                     }
 
                     saveVisibility()
@@ -1735,6 +1744,10 @@ class CartFragment(
         refreshItemCalculation()
         prefProvider.setValueboolean(IS_UPDATE_ORDER_LOYALTY_APPLIED, false)
         prefProvider.setValueboolean(LOYALTY_ADDED, false)
+        if (this::presentation.isInitialized) {
+            presentation.show()
+            presentation.onDisplayChanged()
+        }
     }
 
 
@@ -1883,6 +1896,7 @@ class CartFragment(
                             viewModel.addCart(cartlist[0])
                         }
                         clearCustomer()
+
 
                     }
                     R.id.menu_add_guest -> {

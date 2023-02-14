@@ -19,6 +19,7 @@ import com.android.pos.data.entities.RedeemLoyaltyInfo
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.CreateOrderResponse
+import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.TIP_ADDED
 import com.android.pos.data.remote.Constants.TIP_ADDED_AMOUNT
@@ -175,11 +176,14 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
     }
 
+    @Inject
+    lateinit var apiService: ApiService
+
     override fun onPause() {
         super.onPause()
-        if(this::presentation.isInitialized){
+        if (this::presentation.isInitialized) {
             presentation.show()
-            presentation.onLogOutOrClockOut()
+            presentation.onLogOutOrClockOutWithApiService(apiService)
         }
     }
 

@@ -3,10 +3,12 @@ package com.android.pos.ui.fragments.dashboard.bolddashboard
 import android.app.Presentation
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.Display
 import android.view.View
 import android.view.Window
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.pos.R
 import com.android.pos.data.entities.CartModel
@@ -15,6 +17,7 @@ import com.android.pos.data.entities.TbCustomer
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.DineInModel
 import com.android.pos.data.model.responseModel.TimeDetailsResponse
+import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.ViewCustomDisplayBinding
 import com.android.pos.di.PrefProvider
@@ -29,13 +32,14 @@ import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.invisible
 import com.android.pos.utils.extensions.isVisible
 import com.android.pos.utils.extensions.visible
+import kotlinx.coroutines.launch
 
 class CustomDisplay(
     display: Display,
     context: Context,
     val lifecycleOwner: LifecycleOwner,
     val dashBoardCategoryViewModel: DashBoardCategoryViewModel,
-    val passcodeViewModel: PasscodeViewModel
+    val passcodeViewModel: PasscodeViewModel,
 ) : Presentation(context, display), MyCallback, DineInAdapter.DineInCallback {
 
     private lateinit var dineInCartAdapter: DineInAdapter
@@ -52,19 +56,6 @@ class CustomDisplay(
         prefProvider = PrefProvider(context)
         setupList()
         setupTaxAdapter()
-    }
-
-    override fun onDisplayChanged() {
-        super.onDisplayChanged()
-
-        dashBoardCategoryViewModel.mAllWords(
-            prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT),
-            prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
-        ).observe(lifecycleOwner) {
-            it?.let {
-                updateCustomerDisplay(it)
-            }
-        }
     }
 
     private fun setupList() {
@@ -85,22 +76,23 @@ class CustomDisplay(
 
     }
 
+    override fun onDisplayChanged() {
+        super.onDisplayChanged()
+
+        dashBoardCategoryViewModel.mAllWords(
+            prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT),
+            prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+        ).observe(lifecycleOwner) {
+            it?.let {
+                updateCustomerDisplay(it)
+            }
+        }
+    }
+
     private fun updateCustomerDisplay(cartList: List<CartModel>) {
         if (this::binding.isInitialized) {
 
-            if (cartList.isEmpty()) {
-
-                passcodeViewModel.timeDetails.observe(lifecycleOwner) { res ->
-                    res.data?.let { tdr ->
-                        binding.currentTime.text = tdr.data.time
-                        binding.currentDate.text = tdr.removeWhiteSpaces()
-                    }
-                }
-
-                binding.splashLayout.visibility = View.VISIBLE
-                binding.mainCartLayout.visibility = View.GONE
-
-            } else {
+            if (cartList.isNotEmpty()) {
 
                 binding.mainCartLayout.visibility = View.VISIBLE
                 binding.splashLayout.visibility = View.GONE
@@ -217,7 +209,16 @@ class CustomDisplay(
         } else {
             binding.txtLoyaltyPointsLabel.invisible()
             binding.txtCustomerName.invisible()
+            binding.relativeLoylatyPoints.gone()
+            binding.lblLoyaltyPoints.gone()
+            if (dashBoardCategoryViewModel.order_note.isNotEmpty()) {
+                binding.liinearInfoLayout.layoutParams.height =
+                    resources.getDimension(R.dimen._80sdp).toInt()
+            } else {
+                binding.liinearInfoLayout.layoutParams.height =
+                    resources.getDimension(R.dimen._70sdp).toInt()
 
+            }
         }
 
     }
@@ -252,13 +253,6 @@ class CustomDisplay(
                     } else {
                         binding.liinearInfoLayout.layoutParams.height =
                             resources.getDimension(R.dimen._90sdp).toInt()
-//                        if (binding.relativeLoylatyPoints.isVisible()) {
-//                            binding.liinearInfoLayout.layoutParams.height =
-//                                resources.getDimension(R.dimen._110sdp).toInt()
-//                        } else {
-//                            binding.liinearInfoLayout.layoutParams.height =
-//                                resources.getDimension(R.dimen._70sdp).toInt()
-//                        }
                     }
                 } else {
                     if (dashBoardCategoryViewModel.order_note.isNotEmpty()) {
@@ -313,6 +307,25 @@ class CustomDisplay(
             thankYouLayout.visible()
             txtPaidAmount.text = "Paid $paidAmount"
         }
+    }
+
+    fun onLogOutOrClockOutWithApiService(apiService: ApiService) {
+        binding.apply {
+            mainCartLayout.gone()
+            thankYouLayout.gone()
+            splashLayout.visible()
+            callTimeApi(apiService)
+        }
+    }
+
+    private fun callTimeApi(apiService: ApiService) {
+        lifecycleOwner.lifecycleScope.launch {
+            val response = apiService.getTimeDetails()
+            Log.d("TAG", "onLogOutOrClockOutWithApiService: ${response.data.time}")
+
+            binding.currentTime.text = response.data.time
+            binding.currentDate.text = response.removeWhiteSpaces()
+        }.runCatching { Log.d("TAG", "onLogOutOrClockOutWithApiService: Some Exzception") }
     }
 
     fun onLogOutOrClockOut() {
