@@ -2728,197 +2728,199 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         var totalTablePrice = 0.0
         var WTDiscount = 0.0
         var guestCount = 0
-        LogUtil.logE(TAG, "getMovedItemDAta  ${Gson().toJson(oldList.get(dragTo).item)}")
-        oldList.get(dragTo).item?.guestItemId?.let { listOfMoveItemIds.add(it) }
-        oldList.get(dragTo).item?.guestItemId = null
-        dragFrom = -1
-        dragTo = -1
+        Log.e("checkDragTo","dragTodragTo  ${dragTo}")
+        if (dragTo != -1) {
+            oldList.get(dragTo).item?.guestItemId?.let { listOfMoveItemIds.add(it) }
+            oldList.get(dragTo).item?.guestItemId = null
+            dragFrom = -1
+            dragTo = -1
 
-        for (i in 0 until oldList.size) {
-            if (oldList.get(i).isHeader == 1) {
-                if (oldList.get(i).item?.isPaid == true) {
-                    oldList.get(i).item?.let {
-                        totalPaid += (it.price * it.itemQuantity) - it.discountPrice
-                        if (it.modifiers.isNotEmpty()) {
-                            it.modifiers.forEach {
-                                totalPaid += it.price * it.itemQuantity
+            for (i in 0 until oldList.size) {
+                if (oldList.get(i).isHeader == 1) {
+                    if (oldList.get(i).item?.isPaid == true) {
+                        oldList.get(i).item?.let {
+                            totalPaid += (it.price * it.itemQuantity) - it.discountPrice
+                            if (it.modifiers.isNotEmpty()) {
+                                it.modifiers.forEach {
+                                    totalPaid += it.price * it.itemQuantity
+                                }
                             }
                         }
-                    }
 
+                    } else {
+
+                        oldList.get(i).item?.let {
+                            totalTablePrice += (it.price * it.itemQuantity) - it.discountPrice
+                            if (it.modifiers.isNotEmpty()) {
+                                it.modifiers.forEach {
+                                    totalTablePrice += it.price * it.itemQuantity
+                                }
+                            }
+                        }
+
+                    }
                 } else {
-
-                    oldList.get(i).item?.let {
-                        totalTablePrice += (it.price * it.itemQuantity) - it.discountPrice
-                        if (it.modifiers.isNotEmpty()) {
-                            it.modifiers.forEach {
-                                totalTablePrice += it.price * it.itemQuantity
-                            }
-                        }
-                    }
-
+                    guestCount++
                 }
-            } else {
-                guestCount++
+
+
             }
 
 
-        }
 
+            for (i in 1 until oldList.size) {
+                if (oldList.get(i).isHeader == 1) {
+                    oldList.get(i).item?.let { it ->
+                        WTDiscount += it.discountPrice
+                        wholeTableAmt += (it.price * it.itemQuantity) - it.discountPrice
 
+                        if (it.modifiers.isNotEmpty()) {
+                            it.modifiers.forEach {
+                                wholeTableAmt += it.price * it.itemQuantity
 
-        for (i in 1 until oldList.size) {
-            if (oldList.get(i).isHeader == 1) {
-                oldList.get(i).item?.let { it ->
-                    WTDiscount += it.discountPrice
-                    wholeTableAmt += (it.price * it.itemQuantity) - it.discountPrice
-
-                    if (it.modifiers.isNotEmpty()) {
-                        it.modifiers.forEach {
-                            wholeTableAmt += it.price * it.itemQuantity
-
+                            }
                         }
-                    }
-                    if (it.taxes?.isNotEmpty() == true) {
-                        it.taxes?.forEach { tax ->
-                            if (tax.isActive) {
-                                WTTax += if (tax.taxType == "Percentage") {
+                        if (it.taxes?.isNotEmpty() == true) {
+                            it.taxes?.forEach { tax ->
+                                if (tax.isActive) {
+                                    WTTax += if (tax.taxType == "Percentage") {
 
-                                    var modifierPrice = 0.0
-                                    val price =
-                                        (it.price * it.itemQuantity) - it.discountPrice
+                                        var modifierPrice = 0.0
+                                        val price =
+                                            (it.price * it.itemQuantity) - it.discountPrice
 
-                                    it.modifiers.forEach {
-                                        modifierPrice += (it.price * it.itemQuantity)
-                                    }
+                                        it.modifiers.forEach {
+                                            modifierPrice += (it.price * it.itemQuantity)
+                                        }
 
-                                    val totalPrice = price + modifierPrice
+                                        val totalPrice = price + modifierPrice
 
-                                    val itemTaxPrice =
-                                        (tax.rate * totalPrice) / 100
-                                    LogUtil.logE("itemTaxPrice", "" + itemTaxPrice)
-                                    MethodUtils.getTwoDecimal(itemTaxPrice)
-                                    /* String.format("%.2f", itemTaxPrice)
+                                        val itemTaxPrice =
+                                            (tax.rate * totalPrice) / 100
+                                        LogUtil.logE("itemTaxPrice", "" + itemTaxPrice)
+                                        MethodUtils.getTwoDecimal(itemTaxPrice)
+                                        /* String.format("%.2f", itemTaxPrice)
                                          .toDouble()*/
-                                } else {
-                                    MethodUtils.getTwoDecimal(tax.rate * it.itemQuantity)
+                                    } else {
+                                        MethodUtils.getTwoDecimal(tax.rate * it.itemQuantity)
 
-                                    /* String.format(
+                                        /* String.format(
                                          "%.2f",
                                          tax.rate * it.itemQuantity
                                      )
                                          .toDouble()*/
+                                    }
                                 }
                             }
                         }
                     }
+
+
+                } else {
+
+                    break
                 }
 
-
-            } else {
-
-                break
             }
-
-        }
-        if (serviceChargeList.isNotEmpty() == true) {
-            var isApplied = false
-            serviceChargeList.forEach {
-                if (prefProvider.getValueboolean(
-                        Constants.SERVICECHARGE_DINEIN_ORDER,
-                        false
-                    )
-                ) {
-                    if (it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
-                        if (isInRange(
-                                it.min_guest_count!!,
-                                it.max_guest_count!!,
-                                (guestCount - 1)
-                            )
-                        ) {
-                            isApplied = true
-                            Log.d(
-                                TAG,
-                                "calculateDineInServiceCharge: DashBoard " + it.min_guest_count + "....." + it.max_guest_count + " in between " + (guestCount - 1)
-                            )
-                            WTServiceCharge += (wholeTableAmt * it.percentage) / 100
+            if (serviceChargeList.isNotEmpty() == true) {
+                var isApplied = false
+                serviceChargeList.forEach {
+                    if (prefProvider.getValueboolean(
+                            Constants.SERVICECHARGE_DINEIN_ORDER,
+                            false
+                        )
+                    ) {
+                        if (it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
+                            if (isInRange(
+                                    it.min_guest_count!!,
+                                    it.max_guest_count!!,
+                                    (guestCount - 1)
+                                )
+                            ) {
+                                isApplied = true
+                                Log.d(
+                                    TAG,
+                                    "calculateDineInServiceCharge: DashBoard " + it.min_guest_count + "....." + it.max_guest_count + " in between " + (guestCount - 1)
+                                )
+                                WTServiceCharge += (wholeTableAmt * it.percentage) / 100
+                                return@forEach
+                            }
+                        }
+                    }
+                }
+                if (!isApplied) {
+                    serviceChargeList.forEach { service ->
+                        if (service.id == checkMaxGuestCountId(serviceChargeList)) {
+                            WTServiceCharge += (wholeTableAmt * service.percentage) / 100
                             return@forEach
                         }
                     }
                 }
+
             }
-            if (!isApplied) {
-                serviceChargeList.forEach { service ->
-                    if (service.id == checkMaxGuestCountId(serviceChargeList)) {
-                        WTServiceCharge += (wholeTableAmt * service.percentage) / 100
-                        return@forEach
-                    }
+            LogUtil.logE("AfterMove", "wholeTableAmt  ${wholeTableAmt}")
+            LogUtil.logE("AfterMove", "WTServiceCharge  ${WTServiceCharge}")
+            LogUtil.logE("AfterMove", "WTTax  ${WTTax}")
+            LogUtil.logE("AfterMove", "WTTax  ${WTDiscount}")
+            LogUtil.logE("AfterMode", "guestCount  ${guestCount}")
+            guestShare = (wholeTableAmt + WTServiceCharge + WTTax) / (guestCount - 1)
+
+
+            for (i in 0 until oldList.size) {
+                var model = DineInModel()
+                if (oldList.get(i).isHeader == 1) {
+                    model.item = oldList.get(i).item
+                    model.totalTableAmt = totalTablePrice
+
+
+                } else {
+                    model.title = oldList.get(i).title
+                    model.customer = oldList.get(i).customer
+
+                    model.guestDividedAmt = guestShare
+                    Log.d("two", "navigateDineInOrder: " + model.guestDividedAmt)
+                    LogUtil.logE(TAG, "OLDListGuestId:  ${oldList.get(i).id}")
+                    model.id = oldList.get(i).id
                 }
+                model.isHeader = oldList.get(i).isHeader
+                newList.add(model)
+
             }
+            var guestAmt = 0.0
 
-        }
-        LogUtil.logE("AfterMove", "wholeTableAmt  ${wholeTableAmt}")
-        LogUtil.logE("AfterMove", "WTServiceCharge  ${WTServiceCharge}")
-        LogUtil.logE("AfterMove", "WTTax  ${WTTax}")
-        LogUtil.logE("AfterMove", "WTTax  ${WTDiscount}")
-        LogUtil.logE("AfterMode", "guestCount  ${guestCount}")
-        guestShare = (wholeTableAmt + WTServiceCharge + WTTax) / (guestCount - 1)
-
-
-        for (i in 0 until oldList.size) {
-            var model = DineInModel()
-            if (oldList.get(i).isHeader == 1) {
-                model.item = oldList.get(i).item
-                model.totalTableAmt = totalTablePrice
-
-
-            } else {
-                model.title = oldList.get(i).title
-                model.customer = oldList.get(i).customer
-
-                model.guestDividedAmt = guestShare
-                Log.d("two", "navigateDineInOrder: " + model.guestDividedAmt)
-                LogUtil.logE(TAG, "OLDListGuestId:  ${oldList.get(i).id}")
-                model.id = oldList.get(i).id
-            }
-            model.isHeader = oldList.get(i).isHeader
-            newList.add(model)
-
-        }
-        var guestAmt = 0.0
-
-        for (i in 0 until newList.size) {
-            if (newList.get(i).isHeader == 1) {
-                newList.get(i).item?.let { it ->
-                    guestAmt += (it.price * it.itemQuantity) - it.discountPrice
-                    if (it.modifiers.isNotEmpty()) {
-                        it.modifiers.forEach {
-                            guestAmt += it.itemQuantity * it.price
+            for (i in 0 until newList.size) {
+                if (newList.get(i).isHeader == 1) {
+                    newList.get(i).item?.let { it ->
+                        guestAmt += (it.price * it.itemQuantity) - it.discountPrice
+                        if (it.modifiers.isNotEmpty()) {
+                            it.modifiers.forEach {
+                                guestAmt += it.itemQuantity * it.price
+                            }
                         }
+
                     }
-
+                } else {
+                    newList.get(i).totalGuestPrice = guestAmt + guestShare
+                    guestAmt = 0.0
                 }
-            } else {
-                newList.get(i).totalGuestPrice = guestAmt + guestShare
-                guestAmt = 0.0
             }
+            newList.get(0).guestDividedAmt = guestShare
+            newList.get(0).totalGuestCount = guestCount - 1
+            newList.get(0).wholeTableSubTotal =
+                wholeTableAmt / (guestCount - 1)
+            newList.get(0).wholeTableTax =
+                WTTax / (guestCount - 1)
+            newList.get(0).wholeTableSurTax =
+                WTServiceCharge / (guestCount - 1)
+            newList.get(0).orderDiscount = getOrderDetailsResponse?.totalDiscount ?: 0.0
+            newList.get(0).orderTotalAmount = subTotalDInin
+            totalGuestCount = guestCount - 1
+
+
+            dineInTableAdapter.setList(newList)
+
+            updateOrderCall()
         }
-        newList.get(0).guestDividedAmt = guestShare
-        newList.get(0).totalGuestCount = guestCount - 1
-        newList.get(0).wholeTableSubTotal =
-            wholeTableAmt / (guestCount - 1)
-        newList.get(0).wholeTableTax =
-            WTTax / (guestCount - 1)
-        newList.get(0).wholeTableSurTax =
-            WTServiceCharge / (guestCount - 1)
-        newList.get(0).orderDiscount = getOrderDetailsResponse?.totalDiscount ?: 0.0
-        newList.get(0).orderTotalAmount = subTotalDInin
-        totalGuestCount = guestCount - 1
-
-
-        dineInTableAdapter.setList(newList)
-
-        updateOrderCall()
 
     }
 
