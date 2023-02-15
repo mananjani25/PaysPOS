@@ -27,7 +27,6 @@ import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.model.responseModel.OnlineOrderNotificationCount
 import com.android.pos.data.model.responseModel.PrinterResponse
-import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ADD
 import com.android.pos.data.remote.Constants.BASE_URL_NEW
@@ -1446,7 +1445,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         Log.d(TAG, "newCartLogicModifier normal item: ${i}")
                                         break
                                     } else
-                                        if (cartModel?.reorder == false && list[i].id == item.id && checkVariation(
+                                        if (cartModel?.reorder == false && list[i].itemId == item.itemId && list[i].id == item.id && checkVariation(
                                                 list[i],
                                                 item
                                             ) && checkModifierNewLogic(list[i], item)
