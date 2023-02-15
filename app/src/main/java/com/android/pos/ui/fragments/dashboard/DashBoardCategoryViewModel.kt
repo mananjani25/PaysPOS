@@ -330,7 +330,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     }
 
-    fun generateCombinedItems(cartModel: CartModel): CartModel {
+    fun generateCombinedItems(cartModel: CartModel): CartModel    {
         val combinedItems = arrayListOf<TbItem>()
         cartModel.items?.let {
 

@@ -203,7 +203,7 @@ class PaymentBoldPosFragment : Fragment() {
                 var splitModel: DineInOrderPayment =
                     requireArguments().getParcelable("orderPayment") ?: DineInOrderPayment()
 
-
+                Log.e("CheckGuestPayment","isGuestisGuest  ${isGuest}")
                 Handler(Looper.getMainLooper()).postDelayed({
                     val dineInModel = CheckOutDineInDataModel(
                         requireArguments().getInt("id") ?: 0,
@@ -227,6 +227,7 @@ class PaymentBoldPosFragment : Fragment() {
                     var string_gson = prefProvider.getValue(SPLIT_DINEIN_CHECKOUT, "")
                     var temp_model =
                         Gson().fromJson(string_gson, CheckOutDineInDataModel::class.java)
+                    Log.e("CheckGuestPAymentOrNot","temp_modeltemp_model   ${Gson().toJson(temp_model)}")
                     Handler(Looper.getMainLooper()).postDelayed({
                         val dineInModel = CheckOutDineInDataModel(
                             temp_model.guestId,
