@@ -25,7 +25,7 @@ class OrderTypeAdapter :
             binding.model = item
             binding.executePendingBindings()
             if(item.name == DEFAULT_ORDER){
-                binding.root.setBackgroundResource(R.drawable.background_selected_border)
+                binding.root.setBackgroundResource(R.drawable.border_orange)
             }else{
                 binding.root.setBackgroundResource(R.drawable.background_square_border_grey)
             }
