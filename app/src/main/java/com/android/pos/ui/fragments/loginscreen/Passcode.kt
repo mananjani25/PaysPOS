@@ -29,6 +29,7 @@ import com.android.pos.di.PrefProvider
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
+import com.android.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.ProgressUtils
@@ -44,6 +45,7 @@ class Passcode : Fragment() {
     private lateinit var presentation: CustomDisplay
     private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
     private val passcodeViewModel by activityViewModels<PasscodeViewModel>()
+    private val dineInViewModel by viewModels<DineInOrderTableViewModel>()
 
     private var isLogin: Boolean = false
     private lateinit var binding: FragmentPasscodeBinding
@@ -92,7 +94,9 @@ class Passcode : Fragment() {
                 requireContext(),
                 viewLifecycleOwner,
                 dashboardViewModel,
-                passcodeViewModel
+                passcodeViewModel,
+                dineInViewModel
+
             )
         }
 

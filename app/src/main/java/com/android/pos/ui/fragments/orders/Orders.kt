@@ -26,6 +26,7 @@ import com.android.pos.di.RolePermission
 import com.android.pos.ui.adapter.InventoryAdapter
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
+import com.android.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
@@ -45,6 +46,7 @@ class Orders : Fragment() {
     private lateinit var binding: FragmentInventoryBinding
     var startDate: String? = null
     var endDate: String? = null
+    private val dineInViewModel by viewModels<DineInOrderTableViewModel>()
 
     @Inject
     lateinit var rolePermission: RolePermission
@@ -68,7 +70,8 @@ class Orders : Fragment() {
                 requireContext(),
                 viewLifecycleOwner,
                 dashboardViewModel,
-                passcodeViewModel
+                passcodeViewModel,
+                dineInViewModel
             )
         }
 

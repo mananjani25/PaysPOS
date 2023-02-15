@@ -81,6 +81,7 @@ import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.SplitListAdapter
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
+import com.android.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
 import com.android.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
@@ -128,6 +129,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private var dis_charge_value: Double = 0.0
     private var isGuest: Boolean = false
     private var remainingAmount: Double = 0.0
+    private val dineInViewModel by viewModels<DineInOrderTableViewModel>()
     private var splitPaidAmount: Double = 0.0
     private var woyouService: IWoyouService? = null
     private var splitValue: Int = -1
@@ -197,7 +199,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 requireContext(),
                 viewLifecycleOwner,
                 dashboardViewModel,
-                passcodeViewModel
+                passcodeViewModel,
+                dineInViewModel
+
             )
         }
 

@@ -35,6 +35,7 @@ import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.TransactionAdapter
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
+import com.android.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.ui.fragments.magtek.MagtekRequestUtils
 import com.android.pos.ui.fragments.magtek.PaymentResponse
@@ -67,6 +68,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
     private var singleTransaction: GetTransactionListResponse.Data.Payment? = null
     private var tipAmount: Double = 0.0
     private lateinit var binding: FragmentTransactionBinding
+    private val dineInViewModel by viewModels<DineInOrderTableViewModel>()
     private lateinit var transactionAdapter: TransactionAdapter
     private val viewModel by viewModels<TransactionViewModel>()
     private lateinit var startDate: DatePickerDialog.OnDateSetListener
@@ -127,7 +129,8 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                 requireContext(),
                 viewLifecycleOwner,
                 dashboardViewModel,
-                passcodeViewModel
+                passcodeViewModel,
+                dineInViewModel
             )
         }
 
