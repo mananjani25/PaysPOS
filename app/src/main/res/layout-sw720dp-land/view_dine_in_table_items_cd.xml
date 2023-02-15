@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingDefaultResource">
+
+    <data>
+
+        <variable
+            name="model"
+            type="com.android.pos.data.entities.TbItem" />
+    </data>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#1d1d1f"
+        android:orientation="vertical">
+
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingVertical="@dimen/_2sdp">
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1.5"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/CustomFontRegularStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:gravity="start"
+                        android:paddingStart="@dimen/_14sdp"
+                        android:text="@{model.name}"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_7mdpi"
+                        tools:text="Item" />
+
+                    <TextView
+                        android:id="@+id/txtNote"
+                        style="@style/CustomFontMediumStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:ellipsize="end"
+                        android:gravity="start"
+                        android:lines="1"
+                        android:maxLines="1"
+                        android:paddingStart="@dimen/_14sdp"
+                        android:singleLine="true"
+                        android:text="@{@string/add_note_cart +``+model.note}"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_5mdpi" />
+                </LinearLayout>
+
+                <View
+                    android:id="@+id/viewLine1"
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/view"
+                    android:visibility="invisible"
+                    app:layout_constraintTop_toBottomOf="@+id/linearHeader" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="0.5"
+                    android:gravity="start">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/CustomFontBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:text="@{``+model.itemQuantity}"
+                        android:textColor="@color/dark_btn_Color"
+                        android:textSize="@dimen/_6mdpi" />
+                </LinearLayout>
+
+                <View
+                    android:id="@+id/viewLine3"
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/view"
+                    android:visibility="invisible"
+                    app:layout_constraintTop_toBottomOf="@+id/linearHeader" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:translationX="-25dp">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtEmpName"
+                        style="@style/CustomFontRegularStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:gravity="start"
+                        android:text=""
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_5mdpi"
+                        tools:text="Item" />
+                </LinearLayout>
+
+                <View
+                    android:id="@+id/viewLine4"
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/view"
+                    android:visibility="invisible"
+                    app:layout_constraintTop_toBottomOf="@+id/linearHeader" />
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="0.7"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvRate"
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end"
+                        android:gravity="center"
+                        android:paddingRight="@dimen/_20sdp"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_5mdpi"
+                        tools:text="$20.00" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvDiscountRate"
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end"
+                        android:layout_marginTop="@dimen/_2sdp"
+                        android:gravity="start"
+                        android:paddingRight="@dimen/_22sdp"
+                        android:textColor="@color/colorRed"
+                        android:textSize="@dimen/_5mdpi"
+                        tools:text="$20.00" />
+
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvModifiers"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/view_cart_modifier" />
+
+        <View
+            android:id="@+id/viewLine5"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/view"
+            android:visibility="invisible"
+            app:layout_constraintTop_toBottomOf="@+id/linearHeader" />
+
+    </LinearLayout>
+
+
+</layout>

@@ -174,15 +174,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         )
         binding.lifecycleOwner = this
 
-        getCustomerDisplay(requireContext())?.let { display ->
-            presentation = CustomDisplay(
-                display,
-                requireContext(),
-                viewLifecycleOwner,
-                dashboardViewModel,
-                passcodeViewModel
-            )
-        }
+
 
         progressDialog()
         optionType = prefProvider.getValue(Constants.OPTION_TYPE, "")
@@ -200,6 +192,16 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         observeTipsList()
         observeAddGuest()
 
+        getCustomerDisplay(requireContext())?.let { display ->
+            presentation = CustomDisplay(
+                display,
+                requireContext(),
+                viewLifecycleOwner,
+                dashboardViewModel,
+                passcodeViewModel,
+                viewModel
+            )
+        }
         navigateDineInOrderNew()
         observeUnMergeTable()
         requireActivity().supportFragmentManager.setFragmentResultListener(
@@ -2601,9 +2603,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     if (dineInList.isNotEmpty()) {
                         dineInTableAdapter.setList(dineInList)
                         if(this::presentation.isInitialized){
-                            //presentation.show()
-                            //presentation.onDisplayChanged()
-                            //presentation.showTableDetails(dineInList)
+                            presentation.show()
+                            presentation.onDisplayChanged()
+                            presentation.showTableDetails(baseResponse)
                         }
                         checkForAutoFire(true)
 

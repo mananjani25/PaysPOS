@@ -19,10 +19,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.android.pos.BuildConfig
 import com.android.pos.R
-import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.AUTH_TOKEN
-import com.android.pos.data.remote.Constants.EMAIL
 import com.android.pos.data.remote.Constants.IS_CLOCKOUT
 import com.android.pos.data.remote.Constants.LOGIN_EMAIL
 import com.android.pos.data.remote.Constants.LOGIN_PASSWORD
@@ -35,18 +33,16 @@ import com.android.pos.di.PrefProvider
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
+import com.android.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.android.pos.utils.AdvertisingInfo
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
 import com.android.pos.utils.getCustomerDisplay
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.snackbar.Snackbar
-import com.google.common.util.concurrent.FutureCallback
-import com.google.common.util.concurrent.Futures.addCallback
 import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import java.util.concurrent.Executors
 import javax.inject.Inject
 
 
@@ -68,6 +64,7 @@ class LoginFragment : Fragment() {
     @set:Inject
     internal var prefProvider: PrefProvider? = null
 
+    private val dineInViewModel by viewModels<DineInOrderTableViewModel>()
     @set:Inject
     var hostSelectionInterceptor: HostSelectionInterceptor? = null
 
@@ -108,7 +105,9 @@ class LoginFragment : Fragment() {
                 requireContext(),
                 viewLifecycleOwner,
                 dashboardViewModel,
-                passcodeViewModel
+                passcodeViewModel,
+                dineInViewModel
+
             )
         }
 

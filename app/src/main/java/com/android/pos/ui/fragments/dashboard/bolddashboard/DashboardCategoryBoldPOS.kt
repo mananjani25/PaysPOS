@@ -48,6 +48,7 @@ import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.android.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.ui.fragments.payment.PaymentViewModel
 import com.android.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
@@ -92,7 +93,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     private var serviceChargesObserve: Observer<Resource<List<TbServiceCharge>>>? = null
     private var orderTypeObserver: Observer<Resource<List<TbOrderType>>>? = null
     private var dineInFloorTableModel: GetFloorPlanResponse.Data.FloorPlanTable? = null
-    private val TAG = "DashboardCategoryBold"
+    private val dineInViewModel by viewModels<DineInOrderTableViewModel>()
+        private val TAG = "DashboardCategoryBold"
     var ordertypelist: ArrayList<TbOrderType> = arrayListOf()
     private var kitchenSettingModel = GetKitchenReceiptSettingsResponse.Data()
     var isupdate = false
@@ -157,7 +159,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 requireContext(),
                 viewLifecycleOwner,
                 viewModel,
-                passcodeViewModel
+                passcodeViewModel,
+                dineInViewModel
+
             )
         }
         val callback: OnBackPressedCallback =

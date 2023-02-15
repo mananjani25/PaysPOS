@@ -10,6 +10,7 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -55,6 +56,7 @@ import com.android.pos.ui.adapter.boldpos.CartAdapter
 import com.android.pos.ui.adapter.boldpos.TaxBirfurcationAdapter
 import com.android.pos.ui.fragments.checkout.CheckoutDineInPaymentViewModel
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.android.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.ui.fragments.payment.PaymentViewModel
 import com.android.pos.utils.*
@@ -86,6 +88,7 @@ class CartFragment(
     @Inject
     lateinit var apiService: ApiService
 
+
     private lateinit var presentation: CustomDisplay
     private var isSaveOrder: Boolean = false
     private lateinit var binding: FragmentCartBinding
@@ -103,6 +106,7 @@ class CartFragment(
     private var paymentId: Int? = null
     private var future_delivery_time: String = ""
     lateinit var cashDiscountModel: CashDiscountModel
+    private val dineInViewModel by viewModels<DineInOrderTableViewModel>()
     var cashDiscountType = ""
     var cartlist: ArrayList<CartModel> = arrayListOf()
     private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
@@ -152,7 +156,9 @@ class CartFragment(
                 requireContext(),
                 viewLifecycleOwner,
                 viewModel,
-                passcodeViewModel
+                passcodeViewModel,
+                dineInViewModel
+
             )
             //presentation.show()
         }
