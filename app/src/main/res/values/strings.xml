@@ -511,6 +511,7 @@
     <string name="add_custom_item">Add Custom Item</string>
     <string name="set_up_item_grid">Set up Item Grid</string>
     <string name="hardware">Hardware</string>
+    <string name="hardware_setup">Hardware Setup</string>
     <string name="security">Security</string>
     <string name="marketing">Marketing</string>
     <string name="team_member">Employee</string>
@@ -834,6 +835,8 @@
     <string name="search_by_item">Search by item</string>
     <string name="online_orders">ONLINE ORDERS</string>
     <string name="no_employees_found">No Employees Found</string>
+    <string name="search_by_order_id_employee_customer_name">Search by Order id, employee, customer name</string>
+    <string name="search_by_customer_name_order_id_receipt_id_amount">Search by Customer name, order id, receipt id, $ amount</string>
 
 
 </resources>
