@@ -514,8 +514,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="3.5"
                                 android:gravity="right"
-                                android:text=""
-                                android:textColor="@color/btnColor"
+                                android:textColor="@color/colorRed"
                                 android:textSize="@dimen/text_size_medium" />
                         </androidx.appcompat.widget.LinearLayoutCompat>
 

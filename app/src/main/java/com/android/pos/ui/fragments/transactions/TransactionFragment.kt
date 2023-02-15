@@ -389,7 +389,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        searchFilter()
+//        searchFilter()
     }
 
     fun timeCalculateForStartEndTime(hour: Int, minute: Int, isStart: String): String {
