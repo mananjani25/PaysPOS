@@ -407,23 +407,6 @@ class CustomDisplay(
         if (baseResponse != null) {
             binding.mainCartLayout.visibility = View.VISIBLE
             binding.splashLayout.visibility = View.GONE
-            /*  passDiscountTotal = baseResponse.totalDiscount
-              passSCTotal = baseResponse.totalServiceCharges
-              wholeTableDiscount = 0.0
-              order_note = baseResponse.note
-              globalOrderDiscount = 0.0*/
-            //Manan's Code
-            //for Merge Icon
-            /*  if (baseResponse.floorPlanTable.status == Constants.MERGEDANDOCCUPIED) {
-                  binding.imgMergeTable.visibility = View.VISIBLE
-                  binding.imgMergeTable.setImageDrawable(
-                      requireContext().resources.getDrawable(
-                          R.drawable.ic_unmerge
-                      )
-                  )
-              } else {
-                  binding.imgMergeTable.visibility = View.GONE
-              }*/
 
             //table name,chair for mergedOccupied,single table details in Header
             if (baseResponse.floorPlanTable.status == Constants.MERGEDANDOCCUPIED) {
@@ -976,31 +959,32 @@ class CustomDisplay(
 
 
                 var finalAmount = subTotalDInin + serviceCharge + finalTaxAmt - orderDis
-                binding.txtTotal.text = MethodUtils.roundOffAmount(
-                    finalAmount
-                )
 
-                binding.txtSubTotal.text = MethodUtils.roundOffAmount(
-                    subTotalDInin
-                )
-
-                binding.txtTax.text = MethodUtils.roundOffAmount(
-                    finalTaxAmt
-                )
-
-                binding.txtServiceCharge.text = MethodUtils.roundOffAmount(
-                    serviceCharge
-                )
-
-
-                binding.txtServiceCharge.text = "-" + MethodUtils.roundOffAmount(
-                    baseResponse.totalDiscount
-                )
 
                 //  toFinalAmt = finalAmount
 
 
             }
+            binding.txtTotal.text = MethodUtils.roundOffAmount(
+                finalAmount
+            )
+
+            binding.txtSubTotal.text = MethodUtils.roundOffAmount(
+                subTotalDInin
+            )
+
+            binding.txtTax.text = MethodUtils.roundOffAmount(
+                finalTaxAmt
+            )
+
+            binding.txtServiceCharge.text = MethodUtils.roundOffAmount(
+                serviceCharge
+            )
+
+
+            binding.txtServiceCharge.text = "-" + MethodUtils.roundOffAmount(
+                baseResponse.totalDiscount
+            )
 
             if (prefProvider.getValueboolean(Constants.CASHDIS_SURCHARGEENABLE, false)) {
 
