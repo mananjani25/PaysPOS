@@ -1127,7 +1127,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             tabItemMOdel.customItemCount = count
             tabItemMOdel.name = "Custom Item ${count}"
             if (binding.llKeypad.edtItemName.text?.trim()?.isNotEmpty() == true) {
-                tabItemMOdel.name = binding.llKeypad.edtItemName.text!!.trim().toString()
+                tabItemMOdel.name = binding.llKeypad.edtItemName.text!!.toString().trim().replace("\\s+".toRegex(), " ")
                 count--
                 tabItemMOdel.customItemCount = count
             }
@@ -1445,10 +1445,10 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 ((model.price * model.itemQuantity) - (model.discountPrice* model.itemQuantity))
             )
         } else {
-            txtTitle.text = model.name + "  $" + String.format(
+            txtTitle.text = model.name /*+ "  $" + String.format(
                 "%.2f",
                 (model.price * model.itemQuantity)
-            )
+            )*/
         }
 
         imgClose.setOnClickListener {
@@ -1475,7 +1475,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 model.itemQuantity = 1
             }
 
-            cartList?.get(0)?.items?.get(position)?.name = edtItemName.text.toString()
+            cartList?.get(0)?.items?.get(position)?.name = edtItemName.text.toString().trim().replace("\\s+".toRegex(), " ")
             Log.d(TAG, "onItemClicked: name  " + edtItemName.text.toString())
 
             model.price = String.format("%.2f", (itemCost)).toDouble()

@@ -217,6 +217,7 @@
                     android:digits="@string/disable_emoji_string"
                     android:hint="@string/business_website"
                     android:imeOptions="actionNext"
+                    android:maxLength="500"
                     android:inputType="textVisiblePassword"
                     android:padding="@dimen/_9sdp"
                     android:textColor="@color/btnColor"

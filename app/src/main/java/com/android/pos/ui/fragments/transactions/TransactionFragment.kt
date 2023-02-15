@@ -3,6 +3,8 @@ package com.android.pos.ui.fragments.transactions
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -56,7 +58,6 @@ import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 import kotlin.math.abs
-import kotlin.time.Duration.Companion.minutes
 
 @AndroidEntryPoint
 class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, ItemCallback {
@@ -384,6 +385,11 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
         viewModel.setCurrentDate(
             myCalendar
         )
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        searchFilter()
     }
 
     fun timeCalculateForStartEndTime(hour: Int, minute: Int, isStart: String): String {
@@ -1333,6 +1339,28 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
             override fun onFailure(call: Call<PaymentResponse>, t: Throwable) {
 
                 ProgressUtils.dismissProgressDialog()
+            }
+        })
+    }
+
+    private fun searchFilter() {
+        binding.includeView.autoSearch.addTextChangedListener(object : TextWatcher {
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+                if (s.toString() == " ") {
+                    binding.includeView.autoSearch.setText("")
+                }
+            }
+
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
+            }
+
+            override fun afterTextChanged(s: Editable) {
+                if (s.toString().isNotEmpty()) {
+                    transactionAdapter.showLoading(false)
+                    transactionAdapter.filter.filter(s.toString().trim())
+                } else {
+                    currentPage = 1
+                }
             }
         })
     }

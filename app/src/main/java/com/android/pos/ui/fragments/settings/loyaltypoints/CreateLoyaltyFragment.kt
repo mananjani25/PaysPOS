@@ -87,7 +87,8 @@ class CreateLoyaltyFragment : Fragment() {
                 discountType(false)
 
             }
-
+            binding.editLoyaltyTarget.setText(loyaltyProgramsModel!!.rewardPoint.toString())
+            binding.editLoyaltyAmount.setText(String.format(getString(R.string.format), loyaltyProgramsModel!!.amount))
 
         } else {
             binding.header.txtSave.text = getString(R.string.save)
@@ -150,8 +151,16 @@ class CreateLoyaltyFragment : Fragment() {
             backPressManage()
         }
         binding.header.txtSave.setOnClickListener {
-            viewModel.setLoyaltyAmount(binding.editLoyaltyAmount?.text.toString().toDouble())
-            viewModel.setLoyaltyTarget(binding.editLoyaltyTarget?.text.toString().toInt())
+            if(binding.editLoyaltyAmount.text.toString().isNotEmpty()) {
+                viewModel.setLoyaltyAmount(binding.editLoyaltyAmount.text.toString().toDouble())
+            }else{
+                viewModel.setLoyaltyAmount(0.00)
+            }
+            if(binding.editLoyaltyTarget.text.toString().isNotEmpty()) {
+                viewModel.setLoyaltyTarget(binding.editLoyaltyTarget.text.toString().toInt())
+            }else{
+                viewModel.setLoyaltyTarget(0)
+            }
             viewModel.submit()
         }
     }

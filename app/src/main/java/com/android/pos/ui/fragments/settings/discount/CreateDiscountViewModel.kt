@@ -73,7 +73,7 @@ class CreateDiscountViewModel @Inject constructor(
             if (isEdit) {
                 discountData = CreateDiscountRequestModel().apply {
                     discount = CreateDiscountRequestModel.Discount().apply {
-                        name = value!!.name.trim()
+                        name = value!!.name.trim().replace("\\s+".toRegex(), " ")
                         percentage = percentage_double
                         discountType = discountTypeViewModel    /*[Percentage Amount]*/
                         locationId = prefProvider.getValueInt(LOCATION_ID, -1)
@@ -82,7 +82,7 @@ class CreateDiscountViewModel @Inject constructor(
             } else {
                 discountData = CreateDiscountRequestModel().apply {
                     discount = CreateDiscountRequestModel.Discount().apply {
-                        name = value!!.name.trim()
+                        name = value!!.name.trim().replace("\\s+".toRegex(), " ")
                         percentage = percentage_double
                         discountType = discountTypeViewModel    /*[Percentage Amount]*/
                         locationId = prefProvider.getValueInt(LOCATION_ID, -1)

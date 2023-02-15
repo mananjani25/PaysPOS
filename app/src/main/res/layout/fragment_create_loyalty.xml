@@ -218,7 +218,6 @@
                         android:inputType="number"
                         android:padding="@dimen/_9sdp"
                         android:maxLength="5"
-                        android:text="@={``+viewModel.loyaltyTarget}"
                         android:textColor="@color/txtColor"
                         android:textColorHint="@color/hintColor"
                         android:textSize="@dimen/_7sdp" />

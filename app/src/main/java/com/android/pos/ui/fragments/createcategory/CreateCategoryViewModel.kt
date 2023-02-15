@@ -102,7 +102,7 @@ class CreateCategoryViewModel @Inject constructor(
             if (isEdit) {
                 createCategoryRequestModel = CreateCategoryRequestModel().apply {
                     id = catId
-                    name = categoryDetails.value?.name!!.trim()
+                    name = categoryDetails.value?.name!!.trim().replace("\\s+".toRegex(), " ")
                     active = true
                     location_id = prefProvider.getValueInt(Constants.LOCATION_ID, -1)
                     item_ids = ids
@@ -110,7 +110,7 @@ class CreateCategoryViewModel @Inject constructor(
                 }
             } else {
                 createCategoryRequestModel = CreateCategoryRequestModel().apply {
-                    name = categoryDetails.value?.name!!.trim()
+                    name = categoryDetails.value?.name!!.trim().replace("\\s+".toRegex(), " ")
                     active = true
                     location_id = prefProvider.getValueInt(Constants.LOCATION_ID, -1)
                     item_ids = ids

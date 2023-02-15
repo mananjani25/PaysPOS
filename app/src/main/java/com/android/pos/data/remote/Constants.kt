@@ -687,5 +687,6 @@ object Constants {
     const val TIP_ADDED_ID = "TipAddedId"
 
     const val OPEN_ORDER_DIRECT_PAY = "open_order_direct_pay"
+    const val DEFAULT_ORDER = "Take Out"
 
 }

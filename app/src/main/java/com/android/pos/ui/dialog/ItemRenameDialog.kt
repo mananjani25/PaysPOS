@@ -45,7 +45,7 @@ class ItemRenameDialog : DialogFragment() {
 
         binding.txtSave.setOnClickListener {
             val result = Bundle().apply {
-                putString("item_name", binding.edtItemName.text.toString().trim())
+                putString("item_name", binding.edtItemName.text.toString().trim().replace("\\s+".toRegex(), " "))
             }
             setFragmentResult("request_key_item_rename", result)
             findNavController().navigateUp()

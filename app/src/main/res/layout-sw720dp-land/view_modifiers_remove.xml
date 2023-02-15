@@ -68,6 +68,7 @@
                 android:gravity="start"
                 android:hint="@string/_0_00"
                 android:inputType="numberDecimal"
+                android:maxLength="8"
                 android:padding="@dimen/_3sdp"
                 android:textColor="@color/txtColor"
                 android:textColorHint="@color/hintColor"

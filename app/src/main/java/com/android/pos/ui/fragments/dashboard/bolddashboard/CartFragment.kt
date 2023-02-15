@@ -43,6 +43,7 @@ import com.android.pos.data.remote.Constants.OPEN_ORDER_UPDATE_FOR_PRINT
 import com.android.pos.data.remote.Constants.OPTION_TYPE
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.ORDER_TYPE_ID
+import com.android.pos.data.remote.Constants.ORDER_TYPE_NAME
 import com.android.pos.data.remote.Constants.REDIRECT_FROM
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.remote.Constants.WHOLE_AMOUNT
@@ -2253,6 +2254,7 @@ class CartFragment(
         val model = orderTypeAdapter?.getItem(pos)
 
         model?.id?.let { prefProvider.setValueInt(ORDER_TYPE_ID, it) }
+        model?.name?.let {  prefProvider.setValue(ORDER_TYPE_NAME, it)}
 
         Log.e(TAG, "checkOrderType  ${model?.orderType}")
 

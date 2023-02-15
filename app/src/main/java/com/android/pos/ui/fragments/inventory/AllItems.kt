@@ -107,7 +107,9 @@ class AllItems(val clickedPosition: Int, val totalItems: Int) : Fragment(), Item
 
         binding.edtSearch.addTextChangedListener(object : TextWatcher {
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-
+                if (s.toString() == " ") {
+                    binding.edtSearch.setText("")
+                }
             }
 
             override fun beforeTextChanged(

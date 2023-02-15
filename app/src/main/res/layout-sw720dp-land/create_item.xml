@@ -433,7 +433,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:padding="@dimen/_5sdp"
-                        android:text="@string/stock"
+                        android:text="@string/quantity"
                         android:textColor="@color/txtColor"
                         android:textSize="@dimen/_5mdpi" />
                     <androidx.appcompat.widget.LinearLayoutCompat

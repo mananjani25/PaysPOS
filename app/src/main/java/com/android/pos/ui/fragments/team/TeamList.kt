@@ -1,13 +1,13 @@
 package com.android.pos.ui.fragments.team
 
 import android.os.Bundle
-import android.util.Log
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
-import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -18,7 +18,6 @@ import com.android.pos.R
 import com.android.pos.data.entities.Employee
 import com.android.pos.databinding.FragmentTeamListBinding
 import com.android.pos.di.RolePermission
-import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.TeamsAdapter
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.LogUtil
@@ -43,6 +42,7 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
     private val viewModel by viewModels<TeamListViewModel>()
     var adapter: TeamsAdapter = TeamsAdapter()
     private var empObject: Employee? = null
+    private var isEmptyString = true
     var count = 0
     @Inject
     lateinit var rolePermission: RolePermission
@@ -93,7 +93,7 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
 
             findNavController().navigate(R.id.action_teamList_to_dashboardCategoryNew)
         }
-
+        searchQuery()
 
     }
 
@@ -188,7 +188,7 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
                         ProgressUtils.dismissProgressDialog()
 
                         if (resource.data != null && resource.data.isNotEmpty())
-
+                            binding.noEmployeeData?.visibility = View.GONE
                             adapter.setSelected(selectedPos)
 
 
@@ -231,25 +231,18 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
     private fun configureToolbar() {
         binding.layoutTool.txtTitle.text = "Employees"
         binding.layoutTool.txtSubTitle.text = ""
-        binding.layoutTool.txtEdit.visibility = View.GONE
         binding.layoutTool.imgDrawer.setOnClickListener {
             findNavController().navigate(R.id.action_teamList_to_menupos)
         }
         binding.layoutTool.imgOptionMenu.setImageResource(R.drawable.ic_add)
         binding.layoutTool.imgOptionMenuContainer.visibility = View.GONE
 
-        binding.layoutTool.txtEdit.setOnClickListener {
-
-            val bundle = bundleOf("data" to empObject)
-            findNavController().navigate(R.id.action_global_createTeamMember, bundle)
-        }
     }
 
     private fun loadTeamDetails(data: Employee?) {
 
 
         if (data != null) {
-            binding.layoutTool.txtEdit.visibility = View.VISIBLE
             if (data.lastName != null && data.lastName.isNotEmpty() && !data.lastName.equals(
                     "null",
                     ignoreCase = true
@@ -271,7 +264,6 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
 
             empObject = data
         } else {
-            binding.layoutTool.txtEdit.visibility = View.GONE
             binding.layoutTool.txtSubTitle.text = ""
         }
 
@@ -337,4 +329,78 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
 
     }
 
+    private fun searchQuery() {
+        binding.autoSearch?.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                if (s.toString() == " ") {
+                    binding.autoSearch?.setText("")
+                    isEmptyString = true
+                }
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                try {
+                    if (s?.trim()?.isNotEmpty() == true) {
+                        isEmptyString = false
+                        searchByText(s.trim().toString())
+                    } else {
+                        if (!isEmptyString) {
+                            isEmptyString = true
+                            loadTeams()
+                        }
+                 }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        })
+    }
+
+    fun searchByText(query: String) {
+        viewModel.searchEmployees(query).observe(viewLifecycleOwner) {
+            it?.let { resource ->
+                when (resource.status) {
+                    Status.SUCCESS -> {
+                        if (resource.data != null && resource.data.isNotEmpty()) {
+                            binding.noEmployeeData?.visibility = View.GONE
+                            adapter.setSelected(selectedPos)
+                            count = resource.data.size
+                            adapter.getList().clear()
+                            adapter.setPeople(
+                                resource.data as MutableList<Employee>,
+                                requireActivity()
+                            )
+                            ProgressUtils.dismissProgressDialog()
+                            if (selectedPos != -1)
+                                resource.data.forEach {
+                                    if (it.id == selectedPos) {
+                                        loadTeamDetails(it)
+                                        return@forEach
+                                    }
+                                }
+                            if (empObject != null) {
+                                loadTeamDetails(empObject)
+                            } else {
+                                loadTeamDetails(null)
+                            }
+                        } else {
+                            ProgressUtils.dismissProgressDialog()
+                            binding.noEmployeeData?.visibility = View.VISIBLE
+                        }
+                    }
+                    Status.ERROR -> {
+                        ProgressUtils.dismissProgressDialog()
+                        binding.root.showAlert(resource.message)
+                    }
+                    Status.LOADING -> {
+                        ProgressUtils.showProgressDialog(requireActivity())
+                    }
+                }
+            }
+        }
+    }
 }

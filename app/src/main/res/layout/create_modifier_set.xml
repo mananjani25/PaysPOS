@@ -191,6 +191,7 @@
                             android:digits="1234567890"
                             android:gravity="start"
                             android:hint="@string/_0_00"
+                            android:maxLength="8"
                             android:inputType="numberDecimal"
                             android:padding="@dimen/_5sdp"
                             android:textColor="@color/txtColor"

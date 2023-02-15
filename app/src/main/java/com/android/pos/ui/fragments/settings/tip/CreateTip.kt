@@ -16,6 +16,7 @@ import com.android.pos.data.remote.Constants.CREATE_TIP
 import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.databinding.DialogAddNewTipBinding
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.DecimalDigitsCountFilter
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
@@ -77,8 +78,7 @@ class CreateTip : Fragment() {
             viewModel.submit(rate_double)
         }
 
-
-
+        binding.edtTip.filters = arrayOf(DecimalDigitsCountFilter(2));
         binding.edtTip.addTextChangedListener(object :TextWatcher{
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
 
@@ -89,6 +89,7 @@ class CreateTip : Fragment() {
             }
 
             override fun afterTextChanged(s: Editable?) {
+                try {
                 val temp_rate = s.toString()
                 if (temp_rate.isNotEmpty()) {
                     if (temp_rate.toFloat() > 100) {
@@ -99,6 +100,8 @@ class CreateTip : Fragment() {
                             binding.edtTip.setText("")
                         }
                     }
+                }
+                } catch (_: Exception) {
                 }
             }
 

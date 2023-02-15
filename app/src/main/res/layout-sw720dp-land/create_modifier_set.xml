@@ -40,20 +40,20 @@
                     android:layout_width="match_parent"
                     android:background="@drawable/background_square_border_grey"
                     android:layout_height="wrap_content">
-                <androidx.appcompat.widget.AppCompatEditText
-                    style="@style/CustomFontSemiBold"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@null"
-                    android:digits="@string/character_digits_without_space_String"
-                    android:hint="@string/modifier_set_name"
-                    android:maxLength="50"
-                    android:inputType="textVisiblePassword"
-                    android:padding="@dimen/_5sdp"
-                    android:text="@={createModifierViewModel.modifierDetails.modifierName}"
-                    android:textColor="@color/txtColor"
-                    android:textColorHint="@color/hintColor"
-                    android:textSize="@dimen/_5mdpi" />
+                    <androidx.appcompat.widget.AppCompatEditText
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@null"
+                        android:digits="@string/character_digits_without_space_String"
+                        android:hint="@string/modifier_set_name"
+                        android:maxLength="50"
+                        android:inputType="textVisiblePassword"
+                        android:padding="@dimen/_5sdp"
+                        android:text="@={createModifierViewModel.modifierDetails.modifierName}"
+                        android:textColor="@color/txtColor"
+                        android:textColorHint="@color/hintColor"
+                        android:textSize="@dimen/_5mdpi" />
                 </androidx.appcompat.widget.LinearLayoutCompat>
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontRegularStyle"
@@ -188,6 +188,7 @@
                             android:digits="1234567890"
                             android:gravity="start"
                             android:hint="@string/_0_00"
+                            android:maxLength="8"
                             android:inputType="numberDecimal"
                             android:padding="@dimen/_5sdp"
                             android:textColor="@color/txtColor"
