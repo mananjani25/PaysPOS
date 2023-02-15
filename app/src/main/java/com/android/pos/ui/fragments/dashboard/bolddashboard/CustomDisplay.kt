@@ -20,7 +20,7 @@ import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.ViewCustomDisplayBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.DineInAdapter
-import com.android.pos.ui.adapter.DineInTableAdapter
+import com.android.pos.ui.adapter.DineInTableAdapterCD
 import com.android.pos.ui.adapter.boldpos.CartAdapter
 import com.android.pos.ui.adapter.boldpos.TaxBirfurcationAdapter
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
@@ -47,7 +47,7 @@ class CustomDisplay(
 
     private lateinit var dineInCartAdapter: DineInAdapter
     private lateinit var taxBirfurcationAdapter: TaxBirfurcationAdapter
-    private lateinit var dineInTableAdapter: DineInTableAdapter
+    private lateinit var dineInTableAdapter: DineInTableAdapterCD
     private lateinit var cartAdapter: CartAdapter
     private var wholeTableDiscount: Double = 0.0
     private var cashDiscountGlobal: Double = 0.0
@@ -361,7 +361,10 @@ class CustomDisplay(
             mainCartLayout.gone()
             thankYouLayout.gone()
             splashLayout.visible()
-            callTimeApi(apiService)
+            val email = prefProvider.getValueForLogin(Constants.LOGIN_EMAIL, "")
+            if (email.isNotEmpty()) {
+                callTimeApi(apiService)
+            }
         }
     }
 
@@ -1011,7 +1014,7 @@ class CustomDisplay(
 
 
             if (dineInList.isNotEmpty()) {
-                dineInTableAdapter = DineInTableAdapter()
+                dineInTableAdapter = DineInTableAdapterCD()
                 binding.rvCartList.adapter = dineInTableAdapter
                 dineInTableAdapter.setList(dineInList)
 
