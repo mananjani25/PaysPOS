@@ -115,7 +115,6 @@ class CustomDisplay(
             it?.let {
 
 
-
                 updateCustomerDisplay(it)
 
             }
@@ -173,18 +172,29 @@ class CustomDisplay(
                     }
                     displayCustomer()
                 }
-                if (prefProvider.getValue(ORDER_TYPE,"") == DINE_IN && prefProvider.getValueboolean(Constants.IS_PAYMENT_SCREEN,false) == true) {
+                if (prefProvider.getValue(
+                        ORDER_TYPE,
+                        ""
+                    ) == DINE_IN && prefProvider.getValueboolean(
+                        Constants.IS_PAYMENT_SCREEN,
+                        false
+                    ) == true
+                ) {
                     var string_gson = prefProvider.getValue(Constants.SPLIT_DINEIN_MODEL, "")
                     var temp_model =
                         Gson().fromJson(string_gson, GuestPaymentCalculationModel::class.java)
 
 
-                    binding.txtServiceCharge.text = MethodUtils.roundOffAmount(temp_model?.serviceCharge ?: 0.0)
+                    binding.txtServiceCharge.text =
+                        MethodUtils.roundOffAmount(temp_model?.serviceCharge ?: 0.0)
                     binding.txtTotal.text = MethodUtils.roundOffAmount(temp_model?.total ?: 0.0)
-                    binding.txtDiscount.text ="-"+ MethodUtils.roundOffAmount(temp_model?.totalDiscount ?: 0.0)
+                    binding.txtDiscount.text =
+                        "-" + MethodUtils.roundOffAmount(temp_model?.totalDiscount ?: 0.0)
                     binding.txtTax.text = MethodUtils.roundOffAmount(temp_model?.tax ?: 0.0)
-                    binding.txtNoncashAdj.text = MethodUtils.roundOffAmount(temp_model?.cashDiscount ?: 0.0)
-                    binding.txtSubTotal.text = MethodUtils.roundOffAmount(temp_model?.subTotal ?: 0.0)
+                    binding.txtNoncashAdj.text =
+                        MethodUtils.roundOffAmount(temp_model?.cashDiscount ?: 0.0)
+                    binding.txtSubTotal.text =
+                        MethodUtils.roundOffAmount(temp_model?.subTotal ?: 0.0)
 
                 } else {
                     setupTotals(cartList)
@@ -387,7 +397,7 @@ class CustomDisplay(
             mainCartLayout.gone()
             thankYouLayout.gone()
             splashLayout.visible()
-            val email = prefProvider.getValueForLogin(Constants.LOGIN_EMAIL, "")
+            val email = prefProvider.getValue(Constants.EMAIL, "")
             if (email.isNotEmpty()) {
                 callTimeApi(apiService)
             }
@@ -999,8 +1009,15 @@ class CustomDisplay(
             } else {
                 toFinalAmt = finalAmount
             }
-            Log.e("checkGuestPayFlag","checkGuestPayFlag:  ${dashBoardCategoryViewModel.getIsGuestPay()}")
-            if (prefProvider.getValue(ORDER_TYPE,"") == DINE_IN && prefProvider.getValueboolean(Constants.IS_PAYMENT_SCREEN,false) == true) {
+            Log.e(
+                "checkGuestPayFlag",
+                "checkGuestPayFlag:  ${dashBoardCategoryViewModel.getIsGuestPay()}"
+            )
+            if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN && prefProvider.getValueboolean(
+                    Constants.IS_PAYMENT_SCREEN,
+                    false
+                ) == true
+            ) {
                 binding.txtTotal.text = MethodUtils.roundOffAmount(
                     totalAmount ?: 0.0
                 )
