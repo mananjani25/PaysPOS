@@ -172,6 +172,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             container,
             false
         )
+        prefProvider.setValueboolean(Constants.IS_PAYMENT_SCREEN,false)
         binding.lifecycleOwner = this
 
 
@@ -1039,7 +1040,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     (itemtype.rate * totalPrice) / 100
                 LogUtil.logE("itemTaxPrice", "" + itemTaxPrice)
                 // MethodUtils.getTwoDecimal(itemTaxPrice)
-                 itemTaxPrice
+                itemTaxPrice
             }
 
         } else {
@@ -1049,7 +1050,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     .toDouble()
             } else {
                 // MethodUtils.getTwoDecimal(itemtype.rate * item.itemQuantity)
-                 itemtype.rate * item.itemQuantity
+                itemtype.rate * item.itemQuantity
             }
 
         }
@@ -1280,6 +1281,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     ) {
 
         //New Drag and Drop
+
 
         Log.e(TAG, "divideDiscount2:  ${divideDiscount2}")
         var divideDiscount = divideDiscount2
@@ -1702,6 +1704,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
         prefProvider.setValue(Constants.ORDER_TYPE, prefProvider.getValue(Constants.ORDER_TYPE, ""))
         bundle.putParcelable("dineinPaymentModel", dineinCartPaymentModel)
+
+
         cartList = getCartModel(adapterList.toCollection(arrayListOf()))
 
         var temp_itemslist: ArrayList<TbItem> = arrayListOf()
@@ -1811,6 +1815,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             }
         }
+        dashboardViewModel.setGuestPay(true)
         if (cartList?.taxlistDynamic.isNullOrEmpty()) {
             cartList?.taxlistDynamic = listTaxBirfucaWholeTb.toList()
         } else {
@@ -2347,7 +2352,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                                                 }
                                             }
-                                            totalTaxWT = String.format("%.2f",totalTaxWT).toDouble()
+                                            totalTaxWT =
+                                                String.format("%.2f", totalTaxWT).toDouble()
 
                                         }
                                         serviceChargeWT = 0.0
@@ -2461,7 +2467,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     LogUtil.logE("TODO", "finalAmount  ${finalAmount}")
                     LogUtil.logE("TODO", "guestShareTotal  ${guestShareTotal}")
                     dineInList.get(0).guestDividedAmt =
-                         guestShareTotal
+                        guestShareTotal
                     dineInList.get(0).totalGuestCount = baseResponse.guestAttributes.size - 1
                     dineInList.get(0).wholeTableSubTotal =
                         subTotalWT / (baseResponse.guestAttributes.size - 1)
@@ -2604,7 +2610,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                     if (dineInList.isNotEmpty()) {
                         dineInTableAdapter.setList(dineInList)
-                        if(this::presentation.isInitialized){
+                        if (this::presentation.isInitialized) {
                             presentation.show()
                             presentation.onDisplayChanged()
                             presentation.showTableDetails(baseResponse)
@@ -2732,7 +2738,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         var totalTablePrice = 0.0
         var WTDiscount = 0.0
         var guestCount = 0
-        Log.e("checkDragTo","dragTodragTo  ${dragTo}")
+        Log.e("checkDragTo", "dragTodragTo  ${dragTo}")
         if (dragTo != -1) {
             oldList.get(dragTo).item?.guestItemId?.let { listOfMoveItemIds.add(it) }
             oldList.get(dragTo).item?.guestItemId = null

@@ -110,6 +110,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     private var syncMarkeup: Boolean = false
+    private var isGuestPay: Boolean = false
     var dineInHeaderPosition: Int = 0
     var dineInSelectedItemHeaderPos: Int = 0
     var selectedItemPositionDine: Int = 0
@@ -153,6 +154,13 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun getKitchenReceiptSettings() = posRepository.getKitchenReceiptSettings()
 
+    fun setGuestPay(value: Boolean) {
+        isGuestPay = value
+    }
+
+    fun getIsGuestPay():Boolean{
+        return isGuestPay
+    }
 
     fun venueDataLocal(): LiveData<Resource<List<CategoryWithInventory?>>> {
         return posRepository.venueDataLocal()

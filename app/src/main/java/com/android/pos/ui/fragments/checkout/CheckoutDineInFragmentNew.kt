@@ -11,7 +11,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import androidx.activity.viewModels
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -64,7 +63,6 @@ import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
 class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : Fragment(),
@@ -1252,7 +1250,10 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         if (prefProvider.getValue(Constants.WHOLE_AMOUNT, "").isEmpty() || prefProvider.getValue(
                 Constants.WHOLE_AMOUNT,
                 ""
-            ) == "0.0"
+            ) == "0.0" || prefProvider.getValue(
+                Constants.WHOLE_AMOUNT,
+                ""
+            ) == "0.00"
         ) {
             LogUtil.logE(TAG, "totalPrice  ${viewModel.totalPrice}")
 

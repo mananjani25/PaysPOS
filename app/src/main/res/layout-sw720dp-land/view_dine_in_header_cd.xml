@@ -26,22 +26,36 @@
                 android:weightSum="5">
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_gravity="center_vertical"
-                    android:layout_weight="2.4">
+                    android:layout_weight="2">
 
                     <TextView
                         android:id="@+id/txtTableName"
                         style="@style/CustomFontBold"
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_gravity="center"
+                        android:layout_weight="1"
                         android:gravity="start|center_vertical"
                         android:paddingStart="@dimen/_12sdp"
                         android:text="Whole Table"
                         android:textColor="@color/white"
                         android:textSize="@dimen/_7mdpi" />
+
+                    <TextView
+                        android:id="@+id/txtGuestTotal"
+                        style="@style/CustomFontBold"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:gravity="end|center_vertical"
+                        android:paddingStart="@dimen/_12sdp"
+                        android:paddingEnd="@dimen/_10sdp"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_5mdpi" />
                 </LinearLayout>
 
             </LinearLayout>

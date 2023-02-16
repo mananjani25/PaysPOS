@@ -13,10 +13,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.pos.R
 import com.android.pos.data.entities.*
 import com.android.pos.data.model.DineInModel
+import com.android.pos.data.model.GuestPaymentCalculationModel
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.data.model.responseModel.TimeDetailsResponse
 import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.DINE_IN
+import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.databinding.ViewCustomDisplayBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.DineInAdapter
@@ -34,6 +37,7 @@ import com.android.pos.utils.extensions.invisible
 import com.android.pos.utils.extensions.isVisible
 import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.statusUtils.Status
+import com.google.gson.Gson
 import kotlinx.coroutines.launch
 
 class CustomDisplay(
@@ -45,6 +49,9 @@ class CustomDisplay(
     val dineInViewModel: DineInOrderTableViewModel
 ) : Presentation(context, display), MyCallback, DineInAdapter.DineInCallback {
 
+    private var dineInPaymentDetails: GuestPaymentCalculationModel? = null
+    private var isGuestPay: Boolean = false
+    private var toFinalAmt: Double = 0.0
     private lateinit var dineInCartAdapter: DineInAdapter
     private lateinit var taxBirfurcationAdapter: TaxBirfurcationAdapter
     private lateinit var dineInTableAdapter: DineInTableAdapterCD
@@ -97,6 +104,7 @@ class CustomDisplay(
 
     }
 
+
     override fun onDisplayChanged() {
         super.onDisplayChanged()
 
@@ -105,7 +113,10 @@ class CustomDisplay(
             prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
         ).observe(lifecycleOwner) {
             it?.let {
+
+
                 updateCustomerDisplay(it)
+
             }
         }
     }
@@ -161,8 +172,33 @@ class CustomDisplay(
                     }
                     displayCustomer()
                 }
-                setupTotals(cartList)
+                if (prefProvider.getValue(
+                        ORDER_TYPE,
+                        ""
+                    ) == DINE_IN && prefProvider.getValueboolean(
+                        Constants.IS_PAYMENT_SCREEN,
+                        false
+                    ) == true
+                ) {
+                    var string_gson = prefProvider.getValue(Constants.SPLIT_DINEIN_MODEL, "")
+                    var temp_model =
+                        Gson().fromJson(string_gson, GuestPaymentCalculationModel::class.java)
 
+
+                    binding.txtServiceCharge.text =
+                        MethodUtils.roundOffAmount(temp_model?.serviceCharge ?: 0.0)
+                    binding.txtTotal.text = MethodUtils.roundOffAmount(temp_model?.total ?: 0.0)
+                    binding.txtDiscount.text =
+                        "-" + MethodUtils.roundOffAmount(temp_model?.totalDiscount ?: 0.0)
+                    binding.txtTax.text = MethodUtils.roundOffAmount(temp_model?.tax ?: 0.0)
+                    binding.txtNoncashAdj.text =
+                        MethodUtils.roundOffAmount(temp_model?.cashDiscount ?: 0.0)
+                    binding.txtSubTotal.text =
+                        MethodUtils.roundOffAmount(temp_model?.subTotal ?: 0.0)
+
+                } else {
+                    setupTotals(cartList)
+                }
             }
         }
     }
@@ -361,7 +397,7 @@ class CustomDisplay(
             mainCartLayout.gone()
             thankYouLayout.gone()
             splashLayout.visible()
-            val email = prefProvider.getValueForLogin(Constants.LOGIN_EMAIL, "")
+            val email = prefProvider.getValue(Constants.EMAIL, "")
             if (email.isNotEmpty()) {
                 callTimeApi(apiService)
             }
@@ -403,7 +439,15 @@ class CustomDisplay(
 
     }
 
-    private fun getDineInOrderDetails(baseResponse: GetOrderDetailsResponse.Data) {
+    private fun getDineInOrderDetails(
+        baseResponse: GetOrderDetailsResponse.Data,
+        subTotal: Double? = 0.0,
+        TotalServiceCharge: Double? = 0.0,
+        totalTax: Double? = 0.0,
+        totalAmount: Double? = 0.0,
+        cashOrSurCharge: Double? = 0.0,
+        totalDis: Double? = 0.0
+    ) {
         if (baseResponse != null) {
             binding.mainCartLayout.visibility = View.VISIBLE
             binding.splashLayout.visibility = View.GONE
@@ -495,9 +539,9 @@ class CustomDisplay(
                                     //Whole Table Calculation
                                     totalItemDiscount += it.discountAmount
 
-                                    /*     if (baseResponse.guestAttributes.get(i).isPaid) {
-                                         notPayAnyAmount = true
-                                     }*/
+                                    if (baseResponse.guestAttributes.get(i).isPaid) {
+                                        notPayAnyAmount = true
+                                    }
 
                                     //for add item in tbItem List and extract/convert data from API
                                     val itemDineIn: DineInModel = DineInModel()
@@ -863,9 +907,7 @@ class CustomDisplay(
             totalDiscount = orderDiscount + totalItemDiscount
             finalTaxAmt = totalTaxAmount
             LogUtil.logE(TAG, "GotsubTotalDIninfinalAmount  ${finalAmount}")
-            binding.txtTotal.text = MethodUtils.roundOffAmount(
-                finalAmount
-            )
+
             //  toFinalAmt = finalAmount
 
 
@@ -878,14 +920,14 @@ class CustomDisplay(
                     paidGuestCount++
                 }
             }
-            /*    for (i in 0 until dineInList.size) {
-                    if (i != 0 && dineInList.size > i + 1) {
-                        if (dineInList.get(i + 1).item != null && dineInList.get(i + 1).item?.isPaid == true) {
-                            paidGuestCount++
-                        }
-                    }
-                }*/
-            LogUtil.logE("TODO", "paidGuestCount:  ${paidGuestCount}")
+            /*   for (i in 0 until dineInList.size) {
+                   if (i != 0 && dineInList.size > i + 1) {
+                       if (dineInList.get(i + 1).item != null && dineInList.get(i + 1).item?.isPaid == true) {
+                           paidGuestCount++
+                       }
+                   }
+               }*/
+            LogUtil.logE("Customerdiaply", "paidGuestCount:  ${paidGuestCount}")
             if (paidGuestCount > 0) {
 
                 paidGuestAmount = paidGuestCount
@@ -960,31 +1002,66 @@ class CustomDisplay(
 
                 var finalAmount = subTotalDInin + serviceCharge + finalTaxAmt - orderDis
 
+                Log.e("toFinalCustomDisplay", "finalAmount:  ${finalAmount}")
+                toFinalAmt = finalAmount
 
-                //  toFinalAmt = finalAmount
 
-
+            } else {
+                toFinalAmt = finalAmount
             }
-            binding.txtTotal.text = MethodUtils.roundOffAmount(
-                finalAmount
+            Log.e(
+                "checkGuestPayFlag",
+                "checkGuestPayFlag:  ${dashBoardCategoryViewModel.getIsGuestPay()}"
             )
+            if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN && prefProvider.getValueboolean(
+                    Constants.IS_PAYMENT_SCREEN,
+                    false
+                ) == true
+            ) {
+                binding.txtTotal.text = MethodUtils.roundOffAmount(
+                    totalAmount ?: 0.0
+                )
 
-            binding.txtSubTotal.text = MethodUtils.roundOffAmount(
-                subTotalDInin
-            )
+                binding.txtSubTotal.text = MethodUtils.roundOffAmount(
+                    subTotal ?: 0.0
+                )
 
-            binding.txtTax.text = MethodUtils.roundOffAmount(
-                finalTaxAmt
-            )
+                binding.txtTax.text = MethodUtils.roundOffAmount(
+                    totalTax ?: 0.0
+                )
 
-            binding.txtServiceCharge.text = MethodUtils.roundOffAmount(
-                serviceCharge
-            )
+                binding.txtServiceCharge.text = MethodUtils.roundOffAmount(
+                    TotalServiceCharge ?: 0.0
+                )
 
 
-            binding.txtServiceCharge.text = "-" + MethodUtils.roundOffAmount(
-                baseResponse.totalDiscount
-            )
+                binding.txtDiscount.text = "-" + MethodUtils.roundOffAmount(
+                    totalDis ?: 0.0
+                )
+
+            } else {
+
+                binding.txtTotal.text = MethodUtils.roundOffAmount(
+                    toFinalAmt
+                )
+
+                binding.txtSubTotal.text = MethodUtils.roundOffAmount(
+                    subTotalDInin
+                )
+
+                binding.txtTax.text = MethodUtils.roundOffAmount(
+                    finalTaxAmt
+                )
+
+                binding.txtServiceCharge.text = MethodUtils.roundOffAmount(
+                    serviceCharge
+                )
+
+
+                binding.txtDiscount.text = "-" + MethodUtils.roundOffAmount(
+                    baseResponse.totalDiscount
+                )
+            }
 
             if (prefProvider.getValueboolean(Constants.CASHDIS_SURCHARGEENABLE, false)) {
 
@@ -1001,9 +1078,6 @@ class CustomDisplay(
                 dineInTableAdapter = DineInTableAdapterCD()
                 binding.rvCartList.adapter = dineInTableAdapter
                 dineInTableAdapter.setList(dineInList)
-
-
-                //  binding.txtTotalAmountNew.setText("${MethodUtils.roundOffAmount(totalAmtnew)}")
 
 
             }
@@ -1078,6 +1152,29 @@ class CustomDisplay(
             }
         }
         return serviceChargeId
+    }
+
+    fun setGuestPay(
+        value: Boolean,
+        model: GuestPaymentCalculationModel
+    ) {
+        isGuestPay = value
+        binding.mainCartLayout.visibility = View.VISIBLE
+        binding.splashLayout.visibility = View.GONE
+        dineInPaymentDetails = model
+
+/*
+        getDineInOrderDetails(
+            getOrderDetailsResponse,
+            totalTax = totalTax,
+            totalAmount = TotalAmt,
+            totalDis = discount,
+            cashOrSurCharge = CashOrSurcharge,
+            subTotal = subtotal,
+            TotalServiceCharge = serviceCharge
+        )*/
+
+
     }
 
 }
