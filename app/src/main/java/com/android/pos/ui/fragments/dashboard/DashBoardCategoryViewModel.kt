@@ -5350,6 +5350,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 //loyalty point and price calculation
                 amountToBePaid = finalTotal
 
+                Log.e("checkDineInFinalAmt","finalTotal:  ${finalTotal}")
                 totalPrice = MethodUtils.roundOffAmountDouble(finalTotal)
 
                 if (MethodUtils.isEnableCashDiscount(context)) {
@@ -5358,10 +5359,14 @@ class DashBoardCategoryViewModel @Inject constructor(
                         prefProvider,
                         context
                     )
+
+                 //   cashdiscountAmount = model.cashDiscount
+
                 } else {
                     cashdiscountAmount = 0.0
                 }
 
+                Log.e("checkDineInFinalAmt","checkCashDiscountAmt:  ${cashdiscountAmount}")
                 val nf: NumberFormat = NumberFormat.getNumberInstance()
                 nf.maximumFractionDigits = 2
                 val rounded: String = nf.format(cashdiscountAmount)

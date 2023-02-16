@@ -76,7 +76,6 @@ class PaymentBoldPosFragment : Fragment() {
     }
 
 
-
     @Inject
     lateinit var prefProvider: PrefProvider
 
@@ -86,7 +85,7 @@ class PaymentBoldPosFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentPaymentBoldPosBinding.inflate(inflater, container, false)
-        prefProvider.setValueboolean(Constants.IS_PAYMENT_SCREEN,true)
+        prefProvider.setValueboolean(Constants.IS_PAYMENT_SCREEN, true)
         binding.layoutHeaderCheckout.rlRoot.visibility = View.VISIBLE
         binding.lifecycleOwner = this
         isFromActiveOrder = arguments?.getBoolean("isFromActiveOrder") ?: false
@@ -149,7 +148,8 @@ class PaymentBoldPosFragment : Fragment() {
                         data?.totalAmount?.toDouble() ?: 0.0,
                         data?.totalServiceCharge?.toDouble() ?: 0.0,
                         data?.totalTax?.toDouble() ?: 0.0,
-                        data?.cashDiscount?.toDouble() ?: 0.0,
+                        ((data?.cashDiscount?.toDouble() / dineinCartPaymentModel?.totalGuestCount?.toInt()
+                            ?: 1) ?: 0.0) as Double,
                         data?.totalDiscount?.toDouble() ?: 0.0,
                         requireArguments().getInt("id"),
                         dineinCartPaymentModel
@@ -160,7 +160,7 @@ class PaymentBoldPosFragment : Fragment() {
                     viewModel.setGuestPay(true)
                     presentation.show()
                     presentation.onDisplayChanged()
-                    presentation.setGuestPay(true,model)
+                    presentation.setGuestPay(true, model)
 
                     prefProvider.setValue(SPLIT_DINEIN_MODEL, Gson().toJson(model))
                     loadCartFragment(CartFragment(null, null, true, model, true))
@@ -230,7 +230,7 @@ class PaymentBoldPosFragment : Fragment() {
                 var splitModel: DineInOrderPayment =
                     requireArguments().getParcelable("orderPayment") ?: DineInOrderPayment()
 
-                Log.e("CheckGuestPayment","isGuestisGuest  ${isGuest}")
+                Log.e("CheckGuestPayment", "isGuestisGuest  ${isGuest}")
                 Handler(Looper.getMainLooper()).postDelayed({
                     val dineInModel = CheckOutDineInDataModel(
                         requireArguments().getInt("id") ?: 0,
@@ -254,7 +254,10 @@ class PaymentBoldPosFragment : Fragment() {
                     var string_gson = prefProvider.getValue(SPLIT_DINEIN_CHECKOUT, "")
                     var temp_model =
                         Gson().fromJson(string_gson, CheckOutDineInDataModel::class.java)
-                    Log.e("CheckGuestPAymentOrNot","temp_modeltemp_model   ${Gson().toJson(temp_model)}")
+                    Log.e(
+                        "CheckGuestPAymentOrNot",
+                        "temp_modeltemp_model   ${Gson().toJson(temp_model)}"
+                    )
                     Handler(Looper.getMainLooper()).postDelayed({
                         val dineInModel = CheckOutDineInDataModel(
                             temp_model.guestId,
@@ -341,7 +344,7 @@ class PaymentBoldPosFragment : Fragment() {
 
     override fun onStop() {
         super.onStop()
-        prefProvider.setValueboolean(Constants.IS_PAYMENT_SCREEN,false)
+        prefProvider.setValueboolean(Constants.IS_PAYMENT_SCREEN, false)
     }
 
     override fun onPause() {
@@ -427,4 +430,8 @@ class PaymentBoldPosFragment : Fragment() {
         prefProvider.setValue(Constants.TIPS_AMOUNT_ACTUAL, "0.0")
     }
 
+}
+
+private operator fun Double?.div(toInt: Int?): Double {
+   return this?:0.0.toDouble()
 }

@@ -1675,6 +1675,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         }
 
         LogUtil.logE("FinalLast", "FinalLast ${isLastPayment}")
+        Log.e("checkDividedDis","divideCashDiscount:  ${divideCashDiscount}")
 
 
         val dineinCartPaymentModel: DineinCartPaymentModel? = null
