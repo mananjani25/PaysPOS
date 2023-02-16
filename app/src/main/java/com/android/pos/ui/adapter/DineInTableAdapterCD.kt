@@ -2,11 +2,13 @@ package com.android.pos.ui.adapter
 
 import android.annotation.SuppressLint
 import android.graphics.Paint
+import android.os.Build
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.android.pos.R
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.data.model.DineInModel
@@ -230,6 +232,29 @@ class DineInTableAdapterCD() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
             }
             finalAmt = finalAmt - guestOrderDisShare
+
+            Log.e("CheckListData","TotalGuestCount:  ${list[bindingAdapterPosition].totalGuestCount}")
+            Log.e("CheckListData","Title:  ${list[bindingAdapterPosition].title}")
+            if (list[bindingAdapterPosition].title?.lowercase() != "Whole Table".lowercase() && list[0].totalGuestCount > 1) {
+                if (isPaid && !noItem) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        binding.txtGuestTotal?.setTextColor(binding.root.context.getColor(R.color.colorGreen))
+                        binding.txtGuestTotal?.text = "Paid"
+                    }
+
+                } else if (list.get(position).isPaid) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        binding.txtGuestTotal?.setTextColor(binding.root.context.getColor(R.color.colorGreen))
+                        binding.txtGuestTotal?.text = "Paid"
+                    }
+                } else {
+
+                    binding.txtGuestTotal?.setTextColor(binding.root.context.getColor(R.color.white))
+                    binding.txtGuestTotal?.text = "Pay " + MethodUtils.roundOffAmount(finalAmt)
+                }
+
+
+            }
 
         }
 
