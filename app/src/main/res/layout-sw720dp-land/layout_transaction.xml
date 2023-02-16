@@ -229,8 +229,7 @@
                 android:layout_gravity="end|center_vertical"
                 android:layout_marginHorizontal="@dimen/_3sdp"
                 android:gravity="end|center_vertical"
-                android:orientation="horizontal"
-                android:visibility="gone">
+                android:orientation="horizontal">
 
                 <ImageView
                     android:id="@+id/imgSearch"
