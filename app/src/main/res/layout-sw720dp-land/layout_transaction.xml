@@ -108,8 +108,7 @@
             android:layout_gravity="center"
             android:layout_marginVertical="@dimen/_3sdp"
             android:gravity="start|center"
-            android:orientation="horizontal"
-            android:visibility="gone">
+            android:orientation="horizontal">
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"

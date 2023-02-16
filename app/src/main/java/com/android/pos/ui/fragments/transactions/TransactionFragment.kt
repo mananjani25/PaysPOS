@@ -39,14 +39,11 @@ import com.android.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.ui.fragments.magtek.MagtekRequestUtils
 import com.android.pos.ui.fragments.magtek.PaymentResponse
-import com.android.pos.utils.AlertUtils
-import com.android.pos.utils.LogUtil
-import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.*
 import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.callback.PaginationScrollListener
 import com.android.pos.utils.extensions.liveSnackBar
 import com.android.pos.utils.extensions.showAlert
-import com.android.pos.utils.getCustomerDisplay
 import com.android.pos.utils.statusUtils.Status
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
@@ -351,6 +348,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
     }
 
     private fun apiCallTimeSheet() {
+        MethodUtils.hideKeyboard(requireActivity())
         viewModel.apiCallTimeSheet(
             currentPage,
             getTerminalId(binding.includeView.spTerminals.selectedItemPosition).toString(),
@@ -392,7 +390,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-//        searchFilter()
+        searchFilter()
     }
 
     fun timeCalculateForStartEndTime(hour: Int, minute: Int, isStart: String): String {
@@ -1358,12 +1356,8 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
             }
 
             override fun afterTextChanged(s: Editable) {
-                if (s.toString().isNotEmpty()) {
                     transactionAdapter.showLoading(false)
                     transactionAdapter.filter.filter(s.toString().trim())
-                } else {
-                    currentPage = 1
-                }
             }
         })
     }

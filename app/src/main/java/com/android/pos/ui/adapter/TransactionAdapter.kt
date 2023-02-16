@@ -154,7 +154,7 @@ class TransactionAdapter(val viewModel: TransactionViewModel, val prefProvider: 
 
         LogUtil.logE("teamTimesheetList", employeeTimeSheets.size.toString())
         employeeTimeSheet.addAll(employeeTimeSheets)
-        filterList.addAll(employeeTimeSheets)
+        filterList = employeeTimeSheet
         notifyDataSetChanged()
     }
 
