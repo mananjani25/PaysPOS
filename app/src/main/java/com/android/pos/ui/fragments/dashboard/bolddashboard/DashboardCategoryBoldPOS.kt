@@ -156,7 +156,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 viewLifecycleOwner,
                 viewModel,
                 passcodeViewModel
-            ){}
+            )
         }
         val callback: OnBackPressedCallback =
             object : OnBackPressedCallback(true) {

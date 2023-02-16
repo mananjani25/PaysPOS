@@ -197,7 +197,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 viewLifecycleOwner,
                 dashboardViewModel,
                 passcodeViewModel
-            ){}
+            )
         }
 
         printerDialog = PrinterDialog()

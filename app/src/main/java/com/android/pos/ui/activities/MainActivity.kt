@@ -732,7 +732,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
     private fun initCustomerDisplay() {
         getCustomerDisplay(this)?.let { display ->
-            presentation = CustomDisplay(display, this, this,dashboardViewModel, passcodeViewModel){}
+            presentation = CustomDisplay(display, this, this,dashboardViewModel, passcodeViewModel)
         }
     }
 

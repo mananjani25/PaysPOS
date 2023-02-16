@@ -3,12 +3,11 @@ package com.android.pos.ui.fragments.dashboard.bolddashboard
 import android.app.Presentation
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.Display
 import android.view.View
 import android.view.Window
-import android.widget.Toast
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.pos.R
 import com.android.pos.data.entities.CartModel
@@ -20,8 +19,7 @@ import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.ViewCustomDisplayBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.DineInAdapter
-import com.android.pos.ui.adapter.DineInAdapterCustomerDisplay
-import com.android.pos.ui.adapter.boldpos.CartAdapterCustomerDisplay
+import com.android.pos.ui.adapter.boldpos.CartAdapter
 import com.android.pos.ui.adapter.boldpos.TaxBirfurcationAdapter
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
@@ -30,6 +28,8 @@ import com.android.pos.utils.callback.MyCallback
 import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.invisible
 import com.android.pos.utils.extensions.visible
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class CustomDisplay(
     display: Display,
@@ -37,12 +37,11 @@ class CustomDisplay(
     val lifecycleOwner: LifecycleOwner,
     val dashBoardCategoryViewModel: DashBoardCategoryViewModel,
     val passcodeViewModel: PasscodeViewModel,
-    val onPayNowClick: () -> Unit
-) : Presentation(context, display), MyCallback, DineInAdapterCustomerDisplay.DineInCallback {
+) : Presentation(context, display), MyCallback, DineInAdapter.DineInCallback {
 
-    private lateinit var dineInCartAdapter: DineInAdapterCustomerDisplay
+    private lateinit var dineInCartAdapter: DineInAdapter
     private lateinit var taxBirfurcationAdapter: TaxBirfurcationAdapter
-    private lateinit var cartAdapter: CartAdapterCustomerDisplay
+    private lateinit var cartAdapter: CartAdapter
     private lateinit var binding: ViewCustomDisplayBinding
     lateinit var prefProvider: PrefProvider
 
@@ -54,11 +53,22 @@ class CustomDisplay(
         prefProvider = PrefProvider(context)
         setupList()
         setupTaxAdapter()
-        binding.tvPayNow.setOnClickListener {
-//            onDisplayChanged()
-//            onPayNowClick
-            Log.d("TAGGER", "PAY NOW CALLED")
-        //Toast.makeText(context, "HELLO", Toast.LENGTH_SHORT).show()
+        binding.blockLayoutForOther.setOnClickListener {
+            showTipKeypad()
+        }
+
+    }
+
+    private fun showTipKeypad() {
+        binding.apply {
+            addTipKeypadLayout.visible()
+            askForTipLayout.gone()
+
+            binding.splashLayout.gone()
+            binding.mainCartLayout.gone()
+            binding.thankYouLayout.gone()
+
+
         }
     }
 
@@ -77,10 +87,10 @@ class CustomDisplay(
 
     private fun setupList() {
 
-        cartAdapter = CartAdapterCustomerDisplay()
+        cartAdapter = CartAdapter()
         cartAdapter.setCallback(this)
 
-        dineInCartAdapter = DineInAdapterCustomerDisplay()
+        dineInCartAdapter = DineInAdapter()
         dineInCartAdapter.setListner(this)
 
         binding.rvCartList.layoutManager = LinearLayoutManager(context)
@@ -125,16 +135,6 @@ class CustomDisplay(
                         )
                     }
                 } else {
-                    if (MethodUtils.isEnableCashDiscount(context)) {
-                        binding.txtTotalLabel.gone()
-                        binding.txtCashLabel.visible()
-                        binding.txtCardLabel.visible()
-                    } else {
-                        binding.txtTotalLabel.visible()
-                        binding.txtCashLabel.gone()
-                        binding.txtCardLabel.gone()
-
-                    }
                     cartList[0].items?.toCollection(arrayListOf())?.let { it1 ->
                         cartAdapter.setList(it1)
                     }
@@ -284,7 +284,13 @@ class CustomDisplay(
             mainCartLayout.gone()
             splashLayout.gone()
             thankYouLayout.gone()
+            addTipKeypadLayout.gone()
             askForTipLayout.visible()
+
+            lifecycleOwner.lifecycleScope.launch {
+                delay(5000)
+                binding.blockLayoutForOther.performClick()
+            }
         }
     }
 }

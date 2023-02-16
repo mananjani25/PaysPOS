@@ -143,9 +143,7 @@ class CartFragment(
                 viewLifecycleOwner,
                 viewModel,
                 passcodeViewModel
-            ) {
-                binding.tvPayNow.performClick()
-            }
+            )
             //presentation.show()
         }
 
