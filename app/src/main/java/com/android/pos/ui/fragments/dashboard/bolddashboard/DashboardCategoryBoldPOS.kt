@@ -12,6 +12,9 @@ import android.util.Log
 import android.view.*
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.*
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -141,6 +144,28 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             binding.layoutHeader.txtBadgeCount?.gone()
         }
     }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+
+        hideNavigation()
+
+    }
+
+    private fun hideNavigation() {
+        requireActivity().window.setFlags(
+            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+        )
+        requireActivity().window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_FULLSCREEN
+                or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
+    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -615,6 +640,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
     override fun onResume() {
         super.onResume()
+
+        hideNavigation()
 
         if (prefProvider.getValueboolean(Constants.IS_SYNC_MARKUP, false)) {
             viewModel.markupInventory()
