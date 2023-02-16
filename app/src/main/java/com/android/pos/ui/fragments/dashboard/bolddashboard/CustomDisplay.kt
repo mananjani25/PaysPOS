@@ -42,10 +42,11 @@ class CustomDisplay(
     val lifecycleOwner: LifecycleOwner,
     val dashBoardCategoryViewModel: DashBoardCategoryViewModel,
     val passcodeViewModel: PasscodeViewModel,
-    val dineInViewModel: DineInOrderTableViewModel
+    val dineInViewModel: DineInOrderTableViewModel,
+    val isGuestPay: Boolean = false
 ) : Presentation(context, display), MyCallback, DineInAdapter.DineInCallback {
 
-    private var toFinalAmt: Double= 0.0
+    private var toFinalAmt: Double = 0.0
     private lateinit var dineInCartAdapter: DineInAdapter
     private lateinit var taxBirfurcationAdapter: TaxBirfurcationAdapter
     private lateinit var dineInTableAdapter: DineInTableAdapterCD
@@ -877,13 +878,13 @@ class CustomDisplay(
                     paidGuestCount++
                 }
             }
-         /*   for (i in 0 until dineInList.size) {
-                if (i != 0 && dineInList.size > i + 1) {
-                    if (dineInList.get(i + 1).item != null && dineInList.get(i + 1).item?.isPaid == true) {
-                        paidGuestCount++
-                    }
-                }
-            }*/
+            /*   for (i in 0 until dineInList.size) {
+                   if (i != 0 && dineInList.size > i + 1) {
+                       if (dineInList.get(i + 1).item != null && dineInList.get(i + 1).item?.isPaid == true) {
+                           paidGuestCount++
+                       }
+                   }
+               }*/
             LogUtil.logE("Customerdiaply", "paidGuestCount:  ${paidGuestCount}")
             if (paidGuestCount > 0) {
 
@@ -960,11 +961,10 @@ class CustomDisplay(
                 var finalAmount = subTotalDInin + serviceCharge + finalTaxAmt - orderDis
 
                 Log.e("toFinalCustomDisplay", "finalAmount:  ${finalAmount}")
-                  toFinalAmt = finalAmount
+                toFinalAmt = finalAmount
 
 
-            }
-            else{
+            } else {
                 toFinalAmt = finalAmount
             }
             binding.txtTotal.text = MethodUtils.roundOffAmount(
@@ -1003,8 +1003,6 @@ class CustomDisplay(
                 dineInTableAdapter = DineInTableAdapterCD()
                 binding.rvCartList.adapter = dineInTableAdapter
                 dineInTableAdapter.setList(dineInList)
-
-
 
 
             }
