@@ -272,9 +272,19 @@ class CustomDisplay(
         binding.apply {
             mainCartLayout.gone()
             splashLayout.gone()
+            askForTipLayout.gone()
 
             thankYouLayout.visible()
             txtPaidAmount.text = "Paid ${MethodUtils.roundOffAmount(paidAmount)}"
+        }
+    }
+
+    fun showWouldYouLikeToAddTipScreen() {
+        binding.apply {
+            mainCartLayout.gone()
+            splashLayout.gone()
+            thankYouLayout.gone()
+            askForTipLayout.visible()
         }
     }
 }
