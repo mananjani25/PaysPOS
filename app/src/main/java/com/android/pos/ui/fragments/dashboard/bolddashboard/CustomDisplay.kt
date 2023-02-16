@@ -982,7 +982,7 @@ class CustomDisplay(
             )
 
 
-            binding.txtServiceCharge.text = "-" + MethodUtils.roundOffAmount(
+            binding.txtServiceCharge.text =   MethodUtils.roundOffAmount(
                 baseResponse.totalDiscount
             )
 
