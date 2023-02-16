@@ -1690,6 +1690,7 @@ class CartFragment(
 //                    uiSave()
 
                     prefProvider.setValue(ORDER_TYPE, "")
+                    prefProvider.setValue(ORDER_TYPE_NAME, "")
                     prefProvider.setValueboolean(Constants.LOYALTY_ADDED, false)
 
                     getOrderTypes()
@@ -1712,6 +1713,7 @@ class CartFragment(
                     cartlist.clear()
                     isOrderUpdate = false
                     prefProvider.setValue(ORDER_TYPE, "")
+                    prefProvider.setValue(ORDER_TYPE_NAME, "")
                     prefProvider.setValueboolean(Constants.LOYALTY_ADDED, false)
                     itemClickListner?.onDineInOrderCleared()
                     uiSave()

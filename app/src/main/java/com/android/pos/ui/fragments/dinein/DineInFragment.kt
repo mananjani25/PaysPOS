@@ -102,6 +102,7 @@ class DineInFragment : Fragment() {
                 override fun handleOnBackPressed() {
 
                     prefProvider.setValue(Constants.ORDER_TYPE, "")
+                    prefProvider.setValue(Constants.ORDER_TYPE_NAME, "")
                     findNavController().popBackStack()
                 }
 
@@ -169,6 +170,7 @@ class DineInFragment : Fragment() {
         binding.layoutHeader.txthome.setOnClickListener {
 
             prefProvider.setValue(Constants.ORDER_TYPE, "")
+            prefProvider.setValue(Constants.ORDER_TYPE_NAME, "")
             findNavController().popBackStack()
         }
         binding.layoutHeader.imgDrawer.setOnClickListener {
