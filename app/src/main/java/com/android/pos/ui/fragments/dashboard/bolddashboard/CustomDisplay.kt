@@ -45,6 +45,7 @@ class CustomDisplay(
     val dineInViewModel: DineInOrderTableViewModel
 ) : Presentation(context, display), MyCallback, DineInAdapter.DineInCallback {
 
+    private var toFinalAmt: Double= 0.0
     private lateinit var dineInCartAdapter: DineInAdapter
     private lateinit var taxBirfurcationAdapter: TaxBirfurcationAdapter
     private lateinit var dineInTableAdapter: DineInTableAdapterCD
@@ -495,9 +496,9 @@ class CustomDisplay(
                                     //Whole Table Calculation
                                     totalItemDiscount += it.discountAmount
 
-                                    /*     if (baseResponse.guestAttributes.get(i).isPaid) {
-                                         notPayAnyAmount = true
-                                     }*/
+                                    if (baseResponse.guestAttributes.get(i).isPaid) {
+                                        notPayAnyAmount = true
+                                    }
 
                                     //for add item in tbItem List and extract/convert data from API
                                     val itemDineIn: DineInModel = DineInModel()
@@ -863,9 +864,7 @@ class CustomDisplay(
             totalDiscount = orderDiscount + totalItemDiscount
             finalTaxAmt = totalTaxAmount
             LogUtil.logE(TAG, "GotsubTotalDIninfinalAmount  ${finalAmount}")
-            binding.txtTotal.text = MethodUtils.roundOffAmount(
-                finalAmount
-            )
+
             //  toFinalAmt = finalAmount
 
 
@@ -878,14 +877,14 @@ class CustomDisplay(
                     paidGuestCount++
                 }
             }
-            /*    for (i in 0 until dineInList.size) {
-                    if (i != 0 && dineInList.size > i + 1) {
-                        if (dineInList.get(i + 1).item != null && dineInList.get(i + 1).item?.isPaid == true) {
-                            paidGuestCount++
-                        }
+         /*   for (i in 0 until dineInList.size) {
+                if (i != 0 && dineInList.size > i + 1) {
+                    if (dineInList.get(i + 1).item != null && dineInList.get(i + 1).item?.isPaid == true) {
+                        paidGuestCount++
                     }
-                }*/
-            LogUtil.logE("TODO", "paidGuestCount:  ${paidGuestCount}")
+                }
+            }*/
+            LogUtil.logE("Customerdiaply", "paidGuestCount:  ${paidGuestCount}")
             if (paidGuestCount > 0) {
 
                 paidGuestAmount = paidGuestCount
@@ -960,13 +959,16 @@ class CustomDisplay(
 
                 var finalAmount = subTotalDInin + serviceCharge + finalTaxAmt - orderDis
 
-
-                //  toFinalAmt = finalAmount
+                Log.e("toFinalCustomDisplay", "finalAmount:  ${finalAmount}")
+                  toFinalAmt = finalAmount
 
 
             }
+            else{
+                toFinalAmt = finalAmount
+            }
             binding.txtTotal.text = MethodUtils.roundOffAmount(
-                finalAmount
+                toFinalAmt
             )
 
             binding.txtSubTotal.text = MethodUtils.roundOffAmount(
@@ -982,7 +984,7 @@ class CustomDisplay(
             )
 
 
-            binding.txtServiceCharge.text =   MethodUtils.roundOffAmount(
+            binding.txtServiceCharge.text = MethodUtils.roundOffAmount(
                 baseResponse.totalDiscount
             )
 
@@ -1003,7 +1005,6 @@ class CustomDisplay(
                 dineInTableAdapter.setList(dineInList)
 
 
-                //  binding.txtTotalAmountNew.setText("${MethodUtils.roundOffAmount(totalAmtnew)}")
 
 
             }
