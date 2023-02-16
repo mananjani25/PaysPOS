@@ -249,7 +249,9 @@ class DineInTableAdapterCD() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                     }
                 } else {
 
-                    binding.txtGuestTotal?.setTextColor(binding.root.context.getColor(R.color.white))
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        binding.txtGuestTotal?.setTextColor(binding.root.context.getColor(R.color.white))
+                    }
                     binding.txtGuestTotal?.text = "Pay " + MethodUtils.roundOffAmount(finalAmt)
                 }
 

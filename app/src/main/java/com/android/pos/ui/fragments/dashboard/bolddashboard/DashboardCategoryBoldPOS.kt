@@ -31,6 +31,7 @@ import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
+import com.android.pos.data.remote.Constants.IS_PAYMENT_SCREEN
 import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.android.pos.data.remote.Constants.LARGE
 import com.android.pos.data.remote.Constants.MEDIUM
@@ -164,6 +165,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
             )
         }
+        prefProvider.setValueboolean(IS_PAYMENT_SCREEN,false)
         val callback: OnBackPressedCallback =
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {

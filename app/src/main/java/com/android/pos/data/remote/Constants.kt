@@ -263,6 +263,8 @@ object Constants {
     const val REORDER_CATEGORY = "categories/{id}/reorder"
     const val CATEGORY = "categories"
 
+    const val IS_PAYMENT_SCREEN = "is_payment_screen"
+
     const val WIFI = "Wifi"
     const val BLUETOOTH = "Bluetooth"
     const val KITCHEN = "Kitchen"

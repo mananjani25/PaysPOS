@@ -35,17 +35,22 @@ import com.android.pos.ui.fragments.checkout.CheckoutDineInFragmentNew
 import com.android.pos.ui.fragments.checkout.CheckoutDineInPaymentViewModel
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.dashboard.bolddashboard.CartFragment
+import com.android.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
+import com.android.pos.ui.fragments.dinein.DineInOrderTableViewModel
+import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.TAG
 import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.visible
+import com.android.pos.utils.getCustomerDisplay
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class PaymentBoldPosFragment : Fragment() {
+    private lateinit var presentation: CustomDisplay
     private var orderId: Int? = null
     private var orderOfflineId: String = ""
     private var paymentOfflineId: String = ""
@@ -53,6 +58,8 @@ class PaymentBoldPosFragment : Fragment() {
     private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
     private var dineinCartPaymentModel: DineinCartPaymentModel? = null
     private var guestRequestModel: GuestPaymentRequest? = null
+    private val passcodeViewModel by activityViewModels<PasscodeViewModel>()
+    private val paymentViewModel by viewModels<DineInOrderTableViewModel>()
 
     private val dineInPaymentViewModel by viewModels<CheckoutDineInPaymentViewModel>()
     private var isFromActiveOrder: Boolean = false
@@ -68,6 +75,8 @@ class PaymentBoldPosFragment : Fragment() {
 
     }
 
+
+
     @Inject
     lateinit var prefProvider: PrefProvider
 
@@ -77,12 +86,23 @@ class PaymentBoldPosFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentPaymentBoldPosBinding.inflate(inflater, container, false)
+        prefProvider.setValueboolean(Constants.IS_PAYMENT_SCREEN,true)
         binding.layoutHeaderCheckout.rlRoot.visibility = View.VISIBLE
         binding.lifecycleOwner = this
         isFromActiveOrder = arguments?.getBoolean("isFromActiveOrder") ?: false
         orderId = arguments?.getInt("orderId")
         viewModel.setSplitCount(1)
         LogUtil.logE("orderId :: ", orderId.toString())
+        getCustomerDisplay(requireContext())?.let { display ->
+            presentation = CustomDisplay(
+                display,
+                requireContext(),
+                viewLifecycleOwner,
+                viewModel,
+                passcodeViewModel,
+                paymentViewModel
+            )
+        }
         if (orderId != null) {
             paymentId = requireArguments().getInt("paymentId")
             paymentOfflineId = requireArguments().getString("paymentOfflineId").toString()
@@ -104,6 +124,7 @@ class PaymentBoldPosFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         viewModel.setTipAmount(0.0)
         if (prefProvider.getValue(
                 ORDER_TYPE,
@@ -117,6 +138,7 @@ class PaymentBoldPosFragment : Fragment() {
 
                 prefProvider.setValueboolean(SPLIT_IS_GUESTPAY, isGuest)
                 if (isGuest) {
+
                     val data =
                         requireArguments().getParcelable<GuestDataModel>(Constants.DINE_IN_GUEST_PAYMENT_DATA)
                     LogUtil.logE("GuestData", "Data ${Gson().toJson(data)}")
@@ -135,6 +157,11 @@ class PaymentBoldPosFragment : Fragment() {
 
                     )
                     guestRequestModel = requireArguments().getParcelable("model")
+                    viewModel.setGuestPay(true)
+                    presentation.show()
+                    presentation.onDisplayChanged()
+                    presentation.setGuestPay(true,model)
+
                     prefProvider.setValue(SPLIT_DINEIN_MODEL, Gson().toJson(model))
                     loadCartFragment(CartFragment(null, null, true, model, true))
                 } else {
@@ -309,6 +336,11 @@ class PaymentBoldPosFragment : Fragment() {
         binding.layoutHeaderCheckout.tvAddDiscount.setOnClickListener {
             findNavController().navigate(R.id.action_paymentBoldPosFragment_to_addDiscountDialogFragment)
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        prefProvider.setValueboolean(Constants.IS_PAYMENT_SCREEN,false)
     }
 
     override fun onPause() {
