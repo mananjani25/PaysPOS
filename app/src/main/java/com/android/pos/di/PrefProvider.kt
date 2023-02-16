@@ -203,6 +203,9 @@ class PrefProvider @Inject constructor(@ApplicationContext context: Context) {
     fun employeeId(): Int {
       return   getValueInt(Constants.EMPLOYEE_ID, 0)
     }
+    fun employeeName(): String {
+      return   getValue(Constants.EMPLOYEE_NAME, "0")
+    }
 
     fun setUniqueId(deviceId: String) {
         setValue(UNIQUE_ID, deviceId)
@@ -238,6 +241,19 @@ class PrefProvider @Inject constructor(@ApplicationContext context: Context) {
 
     fun isAdmin(): Boolean {
         return getValue(Constants.EMPLOYEE_ROLE, "").equals(ROLE_ADMIN, true)
+    }
+
+    fun getOrderTypeName(
+        key: String,
+        defaultValue: String
+    ): String {
+        openPref()
+        val result = sharedPreferences?.getString(key, defaultValue)
+        return if (result != "") {
+            result.toString()
+        } else {
+            defaultValue
+        }
     }
 
 

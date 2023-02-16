@@ -36,6 +36,7 @@ import com.android.pos.data.remote.Constants.BUSINESS_PHONE_NO
 import com.android.pos.data.remote.Constants.BUSINESS_WEBSITE
 import com.android.pos.data.remote.Constants.CASH_DISCOUNT_SURCHARGE_AMOUNT_TYPE
 import com.android.pos.data.remote.Constants.CASH_DISCOUNT_SURCHARGE_RATE
+import com.android.pos.data.remote.Constants.DEFAULT_ORDER
 import com.android.pos.data.remote.Constants.DELETE
 import com.android.pos.data.remote.Constants.DINEIN_FLOORPLAN_SHOW_TABLENAME
 import com.android.pos.data.remote.Constants.DINE_IN
@@ -252,6 +253,10 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     var onClickAddCustomer = false
     val _Basedata = MutableLiveData<Event<CreateOrderResponse.Data?>>()
+
+    private val _clockOut = MutableLiveData<Event<String>>()
+    val clockOut: LiveData<Event<String>> = _clockOut
+
 
     var barcodeFoundDbItemLiveData: LiveData<Resource<TbItem>>? = null
 
@@ -4314,6 +4319,46 @@ class DashBoardCategoryViewModel @Inject constructor(
         return null
     }
 
+    fun clockOut() {
+        _showProgress.value = Event(true)
+        val data = HashMap<String, String>()
+        data["employee_id"] = prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1).toString()
+        data["terminal_id"] = prefProvider.getValueInt(Constants.TERMINAL_ID, -1).toString()
+
+        viewModelScope.launch {
+            val resource = posRepository.employeeClockOut(data)
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    prefProvider.setValueboolean(Constants.IS_CLOCKOUT, false)
+                    _showProgress.value = Event(false)
+
+                    resource.data.let {
+                        if (it?.status == 200) {
+                            resource.data?.let {
+
+
+                                _clockOut.value = Event(it.message)
+                            }
+                        } else {
+                            _snackbarText.value = Event(resource.message.toString())
+                        }
+
+                    }
+
+                }
+
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message.toString())
+                    _showProgress.value = Event(false)
+                }
+
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+                }
+            }
+        }
+    }
+
     fun submit(orderRequestModel: OrderRequestModel) {
 
         _showProgress.value = Event(true)
@@ -5255,7 +5300,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             model.serviceCharge = serviceChargesList
             // model.orderTypeId = 1
             ordertypelist.forEach {
-                if (it.name.lowercase() == prefProvider.getValue(ORDER_TYPE_NAME, "").lowercase()) {
+                if (it.name.lowercase() == prefProvider.getOrderTypeName(ORDER_TYPE_NAME, DEFAULT_ORDER).lowercase()) {
                     model.orderTypeId = it.id
                 }
             }

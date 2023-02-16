@@ -9,10 +9,7 @@ import android.os.*
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.view.WindowManager
+import android.view.*
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.*
@@ -40,6 +37,7 @@ import com.android.pos.data.remote.Constants.OPEN_ORDER_ITEMS
 import com.android.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.ORDER_TYPE_ID
+import com.android.pos.data.remote.Constants.ORDER_TYPE_NAME
 import com.android.pos.data.remote.Constants.SMALL
 import com.android.pos.data.remote.Constants.SPLIT_ENABLE
 import com.android.pos.data.remote.Constants.SUNMI_INNER_PRINTER
@@ -59,6 +57,7 @@ import com.android.pos.utils.*
 import com.android.pos.utils.callback.DineInOrderCallBack
 import com.android.pos.utils.callback.ItemClickListner
 import com.android.pos.utils.callback.ItemListner
+import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.printer.PrinterClass
@@ -78,6 +77,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 import javax.inject.Inject
 
+
 @AndroidEntryPoint
 class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     ScannerAppEngine.IScannerAppEngineDevEventsDelegate, ICallback, DineInOrderCallBack {
@@ -95,7 +95,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     private var orderTypeObserver: Observer<Resource<List<TbOrderType>>>? = null
     private var dineInFloorTableModel: GetFloorPlanResponse.Data.FloorPlanTable? = null
     private val dineInViewModel by viewModels<DineInOrderTableViewModel>()
-        private val TAG = "DashboardCategoryBold"
+    private val TAG = "DashboardCategoryBold"
     var ordertypelist: ArrayList<TbOrderType> = arrayListOf()
     private var kitchenSettingModel = GetKitchenReceiptSettingsResponse.Data()
     var isupdate = false
@@ -153,6 +153,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         syncData()
         Binding()
 
+//        hideSystemUI()
+
+        view?.let { SystemBarsCompat.hideSystemBars(requireActivity().window, it) }
+//        requireActivity().window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
         binding = FragmentDashboardCategoryBoldPosBinding.inflate(inflater, container, false)
         getCustomerDisplay(requireContext())?.let { display ->
             presentation = CustomDisplay(
@@ -200,7 +204,35 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         observerSyncItemPriceChange()
         prefProvider.setValueboolean(Constants.ORDER_COMPLETED, false)
         binding.lifecycleOwner = this
+
+
+        binding.layoutBottom?.llClockOut?.setOnClickListener {
+
+            alert(
+                getString(R.string.app_name),
+                "Are you sure, you want to clockout employee  " + prefProvider.employeeName() + " ?"
+            ) {
+                positiveButton(getString(android.R.string.ok)) {
+                    viewModel.clockOut()
+
+
+                }
+                negativeButton(R.string.tv_cancel) {
+                    // Do negative stuff here
+                }
+            }
+        }
+
         return binding.root
+    }
+
+    private fun hideSystemUI() {
+        requireActivity().window.decorView.systemUiVisibility = (
+                View.SYSTEM_UI_FLAG_IMMERSIVE
+                        or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        or View.SYSTEM_UI_FLAG_FULLSCREEN
+                )
     }
 
     private fun checkCashDrawerObserver() {
@@ -968,6 +1000,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     }
 
     private fun addObserver() {
+
+
         viewModel.showProgress.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
@@ -975,6 +1009,22 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 } else {
                     ProgressUtils.dismissProgressDialog()
                 }
+            }
+        }
+        viewModel.clockOut.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let {
+
+                AlertUtils.showCustomAlert(requireContext(),it)
+                val bundle = Bundle()
+                bundle.putBoolean("isDashboard", false)
+                bundle.putBoolean("isSwap", false)
+                if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                    findNavController().navigate(
+                        R.id.action_dashboardCategoryBoldPOS_to_passcode,
+                        bundle
+                    )
+                }
+
             }
         }
         viewModel.callCashDiscount.observe(viewLifecycleOwner) { event ->
@@ -1397,6 +1447,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     orderId?.let { it1 -> bundle.putInt("orderId", it1) }
                 }*/
                 prefProvider.setValue(ORDER_TYPE, "")
+                prefProvider.setValue(ORDER_TYPE_NAME, "")
                 LogUtil.logE(TAG, "deleteCartDineIn")
                 viewModel.deleteCart()
                 clearCustomer()
@@ -1418,7 +1469,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     override fun onPause() {
         arguments?.clear()
         super.onPause()
-        if(this::presentation.isInitialized){
+        if (this::presentation.isInitialized) {
             presentation.show()
             presentation.onLogOutOrClockOutWithApiService(apiService)
         }
@@ -1986,6 +2037,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
                     prefProvider.setValue(ORDER_TYPE, "")
                 }
+                prefProvider.setValue(ORDER_TYPE_NAME, "")
                 LogUtil.logE(TAG, "QueueCreateAgain")
 
                 clearCustomer()
@@ -3469,5 +3521,83 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             salt.append(SALTCHARS[index])
         }
         return salt.toString()
+    }
+
+    object SystemBarsCompat {
+        private val api: Api =
+            when {
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> Api31()
+                Build.VERSION.SDK_INT == Build.VERSION_CODES.R -> Api30()
+                else -> Api()
+            }
+
+        fun hideSystemBars(window: Window, view: View, isImmersiveStickyMode: Boolean = false) =
+            api.hideSystemBars(window, view, isImmersiveStickyMode)
+
+        fun showSystemBars(window: Window, view: View) = api.showSystemBars(window, view)
+
+        fun areSystemBarsHidden(view: View): Boolean = api.areSystemBarsHidden(view)
+
+        @Suppress("DEPRECATION")
+        private open class Api {
+            open fun hideSystemBars(
+                window: Window,
+                view: View,
+                isImmersiveStickyMode: Boolean = false
+            ) {
+                val flags = View.SYSTEM_UI_FLAG_FULLSCREEN or
+                        View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
+                        View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+
+                view.systemUiVisibility = if (isImmersiveStickyMode) {
+                    flags or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                } else {
+                    flags or
+                            View.SYSTEM_UI_FLAG_IMMERSIVE or
+                            View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                }
+            }
+
+            open fun showSystemBars(window: Window, view: View) {
+                view.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+            }
+
+            open fun areSystemBarsHidden(view: View) =
+                view.systemUiVisibility and View.SYSTEM_UI_FLAG_HIDE_NAVIGATION != 0
+        }
+
+        @Suppress("DEPRECATION")
+        @RequiresApi(Build.VERSION_CODES.R)
+        private open class Api30 : Api() {
+
+            open val defaultSystemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_BARS_BY_SWIPE
+
+            override fun hideSystemBars(
+                window: Window,
+                view: View,
+                isImmersiveStickyMode: Boolean
+            ) {
+                window.setDecorFitsSystemWindows(false)
+                view.windowInsetsController?.let {
+                    it.systemBarsBehavior =
+                        if (isImmersiveStickyMode) WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+                        else defaultSystemBarsBehavior
+                    it.hide(WindowInsets.Type.systemBars())
+                }
+            }
+
+            override fun showSystemBars(window: Window, view: View) {
+                window.setDecorFitsSystemWindows(false)
+                view.windowInsetsController?.show(WindowInsets.Type.systemBars())
+            }
+
+            override fun areSystemBarsHidden(view: View) =
+                !view.rootWindowInsets.isVisible(WindowInsets.Type.navigationBars())
+        }
+
+        @RequiresApi(Build.VERSION_CODES.S)
+        private class Api31 : Api30() {
+            override val defaultSystemBarsBehavior = WindowInsetsController.BEHAVIOR_DEFAULT
+        }
     }
 }

@@ -456,6 +456,9 @@
             android:id="@+id/action_reports_to_menuFragment"
             app:destination="@id/menuFragment"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_reports_to_sendReceiptFragment"
+            app:destination="@id/sendReceiptFragment" />
 
 
     </fragment>

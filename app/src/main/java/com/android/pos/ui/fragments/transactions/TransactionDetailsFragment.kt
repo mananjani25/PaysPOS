@@ -798,12 +798,12 @@ class TransactionDetailsFragment : Fragment() {
 
                 binding.llDiscount.visibility = View.VISIBLE
                 if (paymentDetailsResponse.data.total_discount != 0.0) {
-                    binding.txtDiscount.text = "$" + String.format(
+                    binding.txtDiscount.text = "- $" + String.format(
                         "%.2f",
                         paymentDetailsResponse.data.total_discount
                     )
                 } else {
-                    binding.txtDiscount.text = "$" + String.format(
+                    binding.txtDiscount.text = "- $" + String.format(
                         "%.2f",
                         paymentDetailsResponse.data.order.total_discount
                     )

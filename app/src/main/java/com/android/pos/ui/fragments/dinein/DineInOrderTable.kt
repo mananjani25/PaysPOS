@@ -755,10 +755,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
         binding.txtHome.setOnClickListener {
             prefProvider.setValue(ORDER_TYPE, "")
+            prefProvider.setValue(ORDER_TYPE_NAME, "")
             findNavController().navigate(R.id.action_dineInOrderTable_to_dashboardCategoryNew)
         }
         binding.txtHomeBottom.setOnClickListener {
             prefProvider.setValue(ORDER_TYPE, "")
+            prefProvider.setValue(ORDER_TYPE_NAME, "")
             findNavController().navigate(R.id.action_dineInOrderTable_to_dashboardCategoryNew)
         }
 

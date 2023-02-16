@@ -842,7 +842,7 @@ class CartFragment(
                     binding.txtDiscount.text = "-" +
                             MethodUtils.roundOffAmount(viewModel.totalDiscount)
                     binding.txtNoncashAdj.text =
-                        MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
+                        "-" + MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
                     var data: TbCustomer? = prefProvider.getCustomerData()
                     if (data != null) {
                         if (viewModel.loyaltyPointCondition(data)) {
@@ -892,7 +892,7 @@ class CartFragment(
                     binding.txtTax.text = MethodUtils.roundOffAmount(0.00)
                     binding.txtDiscount.text = "-" + MethodUtils.roundOffAmount(0.00)
                     binding.txtNoncashAdj.text =
-                        MethodUtils.roundOffAmount(0.00)
+                        "-" + MethodUtils.roundOffAmount(0.00)
                     binding.relativeOrderNotes?.visibility = View.GONE
                     binding.txtServiceCharge.text =
                         MethodUtils.roundOffAmount(0.00)
@@ -1142,7 +1142,7 @@ class CartFragment(
                             binding.txtDiscount.text =
                                 "-" + MethodUtils.roundOffAmount(viewModel.totalDiscount)
                             binding.txtNoncashAdj.text =
-                                MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
+                                "-" + MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
                             if (viewModel.order_note.isNotEmpty()) {
                                 binding.relativeOrderNotes?.visibility = View.VISIBLE
                                 binding.txtOrderNote?.text = viewModel.order_note
@@ -1285,7 +1285,7 @@ class CartFragment(
                             binding.txtDiscount.text =
                                 "-" + MethodUtils.roundOffAmount(viewModel.totalDiscount)
                             binding.txtNoncashAdj.text =
-                                MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
+                                "-" + MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
                             var data: TbCustomer? = prefProvider.getCustomerData()
                             if (data != null) {
                                 if (viewModel.loyaltyPointCondition(data)) {
@@ -1380,7 +1380,7 @@ class CartFragment(
                             binding.txtTax.text = MethodUtils.roundOffAmount(0.0)
                             binding.txtDiscount.text = "-" + MethodUtils.roundOffAmount(0.00)
                             binding.txtNoncashAdj.text =
-                                MethodUtils.roundOffAmount(0.00)
+                                "-" + MethodUtils.roundOffAmount(0.00)
                             binding.txtServiceCharge.text =
                                 MethodUtils.roundOffAmount(0.00)
                             binding.tvPayNow.text = "Pay " + MethodUtils.roundOffAmount(0.00)
@@ -1690,6 +1690,7 @@ class CartFragment(
 //                    uiSave()
 
                     prefProvider.setValue(ORDER_TYPE, "")
+                    prefProvider.setValue(ORDER_TYPE_NAME, "")
                     prefProvider.setValueboolean(Constants.LOYALTY_ADDED, false)
 
                     getOrderTypes()
@@ -1712,6 +1713,7 @@ class CartFragment(
                     cartlist.clear()
                     isOrderUpdate = false
                     prefProvider.setValue(ORDER_TYPE, "")
+                    prefProvider.setValue(ORDER_TYPE_NAME, "")
                     prefProvider.setValueboolean(Constants.LOYALTY_ADDED, false)
                     itemClickListner?.onDineInOrderCleared()
                     uiSave()
