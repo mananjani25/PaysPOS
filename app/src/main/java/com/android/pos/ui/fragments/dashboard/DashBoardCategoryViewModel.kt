@@ -36,6 +36,7 @@ import com.android.pos.data.remote.Constants.BUSINESS_PHONE_NO
 import com.android.pos.data.remote.Constants.BUSINESS_WEBSITE
 import com.android.pos.data.remote.Constants.CASH_DISCOUNT_SURCHARGE_AMOUNT_TYPE
 import com.android.pos.data.remote.Constants.CASH_DISCOUNT_SURCHARGE_RATE
+import com.android.pos.data.remote.Constants.DEFAULT_ORDER
 import com.android.pos.data.remote.Constants.DELETE
 import com.android.pos.data.remote.Constants.DINEIN_FLOORPLAN_SHOW_TABLENAME
 import com.android.pos.data.remote.Constants.DINE_IN
@@ -5247,7 +5248,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             model.serviceCharge = serviceChargesList
             // model.orderTypeId = 1
             ordertypelist.forEach {
-                if (it.name.lowercase() == prefProvider.getValue(ORDER_TYPE_NAME, "").lowercase()) {
+                if (it.name.lowercase() == prefProvider.getOrderTypeName(ORDER_TYPE_NAME, DEFAULT_ORDER).lowercase()) {
                     model.orderTypeId = it.id
                 }
             }

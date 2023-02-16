@@ -240,6 +240,19 @@ class PrefProvider @Inject constructor(@ApplicationContext context: Context) {
         return getValue(Constants.EMPLOYEE_ROLE, "").equals(ROLE_ADMIN, true)
     }
 
+    fun getOrderTypeName(
+        key: String,
+        defaultValue: String
+    ): String {
+        openPref()
+        val result = sharedPreferences?.getString(key, defaultValue)
+        return if (result != "") {
+            result.toString()
+        } else {
+            defaultValue
+        }
+    }
+
 
     /* fun setCustomObject(
          context: Context,

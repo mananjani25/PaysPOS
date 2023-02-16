@@ -39,6 +39,7 @@ import com.android.pos.data.remote.Constants.OPEN_ORDER_ITEMS
 import com.android.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.ORDER_TYPE_ID
+import com.android.pos.data.remote.Constants.ORDER_TYPE_NAME
 import com.android.pos.data.remote.Constants.SMALL
 import com.android.pos.data.remote.Constants.SPLIT_ENABLE
 import com.android.pos.data.remote.Constants.SUNMI_INNER_PRINTER
@@ -1395,6 +1396,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     orderId?.let { it1 -> bundle.putInt("orderId", it1) }
                 }*/
                 prefProvider.setValue(ORDER_TYPE, "")
+                prefProvider.setValue(ORDER_TYPE_NAME, "")
                 LogUtil.logE(TAG, "deleteCartDineIn")
                 viewModel.deleteCart()
                 clearCustomer()
@@ -1984,6 +1986,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
                     prefProvider.setValue(ORDER_TYPE, "")
                 }
+                prefProvider.setValue(ORDER_TYPE_NAME, "")
                 LogUtil.logE(TAG, "QueueCreateAgain")
 
                 clearCustomer()

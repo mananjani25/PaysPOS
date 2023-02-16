@@ -735,6 +735,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         if (!isSpilt) {
 
             prefProvider.setValue(Constants.ORDER_TYPE, "")
+            prefProvider.setValue(Constants.ORDER_TYPE_NAME, "")
             prefProvider.setValue(Constants.CUSTOMER_NAME, "")
             prefProvider.setValue(Constants.PREF_CUSTOMER, "")
             prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
