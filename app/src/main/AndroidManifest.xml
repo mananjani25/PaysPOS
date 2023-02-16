@@ -90,7 +90,8 @@
             android:screenOrientation="landscape"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize"
             android:windowTranslucentNavigation="true"
-            android:windowTranslucentStatus="true">
+            android:windowTranslucentStatus="true"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

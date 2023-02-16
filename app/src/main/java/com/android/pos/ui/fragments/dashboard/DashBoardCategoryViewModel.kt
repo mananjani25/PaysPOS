@@ -104,7 +104,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     private val networkConnectionInterceptor: NetworkConnectionInterceptor
 ) : ViewModel() {
 
-    fun getRepository():PosRepository{
+    fun getRepository(): PosRepository {
         return posRepository
     }
 
@@ -245,6 +245,10 @@ class DashBoardCategoryViewModel @Inject constructor(
     var onClickAddCustomer = false
     val _Basedata = MutableLiveData<Event<CreateOrderResponse.Data?>>()
 
+    private val _clockOut = MutableLiveData<Event<String>>()
+    val clockOut: LiveData<Event<String>> = _clockOut
+
+
     var barcodeFoundDbItemLiveData: LiveData<Resource<TbItem>>? = null
 
     fun modifierSet(intArray: IntArray) = posRepository.modifierSetList(intArray)
@@ -330,7 +334,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     }
 
-    fun generateCombinedItems(cartModel: CartModel): CartModel    {
+    fun generateCombinedItems(cartModel: CartModel): CartModel {
         val combinedItems = arrayListOf<TbItem>()
         cartModel.items?.let {
 
@@ -4304,6 +4308,46 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
 
         return null
+    }
+
+    fun clockOut() {
+        _showProgress.value = Event(true)
+        val data = HashMap<String, String>()
+        data["employee_id"] = prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1).toString()
+        data["terminal_id"] = prefProvider.getValueInt(Constants.TERMINAL_ID, -1).toString()
+
+        viewModelScope.launch {
+            val resource = posRepository.employeeClockOut(data)
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    prefProvider.setValueboolean(Constants.IS_CLOCKOUT, false)
+                    _showProgress.value = Event(false)
+
+                    resource.data.let {
+                        if (it?.status == 200) {
+                            resource.data?.let {
+
+
+                                _clockOut.value = Event(it.message)
+                            }
+                        } else {
+                            _snackbarText.value = Event(resource.message.toString())
+                        }
+
+                    }
+
+                }
+
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message.toString())
+                    _showProgress.value = Event(false)
+                }
+
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+                }
+            }
+        }
     }
 
     fun submit(orderRequestModel: OrderRequestModel) {
