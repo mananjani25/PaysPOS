@@ -161,15 +161,16 @@ class DineInTableAdapterCD() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
             guestAmt += list.get(0).guestDividedAmt
 
+            Log.e("CheckCustomer","customerData:   ${list[bindingAdapterPosition].customer}")
 
-            if (list.get(position).customer != null) {
+            if (list.get(bindingAdapterPosition).customer != null) {
                 binding.txtTableName.setText(
-                    list.get(layoutPosition).customer?.first_name + " " + list.get(
-                        layoutPosition
+                    list.get(bindingAdapterPosition).customer?.first_name + " " + list.get(
+                        bindingAdapterPosition
                     ).customer?.last_name
                 )
             } else {
-                binding.txtTableName.setText(list.get(layoutPosition).title)
+                binding.txtTableName.setText(list.get(bindingAdapterPosition).title)
 
             }
 //            btnColorDark
