@@ -53,10 +53,26 @@ class CustomDisplay(
         prefProvider = PrefProvider(context)
         setupList()
         setupTaxAdapter()
-        binding.blockLayoutForOther.setOnClickListener {
-            showTipKeypad()
+        binding.apply {
+            blockLayoutForOther.setOnClickListener {
+                showTipKeypad()
+            }
+            blockLayoutForNoTip.setOnClickListener {
+                showMainCart()
+            }
         }
 
+    }
+
+    private fun showMainCart() {
+        binding.apply {
+            binding.mainCartLayout.visible()
+
+            addTipKeypadLayout.gone()
+            askForTipLayout.gone()
+            binding.splashLayout.gone()
+            binding.thankYouLayout.gone()
+        }
     }
 
     private fun showTipKeypad() {
@@ -67,8 +83,6 @@ class CustomDisplay(
             binding.splashLayout.gone()
             binding.mainCartLayout.gone()
             binding.thankYouLayout.gone()
-
-
         }
     }
 
@@ -281,15 +295,16 @@ class CustomDisplay(
 
     fun showWouldYouLikeToAddTipScreen() {
         binding.apply {
+            askForTipLayout.visible()
+
             mainCartLayout.gone()
             splashLayout.gone()
             thankYouLayout.gone()
             addTipKeypadLayout.gone()
-            askForTipLayout.visible()
 
             lifecycleOwner.lifecycleScope.launch {
                 delay(5000)
-                binding.blockLayoutForOther.performClick()
+                binding.blockLayoutForNoTip.performClick()
             }
         }
     }

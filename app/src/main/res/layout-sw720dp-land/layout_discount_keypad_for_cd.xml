@@ -5,7 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="#1d1d1f"
-    android:gravity="center"
     android:orientation="vertical"
     tools:ignore="MissingDefaultResource">
 
@@ -34,7 +33,7 @@
             style="@style/CustomFontRegularStyle"
             android:layout_width="0dp"
             android:layout_height="@dimen/_20sdp"
-            android:layout_marginHorizontal="@dimen/_5sdp"
+            android:layout_marginHorizontal="@dimen/_3sdp"
             android:layout_weight="1"
             android:background="@color/lightGrey"
             android:gravity="center"
@@ -63,7 +62,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginTop="@dimen/_5sdp"
+        android:layout_marginTop="@dimen/_3sdp"
         android:gravity="center"
         android:orientation="horizontal">
 
@@ -85,7 +84,7 @@
             style="@style/CustomFontRegularStyle"
             android:layout_width="0dp"
             android:layout_height="@dimen/_20sdp"
-            android:layout_marginHorizontal="@dimen/_5sdp"
+            android:layout_marginHorizontal="@dimen/_3sdp"
             android:layout_weight="1"
             android:background="@color/lightGrey"
             android:gravity="center"
@@ -113,7 +112,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginTop="@dimen/_5sdp"
+        android:layout_marginTop="@dimen/_3sdp"
         android:gravity="center"
         android:orientation="horizontal">
 
@@ -135,7 +134,7 @@
             style="@style/CustomFontRegularStyle"
             android:layout_width="0dp"
             android:layout_height="@dimen/_20sdp"
-            android:layout_marginHorizontal="@dimen/_5sdp"
+            android:layout_marginHorizontal="@dimen/_3sdp"
             android:layout_weight="1"
             android:background="@color/lightGrey"
             android:gravity="center"
@@ -163,7 +162,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginTop="@dimen/_5sdp"
+        android:layout_marginTop="@dimen/_3sdp"
         android:gravity="center"
         android:orientation="horizontal">
 
@@ -185,7 +184,7 @@
             style="@style/CustomFontRegularStyle"
             android:layout_width="0dp"
             android:layout_height="@dimen/_20sdp"
-            android:layout_marginHorizontal="@dimen/_5sdp"
+            android:layout_marginHorizontal="@dimen/_3sdp"
             android:layout_weight="1"
             android:background="@color/lightGrey"
             android:gravity="center"

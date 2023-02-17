@@ -710,7 +710,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#1D1D1F"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/wouldYouLikeToAddTipLabel"
@@ -722,7 +722,7 @@
             android:padding="@dimen/_5sdp"
             android:text="Would you like to add tip?"
             android:textColor="@color/white"
-            android:textSize="@dimen/_15sdp"
+            android:textSize="@dimen/_12ssp"
             android:textStyle="bold"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -749,7 +749,7 @@
                     android:gravity="center"
                     android:text="No Tip"
                     android:textColor="#ED5950"
-                    android:textSize="@dimen/_9ssp"
+                    android:textSize="@dimen/_7ssp"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -770,11 +770,11 @@
                     android:id="@+id/txtTip25Label"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_3sdp"
+                    android:layout_marginTop="@dimen/_5sdp"
                     android:gravity="center"
                     android:text="25%"
                     android:textColor="#ED5950"
-                    android:textSize="@dimen/_9ssp"
+                    android:textSize="@dimen/_8ssp"
                     android:textStyle="bold"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -786,7 +786,7 @@
                     android:gravity="center"
                     android:text="$2.39"
                     android:textColor="@color/white60"
-                    android:textSize="@dimen/_7ssp"
+                    android:textSize="@dimen/_5ssp"
                     app:layout_constraintTop_toBottomOf="@id/txtTip25Label" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -802,11 +802,11 @@
                     android:id="@+id/txtTip20Label"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_3sdp"
+                    android:layout_marginTop="@dimen/_5sdp"
                     android:gravity="center"
                     android:text="20%"
                     android:textColor="#ED5950"
-                    android:textSize="@dimen/_9ssp"
+                    android:textSize="@dimen/_8ssp"
                     android:textStyle="bold"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -818,7 +818,7 @@
                     android:gravity="center"
                     android:text="$2.39"
                     android:textColor="@color/white60"
-                    android:textSize="@dimen/_7ssp"
+                    android:textSize="@dimen/_5ssp"
                     app:layout_constraintTop_toBottomOf="@id/txtTip20Label" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -840,7 +840,7 @@
                     android:gravity="center"
                     android:text="15%"
                     android:textColor="#ED5950"
-                    android:textSize="@dimen/_9ssp"
+                    android:textSize="@dimen/_8ssp"
                     android:textStyle="bold"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -852,11 +852,10 @@
                     android:gravity="center"
                     android:text="$2.39"
                     android:textColor="@color/white60"
-                    android:textSize="@dimen/_7ssp"
+                    android:textSize="@dimen/_5ssp"
                     app:layout_constraintTop_toBottomOf="@id/txtTip15Label" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
-
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/blockLayoutForOther"
@@ -873,7 +872,7 @@
                     android:gravity="center"
                     android:text="Other"
                     android:textColor="#ED5950"
-                    android:textSize="@dimen/_9ssp"
+                    android:textSize="@dimen/_7ssp"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -896,24 +895,23 @@
             style="@style/CustomFontMediumStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_20sdp"
+            android:layout_marginTop="@dimen/_15sdp"
             android:gravity="center"
             android:padding="@dimen/_5sdp"
             android:text="Would you like to add tip?"
             android:textColor="@color/white"
-            android:textSize="@dimen/_15sdp"
+            android:textSize="@dimen/_12ssp"
             android:textStyle="bold"
             app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/amountLayout"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_18sdp"
+            android:layout_height="@dimen/_22sdp"
             android:layout_gravity="center_vertical"
-            android:layout_marginTop="@dimen/_5sdp"
-            android:layout_marginBottom="@dimen/_3sdp"
+            android:layout_marginTop="@dimen/_15sdp"
             android:background="@drawable/bg_rect_border_light_grey"
-            android:padding="@dimen/_4sdp"
+            android:padding="@dimen/_5sdp"
             app:layout_constraintTop_toBottomOf="@id/wouldYouLikeToAddTipOtherLabel">
 
             <EditText
@@ -926,9 +924,9 @@
                 android:enabled="false"
                 android:gravity="center"
                 android:maxLength="11"
-                android:text="$0.00"
+                android:text="$25.98"
                 android:textColor="@color/btnColor"
-                android:textSize="@dimen/_6sdp"
+                android:textSize="@dimen/_8sdp"
                 tools:ignore="MissingConstraints,TouchTargetSizeCheck"
                 tools:layout_editor_absoluteX="14dp"
                 tools:layout_editor_absoluteY="14dp" />
@@ -939,8 +937,8 @@
             android:id="@+id/incKeypad"
             layout="@layout/layout_discount_keypad_for_cd"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_100sdp"
-            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_3sdp"
             app:layout_constraintTop_toBottomOf="@id/amountLayout" />
 
         <androidx.appcompat.widget.AppCompatTextView
@@ -949,7 +947,7 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/_20sdp"
             android:layout_gravity="center"
-            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_marginTop="@dimen/_5sdp"
             android:background="@color/btnColor"
             android:gravity="center"
             android:text="Continue"
