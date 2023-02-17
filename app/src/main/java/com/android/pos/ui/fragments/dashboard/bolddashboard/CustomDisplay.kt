@@ -425,13 +425,15 @@ class CustomDisplay(
     private fun getCustomerList() {
         dineInViewModel.customer().observe(lifecycleOwner) { it ->
             if (it.isNotEmpty()) {
-                allCustomerList = it.toCollection(arrayListOf())
+                allCustomerList.clear()
+                allCustomerList.addAll(it)
             }
         }
     }
 
     fun showTableDetails(baseResponse: GetOrderDetailsResponse.Data) {
 
+        getCustomerList()
         getDineInOrderDetails(baseResponse)
 //        val cartlist: java.util.ArrayList<CartModel> = arrayListOf()
 //        cartlist.add(CartModel().apply { dineInList = dineInListItems })
@@ -508,10 +510,14 @@ class CustomDisplay(
                 model.serviceChargeList = serviceChargeList
 
 
-                if (baseResponse?.guestAttributes?.get(i)?.customerId != null && baseResponse.guestAttributes.get(
+                if (baseResponse.guestAttributes.get(
                         i
                     ).customerId != 0
                 ) {
+                    Log.e(
+                        "CheckCustomerList",
+                        "allCustomerList:  ${Gson().toJson(allCustomerList)}"
+                    )
                     allCustomerList.forEach {
                         if (it.id == baseResponse.guestAttributes.get(i).customerId) {
                             model.customer = it
@@ -1175,6 +1181,11 @@ class CustomDisplay(
         )*/
 
 
+    }
+
+    fun setCustomerList(list: List<TbCustomer>) {
+        allCustomerList.clear()
+        allCustomerList.addAll(list)
     }
 
 }

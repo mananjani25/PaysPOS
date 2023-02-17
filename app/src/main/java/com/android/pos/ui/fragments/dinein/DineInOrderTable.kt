@@ -172,7 +172,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             container,
             false
         )
-        prefProvider.setValueboolean(Constants.IS_PAYMENT_SCREEN,false)
+        prefProvider.setValueboolean(Constants.IS_PAYMENT_SCREEN, false)
         binding.lifecycleOwner = this
 
 
@@ -203,6 +203,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 viewModel
             )
         }
+
         navigateDineInOrderNew()
         observeUnMergeTable()
         requireActivity().supportFragmentManager.setFragmentResultListener(
@@ -240,6 +241,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         viewModel.customer().observe(viewLifecycleOwner) {
             if (it.isNotEmpty()) {
                 allCustomerList = it.toCollection(arrayListOf())
+                presentation.setCustomerList(it.toCollection(arrayListOf()))
             }
         }
     }
@@ -1675,7 +1677,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         }
 
         LogUtil.logE("FinalLast", "FinalLast ${isLastPayment}")
-        Log.e("checkDividedDis","divideCashDiscount:  ${divideCashDiscount}")
+        Log.e("checkDividedDis", "divideCashDiscount:  ${divideCashDiscount}")
 
 
         val dineinCartPaymentModel: DineinCartPaymentModel? = null
