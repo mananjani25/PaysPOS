@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.model.CategoryTabModel
 import com.android.pos.databinding.ViewBoldCategoryBinding
 import com.android.pos.ui.adapter.CategoryTabAdapter1
-import com.android.pos.utils.MethodUtils
 
 class CategoryAdapter(
     val context: Context,
@@ -38,10 +37,10 @@ class CategoryAdapter(
                 binding.txtCategoryName.text = model.title
             }
             binding.root.setOnClickListener {
-                if (MethodUtils.isDoubleClickCategory()) return@setOnClickListener
+                //if (MethodUtils.isDoubleClickCategory()) return@setOnClickListener
 
 
-                listner.onTabSelected(bindingAdapterPosition)
+              //  listner.onTabSelected(bindingAdapterPosition)
                 list.forEachIndexed { index, categoryTabModel ->
 
                     categoryTabModel.isSelected = index == bindingAdapterPosition
