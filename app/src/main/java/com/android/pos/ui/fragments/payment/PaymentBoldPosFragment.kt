@@ -148,8 +148,7 @@ class PaymentBoldPosFragment : Fragment() {
                         data?.totalAmount?.toDouble() ?: 0.0,
                         data?.totalServiceCharge?.toDouble() ?: 0.0,
                         data?.totalTax?.toDouble() ?: 0.0,
-                        ((data?.cashDiscount?.toDouble() / dineinCartPaymentModel?.totalGuestCount?.toInt()
-                            ?: 1) ?: 0.0) as Double,
+                        data?.cashDiscount?.toDouble() ?: 0.0,
                         data?.totalDiscount?.toDouble() ?: 0.0,
                         requireArguments().getInt("id"),
                         dineinCartPaymentModel
