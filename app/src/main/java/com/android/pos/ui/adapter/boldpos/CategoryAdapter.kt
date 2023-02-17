@@ -40,11 +40,18 @@ class CategoryAdapter(
                 //if (MethodUtils.isDoubleClickCategory()) return@setOnClickListener
 
 
-              //  listner.onTabSelected(bindingAdapterPosition)
-                list.forEachIndexed { index, categoryTabModel ->
+                  listner.onTabSelected(bindingAdapterPosition)
+
+                list.mapIndexed { index, categoryTabModel ->
 
                     categoryTabModel.isSelected = index == bindingAdapterPosition
+
+
                 }
+                /*list.forEachIndexed { index, categoryTabModel ->
+
+                    categoryTabModel.isSelected = index == bindingAdapterPosition
+                }*/
                 notifyDataSetChanged()
             }
 
