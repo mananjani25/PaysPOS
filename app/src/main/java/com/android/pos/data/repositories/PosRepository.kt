@@ -15,6 +15,7 @@ import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.ApiHelper
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN
+import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.SYNC_SETTING_TIME_STAMP
 import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.di.PrefProvider
@@ -212,7 +213,9 @@ class PosRepository @Inject constructor(
     fun getCategoryListAll() =
         performGetOperationDatabase(databaseQuery = { appDatabase.categoryDao().all() })
 
-    fun getCategoryListIWCAll() = performGetOperationDatabase(databaseQuery = { appDatabase.categoryDao().allCatWithoutItem() })
+    fun getCategoryListIWCAll() = performGetOperationDatabase(databaseQuery = {
+        appDatabase.categoryDao().allCatWithoutItem()
+    })
 
     fun getCategoryList() =
         performGetOperation(databaseQuery = { appDatabase.categoryDao().all() },
@@ -278,15 +281,17 @@ class PosRepository @Inject constructor(
 
     fun getSingleItem(id: Int) = appDatabase.itemDao().itemOne(id)
 
+    fun getItemList() = appDatabase.cartDao().allItemMod(prefProvider.getValueInt(EMPLOYEE_ID, 0))
+
     fun getSingleModifier(id: Int) = appDatabase.modifierSetDao().itemOne(id)
 
-    fun updateModifier(mod:ModifierSet) = appDatabase.modifierSetDao().update(mod)
+    fun updateModifier(mod: ModifierSet) = appDatabase.modifierSetDao().update(mod)
 
 
     fun modifierSetsList() =
         performGetOperationDatabase(databaseQuery = { appDatabase.modifierSetDao().all })
 
-    fun updateModSet(mod:ModifierSet) = appDatabase.modifierSetDao().update(mod)
+    fun updateModSet(mod: ModifierSet) = appDatabase.modifierSetDao().update(mod)
 
     fun getAllCountryList() = appDatabase.countryListDao().all
 
@@ -538,6 +543,9 @@ class PosRepository @Inject constructor(
     suspend fun searchCustomer(query: String) =
         apiHelperNew.searchCustomers(query)
 
+    fun searchEmployeesDatabase(query: String) =
+        performGetOperationDatabase(databaseQuery = { appDatabase.employeeDao().getEmployeeSearchResults(query) })
+
     suspend fun deleteEmployeeDatabase(employeeId: Int) =
         appDatabase.employeeDao().deleteEmployeeById(employeeId)
 
@@ -553,6 +561,9 @@ class PosRepository @Inject constructor(
 
     suspend fun deleteItem(itemId: Int) = apiHelperNew.deleteItem(itemId)
 
+    suspend fun increaseOnGoingOrderCounter() = apiHelperNew.increaseOnGoingOrderCounter()
+    suspend fun decreaseOnGoingOrderCounter() = apiHelperNew.decreaseOnGoingOrderCounter()
+
     suspend fun itemHide(itemId: Int, hide_status: String) =
         apiHelperNew.hideItem(itemId, hide_status)
 
@@ -561,6 +572,7 @@ class PosRepository @Inject constructor(
 
     fun unhideItemListPOS() =
         performGetOperationDatabase(databaseQuery = { appDatabase.itemDao().unhideItemPos!! })
+
     fun unhideItemListWebsite() =
         performGetOperationDatabase(databaseQuery = { appDatabase.itemDao().unhideItemWebsite!! })
 
@@ -588,6 +600,9 @@ class PosRepository @Inject constructor(
 
     suspend fun updateCategoryCall(id: Int, data: CreateCategoryRequestModel) =
         apiHelperNew.updateCategoryCall(id, data)
+
+    suspend fun updateCategoryItems(id: Int, itemIdsList: List<Int>) =
+        appDatabase.categoryDao().updateCategoryList(id, itemIdsList)
 
     suspend fun createCategory(category: TbCategory) =
         appDatabase.categoryDao().add(category)
@@ -900,7 +915,7 @@ class PosRepository @Inject constructor(
         is_captured: Boolean,
         data: CashInOutModel
     ) =
-        apiHelperNew.orderUpdateTip(orderId, customerId,is_captured,data)
+        apiHelperNew.orderUpdateTip(orderId, customerId, is_captured, data)
 
     suspend fun updateKitchenFireStatus(
         id: Int,
@@ -927,6 +942,14 @@ class PosRepository @Inject constructor(
     ) =
         apiHelperNew.mergeFloorTable(parentTableId, childIds, orderModel, childOrderIds, orderId)
 
+    suspend fun transferTable(
+        orderId: Int,
+        floorPlanId: Int,
+        floorPlanTableId: Int,
+        oldFloorPlanTableId: Int
+    ) =
+        apiHelperNew.transferTable(orderId, floorPlanId, floorPlanTableId, oldFloorPlanTableId)
+
     suspend fun unMergeTable(id: Int) = apiHelperNew.unMergeTable(id)
     suspend fun payByGuest(
         id: Int,
@@ -942,6 +965,15 @@ class PosRepository @Inject constructor(
 
     fun getFloorPlanTableDetails() =
         performGetOperationNew(networkCall = { apiHelperNew.getFloorPlanTableDetails() })
+
+    fun getAvailableTransferTableList() =
+        performGetOperationNew(networkCall = {
+            apiHelperNew.getAvailableTransferTableList(
+                prefProvider.getValueInt(
+                    EMPLOYEE_ID, 0
+                )
+            )
+        })
 
     suspend fun employeeClockOut(data: HashMap<String, String>) =
         apiHelperNew.employeeClockOut(data)

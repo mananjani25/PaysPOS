@@ -64,11 +64,13 @@
                             android:hint="Option Set Title"
                             android:imeOptions="actionNext"
                             android:background="@null"
+                            android:maxLength="50"
+                            android:singleLine="true"
+                            android:digits="@string/character_digits_String"
                             android:inputType="textCapWords|textVisiblePassword"
                             android:padding="@dimen/_5sdp"
                             android:text="@={createOptionViewModel.optionDetails.name}"
                             android:textColor="@color/txtColor"
-                            android:digits="@string/disable_emoji_string"
                             android:textColorHint="@color/hintColor"
                             android:textSize="@dimen/_5mdpi" />
                     </androidx.appcompat.widget.LinearLayoutCompat>
@@ -110,7 +112,9 @@
                         android:textColor="@color/txtColor"
                         android:textColorHint="@color/hintColor"
                         android:textSize="@dimen/_5mdpi"
-                        android:digits="@string/disable_emoji_string" />
+                        android:maxLength="50"
+                        android:singleLine="true"
+                        android:digits="@string/character_digits_String" />
                     </androidx.appcompat.widget.LinearLayoutCompat>
                 </androidx.appcompat.widget.LinearLayoutCompat>
 

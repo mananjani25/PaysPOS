@@ -69,16 +69,33 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <androidx.appcompat.widget.AppCompatTextView
-                    style="@style/CustomFontSemiBold"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/_5sdp"
-                    android:text="@string/personal_information"
-                    android:textAllCaps="true"
-                    android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_6mdpi" />
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/_5sdp"
+                        android:text="@string/personal_information"
+                        android:textAllCaps="true"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_6mdpi" />
+
+                    <TextView
+                        android:id="@+id/txtEdit"
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginEnd="14dp"
+                        android:text="@string/edit"
+                        android:textAllCaps="true"
+                        android:textColor="@color/txt_color_blue"
+                        android:textSize="@dimen/_6mdpi" />
+
+                </RelativeLayout>
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
@@ -153,7 +170,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:text="@string/tv_email_address_"
-                        android:textColor="@color/txtColor"
+                        android:textColor="@color/txtColorGray"
                         android:textSize="@dimen/text_size_normal" />
 
                     <androidx.appcompat.widget.AppCompatTextView
@@ -164,7 +181,7 @@
                         android:layout_gravity="center"
                         android:layout_marginTop="@dimen/_2ssp"
                         android:text="david@gmail.com"
-                        android:textColor="@color/btnColor"
+                        android:textColor="@color/txtColor"
                         android:textSize="@dimen/text_size_medium" />
 
 
@@ -361,15 +378,15 @@
                         android:textColor="@color/txtColor"
                         android:textSize="@dimen/text_size_medium" />
 
-                    <View
+                   <!-- <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:layout_marginTop="@dimen/_10sdp"
-                        android:background="@color/view" />
+                        android:background="@color/view" />-->
 
                 </LinearLayout>
 
-                <LinearLayout
+                <!--<LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
@@ -397,7 +414,7 @@
                         android:layout_marginBottom="@dimen/_10sdp"/>
 
 
-                </LinearLayout>
+                </LinearLayout>-->
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
 

@@ -337,7 +337,7 @@ class Settings : Fragment() {
         list.add(BusinessSettingModel(0, "Service Charges", false))
         list.add(BusinessSettingModel(0, "Sales Taxes", false))
         list.add(BusinessSettingModel(0, "Discounts", false))
-        list.add(BusinessSettingModel(0, "Dynamic Notes", false))
+        list.add(BusinessSettingModel(0, "Order Notes", false))
         list.add(BusinessSettingModel(0, "Loyalty Program", false))
         list.add(BusinessSettingModel(0, "Receipt Settings", false))
         for (i in 0 until list.size) {
@@ -394,7 +394,7 @@ class Settings : Fragment() {
 
             }
             5 -> {
-                binding.commonToolbar.txtSubTitle.text = "Dynamic Notes"
+                binding.commonToolbar.txtSubTitle.text = "Order Notes"
                 val notes: Fragment = Notes()
                 loadFragment(notes)
 

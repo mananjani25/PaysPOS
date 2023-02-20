@@ -122,7 +122,7 @@ class CreateItemViewModel @Inject constructor(
             itemData = CreateItemRequestModel().apply {
                 if (isEdit) id = itemId
                 active = true
-                name = value!!.name
+                name = value!!.name.trim().replace("\\s+".toRegex(), " ")
                 priceType = if (itemPriceViewModel != null) {
                     "Fixed"
                 } else {

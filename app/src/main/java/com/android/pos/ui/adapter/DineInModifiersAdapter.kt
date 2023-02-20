@@ -14,6 +14,15 @@ class DineInModifiersAdapter : RecyclerView.Adapter<DineInModifiersAdapter.MyVie
         fun bind(item: Modifier) {
             binding.model = item
             binding.executePendingBindings()
+            if (item.modifier_quantity > 1) {
+                if (item.modifier_quantity>9){
+                    binding.modiferName.text = "${item.modifier_quantity}x ${item.name}"
+                }else{
+                    binding.modiferName.text = "${item.modifier_quantity}x   ${item.name}"
+                }
+            }else{
+                binding.modiferName.text = "       ${item.name}"
+            }
         }
 
     }

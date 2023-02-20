@@ -14,7 +14,7 @@ import kotlinx.parcelize.Parcelize
 import java.util.*
 
 
-@TypeConverters(TypeConvertersTax::class,TypeConvertersIds::class)
+@TypeConverters(TypeConvertersTax::class, TypeConvertersIds::class)
 @Entity(tableName = "TbItem")
 @Parcelize
 class TbItem : Parcelable {
@@ -22,6 +22,7 @@ class TbItem : Parcelable {
     @PrimaryKey
     var itemId: Int = 0
     var name: String = ""
+    var id: Int = 0
     var cost: Double = 0.0
     var price: Double = 0.0
     var priceType: String = ""
@@ -56,6 +57,7 @@ class TbItem : Parcelable {
 
     var customItemCount: Int = 0
     var discountPrice: Double = 0.0
+    var singleItemPrice: Double = 0.0
     var isDiscountDefault = false
     var discountId: Int? = null
     var discountType: String = ""
@@ -72,7 +74,7 @@ class TbItem : Parcelable {
     var reorder: Boolean = false
     var manualSaleId: String = UUID.randomUUID().toString()
     var isDeleted: Boolean = false
-
+    var headerPositionDinein = 0
     fun convertToItem(item: Item, category: Category?): TbItem {
 
         itemId = item.id
@@ -120,6 +122,13 @@ class TbItem : Parcelable {
         }
         val removeItems: ArrayList<TaxData> = arrayListOf()
 
+        var itemListIds: ArrayList<Int> = arrayListOf()
+
+        for (m in 0 until itemList.size) {
+
+            itemListIds.add(itemList[m].id)
+        }
+
         item.taxes?.forEachIndexed { index, it ->
 
             for (i in 0 until itemList.size) {
@@ -132,8 +141,20 @@ class TbItem : Parcelable {
 
                 }
             }
-            if (!itemList.contains(it) && !it.isDeleted && it.isActive) {
+
+
+            if (!itemList.contains(it) && !it.isDeleted && it.isActive && !itemListIds.contains(it.id)) {
                 itemList.add(it)
+            }
+
+            //for update the tax
+            else if (itemListIds.contains(it.id) && !it.isDeleted && it.isActive) {
+
+                for (m in 0 until itemList.size) {
+                    if (itemList.get(m).id == it.id) {
+                        itemList.set(m, it)
+                    }
+                }
             }
         }
         //remove items from list
@@ -162,11 +183,11 @@ class TbItem : Parcelable {
         modeTb.thumbImageUrl = item.thumbImageUrl
         modeTb.categoryId = item.categoryId
         modeTb.categoryName = item.categoryName
-      /*  if (item.itemModifierSetsSort?.isNotEmpty() == true) {
-            modeTb.itemModifierSetsSort = item.itemModifierSetsSort
-        } else {
-            modeTb.itemModifierSetsSort = model.itemModifierSetsSort
-        }*/
+        /*  if (item.itemModifierSetsSort?.isNotEmpty() == true) {
+              modeTb.itemModifierSetsSort = item.itemModifierSetsSort
+          } else {
+              modeTb.itemModifierSetsSort = model.itemModifierSetsSort
+          }*/
         if (item.modifier_set_ids.isEmpty() && model.modifier_set_ids.isEmpty()) {
 
             var listMod: ArrayList<Int> = arrayListOf()
@@ -321,8 +342,6 @@ class TbItem : Parcelable {
             Log.e("GetVaroatommodifierList", "${modifierList.size}")
 
             modeTb.modifiers = modifierList
-
-
 
 
         } else if (item.modifiers.isNotEmpty()) {

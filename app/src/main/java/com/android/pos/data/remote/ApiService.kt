@@ -27,6 +27,7 @@ import com.android.pos.data.remote.Constants.CUSTOMERS_SEARCH
 import com.android.pos.data.remote.Constants.CUSTOMER_RECEIPTS_UPDATE_SETTINGS
 import com.android.pos.data.remote.Constants.CUSTOMER_RECEIPT_SETTINGS
 import com.android.pos.data.remote.Constants.CUSTOMER_UPDATE
+import com.android.pos.data.remote.Constants.DECREASE_ONGOING_ORDER_COUNTER
 import com.android.pos.data.remote.Constants.DELETE_ALL_QUEUE_PRINTER
 import com.android.pos.data.remote.Constants.DELETE_QUEUE_PRINTER
 import com.android.pos.data.remote.Constants.DELETE_UPDATE_PRINTER
@@ -48,6 +49,7 @@ import com.android.pos.data.remote.Constants.GET_PRINTERS
 import com.android.pos.data.remote.Constants.GET_TEAM_MODULE
 import com.android.pos.data.remote.Constants.HIDE_CATEGORY
 import com.android.pos.data.remote.Constants.HIDE_ITEM
+import com.android.pos.data.remote.Constants.INCREASE_ONGOING_ORDER_COUNTER
 import com.android.pos.data.remote.Constants.INVENTORY_COUNTS
 import com.android.pos.data.remote.Constants.ITEMS
 import com.android.pos.data.remote.Constants.ITEM_UPDATE_DELETE
@@ -106,6 +108,7 @@ import com.android.pos.data.remote.Constants.TIPS
 import com.android.pos.data.remote.Constants.TIPS_ACTIVE
 import com.android.pos.data.remote.Constants.TIPS_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.TRANSACTION_LIST
+import com.android.pos.data.remote.Constants.TRASNFER_TABLE
 import com.android.pos.data.remote.Constants.UNMERGE_TABLE
 import com.android.pos.data.remote.Constants.UPDATE_LOCK_SCREEN_PERMISSION
 import com.android.pos.data.remote.Constants.UPDATE_ONLINE_ORDER
@@ -192,6 +195,14 @@ interface ApiService {
         @Path("id") Id: Int,
         @Body model: CreatePrinterRequestModel
     ): DeletePrinterResponseModel
+
+    @PUT(INCREASE_ONGOING_ORDER_COUNTER)
+    suspend fun increaseOnGoingOrderCounter(
+    ): BaseResponse
+
+    @PUT(DECREASE_ONGOING_ORDER_COUNTER)
+    suspend fun decreaseOnGoingOrderCounter(
+    ): BaseResponse
 
 
     @PUT(UPDATE_PRINTER_STATUS)
@@ -790,6 +801,14 @@ interface ApiService {
         @Body orderReq: MergeTableRequest?
     ): MergeTableResponse
 
+    @PUT(TRASNFER_TABLE)
+    suspend fun transferTable(
+        @Query("order_id") orderId: Int,
+        @Query("floor_plan_id") floorId: Int,
+        @Query("floor_plan_table_id") tableId: Int,
+        @Query("old_floor_plan_table_id") oldFloorPlanTableId: Int
+    ): BaseResponse
+
     @DELETE(UNMERGE_TABLE)
     suspend fun unMergeTable(
         @Path("id") Id: Int,
@@ -816,6 +835,9 @@ interface ApiService {
 
     @GET(Constants.FLOOR_PLAN_TABLE_DETAILS)
     suspend fun getFloorPlanTableDetails(): GetFloorPlanDetailResponse
+
+    @GET(Constants.AVAILABLE_TRANSFER_TABLE_LIST)
+    suspend fun getAvailableTransferTableList(@Query("employee_id")employeeId:Int): AvailableTransferTableList
 
 
     @GET(REPORT_SUMMARY)

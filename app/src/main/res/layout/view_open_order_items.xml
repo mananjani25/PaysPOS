@@ -53,11 +53,11 @@
                 android:layout_weight="1"
                 android:gravity="center_vertical"
                 android:paddingEnd="@dimen/_5sdp"
-                android:text="@{@string/cross+``+model.quantity}"
+                android:text="@{``+model.quantity}"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_6mdpi"
                 android:paddingLeft="@dimen/_2sdp"
-                tools:text="X 1" />
+                 />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtPrice"

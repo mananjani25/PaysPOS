@@ -446,7 +446,7 @@
                                     android:layout_marginEnd="@dimen/_5sdp"
                                     android:gravity="end"
                                     android:text="@string/_0_00"
-                                    android:textColor="@color/btnColorDark"
+                                    android:textColor="@color/colorRed"
                                     android:textSize="@dimen/text_size_medium" />
                             </RelativeLayout>
 

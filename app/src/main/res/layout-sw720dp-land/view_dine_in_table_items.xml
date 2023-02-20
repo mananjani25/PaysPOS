@@ -109,7 +109,7 @@
                         android:text="@{``+model.itemQuantity}"
                         android:textColor="@color/dark_btn_Color"
                         android:textSize="@dimen/_6mdpi"
-                        tools:text="x 10" />
+                        />
                 </LinearLayout>
 
                 <View

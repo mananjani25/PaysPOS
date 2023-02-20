@@ -10,59 +10,60 @@
         android:background="@color/bg_color"
         android:orientation="vertical">
 
-        <include layout="@layout/view_header_toolbar"
-            android:id="@+id/header"/>
+        <include
+            android:id="@+id/header"
+            layout="@layout/view_header_toolbar" />
 
-<!--
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+        <!--
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/imgBack"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_gravity="center"
-                android:background="?attr/selectableItemBackground"
-                android:paddingHorizontal="@dimen/_8sdp"
-                android:paddingVertical="@dimen/_6sdp"
-                app:srcCompat="@drawable/ic_arrow_back"
-                app:tint="@color/txtColor" />
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/imgBack"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_gravity="center"
+                        android:background="?attr/selectableItemBackground"
+                        android:paddingHorizontal="@dimen/_8sdp"
+                        android:paddingVertical="@dimen/_6sdp"
+                        app:srcCompat="@drawable/ic_arrow_back"
+                        app:tint="@color/txtColor" />
 
-            <androidx.appcompat.widget.AppCompatTextView
-                style="@style/CustomFontBold"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:padding="@dimen/_5mdpi"
-                android:text="@string/menu"
-                android:textColor="@color/txtColor"
-                android:textSize="@dimen/_6mdpi"
-                android:visibility="visible" />
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/CustomFontBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:padding="@dimen/_5mdpi"
+                        android:text="@string/menu"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_6mdpi"
+                        android:visibility="visible" />
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/txtHome"
-                style="@style/CustomFontBold"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:layout_gravity="center"
-                android:background="@drawable/button_action_hover"
-                android:gravity="center"
-                android:paddingHorizontal="@dimen/padding_home_button"
-                android:paddingVertical="@dimen/_8sdp"
-                android:text="@string/tv_home"
-                android:textAllCaps="true"
-                android:textColor="@color/white"
-                android:textSize="@dimen/_5mdpi"
-                tools:ignore="RelativeOverlap" />
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtHome"
+                        style="@style/CustomFontBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:layout_gravity="center"
+                        android:background="@drawable/button_action_hover"
+                        android:gravity="center"
+                        android:paddingHorizontal="@dimen/padding_home_button"
+                        android:paddingVertical="@dimen/_8sdp"
+                        android:text="@string/tv_home"
+                        android:textAllCaps="true"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_5mdpi"
+                        tools:ignore="RelativeOverlap" />
 
-        </RelativeLayout>
--->
+                </RelativeLayout>
+        -->
 
         <!--<include layout="@layout/divider" />-->
 
@@ -70,8 +71,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center"
-            android:layout_marginStart="@dimen/_65sdp"
-            android:layout_marginEnd="@dimen/_65sdp"
+            android:layout_margin="@dimen/_20sdp"
             android:gravity="center"
             android:orientation="vertical">
 
@@ -80,14 +80,14 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:weightSum="3">
+                android:weightSum="4">
 
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:id="@+id/linearSettings"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/_10sdp"
-                    android:layout_weight="0.9"
+                    android:layout_weight="1"
                     android:background="@drawable/menu_hover"
                     android:gravity="center"
                     android:orientation="horizontal"
@@ -97,7 +97,6 @@
                         android:layout_width="@dimen/_12sdp"
                         android:layout_height="@dimen/_12sdp"
                         android:src="@drawable/ic_settings"
-
                         app:tint="@color/txtColor" />
 
                     <TextView
@@ -116,7 +115,8 @@
                     android:id="@+id/linearHardware"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.9"
+                    android:layout_marginEnd="@dimen/_10sdp"
+                    android:layout_weight="1"
                     android:background="@drawable/border_orange"
                     android:gravity="center"
                     android:orientation="horizontal"
@@ -145,8 +145,8 @@
                     android:id="@+id/linearOrders"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/_10sdp"
-                    android:layout_weight="0.9"
+                    android:layout_marginEnd="@dimen/_10sdp"
+                    android:layout_weight="1"
                     android:background="@drawable/menu_hover"
                     android:gravity="center"
                     android:orientation="horizontal"
@@ -169,6 +169,36 @@
 
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/linearReports"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/_10sdp"
+                    android:layout_weight="1"
+                    android:background="@drawable/menu_hover"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:paddingVertical="@dimen/_10sdp">
+
+                    <ImageView
+                        android:layout_width="@dimen/_14mdpi"
+                        android:layout_height="@dimen/_12sdp"
+                        android:src="@drawable/ic_reports"
+                        app:tint="@color/txtColor" />
+
+                    <TextView
+                        style="@style/CustomFontRegularStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/_5sdp"
+                        android:text="@string/reports"
+                        android:textAllCaps="true"
+                        android:textSize="@dimen/_6mdpi" />
+
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
             </LinearLayout>
 
             <LinearLayout
@@ -177,14 +207,14 @@
                 android:layout_marginTop="@dimen/_10sdp"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:weightSum="3">
+                android:weightSum="4">
 
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:id="@+id/linearTeam"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/_10sdp"
-                    android:layout_weight="0.9"
+                    android:layout_weight="1"
                     android:background="@drawable/menu_hover"
                     android:gravity="center"
                     android:orientation="horizontal"
@@ -212,7 +242,8 @@
                     android:id="@+id/linearInventory"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.9"
+                    android:layout_marginEnd="@dimen/_10sdp"
+                    android:layout_weight="1"
                     android:background="@drawable/menu_hover"
                     android:gravity="center"
                     android:orientation="horizontal"
@@ -241,8 +272,8 @@
                     android:id="@+id/linearTransactions"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/_10sdp"
-                    android:layout_weight="0.9"
+                    android:layout_marginEnd="@dimen/_10sdp"
+                    android:layout_weight="1"
                     android:background="@drawable/menu_hover"
                     android:gravity="center"
                     android:orientation="horizontal"
@@ -265,31 +296,23 @@
 
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_10sdp"
-                android:gravity="center"
-                android:orientation="horizontal"
-                android:weightSum="3">
 
                 <androidx.appcompat.widget.LinearLayoutCompat
-                    android:id="@+id/linearCashLog"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/_10sdp"
-                    android:layout_weight="0.9"
+                    android:layout_weight="1"
                     android:background="@drawable/menu_hover"
                     android:gravity="center"
                     android:orientation="horizontal"
-                    android:paddingVertical="@dimen/_10sdp">
+
+                    android:paddingVertical="@dimen/_10sdp"
+                    android:visibility="invisible">
 
                     <ImageView
                         android:layout_width="@dimen/_14sdp"
                         android:layout_height="@dimen/_12sdp"
-                        android:src="@drawable/ic_payment_history"
+                        android:src="@drawable/ic_logout"
                         app:tint="@color/txtColor" />
 
                     <TextView
@@ -297,18 +320,29 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/_5sdp"
-                        android:text="@string/cash_log"
+                        android:text="@string/logout"
                         android:textAllCaps="true"
                         android:textSize="@dimen/_6mdpi" />
 
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:gravity="start"
+                android:orientation="horizontal"
+                android:weightSum="4">
+
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:id="@+id/linearCustomers"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.9"
+                    android:layout_marginEnd="@dimen/_10sdp"
+                    android:layout_weight="1"
                     android:background="@drawable/menu_hover"
                     android:gravity="center"
                     android:orientation="horizontal"
@@ -334,55 +368,15 @@
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
                 <androidx.appcompat.widget.LinearLayoutCompat
-                    android:id="@+id/linearReports"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/_10sdp"
-                    android:layout_weight="0.9"
-                    android:background="@drawable/menu_hover"
-                    android:gravity="center"
-                    android:orientation="horizontal"
-                    android:paddingVertical="@dimen/_10sdp">
-
-                    <ImageView
-                        android:layout_width="@dimen/_14mdpi"
-                        android:layout_height="@dimen/_12sdp"
-                        android:src="@drawable/ic_reports"
-                        app:tint="@color/txtColor" />
-
-                    <TextView
-                        style="@style/CustomFontRegularStyle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/_5sdp"
-                        android:text="@string/reports"
-                        android:textAllCaps="true"
-                        android:textSize="@dimen/_6mdpi" />
-
-
-                </androidx.appcompat.widget.LinearLayoutCompat>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_10sdp"
-                android:gravity="center"
-                android:orientation="horizontal"
-                android:weightSum="2"
-                android:layout_marginHorizontal="@dimen/_19sdp"
-                >
-
-                <androidx.appcompat.widget.LinearLayoutCompat
                     android:id="@+id/linearSupport"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/_10sdp"
                     android:layout_weight="1"
                     android:background="@drawable/menu_hover"
                     android:gravity="center"
                     android:orientation="horizontal"
-                    android:paddingVertical="@dimen/_10sdp"
-                    android:layout_marginRight="@dimen/_5sdp">
+                    android:paddingVertical="@dimen/_10sdp">
 
                     <ImageView
                         android:layout_width="@dimen/_14sdp"
@@ -403,15 +397,45 @@
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
                 <androidx.appcompat.widget.LinearLayoutCompat
-                    android:id="@+id/linearLogout"
+                    android:id="@+id/linearCashLog"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/_10sdp"
                     android:layout_weight="1"
                     android:background="@drawable/menu_hover"
                     android:gravity="center"
                     android:orientation="horizontal"
-                    android:layout_marginLeft="@dimen/_5sdp"
                     android:paddingVertical="@dimen/_10sdp">
+
+                    <ImageView
+                        android:layout_width="@dimen/_14sdp"
+                        android:layout_height="@dimen/_12sdp"
+                        android:src="@drawable/ic_payment_history"
+                        app:tint="@color/txtColor" />
+
+                    <TextView
+                        style="@style/CustomFontRegularStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/_5sdp"
+                        android:text="@string/cash_log"
+                        android:textAllCaps="true"
+                        android:textSize="@dimen/_6mdpi" />
+
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/_10sdp"
+                    android:layout_weight="1"
+                    android:background="@drawable/menu_hover"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:paddingVertical="@dimen/_10sdp"
+                    android:visibility="invisible">
 
                     <ImageView
                         android:layout_width="@dimen/_14sdp"
@@ -431,6 +455,61 @@
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llClockOut"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_15sdp"
+                android:background="@drawable/button_action_hover"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="@dimen/_5sdp">
+
+                <ImageView
+                    android:layout_width="@dimen/_14sdp"
+                    android:layout_height="@dimen/_12sdp"
+                    android:src="@drawable/ic_clock_out"
+                    app:tint="@color/txtColor" />
+
+                <TextView
+                    style="@style/CustomFontBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:text="@string/tv_clock_out"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_8mdpi" />
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/linearLogout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_15sdp"
+                android:background="@drawable/button_action_hover"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="@dimen/_5sdp">
+
+                <ImageView
+                    android:layout_width="@dimen/_14sdp"
+                    android:layout_height="@dimen/_12sdp"
+                    android:src="@drawable/ic_logout"
+                    app:tint="@color/txtColor" />
+
+                <TextView
+                    style="@style/CustomFontBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:text="@string/logout"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_8mdpi" />
+
 
             </LinearLayout>
 
@@ -439,16 +518,15 @@
                 style="@style/CustomFontBold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
                 android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
                 android:layout_centerInParent="true"
                 android:layout_gravity="center"
-                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_marginTop="@dimen/_5sdp"
                 android:gravity="bottom|center"
-                android:padding="@dimen/_10sdp"
-                tools:text="Version : 2.0(22)"
                 android:textColor="@color/btnColor"
-                android:textSize="@dimen/_8mdpi" />
+                android:textSize="@dimen/_8mdpi"
+                tools:text="Version : 2.0(22)" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 

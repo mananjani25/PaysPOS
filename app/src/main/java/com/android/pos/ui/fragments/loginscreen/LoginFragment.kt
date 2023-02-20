@@ -13,13 +13,14 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.android.pos.BuildConfig
 import com.android.pos.R
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.AUTH_TOKEN
-import com.android.pos.data.remote.Constants.EMAIL
 import com.android.pos.data.remote.Constants.IS_CLOCKOUT
 import com.android.pos.data.remote.Constants.LOGIN_EMAIL
 import com.android.pos.data.remote.Constants.LOGIN_PASSWORD
@@ -30,18 +31,27 @@ import com.android.pos.di.ApiModule.BASE_URL
 import com.android.pos.di.HostSelectionInterceptor
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.activities.MainActivity
+import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.android.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
+import com.android.pos.ui.fragments.dinein.DineInOrderTableViewModel
+import com.android.pos.utils.AdvertisingInfo
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
+import com.android.pos.utils.getCustomerDisplay
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
 @AndroidEntryPoint
 class LoginFragment : Fragment() {
 
+    private lateinit var presentation: CustomDisplay
+    private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
+    private val passcodeViewModel by activityViewModels<PasscodeViewModel>()
 
     private lateinit var binding: FragmentLoginBinding
 
@@ -54,6 +64,7 @@ class LoginFragment : Fragment() {
     @set:Inject
     internal var prefProvider: PrefProvider? = null
 
+    private val dineInViewModel by viewModels<DineInOrderTableViewModel>()
     @set:Inject
     var hostSelectionInterceptor: HostSelectionInterceptor? = null
 
@@ -63,6 +74,7 @@ class LoginFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
+//       determineAdvertisingInfo()
 
         if (prefProvider?.getValue(AUTH_TOKEN, "").toString().isNotEmpty()) {
             if (!prefProvider?.getValueboolean(IS_CLOCKOUT, false)!!) {
@@ -86,6 +98,18 @@ class LoginFragment : Fragment() {
 
         binding.lifecycleOwner = this
         binding.loginViewModel = viewModel
+
+        getCustomerDisplay(requireContext())?.let { display ->
+            presentation = CustomDisplay(
+                display,
+                requireContext(),
+                viewLifecycleOwner,
+                dashboardViewModel,
+                passcodeViewModel,
+                dineInViewModel
+
+            )
+        }
 
         versionDisplay()
         setupSnackbar()
@@ -142,6 +166,14 @@ class LoginFragment : Fragment() {
 
         });
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if(this::presentation.isInitialized){
+            presentation.show()
+            presentation.onLogOutOrClockOut()
+        }
     }
 
     private fun versionDisplay() {
@@ -246,4 +278,14 @@ class LoginFragment : Fragment() {
     }
 
 
+    private fun determineAdvertisingInfo() {
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            prefProvider?.setUniqueId(AdvertisingInfo(requireContext()).getAdvertisingId().toString())
+            binding.terminalId.text = AdvertisingInfo(requireContext()).getAdvertisingId().toString()
+            Log.e("onSuccess", AdvertisingInfo(requireContext()).getAdvertisingId().toString())
+
+        }
+
+    }
 }

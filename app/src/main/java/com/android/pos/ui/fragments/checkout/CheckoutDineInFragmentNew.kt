@@ -23,6 +23,7 @@ import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.CheckOutDineInDataModel
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.GuestPaymentAttributes
+import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN_ADAPTER_LIST
 import com.android.pos.data.remote.Constants.DINE_IN_GUEST_PAYMENT_DATA
@@ -33,7 +34,9 @@ import com.android.pos.di.ApiModule1
 import com.android.pos.di.MagtekModule
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.android.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
 import com.android.pos.ui.fragments.dinein.DineInOrderTableViewModel
+import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.ui.fragments.magtek.MagtekRequestUtils
 import com.android.pos.ui.fragments.magtek.PaymentResponse
 import com.android.pos.ui.fragments.magtekPro.MTParser
@@ -60,12 +63,16 @@ import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
 class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : Fragment(),
     magtekCallback,
     DeleteOptionCallback, IDeviceListCallback {
+
+    private lateinit var presentation: CustomDisplay
+    private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
+    private val passcodeViewModel by activityViewModels<PasscodeViewModel>()
+    private val dineInViewModel by viewModels<DineInOrderTableViewModel>()
     private var cardCVV: String = ""
     private var cardExpDate: String = ""
     private var cardNumber: String = ""
@@ -172,11 +179,38 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
         }
 
-
-
-
+        getCustomerDisplay(requireContext())?.let { display ->
+            presentation = CustomDisplay(
+                display,
+                requireContext(),
+                viewLifecycleOwner,
+                dashboardViewModel,
+                passcodeViewModel,
+                dineInViewModel
+            )
+        }
 
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (this::presentation.isInitialized) {
+            presentation.show()
+            presentation.onDisplayChanged()
+            presentation.showSurcharge(true)
+        }
+    }
+
+    @Inject
+    lateinit var apiService: ApiService
+
+    override fun onPause() {
+        super.onPause()
+        if (this::presentation.isInitialized) {
+            presentation.show()
+            presentation.onLogOutOrClockOutWithApiService(apiService)
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -1216,7 +1250,10 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         if (prefProvider.getValue(Constants.WHOLE_AMOUNT, "").isEmpty() || prefProvider.getValue(
                 Constants.WHOLE_AMOUNT,
                 ""
-            ) == "0.0"
+            ) == "0.0" || prefProvider.getValue(
+                Constants.WHOLE_AMOUNT,
+                ""
+            ) == "0.00"
         ) {
             LogUtil.logE(TAG, "totalPrice  ${viewModel.totalPrice}")
 
@@ -1330,7 +1367,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         Log.e("ORDER_TYPE", prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT))
         paymentviewModel.setServiceChargeListApplied(serviceChargeAppliedList)
         viewModel.ordertypelist.forEach {
-            if (prefProvider.getValue(Constants.ORDER_TYPE, Constants.DINE_IN) == it.orderType) {
+            if (prefProvider.getValue(Constants.ORDER_TYPE_NAME, Constants.DINE_IN) == it.name) {
                 paymentviewModel.setOrderTypeId(it.id)
             }
         }
@@ -1411,6 +1448,10 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 )
             )
         } else {
+            if(this::presentation.isInitialized){
+                presentation.show()
+                presentation.showTipsAdded(tipAmount,WholetotalPrice)
+            }
             MethodUtils.setPriceTextView(
                 binding.tvCash,
                 (getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectedCount) + tipAmount
@@ -1677,15 +1718,6 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             }
             paymentAttributesRequest(myRequest)
         }
-    }
-
-    override fun onPause() {
-        super.onPause()
-        //removeCustomer()
-        /*
-        dineInPaymentViewModel.deleteCart()
-        prefProvider.setValue(Constants.ORDER_TYPE, Constants.TAKEOUT)
-        */
     }
 
     fun removeCustomer() {

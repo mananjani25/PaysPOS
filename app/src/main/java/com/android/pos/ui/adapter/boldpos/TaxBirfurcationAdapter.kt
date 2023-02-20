@@ -1,7 +1,7 @@
 package com.android.pos.ui.adapter.boldpos
 
-import android.R.attr.data
 import android.annotation.SuppressLint
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -9,7 +9,7 @@ import com.android.pos.data.entities.TaxData
 import com.android.pos.databinding.LayoutTaxBifurcationBinding
 import com.android.pos.databinding.LayoutTaxDashBifurcatioinBinding
 import com.android.pos.utils.MethodUtils
-import java.util.Date.from
+import com.google.gson.Gson
 
 
 class TaxBirfurcationAdapter(var isFrom: String) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -48,7 +48,8 @@ class TaxBirfurcationAdapter(var isFrom: String) : RecyclerView.Adapter<Recycler
                 }
             }
 
-            MethodUtils.setPriceTextView(binding.txtAmount, item.totalTaxTypePrice ?: 0.0)
+            Log.e("totalTaxTypePriceManan","totalTaxTypePrice:  ${item.totalTaxTypePrice}")
+            MethodUtils.setPriceTextViewDown(binding.txtAmount, item.totalTaxTypePrice ?: 0.0)
         }
 
         companion object {
@@ -64,6 +65,8 @@ class TaxBirfurcationAdapter(var isFrom: String) : RecyclerView.Adapter<Recycler
         RecyclerView.ViewHolder(binding.root) {
         @SuppressLint("SetTextI18n")
         fun bind(item: TaxData, pos: Int) {
+
+            Log.e("checkTaxDataAdapter","checkTaxData ${Gson().toJson(item)}")
             val items: List<String> = item.name!!.split(" ")
             var stringBuffer: StringBuffer = StringBuffer()
             items.forEach {
@@ -92,8 +95,8 @@ class TaxBirfurcationAdapter(var isFrom: String) : RecyclerView.Adapter<Recycler
                     binding.txtValue.text = String.format("%.2f", 0.0) + "%"
                 }
             }
-
-            MethodUtils.setPriceTextView(binding.txtAmount, item.totalTaxTypePrice ?: 0.0)
+            Log.e("TaxBiferguationMan","totalTaxTypePrice:  ${item.totalTaxTypePrice}")
+            MethodUtils.setPriceTextViewDown(binding.txtAmount, item.totalTaxTypePrice ?: 0.0)
         }
 
         companion object {

@@ -32,6 +32,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginRight="@dimen/_3sdp"
                 android:layout_weight="0.5"
+                android:visibility="invisible"
                 android:gravity="end"
                 android:textColor="@color/color88"
                 android:textSize="@dimen/_6mdpi" />

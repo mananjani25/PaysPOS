@@ -16,7 +16,7 @@ class AmountTextWatcher(private val editText: AppCompatEditText, private val isM
     val TAG = "AmountTextWatcher"
     override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
         editText.setInputType(InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL)
-        if (s.toString() != current && s.length<12) {
+        if (s.toString() != current && s.length<9) {
             editText.removeTextChangedListener(this)
 
 

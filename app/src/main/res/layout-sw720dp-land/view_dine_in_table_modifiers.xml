@@ -48,13 +48,13 @@
                     android:orientation="vertical">
 
                     <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/modifer_name"
                         style="@style/CustomFontRegularStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="start"
                         android:gravity="start"
                         android:paddingStart="@dimen/_14sdp"
-                        android:text="@{model.name}"
                         android:textColor="@color/txtColor"
                         android:textSize="@dimen/_5mdpi"
                         tools:text="Item" />
@@ -83,6 +83,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="start"
                         android:gravity="start"
+                        android:visibility="invisible"
                         android:text="@{``+model.itemQuantity}"
                         android:textColor="@color/btnColorDark"
                         android:textSize="@dimen/_5mdpi"
@@ -139,11 +140,11 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="end"
                         android:gravity="start"
+                        android:paddingRight="@dimen/_20sdp"
                         android:text="@{@string/symbole +``+String.format(@string/format,(model.price * model.itemQuantity))}"
                         android:textColor="@color/txtColor"
                         android:textSize="@dimen/_5mdpi"
-                        tools:text="$20.00"
-                        android:paddingRight="@dimen/_20sdp"/>
+                        tools:text="$20.00" />
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
 

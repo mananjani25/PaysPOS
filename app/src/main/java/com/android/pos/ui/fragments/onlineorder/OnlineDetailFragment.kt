@@ -505,6 +505,8 @@ class OnlineDetailFragment(
                     var temp_calender = Calendar.getInstance()
                     temp_calender.add(Calendar.DATE, 7)
                     datePickerDialog.datePicker.maxDate = temp_calender.timeInMillis
+                } else {
+                    datePickerDialog.datePicker.maxDate = Date().time
                 }
 
 
@@ -532,6 +534,8 @@ class OnlineDetailFragment(
                 )
                 if (param1 == "4") {
                     datePickerDialog.datePicker.minDate =myCalendar1.timeInMillis
+                } else {
+                    datePickerDialog.datePicker.maxDate = Date().time
                 }
                 datePickerDialog.show()
             }
@@ -555,9 +559,11 @@ class OnlineDetailFragment(
 
     private fun searchFilter() {
 
-        binding.autoSearch?.addTextChangedListener(object : TextWatcher {
+        binding.autoSearch.addTextChangedListener(object : TextWatcher {
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-
+                if (s.toString() == " ") {
+                    binding.autoSearch.setText("")
+                }
             }
 
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
@@ -1723,7 +1729,7 @@ class OnlineDetailFragment(
 
             }
 
-            PrintSunmiUtils.cutPaper()
+            PrintSunmiUtils.cutPaperInner()
         } catch (e: Exception) {
             // printerDialog.dismiss()
             e.printStackTrace()

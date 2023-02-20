@@ -1,7 +1,6 @@
 package com.android.pos.ui.fragments.settings.hardware
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -63,11 +62,16 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
         arrayAdapter =
             ArrayAdapter(binding.root.context, android.R.layout.simple_spinner_item, list)
         arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        makeEditAableFalse()
         observeShowProgress()
         updateDate()
         getOrderTypes()
         setUpHeader()
         return binding.root
+    }
+
+    private fun makeEditAableFalse() {
+        binding.txtPrinterName.isEnabled = false
     }
 
     private fun setUpHeader() {
@@ -351,7 +355,7 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
                 model.terminalIds = listOf(prefProvider.getValueInt(TERMINAL_ID, 0))
                 model.name = binding.txtPrinterName.text.toString()
                 model.categoryIds = listIds
-                model.terminalId = prefProvider.getValueInt(TERMINAL_ID,0)
+                model.terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
 
                 viewModel.updatePrinter(
                     printerModel?.id!!, model
@@ -369,7 +373,7 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
                 model.terminalIds = listOf(prefProvider.getValueInt(TERMINAL_ID, 0))
                 model.name = binding.txtPrinterName.text.toString()
                 model.categoryIds = listIds
-                model.terminalId = prefProvider.getValueInt(TERMINAL_ID,0)
+                model.terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
 
                 viewModel.updatePrinter(
                     printerModel?.id!!, model

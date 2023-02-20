@@ -114,5 +114,9 @@ class CashLogAdapter(val context: Context?, val prefProvider: PrefProvider) :
         notifyDataSetChanged()
     }
 
+    fun clear(){
+        orderList.clear()
+    }
+
 
 }

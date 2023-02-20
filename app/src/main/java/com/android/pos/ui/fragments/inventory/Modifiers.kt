@@ -234,6 +234,9 @@ class Modifiers(val clickedPosition: Int) : Fragment(), TextWatcher, ItemCallbac
     }
 
     override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+        if (s.toString() == " ") {
+            binding.edtSearch.setText("")
+        }
     }
 
     override fun afterTextChanged(s: Editable?) {

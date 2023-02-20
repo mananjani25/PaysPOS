@@ -28,6 +28,7 @@ import com.google.i18n.phonenumbers.Phonenumber
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import java.io.File
+import java.text.DecimalFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
@@ -35,8 +36,7 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.regex.Matcher
 import java.util.regex.Pattern
-import kotlin.math.ceil
-import kotlin.math.floor
+import kotlin.math.*
 
 
 class MethodUtils {
@@ -111,6 +111,20 @@ class MethodUtils {
 
         }
 
+        @SuppressLint("SetTextI18n")
+        fun setPriceTextViewDown(appCompatTextView: TextView, price: Double) {
+            appCompatTextView.text = MainApplication.getInstance()!!.getText(R.string.symbole)
+                .toString() + getTwoDecimal(price).toPrecision(2)
+
+        }
+
+        @SuppressLint("SetTextI18n")
+        fun setPriceTextViewUP(appCompatTextView: TextView, price: Double) {
+            appCompatTextView.text = MainApplication.getInstance()!!.getText(R.string.symbole)
+                .toString() + roundOffAmountUp(price)
+
+        }
+
 
         @SuppressLint("SetTextI18n")
         fun setRefundPriceTextView(appCompatTextView: AppCompatTextView, price: Double) {
@@ -123,17 +137,53 @@ class MethodUtils {
 
         }
 
+        /*   fun roundOffAmount(price: Double): String {
+               return MainApplication.getInstance()!!.getText(R.string.symbole)
+                   .toString() + String.format("%.2f", price)
+           }
+   */
         fun roundOffAmount(price: Double): String {
             return MainApplication.getInstance()!!.getText(R.string.symbole)
-                .toString() + String.format("%.2f", price)
+                .toString() + getTwoDecimal(price).toPrecision(2)
         }
+
+        fun roundOffTwoDec(price: Double): String {
+            return MainApplication.getInstance()!!.getText(R.string.symbole)
+                .toString() + getTwoDecimal(price)
+        }
+
+        fun roundOffAmountDown(price: Double): Double {
+            var valueFormat = DecimalFormat("##.##")
+            //  valueFormat.roundingMode = RoundingMode.UNNECESSARY
+            return valueFormat.format(price).toDouble()
+
+
+        }
+
+        fun roundOffAmountUp(price: Double): Double {
+            var valueFormat = DecimalFormat("##.##")
+//            valueFormat.roundingMode = RoundingMode.CEILING
+            return valueFormat.format(price).toDouble()
+
+        }
+
+        /*     fun roundOffAmountDouble(price: Double?): Double {
+                 return String.format("%.2f", price).toDouble()
+             }*/
 
         fun roundOffAmountDouble(price: Double?): Double {
-            return String.format("%.2f", price).toDouble()
+            if (price != null)
+                return getTwoDecimal(price)
+            else
+                return String.format("%.2f", price).toDouble()
         }
 
+        /* fun roundOffAmountString(price: Double): String {
+             return String.format("%.2f", price)
+         }*/
+
         fun roundOffAmountString(price: Double): String {
-            return String.format("%.2f", price)
+            return getTwoDecimal(price).toDouble().toPrecision(2)
         }
 
         fun roundOffAmountStringToDouble(price: String): String {
@@ -222,7 +272,8 @@ class MethodUtils {
             createItemRequestMap["location_id"] =
                 data.locationId.toString().toMultiPartRequestBody()
             createItemRequestMap["name"] = data.name.toString().toMultiPartRequestBody()
-            createItemRequestMap["price"] = data.price.toString().toMultiPartRequestBody()
+            createItemRequestMap["price_without_markup"] =
+                data.price.toString().toMultiPartRequestBody()
             createItemRequestMap["priceType"] = data.priceType.toString().toMultiPartRequestBody()
             createItemRequestMap["product_code"] =
                 data.productCode.toString().toMultiPartRequestBody()
@@ -380,6 +431,10 @@ class MethodUtils {
 
         fun percentageCalculation(price: Double, rate: Double): Double {
             return (price * rate) / 100
+        }
+
+        fun calculatePercentageFromAmount(amount: Double, total: Double): Double {
+            return (amount / total) * 100
         }
 
         @SuppressLint("SetTextI18n")
@@ -542,6 +597,42 @@ class MethodUtils {
             return current.format(formatter)
 
         }
+
+        fun getTwoDecimal(value: Double): Double {
+
+            try {
+                var tmp = value.toString()
+                var tmpIndex = tmp.indexOf(".", 0, true)
+                if (tmp.length > tmpIndex + 3) {
+
+
+                    return String.format("%.2f", value).toDouble()
+
+                } else {
+
+                    return String.format("%.2f", value).toDouble()
+
+                }
+            } catch (e: java.lang.Exception) {
+                Log.e("CheckDecCrash", "checkData ${e.message}")
+                return value
+            }
+
+
+        }
+
+        fun Double.toPrecision(precision: Int) =
+            if (precision < 1) {
+                "${this.roundToInt()}"
+            } else {
+                val p = 10.0.pow(precision)
+                val v = (abs(this) * p).roundToInt()
+                val i = floor(v / p)
+                var f = "${floor(v - (i * p)).toInt()}"
+                while (f.length < precision) f = "0$f"
+                val s = if (this < 0) "-" else ""
+                "$s${i.toInt()}.$f"
+            }
     }
 
 

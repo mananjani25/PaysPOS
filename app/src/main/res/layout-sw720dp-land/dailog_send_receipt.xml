@@ -70,7 +70,7 @@
                     android:id="@+id/edtEmail"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/_20sdp"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:hint="@string/email_receipt"
                     android:imeOptions="actionDone"

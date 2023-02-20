@@ -57,7 +57,8 @@
                     android:layout_height="wrap_content"
                     android:background="@drawable/background_square_border_grey"
                     android:hint="@string/note_title_"
-                    android:digits="@string/disable_emoji_string"
+                    android:digits="@string/character_digits_String"
+                    android:maxLength="60"
                     android:imeOptions="actionDone"
 
                     android:padding="@dimen/_9sdp"

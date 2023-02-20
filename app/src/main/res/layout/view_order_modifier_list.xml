@@ -33,6 +33,7 @@
                 android:layout_marginRight="@dimen/_3sdp"
                 android:layout_weight="0.5"
                 android:gravity="end"
+                android:visibility="invisible"
                 android:textColor="@color/color88"
                 android:textSize="@dimen/_6mdpi" />
 

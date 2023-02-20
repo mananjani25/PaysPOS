@@ -57,6 +57,7 @@ object Constants {
     const val PASSCODE = "passcode"
     const val CAT_ID_SELECTED = "cate_id_selected"
     const val LOCATION_ID = "locationId"
+    const val LOCATION_NAME = "location_name"
     const val EMAIL = "email"
     const val LOGIN_EMAIL = "login_email"
     const val LOGIN_REMEMBER = "login_remember"
@@ -157,6 +158,9 @@ object Constants {
     const val UPDATE_PRINTER_STATUS = "printers/{id}/update_printer_status"
     const val UPDATE_SERVICECHARGE = "locations/{id}/enable_service_charge"
     const val CREATE_QUEUE_PRINTER = "printer_queues"
+
+    const val INCREASE_ONGOING_ORDER_COUNTER = "locations/increase_ongoing_order_counter"
+    const val DECREASE_ONGOING_ORDER_COUNTER = "locations/decrease_ongoing_order_counter"
 
 
     const val TAXES = "taxes"
@@ -259,6 +263,8 @@ object Constants {
     const val REORDER_CATEGORY = "categories/{id}/reorder"
     const val CATEGORY = "categories"
 
+    const val IS_PAYMENT_SCREEN = "is_payment_screen"
+
     const val WIFI = "Wifi"
     const val BLUETOOTH = "Bluetooth"
     const val KITCHEN = "Kitchen"
@@ -305,9 +311,11 @@ object Constants {
 
     const val GET_FLOOR_PLAN = "floor_plans"
     const val FLOOR_PLAN_TABLE_DETAILS = "floor_plans/floor_plan_table_details"
+    const val AVAILABLE_TRANSFER_TABLE_LIST = "floor_plan_tables/get_available_table_list"
     const val FLOOR_PLAN_STATUS = "floor_plan_tables/{id}/check_employee_table_lock"
     const val MERGE_FLOOR_TABLE = "floor_plan_tables/{id}/merge_floor_plan_tables"
     const val UNMERGE_TABLE = "floor_plan_tables/{id}/unmerge_floor_plan_tables"
+    const val TRASNFER_TABLE = "floor_plans/transfer_table"
 
     const val REPORT_SUMMARY = "reports/report_summary"
     const val REPORT_EOD_SUMMARY = "reports/employee_eod_report"
@@ -608,6 +616,8 @@ object Constants {
     const val ONLINE_ORDER_REFRESH = "online_order_refresh"
     const val SYNC_NOTIFICATION = "sync_notification"
     const val SYNC_SETTING_NOTIFICATION = "sync_setting_notification"
+    const val SYNC_MARKUP = "MarkupSync"
+    const val IS_SYNC_MARKUP = "is_markup_sync"
 
 
     // dinein
@@ -679,5 +689,6 @@ object Constants {
     const val TIP_ADDED_ID = "TipAddedId"
 
     const val OPEN_ORDER_DIRECT_PAY = "open_order_direct_pay"
+    const val DEFAULT_ORDER = "Take Out"
 
 }

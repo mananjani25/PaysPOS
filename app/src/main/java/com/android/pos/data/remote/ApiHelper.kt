@@ -29,8 +29,8 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun forgotPassword(data: HashMap<String, String>) =
         getResult { apiService.forgotPassword(data) }
 
-    suspend fun syncVenueData(terminalId: Int,timeStamp:String) =
-        getResult { apiService.syncVenueData(terminalId,timeStamp) }
+    suspend fun syncVenueData(terminalId: Int, timeStamp: String) =
+        getResult { apiService.syncVenueData(terminalId, timeStamp) }
 
     suspend fun getPrinterData(terminalId: Int) =
         getResult { apiService.getPrinterList(terminalId) }
@@ -60,8 +60,8 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun updateServiceChargeDininEnable(id: Int, enable_service_charge: Boolean) =
         getResult { apiService.updateServiceChargeDineinEnable(id, enable_service_charge) }
 
-    suspend fun syncVenueDetails(terminalId: Int,timeStamp:String) =
-        getResult { apiService.syncVenueDetails(terminalId, true,timeStamp) }
+    suspend fun syncVenueDetails(terminalId: Int, timeStamp: String) =
+        getResult { apiService.syncVenueDetails(terminalId, true, timeStamp) }
 
 
     suspend fun updateTransactionLockScreen(lock_screen_after_each_transaction: Boolean) =
@@ -197,7 +197,7 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
         getResult { apiService.noteActive(tipId, active) }
 
     suspend fun logOut(data: HashMap<String, String>, terminalId: String) = getResult {
-        apiService.userLogOut(data,terminalId)
+        apiService.userLogOut(data, terminalId)
     }
 
     suspend fun createEmployee(data: CreateEmployeeRequestModel) =
@@ -223,6 +223,12 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
 
     suspend fun deleteItem(itemId: Int) =
         getResult { apiService.deleteItem(itemId) }
+
+  suspend fun increaseOnGoingOrderCounter() =
+        getResult { apiService.increaseOnGoingOrderCounter() }
+
+  suspend fun decreaseOnGoingOrderCounter() =
+        getResult { apiService.decreaseOnGoingOrderCounter() }
 
     suspend fun hideItem(itemId: Int, hide_status: String) =
         getResult { apiService.hideItem(itemId, hide_status) }
@@ -312,7 +318,7 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
                 taxIds = taxIds,
                 modifierIds = modifierSetIds,
                 variationAttributes = variationAttributes,
-                modifierSortIds =modifierSetSortIds
+                modifierSortIds = modifierSetSortIds
             )
         }
 
@@ -541,7 +547,7 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
         is_captured: Boolean,
         data: CashInOutModel
     ) =
-        getResult { apiService.orderUpdateTip(orderId, customerId,is_captured,data) }
+        getResult { apiService.orderUpdateTip(orderId, customerId, is_captured, data) }
 
     suspend fun updateKitchenFireStatus(id: Int, isFired: Boolean, items: String) =
         getResult {
@@ -573,6 +579,9 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
             )
         }
 
+    suspend fun transferTable(orderId: Int, floorId: Int, tableId: Int,oldFloorPlanTableId:Int) =
+        getResult { apiService.transferTable(orderId, floorId, tableId,oldFloorPlanTableId) }
+
     suspend fun unMergeTable(id: Int) = getResult { apiService.unMergeTable(id) }
 
     suspend fun orderCancel(id: Int, data: OrderCancelRequest) =
@@ -582,6 +591,9 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
         getResult { apiService.getFloorPlan(locationId) }
 
     suspend fun getFloorPlanTableDetails() = getResult { apiService.getFloorPlanTableDetails() }
+
+    suspend fun getAvailableTransferTableList(empId:Int) =
+        getResult { apiService.getAvailableTransferTableList(empId) }
 
     suspend fun payByGuest(id: Int, payAll: Boolean, model: GuestPaymentRequest) = getResult {
         apiService.payByGuest(id, payAll, model)

@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.android.pos.data.model.DineInOrderDetailAttributes
 import com.android.pos.data.model.MergeTableModel
 import com.android.pos.data.model.requestModel.*
+import com.android.pos.data.model.responseModel.AvailableTransferTableList
 import com.android.pos.data.model.responseModel.CreateNoteResponse
 import com.android.pos.data.model.responseModel.GetFloorPlanDetailResponse
 import com.android.pos.data.model.responseModel.GetFloorPlanResponse
@@ -50,8 +51,15 @@ class DineInViewModel @Inject constructor(
     val _mergeStatus = MutableLiveData<Event<String>>()
     val mergeStatusChange: LiveData<Event<String>> = _mergeStatus
 
+    val _transferTableStatus = MutableLiveData<Event<String>>()
+    val transferTableStatusChange: LiveData<Event<String>> = _transferTableStatus
+
     val _unMergeStatus = MutableLiveData<Event<String>>()
     val unMergeStatusUpdate: LiveData<Event<String>> = _unMergeStatus
+
+    private val _increaseCounter = MutableLiveData<Event<Boolean>>()
+    val increaseCounter: LiveData<Event<Boolean>> = _increaseCounter
+
 
     fun getFloorPlan(): LiveData<Resource<GetFloorPlanResponse>> {
         return posRepository.getFloorPlan(prefProvider.getValueInt(LOCATION_ID, 0))
@@ -61,6 +69,32 @@ class DineInViewModel @Inject constructor(
 
     fun getFloorPlanDetails(): LiveData<Resource<GetFloorPlanDetailResponse>> {
         return posRepository.getFloorPlanTableDetails()
+    }
+
+    fun getAvailableTransferTableList(): LiveData<Resource<AvailableTransferTableList>> {
+        return posRepository.getAvailableTransferTableList()
+    }
+
+    suspend fun increaseOnGoingOrderCounter() {
+
+        _showProgress.value = Event(true)
+
+        val resource = posRepository.increaseOnGoingOrderCounter()
+        when (resource.status) {
+            Status.SUCCESS -> {
+                _showProgress.value = Event(false)
+                _increaseCounter.value = Event(false)
+            }
+            Status.ERROR -> {
+                _snackbarText.value = Event(resource.message)
+                _showProgress.value = Event(false)
+            }
+
+            Status.LOADING -> {
+                _showProgress.value = Event(true)
+            }
+
+        }
     }
 
     fun mergeTable(
@@ -102,6 +136,45 @@ class DineInViewModel @Inject constructor(
             }
 
         }
+    }
+
+    fun transferTable(
+        orderId: Int? = null,
+        floorPlanId: Int? = null,
+        floorPlanTableId: Int? = null,
+        oldFloorPlanTableId: Int? = null
+    ) {
+        _showProgress.value = Event(true)
+        if (orderId != null && floorPlanId != null && floorPlanTableId != null && oldFloorPlanTableId != null)
+            viewModelScope.launch {
+                val resource =
+                    posRepository.transferTable(
+                        orderId,
+                        floorPlanId,
+                        floorPlanTableId,
+                        oldFloorPlanTableId
+                    )
+
+                when (resource.status) {
+                    Status.SUCCESS -> {
+                        _showProgress.value = Event(false)
+                        _transferTableStatus.value = Event(resource.data?.message.toString())
+
+                    }
+                    Status.LOADING -> {
+                        _showProgress.value = Event(true)
+                    }
+                    Status.ERROR -> {
+                        _snackbarText.value = Event(resource.message.toString())
+                        _showProgress.value = Event(false)
+                    }
+
+
+                }
+
+            }
+
+
     }
 
     fun unMergeTable(id: Int) {
@@ -552,8 +625,12 @@ class DineInViewModel @Inject constructor(
             total_tips += list[i].total_tips
             total_service_charges += list[i].total_service_charges
 
-            list.get(i).order_items.forEach {
+            list.get(i).order_items.forEachIndexed { index, it ->
+
+
                 var model = OrderItemsAttribute()
+
+
                 model.timestamp = it.timestamp
                 model.category_id = it.categoryId
                 model.discountAmount = it.discountAmount
@@ -570,6 +647,7 @@ class DineInViewModel @Inject constructor(
                 model.totalPrice = it.totalPrice
                 model.price = it.price
                 model.isFired = it.isFired
+                model.custom_item_id = index
 
 
                 var modifierList: ArrayList<OrderItemModifierAttribute> = arrayListOf()
@@ -578,8 +656,10 @@ class DineInViewModel @Inject constructor(
                     //  orderModifier.id = modifier.id
                     orderModifier.price = modifier.price
                     orderModifier.quantity = modifier.quantity
+                    orderModifier.modifier_quantity = modifier.modifier_quantity ?: 1
                     orderModifier.name = modifier.name
                     orderModifier.totalPrice = modifier.price
+                    modifier.modifier_set_id?.let { orderModifier.modifier_set_id = it }
                     var itemTaxes: ArrayList<OrderModifierTaxesAttribute> = arrayListOf()
                     modifier.orderItemTaxes.forEach { tax ->
                         var modifierTax = OrderModifierTaxesAttribute()
@@ -605,9 +685,10 @@ class DineInViewModel @Inject constructor(
 
                     modifierList.add(orderModifier)
 
-                    model.orderItemModifiersAttributes = modifierList
+
                 }
 
+                model.orderItemModifiersAttributes = modifierList
                 var itemTaxList: ArrayList<OrderItemTaxesAttribute> = arrayListOf()
 
                 it.orderItemTaxes.forEach {
@@ -624,6 +705,7 @@ class DineInViewModel @Inject constructor(
                 }
 
                 model.orderItemTaxesAttributes = itemTaxList
+
 
 
                 orderItemsAttr.add(model)
@@ -771,6 +853,13 @@ class DineInViewModel @Inject constructor(
 
         guestModelWT.guestItemsAttributes = listWholeTbItems
         listGuestAttr.add(0, guestModelWT)
+       /* for (m in 0 until orderItemsAttr.size) {
+            val obj = orderItemsAttr.get(m)
+
+            obj.custom_item_id = m
+
+        }
+*/
 
 
         model.orderItemsAttributes = orderItemsAttr
@@ -1001,7 +1090,7 @@ class DineInViewModel @Inject constructor(
         model.totalServiceCharges = orderDetails.total_service_charges
         model.totalTaxAmount = orderDetails.total_tax_amount
         model.totalTips = orderDetails.total_tips
-        model.customer_id = ""+orderDetails.customer_id
+        model.customer_id = "" + orderDetails.customer_id
         model.discount_id = orderDetails.discount_id
 /*
         model.loyalty_program_id = orderDetails.loyalty_program_id

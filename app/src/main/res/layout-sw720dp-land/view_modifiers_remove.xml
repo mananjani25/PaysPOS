@@ -39,17 +39,20 @@
                 app:srcCompat="@drawable/ic_remove_circle" />
 
             <androidx.appcompat.widget.AppCompatEditText
+                android:backgroundTint="@color/colorRed"
                 android:id="@+id/edtName"
                 style="@style/CustomFontSemiBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/_5sdp"
-                android:inputType="textVisiblePassword"
+                android:inputType="text"
+                android:digits="@string/character_digits_without_space_String"
                 android:layout_weight="1"
                 android:background="@null"
                 android:gravity="start"
                 android:padding="@dimen/_4sdp"
+                android:maxLength="50"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_5mdpi"
                 tools:text="Modifier one" />
@@ -65,6 +68,7 @@
                 android:gravity="start"
                 android:hint="@string/_0_00"
                 android:inputType="numberDecimal"
+                android:maxLength="8"
                 android:padding="@dimen/_3sdp"
                 android:textColor="@color/txtColor"
                 android:textColorHint="@color/hintColor"

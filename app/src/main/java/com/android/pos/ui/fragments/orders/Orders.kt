@@ -5,17 +5,18 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.model.InventoryItemModel
+import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants.ACTIVE_ORDER
 import com.android.pos.data.remote.Constants.CANCELED_ORDER
 import com.android.pos.data.remote.Constants.COMPLETED_ORDER
@@ -23,8 +24,13 @@ import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.databinding.FragmentInventoryBinding
 import com.android.pos.di.RolePermission
 import com.android.pos.ui.adapter.InventoryAdapter
+import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.android.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
+import com.android.pos.ui.fragments.dinein.DineInOrderTableViewModel
+import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
+import com.android.pos.utils.getCustomerDisplay
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -38,13 +44,17 @@ class Orders : Fragment() {
     private var upcomingOrdersCount: Int? = 0
     val TAG = this.javaClass.name
     private lateinit var binding: FragmentInventoryBinding
-    var startDate:String?=null
-    var endDate:String?=null
+    var startDate: String? = null
+    var endDate: String? = null
+    private val dineInViewModel by viewModels<DineInOrderTableViewModel>()
 
     @Inject
     lateinit var rolePermission: RolePermission
 
     private val viewModel by viewModels<ActiveOrderViewModel>()
+    private lateinit var presentation: CustomDisplay
+    private val passcodeViewModel by activityViewModels<PasscodeViewModel>()
+    private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -54,10 +64,21 @@ class Orders : Fragment() {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_inventory, container, false)
         binding.lifecycleOwner = this
 
+        getCustomerDisplay(requireContext())?.let { display ->
+            presentation = CustomDisplay(
+                display,
+                requireContext(),
+                viewLifecycleOwner,
+                dashboardViewModel,
+                passcodeViewModel,
+                dineInViewModel
+            )
+        }
+
         configureToolbar()
         changePosition(0)
         // setAdapter(0)
-        getOrderCountsObserver("","")
+        getOrderCountsObserver("", "")
         requireContext().registerReceiver(broadcastReceiver, IntentFilter("cancelled"));
         findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<String>(KEY)
             ?.observe(viewLifecycleOwner) { it ->
@@ -71,7 +92,7 @@ class Orders : Fragment() {
                         changePosition(1)
                         setAdapter(1)
                     }
-                    CANCELED_ORDER ->  {
+                    CANCELED_ORDER -> {
                         changePosition(2)
                         setAdapter(2)
                     }
@@ -82,6 +103,16 @@ class Orders : Fragment() {
         return binding.root
     }
 
+    @Inject
+    lateinit var apiService: ApiService
+
+    override fun onResume() {
+        super.onResume()
+        if (this::presentation.isInitialized) {
+            presentation.show()
+            presentation.onLogOutOrClockOutWithApiService(apiService)
+        }
+    }
 
     var broadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -90,7 +121,7 @@ class Orders : Fragment() {
             startDate = intent?.getStringExtra("start_date")
             endDate = intent?.getStringExtra("end_date")
 
-            getOrderCountsObserver(startDate,endDate)
+            getOrderCountsObserver(startDate, endDate)
 
             if (isCount == true) {
 
@@ -158,7 +189,7 @@ class Orders : Fragment() {
                 }
             }
 
-        }catch (e:Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
         }
     }
@@ -188,20 +219,20 @@ class Orders : Fragment() {
         mPos = position
         when (position) {
             0 -> {
-                val activeOrders = ActiveOrderFragment("0",startDate,endDate)
+                val activeOrders = ActiveOrderFragment("0", startDate, endDate)
                 loadFragment(activeOrders)
                 binding.commonToolbar.txtSetItem.visibility = View.GONE
                 binding.commonToolbar.txtSubTitle.text = "Active Orders"
             }
             1 -> {
-                val modifier: Fragment = ActiveOrderFragment("1",startDate,endDate)
+                val modifier: Fragment = ActiveOrderFragment("1", startDate, endDate)
                 loadFragment(modifier)
                 binding.commonToolbar.txtSetItem.visibility = View.GONE
                 binding.commonToolbar.txtSubTitle.text = "Completed"
             }
 
             2 -> {
-                val cancelled = ActiveOrderFragment("2",startDate,endDate)
+                val cancelled = ActiveOrderFragment("2", startDate, endDate)
                 loadFragment(cancelled)
                 binding.commonToolbar.txtSetItem.visibility = View.GONE
                 binding.commonToolbar.txtSubTitle.text = "Cancelled Orders"
@@ -225,23 +256,23 @@ class Orders : Fragment() {
         val list: ArrayList<InventoryItemModel> = arrayListOf()
         when (pos) {
             0 -> {
-                list.add(InventoryItemModel(0, "Active Orders ",activeOrdersCount, true))
+                list.add(InventoryItemModel(0, "Active Orders ", activeOrdersCount, true))
 //                list.add(InventoryItemModel(0, "Upcoming Orders ",upcomingOrdersCount))
-                list.add(InventoryItemModel(0, "Completed ",completedOrdersCount))
-                list.add(InventoryItemModel(0, "Cancelled Orders ",cancelledOrdersCount))
+                list.add(InventoryItemModel(0, "Completed ", completedOrdersCount))
+                list.add(InventoryItemModel(0, "Cancelled Orders ", cancelledOrdersCount))
             }
             1 -> {
-                list.add(InventoryItemModel(0, "Active Orders ",activeOrdersCount))
+                list.add(InventoryItemModel(0, "Active Orders ", activeOrdersCount))
 //                list.add(InventoryItemModel(0, "Upcoming Orders ",upcomingOrdersCount))
-                list.add(InventoryItemModel(0, "Completed ",completedOrdersCount ,true))
-                list.add(InventoryItemModel(0, "Cancelled Orders ",cancelledOrdersCount))
+                list.add(InventoryItemModel(0, "Completed ", completedOrdersCount, true))
+                list.add(InventoryItemModel(0, "Cancelled Orders ", cancelledOrdersCount))
 
             }
             2 -> {
-                list.add(InventoryItemModel(0, "Active Orders ",activeOrdersCount))
+                list.add(InventoryItemModel(0, "Active Orders ", activeOrdersCount))
 //                list.add(InventoryItemModel(0, "Upcoming Orders ",upcomingOrdersCount))
-                list.add(InventoryItemModel(0, "Completed ",completedOrdersCount))
-                list.add(InventoryItemModel(0, "Cancelled Orders ",cancelledOrdersCount, true))
+                list.add(InventoryItemModel(0, "Completed ", completedOrdersCount))
+                list.add(InventoryItemModel(0, "Cancelled Orders ", cancelledOrdersCount, true))
 
             }
         }

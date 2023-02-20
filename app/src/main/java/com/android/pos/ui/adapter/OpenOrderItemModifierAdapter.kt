@@ -5,8 +5,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.model.responseModel.OpenOrderResponse
-import com.android.pos.databinding.ViewOpenOrderItemModifiersBinding
 import com.android.pos.utils.LogUtil
+import com.android.pos.databinding.ViewOpenOrderItemModifiersBinding
 import com.android.pos.utils.MethodUtils
 import com.google.gson.Gson
 
@@ -25,6 +25,15 @@ class OpenOrderItemModifierAdapter :
 
             binding.model = item
             binding.executePendingBindings()
+            if (item.modifier_quantity > 1) {
+                if (item.modifier_quantity>9){
+                    binding.txtItemName.text = "${item.modifier_quantity}x ${item.name}"
+                }else{
+                    binding.txtItemName.text = "${item.modifier_quantity}x   ${item.name}"
+                }
+            }else{
+                binding.txtItemName.text = "       ${item.name}"
+            }
 
         }
 

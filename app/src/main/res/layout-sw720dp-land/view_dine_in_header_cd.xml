@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingDefaultResource">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/dine_in_order_footer_unselected"
+        android:paddingVertical="@dimen/_4sdp">
+
+        <RelativeLayout
+            android:id="@+id/linearHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toTopOf="parent">
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:orientation="horizontal"
+                android:weightSum="5">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="2">
+
+                    <TextView
+                        android:id="@+id/txtTableName"
+                        style="@style/CustomFontBold"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:gravity="start|center_vertical"
+                        android:paddingStart="@dimen/_12sdp"
+                        android:text="Whole Table"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_7mdpi" />
+
+                    <TextView
+                        android:id="@+id/txtGuestTotal"
+                        style="@style/CustomFontBold"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:gravity="end|center_vertical"
+                        android:paddingStart="@dimen/_12sdp"
+                        android:paddingEnd="@dimen/_10sdp"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_5mdpi" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </RelativeLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

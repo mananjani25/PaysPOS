@@ -3,6 +3,8 @@ package com.android.pos.ui.fragments.transactions
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +13,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -23,17 +26,20 @@ import com.android.pos.data.entities.TeamRole
 import com.android.pos.data.model.responseModel.GetTransactionListResponse
 import com.android.pos.data.model.responseModel.MagtekOnlineOrderRefundResponse
 import com.android.pos.data.model.responseModel.VenueDetailsResponse
+import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.databinding.FragmentTransactionBinding
 import com.android.pos.di.ApiModule1
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.TransactionAdapter
+import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.android.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
+import com.android.pos.ui.fragments.dinein.DineInOrderTableViewModel
+import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.ui.fragments.magtek.MagtekRequestUtils
 import com.android.pos.ui.fragments.magtek.PaymentResponse
-import com.android.pos.utils.AlertUtils
-import com.android.pos.utils.LogUtil
-import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.*
 import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.callback.PaginationScrollListener
 import com.android.pos.utils.extensions.liveSnackBar
@@ -59,6 +65,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
     private var singleTransaction: GetTransactionListResponse.Data.Payment? = null
     private var tipAmount: Double = 0.0
     private lateinit var binding: FragmentTransactionBinding
+    private val dineInViewModel by viewModels<DineInOrderTableViewModel>()
     private lateinit var transactionAdapter: TransactionAdapter
     private val viewModel by viewModels<TransactionViewModel>()
     private lateinit var startDate: DatePickerDialog.OnDateSetListener
@@ -95,6 +102,10 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
     private var currentPage = PAGE_START
     private var isLastPage = false
 
+    private lateinit var presentation: CustomDisplay
+    private val passcodeViewModel by activityViewModels<PasscodeViewModel>()
+    private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -109,7 +120,16 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
         binding.lifecycleOwner = this
 
-
+        getCustomerDisplay(requireContext())?.let { display ->
+            presentation = CustomDisplay(
+                display,
+                requireContext(),
+                viewLifecycleOwner,
+                dashboardViewModel,
+                passcodeViewModel,
+                dineInViewModel
+            )
+        }
 
 
         startDatePickerObserver()
@@ -132,7 +152,6 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
         binding.includeView.spTipTypes.onItemSelectedListener = this
         binding.includeView.spTransactionTypes.onItemSelectedListener = this
         setUpTipTypeSpinnerAdapter()
-
 
 
         startTime = TimePickerDialog.OnTimeSetListener { view, hour, minute ->
@@ -169,7 +188,6 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                 ) { _, _ ->
                 }
             }
-
         }
 
         startDate = DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
@@ -314,11 +332,23 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
         return binding.root
     }
 
+    @Inject
+    lateinit var apiService: ApiService
+
+    override fun onResume() {
+        super.onResume()
+        if (this::presentation.isInitialized) {
+            presentation.show()
+            presentation.onLogOutOrClockOutWithApiService(apiService)
+        }
+    }
+
     private fun tipCall(isCard: Boolean) {
         singleTransaction?.let { viewModel.orderUpdateTip(it.id, tipAmount, isCard) }
     }
 
     private fun apiCallTimeSheet() {
+        MethodUtils.hideKeyboard(requireActivity())
         viewModel.apiCallTimeSheet(
             currentPage,
             getTerminalId(binding.includeView.spTerminals.selectedItemPosition).toString(),
@@ -356,6 +386,11 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
         viewModel.setCurrentDate(
             myCalendar
         )
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        searchFilter()
     }
 
     fun timeCalculateForStartEndTime(hour: Int, minute: Int, isStart: String): String {
@@ -420,7 +455,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
         viewModel.startDateSelection.observe(requireActivity()) { event ->
             event.getContentIfNotHandled()?.let {
                 currentPage = 1
-                DatePickerDialog(
+                val dialog = DatePickerDialog(
                     requireActivity(),
                     android.R.style.Theme_Material_Light_Dialog,
                     startDate,
@@ -429,7 +464,9 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                     myCalendar.get(Calendar.MONTH),
                     myCalendar.get(Calendar.DAY_OF_MONTH)
 
-                ).show()
+                )
+                dialog.datePicker.maxDate = Date().time
+                dialog.show()
             }
 
         }
@@ -439,7 +476,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
         viewModel.endDateSelection.observe(requireActivity()) { event ->
             event.getContentIfNotHandled()?.let {
                 currentPage = 1
-                DatePickerDialog(
+                val dialog = DatePickerDialog(
                     requireActivity(),
                     android.R.style.Theme_Material_Light_Dialog,
                     endDate,
@@ -448,7 +485,9 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                     myCalendar1.get(Calendar.MONTH),
                     myCalendar1.get(Calendar.DAY_OF_MONTH)
 
-                ).show()
+                )
+                dialog.datePicker.maxDate = Date().time
+                dialog.show()
             }
         }
     }
@@ -1301,6 +1340,24 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
             override fun onFailure(call: Call<PaymentResponse>, t: Throwable) {
 
                 ProgressUtils.dismissProgressDialog()
+            }
+        })
+    }
+
+    private fun searchFilter() {
+        binding.includeView.autoSearch.addTextChangedListener(object : TextWatcher {
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+                if (s.toString() == " ") {
+                    binding.includeView.autoSearch.setText("")
+                }
+            }
+
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
+            }
+
+            override fun afterTextChanged(s: Editable) {
+                    transactionAdapter.showLoading(false)
+                    transactionAdapter.filter.filter(s.toString().trim())
             }
         })
     }

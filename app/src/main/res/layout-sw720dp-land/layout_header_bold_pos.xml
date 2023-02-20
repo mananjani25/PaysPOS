@@ -39,7 +39,7 @@
                 android:layout_gravity="center"
                 android:background="?attr/selectableItemBackground"
                 android:padding="@dimen/_5sdp"
-                android:text="KEYPAD"
+                android:text="@string/keypad"
                 android:textAllCaps="true"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi" />
@@ -59,14 +59,14 @@
                 android:visibility="gone" />
 -->
             <TextView
-                android:id="@+id/txtTransaction"
+                android:id="@+id/txt_open_order"
                 style="@style/CustomFontRegularStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:background="?attr/selectableItemBackground"
                 android:padding="@dimen/_5sdp"
-                android:text="TRANSACTIONS"
+                android:text="@string/open_orders"
                 android:textAllCaps="true"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi" />
@@ -76,7 +76,7 @@
                 android:id="@+id/linear_onlineorder"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/_5sdp"
+                android:layout_marginStart="@dimen/_5sdp"
                 android:visibility="gone">
 
                 <TextView
@@ -84,11 +84,11 @@
                     style="@style/CustomFontRegularStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="right"
+                    android:layout_gravity="end"
                     android:background="?attr/selectableItemBackground"
-                    android:gravity="right"
+                    android:gravity="end"
                     android:paddingVertical="@dimen/_5sdp"
-                    android:text="ONLINE ORDERS"
+                    android:text="@string/online_orders"
                     android:textAllCaps="true"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi" />
@@ -121,7 +121,7 @@
             <AutoCompleteTextView
                 android:id="@+id/edtSearch"
                 android:layout_width="wrap_content"
-                android:layout_height="@dimen/_18sdp"
+                android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_gravity="center"
                 android:layout_marginEnd="@dimen/_20sdp"
@@ -136,7 +136,7 @@
                 android:ellipsize="end"
                 android:fontFamily="@font/sf_pro_display_regular"
                 android:gravity="start"
-                android:hint="Search by item"
+                android:hint="@string/search_by_item"
                 android:imeOptions="actionDone"
                 android:inputType="textVisiblePassword"
                 android:lines="1"
@@ -147,43 +147,13 @@
                 android:textColorHint="@color/hint_color"
                 android:textSize="@dimen/_7mdpi" />
 
-            <TextView
-                android:id="@+id/txt_open_order"
-                style="@style/CustomFontBold"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginEnd="@dimen/_5sdp"
-                android:background="?attr/selectableItemBackground"
-                android:gravity="center"
-                android:padding="@dimen/_5sdp"
-                android:text="OPEN ORDERS"
-                android:textAllCaps="true"
-                android:textColor="@color/btnColor"
-                android:textSize="@dimen/_6mdpi" />
-
-            <ImageView
-                android:id="@+id/imgSync"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:layout_marginEnd="@dimen/_10sdp"
-                android:layout_toStartOf="@+id/imgSearch"
-                android:background="?attr/selectableItemBackground"
-                android:contentDescription="@string/search"
-                android:padding="@dimen/_5sdp"
-                android:src="@drawable/ic_sync"
-                android:visibility="visible"
-                app:tint="@color/txtColor" />
-
             <ImageView
                 android:id="@+id/imgCashdDrawer"
                 android:layout_width="@dimen/_25sdp"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:layout_marginEnd="@dimen/_10sdp"
+                android:layout_marginEnd="@dimen/_5sdp"
                 android:layout_toStartOf="@+id/imgSync"
                 android:background="?attr/selectableItemBackground"
                 android:contentDescription="@string/search"
@@ -192,8 +162,41 @@
                 android:visibility="gone"
                 app:tint="@color/txtColor" />
 
+            <ImageView
+                android:id="@+id/imgSync"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="@dimen/_5sdp"
+                android:layout_toStartOf="@+id/imgSearch"
+                android:background="?attr/selectableItemBackground"
+                android:contentDescription="@string/search"
+                android:padding="@dimen/_5sdp"
+                android:src="@drawable/ic_sync"
+                android:visibility="visible"
+                app:tint="@color/txtColor" />
+
+            <TextView
+                android:id="@+id/txtTransaction"
+                style="@style/CustomFontBold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginEnd="@dimen/_5sdp"
+                android:background="?attr/selectableItemBackground"
+                android:gravity="center"
+                android:padding="@dimen/_5sdp"
+                android:text="@string/transactions"
+                android:textAllCaps="true"
+                android:textColor="@color/btnColor"
+                android:textSize="@dimen/_6mdpi" />
+
+
+
 
             <LinearLayout
+                android:layout_marginEnd="@dimen/_5sdp"
                 android:id="@+id/linear_switchUser"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/_20sdp"
@@ -210,7 +213,7 @@
                     android:layout_marginEnd="@dimen/_2sdp"
                     android:contentDescription="@string/clock"
                     android:paddingVertical="@dimen/_5sdp"
-                    android:src="@drawable/switch_user"
+                    android:src="@drawable/swipe_user_clock"
                     app:tint="@color/txtColor" />
 
                 <TextView
@@ -224,6 +227,7 @@
             </LinearLayout>
 
             <View
+                android:visibility="gone"
                 android:layout_width="0.5dp"
                 android:layout_height="match_parent"
                 android:layout_marginVertical="@dimen/_5sdp"
@@ -232,6 +236,7 @@
                 android:background="@color/txtColor" />
 
             <ImageView
+                android:visibility="gone"
                 android:id="@+id/ivLock"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"

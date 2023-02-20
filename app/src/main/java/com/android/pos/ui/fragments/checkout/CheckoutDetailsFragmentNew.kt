@@ -9,9 +9,11 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.viewModels
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.CartModel
@@ -19,7 +21,9 @@ import com.android.pos.data.entities.RedeemLoyaltyInfo
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.CreateOrderResponse
+import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.DEFAULT_ORDER
 import com.android.pos.data.remote.Constants.TIP_ADDED
 import com.android.pos.data.remote.Constants.TIP_ADDED_AMOUNT
 import com.android.pos.databinding.FragmentCheckoutDetailsNewBinding
@@ -28,6 +32,7 @@ import com.android.pos.di.MagtekModule
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
+import com.android.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.ui.fragments.magtek.MagtekRequestUtils
 import com.android.pos.ui.fragments.magtek.PaymentResponse
@@ -65,6 +70,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     private var isInsert: Boolean = false
     private var isManualCard: Boolean = false
     private lateinit var binding: FragmentCheckoutDetailsNewBinding
+    private val dineInViewModel by viewModels<DineInOrderTableViewModel>()
     private val TAG = "DashboardCategoryBold"
 
     private var requestCancel: Boolean = false
@@ -137,7 +143,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 requireContext(),
                 viewLifecycleOwner,
                 dashboardViewModel,
-                passcodeViewModel
+                passcodeViewModel,
+                dineInViewModel
+
             )
         }
 
@@ -173,6 +181,17 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             presentation.onDisplayChanged()
             presentation.showSurcharge(true)
             presentation.showWouldYouLikeToAddTipScreen()
+        }
+    }
+
+    @Inject
+    lateinit var apiService: ApiService
+
+    override fun onPause() {
+        super.onPause()
+        if (this::presentation.isInitialized) {
+            presentation.show()
+            presentation.onLogOutOrClockOutWithApiService(apiService)
         }
     }
 
@@ -830,6 +849,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     private fun cashPaymentWithVariation() {
         paymentAmount = String.format("%.2f", WholetotalPrice / isSelectedCount).toDouble()
+        Log.e(
+            "checkPaymentAmount",
+            "checkPrice   ${paymentAmount}"
+        )
         subTotalPrice = String.format("%.2f", subTotalPrice / isSelectedCount).toDouble()
         totalServiceCharge =
             String.format("%.2f", totalServiceCharge / isSelectedCount).toDouble()
@@ -841,6 +864,26 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             paymentAmount -= cashDiscountSurcharge
         }
         makeCashPayment()
+    }
+
+    private fun getTwoDecimal(value: Double): Double {
+        Log.e("csafa", "oewenvalue     ${value}")
+
+        try {
+            var tmp = value.toString()
+            var tmpIndex = tmp.indexOf(".", 0, true)
+
+            if (tmp.length > tmpIndex + 3) {
+                var data = tmp.substring(0, tmpIndex + 3)
+                return String.format("%.2f", data.toDouble()).toDouble()
+            } else {
+                return String.format("%.2f", value).toDouble()
+            }
+        } catch (e: Exception) {
+            return value
+        }
+
+
     }
 
     private fun paymentClick() {
@@ -1136,7 +1179,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         LogUtil.logE("ORDER_TYPE", prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT))
 
         viewModel.ordertypelist.forEach {
-            if (prefProvider.getValue(Constants.ORDER_TYPE, "") == it.orderType) {
+            if (prefProvider.getOrderTypeName(
+                    Constants.ORDER_TYPE_NAME, DEFAULT_ORDER) == it.name) {
                 paymentviewModel.setOrderTypeId(it.id)
             }
         }
@@ -1154,7 +1198,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         setupPaymentScreen(isSelectedCount)
 
 
-        MethodUtils.setPriceTextView(
+        MethodUtils.setPriceTextViewDown(
             binding.tvAmount,
             getCalCashDiscWithAmount(
                 prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble(), true
@@ -1175,7 +1219,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             binding.tvCash2,
             binding.tvCash3
         )
-        MethodUtils.setPriceTextView(
+        MethodUtils.setPriceTextViewDown(
             binding.tvCash,
             getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount
         )
@@ -1184,6 +1228,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount
         )
         binding.tvCash.text = "Cash (" + binding.tvCash.text + ")"
+        Log.e(TAG, "WholetotalPrice:   ${WholetotalPrice}")
         MethodUtils.setPriceTextView(
             binding.tvCard,
             getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectCount
@@ -1210,13 +1255,18 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             )
             binding.tvCash.text = "Cash (" + binding.tvCash.text + ")"
             binding.tvCard.text = "Card (" + binding.tvCard.text + ")"
-            MethodUtils.setPriceTextView(
+            MethodUtils.setPriceTextViewDown(
                 binding.tvAmount,
                 getCalCashDiscWithAmount(
                     prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble(), true
                 )
             )
         } else {
+            if(this::presentation.isInitialized){
+                presentation.show()
+                presentation.showTipsAdded(tipAmount,WholetotalPrice)
+            }
+
             MethodUtils.setPriceTextView(
                 binding.tvCash,
                 (getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectedCount) + tipAmount
@@ -1243,11 +1293,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 binding.tvCash2,
                 binding.tvCash3
             )
-            MethodUtils.setPriceTextView(
+            MethodUtils.setPriceTextViewDown(
                 binding.tvAmount,
                 (getCalCashDiscWithAmount(
                     prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble(), true
-                ) / isSelectedCount) + tipAmount
+                ) / isSelectedCount).toDouble() + tipAmount
             )
             binding.tvAmount.text =
                 binding.tvAmount.text.toString()
@@ -1282,14 +1332,14 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     private fun tipsetupGlobal(tipAmount: Double, isSelectCount: Int) {
         if (tipAmount == 0.0) {
             binding.tvsplittip?.gone()
-            MethodUtils.setPriceTextView(
+            MethodUtils.setPriceTextViewDown(
                 binding.tvAmount,
                 getCalCashDiscWithAmount(
                     prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble(), true
                 ) / isSelectCount
             )
         } else {
-            MethodUtils.setPriceTextView(
+            MethodUtils.setPriceTextViewDown(
                 binding.tvAmount,
                 (getCalCashDiscWithAmount(
                     prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble(), true

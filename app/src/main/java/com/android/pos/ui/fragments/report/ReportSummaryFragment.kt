@@ -283,7 +283,7 @@ class ReportSummaryFragment : Fragment(), AdapterView.OnItemSelectedListener {
         viewModel.startDateSelection.observe(requireActivity()) { event ->
             event.getContentIfNotHandled()?.let {
 
-                DatePickerDialog(
+                val dialog = DatePickerDialog(
                     requireActivity(),
                     android.R.style.Theme_Material_Light_Dialog,
                     startDate,
@@ -291,13 +291,15 @@ class ReportSummaryFragment : Fragment(), AdapterView.OnItemSelectedListener {
                         .get(Calendar.YEAR),
                     myCalendar.get(Calendar.MONTH),
                     myCalendar.get(Calendar.DAY_OF_MONTH)
-                ).show()
+                )
+                dialog.datePicker.maxDate = Date().time
+                dialog.show()
             }
         }
         viewModel.endDateSelection.observe(requireActivity()) { event ->
             event.getContentIfNotHandled()?.let {
 
-                DatePickerDialog(
+                val dialog = DatePickerDialog(
                     requireActivity(),
                     android.R.style.Theme_Material_Light_Dialog,
                     endDate,
@@ -306,7 +308,9 @@ class ReportSummaryFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     myCalendar1.get(Calendar.MONTH),
                     myCalendar1.get(Calendar.DAY_OF_MONTH)
 
-                ).show()
+                )
+                dialog.datePicker.maxDate = Date().time
+                dialog.show()
             }
         }
         viewModel.showProgress.observe(viewLifecycleOwner) { event ->

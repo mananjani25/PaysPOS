@@ -1,6 +1,7 @@
 package com.android.pos.utils
 
 import android.text.Editable
+import android.text.InputType
 import android.text.TextWatcher
 import android.util.Log
 import androidx.appcompat.widget.AppCompatEditText
@@ -13,7 +14,7 @@ class AmountWatcher(private val editText: AppCompatEditText) :
     var current = ""
     val TAG = "AmountTextWatcher"
     override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-        if (s.toString() != current) {
+        if (s.toString() != current && s.length<9) {
             editText.removeTextChangedListener(this)
 
 

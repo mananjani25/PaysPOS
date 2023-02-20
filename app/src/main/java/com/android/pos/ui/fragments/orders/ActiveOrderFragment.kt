@@ -278,7 +278,7 @@ class ActiveOrderFragment(
             )
         )
 
-        adapter = OpenOrderAdapter(requireContext(),prefProvider)
+        adapter = OpenOrderAdapter(requireContext(), prefProvider)
         adapter.setCallback(this)
         binding.rvOpenOrder.adapter = adapter
     }
@@ -396,7 +396,7 @@ class ActiveOrderFragment(
                     prefProvider.saveCustomerData(TbCustomer.customerMapping(order.customer))
                 }
                 prefProvider.setValue(Constants.OPEN_ORDER_ITEMS, Gson().toJson(order.orderItems))
-                prefProvider.setValueboolean(Constants.OPEN_ORDER_UPDATE_FOR_PRINT,true)
+                prefProvider.setValueboolean(Constants.OPEN_ORDER_UPDATE_FOR_PRINT, true)
 
                 dashboardViewModel.addCart(
                     cartModel(order)
@@ -763,6 +763,7 @@ class ActiveOrderFragment(
             val items = TbItem().apply {
                 orderItemId = it.id
                 itemId = it.itemId
+                id = it.custom_item_id
                 name = it.itemName
                 cost = it.price
                 isManualSales = ismanualsale
@@ -826,6 +827,7 @@ class ActiveOrderFragment(
                 price = it.price
                 itemQuantity = it.quantity
                 orderModifierId = it.id
+                modifier_quantity = it.modifier_quantity
 
             }
             modifierList.add(modifier)
@@ -1170,9 +1172,9 @@ class ActiveOrderFragment(
                     Builder.TRUE,
                     Builder.COLOR_1
                 )
-                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE,false)){
+                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
                     builder.addText("OrderID:" + receiptModel.custom_order_id)
-                }else{
+                } else {
                     builder.addText("OrderID:" + receiptModel.id)
                 }
 
@@ -2252,9 +2254,9 @@ class ActiveOrderFragment(
             PrintSunmiUtils.fontSize(customerSettingModel.fonts)
 
             if (customerSettingModel.showOrderIdTop) {
-                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE,false)){
+                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
                     PrintSunmiUtils.orderIdLarge("OrderID:" + receiptModel.custom_order_id)
-                }else{
+                } else {
                     PrintSunmiUtils.orderIdLarge("OrderID:" + receiptModel?.id)
                 }
                 SunmiPrinterApi.getInstance().lineWrap(1)
@@ -2786,9 +2788,9 @@ class ActiveOrderFragment(
 
             SunmiPrintHelper.getInstance().initPrinter()
             if (customerSettingModel.showOrderIdTop) {
-                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE,false)){
+                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
                     PrintSunmiUtils.headerText("OrderID:" + receiptModel?.custom_order_id)
-                }else{
+                } else {
                     PrintSunmiUtils.headerText("OrderID:" + receiptModel?.id)
                 }
                 SunmiPrintHelper.getInstance().lineWrap(1)
@@ -3448,7 +3450,7 @@ class ActiveOrderFragment(
         viewModel.startDateSelection.observe(requireActivity(), { event ->
             event.getContentIfNotHandled()?.let {
                 //currentPage = 1
-                DatePickerDialog(
+                val dialog = DatePickerDialog(
                     requireActivity(),
                     android.R.style.Theme_Material_Light_Dialog,
                     startDate,
@@ -3457,7 +3459,9 @@ class ActiveOrderFragment(
                     myCalendar.get(Calendar.MONTH),
                     myCalendar.get(Calendar.DAY_OF_MONTH)
 
-                ).show()
+                )
+                dialog.datePicker.maxDate = Date().time
+                dialog.show()
             }
 
         })
@@ -3467,7 +3471,7 @@ class ActiveOrderFragment(
         viewModel.endDateSelection.observe(requireActivity()) { event ->
             event.getContentIfNotHandled()?.let {
                 //currentPage = 1
-                DatePickerDialog(
+                val dialog = DatePickerDialog(
                     requireActivity(),
                     android.R.style.Theme_Material_Light_Dialog,
                     endDate,
@@ -3476,7 +3480,9 @@ class ActiveOrderFragment(
                     myCalendar1.get(Calendar.MONTH),
                     myCalendar1.get(Calendar.DAY_OF_MONTH)
 
-                ).show()
+                )
+                dialog.datePicker.maxDate = Date().time
+                dialog.show()
             }
         }
     }
@@ -3485,7 +3491,9 @@ class ActiveOrderFragment(
 
         binding.autoSearch.addTextChangedListener(object : TextWatcher {
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-
+                if (s.toString() == " ") {
+                    binding.autoSearch.setText("")
+                }
             }
 
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
