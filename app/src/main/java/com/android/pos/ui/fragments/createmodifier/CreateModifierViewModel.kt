@@ -19,7 +19,6 @@ import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -56,6 +55,8 @@ class CreateModifierViewModel @Inject constructor(
 
         if (TextUtils.isEmpty(data?.modifierName?.trim())) {
             _snackbarText.value = Event(R.string.modifier_name_validate)
+        } else if (!validateModifierSetsName()) {
+            _snackbarText.value = Event(R.string.modifier_set_name_validate)
         } else {
             _showProgress.value = Event(true)
 
@@ -63,7 +64,7 @@ class CreateModifierViewModel @Inject constructor(
             val modifierSets = CreateModifierRequest().apply {
 
                 val modifierSets = ModifierSet().apply {
-                    name = data?.modifierName!!.trim()
+                    name = data?.modifierName!!.trim().replace("\\s+".toRegex(), " ")
                     locationId = prefProvider.getValueInt(Constants.LOCATION_ID, -1)
                     itemIds = itemIdsViewModel
 
@@ -118,6 +119,24 @@ class CreateModifierViewModel @Inject constructor(
 
         }
 
+    }
+
+    private fun validateModifierSetsName() : Boolean{
+        val similarItemsList = findAllDuplicatesNames(list)
+        return similarItemsList.isEmpty()
+    }
+
+    private fun validateModifierSetsPrice() : Boolean{
+        val similarItemsList = findAllDuplicatesPrices(list)
+        return similarItemsList.isEmpty()
+    }
+
+    private fun findAllDuplicatesNames(modifierList: ArrayList<Modifier>): Set<Modifier> {
+        return modifierList.filter { item -> modifierList.count { (it.name == item.name) } > 1 }.toSet()
+    }
+
+    private fun findAllDuplicatesPrices(modifierList: ArrayList<Modifier>): Set<Modifier> {
+        return modifierList.filter { item -> modifierList.count { (it.price == item.price) } > 1 }.toSet()
     }
 
     fun setModifiers(modifierList: ArrayList<Modifier>) {

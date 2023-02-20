@@ -13,6 +13,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.view.animation.AlphaAnimation
+import android.view.animation.Animation
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.*
@@ -134,13 +136,32 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         if (count != null) {
             if (count > 0) {
                 binding.layoutHeader.txtBadgeCount?.visible()
+                binding.layoutHeader.txtBadgeCount.blink()
                 binding.layoutHeader.txtBadgeCount?.text = count.toString()
             } else {
+                 binding.layoutHeader.txtBadgeCount.clearAnimation()
                 binding.layoutHeader.txtBadgeCount?.gone()
             }
         } else {
+            binding.layoutHeader.txtBadgeCount.clearAnimation()
             binding.layoutHeader.txtBadgeCount?.gone()
         }
+    }
+
+    private fun View.blink(
+        times: Int = Animation.INFINITE,
+        duration: Long = 500L,
+        offset: Long = 20L,
+        minAlpha: Float = 0.45f,
+        maxAlpha: Float = 1.0f,
+        repeatMode: Int = Animation.REVERSE
+    ) {
+        startAnimation(AlphaAnimation(minAlpha, maxAlpha).also {
+            it.duration = duration
+            it.startOffset = offset
+            it.repeatMode = repeatMode
+            it.repeatCount = times
+        })
     }
 
     override fun onCreateView(

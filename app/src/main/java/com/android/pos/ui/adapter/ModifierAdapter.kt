@@ -79,7 +79,7 @@ class ModifierAdapter(private val isEdit: Boolean) :
 
     fun add(modifierSet: Modifier) {
         list.add(modifierSet)
-        notifyDataSetChanged()
+        notifyItemInserted(list.size-1)
     }
 
     fun getItem(pos: Int): Modifier {
