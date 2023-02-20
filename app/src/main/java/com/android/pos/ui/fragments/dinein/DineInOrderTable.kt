@@ -179,6 +179,16 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
         progressDialog()
         optionType = prefProvider.getValue(Constants.OPTION_TYPE, "")
+        getCustomerDisplay(requireContext())?.let { display ->
+            presentation = CustomDisplay(
+                display,
+                requireContext(),
+                viewLifecycleOwner,
+                dashboardViewModel,
+                passcodeViewModel,
+                viewModel
+            )
+        }
         observeShowProgress()
         setupSnackbar()
         getCustomerList()
@@ -193,16 +203,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         observeTipsList()
         observeAddGuest()
 
-        getCustomerDisplay(requireContext())?.let { display ->
-            presentation = CustomDisplay(
-                display,
-                requireContext(),
-                viewLifecycleOwner,
-                dashboardViewModel,
-                passcodeViewModel,
-                viewModel
-            )
-        }
+
 
         navigateDineInOrderNew()
         observeUnMergeTable()
@@ -241,7 +242,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         viewModel.customer().observe(viewLifecycleOwner) {
             if (it.isNotEmpty()) {
                 allCustomerList = it.toCollection(arrayListOf())
-                presentation.setCustomerList(it.toCollection(arrayListOf()))
+                if (this::presentation.isInitialized) {
+                    presentation.setCustomerList(it.toCollection(arrayListOf()))
+                }
             }
         }
     }
