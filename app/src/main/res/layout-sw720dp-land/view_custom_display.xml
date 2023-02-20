@@ -646,7 +646,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#1D1D1F"
-        android:visibility="visible">
+        android:visibility="gone">
 
         <androidx.appcompat.widget.AppCompatImageView
             android:layout_width="190dp"
@@ -744,7 +744,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#1D1D1F"
-        android:visibility="visible">
+        android:paddingHorizontal="@dimen/_50sdp"
+        android:visibility="gone">
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/wouldYouLikeToAddTipLabel"
@@ -761,157 +762,66 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <LinearLayout
+            android:id="@+id/signLinearLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_10sdp"
-            android:gravity="center"
+            android:layout_height="0dp"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="@dimen/_10sdp"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@id/wouldYouLikeToAddTipLabel">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/blockLayoutForNoTip"
-                android:layout_width="@dimen/_50sdp"
-                android:layout_height="@dimen/_30sdp"
-                android:layout_marginEnd="@dimen/_5sdp"
-                android:background="#363636"
-                app:layout_constraintEnd_toStartOf="@id/blockLayoutFor25Tip"
-                app:layout_constraintTop_toBottomOf="@id/wouldYouLikeToAddTipLabel">
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvActiveTipsList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:orientation="horizontal"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/row_item_active_tips_list" />
+
+            <FrameLayout
+                android:id="@+id/signRootLayout"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:visibility="gone"
+                app:layout_constraintTop_toBottomOf="@id/rvActiveTipsList">
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/txtNoTipLabel"
+                    android:id="@+id/yourSignatureLabel"
+                    style="@style/CustomFontBold"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="No Tip"
-                    android:textColor="#ED5950"
-                    android:textSize="@dimen/_7ssp"
-                    android:textStyle="bold"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    android:text="Your Signature"
+                    android:textColor="#30FFFFFF"
+                    android:textSize="@dimen/_12ssp" />
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/blockLayoutFor25Tip"
-                android:layout_width="@dimen/_50sdp"
-                android:layout_height="@dimen/_30sdp"
-                android:layout_marginEnd="@dimen/_5sdp"
-                android:background="#363636"
-                app:layout_constraintEnd_toStartOf="@id/blockLayoutFor20Tip"
-                app:layout_constraintTop_toBottomOf="@id/wouldYouLikeToAddTipLabel">
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/txtTip25Label"
+                <com.github.gcacace.signaturepad.views.SignaturePad
+                    android:id="@+id/signature_pad"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_5sdp"
-                    android:gravity="center"
-                    android:text="25%"
-                    android:textColor="#ED5950"
-                    android:textSize="@dimen/_8ssp"
-                    android:textStyle="bold"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    android:layout_height="match_parent"
+                    android:background="@android:color/transparent"
+                    app:penColor="#80FFFFFF" />
+            </FrameLayout>
 
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/txtTip25Amount"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_2sdp"
-                    android:gravity="center"
-                    android:text="$2.39"
-                    android:textColor="@color/white60"
-                    android:textSize="@dimen/_5ssp"
-                    app:layout_constraintTop_toBottomOf="@id/txtTip25Label" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/blockLayoutFor20Tip"
-                android:layout_width="@dimen/_50sdp"
-                android:layout_height="@dimen/_30sdp"
-                android:layout_marginEnd="@dimen/_5sdp"
-                android:background="#363636">
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/txtTip20Label"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_5sdp"
-                    android:gravity="center"
-                    android:text="20%"
-                    android:textColor="#ED5950"
-                    android:textSize="@dimen/_8ssp"
-                    android:textStyle="bold"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/txtTip20Amount"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_3sdp"
-                    android:gravity="center"
-                    android:text="$2.39"
-                    android:textColor="@color/white60"
-                    android:textSize="@dimen/_5ssp"
-                    app:layout_constraintTop_toBottomOf="@id/txtTip20Label" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/blockLayoutFor15Tip"
-                android:layout_width="@dimen/_50sdp"
-                android:layout_height="@dimen/_30sdp"
-                android:layout_marginEnd="@dimen/_5sdp"
-                android:background="#363636"
-                app:layout_constraintStart_toEndOf="@id/blockLayoutFor20Tip"
-                app:layout_constraintTop_toBottomOf="@id/wouldYouLikeToAddTipLabel">
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/txtTip15Label"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_3sdp"
-                    android:gravity="center"
-                    android:text="15%"
-                    android:textColor="#ED5950"
-                    android:textSize="@dimen/_8ssp"
-                    android:textStyle="bold"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/txtTip15Amount"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_3sdp"
-                    android:gravity="center"
-                    android:text="$2.39"
-                    android:textColor="@color/white60"
-                    android:textSize="@dimen/_5ssp"
-                    app:layout_constraintTop_toBottomOf="@id/txtTip15Label" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/blockLayoutForOther"
-                android:layout_width="@dimen/_50sdp"
-                android:layout_height="@dimen/_30sdp"
-                android:background="#363636"
-                app:layout_constraintStart_toEndOf="@id/blockLayoutFor15Tip"
-                app:layout_constraintTop_toBottomOf="@id/wouldYouLikeToAddTipLabel">
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/txtOtherLabel"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="Other"
-                    android:textColor="#ED5950"
-                    android:textSize="@dimen/_7ssp"
-                    android:textStyle="bold"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvContinue"
+                style="@style/CustomFontBold"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:background="@color/btnColorDark"
+                android:gravity="center"
+                android:padding="@dimen/_5sdp"
+                android:text="Continue"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_7mdpi"
+                android:visibility="gone"
+                app:layout_constraintTop_toBottomOf="@id/signRootLayout" />
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -948,7 +858,7 @@
             android:padding="@dimen/_5sdp"
             app:layout_constraintTop_toBottomOf="@id/wouldYouLikeToAddTipOtherLabel">
 
-            <EditText
+            <androidx.appcompat.widget.AppCompatEditText
                 android:id="@+id/edtAmount"
                 style="@style/CustomFontBold"
                 android:layout_width="match_parent"
@@ -958,7 +868,7 @@
                 android:enabled="false"
                 android:gravity="center"
                 android:maxLength="11"
-                android:text="$25.98"
+                android:text="$0.00"
                 android:textColor="@color/btnColor"
                 android:textSize="@dimen/_8sdp"
                 tools:ignore="MissingConstraints,TouchTargetSizeCheck"

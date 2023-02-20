@@ -5,8 +5,10 @@ import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.Display
+import android.view.Gravity
 import android.view.View
 import android.view.Window
+import androidx.appcompat.widget.AppCompatEditText
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -15,6 +17,7 @@ import com.android.pos.data.entities.*
 import com.android.pos.data.model.DineInModel
 import com.android.pos.data.model.GuestPaymentCalculationModel
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
+import com.android.pos.data.model.responseModel.GetTipReponse
 import com.android.pos.data.model.responseModel.TimeDetailsResponse
 import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants
@@ -22,6 +25,7 @@ import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.databinding.ViewCustomDisplayBinding
 import com.android.pos.di.PrefProvider
+import com.android.pos.ui.adapter.ActiveTipsListAdapter
 import com.android.pos.ui.adapter.DineInAdapter
 import com.android.pos.ui.adapter.DineInTableAdapterCD
 import com.android.pos.ui.adapter.boldpos.CartAdapter
@@ -29,17 +33,17 @@ import com.android.pos.ui.adapter.boldpos.TaxBirfurcationAdapter
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
+import com.android.pos.ui.fragments.settings.tip.TipListViewModel
+import com.android.pos.utils.AmountTextWatcher
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.callback.MyCallback
-import com.android.pos.utils.extensions.gone
-import com.android.pos.utils.extensions.invisible
-import com.android.pos.utils.extensions.isVisible
-import com.android.pos.utils.extensions.visible
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import com.android.pos.utils.extensions.*
 import com.android.pos.utils.statusUtils.Status
+import com.github.gcacace.signaturepad.views.SignaturePad.OnSignedListener
 import com.google.gson.Gson
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class CustomDisplay(
@@ -49,7 +53,8 @@ class CustomDisplay(
     val dashBoardCategoryViewModel: DashBoardCategoryViewModel,
     val passcodeViewModel: PasscodeViewModel,
     val dineInViewModel: DineInOrderTableViewModel
-) : Presentation(context, display), MyCallback, DineInAdapter.DineInCallback {
+) : Presentation(context, display), MyCallback, DineInAdapter.DineInCallback,
+    ActiveTipsListAdapter.DiscountInterface {
 
     private var dineInPaymentDetails: GuestPaymentCalculationModel? = null
     private var isGuestPay: Boolean = false
@@ -74,6 +79,9 @@ class CustomDisplay(
 
     var notPayAnyAmount: Boolean = false
 
+    lateinit var tipsListViewModel: TipListViewModel
+    lateinit var activeTipsListAdapter: ActiveTipsListAdapter
+
     private val TAG = "CustomDisplay"
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -86,20 +94,80 @@ class CustomDisplay(
         getCustomerList()
         observeServiceCharge()
         setupTaxAdapter()
-        binding.apply {
-            blockLayoutForOther.setOnClickListener {
-                showTipKeypad()
-            }
-            blockLayoutForNoTip.setOnClickListener {
-                showMainCart()
-            }
-        }
 
     }
 
-    private fun showMainCart() {
+    private fun setupActiveTipsList(tipListViewModel: TipListViewModel) {
+        activeTipsListAdapter = ActiveTipsListAdapter()
+        binding.apply {
+            rvActiveTipsList.apply {
+                adapter = activeTipsListAdapter
+            }
+        }
+        tipsListViewModel = tipListViewModel
+    }
+
+    private fun observeActiveTipsList(wholeTotalPrice: Double) {
+        tipsListViewModel.getTipActiveList.observe(lifecycleOwner) {
+
+            LogUtil.logE(TAG, "ActiveTipsList ${Gson().toJson(it)}")
+
+            if (it.data?.isNotEmpty() == true) {
+
+                activeTipsListAdapter.clearAll()
+
+                val tipsList = it.data as MutableList
+
+                tipsList.add(
+                    0,
+                    GetTipReponse.Data(
+                        name = "No Tip",
+                        id = 0,
+                        locationId = 0,
+                        rate = 0.0,
+                        sort = 0
+                    )
+                )
+
+                tipsList.add(
+                    GetTipReponse.Data(
+                        name = "Other",
+                        id = 0,
+                        locationId = 0,
+                        rate = 0.0,
+                        sort = 0
+                    )
+                )
+
+
+                tipsList.forEach { data ->
+                    data.isChecked = false
+                }
+                activeTipsListAdapter.setList(tipsList, wholeTotalPrice)
+                activeTipsListAdapter.setListner(this)
+                lifecycleOwner.lifecycleScope.launch {
+                    delay(5000)
+                    binding.rvActiveTipsList.smoothScrollToPosition(tipsList.size - 1)
+                }
+            }
+        }
+    }
+
+    private fun showMainCart(
+        isTipped: Boolean,
+        model: GetTipReponse.Data,
+        wholeTotalPrice: Double
+    ) {
         binding.apply {
             binding.mainCartLayout.visible()
+
+            if (isTipped) {
+                val tippedAmount = MethodUtils.percentageCalculation(
+                    wholeTotalPrice,
+                    model.rate
+                )
+                showTipsAddedVer2(model.rate, tippedAmount)
+            }
 
             addTipKeypadLayout.gone()
             askForTipLayout.gone()
@@ -108,15 +176,127 @@ class CustomDisplay(
         }
     }
 
-    private fun showTipKeypad() {
+    private fun showTipKeypad(wholeTotalPrice: Double) {
         binding.apply {
-            addTipKeypadLayout.visible()
-            askForTipLayout.gone()
 
-            binding.splashLayout.gone()
-            binding.mainCartLayout.gone()
-            binding.thankYouLayout.gone()
+            askForTipLayout.gone()
+            splashLayout.gone()
+            mainCartLayout.gone()
+            thankYouLayout.gone()
+
+            addTipKeypadLayout.visible()
+            binding.edtAmount.addTextChangedListener(AmountTextWatcher(binding.edtAmount, true))
+            setKeyPad()
+
+            edtAmount.setText(MethodUtils.roundOffAmountString(0.00))
+
+            txtContinue.setOnClickListener {
+                mainCartLayout.visible()
+
+                val tippedAmount =
+                    edtAmount.text.toString().replace("$", "").trim().toDouble()
+                val tipRate = MethodUtils.calculatePercentageFromAmount(
+                    tippedAmount,
+                    wholeTotalPrice
+                )
+
+                showTipsAddedVer2(tipRate, tippedAmount)
+
+                addTipKeypadLayout.gone()
+                askForTipLayout.gone()
+                splashLayout.gone()
+                thankYouLayout.gone()
+            }
+
+            lifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
+                delay(1000)
+                incKeypad.tvThree.performClick()
+                delay(1000)
+                incKeypad.tvFive.performClick()
+                delay(1000)
+                incKeypad.tvSix.performClick()
+
+                delay(1000)
+                incKeypad.txtClearLast.performClick()
+
+                delay(1000)
+                incKeypad.txtClearAll.performClick()
+
+                delay(1000)
+                incKeypad.tvEight.performClick()
+                delay(1000)
+                incKeypad.tvZero.performClick()
+                delay(1000)
+                incKeypad.tvFour.performClick()
+
+                delay(2000)
+                txtContinue.performClick()
+            }
+
         }
+    }
+
+    private fun setKeyPad() {
+        binding.incKeypad.tvOne.setOnSingleClickListener {
+            calculateValue("1", false)
+        }
+
+        binding.incKeypad.tvTwo.setOnSingleClickListener {
+            calculateValue("2", false)
+        }
+
+        binding.incKeypad.tvThree.setOnSingleClickListener {
+            calculateValue("3", false)
+        }
+
+        binding.incKeypad.tvFour.setOnSingleClickListener {
+            calculateValue("4", false)
+        }
+
+        binding.incKeypad.tvFive.setOnSingleClickListener {
+            calculateValue("5", false)
+        }
+
+        binding.incKeypad.tvSix.setOnSingleClickListener {
+            calculateValue("6", false)
+        }
+
+        binding.incKeypad.tvSeven.setOnSingleClickListener {
+            calculateValue("7", false)
+        }
+
+        binding.incKeypad.tvEight.setOnSingleClickListener {
+            calculateValue("8", false)
+        }
+
+        binding.incKeypad.tvNine.setOnSingleClickListener {
+            calculateValue("9", false)
+        }
+
+        binding.incKeypad.tvZero.setOnSingleClickListener {
+            calculateValue("0", false)
+        }
+
+        binding.incKeypad.txtClearAll.setOnSingleClickListener {
+            binding.edtAmount.setText("0.00")
+        }
+
+        binding.incKeypad.txtClearLast.setOnSingleClickListener {
+            calculateValue("", true)
+        }
+
+    }
+
+    private fun calculateValue(number: String, delete: Boolean) {
+        if (binding.edtAmount.text?.length!! > 1 && delete) {
+            binding.edtAmount.setText(removeLastCharacter(binding.edtAmount.text.toString()))
+        } else {
+            binding.edtAmount.append(number)
+        }
+    }
+
+    private fun removeLastCharacter(str: String): String {
+        return str.substring(0, str.length - 1)
     }
 
     private fun setupList() {
@@ -146,10 +326,7 @@ class CustomDisplay(
             prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
         ).observe(lifecycleOwner) {
             it?.let {
-
-
                 updateCustomerDisplay(it)
-
             }
         }
     }
@@ -1147,6 +1324,18 @@ class CustomDisplay(
 
     }
 
+    fun showTipsAddedVer2(tipRate: Double, tipAmount: Double) {
+        if (tipAmount == 0.00) {
+            binding.tipLayout.gone()
+        } else {
+            binding.tipLayout.visible()
+            binding.tipPercentLabel.text = "Tip (${String.format("%.0f", tipRate)}%)"
+            binding.txtTipGiven.text = "" + MethodUtils.roundOffAmount(tipAmount)
+
+        }
+
+    }
+
     private fun modifiersIds(orderItemModifiers: List<GetOrderDetailsResponse.Data.OrderItem.OrderItemModifier>): List<Int> {
 
         val selectedIds = java.util.ArrayList<Int>()
@@ -1223,18 +1412,68 @@ class CustomDisplay(
     }
 
 
-    fun showWouldYouLikeToAddTipScreen() {
+    fun showWouldYouLikeToAddTipScreen(
+        tipListViewModel: TipListViewModel,
+        WholetotalPrice: Double
+    ) {
         binding.apply {
             askForTipLayout.visible()
+            setupActiveTipsList(tipListViewModel)
+            observeActiveTipsList(WholetotalPrice)
 
             mainCartLayout.gone()
             splashLayout.gone()
             thankYouLayout.gone()
             addTipKeypadLayout.gone()
 
+            val isSignatureRequired = true
+
+            if (isSignatureRequired) {
+                signRootLayout.visible()
+                tvContinue.visible()
+                signLinearLayout.gravity = Gravity.TOP
+            } else {
+                signRootLayout.gone()
+                tvContinue.gone()
+                signLinearLayout.gravity = Gravity.CENTER_VERTICAL
+            }
+
+            binding.tvContinue.setOnClickListener {
+                //TO-DO
+            }
+
+            signaturePad.setOnSignedListener(object : OnSignedListener {
+                override fun onStartSigning() {
+                    yourSignatureLabel.invisible()
+                }
+
+                override fun onSigned() {
+
+                }
+
+                override fun onClear() {
+                    yourSignatureLabel.visible()
+                }
+
+            })
+
             lifecycleOwner.lifecycleScope.launch {
                 delay(5000)
-                binding.blockLayoutForNoTip.performClick()
+                binding.tvContinue.performClick()
+            }
+        }
+    }
+
+    override fun selectedItem(model: GetTipReponse.Data, pos: Int, wholeTotalPrice: Double) {
+        when (model.name) {
+            "No Tip" -> {
+                showMainCart(false, model, wholeTotalPrice)
+            }
+            "Other" -> {
+                showTipKeypad(wholeTotalPrice)
+            }
+            else -> {
+                showMainCart(true, model, wholeTotalPrice)
             }
         }
     }

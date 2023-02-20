@@ -167,7 +167,7 @@
         android:orientation="horizontal">
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/txtClear"
+            android:id="@+id/txtClearAll"
             style="@style/CustomFontRegularStyle"
             android:layout_width="0dp"
             android:layout_height="@dimen/_20sdp"
@@ -194,7 +194,7 @@
             android:textSize="@dimen/_6mdpi" />
 
         <ImageView
-            android:id="@+id/tvClear"
+            android:id="@+id/txtClearLast"
             style="@style/CustomFontRegularStyle"
             android:layout_width="0dp"
             android:layout_height="@dimen/_20sdp"

@@ -9,7 +9,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.viewModels
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
@@ -40,6 +39,7 @@ import com.android.pos.ui.fragments.magtekPro.MTParser
 import com.android.pos.ui.fragments.magtekPro.SessionManager
 import com.android.pos.ui.fragments.payment.PaymentBoldPosFragment
 import com.android.pos.ui.fragments.payment.PaymentViewModel
+import com.android.pos.ui.fragments.settings.tip.TipListViewModel
 import com.android.pos.utils.*
 import com.android.pos.utils.callback.DeleteOptionCallback
 import com.android.pos.utils.callback.magtekCallback
@@ -174,13 +174,15 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         return binding.root
     }
 
+    private val tipListViewModel by activityViewModels<TipListViewModel>()
+
     override fun onResume() {
         super.onResume()
         if (this::presentation.isInitialized) {
             presentation.show()
             presentation.onDisplayChanged()
             presentation.showSurcharge(true)
-            presentation.showWouldYouLikeToAddTipScreen()
+            presentation.showWouldYouLikeToAddTipScreen(tipListViewModel,WholetotalPrice)
         }
     }
 

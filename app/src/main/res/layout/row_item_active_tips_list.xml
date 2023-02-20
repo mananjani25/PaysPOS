@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rootLayout"
+    android:layout_width="@dimen/_50sdp"
+    android:layout_height="@dimen/_30sdp"
+    android:layout_marginEnd="@dimen/_5sdp"
+    android:background="#363636">
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/txtNoTipLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="No Tip"
+        android:textColor="#ED5950"
+        android:textSize="@dimen/_7ssp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/txtTipTitle"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:gravity="center"
+        android:text="Good"
+        android:textColor="#ED5950"
+        android:textSize="@dimen/_8ssp"
+        android:textStyle="bold" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/txtTipValue"
+        app:layout_constraintTop_toBottomOf="@id/txtTipTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_2sdp"
+        android:gravity="center"
+        android:text="25%"
+        android:textColor="@color/white60"
+        android:textSize="@dimen/_5ssp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
