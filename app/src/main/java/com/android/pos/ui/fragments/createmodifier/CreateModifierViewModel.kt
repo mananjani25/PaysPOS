@@ -126,11 +126,6 @@ class CreateModifierViewModel @Inject constructor(
         return similarItemsList.isEmpty()
     }
 
-    private fun validateModifierSetsPrice() : Boolean{
-        val similarItemsList = findAllDuplicatesPrices(list)
-        return similarItemsList.isEmpty()
-    }
-
     private fun findAllDuplicatesNames(modifierList: ArrayList<Modifier>): Set<Modifier> {
         return modifierList.filter { item -> modifierList.count { (it.name == item.name) } > 1 }.toSet()
     }
