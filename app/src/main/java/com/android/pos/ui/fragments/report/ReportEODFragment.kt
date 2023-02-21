@@ -412,6 +412,10 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
             sendEmail()
         }else if (event.equals("2")){
             generateEODReport()
+        }else{
+            if (event != null) {
+                viewModel.getReportSummary(event)
+            }
         }
 
     }

@@ -12,9 +12,6 @@ import android.util.Log
 import android.view.*
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.*
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -58,6 +55,7 @@ import com.android.pos.utils.*
 import com.android.pos.utils.callback.DineInOrderCallBack
 import com.android.pos.utils.callback.ItemClickListner
 import com.android.pos.utils.callback.ItemListner
+import com.android.pos.utils.extensions.addOnWindowFocusChangeListener
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.visible
@@ -82,7 +80,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     ScannerAppEngine.IScannerAppEngineDevEventsDelegate, ICallback, DineInOrderCallBack {
-
+    private val mHandler = Handler(Looper.myLooper()!!)
     private lateinit var presentation: CustomDisplay
     private var dineInList: List<DineInModel>? = null
     private var woyouService: IWoyouService? = null
@@ -149,11 +147,36 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         super.onCreate(savedInstanceState)
 
 
+        addOnWindowFocusChangeListener {
+            if(it)
+            {
+                mHandler.post(decor_view_settings);
+            }
+        }
         hideNavigation()
 
     }
 
+
+
+    private val decor_view_settings = Runnable {
+
+        hideNavigation()
+    }
+
+
     private fun hideNavigation() {
+
+        if (Build.VERSION.SDK_INT < 19) {
+            val v: View =  requireActivity().getWindow().getDecorView()
+            v.systemUiVisibility = View.GONE
+        } else {
+            //for higher api versions.
+            val decorView: View =  requireActivity().getWindow().getDecorView()
+            val uiOptions =
+                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+            decorView.systemUiVisibility = uiOptions
+        }
         requireActivity().window.setFlags(
             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
@@ -232,7 +255,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
             alert(
                 getString(R.string.app_name),
-                "Are you sure, you want to clockout employee  " + prefProvider.employeeName() + " ?"
+                prefProvider.employeeName() + ", Are you sure, you want to clockout?"
             ) {
                 positiveButton(getString(android.R.string.ok)) {
                     viewModel.clockOut()
@@ -1038,7 +1061,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         viewModel.clockOut.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
 
-                AlertUtils.showCustomAlert(requireContext(),it)
+                AlertUtils.showCustomAlert(requireContext(), it)
                 val bundle = Bundle()
                 bundle.putBoolean("isDashboard", false)
                 bundle.putBoolean("isSwap", false)

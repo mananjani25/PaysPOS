@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.databinding.FragmentReportsBinding
@@ -49,6 +50,16 @@ class Reports : Fragment() {
         loadFragment(frag)
 
         onClick()
+
+        setFragmentResultListener("request_key_eod") { _: String, bundle: Bundle ->
+
+
+            bundle.getString("email")?.let {
+
+                EventBus.getDefault().post(it)
+
+            }
+        }
 
     }
 
