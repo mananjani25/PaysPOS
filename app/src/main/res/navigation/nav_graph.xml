@@ -1478,6 +1478,10 @@
         <action
             android:id="@+id/action_menuFragment_to_reportEODFragment"
             app:destination="@id/reportEODFragment" />
+        <action
+            android:id="@+id/action_menuFragment_to_passcode"
+            app:popUpToInclusive="true"
+            app:destination="@id/passcode" />
     </dialog>
     <fragment
         android:id="@+id/dummyFragment"

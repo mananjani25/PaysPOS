@@ -177,3 +177,6 @@ fun View.isClickable(flag: Boolean) {
     isClickable = flag
     isEnabled = flag
 }
+
+fun Fragment.addOnWindowFocusChangeListener(callback: (hasFocus: Boolean) -> Unit) =
+    view?.viewTreeObserver?.addOnWindowFocusChangeListener(callback)
