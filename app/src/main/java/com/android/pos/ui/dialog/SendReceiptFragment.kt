@@ -130,7 +130,16 @@ class SendReceiptFragment : DialogFragment() {
                         setFragmentResult("request_key_eod", result)
                         findNavController().navigateUp()
                         dismiss()
+
+                        viewModelOrder.submit(
+                            if (type == 1) "Message" else "Email",
+                            binding.edtEmail.text.toString().trim(),
+                            binding.edtPhoneNo.text.toString().trim(),
+                            orderId
+                        )
                     }
+
+
 
                 } else {
 

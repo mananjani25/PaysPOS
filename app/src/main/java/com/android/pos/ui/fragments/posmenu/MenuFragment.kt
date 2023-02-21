@@ -17,6 +17,7 @@ import com.android.pos.di.ApiModule.BASE_URL
 import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.alert
 import dagger.hilt.android.AndroidEntryPoint
@@ -98,6 +99,22 @@ class MenuFragment : DialogFragment() {
             }
         }
 
+        viewModel.clockOut.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let {
+
+                AlertUtils.showCustomAlert(requireContext(), it)
+                val bundle = Bundle()
+                bundle.putBoolean("isDashboard", false)
+                bundle.putBoolean("isSwap", false)
+                if (findNavController().currentDestination?.id == R.id.menuFragment) {
+                    findNavController().navigate(
+                        R.id.action_menuFragment_to_passcode,
+                        bundle
+                    )
+                }
+
+            }
+        }
     }
 
 
@@ -173,7 +190,21 @@ class MenuFragment : DialogFragment() {
         binding.llClockOut.setOnClickListener {
 //            if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
 //                prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
-            findNavController().navigate(R.id.action_menuFragment_to_reportEODFragment)
+
+            alert(
+                getString(R.string.app_name),
+                prefProvider.employeeName() + ", Are you sure, you want to clockout?"
+            ) {
+                positiveButton(getString(android.R.string.ok)) {
+                    viewModel.clockOut()
+
+
+                }
+                negativeButton(R.string.tv_cancel) {
+                    // Do negative stuff here
+                }
+            }
+//            findNavController().navigate(R.id.action_menuFragment_to_reportEODFragment)
 //            }
         }
 
