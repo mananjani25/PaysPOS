@@ -2958,11 +2958,15 @@ class DashBoardCategoryViewModel @Inject constructor(
                     var finalTotal = 0.0
                     finalTotal = (subTotalPrice + totalTax + totalServiceCharge)
 
+                    totalPrice = finalTotal
+
 
 
                     cashDiscountType = prefProvider.getValue(Constants.OPTION_TYPE, "")
                     //loyalty point and price calculation
                     amountToBePaid = finalTotal
+
+                    Log.e("checkAmountTobe","amountToBePaid:  ${amountToBePaid}")
                     if (selectedCustomer == null) {
                         totalPrice = amountToBePaid
                         MethodUtils.setPriceTextView(

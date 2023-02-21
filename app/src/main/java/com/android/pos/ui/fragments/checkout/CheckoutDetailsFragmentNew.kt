@@ -1072,10 +1072,20 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 ""
             ) == "0.0"
         ) {
-            WholetotalPrice = viewModel.totalPrice
+            Log.e("AmtviewModeltotalPrice","totalPrice  ${viewModel.totalPrice}")
+            WholetotalPrice = viewModel.subTotalPrice + viewModel.totalTax + String.format("%.2f",viewModel.totalServiceCharge).toDouble() - viewModel.totalDiscount
+
+            Log.e("checkWhole","WholetotalPrice:  ${WholetotalPrice}")
+            Log.e("checkWhole","subTotalPrice:  ${viewModel.subTotalPrice}")
+            Log.e("checkWhole","totalServiceCharge:  ${viewModel.totalServiceCharge}")
+            Log.e("checkWhole","totalTax:  ${viewModel.totalTax}")
+            Log.e("checkWhole","totalDiscount:  ${viewModel.totalDiscount}")
+            WholetotalPrice = String.format("%.2f",WholetotalPrice).toDouble()
+            Log.e("checkWholePrice","WholetotalPrice:  ${WholetotalPrice}")
+
             prefProvider.setValue(
                 Constants.WHOLE_AMOUNT,
-                String.format("%.2f", viewModel.totalPrice)
+                String.format("%.2f", getTwoDecimal(viewModel.totalPrice))
             )
         } else {
             WholetotalPrice = prefProvider.getValue(Constants.WHOLE_AMOUNT, "").toDouble()
