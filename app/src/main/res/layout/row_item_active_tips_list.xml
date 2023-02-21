@@ -5,6 +5,7 @@
     android:layout_width="@dimen/_50sdp"
     android:layout_height="@dimen/_30sdp"
     android:layout_marginEnd="@dimen/_5sdp"
+    android:layout_marginVertical="@dimen/_3sdp"
     android:background="#363636">
 
     <androidx.appcompat.widget.AppCompatTextView

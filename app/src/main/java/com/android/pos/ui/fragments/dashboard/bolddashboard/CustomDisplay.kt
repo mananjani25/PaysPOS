@@ -4,10 +4,7 @@ import android.app.Presentation
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
-import android.view.Display
-import android.view.Gravity
-import android.view.View
-import android.view.Window
+import android.view.*
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
@@ -30,6 +27,7 @@ import com.android.pos.ui.adapter.DineInAdapter
 import com.android.pos.ui.adapter.DineInTableAdapterCD
 import com.android.pos.ui.adapter.boldpos.CartAdapter
 import com.android.pos.ui.adapter.boldpos.TaxBirfurcationAdapter
+import com.android.pos.ui.fragments.checkout.CheckoutDetailsFragmentNew
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
@@ -38,6 +36,7 @@ import com.android.pos.utils.AmountTextWatcher
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.callback.MyCallback
+import com.android.pos.utils.callback.OnTipAddedListener
 import com.android.pos.utils.extensions.*
 import com.android.pos.utils.statusUtils.Status
 import com.github.gcacace.signaturepad.views.SignaturePad.OnSignedListener
@@ -50,12 +49,15 @@ class CustomDisplay(
     display: Display,
     context: Context,
     val lifecycleOwner: LifecycleOwner,
-    val dashBoardCategoryViewModel: DashBoardCategoryViewModel,
+    private val dashBoardCategoryViewModel: DashBoardCategoryViewModel,
     val passcodeViewModel: PasscodeViewModel,
-    val dineInViewModel: DineInOrderTableViewModel
+    val dineInViewModel: DineInOrderTableViewModel,
+    val onTipAdded: (Double) -> Unit = {}
 ) : Presentation(context, display), MyCallback, DineInAdapter.DineInCallback,
     ActiveTipsListAdapter.DiscountInterface {
 
+    private var tippedAmount: Double = 0.0
+    private var tipRate: Double = 0.0
     private var dineInPaymentDetails: GuestPaymentCalculationModel? = null
     private var isGuestPay: Boolean = false
     private var toFinalAmt: Double = 0.0
@@ -94,7 +96,6 @@ class CustomDisplay(
         getCustomerList()
         observeServiceCharge()
         setupTaxAdapter()
-
     }
 
     private fun setupActiveTipsList(tipListViewModel: TipListViewModel) {
@@ -118,27 +119,33 @@ class CustomDisplay(
 
                 val tipsList = it.data as MutableList
 
-                tipsList.add(
-                    0,
-                    GetTipReponse.Data(
-                        name = "No Tip",
-                        id = 0,
-                        locationId = 0,
-                        rate = 0.0,
-                        sort = 0
-                    )
-                )
+                val noTipExists = tipsList.filter { tdr-> tdr.name == "No Tip" }
+                val otherExists = tipsList.filter { tdr-> tdr.name == "Other" }
 
-                tipsList.add(
-                    GetTipReponse.Data(
-                        name = "Other",
-                        id = 0,
-                        locationId = 0,
-                        rate = 0.0,
-                        sort = 0
+                if(noTipExists.isEmpty()){
+                    tipsList.add(
+                        0,
+                        GetTipReponse.Data(
+                            name = "No Tip",
+                            id = 0,
+                            locationId = 0,
+                            rate = 0.0,
+                            sort = 0
+                        )
                     )
-                )
+                }
 
+                if(otherExists.isEmpty()){
+                    tipsList.add(
+                        GetTipReponse.Data(
+                            name = "Other",
+                            id = 0,
+                            locationId = 0,
+                            rate = 0.0,
+                            sort = 0
+                        )
+                    )
+                }
 
                 tipsList.forEach { data ->
                     data.isChecked = false
@@ -1324,16 +1331,16 @@ class CustomDisplay(
 
     }
 
-    fun showTipsAddedVer2(tipRate: Double, tipAmount: Double) {
+    private fun showTipsAddedVer2(tipRate: Double, tipAmount: Double) {
         if (tipAmount == 0.00) {
             binding.tipLayout.gone()
         } else {
             binding.tipLayout.visible()
             binding.tipPercentLabel.text = "Tip (${String.format("%.0f", tipRate)}%)"
             binding.txtTipGiven.text = "" + MethodUtils.roundOffAmount(tipAmount)
-
         }
-
+        //CALLBACK METHOD CALL
+        onTipAdded(tipAmount)
     }
 
     private fun modifiersIds(orderItemModifiers: List<GetOrderDetailsResponse.Data.OrderItem.OrderItemModifier>): List<Int> {
@@ -1414,12 +1421,12 @@ class CustomDisplay(
 
     fun showWouldYouLikeToAddTipScreen(
         tipListViewModel: TipListViewModel,
-        WholetotalPrice: Double
+        wholeTotalPrice: Double
     ) {
         binding.apply {
             askForTipLayout.visible()
             setupActiveTipsList(tipListViewModel)
-            observeActiveTipsList(WholetotalPrice)
+            observeActiveTipsList(wholeTotalPrice)
 
             mainCartLayout.gone()
             splashLayout.gone()
@@ -1438,8 +1445,26 @@ class CustomDisplay(
                 signLinearLayout.gravity = Gravity.CENTER_VERTICAL
             }
 
-            binding.tvContinue.setOnClickListener {
-                //TO-DO
+            binding.tvContinue.setOnSingleClickListener {
+                mainCartLayout.visible()
+
+//                val tippedAmount = 14.06 //Take this amount from selected item from list of active tips
+//                //MethodUtils.percentageCalculation(
+//                //                        wholeTotalPrice,
+//                //                        model.rate
+//                //                    )
+//                val tipRate = MethodUtils.calculatePercentageFromAmount(
+//                    tippedAmount,
+//                    wholeTotalPrice
+//                )
+                Log.d(TAG, "showWouldYouLikeToAddTipScreen: TIP-RATE = $tipRate")
+                Log.d(TAG, "showWouldYouLikeToAddTipScreen: TIPPED-AMOUNT = $tippedAmount")
+                showTipsAddedVer2(tipRate, tippedAmount)
+
+                addTipKeypadLayout.gone()
+                askForTipLayout.gone()
+                splashLayout.gone()
+                thankYouLayout.gone()
             }
 
             signaturePad.setOnSignedListener(object : OnSignedListener {
@@ -1457,10 +1482,7 @@ class CustomDisplay(
 
             })
 
-            lifecycleOwner.lifecycleScope.launch {
-                delay(5000)
-                binding.tvContinue.performClick()
-            }
+
         }
     }
 
@@ -1473,7 +1495,17 @@ class CustomDisplay(
                 showTipKeypad(wholeTotalPrice)
             }
             else -> {
-                showMainCart(true, model, wholeTotalPrice)
+                tipRate = model.rate
+                tippedAmount = MethodUtils.percentageCalculation(
+                    wholeTotalPrice,
+                    model.rate
+                )
+                Log.d(TAG, "selectedItem: CALLED")
+                lifecycleOwner.lifecycleScope.launch {
+                    delay(3000)
+                    binding.tvContinue.performClick()
+                }
+                //showMainCart(true, model, wholeTotalPrice)
             }
         }
     }

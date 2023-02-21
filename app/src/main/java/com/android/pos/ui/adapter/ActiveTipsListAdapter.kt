@@ -8,6 +8,7 @@ import com.android.pos.data.model.responseModel.GetTipReponse
 import com.android.pos.databinding.RowItemActiveTipsListBinding
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.extensions.gone
+import com.android.pos.utils.extensions.setOnSingleClickListener
 import com.android.pos.utils.extensions.visible
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -64,17 +65,17 @@ class ActiveTipsListAdapter() :
 
             val coroutineScope = CoroutineScope(Dispatchers.Main)
             coroutineScope.launch {
-                delay(3000)
+                delay(5000)
                 binding.rootLayout.performClick()
             }
 
         }
 
         init {
-            binding.rootLayout.setOnClickListener {
-                selectedPosition = discountList.size-1
+            binding.rootLayout.setOnSingleClickListener {
+                selectedPosition = 1
                 notifyDataSetChanged()
-                listner.selectedItem(discountList[discountList.size-1], discountList.size-1,wholeTotalPrice)
+                listner.selectedItem(discountList[1], 1,wholeTotalPrice)
             }
         }
     }
