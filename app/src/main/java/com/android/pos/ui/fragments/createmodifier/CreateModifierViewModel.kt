@@ -135,6 +135,8 @@ class CreateModifierViewModel @Inject constructor(
     }
 
     fun setModifiers(modifierList: ArrayList<Modifier>) {
+        modifierList.forEach {
+             it.name = it.name.trim().replace("\\s+".toRegex(), " ") }
         this.list = modifierList
     }
 
