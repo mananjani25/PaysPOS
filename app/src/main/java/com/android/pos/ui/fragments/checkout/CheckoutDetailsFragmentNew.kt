@@ -9,7 +9,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.viewModels
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
@@ -873,8 +872,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             var tmpIndex = tmp.indexOf(".", 0, true)
 
             if (tmp.length > tmpIndex + 3) {
-                var data = tmp.substring(0, tmpIndex + 3)
-                return String.format("%.2f", data.toDouble()).toDouble()
+                Log.e("getDecimal", "tmpGetDecimal  ${tmp.get(tmpIndex + 3)}")
+                if (tmp.get(tmpIndex + 3).toString().toInt() >= 5) {
+                    return String.format("%.2f", value).toDouble()
+                } else {
+                    var data = tmp.substring(0, tmpIndex + 3)
+                    return String.format("%.2f", data.toDouble()).toDouble()
+                }
             } else {
                 return String.format("%.2f", value).toDouble()
             }
@@ -1068,15 +1072,28 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 ""
             ) == "0.0"
         ) {
-            WholetotalPrice = viewModel.totalPrice
+            Log.e("AmtviewModeltotalPrice","totalPrice  ${viewModel.totalPrice}")
+            viewModel.totalServiceCharge =String.format("%.2f",viewModel.totalServiceCharge).toDouble()
+            WholetotalPrice = viewModel.subTotalPrice + viewModel.totalTax + String.format("%.2f",viewModel.totalServiceCharge).toDouble() - viewModel.totalDiscount
+
+            viewModel.totalPrice = WholetotalPrice
+            Log.e("checkWhole","WholetotalPrice:  ${WholetotalPrice}")
+            Log.e("checkWhole","subTotalPrice:  ${viewModel.subTotalPrice}")
+            Log.e("checkWhole","totalServiceCharge:  ${viewModel.totalServiceCharge}")
+            Log.e("checkWhole","totalTax:  ${viewModel.totalTax}")
+            Log.e("checkWhole","totalDiscount:  ${viewModel.totalDiscount}")
+            WholetotalPrice = String.format("%.2f",WholetotalPrice).toDouble()
+            Log.e("checkWholePrice","WholetotalPrice:  ${WholetotalPrice}")
+
             prefProvider.setValue(
                 Constants.WHOLE_AMOUNT,
-                String.format("%.2f", viewModel.totalPrice)
+                String.format("%.2f", getTwoDecimal(viewModel.totalPrice))
             )
         } else {
             WholetotalPrice = prefProvider.getValue(Constants.WHOLE_AMOUNT, "").toDouble()
         }
 
+        WholetotalPrice = getTwoDecimal(WholetotalPrice)
         if (prefProvider.getValue(Constants.SUB_TOTAL, "").isEmpty() || prefProvider.getValue(
                 Constants.SUB_TOTAL,
                 ""
@@ -1179,7 +1196,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         viewModel.ordertypelist.forEach {
             if (prefProvider.getOrderTypeName(
-                    Constants.ORDER_TYPE_NAME, DEFAULT_ORDER) == it.name) {
+                    Constants.ORDER_TYPE_NAME, DEFAULT_ORDER
+                ) == it.name
+            ) {
                 paymentviewModel.setOrderTypeId(it.id)
             }
         }
@@ -1218,7 +1237,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             binding.tvCash2,
             binding.tvCash3
         )
-        MethodUtils.setPriceTextViewDown(
+        Log.e("checkPaymentPrice", "WholetotalPrice:   ${WholetotalPrice}")
+
+        MethodUtils.setPriceTextView(
             binding.tvCash,
             getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount
         )
@@ -1261,9 +1282,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 )
             )
         } else {
-            if(this::presentation.isInitialized){
+            if (this::presentation.isInitialized) {
                 presentation.show()
-                presentation.showTipsAdded(tipAmount,WholetotalPrice)
+                presentation.showTipsAdded(tipAmount, WholetotalPrice)
             }
 
             MethodUtils.setPriceTextView(
