@@ -4,7 +4,6 @@ import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,6 +22,8 @@ import com.android.pos.databinding.FragmentCustomerReceiptSettingsBinding
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.Event
 import com.android.pos.utils.LogUtil
+import com.android.pos.utils.extensions.gone
+import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -137,6 +138,7 @@ class CustomerReceiptSettings : Fragment() {
             model.showQrCode = binding.customerReciptPart2.swtQrCode.isChecked
             model.showCustomNote = binding.customerReciptPart2.swtCustomNote.isChecked
             model.showTeam = binding.swtEmployee.isChecked
+            model.showCdAndScCustomerReceipt = binding.customerReciptPart2.swtSurCash.isChecked
 
 
             viewModel.updateCustomer(model)
@@ -192,6 +194,16 @@ class CustomerReceiptSettings : Fragment() {
             } else {
                 binding.layoutCustomerReceipt.imgQrCode.visibility = View.GONE
             }
+        }
+
+        binding.customerReciptPart2.swtSurCash.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked){
+                binding.layoutCustomerReceipt.linearCashDisSurCharge?.visibility = View.VISIBLE
+            }
+            else{
+                binding.layoutCustomerReceipt.linearCashDisSurCharge?.visibility = View.GONE
+            }
+
         }
 
         binding.swtEmployee.setOnCheckedChangeListener { buttonView, isChecked ->
@@ -398,8 +410,10 @@ class CustomerReceiptSettings : Fragment() {
                 binding.customerReciptPart2.swtTipSuggestion.isChecked = model.showTipSuggestion
                 binding.customerReciptPart2.swtTipCash.isChecked = model.showTipLineForCash
                 binding.customerReciptPart2.swtQrCode.isChecked = model.showQrCode
+                binding.customerReciptPart2.swtSurCash.isChecked = model.showCashDisSurCharg
                 binding.customerReciptPart2.swtCustomNote.isChecked = model.showCustomNote
                 binding.swtEmployee.isChecked = model.showTeam
+
 
 
                 /*if (model.emp){
@@ -409,6 +423,12 @@ class CustomerReceiptSettings : Fragment() {
                     binding.layoutCustomerReceipt.txtEmployee.visibility = View.GONE
                 }*/
 
+                if (model.showCashDisSurCharg){
+                    binding.layoutCustomerReceipt.linearCashDisSurCharge?.visible()
+                }
+                else{
+                    binding.layoutCustomerReceipt.linearCashDisSurCharge?.gone()
+                }
 
                 if (model.showTipSuggestion) {
                     binding.layoutCustomerReceipt.txtAdditionalTip.visibility = View.VISIBLE

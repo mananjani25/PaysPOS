@@ -63,4 +63,7 @@ data class UpdateCustomerReceiptRequestModel(
     @SerializedName("custom_note")
     val customNote: String = "",
 
+    @SerializedName("show_cd_and_sc_customer_receipt")
+    var showCdAndScCustomerReceipt:Boolean = false
+
     )
