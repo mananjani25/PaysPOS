@@ -872,8 +872,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             var tmpIndex = tmp.indexOf(".", 0, true)
 
             if (tmp.length > tmpIndex + 3) {
-                var data = tmp.substring(0, tmpIndex + 3)
-                return String.format("%.2f", data.toDouble()).toDouble()
+                Log.e("getDecimal", "tmpGetDecimal  ${tmp.get(tmpIndex + 3)}")
+                if (tmp.get(tmpIndex + 3).toString().toInt() >= 5) {
+                    return String.format("%.2f", value).toDouble()
+                } else {
+                    var data = tmp.substring(0, tmpIndex + 3)
+                    return String.format("%.2f", data.toDouble()).toDouble()
+                }
             } else {
                 return String.format("%.2f", value).toDouble()
             }
@@ -1076,7 +1081,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             WholetotalPrice = prefProvider.getValue(Constants.WHOLE_AMOUNT, "").toDouble()
         }
 
-        WholetotalPrice =getTwoDecimal(WholetotalPrice)
+        WholetotalPrice = getTwoDecimal(WholetotalPrice)
         if (prefProvider.getValue(Constants.SUB_TOTAL, "").isEmpty() || prefProvider.getValue(
                 Constants.SUB_TOTAL,
                 ""
@@ -1179,7 +1184,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         viewModel.ordertypelist.forEach {
             if (prefProvider.getOrderTypeName(
-                    Constants.ORDER_TYPE_NAME, DEFAULT_ORDER) == it.name) {
+                    Constants.ORDER_TYPE_NAME, DEFAULT_ORDER
+                ) == it.name
+            ) {
                 paymentviewModel.setOrderTypeId(it.id)
             }
         }
@@ -1218,7 +1225,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             binding.tvCash2,
             binding.tvCash3
         )
-        Log.e("checkPaymentPrice","WholetotalPrice:   ${WholetotalPrice}")
+        Log.e("checkPaymentPrice", "WholetotalPrice:   ${WholetotalPrice}")
 
         MethodUtils.setPriceTextView(
             binding.tvCash,
@@ -1263,9 +1270,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 )
             )
         } else {
-            if(this::presentation.isInitialized){
+            if (this::presentation.isInitialized) {
                 presentation.show()
-                presentation.showTipsAdded(tipAmount,WholetotalPrice)
+                presentation.showTipsAdded(tipAmount, WholetotalPrice)
             }
 
             MethodUtils.setPriceTextView(
