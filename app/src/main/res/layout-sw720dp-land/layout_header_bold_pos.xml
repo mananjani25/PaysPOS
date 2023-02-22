@@ -111,23 +111,25 @@
         </androidx.appcompat.widget.LinearLayoutCompat>
 
         <androidx.appcompat.widget.LinearLayoutCompat
-            android:id="@+id/linearSecond"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_alignParentEnd="true"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_5sdp"
+            android:layout_toStartOf="@id/linearSecond"
+            android:layout_toEndOf="@id/linearFirst"
             android:gravity="center">
-
 
             <AutoCompleteTextView
                 android:id="@+id/edtSearch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:minWidth="@dimen/_100sdp"
                 android:layout_centerVertical="true"
                 android:layout_gravity="center"
                 android:layout_marginEnd="@dimen/_20sdp"
-                android:layout_toStartOf="@+id/linearSecond"
-                android:layout_toEndOf="@+id/linearFirst"
                 android:autoLink="all"
+                android:maxLength="60"
+                android:digits="@string/character_digits_String"
+                android:singleLine="true"
                 android:background="@android:color/transparent"
                 android:backgroundTint="@android:color/transparent"
                 android:drawableStart="@drawable/ic_dashboard_serach"
@@ -147,13 +149,23 @@
                 android:textColorHint="@color/hint_color"
                 android:textSize="@dimen/_7mdpi" />
 
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/linearSecond"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true"
+            android:gravity="center">
+
             <ImageView
                 android:id="@+id/imgCashdDrawer"
                 android:layout_width="@dimen/_25sdp"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:layout_marginEnd="@dimen/_5sdp"
+                android:layout_marginEnd="@dimen/_12sdp"
                 android:layout_toStartOf="@+id/imgSync"
                 android:background="?attr/selectableItemBackground"
                 android:contentDescription="@string/search"
@@ -168,7 +180,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:layout_marginEnd="@dimen/_5sdp"
+                android:layout_marginEnd="@dimen/_12sdp"
                 android:layout_toStartOf="@+id/imgSearch"
                 android:background="?attr/selectableItemBackground"
                 android:contentDescription="@string/search"
@@ -183,7 +195,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginEnd="@dimen/_5sdp"
+                android:layout_marginEnd="@dimen/_12sdp"
                 android:background="?attr/selectableItemBackground"
                 android:gravity="center"
                 android:padding="@dimen/_5sdp"

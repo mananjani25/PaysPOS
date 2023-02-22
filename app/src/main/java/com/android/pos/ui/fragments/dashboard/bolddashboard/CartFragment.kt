@@ -841,8 +841,17 @@ class CartFragment(
                     Log.e("totalDiscount", viewModel.totalDiscount.toString())
                     binding.txtDiscount.text = "-" +
                             MethodUtils.roundOffAmount(viewModel.totalDiscount)
-                    binding.txtNoncashAdj.text =
-                        "-" + MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
+                    if (prefProvider.getValue(
+                            OPTION_TYPE, "CashDiscount"
+                        ) == "CashDiscount"
+                    ) {
+                        binding.txtNoncashAdj.setTextColor(getColor(R.color.colorRed))
+                        binding.txtNoncashAdj.text =
+                            "-" + MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
+                    } else {
+                        binding.txtNoncashAdj.text =
+                            MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
+                    }
                     var data: TbCustomer? = prefProvider.getCustomerData()
                     if (data != null) {
                         if (viewModel.loyaltyPointCondition(data)) {
@@ -891,8 +900,17 @@ class CartFragment(
                     binding.txtSubTotal.text = MethodUtils.roundOffAmount(0.00)
                     binding.txtTax.text = MethodUtils.roundOffAmount(0.00)
                     binding.txtDiscount.text = "-" + MethodUtils.roundOffAmount(0.00)
-                    binding.txtNoncashAdj.text =
-                        "-" + MethodUtils.roundOffAmount(0.00)
+                    if (prefProvider.getValue(
+                            OPTION_TYPE, "CashDiscount"
+                        ) == "CashDiscount"
+                    ) {
+                        binding.txtNoncashAdj.setTextColor(getColor(R.color.colorRed))
+                        binding.txtNoncashAdj.text =
+                            "-" + MethodUtils.roundOffAmount(0.00)
+                    } else {
+                        binding.txtNoncashAdj.text =
+                            MethodUtils.roundOffAmount(0.00)
+                    }
                     binding.relativeOrderNotes?.visibility = View.GONE
                     binding.txtServiceCharge.text =
                         MethodUtils.roundOffAmount(0.00)
@@ -1141,8 +1159,17 @@ class CartFragment(
                                 MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
                             binding.txtDiscount.text =
                                 "-" + MethodUtils.roundOffAmount(viewModel.totalDiscount)
-                            binding.txtNoncashAdj.text =
-                                "-" + MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
+                            if (prefProvider.getValue(
+                                    OPTION_TYPE, "CashDiscount"
+                                ) == "CashDiscount"
+                            ) {
+                                binding.txtNoncashAdj.setTextColor(getColor(R.color.colorRed))
+                                binding.txtNoncashAdj.text =
+                                    "-" + MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
+                            } else {
+                                binding.txtNoncashAdj.text =
+                                    MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
+                            }
                             if (viewModel.order_note.isNotEmpty()) {
                                 binding.relativeOrderNotes?.visibility = View.VISIBLE
                                 binding.txtOrderNote?.text = viewModel.order_note
@@ -1284,8 +1311,17 @@ class CartFragment(
                             Log.e("totalDiscount", viewModel.totalDiscount.toString())
                             binding.txtDiscount.text =
                                 "-" + MethodUtils.roundOffAmount(viewModel.totalDiscount)
-                            binding.txtNoncashAdj.text =
-                                "-" + MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
+                            if (prefProvider.getValue(
+                                    OPTION_TYPE, "CashDiscount"
+                                ) == "CashDiscount"
+                            ) {
+                                binding.txtNoncashAdj.setTextColor(getColor(R.color.colorRed))
+                                binding.txtNoncashAdj.text =
+                                    "-" + MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
+                            } else {
+                                binding.txtNoncashAdj.text =
+                                    MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
+                            }
                             var data: TbCustomer? = prefProvider.getCustomerData()
                             if (data != null) {
                                 if (viewModel.loyaltyPointCondition(data)) {
@@ -1379,8 +1415,17 @@ class CartFragment(
                             binding.txtSubTotal.text = MethodUtils.roundOffAmount(0.00)
                             binding.txtTax.text = MethodUtils.roundOffAmount(0.0)
                             binding.txtDiscount.text = "-" + MethodUtils.roundOffAmount(0.00)
-                            binding.txtNoncashAdj.text =
-                                "-" + MethodUtils.roundOffAmount(0.00)
+                            if (prefProvider.getValue(
+                                    OPTION_TYPE, "CashDiscount"
+                                ) == "CashDiscount"
+                            ) {
+                                binding.txtNoncashAdj.setTextColor(getColor(R.color.colorRed))
+                                binding.txtNoncashAdj.text =
+                                    "-" + MethodUtils.roundOffAmount(0.00)
+                            } else {
+                                binding.txtNoncashAdj.text =
+                                    MethodUtils.roundOffAmount(0.00)
+                            }
                             binding.txtServiceCharge.text =
                                 MethodUtils.roundOffAmount(0.00)
                             binding.tvPayNow.text = "Pay " + MethodUtils.roundOffAmount(0.00)

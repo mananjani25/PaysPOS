@@ -353,7 +353,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             orderID = requireArguments().getInt("orderID")
             receiptModel = requireArguments().getParcelable("receiptData")
             receiptModelForOpenORder = requireArguments().getParcelable("receiptData")
-            Log.e(TAG, "checkreceiptModel:   ${Gson().toJson(receiptModel)}")
+            Log.e(TAG,"checkreceiptModel:   ${Gson().toJson(receiptModel)}")
             splitValue = requireArguments().getInt("splitValue")
             isSpilt = requireArguments().getBoolean("isSpilt")
             isSplitByNo = requireArguments().getBoolean("isSplitByNo")
@@ -5799,15 +5799,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                 noItem = true
                                             }
                                         }
-                                        Log.e(
-                                            TAG,
-                                            "checkOrderType  ${
-                                                prefProvider.getValue(
-                                                    ORDER_TYPE,
-                                                    ""
-                                                )
-                                            }"
-                                        )
+                                        Log.e(TAG,"checkOrderType  ${prefProvider.getValue(ORDER_TYPE,"")}")
                                         if (kitchenPrinterList.isNotEmpty() && noItem == false) {
                                             for (i in 0 until kitchenPrinterList.size) {
                                                 if (kitchenPrinterList[i].status) {
@@ -5964,10 +5956,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }"
             )
 
-            Log.e(
-                TAG,
-                "updafwwewe  ${Gson().toJson(Gson().toJson(receiptModel?.order?.orderItems))}"
-            )
+            Log.e(TAG,"updafwwewe  ${Gson().toJson(Gson().toJson(receiptModel?.order?.orderItems))}")
             var itemIds: ArrayList<Int> =
                 arrayListOf()
             arrayItems.forEach {
@@ -9029,16 +9018,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             PrintSunmiUtils.addHorizontal()
             SunmiPrinterApi.getInstance().lineWrap(1)
 
-            Log.e(
-                TAG,
-                "getValueUpdate:  ${
-                    prefProvider.getValueboolean(
-                        OPEN_ORDER_UPDATE_FOR_PRINT,
-                        false
-                    )
-                }"
-            )
-            if (prefProvider.getValueboolean(OPEN_ORDER_UPDATE_FOR_PRINT, false) == true) {
+            Log.e(TAG,"getValueUpdate:  ${prefProvider.getValueboolean(OPEN_ORDER_UPDATE_FOR_PRINT,false)}")
+            if (prefProvider.getValueboolean(OPEN_ORDER_UPDATE_FOR_PRINT,false) == true){
                 receiptModel?.order?.orderItems?.let {
                     var printOrderItems = checkOrderItemsForOpenORderUpdate()
 
@@ -9750,55 +9731,58 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             }
 
-            if (receiptModel?.order?.payments?.isNotEmpty() == true && receiptModel?.order?.payments?.get(
-                    receiptModel?.order?.payments?.size!! - 1
-                )?.paymentType?.lowercase() == "Card".lowercase() && receiptModel?.order?.payments?.get(
-                    receiptModel?.order?.payments?.size!! - 1
-                )?.cash_discount_type?.lowercase() == "SurCharge".lowercase()
-            ) {
+            if (customerSettingModel.showCashDisSurCharg) {
 
-                if (receiptModel?.order?.totalCashDiscountFee != null) {
+                if (receiptModel?.order?.payments?.isNotEmpty() == true && receiptModel?.order?.payments?.get(
+                        receiptModel?.order?.payments?.size!! - 1
+                    )?.paymentType?.lowercase() == "Card".lowercase() && receiptModel?.order?.payments?.get(
+                        receiptModel?.order?.payments?.size!! - 1
+                    )?.cash_discount_type?.lowercase() == "SurCharge".lowercase()
+                ) {
 
-
-                    val str8 = padLine(
-                        "SurCharge",
-                        "$" + MethodUtils.roundOffAmountString(
-                            receiptModel?.order?.payments?.get(
-                                receiptModel?.order?.payments?.size?.minus(1) ?: 0
-                            )?.cash_discount_or_surcharge ?: 0.0
-                        ), if (customerSettingModel.fonts == LARGE) 23 else 48
-                    ).toString()
-                    PrintSunmiUtils.cashDiscount(str8)
-
-                }
+                    if (receiptModel?.order?.totalCashDiscountFee != null) {
 
 
-            } else if (receiptModel?.order?.payments?.isNotEmpty() == true && receiptModel?.order?.payments?.get(
-                    receiptModel?.order?.payments?.size!! - 1
-                )?.cash_discount_type?.lowercase() == "CashDiscount".lowercase()
-            ) {
-
-                if (receiptModel?.order?.totalCashDiscountFee != null) {
-
-                    val str8 = padLine(
-                        "Cash Discount",
-                        if (receiptModel?.order?.totalCashDiscountFee == 0.0) {
+                        val str8 = padLine(
+                            "SurCharge",
                             "$" + MethodUtils.roundOffAmountString(
                                 receiptModel?.order?.payments?.get(
                                     receiptModel?.order?.payments?.size?.minus(1) ?: 0
                                 )?.cash_discount_or_surcharge ?: 0.0
-                            )
-                        } else {
-                            "-$" + MethodUtils.roundOffAmountString(
-                                receiptModel?.order?.payments?.get(
-                                    receiptModel?.order?.payments?.size?.minus(1) ?: 0
-                                )?.cash_discount_or_surcharge ?: 0.0
-                            )
-                        }, if (customerSettingModel.fonts == LARGE) 23 else 48
-                    ).toString()
-                    PrintSunmiUtils.cashDiscount(str8)
+                            ), if (customerSettingModel.fonts == LARGE) 23 else 48
+                        ).toString()
+                        PrintSunmiUtils.cashDiscount(str8)
+
+                    }
 
 
+                } else if (receiptModel?.order?.payments?.isNotEmpty() == true && receiptModel?.order?.payments?.get(
+                        receiptModel?.order?.payments?.size!! - 1
+                    )?.cash_discount_type?.lowercase() == "CashDiscount".lowercase()
+                ) {
+
+                    if (receiptModel?.order?.totalCashDiscountFee != null) {
+
+                        val str8 = padLine(
+                            "Cash Discount",
+                            if (receiptModel?.order?.totalCashDiscountFee == 0.0) {
+                                "$" + MethodUtils.roundOffAmountString(
+                                    receiptModel?.order?.payments?.get(
+                                        receiptModel?.order?.payments?.size?.minus(1) ?: 0
+                                    )?.cash_discount_or_surcharge ?: 0.0
+                                )
+                            } else {
+                                "-$" + MethodUtils.roundOffAmountString(
+                                    receiptModel?.order?.payments?.get(
+                                        receiptModel?.order?.payments?.size?.minus(1) ?: 0
+                                    )?.cash_discount_or_surcharge ?: 0.0
+                                )
+                            }, if (customerSettingModel.fonts == LARGE) 23 else 48
+                        ).toString()
+                        PrintSunmiUtils.cashDiscount(str8)
+
+
+                    }
                 }
             }
 
@@ -10226,13 +10210,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             receiptModel?.order?.orderType?.trim()?.let { PrintSunmiUtils.headerText(it) }
             SunmiPrintHelper.getInstance().lineWrap(1)
 
-            /*    if (receiptModel?.order?.orderType?.lowercase() == OPEN_ORDER.lowercase()
-                    || receiptModel?.order?.orderType?.lowercase() == OPEN_ORDER.lowercase()
-                ) {
+        /*    if (receiptModel?.order?.orderType?.lowercase() == OPEN_ORDER.lowercase()
+                || receiptModel?.order?.orderType?.lowercase() == OPEN_ORDER.lowercase()
+            ) {
 
-                    //  receiptModel?.order?.deliveryType?.let { PrintSunmiUtils.headerText(it) }
-                }
-    */
+                //  receiptModel?.order?.deliveryType?.let { PrintSunmiUtils.headerText(it) }
+            }
+*/
 
 
             if (customerSettingModel.fonts == LARGE) {
@@ -10410,55 +10394,57 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             }
 
-            if (receiptModel?.order?.payments?.isNotEmpty() == true && receiptModel?.order?.payments?.get(
-                    receiptModel?.order?.payments?.size!! - 1
-                )?.paymentType?.lowercase() == "Card".lowercase() && receiptModel?.order?.payments?.get(
-                    receiptModel?.order?.payments?.size!! - 1
-                )?.cash_discount_type?.lowercase() == "SurCharge".lowercase()
-            ) {
+            if (customerSettingModel.showCashDisSurCharg) {
+                if (receiptModel?.order?.payments?.isNotEmpty() == true && receiptModel?.order?.payments?.get(
+                        receiptModel?.order?.payments?.size!! - 1
+                    )?.paymentType?.lowercase() == "Card".lowercase() && receiptModel?.order?.payments?.get(
+                        receiptModel?.order?.payments?.size!! - 1
+                    )?.cash_discount_type?.lowercase() == "SurCharge".lowercase()
+                ) {
 
-                if (receiptModel?.order?.totalCashDiscountFee != null) {
-
-
-                    val str8 = padLine(
-                        "SurCharge",
-                        "$" + MethodUtils.roundOffAmountString(
-                            receiptModel?.order?.payments?.get(
-                                receiptModel?.order?.payments?.size?.minus(1) ?: 0
-                            )?.cash_discount_or_surcharge ?: 0.0
-                        ), if (customerSettingModel.fonts == LARGE) 23 else 48
-                    ).toString()
-                    PrintSunmiUtils.normalText(str8)
-
-                }
+                    if (receiptModel?.order?.totalCashDiscountFee != null) {
 
 
-            } else if (receiptModel?.order?.payments?.isNotEmpty() == true && receiptModel?.order?.payments?.get(
-                    receiptModel?.order?.payments?.size!! - 1
-                )?.cash_discount_type?.lowercase() == "CashDiscount".lowercase()
-            ) {
-
-                if (receiptModel?.order?.totalCashDiscountFee != null) {
-
-                    val str8 = padLine(
-                        "Cash Discount",
-                        if (receiptModel?.order?.totalCashDiscountFee == 0.0) {
+                        val str8 = padLine(
+                            "SurCharge",
                             "$" + MethodUtils.roundOffAmountString(
                                 receiptModel?.order?.payments?.get(
                                     receiptModel?.order?.payments?.size?.minus(1) ?: 0
                                 )?.cash_discount_or_surcharge ?: 0.0
-                            )
-                        } else {
-                            "-$" + MethodUtils.roundOffAmountString(
-                                receiptModel?.order?.payments?.get(
-                                    receiptModel?.order?.payments?.size?.minus(1) ?: 0
-                                )?.cash_discount_or_surcharge ?: 0.0
-                            )
-                        }, if (customerSettingModel.fonts == LARGE) 23 else 48
-                    ).toString()
-                    PrintSunmiUtils.normalText(str8)
+                            ), if (customerSettingModel.fonts == LARGE) 23 else 48
+                        ).toString()
+                        PrintSunmiUtils.normalText(str8)
+
+                    }
 
 
+                } else if (receiptModel?.order?.payments?.isNotEmpty() == true && receiptModel?.order?.payments?.get(
+                        receiptModel?.order?.payments?.size!! - 1
+                    )?.cash_discount_type?.lowercase() == "CashDiscount".lowercase()
+                ) {
+
+                    if (receiptModel?.order?.totalCashDiscountFee != null) {
+
+                        val str8 = padLine(
+                            "Cash Discount",
+                            if (receiptModel?.order?.totalCashDiscountFee == 0.0) {
+                                "$" + MethodUtils.roundOffAmountString(
+                                    receiptModel?.order?.payments?.get(
+                                        receiptModel?.order?.payments?.size?.minus(1) ?: 0
+                                    )?.cash_discount_or_surcharge ?: 0.0
+                                )
+                            } else {
+                                "-$" + MethodUtils.roundOffAmountString(
+                                    receiptModel?.order?.payments?.get(
+                                        receiptModel?.order?.payments?.size?.minus(1) ?: 0
+                                    )?.cash_discount_or_surcharge ?: 0.0
+                                )
+                            }, if (customerSettingModel.fonts == LARGE) 23 else 48
+                        ).toString()
+                        PrintSunmiUtils.normalText(str8)
+
+
+                    }
                 }
             }
 

@@ -79,6 +79,9 @@ data class GetCustomerReceiptSettingsResponse(
         @SerializedName("custom_note")
 
         val customNote: String = "",
+        @SerializedName("show_cd_and_sc_customer_receipt")
+        val showCashDisSurCharg:Boolean = false,
+
         @SerializedName("location_id")
 
         val locationId: Int? = null,

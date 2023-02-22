@@ -19,10 +19,7 @@ import com.android.pos.data.entities.Employee
 import com.android.pos.databinding.FragmentTeamListBinding
 import com.android.pos.di.RolePermission
 import com.android.pos.ui.adapter.TeamsAdapter
-import com.android.pos.utils.AlertUtils
-import com.android.pos.utils.LogUtil
-import com.android.pos.utils.ProgressUtils
-import com.android.pos.utils.SwipeHelper
+import com.android.pos.utils.*
 import com.android.pos.utils.callback.CustomCallback
 import com.android.pos.utils.callback.OperationCallback
 import com.android.pos.utils.extensions.alert
@@ -44,6 +41,7 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
     private var empObject: Employee? = null
     private var isEmptyString = true
     var count = 0
+    var isFromSearch: Boolean = false
     @Inject
     lateinit var rolePermission: RolePermission
     override fun onCreateView(
@@ -185,7 +183,9 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
-                        ProgressUtils.dismissProgressDialog()
+                        if (!isFromSearch) {
+                            ProgressUtils.dismissProgressDialog()
+                        }
 
                         if (resource.data != null && resource.data.isNotEmpty())
                             binding.noEmployeeData?.visibility = View.GONE
@@ -215,12 +215,16 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
                         }
                     }
                     Status.ERROR -> {
-                        ProgressUtils.dismissProgressDialog()
+                        if(!isFromSearch) {
+                            ProgressUtils.dismissProgressDialog()
+                        }
                         binding.root.showAlert(resource.message)
 
                     }
                     Status.LOADING -> {
-                        ProgressUtils.showProgressDialog(requireActivity())
+                        if(!isFromSearch) {
+                            ProgressUtils.showProgressDialog(requireActivity())
+                        }
                     }
                 }
             }
@@ -281,6 +285,7 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
     override fun onItemClickListener(view: View?, data: Employee) {
 
         LogUtil.logE("onItemClickListener", ">>>>")
+        MethodUtils.hideKeyboard(requireActivity())
         selectedPos = data.id
         empObject = data
         loadTeamDetails(empObject)
@@ -350,6 +355,7 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
                     } else {
                         if (!isEmptyString) {
                             isEmptyString = true
+                            isFromSearch = true
                             loadTeams()
                         }
                  }
@@ -374,7 +380,6 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
                                 resource.data as MutableList<Employee>,
                                 requireActivity()
                             )
-                            ProgressUtils.dismissProgressDialog()
                             if (selectedPos != -1)
                                 resource.data.forEach {
                                     if (it.id == selectedPos) {
@@ -388,16 +393,13 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
                                 loadTeamDetails(null)
                             }
                         } else {
-                            ProgressUtils.dismissProgressDialog()
                             binding.noEmployeeData?.visibility = View.VISIBLE
                         }
                     }
                     Status.ERROR -> {
-                        ProgressUtils.dismissProgressDialog()
                         binding.root.showAlert(resource.message)
                     }
                     Status.LOADING -> {
-                        ProgressUtils.showProgressDialog(requireActivity())
                     }
                 }
             }
