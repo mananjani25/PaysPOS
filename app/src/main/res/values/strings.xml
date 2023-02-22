@@ -70,6 +70,7 @@
 
     <string name="category_name_validate">Please enter Category Name</string>
     <string name="modifier_name_validate">Please enter Modifier Name</string>
+    <string name="modifier_set_name_validate">All modifier names must be different</string>
     <string name="option_name_validate">Please enter Option Name</string>
     <string name="display_option_name_validate">Please enter Display Name</string>
 
