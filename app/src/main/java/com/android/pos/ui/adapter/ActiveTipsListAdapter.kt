@@ -1,9 +1,11 @@
 package com.android.pos.ui.adapter
 
 import android.annotation.SuppressLint
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.android.pos.R
 import com.android.pos.data.model.responseModel.GetTipReponse
 import com.android.pos.databinding.RowItemActiveTipsListBinding
 import com.android.pos.utils.MethodUtils
@@ -24,19 +26,19 @@ class ActiveTipsListAdapter() :
     inner class MyViewHolder(private val binding: RowItemActiveTipsListBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(model: GetTipReponse.Data, position: Int) {
-//            if (selectedPosition == position) {
-//                binding.rootLayout.background =
-//                    binding.root.context.getDrawable(R.drawable.button_selected)
-//                binding.txtTipTitle.setTextColor(binding.root.context.resources.getColor(R.color.white))
-//                binding.txtTipValue.setTextColor(binding.root.context.resources.getColor(R.color.white))
-//
-//
-//            } else {
-//                binding.root.background =
-//                    binding.root.context.getDrawable(R.drawable.background_square_border_grey)
-//                binding.txtTipTitle.setTextColor(binding.root.context.resources.getColor(R.color.txtColor))
-//                binding.txtTipValue.setTextColor(binding.root.context.resources.getColor(R.color.txtColor))
-//            }
+            if (selectedPosition == position) {
+                binding.rootLayout.setBackgroundColor(Color.parseColor("#ED5950"))
+                binding.txtTipTitle.setTextColor(Color.parseColor("#FFFFFF"))
+                binding.txtTipValue.setTextColor(Color.parseColor("#FFFFFF"))
+                binding.txtNoTipLabel.setTextColor(Color.parseColor("#FFFFFF"))
+
+
+            } else {
+                binding.rootLayout.setBackgroundColor(Color.parseColor("#363636"))
+                binding.txtTipTitle.setTextColor(Color.parseColor("#ED5950"))
+                binding.txtTipValue.setTextColor(Color.parseColor("#60FFFFFF"))
+                binding.txtNoTipLabel.setTextColor(Color.parseColor("#ED5950"))
+            }
 
             binding.apply {
                 if (model.name.equals("No Tip") || model.name.equals("Other")) {
@@ -63,19 +65,21 @@ class ActiveTipsListAdapter() :
 
             }
 
-            val coroutineScope = CoroutineScope(Dispatchers.Main)
-            coroutineScope.launch {
-                delay(5000)
-                binding.rootLayout.performClick()
-            }
+//            val coroutineScope = CoroutineScope(Dispatchers.Main)
+//            coroutineScope.launch {
+//                delay(3000)
+//                binding.rootLayout.performClick()
+//            }
 
         }
 
         init {
+            val selectedItem = layoutPosition
+            //val selectedItem = 0
             binding.rootLayout.setOnSingleClickListener {
-                selectedPosition = 1
+                selectedPosition = selectedItem
                 notifyDataSetChanged()
-                listner.selectedItem(discountList[1], 1,wholeTotalPrice)
+                listner.selectedItem(discountList[selectedItem], selectedItem, wholeTotalPrice)
             }
         }
     }
@@ -110,7 +114,7 @@ class ActiveTipsListAdapter() :
         notifyDataSetChanged()
     }
 
-    fun clearAll(){
+    fun clearAll() {
         this.discountList.clear()
     }
 
