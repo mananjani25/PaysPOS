@@ -885,11 +885,12 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback, It
     }
 
     override fun onDeleteCallback(modifierSet: ModifierSet) {
-        Log.e(TAG,"DeleteCallback")
+        Log.e(TAG,"DeleteCallback  ${Gson().toJson(itemObject.modifier_set_ids)}")
+        Log.e(TAG,"DeleteCallbackModSet  ${Gson().toJson(modifierSet)}")
 
 
         if (isEdit) {
-            modifierSet.id?.let { itemObject.modifier_set_ids.toCollection(arrayListOf()).drop(it) }
+            modifierSet.id?.let { itemObject.modifier_set_ids.toCollection(arrayListOf()).remove(it) }
         }
 
         runOnUiThread(Runnable {
