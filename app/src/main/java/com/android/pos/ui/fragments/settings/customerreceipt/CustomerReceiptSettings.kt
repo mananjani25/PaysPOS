@@ -266,9 +266,9 @@ class CustomerReceiptSettings : Fragment() {
 
         binding.customerReciptPart2.swtTipCash.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
-                binding.layoutCustomerReceipt.linearTips.visibility = View.VISIBLE
+                binding.layoutCustomerReceipt.linearTips?.visibility = View.VISIBLE
             } else {
-                binding.layoutCustomerReceipt.linearTips.visibility = View.GONE
+                binding.layoutCustomerReceipt.linearTips?.visibility = View.GONE
             }
 
         }
@@ -514,9 +514,9 @@ class CustomerReceiptSettings : Fragment() {
                     binding.layoutCustomerReceipt.txtSugarLabel.visibility = View.GONE
                 }*/
                 if (model.showTipLineForCash) {
-                    binding.layoutCustomerReceipt.linearTips.visibility = View.VISIBLE
+                    binding.layoutCustomerReceipt.linearTips?.visibility = View.VISIBLE
                 } else {
-                    binding.layoutCustomerReceipt.linearTips.visibility = View.GONE
+                    binding.layoutCustomerReceipt.linearTips?.visibility = View.GONE
                 }
 
                 if (model.showRefundAmount) {
