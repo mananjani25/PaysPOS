@@ -640,6 +640,7 @@
         </androidx.appcompat.widget.LinearLayoutCompat>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/splashLayout"
         android:layout_width="match_parent"
@@ -751,10 +752,10 @@
             style="@style/CustomFontMediumStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_15sdp"
+            android:layout_marginTop="@dimen/_20sdp"
             android:gravity="center"
             android:padding="@dimen/_5sdp"
-            android:text="Add Tip"
+            android:text="Would you like to add tip?"
             android:textColor="@color/white"
             android:textSize="@dimen/_12ssp"
             android:textStyle="bold"
@@ -778,64 +779,7 @@
                 android:layout_gravity="center"
                 android:orientation="horizontal"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:itemCount="4"
                 tools:listitem="@layout/row_item_active_tips_list" />
-
-            <LinearLayout
-                android:id="@+id/otherNoTipLayout"
-                android:layout_width="match_parent"
-                android:layout_marginTop="@dimen/_3sdp"
-                android:layout_height="wrap_content">
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/otherRootLayout"
-                    android:layout_width="0dp"
-                    android:layout_height="@dimen/_16sdp"
-                    android:layout_marginVertical="@dimen/_2sdp"
-                    android:layout_marginEnd="@dimen/_5sdp"
-                    android:layout_weight="1"
-                    android:background="#363636">
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/txtOtherLabel"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="Other"
-                        android:textColor="#ED5950"
-                        android:textSize="@dimen/_7ssp"
-                        android:textStyle="bold"
-                        android:visibility="visible"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/noTipRootLayout"
-                    android:layout_width="0dp"
-                    android:layout_height="@dimen/_16sdp"
-                    android:layout_marginVertical="@dimen/_2sdp"
-                    android:layout_marginEnd="@dimen/_5sdp"
-                    android:layout_weight="1"
-                    android:background="#363636">
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/txtNoTipLabel"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="No Tip"
-                        android:textColor="#ED5950"
-                        android:textSize="@dimen/_7ssp"
-                        android:textStyle="bold"
-                        android:visibility="visible"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-            </LinearLayout>
 
             <FrameLayout
                 android:id="@+id/signRootLayout"
@@ -843,7 +787,7 @@
                 android:layout_height="0dp"
                 android:layout_marginTop="@dimen/_5sdp"
                 android:layout_weight="1"
-                android:visibility="visible"
+                android:visibility="gone"
                 app:layout_constraintTop_toBottomOf="@id/rvActiveTipsList">
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -852,8 +796,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="Signature"
-                    android:textColor="#535354"
+                    android:text="Your Signature"
+                    android:textColor="#30FFFFFF"
                     android:textSize="@dimen/_10ssp" />
 
                 <com.github.gcacace.signaturepad.views.SignaturePad
@@ -863,33 +807,16 @@
                     android:background="@android:color/transparent"
                     app:penColor="#80FFFFFF" />
 
-                <LinearLayout
-                    android:id="@+id/clearSignLayout"
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/btnClearSignature"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="end|top"
-                    android:layout_margin="@dimen/_10sdp"
-                    android:gravity="center_vertical"
-                    android:visibility="visible">
-
-                    <ImageView
-                        android:layout_width="@dimen/_9sdp"
-                        android:layout_height="@dimen/_9sdp"
-                        android:src="@drawable/ic_clear_circle" />
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/btnClearSignature"
-                        style="@style/CustomFontLight"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/_3sdp"
-                        android:paddingVertical="@dimen/_3sdp"
-                        android:text="Clear"
-                        android:textColor="#535354"
-                        android:textSize="@dimen/_7ssp"
-                        android:textStyle="bold" />
-
-                </LinearLayout>
+                    android:layout_gravity="bottom|end"
+                    android:visibility="visible"
+                    android:textColor="@color/white"
+                    android:padding="@dimen/_5sdp"
+                    android:background="@color/btnColorDark"
+                    android:text="Clear" />
 
             </FrameLayout>
 
@@ -902,7 +829,7 @@
                 android:background="@color/btnColorDark"
                 android:gravity="center"
                 android:padding="@dimen/_5sdp"
-                android:text="CONFIRM"
+                android:text="Continue"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_7mdpi"
                 android:visibility="gone"

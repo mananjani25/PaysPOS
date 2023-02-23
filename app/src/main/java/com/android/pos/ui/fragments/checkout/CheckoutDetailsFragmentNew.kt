@@ -186,7 +186,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             presentation.show()
             presentation.onDisplayChanged()
             presentation.showSurcharge(true)
-            presentation.showWouldYouLikeToAddTipScreen(tipListViewModel,WholetotalPrice)
+            //presentation.showWouldYouLikeToAddTipScreen(tipListViewModel,WholetotalPrice)
         }
     }
 

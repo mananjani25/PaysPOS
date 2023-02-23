@@ -102,7 +102,6 @@ class CustomDisplay(
     }
 
 
-
     private fun setupCartList() {
 
         cartAdapter = CartAdapter()
@@ -1113,6 +1112,8 @@ class CustomDisplay(
         if (tipAmount == 0.00) {
             binding.tipLayout.gone()
         } else {
+            binding.askForTipLayout.gone()
+            binding.addTipKeypadLayout.gone()
             binding.tipLayout.visible()
             val percentageTip = String.format(
                 "%.0f", MethodUtils.calculatePercentageFromAmount(
@@ -1159,40 +1160,10 @@ class CustomDisplay(
 
                 activeTipsListAdapter.clearAll()
 
-                val tipsList = it.data as MutableList
-
-                val noTipExists = tipsList.filter { tdr -> tdr.name == "No Tip" }
-                val otherExists = tipsList.filter { tdr -> tdr.name == "Other" }
-
-                if (noTipExists.isEmpty()) {
-                    tipsList.add(
-                        0,
-                        GetTipReponse.Data(
-                            name = "No Tip",
-                            id = 0,
-                            locationId = 0,
-                            rate = 0.0,
-                            sort = 0
-                        )
-                    )
-                }
-
-                if (otherExists.isEmpty()) {
-                    tipsList.add(
-                        GetTipReponse.Data(
-                            name = "Other",
-                            id = 0,
-                            locationId = 0,
-                            rate = 0.0,
-                            sort = 0
-                        )
-                    )
-                }
-
-                tipsList.forEach { data ->
+                it.data.forEach { data ->
                     data.isChecked = false
                 }
-                activeTipsListAdapter.setList(tipsList, wholeTotalPrice)
+                activeTipsListAdapter.setList(it.data, wholeTotalPrice)
                 activeTipsListAdapter.setListner(this)
                 lifecycleOwner.lifecycleScope.launch {
                     delay(5000)
@@ -1202,22 +1173,9 @@ class CustomDisplay(
         }
     }
 
-    private fun showMainCart(
-        isTipped: Boolean,
-        model: GetTipReponse.Data,
-        wholeTotalPrice: Double
-    ) {
+    private fun showMainCart() {
         binding.apply {
             binding.mainCartLayout.visible()
-
-            if (isTipped) {
-                val tippedAmount = MethodUtils.percentageCalculation(
-                    wholeTotalPrice,
-                    model.rate
-                )
-                showTipsAddedVer2(model.rate, tippedAmount)
-            }
-
             addTipKeypadLayout.gone()
             askForTipLayout.gone()
             binding.splashLayout.gone()
@@ -1450,12 +1408,23 @@ class CustomDisplay(
                 signLinearLayout.gravity = Gravity.CENTER_VERTICAL
             }
 
+            binding.clearSignLayout?.setOnClickListener {
+                binding.signaturePad.clear()
+            }
+
+            binding.otherRootLayout?.setOnSingleClickListener {
+                showTipKeypad(wholeTotalPrice)
+            }
+
+            binding.noTipRootLayout?.setOnSingleClickListener {
+                showMainCart()
+            }
+
             binding.tvContinue.setOnSingleClickListener {
-                mainCartLayout.visible()
-                Log.d(TAG, "showWouldYouLikeToAddTipScreen: TIP-RATE = $tipRate")
-                Log.d(TAG, "showWouldYouLikeToAddTipScreen: TIPPED-AMOUNT = $tippedAmount")
+
                 showTipsAddedVer2(tipRate, tippedAmount)
 
+                mainCartLayout.visible()
                 addTipKeypadLayout.gone()
                 askForTipLayout.gone()
                 splashLayout.gone()
@@ -1464,16 +1433,19 @@ class CustomDisplay(
             }
 
             signaturePad.setOnSignedListener(object : OnSignedListener {
+
                 override fun onStartSigning() {
                     yourSignatureLabel.invisible()
+                    clearSignLayout?.visible()
                 }
 
                 override fun onSigned() {
-
+                    clearSignLayout?.visible()
                 }
 
                 override fun onClear() {
                     yourSignatureLabel.visible()
+                    clearSignLayout?.gone()
                 }
 
             })
@@ -1486,33 +1458,7 @@ class CustomDisplay(
     }
 
     override fun selectedItem(model: GetTipReponse.Data, pos: Int, wholeTotalPrice: Double) {
-        when (model.name) {
-            "No Tip" -> {
-//                lifecycleOwner.lifecycleScope.launch {
-//                    delay(3000)
-//                    showMainCart(false, model, wholeTotalPrice)
-//                }
-                showMainCart(false, model, wholeTotalPrice)
-            }
-            "Other" -> {
-//                lifecycleOwner.lifecycleScope.launch {
-//                    delay(3000)
-//                    showTipKeypad(wholeTotalPrice)
-//                }
-                showTipKeypad(wholeTotalPrice)
-            }
-            else -> {
-                tipRate = model.rate
-                tippedAmount = MethodUtils.percentageCalculation(
-                    wholeTotalPrice,
-                    model.rate
-                )
-                Log.d(TAG, "selectedItem: CALLED")
-//                lifecycleOwner.lifecycleScope.launch {
-//                    delay(4000)
-//                    binding.tvContinue.performClick()
-//                }
-            }
-        }
+        tipRate = model.rate
+        tippedAmount = MethodUtils.percentageCalculation(wholeTotalPrice, model.rate)
     }
 }

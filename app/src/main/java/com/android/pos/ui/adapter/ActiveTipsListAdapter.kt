@@ -30,38 +30,24 @@ class ActiveTipsListAdapter() :
                 binding.rootLayout.setBackgroundColor(Color.parseColor("#ED5950"))
                 binding.txtTipTitle.setTextColor(Color.parseColor("#FFFFFF"))
                 binding.txtTipValue.setTextColor(Color.parseColor("#FFFFFF"))
-                binding.txtNoTipLabel.setTextColor(Color.parseColor("#FFFFFF"))
-
-
             } else {
                 binding.rootLayout.setBackgroundColor(Color.parseColor("#363636"))
                 binding.txtTipTitle.setTextColor(Color.parseColor("#ED5950"))
                 binding.txtTipValue.setTextColor(Color.parseColor("#60FFFFFF"))
-                binding.txtNoTipLabel.setTextColor(Color.parseColor("#ED5950"))
             }
 
             binding.apply {
-                if (model.name.equals("No Tip") || model.name.equals("Other")) {
-                    binding.txtNoTipLabel.visible()
-                    binding.txtNoTipLabel.text = model.name
 
-                    binding.txtTipValue.gone()
-                    binding.txtTipTitle.gone()
-                } else {
-                    binding.txtTipValue.visible()
-                    binding.txtTipTitle.visible()
+                binding.txtTipValue.visible()
+                binding.txtTipTitle.visible()
 
-                    binding.txtNoTipLabel.gone()
+                txtTipTitle.text = "${String.format("%.0f", model.rate)}%"
+                val tippedAmount = MethodUtils.percentageCalculation(
+                    wholeTotalPrice,
+                    model.rate
+                )
 
-                    txtTipTitle.text = "${String.format("%.0f", model.rate)}%"
-                    val tippedAmount = MethodUtils.percentageCalculation(
-                        wholeTotalPrice,
-                        model.rate
-                    )
-
-                    binding.txtTipValue.text = MethodUtils.roundOffAmount(tippedAmount)
-                }
-
+                binding.txtTipValue.text = MethodUtils.roundOffAmount(tippedAmount)
 
             }
 
@@ -74,12 +60,12 @@ class ActiveTipsListAdapter() :
         }
 
         init {
-            val selectedItem = layoutPosition
+            //val selectedItem = layoutPosition
             //val selectedItem = 0
             binding.rootLayout.setOnSingleClickListener {
-                selectedPosition = selectedItem
+                selectedPosition = layoutPosition
                 notifyDataSetChanged()
-                listner.selectedItem(discountList[selectedItem], selectedItem, wholeTotalPrice)
+                listner.selectedItem(discountList[layoutPosition], layoutPosition, wholeTotalPrice)
             }
         }
     }
