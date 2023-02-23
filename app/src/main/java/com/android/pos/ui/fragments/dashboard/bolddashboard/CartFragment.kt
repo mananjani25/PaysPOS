@@ -14,6 +14,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.android.pos.BuildConfig
 import com.android.pos.R
 import com.android.pos.data.entities.*
 import com.android.pos.data.model.DineInModel
@@ -2263,6 +2264,15 @@ class CartFragment(
             }
         }
         cartlist[0].openOrderType = Constants.PICK_UP
+        var finalDiscount = 0.0
+        if (BuildConfig.DEBUG == false){
+            finalDiscount = cartlist[0].discountPrice  + viewModel.totalDiscount
+        }
+        else{
+            finalDiscount = viewModel.totalDiscount
+        }
+        Log.e("checkDiscount","totalDiscount:  ${viewModel.totalDiscount}")
+        Log.e("checkDiscount","totalDiscountdiscountPrice:  ${cartlist[0].discountPrice}")
 
         val orderRequestModel = viewModel.createDineInOrderRequest(
             cartModel = cartlist[0],
@@ -2274,7 +2284,7 @@ class CartFragment(
             "",
             "",
             false,
-            totalDiscount = viewModel.totalDiscount,
+            totalDiscount =finalDiscount,
             0.0,
             floorPlanDetails = floorModel
         )

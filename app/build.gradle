@@ -13,10 +13,10 @@ android {
     buildToolsVersion "30.0.3"
 
     defaultConfig {
-        applicationId "com.internetsoft.pos_test"
+        applicationId "com.internetsoft.pos"
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 27
+        versionCode 30
         versionName "3.6"
 
 

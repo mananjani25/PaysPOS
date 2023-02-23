@@ -16,6 +16,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import com.android.pos.BuildConfig
 import com.android.pos.MainApplication
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.entities.*
@@ -4442,9 +4443,17 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     fun updateOrder(cartModel: CartModel): OrderRequestModel {
+
         Log.e(TAG, "totalDiscountDineIn  ${totalDiscount}")
         val orderModel: OrderAttributeRequestModel = OrderAttributeRequestModel()
         var ttotalDiscount = totalDiscount
+        if (BuildConfig.DEBUG == false){
+            ttotalDiscount = cartModel.discountPrice  + totalDiscount
+        }
+        else{
+            ttotalDiscount = totalDiscount
+        }
+
         Log.e(TAG, "ttotalDiscount:  ${ttotalDiscount}")
         LogUtil.logE(TAG, "getCartmodelId  ${cartModel.orderId}")
         orderModel.apply {
