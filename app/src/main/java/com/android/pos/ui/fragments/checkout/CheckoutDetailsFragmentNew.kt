@@ -1339,9 +1339,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 if (totalprice - cashDiscountSurcharge < 0.0){
                     0.0
                 }
-                else {
-                    totalprice - cashDiscountSurcharge
-                }
+                else{
+                totalprice - cashDiscountSurcharge
+                    }
             } else {
                 totalprice
             }
