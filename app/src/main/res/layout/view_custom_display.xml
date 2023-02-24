@@ -705,6 +705,7 @@
             android:textColor="@color/white"
             android:textSize="@dimen/_14mdpi"
             android:textStyle="bold"
+            android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@id/imageViewThankYou"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

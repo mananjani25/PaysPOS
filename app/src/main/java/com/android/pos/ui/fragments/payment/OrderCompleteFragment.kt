@@ -86,6 +86,7 @@ import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
 import com.android.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.android.pos.ui.fragments.settings.tip.TipListViewModel
+import com.android.pos.ui.fragments.transactions.TransactionViewModel
 import com.android.pos.utils.*
 import com.android.pos.utils.MethodUtils.Companion.toPrecision
 import com.android.pos.utils.extensions.gone
@@ -244,14 +245,23 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     }
 
     private val tipListViewModel by activityViewModels<TipListViewModel>()
+    private val transactionViewModel by viewModels<TransactionViewModel>()
 
     override fun onResume() {
         super.onResume()
         if (this::presentation.isInitialized) {
             presentation.show()
             presentation.onDisplayChanged()
-            val finalPaidAmount = binding.txtPaymentAmount.text.toString().replace(" payment successful", "").replace("$","").toDouble()
-            presentation.showWouldYouLikeToAddTipScreen(tipListViewModel,finalPaidAmount)
+            val finalPaidAmount =
+                binding.txtPaymentAmount.text.toString().replace(" payment successful", "")
+                    .replace("$", "").toDouble()
+
+            presentation.showWouldYouLikeToAddTipScreen(
+                tipListViewModel,
+                transactionViewModel,
+                finalPaidAmount, orderID,
+                paymentType == "Card"
+            )
             /*presentation.showThankYou(
                 binding.txtPaymentAmount.text.toString().replace(" payment successful", "")
             )*/

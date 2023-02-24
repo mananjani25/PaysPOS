@@ -35,6 +35,7 @@ import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.ui.fragments.settings.tip.TipListViewModel
+import com.android.pos.ui.fragments.transactions.TransactionViewModel
 import com.android.pos.utils.AmountTextWatcher
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
@@ -61,6 +62,10 @@ class CustomDisplay(
 
     private var tippedAmount: Double = 0.0
     private var tipRate: Double = 0.0
+    private var mOrderID: Int = 0
+    private var mIsCardPayment: Boolean = false
+    lateinit var mTransactionViewModel: TransactionViewModel
+
     private var dineInPaymentDetails: GuestPaymentCalculationModel? = null
     private var isGuestPay: Boolean = false
     private var toFinalAmt: Double = 0.0
@@ -395,14 +400,14 @@ class CustomDisplay(
 
     override fun onItemDelete(position: Int, itemPosition: Int, data: TbItem) {}
 
-    fun showThankYou(paidAmount: String) {
+    fun showThankYou() {
         binding.apply {
             mainCartLayout.gone()
             splashLayout.gone()
             askForTipLayout.gone()
+            addTipKeypadLayout.gone()
 
             thankYouLayout.visible()
-            txtPaidAmount.text = "Paid $paidAmount"
         }
     }
 
@@ -1198,47 +1203,49 @@ class CustomDisplay(
             edtAmount.setText(MethodUtils.roundOffAmountString(0.00))
 
             txtContinue.setOnClickListener {
-                mainCartLayout.visible()
-
-                val tippedAmount =
+//                mainCartLayout.visible()
+//
+                val enteredTippedAmount =
                     edtAmount.text.toString().replace("$", "").trim().toDouble()
-                val tipRate = MethodUtils.calculatePercentageFromAmount(
-                    tippedAmount,
-                    wholeTotalPrice
-                )
+//                val tipRate = MethodUtils.calculatePercentageFromAmount(
+//                    tippedAmount,
+//                    wholeTotalPrice
+//                )
+//
+//                showTipsAddedVer2(tipRate, tippedAmount)
+//
+//                addTipKeypadLayout.gone()
+//                askForTipLayout.gone()
+//                splashLayout.gone()
+//                thankYouLayout.gone()
 
-                showTipsAddedVer2(tipRate, tippedAmount)
-
-                addTipKeypadLayout.gone()
-                askForTipLayout.gone()
-                splashLayout.gone()
-                thankYouLayout.gone()
+                callUpdateTip(mOrderID,enteredTippedAmount,mIsCardPayment,mTransactionViewModel)
             }
 
-//            lifecycleOwner.lifecycleScope.launch {
-//                delay(1000)
-//                incKeypad.tvThree.performClick()
-//                delay(1000)
-//                incKeypad.tvFive.performClick()
-//                delay(1000)
-//                incKeypad.tvSix.performClick()
-//
-//                delay(1000)
-//                incKeypad.txtClearLast.performClick()
-//
-//                delay(1000)
-//                incKeypad.txtClearAll.performClick()
-//
-//                delay(1000)
-//                incKeypad.tvEight.performClick()
-//                delay(1000)
-//                incKeypad.tvZero.performClick()
-//                delay(1000)
-//                incKeypad.tvFour.performClick()
-//
-//                delay(2000)
-//                txtContinue.performClick()
-//            }
+            lifecycleOwner.lifecycleScope.launch {
+                delay(1500)
+                incKeypad.tvThree.performClick()
+                delay(1500)
+                incKeypad.tvFive.performClick()
+                delay(1500)
+                incKeypad.tvSix.performClick()
+
+                delay(1500)
+                incKeypad.txtClearLast.performClick()
+
+                delay(1500)
+                incKeypad.txtClearAll.performClick()
+
+                delay(1500)
+                incKeypad.tvEight.performClick()
+                delay(1500)
+                incKeypad.tvOne.performClick()
+                delay(1500)
+                incKeypad.tvFour.performClick()
+
+                delay(2000)
+                txtContinue.performClick()
+            }
 
         }
     }
@@ -1384,8 +1391,17 @@ class CustomDisplay(
 
     fun showWouldYouLikeToAddTipScreen(
         tipListViewModel: TipListViewModel,
-        wholeTotalPrice: Double
+        transactionViewModel: TransactionViewModel,
+        wholeTotalPrice: Double,
+        orderId: Int,
+        isCardPayment: Boolean,
+        isSignatureRequired: Boolean = true
     ) {
+
+        mOrderID = orderId
+        mIsCardPayment = isCardPayment
+        mTransactionViewModel = transactionViewModel
+
         binding.apply {
             askForTipLayout.visible()
             setupActiveTipsList(tipListViewModel)
@@ -1396,9 +1412,7 @@ class CustomDisplay(
             thankYouLayout.gone()
             addTipKeypadLayout.gone()
 
-            val isSignatureRequired = true
-
-            if (isSignatureRequired) {
+            if (isSignatureRequired && isCardPayment) {
                 signRootLayout.visible()
                 tvContinue.visible()
                 signLinearLayout.gravity = Gravity.TOP
@@ -1408,7 +1422,7 @@ class CustomDisplay(
                 signLinearLayout.gravity = Gravity.CENTER_VERTICAL
             }
 
-            binding.clearSignLayout?.setOnClickListener {
+            binding.clearSignLayout?.setOnSingleClickListener {
                 binding.signaturePad.clear()
             }
 
@@ -1417,7 +1431,7 @@ class CustomDisplay(
             }
 
             binding.noTipRootLayout?.setOnSingleClickListener {
-                showMainCart()
+                showThankYou()
             }
 
             binding.tvContinue.setOnSingleClickListener {
@@ -1451,14 +1465,29 @@ class CustomDisplay(
             })
 
             lifecycleOwner.lifecycleScope.launch {
-                //delay(3000)
+                delay(3000)
+                //otherRootLayout?.performClick()
+                noTipRootLayout?.performClick()
             }
 
+        }
+    }
+
+    private fun callUpdateTip(
+        orderID: Int,
+        tipAmount: Double,
+        isCaptured: Boolean,
+        transactionViewModel: TransactionViewModel
+    ) {
+        lifecycleOwner.lifecycleScope.launch {
+            transactionViewModel.orderUpdateTip(orderID, tipAmount, isCaptured)
+            showThankYou()
         }
     }
 
     override fun selectedItem(model: GetTipReponse.Data, pos: Int, wholeTotalPrice: Double) {
         tipRate = model.rate
         tippedAmount = MethodUtils.percentageCalculation(wholeTotalPrice, model.rate)
+        callUpdateTip(mOrderID, tippedAmount, mIsCardPayment, mTransactionViewModel)
     }
 }

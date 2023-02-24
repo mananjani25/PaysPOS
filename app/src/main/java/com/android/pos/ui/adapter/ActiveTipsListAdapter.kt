@@ -51,21 +51,21 @@ class ActiveTipsListAdapter() :
 
             }
 
-//            val coroutineScope = CoroutineScope(Dispatchers.Main)
-//            coroutineScope.launch {
-//                delay(3000)
-//                binding.rootLayout.performClick()
-//            }
+            val coroutineScope = CoroutineScope(Dispatchers.Main)
+            coroutineScope.launch {
+                delay(3000)
+                //binding.rootLayout.performClick()
+            }
 
         }
 
         init {
             //val selectedItem = layoutPosition
-            //val selectedItem = 0
+            val selectedItem = 1
             binding.rootLayout.setOnSingleClickListener {
-                selectedPosition = layoutPosition
+                selectedPosition = selectedItem
                 notifyDataSetChanged()
-                listner.selectedItem(discountList[layoutPosition], layoutPosition, wholeTotalPrice)
+                listner.selectedItem(discountList[selectedItem], selectedItem, wholeTotalPrice)
             }
         }
     }

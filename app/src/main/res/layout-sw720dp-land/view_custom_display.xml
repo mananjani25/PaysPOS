@@ -704,6 +704,7 @@
             android:textColor="@color/white"
             android:textSize="@dimen/_14mdpi"
             android:textStyle="bold"
+            android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@id/imageViewThankYou"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -743,7 +744,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#1D1D1F"
-        android:paddingHorizontal="@dimen/_50sdp"
+        android:paddingHorizontal="@dimen/_70sdp"
         android:visibility="gone">
 
         <androidx.appcompat.widget.AppCompatTextView
@@ -861,7 +862,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@android:color/transparent"
-                    app:penColor="#80FFFFFF" />
+                    app:penColor="@color/white" />
 
                 <LinearLayout
                     android:id="@+id/clearSignLayout"
