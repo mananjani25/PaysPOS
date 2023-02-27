@@ -486,6 +486,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:visibility="gone"
                 android:id="@+id/linearLogout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -522,7 +523,7 @@
                 android:layout_alignParentBottom="true"
                 android:layout_centerInParent="true"
                 android:layout_gravity="center"
-                android:layout_marginTop="@dimen/_5sdp"
+                android:layout_marginTop="@dimen/_15sdp"
                 android:gravity="bottom|center"
                 android:textColor="@color/btnColor"
                 android:textSize="@dimen/_8mdpi"
