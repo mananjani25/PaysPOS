@@ -940,7 +940,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                             Log.d(TAG, "newCartLogicModifier normal item: ${i}")
                                             break
                                         } else
-                                            if (cartModel?.reorder == false && list[i].id == item.id && checkVariation(
+                                            if (list[i].itemId == item.itemId && cartModel?.reorder == false && list[i].id == item.id && checkVariation(
                                                     list[i],
                                                     item
                                                 ) && checkModifierNewLogic(list[i], item)
