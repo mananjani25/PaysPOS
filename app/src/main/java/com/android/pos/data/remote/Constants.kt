@@ -665,6 +665,7 @@ object Constants {
 
     const val IS_UPDATE_ORDER = "is_update_order"
     const val IS_UPDATE_ORDER_ID = "is_update_order_id"
+    const val PAYMENT_ID_FOR_CUSTOMER_DISPLAY = "payment_id_for_customer_display"
     const val IS_UPDATE_ORDER_PAYMENT_ID = "is_update_order_payment_id"
     const val IS_UPDATE_ORDER_PAY_OFFLINE_ID = "is_update_order_pay_offline_id"
     const val IS_UPDATE_ORDER_OFFLINE_ID = "is_update_order_offline_id"

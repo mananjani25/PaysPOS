@@ -60,6 +60,7 @@ import com.android.pos.data.remote.Constants.ORDER_COMPLETED
 import com.android.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.PAYMENT_ID
+import com.android.pos.data.remote.Constants.PAYMENT_ID_FOR_CUSTOMER_DISPLAY
 import com.android.pos.data.remote.Constants.PRINT_DATA_DINE_IN
 import com.android.pos.data.remote.Constants.SAVE_SPLIT_BUNDLE
 import com.android.pos.data.remote.Constants.SERVICECHARGE_DINEIN_ORDER
@@ -255,11 +256,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             val finalPaidAmount =
                 binding.txtPaymentAmount.text.toString().replace(" payment successful", "")
                     .replace("$", "").toDouble()
-
+            val paymentIdForCustomerDisplay = prefProvider.getValueInt(
+                PAYMENT_ID_FOR_CUSTOMER_DISPLAY, 0
+            )
             presentation.showWouldYouLikeToAddTipScreen(
                 tipListViewModel,
                 transactionViewModel,
-                finalPaidAmount, orderID,
+                finalPaidAmount, paymentIdForCustomerDisplay,
                 paymentType == "Card"
             )
             /*presentation.showThankYou(
@@ -530,14 +533,16 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         MethodUtils.roundOffAmount(paidAmount)
                     binding.txtPaymentAmount.text =
                         "" + MainApplication.getInstance()!!
-                            .getText(R.string.symbole) + MethodUtils.roundOffAmountDown(paidAmount).toDouble().toPrecision(2) + " payment successful"
+                            .getText(R.string.symbole) + MethodUtils.roundOffAmountDown(paidAmount)
+                            .toDouble().toPrecision(2) + " payment successful"
 
                 } else {
                     binding.txtTitle.text =
                         MethodUtils.roundOffAmount(paidAmount + tipAmount)
                     binding.txtPaymentAmount.text =
                         "" + MainApplication.getInstance()!!
-                            .getText(R.string.symbole) + MethodUtils.roundOffAmountDown(paidAmount + tipAmount).toDouble().toPrecision(2) + " payment successful"
+                            .getText(R.string.symbole) + MethodUtils.roundOffAmountDown(paidAmount + tipAmount)
+                            .toDouble().toPrecision(2) + " payment successful"
                 }
 
 
@@ -703,7 +708,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 binding.txtPaymentAmount.text =
                     "" + MainApplication.getInstance()!!
-                        .getText(R.string.symbole) + MethodUtils.roundOffAmountDown(paidAmount + tipAmount).toDouble().toPrecision(2) + " payment successful"
+                        .getText(R.string.symbole) + MethodUtils.roundOffAmountDown(paidAmount + tipAmount)
+                        .toDouble().toPrecision(2) + " payment successful"
 
 
             }

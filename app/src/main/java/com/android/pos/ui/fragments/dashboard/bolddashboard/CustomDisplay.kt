@@ -2,13 +2,9 @@ package com.android.pos.ui.fragments.dashboard.bolddashboard
 
 import android.app.Presentation
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import androidx.appcompat.widget.AppCompatEditText
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -30,22 +26,17 @@ import com.android.pos.ui.adapter.DineInAdapter
 import com.android.pos.ui.adapter.DineInTableAdapterCD
 import com.android.pos.ui.adapter.boldpos.CartAdapter
 import com.android.pos.ui.adapter.boldpos.TaxBirfurcationAdapter
-import com.android.pos.ui.fragments.checkout.CheckoutDetailsFragmentNew
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.ui.fragments.settings.tip.TipListViewModel
 import com.android.pos.ui.fragments.transactions.TransactionViewModel
-import com.android.pos.utils.AmountTextWatcher
-import com.android.pos.utils.LogUtil
-import com.android.pos.utils.MethodUtils
+import com.android.pos.utils.*
 import com.android.pos.utils.callback.MyCallback
-import com.android.pos.utils.callback.OnTipAddedListener
 import com.android.pos.utils.extensions.*
 import com.android.pos.utils.statusUtils.Status
 import com.github.gcacace.signaturepad.views.SignaturePad.OnSignedListener
 import com.google.gson.Gson
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -1203,23 +1194,15 @@ class CustomDisplay(
             edtAmount.setText(MethodUtils.roundOffAmountString(0.00))
 
             txtContinue.setOnClickListener {
-//                mainCartLayout.visible()
-//
+
                 val enteredTippedAmount =
                     edtAmount.text.toString().replace("$", "").trim().toDouble()
-//                val tipRate = MethodUtils.calculatePercentageFromAmount(
-//                    tippedAmount,
-//                    wholeTotalPrice
-//                )
-//
-//                showTipsAddedVer2(tipRate, tippedAmount)
-//
-//                addTipKeypadLayout.gone()
-//                askForTipLayout.gone()
-//                splashLayout.gone()
-//                thankYouLayout.gone()
 
-                callUpdateTip(mOrderID,enteredTippedAmount,mIsCardPayment,mTransactionViewModel)
+//                if(mIsCardPayment){
+//                    magtekCall(enteredTippedAmount)
+//                }else{
+                    callUpdateTip()
+//                }
             }
 
             lifecycleOwner.lifecycleScope.launch {
@@ -1467,20 +1450,16 @@ class CustomDisplay(
             lifecycleOwner.lifecycleScope.launch {
                 delay(3000)
                 //otherRootLayout?.performClick()
-                noTipRootLayout?.performClick()
+                //noTipRootLayout?.performClick()
             }
 
         }
     }
 
-    private fun callUpdateTip(
-        orderID: Int,
-        tipAmount: Double,
-        isCaptured: Boolean,
-        transactionViewModel: TransactionViewModel
-    ) {
+    private fun callUpdateTip() {
         lifecycleOwner.lifecycleScope.launch {
-            transactionViewModel.orderUpdateTip(orderID, tipAmount, isCaptured)
+            delay(3000)
+            mTransactionViewModel.orderUpdateTip(mOrderID, tippedAmount, mIsCardPayment)
             showThankYou()
         }
     }
@@ -1488,6 +1467,10 @@ class CustomDisplay(
     override fun selectedItem(model: GetTipReponse.Data, pos: Int, wholeTotalPrice: Double) {
         tipRate = model.rate
         tippedAmount = MethodUtils.percentageCalculation(wholeTotalPrice, model.rate)
-        callUpdateTip(mOrderID, tippedAmount, mIsCardPayment, mTransactionViewModel)
+//        if(mIsCardPayment){
+//            magtekCall(tippedAmount)
+//        }else{
+            callUpdateTip()
+//        }
     }
 }

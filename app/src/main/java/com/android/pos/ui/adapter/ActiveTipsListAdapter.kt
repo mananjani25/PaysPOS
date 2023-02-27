@@ -54,14 +54,14 @@ class ActiveTipsListAdapter() :
             val coroutineScope = CoroutineScope(Dispatchers.Main)
             coroutineScope.launch {
                 delay(3000)
-                //binding.rootLayout.performClick()
+                binding.rootLayout.performClick()
             }
 
         }
 
         init {
             //val selectedItem = layoutPosition
-            val selectedItem = 1
+            val selectedItem = 2
             binding.rootLayout.setOnSingleClickListener {
                 selectedPosition = selectedItem
                 notifyDataSetChanged()

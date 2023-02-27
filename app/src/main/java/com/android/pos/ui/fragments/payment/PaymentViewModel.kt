@@ -14,6 +14,7 @@ import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.android.pos.data.remote.Constants.PAYMENT_ID
+import com.android.pos.data.remote.Constants.PAYMENT_ID_FOR_CUSTOMER_DISPLAY
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
@@ -359,6 +360,10 @@ open class PaymentViewModel @Inject constructor(
             null
         )
 
+        prefProvider.setValueInt(
+            PAYMENT_ID_FOR_CUSTOMER_DISPLAY,
+            order.payments[order.payments.size - 1].id
+        )
 
         val resource = posRepository.cashInOut(cashLogRequest)
 
