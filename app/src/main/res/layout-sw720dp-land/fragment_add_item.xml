@@ -122,7 +122,7 @@
                             android:digits="1234567890"
                             android:gravity="center"
                             android:inputType="phone"
-                            android:maxLength="3"
+                            android:maxLength="5"
                             android:paddingTop="@dimen/_7sdp"
                             android:paddingBottom="@dimen/_7sdp"
                             android:text="1"
