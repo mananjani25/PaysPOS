@@ -1896,6 +1896,7 @@ class CartFragment(
             popupMenu.setOnMenuItemClickListener { menuItem ->
                 when (menuItem.itemId) {
                     R.id.menu_clear_cart -> {
+                        popupMenu.dismiss() //For resolving BIS-273
                         clearCart()
                     }
                     R.id.menu_remove_customer -> {
