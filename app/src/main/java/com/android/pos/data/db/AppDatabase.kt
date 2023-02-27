@@ -29,7 +29,7 @@ import com.android.pos.data.typeconvert.*
         GetCustomerReceiptSettingsResponse.Data::class, LoyaltyProgramsModel::class, SplitDetailListModel::class,
         CashDiscountModel::class, TbCountryList::class, TbCardReader::class, VenueDetailsResponse.Data.CancelOrderReason::class,
         DineInCartModel::class, ShiftRportConfiguration::class, TbBusinessDetails::class, TbTimeZones::class, PrinterQueueModel::class],
-    version = 3
+    version = 4
 )
 @TypeConverters(
     TypeConvertersIds::class,
@@ -121,9 +121,23 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        val MIGRATION_3_4: Migration = object : Migration(3, 4) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                try {
+
+                    database.execSQL("ALTER TABLE TbCustomerSettings ADD COLUMN showCashDisSurCharg boolean DEFAULT 0")
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+
+
+            }
+
+        }
+
         private fun buildDatabase(appContext: Context) =
             Room.databaseBuilder(appContext, AppDatabase::class.java, DATABASE_NAME)
-                .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
                 .build()
     }
 
