@@ -1367,7 +1367,11 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         Log.e("ORDER_TYPE", prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT))
         paymentviewModel.setServiceChargeListApplied(serviceChargeAppliedList)
         viewModel.ordertypelist.forEach {
-            if (prefProvider.getValue(Constants.ORDER_TYPE_NAME, Constants.DINE_IN) == it.name) {
+            //For resolving issue BIS-303
+            //Added one more OR condition to check if order_type_name from preference is "DineIn" or "Dine In"
+            //By Dharmesh Basapati
+            if (prefProvider.getValue(Constants.ORDER_TYPE_NAME, Constants.DINE_IN) == it.name ||
+                prefProvider.getValue(Constants.ORDER_TYPE_NAME, Constants.DINE_IN) == it.orderType) {
                 paymentviewModel.setOrderTypeId(it.id)
             }
         }

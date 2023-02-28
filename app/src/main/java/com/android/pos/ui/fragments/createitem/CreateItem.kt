@@ -653,7 +653,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback, It
         }
 
         binding.etItemPrice.addTextChangedListener(
-            AmountTextWatcher(
+            ItemPriceTextWatcher(
                 binding.etItemPrice,
                 false
             )
