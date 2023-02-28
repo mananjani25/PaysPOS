@@ -16,6 +16,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import com.android.pos.BuildConfig
 import com.android.pos.MainApplication
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.entities.*
@@ -36,6 +37,7 @@ import com.android.pos.data.remote.Constants.BUSINESS_PHONE_NO
 import com.android.pos.data.remote.Constants.BUSINESS_WEBSITE
 import com.android.pos.data.remote.Constants.CASH_DISCOUNT_SURCHARGE_AMOUNT_TYPE
 import com.android.pos.data.remote.Constants.CASH_DISCOUNT_SURCHARGE_RATE
+import com.android.pos.data.remote.Constants.DEFAULT_ORDER
 import com.android.pos.data.remote.Constants.DELETE
 import com.android.pos.data.remote.Constants.DINEIN_FLOORPLAN_SHOW_TABLENAME
 import com.android.pos.data.remote.Constants.DINE_IN
@@ -104,11 +106,12 @@ class DashBoardCategoryViewModel @Inject constructor(
     private val networkConnectionInterceptor: NetworkConnectionInterceptor
 ) : ViewModel() {
 
-    fun getRepository():PosRepository{
+    fun getRepository(): PosRepository {
         return posRepository
     }
 
     private var syncMarkeup: Boolean = false
+    private var isGuestPay: Boolean = false
     var dineInHeaderPosition: Int = 0
     var dineInSelectedItemHeaderPos: Int = 0
     var selectedItemPositionDine: Int = 0
@@ -152,6 +155,13 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun getKitchenReceiptSettings() = posRepository.getKitchenReceiptSettings()
 
+    fun setGuestPay(value: Boolean) {
+        isGuestPay = value
+    }
+
+    fun getIsGuestPay():Boolean{
+        return isGuestPay
+    }
 
     fun venueDataLocal(): LiveData<Resource<List<CategoryWithInventory?>>> {
         return posRepository.venueDataLocal()
@@ -245,6 +255,10 @@ class DashBoardCategoryViewModel @Inject constructor(
     var onClickAddCustomer = false
     val _Basedata = MutableLiveData<Event<CreateOrderResponse.Data?>>()
 
+    private val _clockOut = MutableLiveData<Event<String>>()
+    val clockOut: LiveData<Event<String>> = _clockOut
+
+
     var barcodeFoundDbItemLiveData: LiveData<Resource<TbItem>>? = null
 
     fun modifierSet(intArray: IntArray) = posRepository.modifierSetList(intArray)
@@ -330,7 +344,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     }
 
-    fun generateCombinedItems(cartModel: CartModel): CartModel    {
+    fun generateCombinedItems(cartModel: CartModel): CartModel {
         val combinedItems = arrayListOf<TbItem>()
         cartModel.items?.let {
 
@@ -927,7 +941,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                             Log.d(TAG, "newCartLogicModifier normal item: ${i}")
                                             break
                                         } else
-                                            if (cartModel?.reorder == false && list[i].id == item.id && checkVariation(
+                                            if (list[i].itemId == item.itemId && cartModel?.reorder == false && list[i].id == item.id && checkVariation(
                                                     list[i],
                                                     item
                                                 ) && checkModifierNewLogic(list[i], item)
@@ -2945,11 +2959,15 @@ class DashBoardCategoryViewModel @Inject constructor(
                     var finalTotal = 0.0
                     finalTotal = (subTotalPrice + totalTax + totalServiceCharge)
 
+                    totalPrice = finalTotal
+
 
 
                     cashDiscountType = prefProvider.getValue(Constants.OPTION_TYPE, "")
                     //loyalty point and price calculation
                     amountToBePaid = finalTotal
+
+                    Log.e("checkAmountTobe","amountToBePaid:  ${amountToBePaid}")
                     if (selectedCustomer == null) {
                         totalPrice = amountToBePaid
                         MethodUtils.setPriceTextView(
@@ -4306,6 +4324,46 @@ class DashBoardCategoryViewModel @Inject constructor(
         return null
     }
 
+    fun clockOut() {
+        _showProgress.value = Event(true)
+        val data = HashMap<String, String>()
+        data["employee_id"] = prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1).toString()
+        data["terminal_id"] = prefProvider.getValueInt(Constants.TERMINAL_ID, -1).toString()
+
+        viewModelScope.launch {
+            val resource = posRepository.employeeClockOut(data)
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    prefProvider.setValueboolean(Constants.IS_CLOCKOUT, false)
+                    _showProgress.value = Event(false)
+
+                    resource.data.let {
+                        if (it?.status == 200) {
+                            resource.data?.let {
+
+
+                                _clockOut.value = Event(it.message)
+                            }
+                        } else {
+                            _snackbarText.value = Event(resource.message.toString())
+                        }
+
+                    }
+
+                }
+
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message.toString())
+                    _showProgress.value = Event(false)
+                }
+
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+                }
+            }
+        }
+    }
+
     fun submit(orderRequestModel: OrderRequestModel) {
 
         _showProgress.value = Event(true)
@@ -4385,9 +4443,17 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     fun updateOrder(cartModel: CartModel): OrderRequestModel {
+
         Log.e(TAG, "totalDiscountDineIn  ${totalDiscount}")
         val orderModel: OrderAttributeRequestModel = OrderAttributeRequestModel()
         var ttotalDiscount = totalDiscount
+        if (BuildConfig.DEBUG == false){
+            ttotalDiscount = cartModel.discountPrice  + totalDiscount
+        }
+        else{
+            ttotalDiscount = totalDiscount
+        }
+
         Log.e(TAG, "ttotalDiscount:  ${ttotalDiscount}")
         LogUtil.logE(TAG, "getCartmodelId  ${cartModel.orderId}")
         orderModel.apply {
@@ -5247,7 +5313,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             model.serviceCharge = serviceChargesList
             // model.orderTypeId = 1
             ordertypelist.forEach {
-                if (it.name.lowercase() == prefProvider.getValue(ORDER_TYPE_NAME, "").lowercase()) {
+                if (it.name.lowercase() == prefProvider.getOrderTypeName(ORDER_TYPE_NAME, DEFAULT_ORDER).lowercase()) {
                     model.orderTypeId = it.id
                 }
             }
@@ -5297,6 +5363,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 //loyalty point and price calculation
                 amountToBePaid = finalTotal
 
+                Log.e("checkDineInFinalAmt","finalTotal:  ${finalTotal}")
                 totalPrice = MethodUtils.roundOffAmountDouble(finalTotal)
 
                 if (MethodUtils.isEnableCashDiscount(context)) {
@@ -5305,10 +5372,14 @@ class DashBoardCategoryViewModel @Inject constructor(
                         prefProvider,
                         context
                     )
+
+                 //   cashdiscountAmount = model.cashDiscount
+
                 } else {
                     cashdiscountAmount = 0.0
                 }
 
+                Log.e("checkDineInFinalAmt","checkCashDiscountAmt:  ${cashdiscountAmount}")
                 val nf: NumberFormat = NumberFormat.getNumberInstance()
                 nf.maximumFractionDigits = 2
                 val rounded: String = nf.format(cashdiscountAmount)

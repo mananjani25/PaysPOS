@@ -72,6 +72,7 @@ class Settings : Fragment() {
     }
 
     fun init() {
+        binding.commonToolbar.llEmailPrint?.visibility = View.GONE
         binding.txtBusiness.styleBold()
         binding.txtBusiness.setBackgroundColor(resources.getColor(R.color.btnColor))
         binding.txtHardware.styleNormal()

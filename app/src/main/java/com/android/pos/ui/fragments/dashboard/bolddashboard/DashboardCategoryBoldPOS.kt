@@ -9,10 +9,9 @@ import android.os.*
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.view.WindowManager
+import android.view.*
+import android.view.animation.AlphaAnimation
+import android.view.animation.Animation
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.*
@@ -31,6 +30,7 @@ import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
+import com.android.pos.data.remote.Constants.IS_PAYMENT_SCREEN
 import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.android.pos.data.remote.Constants.LARGE
 import com.android.pos.data.remote.Constants.MEDIUM
@@ -39,6 +39,7 @@ import com.android.pos.data.remote.Constants.OPEN_ORDER_ITEMS
 import com.android.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.ORDER_TYPE_ID
+import com.android.pos.data.remote.Constants.ORDER_TYPE_NAME
 import com.android.pos.data.remote.Constants.SMALL
 import com.android.pos.data.remote.Constants.SPLIT_ENABLE
 import com.android.pos.data.remote.Constants.SUNMI_INNER_PRINTER
@@ -48,6 +49,7 @@ import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.android.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.ui.fragments.payment.PaymentViewModel
 import com.android.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
@@ -57,6 +59,8 @@ import com.android.pos.utils.*
 import com.android.pos.utils.callback.DineInOrderCallBack
 import com.android.pos.utils.callback.ItemClickListner
 import com.android.pos.utils.callback.ItemListner
+import com.android.pos.utils.extensions.addOnWindowFocusChangeListener
+import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.printer.PrinterClass
@@ -76,10 +80,11 @@ import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 import javax.inject.Inject
 
+
 @AndroidEntryPoint
 class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     ScannerAppEngine.IScannerAppEngineDevEventsDelegate, ICallback, DineInOrderCallBack {
-
+    private val mHandler = Handler(Looper.myLooper()!!)
     private lateinit var presentation: CustomDisplay
     private var dineInList: List<DineInModel>? = null
     private var woyouService: IWoyouService? = null
@@ -92,6 +97,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     private var serviceChargesObserve: Observer<Resource<List<TbServiceCharge>>>? = null
     private var orderTypeObserver: Observer<Resource<List<TbOrderType>>>? = null
     private var dineInFloorTableModel: GetFloorPlanResponse.Data.FloorPlanTable? = null
+    private val dineInViewModel by viewModels<DineInOrderTableViewModel>()
     private val TAG = "DashboardCategoryBold"
     var ordertypelist: ArrayList<TbOrderType> = arrayListOf()
     private var kitchenSettingModel = GetKitchenReceiptSettingsResponse.Data()
@@ -132,13 +138,35 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         if (count != null) {
             if (count > 0) {
                 binding.layoutHeader.txtBadgeCount?.visible()
+                binding.layoutHeader.txtBadgeCount.blink()
                 binding.layoutHeader.txtBadgeCount?.text = count.toString()
             } else {
+                 binding.layoutHeader.txtBadgeCount.clearAnimation()
                 binding.layoutHeader.txtBadgeCount?.gone()
             }
         } else {
+            binding.layoutHeader.txtBadgeCount.clearAnimation()
             binding.layoutHeader.txtBadgeCount?.gone()
         }
+    }
+
+
+
+
+    private fun View.blink(
+        times: Int = Animation.INFINITE,
+        duration: Long = 500L,
+        offset: Long = 20L,
+        minAlpha: Float = 0.45f,
+        maxAlpha: Float = 1.0f,
+        repeatMode: Int = Animation.REVERSE
+    ) {
+        startAnimation(AlphaAnimation(minAlpha, maxAlpha).also {
+            it.duration = duration
+            it.startOffset = offset
+            it.repeatMode = repeatMode
+            it.repeatCount = times
+        })
     }
 
     override fun onCreateView(
@@ -150,6 +178,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         syncData()
         Binding()
 
+//        hideSystemUI()
+
         binding = FragmentDashboardCategoryBoldPosBinding.inflate(inflater, container, false)
         getCustomerDisplay(requireContext())?.let { display ->
             presentation = CustomDisplay(
@@ -157,9 +187,12 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 requireContext(),
                 viewLifecycleOwner,
                 viewModel,
-                passcodeViewModel
+                passcodeViewModel,
+                dineInViewModel
+
             )
         }
+        prefProvider.setValueboolean(IS_PAYMENT_SCREEN,false)
         val callback: OnBackPressedCallback =
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
@@ -194,8 +227,28 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         observerSyncItemPriceChange()
         prefProvider.setValueboolean(Constants.ORDER_COMPLETED, false)
         binding.lifecycleOwner = this
+
+
+        binding.layoutHeader.ivLock.setOnClickListener {
+
+            alert(
+                getString(R.string.app_name),
+                prefProvider.employeeName() + ", Are you sure, you want to clockout?"
+            ) {
+                positiveButton(getString(android.R.string.ok)) {
+                    viewModel.clockOut()
+
+
+                }
+                negativeButton(R.string.tv_cancel) {
+                    // Do negative stuff here
+                }
+            }
+        }
+
         return binding.root
     }
+
 
     private fun checkCashDrawerObserver() {
         viewModel.checkCashDrawerPer.observe(viewLifecycleOwner) {
@@ -581,6 +634,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     override fun onResume() {
         super.onResume()
 
+//        hideNavigation()
+
         if (prefProvider.getValueboolean(Constants.IS_SYNC_MARKUP, false)) {
             viewModel.markupInventory()
         }
@@ -920,11 +975,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         cartList[0].dineInList = dineInList
                     }
 
-                    LogUtil.logE(
-                        TAG,
-                        "dineInCartListData:  ${Gson().toJson(cartList[0].dineInList)}"
-                    )
+
                     if (cartList[0].dineInList?.isNotEmpty() == true) {
+                        Log.e("checkDineHeaderPos","dineInHeaderPosition:  ${viewModel.dineInHeaderPosition}")
+
                         var dineInList = cartList[0].dineInList
                         dineInList!![0]?.selectedPosition = viewModel.dineInHeaderPosition
                         viewModel.newCartLogicModifier(
@@ -969,6 +1023,22 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 } else {
                     ProgressUtils.dismissProgressDialog()
                 }
+            }
+        }
+        viewModel.clockOut.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let {
+
+                AlertUtils.showCustomAlert(requireContext(), it)
+                val bundle = Bundle()
+                bundle.putBoolean("isDashboard", false)
+                bundle.putBoolean("isSwap", false)
+                if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                    findNavController().navigate(
+                        R.id.action_dashboardCategoryBoldPOS_to_passcode,
+                        bundle
+                    )
+                }
+
             }
         }
         viewModel.callCashDiscount.observe(viewLifecycleOwner) { event ->
@@ -1391,6 +1461,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     orderId?.let { it1 -> bundle.putInt("orderId", it1) }
                 }*/
                 prefProvider.setValue(ORDER_TYPE, "")
+                prefProvider.setValue(ORDER_TYPE_NAME, "")
                 LogUtil.logE(TAG, "deleteCartDineIn")
                 viewModel.deleteCart()
                 clearCustomer()
@@ -1412,7 +1483,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     override fun onPause() {
         arguments?.clear()
         super.onPause()
-        if(this::presentation.isInitialized){
+        if (this::presentation.isInitialized) {
             presentation.show()
             presentation.onLogOutOrClockOutWithApiService(apiService)
         }
@@ -1980,6 +2051,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
                     prefProvider.setValue(ORDER_TYPE, "")
                 }
+                prefProvider.setValue(ORDER_TYPE_NAME, "")
                 LogUtil.logE(TAG, "QueueCreateAgain")
 
                 clearCustomer()
@@ -3464,4 +3536,5 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         }
         return salt.toString()
     }
+
 }

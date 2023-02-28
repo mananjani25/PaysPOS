@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.CartModel
@@ -21,6 +22,7 @@ import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.DEFAULT_ORDER
 import com.android.pos.data.remote.Constants.TIP_ADDED
 import com.android.pos.data.remote.Constants.TIP_ADDED_AMOUNT
 import com.android.pos.databinding.FragmentCheckoutDetailsNewBinding
@@ -29,6 +31,7 @@ import com.android.pos.di.MagtekModule
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
+import com.android.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.ui.fragments.magtek.MagtekRequestUtils
 import com.android.pos.ui.fragments.magtek.PaymentResponse
@@ -66,6 +69,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     private var isInsert: Boolean = false
     private var isManualCard: Boolean = false
     private lateinit var binding: FragmentCheckoutDetailsNewBinding
+    private val dineInViewModel by viewModels<DineInOrderTableViewModel>()
     private val TAG = "DashboardCategoryBold"
 
     private var requestCancel: Boolean = false
@@ -138,7 +142,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 requireContext(),
                 viewLifecycleOwner,
                 dashboardViewModel,
-                passcodeViewModel
+                passcodeViewModel,
+                dineInViewModel
+
             )
         }
 
@@ -866,8 +872,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             var tmpIndex = tmp.indexOf(".", 0, true)
 
             if (tmp.length > tmpIndex + 3) {
-                var data = tmp.substring(0, tmpIndex + 3)
-                return String.format("%.2f", data.toDouble()).toDouble()
+                Log.e("getDecimal", "tmpGetDecimal  ${tmp.get(tmpIndex + 3)}")
+                if (tmp.get(tmpIndex + 3).toString().toInt() >= 5) {
+                    return String.format("%.2f", value).toDouble()
+                } else {
+                    var data = tmp.substring(0, tmpIndex + 3)
+                    return String.format("%.2f", data.toDouble()).toDouble()
+                }
             } else {
                 return String.format("%.2f", value).toDouble()
             }
@@ -1061,15 +1072,28 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 ""
             ) == "0.0"
         ) {
-            WholetotalPrice = viewModel.totalPrice
+            Log.e("AmtviewModeltotalPrice","totalPrice  ${viewModel.totalPrice}")
+            viewModel.totalServiceCharge =String.format("%.2f",viewModel.totalServiceCharge).toDouble()
+            WholetotalPrice = viewModel.subTotalPrice + viewModel.totalTax + String.format("%.2f",viewModel.totalServiceCharge).toDouble() - viewModel.totalDiscount
+
+            viewModel.totalPrice = WholetotalPrice
+            Log.e("checkWhole","WholetotalPrice:  ${WholetotalPrice}")
+            Log.e("checkWhole","subTotalPrice:  ${viewModel.subTotalPrice}")
+            Log.e("checkWhole","totalServiceCharge:  ${viewModel.totalServiceCharge}")
+            Log.e("checkWhole","totalTax:  ${viewModel.totalTax}")
+            Log.e("checkWhole","totalDiscount:  ${viewModel.totalDiscount}")
+            WholetotalPrice = String.format("%.2f",WholetotalPrice).toDouble()
+            Log.e("checkWholePrice","WholetotalPrice:  ${WholetotalPrice}")
+
             prefProvider.setValue(
                 Constants.WHOLE_AMOUNT,
-                String.format("%.2f", viewModel.totalPrice)
+                String.format("%.2f", getTwoDecimal(viewModel.totalPrice))
             )
         } else {
             WholetotalPrice = prefProvider.getValue(Constants.WHOLE_AMOUNT, "").toDouble()
         }
 
+        WholetotalPrice = getTwoDecimal(WholetotalPrice)
         if (prefProvider.getValue(Constants.SUB_TOTAL, "").isEmpty() || prefProvider.getValue(
                 Constants.SUB_TOTAL,
                 ""
@@ -1171,7 +1195,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         LogUtil.logE("ORDER_TYPE", prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT))
 
         viewModel.ordertypelist.forEach {
-            if (prefProvider.getValue(Constants.ORDER_TYPE_NAME, "") == it.name) {
+            if (prefProvider.getOrderTypeName(
+                    Constants.ORDER_TYPE_NAME, DEFAULT_ORDER
+                ) == it.name
+            ) {
                 paymentviewModel.setOrderTypeId(it.id)
             }
         }
@@ -1210,7 +1237,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             binding.tvCash2,
             binding.tvCash3
         )
-        MethodUtils.setPriceTextViewDown(
+        Log.e("checkPaymentPrice", "cashDiscountSurcharge:   ${cashDiscountSurcharge}")
+
+        Log.e("ChceckPriceWithCash","getPriceWithCash  ${getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount}")
+        MethodUtils.setPriceTextView(
             binding.tvCash,
             getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount
         )
@@ -1253,9 +1283,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 )
             )
         } else {
-            if(this::presentation.isInitialized){
+            if (this::presentation.isInitialized) {
                 presentation.show()
-                presentation.showTipsAdded(tipAmount,WholetotalPrice)
+                presentation.showTipsAdded(tipAmount, WholetotalPrice)
             }
 
             MethodUtils.setPriceTextView(
@@ -1306,7 +1336,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     private fun getCalCashDiscWithAmount(totalprice: Double, isCash: Boolean): Double {
         return if (isCash) {
             if (cashDiscountType == "CashDiscount") {
+                if (totalprice - cashDiscountSurcharge < 0.0){
+                    0.0
+                }
+                else{
                 totalprice - cashDiscountSurcharge
+                    }
             } else {
                 totalprice
             }

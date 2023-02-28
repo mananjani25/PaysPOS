@@ -52,6 +52,7 @@ import com.android.pos.data.remote.Constants.CASHDIS_SURCHARGEENABLE
 import com.android.pos.data.remote.Constants.CASH_DIS_STORED
 import com.android.pos.data.remote.Constants.CUSTOMER_ID
 import com.android.pos.data.remote.Constants.CUSTOMER_NAME
+import com.android.pos.data.remote.Constants.DEFAULT_ORDER
 import com.android.pos.data.remote.Constants.DELETE
 import com.android.pos.data.remote.Constants.DIALOG_KEY_VARIATION_DETAILS
 import com.android.pos.data.remote.Constants.DINE_IN
@@ -889,9 +890,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 }
             } else {
                 binding.layoutCart.txtOrderType.text =
-                    prefProvider.getValue(ORDER_TYPE_NAME, TAKEOUT).toString()
+                    prefProvider.getOrderTypeName(ORDER_TYPE_NAME, DEFAULT_ORDER).toString()
             }
-            if (prefProvider.getValue(ORDER_TYPE_NAME, TAKEOUT) == DINE_IN) {
+            if (prefProvider.getOrderTypeName(ORDER_TYPE_NAME, DEFAULT_ORDER) == DINE_IN) {
                 binding.layoutCart.llShowMenu.visibility = View.GONE
                 binding.layoutCart.viewDineIn.visibility = View.VISIBLE
 

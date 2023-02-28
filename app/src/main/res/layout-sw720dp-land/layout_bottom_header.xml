@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingDefaultResource">
+
+    <RelativeLayout
+        android:id="@+id/rlRoot"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_23sdp"
+        android:background="@color/bg_color"
+        android:orientation="horizontal"
+        >
+
+        <LinearLayout
+
+            android:layout_marginEnd="@dimen/_5sdp"
+            android:id="@+id/llClockOut"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/_20sdp"
+            android:gravity="end"
+            android:layout_alignParentEnd="true"
+            android:layout_gravity="center"
+            android:background="?attr/selectableItemBackground"
+            android:contentDescription="@string/clock"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/imgswitch"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/_20sdp"
+                android:layout_gravity="center"
+                android:layout_marginEnd="@dimen/_2sdp"
+                android:contentDescription="@string/clock"
+                android:paddingVertical="@dimen/_5sdp"
+                android:src="@drawable/ic_clock_out"
+                app:tint="@color/txtColor" />
+
+            <TextView
+                android:id="@+id/txtUserName"
+                style="@style/CustomFontBold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textSize="@dimen/_8mdpi"
+                android:textColor="@color/btnColor"
+                android:text="@string/tv_clock_out" />
+        </LinearLayout>
+    </RelativeLayout>
+</layout>

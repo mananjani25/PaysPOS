@@ -52,7 +52,7 @@
                     android:text="@string/tv_clock_in"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_8mdpi"
-                    android:visibility="visible" />
+                    android:visibility="gone" />
 
             </RelativeLayout>
         </LinearLayout>

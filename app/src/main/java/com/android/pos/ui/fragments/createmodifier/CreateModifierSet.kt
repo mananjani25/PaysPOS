@@ -288,7 +288,7 @@ class CreateModifierSet : Fragment(), TextWatcher {
 
         }
 
-        viewModel.setModifiers(adapter.getAll())
+//        viewModel.setModifiers(adapter.getAll())
 
     }
 

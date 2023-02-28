@@ -30,8 +30,8 @@
                     android:layout_alignParentStart="true"
                     android:layout_centerVertical="true"
                     android:layout_marginStart="@dimen/_5sdp"
-                    android:padding="@dimen/_6sdp"
                     android:background="?attr/selectableItemBackground"
+                    android:padding="@dimen/_6sdp"
                     android:src="@drawable/ic_baseline_menu" />
 
 
@@ -90,23 +90,63 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
+
+                <LinearLayout
+                    android:id="@+id/llEmailPrint"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/txtHome"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:ignore="RelativeOverlap">
+
+                    <TextView
+                        android:id="@+id/txtEmail"
+                        style="@style/CustomFontBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginRight="@dimen/_10sdp"
+                        android:background="?attr/selectableItemBackground"
+                        android:gravity="center"
+                        android:padding="@dimen/_6sdp"
+                        android:text="@string/tv_email"
+                        android:textColor="@color/btnColor"
+                        android:textSize="@dimen/_6mdpi"
+                        android:visibility="visible" />
+
+                    <ImageView
+                        android:id="@+id/imgPrintEODReport"
+                        android:layout_width="@dimen/_15sdp"
+                        android:layout_height="@dimen/_20sdp"
+                        android:layout_gravity="center"
+                        android:layout_marginEnd="@dimen/_8sdp"
+                        android:background="?attr/selectableItemBackground"
+                        android:padding="@dimen/_2sdp"
+                        android:src="@drawable/print_all"
+                        app:tint="@color/white" />
+
+                </LinearLayout>
+
                 <TextView
                     android:id="@+id/txtHome"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
+                    android:background="@drawable/button_action_hover"
                     android:fontFamily="@font/sf_pro_display_semibold"
+                    android:gravity="center"
+                    android:paddingHorizontal="@dimen/padding_home_button"
                     android:paddingVertical="@dimen/_6sdp"
                     android:text="@string/tv_home"
                     android:textAllCaps="true"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_7mdpi"
-                    android:gravity="center"
-                    android:paddingHorizontal="@dimen/padding_home_button"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/imgOptionMenuContainer"
-                    app:layout_constraintTop_toTopOf="parent"
-                    android:background="@drawable/button_action_hover"
-                    />
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
                     android:id="@+id/txtSetItem"

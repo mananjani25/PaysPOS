@@ -41,8 +41,9 @@ import com.android.pos.di.HostSelectionInterceptor
 import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
-import com.android.pos.ui.fragments.dashboard.bolddashboard.DashboardCategoryBoldPOS
 import com.android.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
+import com.android.pos.ui.fragments.dashboard.bolddashboard.DashboardCategoryBoldPOS
+import com.android.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.ui.fragments.payment.OrderCompleteViewModel
 import com.android.pos.ui.fragments.settings.hardware.Hardware
@@ -87,6 +88,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     private var cameraUri: Uri? = null
     private var selectedFilePath: String? = ""
     private var builder: Dialog? = null
+    private val dineInViewModel by viewModels<DineInOrderTableViewModel>()
     private lateinit var binding: ParentActivityBinding
     private var navController: NavController? = null
     private lateinit var listner: NavController.OnDestinationChangedListener
@@ -191,6 +193,8 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         }
 
     }
+
+
 
     var broadCastReceiverPrinterQueueDataGet = object : BroadcastReceiver() {
         override fun onReceive(p0: Context?, p1: Intent?) {
@@ -735,7 +739,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
     private fun initCustomerDisplay() {
         getCustomerDisplay(this)?.let { display ->
-            presentation = CustomDisplay(display, this, this,dashboardViewModel, passcodeViewModel)
+            presentation = CustomDisplay(display, this, this,dashboardViewModel, passcodeViewModel,dineInViewModel)
         }
     }
 

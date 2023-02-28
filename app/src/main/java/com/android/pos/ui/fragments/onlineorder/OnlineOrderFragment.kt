@@ -22,6 +22,7 @@ import com.android.pos.di.RolePermission
 import com.android.pos.ui.adapter.InventoryAdapter
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
+import com.android.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.TAG
@@ -49,6 +50,7 @@ class OnlineOrderFragment : Fragment() {
 
     @set:Inject
     internal var prefProvider: PrefProvider? = null
+    private val dineInViewModel by viewModels<DineInOrderTableViewModel>()
 
     private lateinit var presentation: CustomDisplay
     private val passcodeViewModel by activityViewModels<PasscodeViewModel>()
@@ -70,7 +72,9 @@ class OnlineOrderFragment : Fragment() {
                 requireContext(),
                 viewLifecycleOwner,
                 dashboardViewModel,
-                passcodeViewModel
+                passcodeViewModel,
+                dineInViewModel
+
             )
         }
         return binding.root

@@ -40,7 +40,9 @@ import com.android.pos.databinding.FragmentReportEodBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.*
 import com.android.pos.ui.adapter.boldpos.SalesPerCategorySummary
+import com.android.pos.ui.fragments.dashboard.bolddashboard.DashboardCategoryBoldPOS
 import com.android.pos.ui.fragments.loginscreen.ClockInOwnerViewModel
+import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
 import com.android.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.android.pos.utils.*
@@ -57,6 +59,8 @@ import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -73,7 +77,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
     private var defaultEmployeePos: Int = 0
     private lateinit var binding: FragmentReportEodBinding
     private val viewModel by viewModels<ReportEODViewModel>()
-    private val viewModelClockOut by viewModels<ClockInOwnerViewModel>()
+    private val viewModelClockOut by viewModels<PasscodeViewModel>()
     private val TAG = "ReportEODFragment"
 
     private lateinit var startDate: DatePickerDialog.OnDateSetListener
@@ -160,32 +164,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
             binding.txtEmail.setOnClickListener {
 
 
-                if (viewModel.selectedTerminalId.isNotEmpty()) {
-                    viewModel.getEmployeeEmail(viewModel.selectedTerminalId.toInt())
-                        .observe(viewLifecycleOwner) {
-
-                            if (it.status == Status.SUCCESS) {
-                                val bundle = Bundle()
-                                bundle.putBoolean("EOD", true)
-                                bundle.putInt("type", 2)
-                                bundle.putString("email", it.data?.email)
-                                findNavController().navigate(
-                                    R.id.action_reportEODFragment_to_sendReceiptFragment,
-                                    bundle
-                                )
-                            }
-                        }
-                } else {
-                    val bundle = Bundle()
-                    bundle.putBoolean("EOD", true)
-                    bundle.putInt("type", 2)
-                    bundle.putString("email", "")
-                    findNavController().navigate(
-                        R.id.action_reportEODFragment_to_sendReceiptFragment,
-                        bundle
-                    )
-
-                }
+                sendEmail()
 
 
                 //  viewModel.getReportSummary("")
@@ -207,6 +186,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     positiveButton(getString(android.R.string.ok)) {
                         //  viewModelClockOut.submit()
 
+//                       viewModel.clockOut()
                         val bundle = Bundle()
                         bundle.putBoolean("isDashboard", true)
                         bundle.putBoolean("isSwap", false)
@@ -216,6 +196,8 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                                 bundle
                             )
                         }
+
+
 
                     }
                     negativeButton(R.string.tv_cancel) {
@@ -229,6 +211,35 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
         loadSettings()
 
+    }
+
+    private fun sendEmail() {
+        if (viewModel.selectedTerminalId.isNotEmpty()) {
+            viewModel.getEmployeeEmail(viewModel.selectedTerminalId.toInt())
+                .observe(viewLifecycleOwner) {
+
+                    if (it.status == Status.SUCCESS) {
+                        val bundle = Bundle()
+                        bundle.putBoolean("EOD", true)
+                        bundle.putInt("type", 2)
+                        bundle.putString("email", it.data?.email)
+                        findNavController().navigate(
+                            R.id.action_reports_to_sendReceiptFragment,
+                            bundle
+                        )
+                    }
+                }
+        } else {
+            val bundle = Bundle()
+            bundle.putBoolean("EOD", true)
+            bundle.putInt("type", 2)
+            bundle.putString("email", "")
+            findNavController().navigate(
+                R.id.action_reports_to_sendReceiptFragment,
+                bundle
+            )
+
+        }
     }
 
     private fun eodReportSettings() {
@@ -379,6 +390,33 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
         val newBitmap = Bitmap.createScaledBitmap(bitmap!!, 210, 210, true)
 
         PrintSunmiUtils.printLogo(newBitmap)
+
+    }
+
+
+    override fun onStart() {
+        super.onStart()
+
+        org.greenrobot.eventbus.EventBus.getDefault().register(this)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        org.greenrobot.eventbus.EventBus.getDefault().unregister(this)
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onMessageEvent(event: String?) {
+        // Do something
+        if (event.equals("1")){
+            sendEmail()
+        }else if (event.equals("2")){
+            generateEODReport()
+        }else{
+            if (event != null) {
+                viewModel.getReportSummary(event)
+            }
+        }
 
     }
 
