@@ -165,7 +165,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:layout_marginEnd="@dimen/_12sdp"
+                android:layout_marginEnd="@dimen/_5sdp"
                 android:layout_toStartOf="@+id/imgSync"
                 android:background="?attr/selectableItemBackground"
                 android:contentDescription="@string/search"
@@ -180,7 +180,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:layout_marginEnd="@dimen/_12sdp"
+                android:layout_marginEnd="@dimen/_5sdp"
                 android:layout_toStartOf="@+id/imgSearch"
                 android:background="?attr/selectableItemBackground"
                 android:contentDescription="@string/search"
@@ -195,7 +195,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginEnd="@dimen/_12sdp"
+                android:layout_marginEnd="@dimen/_10sdp"
                 android:background="?attr/selectableItemBackground"
                 android:gravity="center"
                 android:padding="@dimen/_5sdp"
@@ -234,22 +234,56 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:textAllCaps="true"
                     android:textSize="@dimen/_6mdpi"
                     tools:text="ELEANOR RUSSELL" />
             </LinearLayout>
 
             <View
-                android:visibility="gone"
+                android:visibility="visible"
                 android:layout_width="0.5dp"
                 android:layout_height="match_parent"
                 android:layout_marginVertical="@dimen/_5sdp"
-                android:layout_marginStart="@dimen/_6sdp"
-                android:layout_marginEnd="@dimen/_6sdp"
+                android:layout_marginStart="@dimen/_2sdp"
+                android:layout_marginEnd="@dimen/_2sdp"
                 android:background="@color/txtColor" />
+
+            <LinearLayout
+
+                android:layout_marginEnd="@dimen/_5sdp"
+                android:id="@+id/ivLock"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/_20sdp"
+                android:gravity="end"
+                android:layout_alignParentEnd="true"
+                android:layout_gravity="center"
+                android:background="?attr/selectableItemBackground"
+                android:contentDescription="@string/clock"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/_20sdp"
+                    android:layout_gravity="center"
+                    android:layout_marginEnd="@dimen/_2sdp"
+                    android:contentDescription="@string/clock"
+                    android:paddingVertical="@dimen/_5sdp"
+                    android:src="@drawable/ic_clock_out"
+                    app:tint="@color/txtColor" />
+
+                <TextView
+                    style="@style/CustomFontBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textAllCaps="true"
+                    android:textSize="@dimen/_6mdpi"
+                    android:textColor="@color/btnColor"
+                    android:text="@string/tv_clock_out" />
+            </LinearLayout>
 
             <ImageView
                 android:visibility="gone"
-                android:id="@+id/ivLock"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
