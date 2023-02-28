@@ -15,6 +15,7 @@ import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.ONLINE_ORDER_GET_NOTIFICATION
 import com.android.pos.data.remote.Constants.SEND_CLOCKOUT_NOTIFICATION
+import com.android.pos.data.remote.Constants.SYNC_FLOORPLAN
 import com.android.pos.data.remote.Constants.SYNC_MARKUP
 import com.android.pos.data.remote.Constants.SYNC_NOTIFICATION
 import com.android.pos.data.remote.Constants.SYNC_SETTING_NOTIFICATION
@@ -73,6 +74,11 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                     val intent = Intent()
                     intent.action = SYNC_MARKUP
                     sendBroadcast(intent)
+                } else if (type == "DineIn") {
+                    val intent = Intent()
+                    intent.action = SYNC_FLOORPLAN
+                    sendBroadcast(intent)
+
                 } else {
                     val intent = Intent()
                     intent.putExtra("printer_queue", "rem")
