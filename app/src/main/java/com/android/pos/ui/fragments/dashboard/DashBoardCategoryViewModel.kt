@@ -3556,12 +3556,12 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     fun getOnlineOrderCount() {
-        _showProgress.value = Event(true)
+      //  _showProgress.value = Event(true)
         viewModelScope.launch {
             val resource = posRepository.getOnlineOrderNotificationCount()
             when (resource.status) {
                 Status.SUCCESS -> {
-                    _showProgress.value = Event(false)
+                  //  _showProgress.value = Event(false)
                     resource.data?.let { it ->
                         _onlineOrderCount.value = Event(it.data)
                     }
@@ -3572,7 +3572,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 }
 
                 Status.LOADING -> {
-                    _showProgress.value = Event(true)
+                  //  _showProgress.value = Event(true)
                 }
 
             }

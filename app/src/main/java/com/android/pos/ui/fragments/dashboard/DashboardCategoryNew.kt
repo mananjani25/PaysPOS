@@ -502,7 +502,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     override fun onPause() {
         super.onPause()
-        ProgressUtils.dismissProgressDialog()
+//        ProgressUtils.dismissProgressDialog()
 
         serviceChargesObserve?.let { viewModel.serviceCharges.removeObserver(it) }
 
@@ -652,8 +652,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         }
 
 
-        if (isAdded)
-            addObserver()
+//        if (isAdded)
+//            addObserver()
     }
 
     private fun addObserver() {
@@ -1160,7 +1160,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     override fun onDestroy() {
         super.onDestroy()
-        ProgressUtils.dismissProgressDialog()
+     //   ProgressUtils.dismissProgressDialog()
     }
 
     private fun horizontalTabList() {
