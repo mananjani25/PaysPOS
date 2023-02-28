@@ -127,7 +127,7 @@
             android:fontFamily="@font/sf_pro_display_semibold"
             android:gravity="start"
             android:padding="@dimen/_5sdp"
-            android:text="@string/tv_show_refund_text_amount"
+            android:text="@string/tv_show_refund_amount"
             android:textColor="@color/txtColor"
             android:textSize="@dimen/_6mdpi" />
     </androidx.appcompat.widget.LinearLayoutCompat>

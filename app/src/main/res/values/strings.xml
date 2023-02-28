@@ -273,7 +273,7 @@
     <string name="tv_show_order_print_time"><![CDATA[SHOW ORDER & PRINT TIME]]></string>
     <string name="tv_order_time">Order Date &amp; Time</string>
     <string name="tv_print_time">Print Date &amp; Time</string>
-    <string name="tv_show_refund_text_amount">SHOW REFUND TEXT AMOUNT</string>
+    <string name="tv_show_refund_amount">SHOW REFUND AMOUNT</string>
     <string name="tv_refund_text_amount">Refund Text/Amount</string>
     <string name="tv_show_venue_information">SHOW VENUE INFORMATION</string>
     <string name="tv_logo">Logo</string>
@@ -842,7 +842,7 @@
     <string name="online_orders">ONLINE ORDERS</string>
     <string name="no_employees_found">No Employees Found</string>
     <string name="search_by_order_id_employee_customer_name">Search by Order id, employee, customer name</string>
-    <string name="search_by_customer_name_order_id_receipt_id_amount">Search by Customer name, order id, receipt id, $ amount</string>
+    <string name="search_by_customer_name_order_id_receipt_id_amount">Search by employee name, customer name, order id, receipt id, $ amount</string>
 
 
 </resources>

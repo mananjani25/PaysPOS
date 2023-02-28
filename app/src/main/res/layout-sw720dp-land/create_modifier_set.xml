@@ -11,21 +11,20 @@
             type="com.android.pos.ui.fragments.createmodifier.CreateModifierViewModel" />
     </data>
 
-    <androidx.core.widget.NestedScrollView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/bg_color"
         android:orientation="vertical">
 
-        <LinearLayout
+        <include
+            android:id="@+id/header"
+            layout="@layout/view_header_toolbar_inventory" />
+
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@color/bg_color"
             android:orientation="vertical">
-
-            <include
-                android:id="@+id/header"
-                layout="@layout/view_header_toolbar_inventory" />
-
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
@@ -168,9 +167,10 @@
                             android:layout_marginStart="@dimen/_5sdp"
                             android:layout_weight="1"
                             android:background="@null"
-                            android:digits="1234567890-_+=/.,!@#~`$%^*()|\;'[]{}?abcdefghijklmnopqrstuvwxyzABCDEFGHHIJKLMNOPQURSTUVWXYZ"
+                            android:digits="@string/character_digits_String"
                             android:gravity="start"
                             android:hint="@string/modifier"
+                            android:singleLine="true"
                             android:inputType="text"
                             android:padding="@dimen/_5sdp"
                             android:textColor="@color/txtColor"
@@ -204,8 +204,8 @@
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
             </androidx.appcompat.widget.LinearLayoutCompat>
+        </androidx.core.widget.NestedScrollView>
 
+    </LinearLayout>
 
-        </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
 </layout>

@@ -298,6 +298,11 @@ class OpenOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
                                 .contains(charString.lowercase(Locale.getDefault()))
                         ) {
                             fList.add(it)
+                        } else if (it.customer != null && ((it.customer.firstName.lowercase(Locale.getDefault()) + " "
+                                    + it.customer.lastName.lowercase(Locale.getDefault())))
+                                .contains(charString.lowercase(Locale.getDefault()))
+                        ) {
+                            fList.add(it)
                         } else if (it.employee.firstName.lowercase(Locale.getDefault())
                                 .contains(charString.lowercase(Locale.getDefault()))
                         ) {

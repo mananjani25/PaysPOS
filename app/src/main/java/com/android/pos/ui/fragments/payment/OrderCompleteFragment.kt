@@ -9301,6 +9301,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         binding.txtHome.visibility = View.GONE
         binding.txtAddCustomer.visibility = View.GONE
         binding.llOptions.visibility = View.VISIBLE
+        binding.llEmail.background =
+            resources.getDrawable(R.drawable.background_square_border_grey)
+        binding.llEmail.setTextColor(resources.getColor(R.color.txtColor))
+        binding.llMessage.background =
+            resources.getDrawable(R.drawable.background_square_border_grey)
+        binding.llMessage.setTextColor(resources.getColor(R.color.txtColor))
     }
 
     fun removePrefrenceDinein() {

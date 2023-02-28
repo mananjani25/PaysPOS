@@ -16,13 +16,17 @@
         android:layout_height="match_parent"
         android:background="@color/bg_color">
 
+        <ScrollView
+            android:layout_width="@dimen/_250sdp"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true">
+
         <LinearLayout
             android:id="@+id/linearLogin"
             android:layout_width="@dimen/_250sdp"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
+            android:layout_gravity="center"
             android:gravity="center"
-
             android:orientation="vertical">
 
 
@@ -201,6 +205,7 @@
                 android:textSize="@dimen/_6mdpi" />
         </LinearLayout>
 
+        </ScrollView>
 
 
         <androidx.appcompat.widget.AppCompatTextView
@@ -218,6 +223,5 @@
             android:textColor="@color/btnColor"
             android:textSize="@dimen/_6mdpi" />
     </RelativeLayout>
-
 
 </layout>

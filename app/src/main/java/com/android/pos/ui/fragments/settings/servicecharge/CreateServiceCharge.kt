@@ -16,6 +16,7 @@ import com.android.pos.data.remote.Constants.ADD_SERVICE_CHARGE
 import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.databinding.DialogAddServiceChargeBinding
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.DecimalDigitsCountFilter
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.gone
@@ -84,6 +85,7 @@ class CreateServiceCharge : Fragment() {
             }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
 
+        binding.editPercentage.filters = arrayOf(DecimalDigitsCountFilter(2));
         binding.editPercentage?.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
 
