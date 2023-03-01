@@ -353,7 +353,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             orderID = requireArguments().getInt("orderID")
             receiptModel = requireArguments().getParcelable("receiptData")
             receiptModelForOpenORder = requireArguments().getParcelable("receiptData")
-            Log.e(TAG,"checkreceiptModel:   ${Gson().toJson(receiptModel)}")
+            Log.e(TAG, "checkreceiptModel:   ${Gson().toJson(receiptModel)}")
             splitValue = requireArguments().getInt("splitValue")
             isSpilt = requireArguments().getBoolean("isSpilt")
             isSplitByNo = requireArguments().getBoolean("isSplitByNo")
@@ -519,14 +519,16 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         MethodUtils.roundOffAmount(paidAmount)
                     binding.txtPaymentAmount.text =
                         "" + MainApplication.getInstance()!!
-                            .getText(R.string.symbole) + MethodUtils.roundOffAmountDown(paidAmount).toDouble().toPrecision(2) + " payment successful"
+                            .getText(R.string.symbole) + MethodUtils.roundOffAmountDown(paidAmount)
+                            .toDouble().toPrecision(2) + " payment successful"
 
                 } else {
                     binding.txtTitle.text =
                         MethodUtils.roundOffAmount(paidAmount + tipAmount)
                     binding.txtPaymentAmount.text =
                         "" + MainApplication.getInstance()!!
-                            .getText(R.string.symbole) + MethodUtils.roundOffAmountDown(paidAmount + tipAmount).toDouble().toPrecision(2) + " payment successful"
+                            .getText(R.string.symbole) + MethodUtils.roundOffAmountDown(paidAmount + tipAmount)
+                            .toDouble().toPrecision(2) + " payment successful"
                 }
 
 
@@ -692,7 +694,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 binding.txtPaymentAmount.text =
                     "" + MainApplication.getInstance()!!
-                        .getText(R.string.symbole) + MethodUtils.roundOffAmountDown(paidAmount + tipAmount).toDouble().toPrecision(2) + " payment successful"
+                        .getText(R.string.symbole) + MethodUtils.roundOffAmountDown(paidAmount + tipAmount)
+                        .toDouble().toPrecision(2) + " payment successful"
 
 
             }
@@ -5799,7 +5802,15 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                 noItem = true
                                             }
                                         }
-                                        Log.e(TAG,"checkOrderType  ${prefProvider.getValue(ORDER_TYPE,"")}")
+                                        Log.e(
+                                            TAG,
+                                            "checkOrderType  ${
+                                                prefProvider.getValue(
+                                                    ORDER_TYPE,
+                                                    ""
+                                                )
+                                            }"
+                                        )
                                         if (kitchenPrinterList.isNotEmpty() && noItem == false) {
                                             for (i in 0 until kitchenPrinterList.size) {
                                                 if (kitchenPrinterList[i].status) {
@@ -5956,7 +5967,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }"
             )
 
-            Log.e(TAG,"updafwwewe  ${Gson().toJson(Gson().toJson(receiptModel?.order?.orderItems))}")
+            Log.e(
+                TAG,
+                "updafwwewe  ${Gson().toJson(Gson().toJson(receiptModel?.order?.orderItems))}"
+            )
             var itemIds: ArrayList<Int> =
                 arrayListOf()
             arrayItems.forEach {
@@ -6272,41 +6286,45 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             builder.addTextAlign(Builder.ALIGN_CENTER)
 
             addBuilderText(builder, prefProvider.getValue(BUSINESS_NAME, "").toString())
-            builder.addFeedLine(1)
-            builder.addTextFont(Builder.FONT_E)
-            builder.addTextAlign(Builder.ALIGN_CENTER)
-            builder.addTextLang(Builder.LANG_EN)
-            addCustomerTextSize(builder, customerSettingModel.fonts)
+            if (customerSettingModel.showVenueAddress) {
+                builder.addFeedLine(1)
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, customerSettingModel.fonts)
 
-            builder.addTextStyle(
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.COLOR_1
-            )
-
-            addBuilderText(
-                builder,
-                prefProvider.getValue(BUSINESS_ADDRESS, "").toString()
-            )
-            builder.addFeedLine(1)
-
-            builder.addTextFont(Builder.FONT_E)
-            builder.addTextAlign(Builder.ALIGN_CENTER)
-            builder.addTextLang(Builder.LANG_EN)
-            addCustomerTextSize(builder, customerSettingModel.fonts)
-            builder.addTextStyle(
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.COLOR_1
-            )
-            addBuilderText(
-                builder,
-                MethodUtils.getUSFormatNumber(
-                    prefProvider.getValue(BUSINESS_PHONE_NO, "").toString()
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
                 )
-            )
+
+                addBuilderText(
+                    builder,
+                    prefProvider.getValue(BUSINESS_ADDRESS, "").toString()
+                )
+            }
+            if (customerSettingModel.showVenuePhone) {
+                builder.addFeedLine(1)
+
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, customerSettingModel.fonts)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+                addBuilderText(
+                    builder,
+                    MethodUtils.getUSFormatNumber(
+                        prefProvider.getValue(BUSINESS_PHONE_NO, "").toString()
+                    )
+                )
+            }
 
 
             receiptModel?.order?.venue_website?.let {
@@ -9018,8 +9036,16 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             PrintSunmiUtils.addHorizontal()
             SunmiPrinterApi.getInstance().lineWrap(1)
 
-            Log.e(TAG,"getValueUpdate:  ${prefProvider.getValueboolean(OPEN_ORDER_UPDATE_FOR_PRINT,false)}")
-            if (prefProvider.getValueboolean(OPEN_ORDER_UPDATE_FOR_PRINT,false) == true){
+            Log.e(
+                TAG,
+                "getValueUpdate:  ${
+                    prefProvider.getValueboolean(
+                        OPEN_ORDER_UPDATE_FOR_PRINT,
+                        false
+                    )
+                }"
+            )
+            if (prefProvider.getValueboolean(OPEN_ORDER_UPDATE_FOR_PRINT, false) == true) {
                 receiptModel?.order?.orderItems?.let {
                     var printOrderItems = checkOrderItemsForOpenORderUpdate()
 
@@ -9530,8 +9556,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             PrintSunmiUtils.printBusinessDetails(
                 prefProvider.getValue(BUSINESS_NAME, ""),
-                prefProvider.getValue(BUSINESS_ADDRESS, ""),
-                prefProvider.getValue(BUSINESS_PHONE_NO, "")
+               if (customerSettingModel.showVenueAddress) prefProvider.getValue(BUSINESS_ADDRESS, "") else "",
+               if (customerSettingModel.showVenuePhone) prefProvider.getValue(BUSINESS_PHONE_NO, "") else ""
             )
 
 
@@ -10201,8 +10227,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             PrintSunmiUtils.printBusinessDetailsInner(
                 prefProvider.getValue(BUSINESS_NAME, ""),
-                prefProvider.getValue(BUSINESS_ADDRESS, ""),
-                prefProvider.getValue(BUSINESS_PHONE_NO, "")
+                if (customerSettingModel.showVenueAddress){prefProvider.getValue(BUSINESS_ADDRESS, "")}else "",
+                if (customerSettingModel.showVenuePhone)prefProvider.getValue(BUSINESS_PHONE_NO, "") else ""
             )
 
 
@@ -10216,13 +10242,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             receiptModel?.order?.orderType?.trim()?.let { PrintSunmiUtils.headerText(it) }
             SunmiPrintHelper.getInstance().lineWrap(1)
 
-        /*    if (receiptModel?.order?.orderType?.lowercase() == OPEN_ORDER.lowercase()
-                || receiptModel?.order?.orderType?.lowercase() == OPEN_ORDER.lowercase()
-            ) {
+            /*    if (receiptModel?.order?.orderType?.lowercase() == OPEN_ORDER.lowercase()
+                    || receiptModel?.order?.orderType?.lowercase() == OPEN_ORDER.lowercase()
+                ) {
 
-                //  receiptModel?.order?.deliveryType?.let { PrintSunmiUtils.headerText(it) }
-            }
-*/
+                    //  receiptModel?.order?.deliveryType?.let { PrintSunmiUtils.headerText(it) }
+                }
+    */
 
 
             if (customerSettingModel.fonts == LARGE) {
