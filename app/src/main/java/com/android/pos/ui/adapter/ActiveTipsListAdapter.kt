@@ -2,6 +2,7 @@ package com.android.pos.ui.adapter
 
 import android.annotation.SuppressLint
 import android.graphics.Color
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -53,8 +54,9 @@ class ActiveTipsListAdapter() :
 
             val coroutineScope = CoroutineScope(Dispatchers.Main)
             coroutineScope.launch {
-                delay(3000)
-                binding.rootLayout.performClick()
+                //delay(3000)
+                //Log.d("MERA", "SCOPE: CALLED")
+                //binding.rootLayout.performClick()
             }
 
         }
@@ -63,9 +65,9 @@ class ActiveTipsListAdapter() :
             //val selectedItem = layoutPosition
             val selectedItem = 2
             binding.rootLayout.setOnSingleClickListener {
-                selectedPosition = selectedItem
+                selectedPosition = layoutPosition
                 notifyDataSetChanged()
-                listner.selectedItem(discountList[selectedItem], selectedItem, wholeTotalPrice)
+                listner.selectedItem(discountList[layoutPosition], layoutPosition, wholeTotalPrice)
             }
         }
     }

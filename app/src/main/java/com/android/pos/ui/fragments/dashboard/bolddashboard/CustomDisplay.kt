@@ -1,10 +1,14 @@
 package com.android.pos.ui.fragments.dashboard.bolddashboard
 
+import android.app.Activity
 import android.app.Presentation
 import android.content.Context
+import android.graphics.Bitmap
 import android.os.Bundle
+import android.util.Base64
 import android.util.Log
 import android.view.*
+import android.widget.Toast
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -14,12 +18,15 @@ import com.android.pos.data.model.DineInModel
 import com.android.pos.data.model.GuestPaymentCalculationModel
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.data.model.responseModel.GetTipReponse
+import com.android.pos.data.model.responseModel.MagtekOnlineOrderRefundResponse
 import com.android.pos.data.model.responseModel.TimeDetailsResponse
 import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.ORDER_TYPE
+import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.databinding.ViewCustomDisplayBinding
+import com.android.pos.di.ApiModule1
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.ActiveTipsListAdapter
 import com.android.pos.ui.adapter.DineInAdapter
@@ -29,6 +36,9 @@ import com.android.pos.ui.adapter.boldpos.TaxBirfurcationAdapter
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
+import com.android.pos.ui.fragments.magtek.MagtekRequestUtils
+import com.android.pos.ui.fragments.magtek.PaymentResponse
+import com.android.pos.ui.fragments.payment.PaymentViewModel
 import com.android.pos.ui.fragments.settings.tip.TipListViewModel
 import com.android.pos.ui.fragments.transactions.TransactionViewModel
 import com.android.pos.utils.*
@@ -37,8 +47,13 @@ import com.android.pos.utils.extensions.*
 import com.android.pos.utils.statusUtils.Status
 import com.github.gcacace.signaturepad.views.SignaturePad.OnSignedListener
 import com.google.gson.Gson
+import com.google.gson.JsonArray
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import java.io.ByteArrayOutputStream
 
 class CustomDisplay(
     display: Display,
@@ -51,6 +66,9 @@ class CustomDisplay(
 ) : Presentation(context, display), MyCallback, DineInAdapter.DineInCallback,
     ActiveTipsListAdapter.DiscountInterface {
 
+    private lateinit var apiModule1: ApiModule1
+    private lateinit var magtekRequestUtils: MagtekRequestUtils
+    private lateinit var magensaResponse: String
     private var tippedAmount: Double = 0.0
     private var tipRate: Double = 0.0
     private var mOrderID: Int = 0
@@ -1162,7 +1180,7 @@ class CustomDisplay(
                 activeTipsListAdapter.setList(it.data, wholeTotalPrice)
                 activeTipsListAdapter.setListner(this)
                 lifecycleOwner.lifecycleScope.launch {
-                    delay(5000)
+                    //delay(5000)
                     //binding.rvActiveTipsList.smoothScrollToPosition(tipsList.size - 1)
                 }
             }
@@ -1195,40 +1213,39 @@ class CustomDisplay(
 
             txtContinue.setOnClickListener {
 
-                val enteredTippedAmount =
-                    edtAmount.text.toString().replace("$", "").trim().toDouble()
+                tippedAmount = edtAmount.text.toString().replace("$", "").trim().toDouble()
 
-//                if(mIsCardPayment){
-//                    magtekCall(enteredTippedAmount)
-//                }else{
+                if (mIsCardPayment) {
+                    magtekCall(wholeTotalPrice)
+                } else {
                     callUpdateTip()
-//                }
+                }
             }
 
-            lifecycleOwner.lifecycleScope.launch {
-                delay(1500)
-                incKeypad.tvThree.performClick()
-                delay(1500)
-                incKeypad.tvFive.performClick()
-                delay(1500)
-                incKeypad.tvSix.performClick()
-
-                delay(1500)
-                incKeypad.txtClearLast.performClick()
-
-                delay(1500)
-                incKeypad.txtClearAll.performClick()
-
-                delay(1500)
-                incKeypad.tvEight.performClick()
-                delay(1500)
-                incKeypad.tvOne.performClick()
-                delay(1500)
-                incKeypad.tvFour.performClick()
-
-                delay(2000)
-                txtContinue.performClick()
-            }
+//            lifecycleOwner.lifecycleScope.launch {
+//                delay(1500)
+//                incKeypad.tvThree.performClick()
+//                delay(1500)
+//                incKeypad.tvFive.performClick()
+//                delay(1500)
+//                incKeypad.tvSix.performClick()
+//
+//                delay(1500)
+//                incKeypad.txtClearLast.performClick()
+//
+//                delay(1500)
+//                incKeypad.txtClearAll.performClick()
+//
+//                delay(1500)
+//                incKeypad.tvEight.performClick()
+//                delay(1500)
+//                incKeypad.tvOne.performClick()
+//                delay(1500)
+//                incKeypad.tvFour.performClick()
+//
+//                delay(2000)
+//                txtContinue.performClick()
+//            }
 
         }
     }
@@ -1378,12 +1395,19 @@ class CustomDisplay(
         wholeTotalPrice: Double,
         orderId: Int,
         isCardPayment: Boolean,
-        isSignatureRequired: Boolean = true
+        isSignatureRequired: Boolean = true,
+        paymentViewModel: PaymentViewModel,
+        magRequestUtils: MagtekRequestUtils,
+        apiModule1: ApiModule1
     ) {
 
         mOrderID = orderId
         mIsCardPayment = isCardPayment
         mTransactionViewModel = transactionViewModel
+
+        magensaResponse = paymentViewModel.magensaResponse ?: ""
+        magtekRequestUtils = magRequestUtils
+        this.apiModule1 = apiModule1
 
         binding.apply {
             askForTipLayout.visible()
@@ -1419,13 +1443,23 @@ class CustomDisplay(
 
             binding.tvContinue.setOnSingleClickListener {
 
-                showTipsAddedVer2(tipRate, tippedAmount)
+                if (!signaturePad.isEmpty) {
+                    val signBase64 = bitmapToBase64(signaturePad.signatureBitmap)
+                    Log.d(TAG, "showWouldYouLikeToAddTipScreen: SIGN BASE-64 = $signBase64")
+                    showTipsAddedVer2(tipRate, tippedAmount)
 
-                mainCartLayout.visible()
-                addTipKeypadLayout.gone()
-                askForTipLayout.gone()
-                splashLayout.gone()
-                thankYouLayout.gone()
+                    mainCartLayout.visible()
+                    addTipKeypadLayout.gone()
+                    askForTipLayout.gone()
+                    splashLayout.gone()
+                    thankYouLayout.gone()
+                } else {
+                    Toast.makeText(
+                        context,
+                        "Looks like you forgot to sign the form. Please do so to proceed.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
 
             }
 
@@ -1442,13 +1476,13 @@ class CustomDisplay(
 
                 override fun onClear() {
                     yourSignatureLabel.visible()
-                    clearSignLayout?.gone()
+                    clearSignLayout?.invisible()
                 }
 
             })
 
             lifecycleOwner.lifecycleScope.launch {
-                delay(3000)
+                //delay(3000)
                 //otherRootLayout?.performClick()
                 //noTipRootLayout?.performClick()
             }
@@ -1456,9 +1490,16 @@ class CustomDisplay(
         }
     }
 
+    fun bitmapToBase64(bitmap: Bitmap): String {
+        val byteArrayOutputStream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
+        val byteArray = byteArrayOutputStream.toByteArray()
+        return Base64.encodeToString(byteArray, Base64.DEFAULT)
+    }
+
     private fun callUpdateTip() {
         lifecycleOwner.lifecycleScope.launch {
-            delay(3000)
+            delay(500)
             mTransactionViewModel.orderUpdateTip(mOrderID, tippedAmount, mIsCardPayment)
             showThankYou()
         }
@@ -1467,10 +1508,322 @@ class CustomDisplay(
     override fun selectedItem(model: GetTipReponse.Data, pos: Int, wholeTotalPrice: Double) {
         tipRate = model.rate
         tippedAmount = MethodUtils.percentageCalculation(wholeTotalPrice, model.rate)
-//        if(mIsCardPayment){
-//            magtekCall(tippedAmount)
-//        }else{
+        if (mIsCardPayment) {
+            magtekCall(wholeTotalPrice)
+        } else {
             callUpdateTip()
-//        }
+        }
+    }
+
+    private fun magtekCall(
+        wholeTotalPrice: Double
+    ) {
+        Log.d("MERA", "magtekCall: CALLED")
+        if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == "OnlineWebOrder") {
+            val model = Gson().fromJson(
+                magensaResponse,
+                MagtekOnlineOrderRefundResponse::class.java
+            )
+            val jsonArray: JsonArray?
+
+            when {
+
+                Constants.FIRST_DATA_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                    if (model != null) {
+                        jsonArray =
+                            model.transactionOutput.token.let { it1 ->
+                                tippedAmount.times(100).let {
+                                    magtekRequestUtils.processTokenFirstData(
+                                        it,
+                                        it1,
+                                        model.customerTransactionID ?: "",
+                                        model.transactionOutput.transactionOutputDetails[0].value,
+                                        Constants.CAPTURE
+                                    )
+                                }
+                            }
+
+                        networkCall(jsonArray, 0, apiModule1)
+                    }
+                }
+
+                // not support CAPTURE
+                Constants.ELAVON_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                    jsonArray =
+                        model.transactionOutput.token.let { it1 ->
+                            magtekRequestUtils.processTokenElavon(
+                                (tippedAmount * 100),
+                                it1,
+                                model.customerTransactionID ?: "",
+                                model.transactionOutput.transactionOutputDetails[0].value
+
+                            )
+                        }
+
+                    networkCall(jsonArray, 0, apiModule1)
+                }
+
+                Constants.EPX_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                    jsonArray = model.transactionOutput.transactionID.let { it1 ->
+                        wholeTotalPrice.times(100).let {
+                            magtekRequestUtils.processReferenceIDEPXForce(
+                                it,
+                                model.customerTransactionID ?: "", it1, Constants.CAPTURE,
+                                (tippedAmount * 100).toString()
+                            )
+                        }
+                    }
+                    networkCall(jsonArray, 1, apiModule1)
+                }
+
+                Constants.VANIT_EXORESS_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                    jsonArray = model.transactionOutput.transactionID.let { it1 ->
+                        magtekRequestUtils.processReferenceIDCapture(
+                            (tippedAmount * 100),
+                            model.customerTransactionID ?: "", it1,
+                            model.transactionOutput.authCode,
+                            ""
+                        )
+                    }
+                    networkCall(jsonArray, 1, apiModule1)
+                }
+
+                Constants.CHASE_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                    val amount = wholeTotalPrice.plus(tippedAmount)
+
+                    jsonArray = amount.times(100).let {
+                        magtekRequestUtils.processTokenChase(
+                            it,
+                            model.transactionOutput?.token ?: "",
+                            model.customerTransactionID ?: "",
+                            model.transactionOutput?.authCode ?: "",
+                            Constants.CAPTURE
+                        )
+                    }
+
+                    networkCall(jsonArray, 0, apiModule1)
+                }
+                Constants.HEARTLAND_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                    val amount = wholeTotalPrice.plus(tippedAmount)
+
+                    jsonArray = model.transactionOutput.transactionID.let { it1 ->
+                        amount.times(100).let {
+                            magtekRequestUtils.processReferenceIdHeartlandCapture(
+                                it,
+                                model.customerTransactionID ?: "",
+                                it1,
+                                model.transactionOutput.authCode,
+                                (tippedAmount * 100).toString()
+                            )
+                        }
+                    }
+                    networkCall(jsonArray, 1, apiModule1)
+                }
+                Constants.TSYS_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                    jsonArray = model.transactionOutput.transactionID.let { it1 ->
+                        wholeTotalPrice.let {
+                            it.let { it2 ->
+                                magtekRequestUtils.processReferenceIDTSYSCapture(
+                                    it2,
+                                    model.customerTransactionID ?: "",
+                                    it1,
+                                    (tippedAmount)
+                                )
+                            }
+                        }
+                    }
+                    networkCall(jsonArray, 1, apiModule1)
+                }
+
+
+            }
+        } else {
+            val model = Gson().fromJson(
+                magensaResponse,
+                PaymentResponse.PaymentResponseItem::class.java
+            )
+
+
+            val jsonArray: JsonArray?
+
+            when {
+
+                Constants.FIRST_DATA_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                    if (model != null) {
+                        jsonArray =
+                            model.transactionOutput?.token?.let { it1 ->
+                                tippedAmount.times(100).let {
+                                    magtekRequestUtils.processTokenFirstData(
+                                        it,
+                                        it1,
+                                        model.customerTransactionID ?: "",
+                                        model.transactionOutput.transactionOutputDetails[0].value,
+                                        Constants.CAPTURE
+                                    )
+                                }
+                            }
+
+                        networkCall(jsonArray, 0, apiModule1)
+                    }
+                }
+
+                // not support CAPTURE
+                Constants.ELAVON_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                    jsonArray =
+                        model.transactionOutput?.token?.let { it1 ->
+                            magtekRequestUtils.processTokenElavon(
+                                (tippedAmount * 100),
+                                it1,
+                                model.customerTransactionID ?: "",
+                                model.transactionOutput.transactionOutputDetails[0].value
+
+                            )
+                        }
+
+                    networkCall(jsonArray, 0, apiModule1)
+                }
+
+                Constants.EPX_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                    jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
+                        wholeTotalPrice.times(100).let {
+                            magtekRequestUtils.processReferenceIDEPXForce(
+                                it,
+                                model.customerTransactionID ?: "", it1, Constants.CAPTURE,
+                                (tippedAmount * 100).toString()
+                            )
+                        }
+                    }
+                    networkCall(jsonArray, 1, apiModule1)
+                }
+
+                Constants.VANIT_EXORESS_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                    jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
+                        magtekRequestUtils.processReferenceIDCapture(
+                            (tippedAmount * 100),
+                            model.customerTransactionID ?: "", it1,
+                            model.transactionOutput.authCode,
+                            ""
+                        )
+                    }
+                    networkCall(jsonArray, 1, apiModule1)
+                }
+
+                Constants.CHASE_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                    val amt = wholeTotalPrice.plus(tippedAmount)
+
+                    jsonArray = amt.times(100).let {
+                        magtekRequestUtils.processTokenChase(
+                            it,
+                            model.transactionOutput?.token ?: "",
+                            model.customerTransactionID ?: "",
+                            model.transactionOutput?.authCode ?: "",
+                            Constants.CAPTURE
+                        )
+                    }
+
+                    networkCall(jsonArray, 0, apiModule1)
+                }
+                Constants.HEARTLAND_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                    val amt = wholeTotalPrice.plus(tippedAmount)
+
+                    jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
+                        amt.times(100).let {
+                            magtekRequestUtils.processReferenceIdHeartlandCapture(
+                                it,
+                                model.customerTransactionID ?: "",
+                                it1,
+                                model.transactionOutput.authCode,
+                                (tippedAmount * 100).toString()
+                            )
+                        }
+                    }
+                    networkCall(jsonArray, 1, apiModule1)
+                }
+                Constants.TSYS_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+
+                    jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
+                        wholeTotalPrice.let {
+                            it.let { it2 ->
+                                magtekRequestUtils.processReferenceIDTSYSCapture(
+                                    it2,
+                                    model.customerTransactionID ?: "",
+                                    it1,
+                                    (tippedAmount)
+                                )
+                            }
+                        }
+                    }
+                    networkCall(jsonArray, 1, apiModule1)
+                }
+
+
+            }
+        }
+
+    }
+
+    private fun networkCall(jsonArray1: JsonArray?, i: Int, apiModule1: ApiModule1) {
+        Log.d("MERA", "networkCall: CALLED")
+        //ProgressUtils.showProgressDialog(context as Activity)
+
+        val call = if (i == 1) {
+            jsonArray1?.let { apiModule1.getRetrofit1().processReferenceID(it) }
+        } else {
+            jsonArray1?.let { apiModule1.getRetrofit1().processToken(it) }
+        }
+
+        call!!.enqueue(object : Callback<PaymentResponse> {
+
+            override fun onResponse(
+                call: Call<PaymentResponse>,
+                response: Response<PaymentResponse>
+            ) {
+                //ProgressUtils.dismissProgressDialog()
+                if (response.isSuccessful) {
+                    LogUtil.logE("onResponse", Gson().toJson(response.body()))
+                    if (response.body() != null && response.body()!![0].transactionOutput != null) {
+
+                        if (response.body()!![0].transactionOutput?.isTransactionApproved == true) {
+
+                            callUpdateTip()
+
+                        } else {
+                            AlertUtils.showCustomAlert(
+                                context,
+                                response.body()!![0].transactionOutput?.transactionMessage
+                            )
+                        }
+
+
+                    } else {
+                        if (response.body()!![0].mPPGv4WSFault != null)
+                            AlertUtils.showCustomAlert(
+                                context,
+                                response.body()!![0].mPPGv4WSFault?.faultCode + "\n" +
+                                        response.body()!![0].mPPGv4WSFault?.faultReason
+                            )
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<PaymentResponse>, t: Throwable) {
+
+                //ProgressUtils.dismissProgressDialog()
+            }
+        })
     }
 }

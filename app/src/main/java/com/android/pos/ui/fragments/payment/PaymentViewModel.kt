@@ -109,7 +109,7 @@ open class PaymentViewModel @Inject constructor(
     public var actual_CashDiscountSurCharge: Double = 0.0
     public var actual_CardAmount: Double = 0.0
 
-    private var magensaResponse: String? = null
+    public var magensaResponse: String? = null
 
     fun cardReaderList() = posRepository.cardReaderActiveList()
 
@@ -142,6 +142,8 @@ open class PaymentViewModel @Inject constructor(
                     _showProgress.value = Event(false)
                     resource.data.let { response ->
                         if (response?.status == 200) {
+                            Log.d("MERA", "ON CREATE ORDER RESPONSE: CALLED - Order ID = ${response.data.order.id}")
+                            Log.d("MERA", "ON CREATE ORDER RESPONSE: CALLED - PaymentID = ${response.data.order.payments[0].id}")
 
                             resource.data?.let { createOrderResponse ->
                                 if (createOrderResponse.data.order.customer != null) {
@@ -154,6 +156,11 @@ open class PaymentViewModel @Inject constructor(
                                 if (createOrderResponse.data.order.payments.isNotEmpty()) {
                                     prefProvider.setValueInt(
                                         PAYMENT_ID,
+                                        createOrderResponse.data.order.payments[createOrderResponse.data.order.payments.size - 1].id
+                                    )
+
+                                    prefProvider.setValueInt(
+                                        PAYMENT_ID_FOR_CUSTOMER_DISPLAY,
                                         createOrderResponse.data.order.payments[createOrderResponse.data.order.payments.size - 1].id
                                     )
                                 }
