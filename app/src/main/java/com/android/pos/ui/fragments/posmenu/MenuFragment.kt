@@ -26,6 +26,7 @@ import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.getCustomerDisplay
+import com.android.pos.utils.extensions.visible
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -84,8 +85,9 @@ class MenuFragment : DialogFragment() {
     }
 
     private fun setUpHeader() {
-        binding.header.txtTitle.text = getString(R.string.menu)
+        binding.header.txtTitle.text = "Settings"
         binding.header.txtSave.text = getString(R.string.tv_home)
+        binding.header.txtLogout?.visible()
     }
 
     private fun versionDisplay() {
@@ -203,7 +205,7 @@ class MenuFragment : DialogFragment() {
                 findNavController().navigate(R.id.action_menuFragment_to_reports)
             }
         }
-        binding.linearLogout.setOnClickListener {
+        binding.header.txtLogout?.setOnClickListener {
             alert("", "Are you sure you want to Logout?") {
                 this.positiveButton("Logout") {
 

@@ -147,9 +147,9 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
             override fun afterTextChanged(s: Editable?) {
                 if (s.toString().isNotEmpty()) {
                     qty = s.toString().toInt()
-                    if (qty > 15) {
-                        qty = 15
-                        binding.edttxtQuantity.setText("15")
+                    if (qty > 1000) {
+                        qty = 1000
+                        binding.edttxtQuantity.setText("1000")
                     } else if (qty == 0) {
                         binding.edttxtQuantity.setText("1")
                     }

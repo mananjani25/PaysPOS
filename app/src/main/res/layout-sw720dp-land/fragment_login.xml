@@ -42,7 +42,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/_10sdp"
                 android:padding="@dimen/_5sdp"
-                android:text="@string/tv_Info"
+                android:text="@string/serving_efficiency"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_7mdpi" />
 
