@@ -793,6 +793,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             val newList: ArrayList<DineInModel> = arrayListOf()
 
 
+            dashboardViewModel.dineInHeaderPosition = 0
             for (i in 0 until list.size) {
                 val model = DineInModel()
                 if (list[i].isHeader == 0) {

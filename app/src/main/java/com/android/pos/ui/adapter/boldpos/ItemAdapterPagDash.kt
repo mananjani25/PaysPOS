@@ -105,7 +105,7 @@ class ItemAdapterPagDash(
 
 
 
-            if (model.modifier_set_ids.isNotEmpty()) {
+            if (model.modifier_set_ids.isNotEmpty() || model.variationsAttributes.isNotEmpty()) {
                 binding.viewLineFormodifier.visible()
             } else {
                 binding.viewLineFormodifier.gone()

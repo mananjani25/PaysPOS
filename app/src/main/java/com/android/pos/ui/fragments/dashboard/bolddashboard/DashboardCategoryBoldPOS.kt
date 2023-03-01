@@ -10,6 +10,8 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.*
+import android.view.animation.AlphaAnimation
+import android.view.animation.Animation
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.*
@@ -136,11 +138,14 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         if (count != null) {
             if (count > 0) {
                 binding.layoutHeader.txtBadgeCount?.visible()
+                binding.layoutHeader.txtBadgeCount.blink()
                 binding.layoutHeader.txtBadgeCount?.text = count.toString()
             } else {
+                 binding.layoutHeader.txtBadgeCount.clearAnimation()
                 binding.layoutHeader.txtBadgeCount?.gone()
             }
         } else {
+            binding.layoutHeader.txtBadgeCount.clearAnimation()
             binding.layoutHeader.txtBadgeCount?.gone()
         }
     }
@@ -191,6 +196,22 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
     }
 
+
+    private fun View.blink(
+        times: Int = Animation.INFINITE,
+        duration: Long = 500L,
+        offset: Long = 20L,
+        minAlpha: Float = 0.45f,
+        maxAlpha: Float = 1.0f,
+        repeatMode: Int = Animation.REVERSE
+    ) {
+        startAnimation(AlphaAnimation(minAlpha, maxAlpha).also {
+            it.duration = duration
+            it.startOffset = offset
+            it.repeatMode = repeatMode
+            it.repeatCount = times
+        })
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -1008,11 +1029,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         cartList[0].dineInList = dineInList
                     }
 
-                    LogUtil.logE(
-                        TAG,
-                        "dineInCartListData:  ${Gson().toJson(cartList[0].dineInList)}"
-                    )
+
                     if (cartList[0].dineInList?.isNotEmpty() == true) {
+                        Log.e("checkDineHeaderPos","dineInHeaderPosition:  ${viewModel.dineInHeaderPosition}")
+
                         var dineInList = cartList[0].dineInList
                         dineInList!![0]?.selectedPosition = viewModel.dineInHeaderPosition
                         viewModel.newCartLogicModifier(
@@ -1050,8 +1070,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     }
 
     private fun addObserver() {
-
-
         viewModel.showProgress.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {

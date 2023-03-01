@@ -194,7 +194,6 @@
                         android:layout_gravity="center"
                         android:layout_marginEnd="@dimen/_5sdp"
                         app:srcCompat="@drawable/ic_calendar"
-                        app:tint="@color/color65"
                         tools:ignore="ContentDescription" />
 
                     <androidx.appcompat.widget.AppCompatTextView

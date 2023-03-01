@@ -254,6 +254,10 @@ class OnlineOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
                                     .contains(charString.lowercase(Locale.getDefault()))
                             ) {
                                 fList.add(it)
+                            } else if (it.employee.name.lowercase(Locale.getDefault())
+                                    .contains(charString.lowercase(Locale.getDefault()))
+                            ) {
+                                fList.add(it)
                             }
                         }
                     }

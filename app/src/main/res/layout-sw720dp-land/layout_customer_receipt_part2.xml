@@ -127,7 +127,7 @@
             android:fontFamily="@font/sf_pro_display_semibold"
             android:gravity="start"
             android:padding="@dimen/_5sdp"
-            android:text="@string/tv_show_refund_text_amount"
+            android:text="@string/tv_show_refund_amount"
             android:textColor="@color/txtColor"
             android:textSize="@dimen/_6mdpi" />
     </androidx.appcompat.widget.LinearLayoutCompat>
@@ -711,6 +711,65 @@
             app:trackTint="@color/switch_track_tint"
             tools:ignore="UseSwitchCompatOrMaterialXml" />
     </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:layout_weight="1"
+            android:fontFamily="@font/sf_pro_display_semibold"
+            android:gravity="start"
+            android:padding="@dimen/_5sdp"
+            android:text="@string/tv_show_cash_or_surcharge"
+            android:textColor="@color/txtColor"
+            android:textSize="@dimen/_6mdpi" />
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/view" />
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:fontFamily="@font/sf_pro_display_semibold"
+            android:gravity="start"
+            android:padding="@dimen/_5sdp"
+            android:text="CASH DISCOUNT OR SURCHARGE"
+            android:textColor="@color/txtColor"
+            android:textSize="@dimen/_6mdpi" />
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/swtSurCash"
+            style="@style/AppTheme"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:scaleX="0.7"
+            android:scaleY="0.8"
+            android:showText="false"
+            android:thumb="@drawable/custom_thumb_printer_active_switch"
+            android:visibility="visible"
+            app:srcCompat="@drawable/ic_arrow_forward"
+            app:thumbTint="@color/switch_thumb_selector"
+            app:track="@drawable/custom_switch_track_printer"
+            app:trackTint="@color/switch_track_tint"
+            tools:ignore="UseSwitchCompatOrMaterialXml" />
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
 
     <View
         android:layout_width="match_parent"

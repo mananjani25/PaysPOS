@@ -147,7 +147,7 @@ class CustomDisplay(
 
     }
 
-    private fun updateCustomerDisplay(cartList: List<CartModel>) {
+    fun updateCustomerDisplay(cartList: List<CartModel>) {
         if (this::binding.isInitialized) {
 
             if (cartList.isNotEmpty()) {

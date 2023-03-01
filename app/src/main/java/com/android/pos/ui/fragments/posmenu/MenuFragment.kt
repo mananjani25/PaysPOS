@@ -6,11 +6,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.android.pos.BuildConfig
 import com.android.pos.R
+import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentMenuBinding
 import com.android.pos.di.ApiModule.BASE_URL
@@ -18,8 +20,12 @@ import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.utils.AlertUtils
+import com.android.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
+import com.android.pos.ui.fragments.dinein.DineInOrderTableViewModel
+import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.alert
+import com.android.pos.utils.getCustomerDisplay
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -31,6 +37,8 @@ class MenuFragment : DialogFragment() {
     @Inject
     lateinit var rolePermission: RolePermission
     private val viewModel by viewModels<DashBoardCategoryViewModel>()
+
+    private val dashBoardCategoryViewModel by activityViewModels<DashBoardCategoryViewModel>()
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -45,7 +53,34 @@ class MenuFragment : DialogFragment() {
         setUpHeader()
         versionDisplay()
 
+        getCustomerDisplay(requireContext())?.let { display ->
+            presentation = CustomDisplay(
+                display,
+                requireContext(),
+                viewLifecycleOwner,
+                dashboardViewModel,
+                passcodeViewModel,
+                dineInViewModel
+            )
+        }
+
         return binding.root
+    }
+
+    private lateinit var presentation: CustomDisplay
+    private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
+    private val passcodeViewModel by activityViewModels<PasscodeViewModel>()
+    private val dineInViewModel by viewModels<DineInOrderTableViewModel>()
+
+    @Inject
+    lateinit var apiService: ApiService
+
+    override fun onResume() {
+        super.onResume()
+        if (this::presentation.isInitialized) {
+            presentation.show()
+            presentation.onLogOutOrClockOutWithApiService(apiService)
+        }
     }
 
     private fun setUpHeader() {
@@ -121,7 +156,7 @@ class MenuFragment : DialogFragment() {
     private fun onClick() {
         binding.header.txtSave.setOnClickListener {
             findNavController().navigateUp()
-            /*findNavController().navigateUp()*/
+            manageCustomerDisplay()
         }
         binding.linearSettings.setOnClickListener {
             findNavController().navigate(R.id.action_menuFragment_to_settings)
@@ -131,6 +166,8 @@ class MenuFragment : DialogFragment() {
         }
         binding.header.imgBack.setOnClickListener {
             findNavController().navigateUp()
+            manageCustomerDisplay()
+
         }
         binding.linearInventory.setOnClickListener {
             if (rolePermission.hasInventoryPermission(binding.root)) {
@@ -208,6 +245,21 @@ class MenuFragment : DialogFragment() {
 //            }
         }
 
+    }
+
+    private fun manageCustomerDisplay() {
+        if (this::presentation.isInitialized) {
+            presentation.show()
+            presentation.onDisplayChanged()
+            dashBoardCategoryViewModel.mAllWords(
+                prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT),
+                prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+            ).observe(requireActivity()) {
+                it?.let {
+                    presentation.updateCustomerDisplay(it)
+                }
+            }
+        }
     }
 
     private fun closeDialog(dialog: Dialog?) {

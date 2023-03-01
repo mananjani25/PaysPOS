@@ -1237,8 +1237,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             binding.tvCash2,
             binding.tvCash3
         )
-        Log.e("checkPaymentPrice", "WholetotalPrice:   ${WholetotalPrice}")
+        Log.e("checkPaymentPrice", "cashDiscountSurcharge:   ${cashDiscountSurcharge}")
 
+        Log.e("ChceckPriceWithCash","getPriceWithCash  ${getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount}")
         MethodUtils.setPriceTextView(
             binding.tvCash,
             getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount
@@ -1335,7 +1336,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     private fun getCalCashDiscWithAmount(totalprice: Double, isCash: Boolean): Double {
         return if (isCash) {
             if (cashDiscountType == "CashDiscount") {
+                if (totalprice - cashDiscountSurcharge < 0.0){
+                    0.0
+                }
+                else{
                 totalprice - cashDiscountSurcharge
+                    }
             } else {
                 totalprice
             }

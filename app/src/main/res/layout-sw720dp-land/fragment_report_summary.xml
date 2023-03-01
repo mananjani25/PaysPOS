@@ -108,35 +108,45 @@
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/text_size_medium" />
 
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="wrap_content"
-                android:layout_height="@dimen/_20sdp"
-                android:background="@drawable/background_square_border_grey"
-                android:onClick="@{() -> viewModel.datePicker(true)}"
-                android:orientation="horizontal"
-                android:padding="@dimen/_5sdp">
+                android:layout_height="wrap_content">
 
-
-                <ImageView
+                <LinearLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginEnd="@dimen/_5sdp"
-                    app:srcCompat="@drawable/ic_calendar"
-                    tools:ignore="ContentDescription" />
+                    android:layout_height="@dimen/_20sdp"
+                    android:background="@drawable/background_square_border_grey"
+                    android:onClick="@{() -> viewModel.datePicker(true)}"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/_5sdp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
 
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tvStartDate"
-                    style="@style/CustomFontSemiBold"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:text="@{viewModel.startDate}"
-                    android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_5mdpi"
-                    tools:text="2021-08-10" />
-            </LinearLayout>
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginEnd="@dimen/_5sdp"
+                        app:srcCompat="@drawable/ic_calendar"
+                        tools:ignore="ContentDescription" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvStartDate"
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:text="@{viewModel.startDate}"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_5mdpi"
+                        tools:text="2021-08-10" />
+                </LinearLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
@@ -149,33 +159,43 @@
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_5mdpi" />
 
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="wrap_content"
-                android:layout_height="@dimen/_20sdp"
-                android:background="@drawable/background_square_border_grey"
-                android:onClick="@{() -> viewModel.datePicker(false)}"
-                android:orientation="horizontal"
-               android:padding="@dimen/_5sdp">
+                android:layout_height="wrap_content">
 
-                <ImageView
+                <LinearLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginEnd="@dimen/_5sdp"
-                    app:srcCompat="@drawable/ic_calendar"
-                    tools:ignore="ContentDescription" />
+                    android:layout_height="@dimen/_20sdp"
+                    android:background="@drawable/background_square_border_grey"
+                    android:onClick="@{() -> viewModel.datePicker(false)}"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/_5sdp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
 
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tvEndDate"
-                    style="@style/CustomFontSemiBold"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="@{viewModel.endDate}"
-                    android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_5mdpi"
-                    tools:text="2021-08-10" />
-            </LinearLayout>
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginEnd="@dimen/_5sdp"
+                        app:srcCompat="@drawable/ic_calendar"
+                        tools:ignore="ContentDescription" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvEndDate"
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="@{viewModel.endDate}"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_5mdpi"
+                        tools:text="2021-08-10" />
+                </LinearLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <RelativeLayout
                 android:layout_width="@dimen/_80sdp"
