@@ -18,6 +18,7 @@ import com.android.pos.data.remote.Constants.DIALOG_KEY_ADD_VARIATION_DETAILS
 import com.android.pos.databinding.DialogCustomVariationBinding
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.AmountTextWatcher
+import com.android.pos.utils.ItemPriceTextWatcher
 import com.android.pos.utils.extensions.setNavigationResult
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -47,7 +48,7 @@ class CustomVariationDialog : DialogFragment(), View.OnClickListener,
 
 
         binding.tvVariationsPrice.addTextChangedListener(
-            AmountTextWatcher(
+            ItemPriceTextWatcher(
                 binding.tvVariationsPrice,
                 false
             )
