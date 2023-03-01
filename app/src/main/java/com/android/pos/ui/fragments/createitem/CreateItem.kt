@@ -55,7 +55,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback, ItemCallback,
-    ModifierSetsListAdapter.ModifierCallback {
+    ModifierSetsListAdapter.ModifierCallback, ModifierSetsListAdapter.ModifierDeleteCallback {
 
     private var spinnerAdapter: ArrayAdapter<ModifierSet>? = null
     private var productCode: String? = ""
@@ -432,7 +432,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback, It
                     }
                 }
 
-                if (isEdit){
+                if (isEdit) {
                     adapter.add(
                         MethodUtils.convertSortListForModifierSet(
                             itemObject.modifier_set_ids,
@@ -520,7 +520,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback, It
         adapter = ModifierSetsListAdapter(true)
         binding.rvModifiersList.adapter = adapter
         adapter.setCallback(this)
-        adapter.setDeleteCallback(this)
+        adapter.onDelteCallbackMod(this)
 
         val touchHelper =
             ItemTouchHelper(object :
@@ -885,12 +885,14 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback, It
     }
 
     override fun onDeleteCallback(modifierSet: ModifierSet) {
-        Log.e(TAG,"DeleteCallback  ${Gson().toJson(itemObject.modifier_set_ids)}")
-        Log.e(TAG,"DeleteCallbackModSet  ${Gson().toJson(modifierSet)}")
+        Log.e(TAG, "DeleteCallback  ${Gson().toJson(itemObject.modifier_set_ids)}")
+        Log.e(TAG, "DeleteCallbackModSet  ${Gson().toJson(modifierSet)}")
 
 
         if (isEdit) {
-            modifierSet.id?.let { itemObject.modifier_set_ids.toCollection(arrayListOf()).remove(it) }
+            modifierSet.id?.let {
+                itemObject.modifier_set_ids.toCollection(arrayListOf()).remove(it)
+            }
         }
 
         runOnUiThread(Runnable {
@@ -952,6 +954,83 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback, It
 
         })
 
+
+    }
+
+    override fun onDelete(pos: Int) {
+
+        var modifierSet = adapter.getAll().get(pos)
+
+        Log.e(TAG, "DeleteCallback  ${Gson().toJson(itemObject.modifier_set_ids)}")
+        Log.e(TAG, "DeleteCallbackModSet  ${Gson().toJson(modifierSet)}")
+
+
+        if (isEdit) {
+            modifierSet.id?.let {
+                itemObject.modifier_set_ids.toCollection(arrayListOf()).remove(it)
+            }
+        }
+
+        adapter.removeItem(pos)
+
+        runOnUiThread(Runnable {
+            spinnerList.add(modifierSet)
+
+            binding.edtModifiersList?.adapter = null
+            Log.e(TAG, "spinnerListSize:  ${spinnerList.size}")
+            spinnerAdapter =
+                ArrayAdapter(
+                    requireContext(),
+                    android.R.layout.simple_spinner_item,
+                    spinnerList
+                )
+            spinnerAdapter?.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+
+            binding.edtModifiersList?.adapter = spinnerAdapter
+
+            binding.edtModifiersList?.onItemSelectedListener =
+                object : AdapterView.OnItemSelectedListener {
+                    override fun onItemSelected(
+                        p0: AdapterView<*>?,
+                        p1: View?,
+                        position: Int,
+                        p3: Long
+                    ) {
+                        Log.e("OnSpinItemSelected", "OnItemSelected")
+                        if (position != 0) {
+                            var mod = spinnerList.get(position)
+
+                            mod.id?.let { it1 ->
+                                if (isEdit) {
+                                    itemObject.modifier_set_ids.toCollection(arrayListOf())
+                                        .add(
+                                            it1
+                                        )
+                                }
+
+                                runOnUiThread(Runnable {
+                                    spinnerAdapter?.remove(spinnerList.get(position))
+                                    spinnerAdapter?.notifyDataSetChanged()
+                                    binding.edtModifiersList?.setSelection(0)
+                                    adapter.addItem(mod)
+                                })
+                            }
+
+                            //  viewModel.updateMod(mod)
+
+
+                        }
+
+                    }
+
+                    override fun onNothingSelected(p0: AdapterView<*>?) {
+
+                    }
+
+                }
+
+
+        })
 
     }
 
