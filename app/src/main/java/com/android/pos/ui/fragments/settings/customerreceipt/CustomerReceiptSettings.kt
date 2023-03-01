@@ -502,11 +502,25 @@ class CustomerReceiptSettings : Fragment() {
                 } else {
                     binding.layoutCustomerReceipt.txtAddress.visibility = View.GONE
                 }
-                if (model.showVenuePhone) {
+                if (model.showCustomerPhone) {
                     binding.layoutCustomerReceipt.txtCustomerPhone.visibility = View.VISIBLE
 
                 } else {
                     binding.layoutCustomerReceipt.txtCustomerPhone.visibility = View.GONE
+                }
+
+                if (model.showCustomerAddress) {
+                    binding.layoutCustomerReceipt.txtCusAddress.visibility = View.VISIBLE
+
+                } else {
+                    binding.layoutCustomerReceipt.txtCusAddress.visibility = View.GONE
+                }
+
+                if (model.showCustomerName){
+                    binding.layoutCustomerReceipt.txtCustomerName.visibility = View.VISIBLE
+                }
+                else{
+                    binding.layoutCustomerReceipt.txtCustomerName.visibility = View.GONE
                 }
                 /*if (model.showCustomNote) {
                     binding.layoutCustomerReceipt.txtSugarLabel.visibility = View.VISIBLE

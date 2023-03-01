@@ -1599,7 +1599,15 @@ class CartFragment(
 
         } else {
 
-            val bundle = bundleOf("DINE_IN" to true, "position" to position, "cartList" to cartlist)
+            var listOfCustomersID:ArrayList<Int> = arrayListOf()
+            cartlist[0].dineInList?.forEach {
+                if(it.customer != null){
+                    listOfCustomersID.add(it.customer?.id ?: 0)
+
+                }
+
+            }
+            val bundle = bundleOf("DINE_IN" to true, "position" to position, "cartList" to cartlist, "listOfCustomersID" to listOfCustomersID)
             findNavController().navigate(
                 R.id.action_dashboardCategoryBoldPOS_to_assignCustomerOrderFragment, bundle
             )
