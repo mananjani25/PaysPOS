@@ -9556,8 +9556,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             PrintSunmiUtils.printBusinessDetails(
                 prefProvider.getValue(BUSINESS_NAME, ""),
-               if (customerSettingModel.showVenueAddress) prefProvider.getValue(BUSINESS_ADDRESS, "") else "",
-               if (customerSettingModel.showVenuePhone) prefProvider.getValue(BUSINESS_PHONE_NO, "") else ""
+                if (customerSettingModel.showVenueAddress) prefProvider.getValue(
+                    BUSINESS_ADDRESS,
+                    ""
+                ) else "",
+                if (customerSettingModel.showVenuePhone) prefProvider.getValue(
+                    BUSINESS_PHONE_NO,
+                    ""
+                ) else ""
             )
 
 
@@ -9568,9 +9574,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 //            SunmiPrinterApi.getInstance().lineWrap(1)
 
 
-            SunmiPrinterApi.getInstance().lineWrap(2)
+            if (customerSettingModel.showOrderType) {
+                SunmiPrinterApi.getInstance().lineWrap(2)
 
-            receiptModel?.order?.orderType?.trim()?.let { PrintSunmiUtils.printOrderType(it) }
+                receiptModel?.order?.orderType?.trim()?.let { PrintSunmiUtils.printOrderType(it) }
+            }
 
 
             /*if (receiptModel?.order?.orderType?.lowercase() == OPEN_ORDER.lowercase()
@@ -10227,8 +10235,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             PrintSunmiUtils.printBusinessDetailsInner(
                 prefProvider.getValue(BUSINESS_NAME, ""),
-                if (customerSettingModel.showVenueAddress){prefProvider.getValue(BUSINESS_ADDRESS, "")}else "",
-                if (customerSettingModel.showVenuePhone)prefProvider.getValue(BUSINESS_PHONE_NO, "") else ""
+                if (customerSettingModel.showVenueAddress) {
+                    prefProvider.getValue(BUSINESS_ADDRESS, "")
+                } else "",
+                if (customerSettingModel.showVenuePhone) prefProvider.getValue(
+                    BUSINESS_PHONE_NO,
+                    ""
+                ) else ""
             )
 
 
