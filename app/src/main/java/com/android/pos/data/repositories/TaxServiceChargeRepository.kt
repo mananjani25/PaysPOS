@@ -8,13 +8,13 @@ import com.android.pos.data.entities.TeamRole
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.GetCustomerReceiptSettingsResponse
 import com.android.pos.data.model.responseModel.GetKitchenReceiptSettingsResponse
+import com.android.pos.data.model.responseModel.GetTaxResponse
 import com.android.pos.data.model.responseModel.ServiceChargeListResponse
 import com.android.pos.data.remote.ApiHelper
 import com.android.pos.di.RolePermission
 import com.android.pos.utils.performGetOperation
 import com.android.pos.utils.performGetOperationDatabase
 import com.android.pos.utils.statusUtils.Resource
-import java.util.*
 import javax.inject.Inject
 
 class TaxServiceChargeRepository @Inject constructor(
@@ -33,16 +33,21 @@ class TaxServiceChargeRepository @Inject constructor(
     fun getTempTaxList() =
         performGetOperationDatabase(databaseQuery = { appDatabase.taxDao().allTax })
 
-    fun getTaxList() =
+     fun getTaxList() =
         performGetOperation(
             databaseQuery = { appDatabase.taxDao().allTax },
             networkCall = { apiHelperNew.getTaxList() },
             saveCallResult = { appDatabase.taxDao().addAllTaxes(it.data) })
 
-
+    suspend fun getTaxesList(): Resource<GetTaxResponse> {
+        return apiHelperNew.getTaxList()
+    }
     fun enableTaxes() =
         performGetOperationDatabase(
             databaseQuery = { appDatabase.taxDao().enableTax })
+
+    suspend fun addAllTaxListDatabase(data: List<TaxData>) =
+        appDatabase.taxDao().addAllTaxes(data)
 
     suspend fun addAllTaxDatabase(data: List<TaxData>) =
         appDatabase.taxDao().addAllTaxesSuspend(data)
