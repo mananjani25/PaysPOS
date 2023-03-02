@@ -196,8 +196,8 @@ class TransactionAdapter(val viewModel: TransactionViewModel, val prefProvider: 
                                 .contains(charString.lowercase(Locale.getDefault())) ||
                             it.orderId.toString()
                                 .contains(charString.lowercase(Locale.getDefault())) ||
-                            it.transactionId.lowercase(Locale.getDefault())
-                                .contains(charString.lowercase(Locale.getDefault())) ||
+//                            it.transactionId.lowercase(Locale.getDefault())
+//                                .contains(charString.lowercase(Locale.getDefault())) ||
                             it.totalAmount.toString()
                                 .contains(charString.lowercase(Locale.getDefault()))
                         ) {

@@ -229,8 +229,8 @@ class OpenOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
                     itemView.context.getDrawable(R.drawable.background_square_border_grey)
                 binding.txtEditOrder.background =
                     itemView.context.getDrawable(R.drawable.background_square_border_grey)
-                binding.txtCustomerReceipt.background =
-                    itemView.context.getDrawable(R.drawable.button_selected)
+//                binding.txtCustomerReceipt.background =
+//                    itemView.context.getDrawable(R.drawable.button_selected)
                 binding.txtPayNow.background =
                     itemView.context.getDrawable(R.drawable.background_square_border_grey)
                 if (filterList[bindingAdapterPosition].paymentStatus == "Paid") {

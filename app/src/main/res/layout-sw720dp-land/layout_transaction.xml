@@ -259,7 +259,7 @@
                     android:singleLine="true"
                     android:textColor="@color/txtColor"
                     android:textColorHint="@color/hint_color"
-                    android:textSize="@dimen/_6mdpi"
+                    android:textSize="@dimen/_5mdpi"
                     tools:ignore="Autofill" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>

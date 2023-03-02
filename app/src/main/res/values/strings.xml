@@ -840,7 +840,7 @@
     <string name="online_orders">ONLINE ORDERS</string>
     <string name="no_employees_found">No Employees Found</string>
     <string name="search_by_order_id_employee_customer_name">Search by Order id, employee, customer name</string>
-    <string name="search_by_customer_name_order_id_receipt_id_amount">Search by Customer name, order id, receipt id, $ amount</string>
+    <string name="search_by_customer_name_order_id_receipt_id_amount">Search by employee name/customer name/order id/receipt id/$ amount</string>
 
 
 </resources>
