@@ -188,10 +188,11 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 dashboardViewModel,
                 passcodeViewModel,
                 dineInViewModel
-            ){
-                tipAmount = it
-                tipAmountCalculation()
-            }
+            )
+//            {
+//                tipAmount = it
+//                tipAmountCalculation()
+//            }
         }
 
         return binding.root

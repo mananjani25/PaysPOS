@@ -61,11 +61,11 @@ class CustomDisplay(
     val lifecycleOwner: LifecycleOwner,
     private val dashBoardCategoryViewModel: DashBoardCategoryViewModel,
     val passcodeViewModel: PasscodeViewModel,
-    val dineInViewModel: DineInOrderTableViewModel,
-    val onTipAdded: (Double) -> Unit = {}
+    val dineInViewModel: DineInOrderTableViewModel
 ) : Presentation(context, display), MyCallback, DineInAdapter.DineInCallback,
     ActiveTipsListAdapter.DiscountInterface {
 
+    private var mIsSignatureRequired: Boolean = false
     private lateinit var apiModule1: ApiModule1
     private lateinit var magtekRequestUtils: MagtekRequestUtils
     private lateinit var magensaResponse: String
@@ -1151,8 +1151,6 @@ class CustomDisplay(
             binding.tipPercentLabel.text = "Tip (${String.format("%.0f", tipRate)}%)"
             binding.txtTipGiven.text = "" + MethodUtils.roundOffAmount(tipAmount)
         }
-        //CALLBACK METHOD CALL
-        onTipAdded(tipAmount)
     }
 
     private fun setupActiveTipsList(tipListViewModel: TipListViewModel) {
@@ -1403,6 +1401,7 @@ class CustomDisplay(
 
         mOrderID = orderId
         mIsCardPayment = isCardPayment
+        mIsSignatureRequired = isSignatureRequired
         mTransactionViewModel = transactionViewModel
 
         magensaResponse = paymentViewModel.magensaResponse ?: ""
@@ -1419,7 +1418,7 @@ class CustomDisplay(
             thankYouLayout.gone()
             addTipKeypadLayout.gone()
 
-            if (isSignatureRequired && isCardPayment) {
+            if (mIsSignatureRequired && mIsCardPayment) {
                 signRootLayout.visible()
                 tvContinue.visible()
                 signLinearLayout.gravity = Gravity.TOP
@@ -1434,6 +1433,7 @@ class CustomDisplay(
             }
 
             binding.otherRootLayout?.setOnSingleClickListener {
+                //TO-DO - Do we have to take signature and then show keypad screen??
                 showTipKeypad(wholeTotalPrice)
             }
 
@@ -1446,13 +1446,9 @@ class CustomDisplay(
                 if (!signaturePad.isEmpty) {
                     val signBase64 = bitmapToBase64(signaturePad.signatureBitmap)
                     Log.d(TAG, "showWouldYouLikeToAddTipScreen: SIGN BASE-64 = $signBase64")
-                    showTipsAddedVer2(tipRate, tippedAmount)
 
-                    mainCartLayout.visible()
-                    addTipKeypadLayout.gone()
-                    askForTipLayout.gone()
-                    splashLayout.gone()
-                    thankYouLayout.gone()
+                    magtekCall(wholeTotalPrice)
+
                 } else {
                     Toast.makeText(
                         context,
@@ -1508,9 +1504,7 @@ class CustomDisplay(
     override fun selectedItem(model: GetTipReponse.Data, pos: Int, wholeTotalPrice: Double) {
         tipRate = model.rate
         tippedAmount = MethodUtils.percentageCalculation(wholeTotalPrice, model.rate)
-        if (mIsCardPayment) {
-            magtekCall(wholeTotalPrice)
-        } else {
+        if (!mIsCardPayment) {
             callUpdateTip()
         }
     }

@@ -147,10 +147,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 dashboardViewModel,
                 passcodeViewModel,
                 dineInViewModel
-            ){
-                tipAmount = it
-                tipAmountCalculation()
-            }
+            )
+//            {
+//                tipAmount = it
+//                tipAmountCalculation()
+//            }
         }
 
         val device = prefProvider.getValueInt(Constants.MAGTEK_HARDWARE, 0)
