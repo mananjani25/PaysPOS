@@ -30,8 +30,8 @@
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_15sdp"
                     android:layout_marginStart="@dimen/_20sdp"
+                    android:layout_marginTop="@dimen/_15sdp"
                     android:layout_marginEnd="@dimen/_20sdp"
                     android:orientation="horizontal">
 
@@ -101,6 +101,36 @@
                         </androidx.appcompat.widget.LinearLayoutCompat>
 
                         <androidx.appcompat.widget.LinearLayoutCompat
+                            android:id="@+id/linearInventory"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="@dimen/_15sdp"
+                            android:layout_marginBottom="@dimen/_10sdp"
+                            android:background="@drawable/menu_hover"
+                            android:gravity="center"
+                            android:orientation="horizontal"
+                            android:paddingVertical="@dimen/_8sdp">
+
+                            <ImageView
+                                android:layout_width="@dimen/_14sdp"
+                                android:layout_height="@dimen/_12sdp"
+                                android:src="@drawable/ic_inventory"
+
+                                app:tint="@color/txtColor" />
+
+                            <TextView
+                                style="@style/CustomFontRegularStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/_5sdp"
+                                android:text="@string/inventory_title"
+                                android:textAllCaps="true"
+                                android:textSize="@dimen/_6mdpi" />
+
+
+                        </androidx.appcompat.widget.LinearLayoutCompat>
+
+                        <androidx.appcompat.widget.LinearLayoutCompat
                             android:id="@+id/linearTeam"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -130,10 +160,11 @@
                         </androidx.appcompat.widget.LinearLayoutCompat>
 
                         <androidx.appcompat.widget.LinearLayoutCompat
-                            android:id="@+id/linearInventory"
+                            android:id="@+id/linearCustomers"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="@dimen/_15sdp"
+                            android:layout_marginBottom="@dimen/_10sdp"
                             android:background="@drawable/menu_hover"
                             android:gravity="center"
                             android:orientation="horizontal"
@@ -142,7 +173,7 @@
                             <ImageView
                                 android:layout_width="@dimen/_14sdp"
                                 android:layout_height="@dimen/_12sdp"
-                                android:src="@drawable/ic_inventory"
+                                android:src="@drawable/ic_groups"
 
                                 app:tint="@color/txtColor" />
 
@@ -151,7 +182,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="@dimen/_5sdp"
-                                android:text="@string/inventory_title"
+                                android:text="@string/customers"
                                 android:textAllCaps="true"
                                 android:textSize="@dimen/_6mdpi" />
 
@@ -225,35 +256,6 @@
 
                         </androidx.appcompat.widget.LinearLayoutCompat>
 
-                        <androidx.appcompat.widget.LinearLayoutCompat
-                            android:id="@+id/linearCustomers"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginEnd="@dimen/_15sdp"
-                            android:layout_marginBottom="@dimen/_10sdp"
-                            android:background="@drawable/menu_hover"
-                            android:gravity="center"
-                            android:orientation="horizontal"
-                            android:paddingVertical="@dimen/_8sdp">
-
-                            <ImageView
-                                android:layout_width="@dimen/_14sdp"
-                                android:layout_height="@dimen/_12sdp"
-                                android:src="@drawable/ic_groups"
-
-                                app:tint="@color/txtColor" />
-
-                            <TextView
-                                style="@style/CustomFontRegularStyle"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="@dimen/_5sdp"
-                                android:text="@string/customers"
-                                android:textAllCaps="true"
-                                android:textSize="@dimen/_6mdpi" />
-
-
-                        </androidx.appcompat.widget.LinearLayoutCompat>
 
                         <androidx.appcompat.widget.LinearLayoutCompat
                             android:id="@+id/linearCashLog"
@@ -348,12 +350,12 @@
 
 
                 <LinearLayout
-                    android:layout_marginStart="@dimen/_20sdp"
-                    android:layout_marginEnd="@dimen/_20sdp"
                     android:id="@+id/llClockOut"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_20sdp"
                     android:layout_marginTop="@dimen/_15sdp"
+                    android:layout_marginEnd="@dimen/_20sdp"
                     android:background="@drawable/button_action_hover"
                     android:gravity="center"
                     android:orientation="horizontal"
@@ -379,12 +381,12 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_marginStart="@dimen/_20sdp"
-                    android:layout_marginEnd="@dimen/_20sdp"
                     android:id="@+id/linearLogout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_20sdp"
                     android:layout_marginTop="@dimen/_10sdp"
+                    android:layout_marginEnd="@dimen/_20sdp"
                     android:background="@drawable/button_action_hover"
                     android:gravity="center"
                     android:orientation="horizontal"

@@ -2,7 +2,6 @@ package com.android.pos.ui.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -229,8 +228,8 @@ class OpenOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
                     itemView.context.getDrawable(R.drawable.background_square_border_grey)
                 binding.txtEditOrder.background =
                     itemView.context.getDrawable(R.drawable.background_square_border_grey)
-                binding.txtCustomerReceipt.background =
-                    itemView.context.getDrawable(R.drawable.button_selected)
+//                binding.txtCustomerReceipt.background =
+//                    itemView.context.getDrawable(R.drawable.button_selected)
                 binding.txtPayNow.background =
                     itemView.context.getDrawable(R.drawable.background_square_border_grey)
                 if (filterList[bindingAdapterPosition].paymentStatus == "Paid") {
@@ -286,8 +285,10 @@ class OpenOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
                     val fList = ArrayList<OpenOrderResponse.Data.Order>()
 
                     for (it in orderList) {
-                        if (it.id.toString().lowercase(Locale.getDefault())
-                                .contains(charString.lowercase(Locale.getDefault()))
+                        if ((if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE,false))
+                                it.custom_order_id.toString().lowercase(Locale.getDefault()) else
+                                it.id.toString().lowercase(Locale.getDefault()))
+                            .contains(charString.lowercase(Locale.getDefault()))
                         ) {
                             fList.add(it)
                         } else if (it.customer != null && it.customer.firstName.lowercase(Locale.getDefault())
@@ -303,18 +304,16 @@ class OpenOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
                                 .contains(charString.lowercase(Locale.getDefault()))
                         ) {
                             fList.add(it)
-                        } else if (it.employee.firstName.lowercase(Locale.getDefault())
-                                .contains(charString.lowercase(Locale.getDefault()))
-                        ) {
-                            fList.add(it)
-                        } else if (it.employee.lastName.lowercase(Locale.getDefault())
-                                .contains(charString.lowercase(Locale.getDefault()))
-                        ) {
-                            fList.add(it)
-                        }else if (it.employee.name.lowercase(Locale.getDefault())
-                                .contains(charString.lowercase(Locale.getDefault()))
-                        ) {
-                            fList.add(it)
+                        } else if (it.employee != null) {
+                            if (it.employee.firstName.lowercase(Locale.getDefault())
+                                    .contains(charString.lowercase(Locale.getDefault())) ||
+                                it.employee.lastName.lowercase(Locale.getDefault())
+                                    .contains(charString.lowercase(Locale.getDefault())) ||
+                                it.employee.name.lowercase(Locale.getDefault())
+                                    .contains(charString.lowercase(Locale.getDefault()))
+                            ) {
+                                fList.add(it)
+                            }
                         }
                     }
 

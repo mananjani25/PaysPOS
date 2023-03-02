@@ -15,7 +15,7 @@ interface TaxDao {
     suspend fun addTax(taxModel: TaxData): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun addAllTaxes(taxList: List<TaxData>)
+    suspend fun addAllTaxes(taxList: List<TaxData>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addAllTaxesSuspend(taxList: List<TaxData>)

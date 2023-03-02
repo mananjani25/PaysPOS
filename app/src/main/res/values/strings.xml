@@ -274,7 +274,7 @@
     <string name="tv_order_time">Order Date &amp; Time</string>
     <string name="tv_print_time">Print Date &amp; Time</string>
     <string name="tv_show_refund_amount">SHOW REFUND AMOUNT</string>
-    <string name="tv_refund_text_amount">Refund Text/Amount</string>
+    <string name="tv_refund_text_amount">Refund Amount</string>
     <string name="tv_show_venue_information">SHOW VENUE INFORMATION</string>
     <string name="tv_logo">Logo</string>
     <string name="tv_photo">Photo</string>
@@ -840,11 +840,10 @@
     <string name="remember_me">Remember me</string>
     <string name="search_by_item">Search by item</string>
     <string name="online_orders">ONLINE ORDERS</string>
-    <string name="serving_efficiency">Serving Efficiency</string>
     <string name="no_employees_found">No Employees Found</string>
     <string name="search_by_order_id_employee_customer_name">Search by Order id, employee, customer name</string>
-    <string name="search_by_customer_name_order_id_receipt_id_amount">Search by employee name, customer name, order id, receipt id, $ amount</string>
-
+    <string name="search_by_customer_name_order_id_receipt_id_amount">Search by employee name/customer name/order id/receipt id/$ amount</string>
+    <string name="serving_efficiency">Serving Efficiency</string>
 
 </resources>
 

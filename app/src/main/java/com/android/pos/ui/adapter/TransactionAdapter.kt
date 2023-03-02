@@ -1,6 +1,7 @@
 package com.android.pos.ui.adapter
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Build
 import android.util.Log
 import android.view.LayoutInflater
@@ -29,6 +30,7 @@ class TransactionAdapter(val viewModel: TransactionViewModel, val prefProvider: 
     private var filterList = ArrayList<GetTransactionListResponse.Data.Payment>()
     private val TYPE_FOOTER = 1
     private val TYPE_ITEM = 2
+    lateinit var context: Context
 
 
     private var mCallback: ItemCallback? = null
@@ -62,7 +64,7 @@ class TransactionAdapter(val viewModel: TransactionViewModel, val prefProvider: 
             val itemBinding = holder.discountItemBinding
             itemBinding.itemSheetModel = filterList[position]
             itemBinding.viewModel = viewModel
-            val context = itemBinding.root.context
+             context = itemBinding.root.context
 
             val model = filterList[position]
 
@@ -179,26 +181,22 @@ class TransactionAdapter(val viewModel: TransactionViewModel, val prefProvider: 
                     val fList = ArrayList<GetTransactionListResponse.Data.Payment>()
 
                     for (it in employeeTimeSheet) {
-                        if (it.id.toString().lowercase(Locale.getDefault())
+                        if ((if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false))
+                                it.custom_order_id.toString().lowercase(Locale.getDefault()) else
+                                it.orderId.toString().lowercase(Locale.getDefault()))
                                 .contains(charString.lowercase(Locale.getDefault())) ||
                             (it.customer.firstName != null && it.customer.firstName.lowercase(Locale.getDefault())
                                 .contains(charString.lowercase(Locale.getDefault()))) ||
                             (it.customer.lastName != null && it.customer.lastName.lowercase(Locale.getDefault())
                                 .contains(charString.lowercase(Locale.getDefault()))) ||
                             (it.customer.firstName != null && it.customer.lastName != null && (it.customer.firstName.lowercase(
-                                Locale.getDefault()
-                            ) + " " + it.customer.lastName.lowercase(
-                                Locale.getDefault()
-                            )
-                                    )
+                                Locale.getDefault()) + " " + it.customer.lastName.lowercase(Locale.getDefault()))
                                 .contains(charString.lowercase(Locale.getDefault()))) ||
                             it.employeeName.lowercase(Locale.getDefault())
                                 .contains(charString.lowercase(Locale.getDefault())) ||
-                            it.orderId.toString()
-                                .contains(charString.lowercase(Locale.getDefault())) ||
-                            it.transactionId.lowercase(Locale.getDefault())
-                                .contains(charString.lowercase(Locale.getDefault())) ||
-                            it.totalAmount.toString()
+                            (it.orderDetails.receiptId != null && it.orderDetails.receiptId.lowercase(Locale.getDefault())
+                                .contains(charString.lowercase(Locale.getDefault()))) ||
+                            String.format(context.getString(R.string.format), it.totalAmount)
                                 .contains(charString.lowercase(Locale.getDefault()))
                         ) {
                             fList.add(it)
