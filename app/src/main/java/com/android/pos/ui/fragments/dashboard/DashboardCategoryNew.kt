@@ -502,7 +502,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     override fun onPause() {
         super.onPause()
-        ProgressUtils.dismissProgressDialog()
+//        ProgressUtils.dismissProgressDialog()
 
         serviceChargesObserve?.let { viewModel.serviceCharges.removeObserver(it) }
 
@@ -652,8 +652,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         }
 
 
-        if (isAdded)
-            addObserver()
+//        if (isAdded)
+//            addObserver()
     }
 
     private fun addObserver() {
@@ -1160,7 +1160,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     override fun onDestroy() {
         super.onDestroy()
-        ProgressUtils.dismissProgressDialog()
+     //   ProgressUtils.dismissProgressDialog()
     }
 
     private fun horizontalTabList() {
@@ -1430,7 +1430,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 Status.ERROR ->
                     ProgressUtils.dismissProgressDialog()
 
-                Status.LOADING -> ProgressUtils.showProgressDialog(requireActivity())
+                //Status.LOADING -> ProgressUtils.showProgressDialog(requireActivity())
 
             }
         }
@@ -2276,7 +2276,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         viewModel.showProgress.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
-                    ProgressUtils.showProgressDialog(requireActivity())
+                   // ProgressUtils.showProgressDialog(requireActivity())
                 } else {
                     ProgressUtils.dismissProgressDialog()
                 }
@@ -2287,7 +2287,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             event.getContentIfNotHandled()?.let {
                 LogUtil.logE("observeShowProgress2", it.toString())
                 if (it) {
-                    ProgressUtils.showProgressDialog(requireActivity())
+                  //  ProgressUtils.showProgressDialog(requireActivity())
                 } else {
                     ProgressUtils.dismissProgressDialog()
                 }
@@ -2370,7 +2370,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             when (it.status) {
                 Status.SUCCESS -> {
                     ProgressUtils.dismissProgressDialog()
-                    ProgressUtils.showProgressDialog(requireActivity())
+                //    ProgressUtils.showProgressDialog(requireActivity())
 
                     if (it.data?.isNotEmpty() == true) {
 
@@ -2389,7 +2389,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                 }
                 Status.LOADING -> {
-                    ProgressUtils.showProgressDialog(requireActivity())
+                  //  ProgressUtils.showProgressDialog(requireActivity())
                 }
                 Status.ERROR -> {
                     ProgressUtils.dismissProgressDialog()

@@ -14,6 +14,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.android.pos.BuildConfig
 import com.android.pos.R
 import com.android.pos.data.entities.*
 import com.android.pos.data.model.DineInModel
@@ -841,8 +842,17 @@ class CartFragment(
                     Log.e("totalDiscount", viewModel.totalDiscount.toString())
                     binding.txtDiscount.text = "-" +
                             MethodUtils.roundOffAmount(viewModel.totalDiscount)
-                    binding.txtNoncashAdj.text =
-                        "-" + MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
+                    if (prefProvider.getValue(
+                            OPTION_TYPE, "CashDiscount"
+                        ) == "CashDiscount"
+                    ) {
+                        binding.txtNoncashAdj.setTextColor(getColor(R.color.colorRed))
+                        binding.txtNoncashAdj.text =
+                            "-" + MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
+                    } else {
+                        binding.txtNoncashAdj.text =
+                            MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
+                    }
                     var data: TbCustomer? = prefProvider.getCustomerData()
                     if (data != null) {
                         if (viewModel.loyaltyPointCondition(data)) {
@@ -891,8 +901,17 @@ class CartFragment(
                     binding.txtSubTotal.text = MethodUtils.roundOffAmount(0.00)
                     binding.txtTax.text = MethodUtils.roundOffAmount(0.00)
                     binding.txtDiscount.text = "-" + MethodUtils.roundOffAmount(0.00)
-                    binding.txtNoncashAdj.text =
-                        "-" + MethodUtils.roundOffAmount(0.00)
+                    if (prefProvider.getValue(
+                            OPTION_TYPE, "CashDiscount"
+                        ) == "CashDiscount"
+                    ) {
+                        binding.txtNoncashAdj.setTextColor(getColor(R.color.colorRed))
+                        binding.txtNoncashAdj.text =
+                            "-" + MethodUtils.roundOffAmount(0.00)
+                    } else {
+                        binding.txtNoncashAdj.text =
+                            MethodUtils.roundOffAmount(0.00)
+                    }
                     binding.relativeOrderNotes?.visibility = View.GONE
                     binding.txtServiceCharge.text =
                         MethodUtils.roundOffAmount(0.00)
@@ -1141,8 +1160,17 @@ class CartFragment(
                                 MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
                             binding.txtDiscount.text =
                                 "-" + MethodUtils.roundOffAmount(viewModel.totalDiscount)
-                            binding.txtNoncashAdj.text =
-                                "-" + MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
+                            if (prefProvider.getValue(
+                                    OPTION_TYPE, "CashDiscount"
+                                ) == "CashDiscount"
+                            ) {
+                                binding.txtNoncashAdj.setTextColor(getColor(R.color.colorRed))
+                                binding.txtNoncashAdj.text =
+                                    "-" + MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
+                            } else {
+                                binding.txtNoncashAdj.text =
+                                    MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
+                            }
                             if (viewModel.order_note.isNotEmpty()) {
                                 binding.relativeOrderNotes?.visibility = View.VISIBLE
                                 binding.txtOrderNote?.text = viewModel.order_note
@@ -1284,8 +1312,17 @@ class CartFragment(
                             Log.e("totalDiscount", viewModel.totalDiscount.toString())
                             binding.txtDiscount.text =
                                 "-" + MethodUtils.roundOffAmount(viewModel.totalDiscount)
-                            binding.txtNoncashAdj.text =
-                                "-" + MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
+                            if (prefProvider.getValue(
+                                    OPTION_TYPE, "CashDiscount"
+                                ) == "CashDiscount"
+                            ) {
+                                binding.txtNoncashAdj.setTextColor(getColor(R.color.colorRed))
+                                binding.txtNoncashAdj.text =
+                                    "-" + MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
+                            } else {
+                                binding.txtNoncashAdj.text =
+                                    MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
+                            }
                             var data: TbCustomer? = prefProvider.getCustomerData()
                             if (data != null) {
                                 if (viewModel.loyaltyPointCondition(data)) {
@@ -1379,8 +1416,17 @@ class CartFragment(
                             binding.txtSubTotal.text = MethodUtils.roundOffAmount(0.00)
                             binding.txtTax.text = MethodUtils.roundOffAmount(0.0)
                             binding.txtDiscount.text = "-" + MethodUtils.roundOffAmount(0.00)
-                            binding.txtNoncashAdj.text =
-                                "-" + MethodUtils.roundOffAmount(0.00)
+                            if (prefProvider.getValue(
+                                    OPTION_TYPE, "CashDiscount"
+                                ) == "CashDiscount"
+                            ) {
+                                binding.txtNoncashAdj.setTextColor(getColor(R.color.colorRed))
+                                binding.txtNoncashAdj.text =
+                                    "-" + MethodUtils.roundOffAmount(0.00)
+                            } else {
+                                binding.txtNoncashAdj.text =
+                                    MethodUtils.roundOffAmount(0.00)
+                            }
                             binding.txtServiceCharge.text =
                                 MethodUtils.roundOffAmount(0.00)
                             binding.tvPayNow.text = "Pay " + MethodUtils.roundOffAmount(0.00)
@@ -1553,7 +1599,15 @@ class CartFragment(
 
         } else {
 
-            val bundle = bundleOf("DINE_IN" to true, "position" to position, "cartList" to cartlist)
+            var listOfCustomersID:ArrayList<Int> = arrayListOf()
+            cartlist[0].dineInList?.forEach {
+                if(it.customer != null){
+                    listOfCustomersID.add(it.customer?.id ?: 0)
+
+                }
+
+            }
+            val bundle = bundleOf("DINE_IN" to true, "position" to position, "cartList" to cartlist, "listOfCustomersID" to listOfCustomersID)
             findNavController().navigate(
                 R.id.action_dashboardCategoryBoldPOS_to_assignCustomerOrderFragment, bundle
             )
@@ -2219,6 +2273,15 @@ class CartFragment(
             }
         }
         cartlist[0].openOrderType = Constants.PICK_UP
+        var finalDiscount = 0.0
+        if (BuildConfig.DEBUG == false){
+            finalDiscount = cartlist[0].discountPrice  + viewModel.totalDiscount
+        }
+        else{
+            finalDiscount = viewModel.totalDiscount
+        }
+        Log.e("checkDiscount","totalDiscount:  ${viewModel.totalDiscount}")
+        Log.e("checkDiscount","totalDiscountdiscountPrice:  ${cartlist[0].discountPrice}")
 
         val orderRequestModel = viewModel.createDineInOrderRequest(
             cartModel = cartlist[0],
@@ -2230,7 +2293,7 @@ class CartFragment(
             "",
             "",
             false,
-            totalDiscount = viewModel.totalDiscount,
+            totalDiscount =finalDiscount,
             0.0,
             floorPlanDetails = floorModel
         )

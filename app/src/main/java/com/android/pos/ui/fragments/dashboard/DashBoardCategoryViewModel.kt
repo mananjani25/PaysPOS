@@ -16,6 +16,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import com.android.pos.BuildConfig
 import com.android.pos.MainApplication
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.entities.*
@@ -940,7 +941,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                             Log.d(TAG, "newCartLogicModifier normal item: ${i}")
                                             break
                                         } else
-                                            if (cartModel?.reorder == false && list[i].id == item.id && checkVariation(
+                                            if (list[i].itemId == item.itemId && cartModel?.reorder == false && list[i].id == item.id && checkVariation(
                                                     list[i],
                                                     item
                                                 ) && checkModifierNewLogic(list[i], item)
@@ -3555,12 +3556,12 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     fun getOnlineOrderCount() {
-        _showProgress.value = Event(true)
+      //  _showProgress.value = Event(true)
         viewModelScope.launch {
             val resource = posRepository.getOnlineOrderNotificationCount()
             when (resource.status) {
                 Status.SUCCESS -> {
-                    _showProgress.value = Event(false)
+                  //  _showProgress.value = Event(false)
                     resource.data?.let { it ->
                         _onlineOrderCount.value = Event(it.data)
                     }
@@ -3571,7 +3572,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 }
 
                 Status.LOADING -> {
-                    _showProgress.value = Event(true)
+                  //  _showProgress.value = Event(true)
                 }
 
             }
@@ -4442,9 +4443,17 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     fun updateOrder(cartModel: CartModel): OrderRequestModel {
+
         Log.e(TAG, "totalDiscountDineIn  ${totalDiscount}")
         val orderModel: OrderAttributeRequestModel = OrderAttributeRequestModel()
         var ttotalDiscount = totalDiscount
+        if (BuildConfig.DEBUG == false){
+            ttotalDiscount = cartModel.discountPrice  + totalDiscount
+        }
+        else{
+            ttotalDiscount = totalDiscount
+        }
+
         Log.e(TAG, "ttotalDiscount:  ${ttotalDiscount}")
         LogUtil.logE(TAG, "getCartmodelId  ${cartModel.orderId}")
         orderModel.apply {

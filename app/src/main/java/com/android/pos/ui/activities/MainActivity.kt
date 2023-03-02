@@ -26,6 +26,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.android.pos.R
@@ -174,6 +175,19 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         }
 
     }
+    private var syncFloorPlan = object : BroadcastReceiver() {
+        override fun onReceive(p0: Context?, p1: Intent?) {
+            Log.e("SyncFloorPlan", "onReceiveSync")
+            if (findNavController(R.id.navHostFrag).currentDestination?.id == R.id.dineInFragment){
+
+                navController?.popBackStack(R.id.dineInFragment,true)
+                navController?.navigate(R.id.dineInFragment)
+
+            }
+        }
+
+    }
+
     private var syncSettingReceiver = object : BroadcastReceiver() {
         override fun onReceive(p0: Context?, p1: Intent?) {
 
@@ -194,19 +208,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
     }
 
-    override fun onWindowFocusChanged(hasFocus: Boolean) {
-        super.onWindowFocusChanged(hasFocus)
-        //This is used to hide/show 'Status Bar' & 'System Bar'. Swip bar to get it as visible.
-        val decorView = window.decorView
-        if (hasFocus) {
-            decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                    or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                    or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                    or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                    or View.SYSTEM_UI_FLAG_FULLSCREEN
-                    or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
-        }
-    }
+
 
     var broadCastReceiverPrinterQueueDataGet = object : BroadcastReceiver() {
         override fun onReceive(p0: Context?, p1: Intent?) {
@@ -751,7 +753,14 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
     private fun initCustomerDisplay() {
         getCustomerDisplay(this)?.let { display ->
-            presentation = CustomDisplay(display, this, this,dashboardViewModel, passcodeViewModel,dineInViewModel)
+            presentation = CustomDisplay(
+                display,
+                this,
+                this,
+                dashboardViewModel,
+                passcodeViewModel,
+                dineInViewModel
+            )
         }
     }
 
@@ -796,6 +805,11 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             syncReceiver,
             IntentFilter(Constants.SYNC_NOTIFICATION)
         )
+        registerReceiver(
+            syncFloorPlan,
+            IntentFilter(Constants.SYNC_FLOORPLAN)
+        )
+
         registerReceiver(
             syncSettingReceiver,
             IntentFilter(Constants.SYNC_SETTING_NOTIFICATION)
