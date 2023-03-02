@@ -46,9 +46,11 @@ class TaxesList : Fragment(), ItemCallback {
         binding.lifecycleOwner = this
 
         setUpRecyclerView()
-        getTaxListObserver()
-        setupSnackbar()
         observeShowProgress()
+        observeData()
+        viewModel.getTextList()
+//        getTaxListObserver()
+        setupSnackbar()
         deleteTax()
         notifyAdapter()
         return binding.root
@@ -69,6 +71,15 @@ class TaxesList : Fragment(), ItemCallback {
         binding.rvTaxList.adapter = taxListadapter
     }
 
+    private fun observeData() {
+        viewModel.taxesData.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it.data.isNotEmpty()) {
+                    setTaxData(it.data)
+                }
+            }
+        }
+    }
 
     private fun getTaxListObserver() {
         viewModel.getTaxList.observe(viewLifecycleOwner) {
