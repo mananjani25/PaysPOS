@@ -5,7 +5,6 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.InsetDrawable
 import android.os.Bundle
@@ -25,7 +24,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.*
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.remote.Constants
@@ -287,6 +289,7 @@ class AllItems(val clickedPosition: Int, val totalItems: Int) : Fragment(), Item
 
         adapterPage = ItemListPageAdapter()
         binding.rvAllItemList.adapter = adapterPage
+        binding.rvAllItemList.itemAnimator = null
         adapterPage.setCallback(this)
 
 
@@ -397,7 +400,7 @@ class AllItems(val clickedPosition: Int, val totalItems: Int) : Fragment(), Item
             .setView(dialogView)
             .show()
         customDialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
-        val back = ColorDrawable(ContextCompat.getColor(binding.root.context,R.color.bg_color))
+        val back = ColorDrawable(ContextCompat.getColor(binding.root.context, R.color.bg_color))
         val inset = InsetDrawable(back, 150, 200, 150, 200)
         customDialog?.window?.setBackgroundDrawable(inset);
         var txttitle = customDialog.findViewById<AppCompatTextView>(R.id.txtTitle)

@@ -1074,7 +1074,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         ) {
             Log.e("AmtviewModeltotalPrice","totalPrice  ${viewModel.totalPrice}")
             viewModel.totalServiceCharge =String.format("%.2f",viewModel.totalServiceCharge).toDouble()
-            WholetotalPrice = viewModel.subTotalPrice + viewModel.totalTax + String.format("%.2f",viewModel.totalServiceCharge).toDouble() - viewModel.totalDiscount
+            WholetotalPrice = viewModel.subTotalPrice + viewModel.totalTax + String.format("%.2f",viewModel.totalServiceCharge).toDouble()
 
             viewModel.totalPrice = WholetotalPrice
             Log.e("checkWhole","WholetotalPrice:  ${WholetotalPrice}")
@@ -1192,12 +1192,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
 
         cartList = viewModel.cartModel
-        LogUtil.logE("ORDER_TYPE", prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT))
+        Log.e("ORDER_TYPE_check_data", prefProvider.getValue(Constants.ORDER_TYPE_NAME, DEFAULT_ORDER))
+        Log.e("ORDER_TYPE_check_orderpeList", Gson().toJson(viewModel.ordertypelist))
 
         viewModel.ordertypelist.forEach {
             if (prefProvider.getOrderTypeName(
-                    Constants.ORDER_TYPE_NAME, DEFAULT_ORDER
-                ) == it.name
+                    Constants.ORDER_TYPE, DEFAULT_ORDER
+                ) == it.orderType
             ) {
                 paymentviewModel.setOrderTypeId(it.id)
             }

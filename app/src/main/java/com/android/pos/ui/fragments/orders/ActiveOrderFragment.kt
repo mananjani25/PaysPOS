@@ -467,6 +467,7 @@ class ActiveOrderFragment(
 
                 dashboardViewModel.deleteCart()
                 prefProvider.setValue(Constants.ORDER_TYPE, OPEN_ORDER)
+                prefProvider.setValue(Constants.ORDER_TYPE_NAME, OPEN_ORDER)
 
                 var itemDiscountTotal: Double = 0.0
                 var itemPassDis: Double = 0.0
