@@ -97,7 +97,6 @@ class ReportEODViewModel @Inject constructor(
     }
 
     fun datePicker(selectPicker: Boolean) {
-        Log.d("DB-TAG", "datePicker: CALLED")
         selectPicker1 = selectPicker
 
         if (selectPicker) {
