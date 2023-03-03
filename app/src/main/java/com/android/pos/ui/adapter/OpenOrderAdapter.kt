@@ -187,51 +187,51 @@ class OpenOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
 
             binding.txtCancelOrder.setOnClickListener {
                 if (MethodUtils.isDoubleClick()) return@setOnClickListener
-                binding.txtCancelOrder.background =
-                    itemView.context.getDrawable(R.drawable.button_selected)
-                binding.txtEditOrder.background =
-                    itemView.context.getDrawable(R.drawable.background_square_border_grey)
+//                binding.txtCancelOrder.background =
+//                    itemView.context.getDrawable(R.drawable.button_selected)
+//                binding.txtEditOrder.background =
+//                    itemView.context.getDrawable(R.drawable.background_square_border_grey)
 
-                binding.txtCustomerReceipt.background =
-                    itemView.context.getDrawable(R.drawable.background_square_border_grey)
-                binding.txtPayNow.background =
-                    itemView.context.getDrawable(R.drawable.background_square_border_grey)
+//                binding.txtCustomerReceipt.background =
+//                    itemView.context.getDrawable(R.drawable.background_square_border_grey)
+//                binding.txtPayNow.background =
+//                    itemView.context.getDrawable(R.drawable.background_square_border_grey)
                 mCallback?.onItemClickListener(it, bindingAdapterPosition, "")
             }
 
 
             binding.txtEditOrder.setOnClickListener {
-                binding.txtCancelOrder.background =
-                    itemView.context.getDrawable(R.drawable.background_square_border_grey)
+//                binding.txtCancelOrder.background =
+//                    itemView.context.getDrawable(R.drawable.background_square_border_grey)
                 binding.txtEditOrder.background =
                     itemView.context.getDrawable(R.drawable.button_selected)
-                binding.txtCustomerReceipt.background =
-                    itemView.context.getDrawable(R.drawable.background_square_border_grey)
+//                binding.txtCustomerReceipt.background =
+//                    itemView.context.getDrawable(R.drawable.background_square_border_grey)
                 binding.txtPayNow.background =
                     itemView.context.getDrawable(R.drawable.background_square_border_grey)
                 mCallback?.onItemClickListener(it, bindingAdapterPosition, "UPDATE")
             }
 
             binding.txtPayNow.setOnClickListener {
-                binding.txtCancelOrder.background =
-                    itemView.context.getDrawable(R.drawable.background_square_border_grey)
+//                binding.txtCancelOrder.background =
+//                    itemView.context.getDrawable(R.drawable.background_square_border_grey)
                 binding.txtEditOrder.background =
                     itemView.context.getDrawable(R.drawable.background_square_border_grey)
-                binding.txtCustomerReceipt.background =
-                    itemView.context.getDrawable(R.drawable.background_square_border_grey)
+//                binding.txtCustomerReceipt.background =
+//                    itemView.context.getDrawable(R.drawable.background_square_border_grey)
                 binding.txtPayNow.background =
                     itemView.context.getDrawable(R.drawable.button_selected)
                 mCallback?.onItemClickListener(it, bindingAdapterPosition, "PAY")
             }
             binding.txtCustomerReceipt.setOnClickListener {
-                binding.txtCancelOrder.background =
-                    itemView.context.getDrawable(R.drawable.background_square_border_grey)
-                binding.txtEditOrder.background =
-                    itemView.context.getDrawable(R.drawable.background_square_border_grey)
+//                binding.txtCancelOrder.background =
+//                    itemView.context.getDrawable(R.drawable.background_square_border_grey)
+//                binding.txtEditOrder.background =
+//                    itemView.context.getDrawable(R.drawable.background_square_border_grey)
 //                binding.txtCustomerReceipt.background =
 //                    itemView.context.getDrawable(R.drawable.button_selected)
-                binding.txtPayNow.background =
-                    itemView.context.getDrawable(R.drawable.background_square_border_grey)
+//                binding.txtPayNow.background =
+//                    itemView.context.getDrawable(R.drawable.background_square_border_grey)
                 if (filterList[bindingAdapterPosition].paymentStatus == "Paid") {
                     mCallback?.onItemClickListener(it, bindingAdapterPosition, PRINT_PAID)
                 } else {

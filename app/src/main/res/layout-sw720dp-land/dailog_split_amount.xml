@@ -110,6 +110,7 @@
                     android:background="@null"
                     android:gravity="end"
                     android:hint="0"
+                    android:maxLength="2"
                     android:imeOptions="actionDone"
                     android:inputType="number"
                     android:padding="@dimen/_5sdp"

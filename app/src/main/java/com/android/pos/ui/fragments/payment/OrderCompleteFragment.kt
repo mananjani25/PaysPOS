@@ -4733,13 +4733,16 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                         } else {
 
-                            dineInList[i]?.customer?.first_name + " " +
-                                    if (dineInList[i]?.customer?.last_name != null) {
-                                        dineInList[i].customer?.last_name
-                                    } else {
-                                        ""
-                                    }?.let { PrintSunmiUtils.printTextCenter(it) }
+//                            dineInList[i].customer?.first_name + " " +
+//                                    if (dineInList[i].customer?.last_name != null) {
+//                                        dineInList[i].customer?.last_name
+//                                    } else {
+//                                        ""
+//                                    }?.let { PrintSunmiUtils.printTextCenter(it) }
 
+                            dineInList[i].customer?.let {
+                                PrintSunmiUtils.printTextCenter(it.first_name.toString() + " " + it.last_name.toString())
+                            }
                         }
                     }
 
