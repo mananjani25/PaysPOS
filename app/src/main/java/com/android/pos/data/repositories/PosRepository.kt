@@ -255,6 +255,8 @@ class PosRepository @Inject constructor(
     fun getWholeItemFromPos() =
         performGetOperationDatabase(databaseQuery = { appDatabase.itemDao().allItemFromPos!! })
 
+    fun getWholeItemsWithManualFromPos() =
+        performGetOperationDatabase(databaseQuery = { appDatabase.itemDao().allItemsWithManualFromPos!! })
 
     fun getTimeZones() =
         performGetOperationDatabase(databaseQuery = { appDatabase.timeZonesDao().allItem })
