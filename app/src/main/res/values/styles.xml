@@ -145,6 +145,14 @@
         <item name="android:textColorAlertDialogListItem">@color/txtColor</item>
     </style>
 
+    <style name="CustomDialogTeamTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:background">@color/bg_color</item>
+        <item name="android:textColor">@color/txtColor</item>
+        <item name="colorAccent">@color/txtColor</item>
+        <item name="android:textColorAlertDialogListItem">@color/txtColor</item>
+    </style>
+
     <style name="passcodeviewStyle">
         <item name="android:textSize">@dimen/_10sdp</item>
         <item name="android:gravity">center</item>
