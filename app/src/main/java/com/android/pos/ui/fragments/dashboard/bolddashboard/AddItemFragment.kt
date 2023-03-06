@@ -19,6 +19,7 @@ import com.android.pos.data.remote.Constants.DELETE
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
 import com.android.pos.data.remote.Constants.MAX_ITEM_QUANTITY
+import com.android.pos.data.remote.Constants.MAX_ITEM_QUANTITY_FOR_MANUAL_SALES
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.SERVICECHARGE_TAKEOUT_OPENORDER
 import com.android.pos.data.remote.Constants.TAKEOUT
@@ -148,9 +149,12 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
             override fun afterTextChanged(s: Editable?) {
                 if (s.toString().isNotEmpty()) {
                     qty = s.toString().toInt()
-                    if (qty > MAX_ITEM_QUANTITY) {
+                    if (!item.isManualSales &&  qty > MAX_ITEM_QUANTITY) {
                         qty = MAX_ITEM_QUANTITY
                         binding.edttxtQuantity.setText(MAX_ITEM_QUANTITY.toString())
+                    } else if(item.isManualSales &&  qty > MAX_ITEM_QUANTITY_FOR_MANUAL_SALES){
+                        qty = MAX_ITEM_QUANTITY_FOR_MANUAL_SALES
+                        binding.edttxtQuantity.setText(MAX_ITEM_QUANTITY_FOR_MANUAL_SALES.toString())
                     } else if (qty == 0) {
                         binding.edttxtQuantity.setText("1")
                     }
