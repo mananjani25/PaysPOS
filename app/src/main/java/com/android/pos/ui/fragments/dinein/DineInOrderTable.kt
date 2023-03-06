@@ -218,10 +218,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     }
 
 
-
-
-
-
     private fun observeAddGuest() {
         viewModel.updateOrder.observe(viewLifecycleOwner) { event ->
             AlertUtils.showCustomAlertWithListenerWithOK(
@@ -2450,7 +2446,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     totalServiceChargeAmount = MethodUtils.getTwoDecimal(totalServiceChargeAmount)
 
 
-
                     var finalAmount =
                         totalSubTotal + totalTaxAmount + totalServiceChargeAmount - orderDiscount
 
@@ -2514,7 +2509,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         }
 
                         //subTotalDInin -= baseResponse.totalDiscount
-
 
 
                         var tempServicecharge = 0.0
@@ -3030,20 +3024,25 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 viewHolder: RecyclerView.ViewHolder,
                 target: RecyclerView.ViewHolder
             ): Boolean {
-                val oldPos = viewHolder.layoutPosition
-                val newPos = target.layoutPosition
+                if (target.layoutPosition != 0 && dineInTableAdapter.getList().get(viewHolder.layoutPosition).isHeader != 0) {
+                    val oldPos = viewHolder.layoutPosition
+                    val newPos = target.layoutPosition
 
-                if (dragFrom == -1) {
-                    dragFrom = oldPos
+                    if (dragFrom == -1) {
+                        dragFrom = oldPos
+                    }
+                    dragTo = newPos
+
+                    dineInTableAdapter.onItemMove(
+                        viewHolder.layoutPosition,
+                        target.layoutPosition
+                    )
+                    return true
                 }
-                dragTo = newPos
+                else{
+                    return false
+                }
 
-                dineInTableAdapter.onItemMove(
-                    viewHolder.layoutPosition,
-                    target.layoutPosition
-                )
-
-                return true
             }
 
             override fun isLongPressDragEnabled(): Boolean {
