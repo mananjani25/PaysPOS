@@ -141,7 +141,7 @@ class ItemAdapterPagDash(
                         getItem(position)?.let {
                             LogUtil.logE(
                                 "ITemAdapter",
-                                "onClickposition  ${position}  itemname ${it.name}"
+                                "onClickposition  ${position}  itemname ${it.name} itemQty = ${it.itemQuantity}"
                             )
                             if (prefProvider?.getValue(Constants.ORDER_TYPE, "").equals("")) {
                                 prefProvider?.setValue(Constants.ORDER_TYPE, TAKEOUT)
