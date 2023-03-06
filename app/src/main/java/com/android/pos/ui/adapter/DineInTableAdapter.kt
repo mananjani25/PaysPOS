@@ -337,7 +337,8 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                     var guestName = ""
                     if (listItem.isNotEmpty()) {
                         if (list[bindingAdapterPosition].customer != null) {
-                            guestName = list[bindingAdapterPosition].customer?.first_name.toString()
+                            guestName =
+                                list[bindingAdapterPosition].customer?.first_name.toString() + " " + list[bindingAdapterPosition].customer?.last_name.toString()
                         } else {
                             guestName = list[bindingAdapterPosition].title.toString()
                         }
@@ -387,7 +388,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 var guestName = ""
                 if (listItem.isNotEmpty()) {
                     if (list[bindingAdapterPosition].customer != null) {
-                        guestName = list[bindingAdapterPosition].customer?.first_name.toString()
+                        guestName = list[bindingAdapterPosition].customer?.first_name.toString() + " " + list[bindingAdapterPosition].customer?.last_name.toString()
                     } else {
                         guestName = list[bindingAdapterPosition].title.toString()
                     }
