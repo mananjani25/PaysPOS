@@ -48,6 +48,7 @@ import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.android.pos.data.remote.Constants.IS_SYNC_MARKUP
 import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER
 import com.android.pos.data.remote.Constants.LOCK_SCREEN_TRANSACTION
+import com.android.pos.data.remote.Constants.MAX_ITEM_QUANTITY
 import com.android.pos.data.remote.Constants.ONLINE_ORDER_ENABLE
 import com.android.pos.data.remote.Constants.ONLY_SHOW_PRICE_GREATER_THAN_ZERO
 import com.android.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
@@ -1071,6 +1072,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                         var index = -1
                         for (i in list.indices) {
                             if (item != null) {
+
                                 if (item.isManualSales) {
 
 
@@ -1081,47 +1083,50 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     }
 
                                 } else {
-                                    Log.e("AddedInElse", "GotMod")
 
-                                    if (list[i].itemId == item.itemId && checkVariation(
-                                            list[i],
-                                            item
-                                        ) && checkModifierNewLogic(list[i], item)
-                                    ) {
-                                        Log.d(TAG, "cartLogic: " + i)
-
-                                        var listTmp =
-                                            combineItem(list.toCollection(arrayListOf()), item, i)
-                                        list.clear()
-                                        Log.d(
-                                            TAG,
-                                            "newCartLogicModifier: position of selected Item " + item.id
-                                        )
-                                        list.addAll(listTmp.toMutableList())
-
-                                        Log.e(TAG, "getMergeCombineItem  ${list.size}")
-
-                                        index = -2
+                                    Log.e("AddedInElse", "BOOM = ${list[i].itemQuantity}")
+                                    if(list[i].itemId == item.itemId && list[i].itemQuantity == 1000){
                                         break
+                                    }else{
+                                        if (list[i].itemId == item.itemId && checkVariation(
+                                                list[i],
+                                                item
+                                            ) && checkModifierNewLogic(list[i], item)
+                                        ) {
+                                            Log.d(TAG, "cartLogic: " + i)
+
+                                            var listTmp =
+                                                combineItem(list.toCollection(arrayListOf()), item, i)
+                                            list.clear()
+                                            Log.d(
+                                                TAG,
+                                                "newCartLogicModifier: position of selected Item " + item.id
+                                            )
+                                            list.addAll(listTmp.toMutableList())
+
+                                            Log.e(TAG, "getMergeCombineItem  ${list.size}")
+
+                                            index = -2
+                                            break
 
 
-                                    } else if (list[i].itemId == item.itemId && (!checkVariation(
-                                            list[i],
-                                            item
-                                        ) && !checkModifierNewLogic(list[i], item))
-                                    ) {
-                                        var isBreak: Boolean = false
+                                        } else if (list[i].itemId == item.itemId && (!checkVariation(
+                                                list[i],
+                                                item
+                                            ) && !checkModifierNewLogic(list[i], item))
+                                        ) {
+                                            var isBreak: Boolean = false
 
-                                        list[i].modifiers.forEach { modifier ->
-                                            item.modifiers.forEach { mod ->
-                                                if (mod.id == modifier.id && mod.modifier_quantity == modifier.modifier_quantity) {
-                                                    if (list[i].variationsAttributes.isNotEmpty() && list[i].variationsAttributes[0].id == item.variationsAttributes[0].id) {
-                                                        item.id += 1
-                                                        isBreak = true
-                                                        Log.d(TAG, "newCartLogicModifier: isBreak")
+                                            list[i].modifiers.forEach { modifier ->
+                                                item.modifiers.forEach { mod ->
+                                                    if (mod.id == modifier.id && mod.modifier_quantity == modifier.modifier_quantity) {
+                                                        if (list[i].variationsAttributes.isNotEmpty() && list[i].variationsAttributes[0].id == item.variationsAttributes[0].id) {
+                                                            item.id += 1
+                                                            isBreak = true
+                                                            Log.d(TAG, "newCartLogicModifier: isBreak")
 
-                                                        return@forEach
-                                                    } /*else if (list[i].variationsAttributes.isEmpty() == true) {
+                                                            return@forEach
+                                                        } /*else if (list[i].variationsAttributes.isEmpty() == true) {
                                                         item.id += 1
                                                         isBreak = true
                                                         Log.d(TAG, "newCartLogicModifier: isBreak")
@@ -1130,44 +1135,47 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                     }*/
 //
 
-                                                } else if (mod.id == modifier.id && mod.modifier_quantity != modifier.modifier_quantity) {
-                                                    item.id += 1
-                                                    isBreak = false
-                                                    Log.d(TAG, "newCartLogicModifier: isBreak")
+                                                    } else if (mod.id == modifier.id && mod.modifier_quantity != modifier.modifier_quantity) {
+                                                        item.id += 1
+                                                        isBreak = false
+                                                        Log.d(TAG, "newCartLogicModifier: isBreak")
 
-                                                    return@forEach
+                                                        return@forEach
+                                                    }
+
                                                 }
 
+
+
+                                                if (isBreak) {
+                                                    return@forEach
+                                                }
                                             }
-
-
-
-                                            if (isBreak) {
-                                                return@forEach
-                                            }
-                                        }
 
 
 //
-                                        if (list[i].variationsAttributes.isNotEmpty() == true) {
-                                            if (list[i].variationsAttributes.get(0).id != item.variationsAttributes.get(
-                                                    0
-                                                ).id
-                                            ) {
-                                                item.id += 1
+                                            if (list[i].variationsAttributes.isNotEmpty() == true) {
+                                                if (list[i].variationsAttributes.get(0).id != item.variationsAttributes.get(
+                                                        0
+                                                    ).id
+                                                ) {
+                                                    item.id += 1
 
+                                                }
+
+
+                                            }
+
+                                            if (isBreak) {
+                                                index = i
+                                                break
                                             }
 
 
                                         }
-
-                                        if (isBreak) {
-                                            index = i
-                                            break
-                                        }
-
-
                                     }
+
+
 
 
                                 }
@@ -2213,6 +2221,8 @@ class DashBoardCategoryViewModel @Inject constructor(
         Log.e(TAG, "newItemitemQuantity  ${Gson().toJson(item)}")
         Log.e(TAG, "newItemitemQuantity  ${item.itemQuantity}")
         Log.e(TAG, "newItemitemQuantityOld  ${list[index].itemQuantity}")
+//        if(list[index].itemQuantity < MAX_ITEM_QUANTITY){
+//        }
         list[index].itemQuantity += item.itemQuantity
         list[index].modifiers.forEach { listmod ->
             item.modifiers.forEach { itemmod ->
