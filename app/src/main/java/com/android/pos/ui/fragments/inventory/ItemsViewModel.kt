@@ -39,7 +39,7 @@ class ItemsViewModel @Inject constructor(
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
 
-    val items = posRepository.getWholeItemFromPos()
+    val items = posRepository.getWholeItemsWithManualFromPos()
     val hideItemsListPos = posRepository.unhideItemListPOS()
     val hideItemsListWebsite = posRepository.unhideItemListWebsite()
 

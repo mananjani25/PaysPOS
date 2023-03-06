@@ -24,6 +24,8 @@ interface DBItemDao {
     @get:Query("select * from TbItem where TbItem.hide_status = 'UnHide' and TbItem.isDeleted = 0 and TbItem.name != 'Manual Item' GROUP by TbItem.itemId ORDER BY TbItem.sort DESC")
     val allItemFromPos: LiveData<List<TbItem?>>?
 
+    @get:Query("select * from TbItem where (TbItem.hide_status = 'UnHide' and TbItem.isDeleted = 0) GROUP by TbItem.itemId ORDER BY TbItem.sort DESC")
+    val allItemsWithManualFromPos: LiveData<List<TbItem?>>?
 
     @Query("select * from TbItem where TbItem.isDeleted = 0 and (TbItem.website_hide_status ='UnHideOnWebsite' or TbItem.hide_status ='UnHide') and TbItem.name != 'Manual Item' GROUP by TbItem.itemId ORDER BY TbItem.sort ASC")
     fun getPaginationList(): PagingSource<Int, TbItem>
