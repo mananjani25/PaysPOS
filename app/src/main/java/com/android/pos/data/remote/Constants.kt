@@ -19,6 +19,8 @@ object Constants {
 
     const val CURRENT_VERSION = 1
 
+    const val MAX_ITEM_QUANTITY = 1000
+
     // payment magtek
 
     const val TSYS_PRODUCTION = "TSYS - Production"
