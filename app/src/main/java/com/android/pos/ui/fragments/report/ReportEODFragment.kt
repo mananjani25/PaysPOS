@@ -4,10 +4,7 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.os.Build
-import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
+import android.os.*
 import android.util.Base64
 import android.util.Log
 import android.view.LayoutInflater
@@ -62,6 +59,8 @@ import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 import javax.inject.Inject
 import kotlin.math.abs
 
@@ -69,7 +68,7 @@ import kotlin.math.abs
 class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     private var eodReportConfiguration: ShiftRportConfiguration? = null
-    private var eodReportData: EodReportResponse.Data? = null
+    var eodReportData: EodReportResponse.Data? = null
     private var shiftReportsSettingModel: ShiftRportConfiguration? = null
     private var defaultEmployeePos: Int = 0
     private lateinit var binding: FragmentReportEodBinding
@@ -2634,12 +2633,12 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
             timecalender.set(Calendar.HOUR_OF_DAY, hour)
             timecalender.set(Calendar.MINUTE, minute)
             viewModel.startDate.value = timeCalculateForStartEndTime(hour, minute, "isstart")
-            if (differnceTrue(viewModel.startDate.value!!, viewModel.endDate.value) <= 30) {
+            if (differnceTrue(viewModel.startDate.value!!, viewModel.endDate.value) <= 7) {
                 viewModel.getReportSummary("")
             } else {
                 AlertUtils.showCustomAlertWithListenerWithOK(
                     requireActivity(),
-                    "Please Select date in 30 Days."
+                    "Please Select date in 7 Days."
                 ) { _, _ ->
                 }
             }
@@ -2651,12 +2650,12 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
             timecalender.set(Calendar.MINUTE, minute)
 
             viewModel.endDate.value = timeCalculateForStartEndTime(hour, minute, "isend")
-            if (differnceTrue(viewModel.endDate.value!!, viewModel.startDate.value) <= 30) {
+            if (differnceTrue(viewModel.endDate.value!!, viewModel.startDate.value) <= 7) {
                 viewModel.getReportSummary("")
             } else {
                 AlertUtils.showCustomAlertWithListenerWithOK(
                     requireActivity(),
-                    "Please Select date in 30 Days."
+                    "Please Select date in 7 Days."
                 ) { _, _ ->
                 }
             }
@@ -2854,25 +2853,60 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 eodReportData = it
 
                 val uiScope = CoroutineScope(Dispatchers.Main)
-                ProgressUtils.showProgressDialog(requireActivity())
                 uiScope.launch {
-                    Log.d(TAG, "INSIDE JOB: CALLED")
 
-                    val task = async(Dispatchers.Main) {
+                    Log.d(TAG, "INSIDE JOB: CALLED")
+                    ProgressUtils.showProgressDialog(requireActivity())
+
+                    delay(3000)
+
+                    val job = async(Dispatchers.Main) {
                         updateData(it)
                     }
+                    job.await()
 
-                    val result = task.await()
-
-                    Log.d(TAG, "AFTER JOB ENDS: CALLED - $result")
+                    Log.d(TAG, "AFTER JOB ENDS: CALLED")
                     ProgressUtils.dismissProgressDialog()
+
                 }
+
+//                uiScope.executeAsyncTask(
+//                    onPostExecute = {
+//                        ProgressUtils.dismissProgressDialog()
+//                    },
+//                    onPreExecute = {
+//                        ProgressUtils.showProgressDialog(requireActivity())
+//                    },
+//                    doInBackground = {
+//                        updateData(it)
+//                    }
+//                )
+
+//                val executor: ExecutorService = Executors.newSingleThreadExecutor()
+//                val handler = Handler(Looper.getMainLooper())
+//                executor.execute {
+//
+//                    handler.post {
+//                        //UI Thread work here
+//                        ProgressUtils.showProgressDialog(requireActivity())
+//                    }
+//
+//                    //Background work here
+//                    runOnUiThread(){
+//                        updateData(it)
+//                    }
+//
+//                    handler.post {
+//                        //UI Thread work here
+//                        ProgressUtils.dismissProgressDialog()
+//                    }
+//                }
 
             }
         })
     }
 
-    private fun updateData(it: EodReportResponse.Data) {
+    fun updateData(it: EodReportResponse.Data) {
 
         showHide(
             rvMedia = binding.rvSalesSummary,
@@ -3131,7 +3165,6 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
         }
 
         salesOrderDetailsAdapter.add(it.orderSalesDetails.data)
-
 
         binding.linReports.visible()
 
