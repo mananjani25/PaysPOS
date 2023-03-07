@@ -918,17 +918,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
 
     override fun onItemSelected(item: TbItem) {
-        Log.e(TAG, "onItemSelectedItem:  ${Gson().toJson(item)}")
         item.timeStamp = randomOfflineId()
-
-        Log.e(
-            TAG,
-            "getCartList  ${Gson().toJson(cartList)} viewmodeCartList ${Gson().toJson(viewModel.cartModel)}"
-        )
 
         if (cartList.isEmpty() && viewModel.cartModel != null) {
             viewModel.cartModel?.let {
-
                 cartList.add(it)
             }
         }
@@ -1093,8 +1086,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             prefProvider.getValue(ORDER_TYPE, TAKEOUT),
             prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
         ).observe(requireActivity()) {
-            Log.e(TAG, "MAllWords:::  ${Gson().toJson(it)}")
-            Log.e(TAG, "OrderTypeCheck ${prefProvider.getValue(ORDER_TYPE, "")}")
 
             if (prefProvider.getValue(ORDER_TYPE, "").trim().isEmpty()) {
                 binding.layoutHeader.txtKeypad.gone()
@@ -1115,10 +1106,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 cartList.addAll(it.toCollection(arrayListOf()))
             }
 
-            if (this::presentation.isInitialized) {
-                presentation.show()
-                presentation.onDisplayChanged()
-            }
+//            if (this::presentation.isInitialized) {
+//                presentation.show()
+//                presentation.onDisplayChanged()
+//            }
 
             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
 

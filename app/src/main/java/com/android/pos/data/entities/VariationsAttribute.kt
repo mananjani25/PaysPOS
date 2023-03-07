@@ -13,7 +13,7 @@ data class VariationsAttribute(
     @SerializedName("is_custom")
     var isCustom: Boolean = false,
     @SerializedName("name")
-    var name: String = "",
+    var name: String? = "",
     @SerializedName("option_ids")
     var optionIds: List<Int>? = null,
     @SerializedName("option_set_id")

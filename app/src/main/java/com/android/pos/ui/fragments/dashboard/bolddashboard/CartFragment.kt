@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.android.pos.BuildConfig
@@ -458,7 +459,7 @@ class CartFragment(
 //            viewModel.redeemLoyaltyInfo.needToApplyLoyalty = p1
             prefProvider.setValueboolean(Constants.LOYALTY_ADDED, p1)
             prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED, p1)
-            addObserver()
+//            addObserver()
             if (this::presentation.isInitialized) {
                 presentation.show()
                 presentation.onDisplayChanged()
@@ -939,34 +940,28 @@ class CartFragment(
             if (view != null) {
 
 
-                viewModel.mAllWords(
+                viewModel.mAllWordsFlow(
                     prefProvider.getValue(ORDER_TYPE, TAKEOUT),
                     prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
-                ).observe(requireActivity()) {
+                ).asLiveData().observe(requireActivity()) {
 
-                    Log.e("All LOG : ORDER_TYPE", prefProvider.getValue(ORDER_TYPE, TAKEOUT))
-                    Log.e(
-                        "All LOG :EMPLOYEE_ID",
-                        prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0).toString()
-                    )
 
-                    if (this::presentation.isInitialized) {
-                        presentation.show()
-                        if (it.isNotEmpty()) {
-                            presentation.onDisplayChanged()
-                        } else {
-                            presentation.onLogOutOrClockOutWithApiService(apiService)
-                        }
+                    Log.e("mAllWordsFlow", "asLiveData"+it)
+
+                    if (it == null){
+                        return@observe
                     }
 
-                    saveVisibility()
+//                    if (this::presentation.isInitialized) {
+//                        presentation.show()
+//                        if (it.isNotEmpty()) {
+//                            presentation.onDisplayChanged()
+//                        } else {
+//                            presentation.onLogOutOrClockOutWithApiService(apiService)
+//                        }
+//                    }
 
-                    LogUtil.logE("mAllWords :", "LIST SIZE :" + it.size.toString())
-                    LogUtil.logE(
-                        "mAllWords",
-                        "LIST EMPLOYEE :" + prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
-                            .toString()
-                    )
+                    saveVisibility()
 
 
                     if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
@@ -1233,12 +1228,9 @@ class CartFragment(
 
                     } else {
 
-
                         binding.rvCartDineIn.gone()
                         binding.rvCartList.visible()
-
                         checkOrderType()
-
 
                         if (it.isNotEmpty()) {
 
@@ -1296,7 +1288,8 @@ class CartFragment(
                                 requireContext()
                             )
                             viewModel.setCartModel(it)
-                            setTaxBifurcationData(it[0].taxlistDynamic as ArrayList<TaxData>)
+                            it[0].taxlistDynamic?.toCollection(arrayListOf())
+                                ?.let { it1 -> setTaxBifurcationData(it1) }
                             if (viewModel.order_note.isNotEmpty()) {
                                 binding.relativeOrderNotes?.visibility = View.VISIBLE
                                 binding.txtOrderNote?.text = viewModel.order_note
@@ -1470,8 +1463,6 @@ class CartFragment(
                     if (isFromPayment || isFromPaymentDinein) {
                         binding.rvOrderType.gone()
                         binding.rlCartView.visible()
-
-
                     }
 
                 }

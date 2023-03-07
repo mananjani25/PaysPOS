@@ -29,6 +29,9 @@ public class TypeConvertersTax {
 
     @TypeConverter
     public static String someObjectListToString(List<TaxData> someObjects) {
+        if (someObjects.isEmpty()){
+            return "";
+        }
         return gson.toJson(someObjects);
     }
 }

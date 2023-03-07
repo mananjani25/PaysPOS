@@ -24,6 +24,7 @@ import com.android.pos.utils.performGetOperation
 import com.android.pos.utils.performGetOperationDatabase
 import com.android.pos.utils.performGetOperationNew
 import com.android.pos.utils.statusUtils.Resource
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 
@@ -641,6 +642,10 @@ class PosRepository @Inject constructor(
 
     fun getCartList(orderType: String, employee_Id: Int): LiveData<List<CartModel>> {
         return appDatabase.cartDao().allItem(orderType, employee_Id)
+    }
+
+    fun getCartListFlow(orderType: String, employee_Id: Int): Flow<List<CartModel>> {
+        return appDatabase.cartDao().allItemFlow(orderType, employee_Id)
     }
 
     fun getCartDineInList(employee_Id: Int): LiveData<List<DineInCartModel>> {
