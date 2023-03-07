@@ -5248,12 +5248,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                         } else {
 
-                            dineInList[i]?.customer?.first_name + " " +
-                                    if (dineInList[i]?.customer?.last_name != null) {
-                                        dineInList[i].customer?.last_name
-                                    } else {
-                                        ""
-                                    }?.let { PrintSunmiUtils.normalTextCenter(it) }
+                            var customerName = dineInList[i]?.customer?.first_name + " "
+
+                            if(dineInList[i]?.customer?.last_name != null) {
+                                 customerName += dineInList[i].customer?.last_name
+                             }
+                            PrintSunmiUtils.normalTextCenter(customerName)
+
+
 
                         }
                     }
