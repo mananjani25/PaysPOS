@@ -1032,6 +1032,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 val bundle = Bundle()
                 bundle.putBoolean("isDashboard", false)
                 bundle.putBoolean("isSwap", false)
+                viewModel.deleteCart()
                 if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
                     findNavController().navigate(
                         R.id.action_dashboardCategoryBoldPOS_to_passcode,
