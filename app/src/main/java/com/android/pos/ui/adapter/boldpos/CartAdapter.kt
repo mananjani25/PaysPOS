@@ -105,6 +105,10 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
 
     }
 
+    override fun getItemId(position: Int): Long {
+        return super.getItemId(position)
+    }
+
     fun setList(list: ArrayList<TbItem>) {
         LogUtil.logE(TAG, "itemListSize ${list.size}")
         cartList = list

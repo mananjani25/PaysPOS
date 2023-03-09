@@ -1,6 +1,8 @@
 package com.android.pos.ui.fragments.dashboard.bolddashboard
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -118,6 +120,10 @@ class CartFragment(
     var isFromPayment: Boolean = false
     var isActiveOrder: Boolean = false
     var reorder: Boolean = false
+
+    private val DELAY_MILLIS = 100L
+
+    private var previousClickTimeMillis = 0L
 
     private var serviceChargesObserve: Observer<Resource<List<TbServiceCharge>>>? = null
     private lateinit var nameObserver: Observer<List<CartModel>>
@@ -940,26 +946,37 @@ class CartFragment(
             if (view != null) {
 
 
+
                 viewModel.mAllWordsFlow(
                     prefProvider.getValue(ORDER_TYPE, TAKEOUT),
                     prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
                 ).asLiveData().observe(requireActivity()) {
 
 
-                    Log.e("mAllWordsFlow", "asLiveData"+it)
+                    Log.e("mAllWordsFlow", "asLiveData" + it.size)
 
-                    if (it == null){
+                    if (it.isEmpty()) {
                         return@observe
+                    } else {
+                        val currentTimeMillis = System.currentTimeMillis()
+
+                        if (currentTimeMillis >= previousClickTimeMillis + DELAY_MILLIS) {
+                            previousClickTimeMillis = currentTimeMillis
+                        } else {
+                            Log.e("mAllWordsFlow", currentTimeMillis.toString())
+                            return@observe
+                        }
                     }
 
-//                    if (this::presentation.isInitialized) {
-//                        presentation.show()
-//                        if (it.isNotEmpty()) {
-//                            presentation.onDisplayChanged()
-//                        } else {
-//                            presentation.onLogOutOrClockOutWithApiService(apiService)
-//                        }
-//                    }
+                    if (this::presentation.isInitialized) {
+                        if (!presentation.isShowing)
+                            presentation.show()
+                        if (it.isNotEmpty()) {
+                            presentation.updateCustomerDisplay(it)
+                        } else {
+                            presentation.onLogOutOrClockOutWithApiService(apiService)
+                        }
+                    }
 
                     saveVisibility()
 
@@ -968,7 +985,6 @@ class CartFragment(
                         binding.rvCartDineIn.visible()
                         binding.rvCartList.gone()
                         if (it.isNotEmpty()) {
-                            LogUtil.logE(TAG, "cartListDine:  ${Gson().toJson(it)}")
 
                             cartlist = it as ArrayList<CartModel>
                             if (isFromPayment) {
@@ -1006,7 +1022,6 @@ class CartFragment(
                             LogUtil.logE(TAG, "isGuestPayment:  ${isGuestPayment}")
 
                             if (isFromPaymentDinein) {
-                                LogUtil.logE(TAG, "guestCalModel:  ${Gson().toJson(guestCalModel)}")
                                 viewModelPayment.dineInWholeDiscount =
                                     guestCalModel?.wholeOrderPassDiscount
                                 viewModelPayment.dineInWholeSC = guestCalModel?.wholeOrderPassSC
@@ -1037,7 +1052,6 @@ class CartFragment(
                                 binding.txtDineInProceed.setText("Update and Proceed")
 
                                 var getOldList = prefProvider.getValue(DINE_IN_UPDATE_LIST, "")
-                                LogUtil.logE(TAG, "getOldList  ${Gson().toJson(getOldList)}")
                                 if (getOldList.isEmpty()) {
                                     var listItemDine: ArrayList<GetOrderDetailsResponse.Data.OrderItem> =
                                         arrayListOf()
@@ -1267,7 +1281,7 @@ class CartFragment(
                             binding.rvCartList.removeAllViews()
                             binding.rvCartList.removeAllViewsInLayout()
 
-                            var filterItems = arrayListOf<TbItem>()
+                            val filterItems = arrayListOf<TbItem>()
                             it[0].items?.filter {
                                 !it.isDestroy
                             }.let {
@@ -1278,7 +1292,12 @@ class CartFragment(
                             Log.e("mAllWords", "filterItems  ${filterItems.size}")
                             cartAdapter.setList(filterItems)
                             if (filterItems.isNotEmpty()) {
-                                binding.rvCartList.smoothScrollToPosition(filterItems.size - 1)
+
+                                Handler(Looper.myLooper()!!).postDelayed(
+                                    { binding.rvCartList.smoothScrollToPosition(filterItems.size - 1) },
+                                    200
+                                )
+//                               binding.rvCartList.smoothScrollToPosition(filterItems.size - 1)
                             }
 
                             cartlist = it as ArrayList<CartModel>
@@ -1678,6 +1697,9 @@ class CartFragment(
 
 
     private fun setCartAdapter() {
+
+        binding.rvCartList.isNestedScrollingEnabled = false
+        binding.rvCartList.disableItemAnimator()
         cartAdapter = CartAdapter()
         cartAdapter.setCallback(this)
         binding.rvCartList.adapter = cartAdapter
