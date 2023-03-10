@@ -1000,6 +1000,10 @@ class CartFragment(
                             }
                             if (it[0].dineInList?.isNotEmpty() == true) {
                                 var dineInList = it[0].dineInList
+                                if (dineInList?.get(0)?.selectedPosition != -1){
+                                    Log.e("checkDineInHeaderPos","dineInSelectedItemHeaderPos:  ${viewModel.dineInHeaderPosition}")
+                                    dineInList?.get(0)?.selectedPosition = viewModel.dineInHeaderPosition
+                                }
 
                                 dineInCartAdapter.setList(
                                     dineInList?.toCollection(arrayListOf()) ?: arrayListOf()
@@ -1590,6 +1594,7 @@ class CartFragment(
 
     override fun onCustomerClicked(position: Int, isRemoved: Boolean) {
         LogUtil.logE(TAG, "onCustomerClicked  ${isRemoved}")
+        viewModel.dineInHeaderPosition = position
         if (isRemoved) {
             if (cartlist.get(0).dineInList?.size!! >= position) {
                 val dineIn = cartlist.get(0).dineInList
