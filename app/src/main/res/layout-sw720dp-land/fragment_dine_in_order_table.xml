@@ -64,6 +64,7 @@
                 android:layout_marginEnd="@dimen/_8sdp"
                 android:layout_toStartOf="@+id/imgPrintAll"
                 android:padding="@dimen/_2sdp"
+                android:visibility="gone"
                 android:src="@drawable/ic_trans_table"
                 app:tint="@color/white" />
 
