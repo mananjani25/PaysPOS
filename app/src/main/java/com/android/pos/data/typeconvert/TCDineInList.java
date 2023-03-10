@@ -27,7 +27,7 @@ public class TCDineInList {
 
     @TypeConverter
     public static String someObjectListToString(List<DineInModel> someObjects) {
-        if (someObjects.isEmpty()) {
+        if (someObjects == null) {
             return "";
         } else {
             someObjects.size();

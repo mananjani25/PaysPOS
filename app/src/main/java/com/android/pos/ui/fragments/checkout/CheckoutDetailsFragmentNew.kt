@@ -60,6 +60,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragment(), magtekCallback,
     DeleteOptionCallback, IDeviceListCallback {
+    private var isShow: Boolean = false
     private lateinit var presentation: CustomDisplay
     private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
     private val passcodeViewModel by activityViewModels<PasscodeViewModel>()
@@ -1192,8 +1193,6 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
 
         cartList = viewModel.cartModel
-        Log.e("ORDER_TYPE_check_data", prefProvider.getValue(Constants.ORDER_TYPE_NAME, DEFAULT_ORDER))
-        Log.e("ORDER_TYPE_check_orderpeList", Gson().toJson(viewModel.ordertypelist))
 
         viewModel.ordertypelist.forEach {
             if (prefProvider.getOrderTypeName(
@@ -1878,13 +1877,22 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         ConnectionState.Connected -> {
                             LogUtil.logE("", "[CONNECTED]")
 
-                            // ProgressUtils.dismissProgressDialog()
+//                            ProgressUtils.dismissProgressDialog()
+                            prefProvider.setValueboolean(Constants.DYNANA_FLAX, true)
 
+                            ProgressUtils.showProgressDialog(
+                                "Please tap, insert or swipe card",
+                                requireActivity()
+                            )
+                            ProgressUtils.setCallback(this)
                             startTransaction()
                         }
                         ConnectionState.Disconnected -> {
                             LogUtil.logE("", "[DISCONNECTED]")
                             ProgressUtils.dismissProgressDialog()
+
+                            mSessionManager.isConnected = false
+                            prefProvider.setValueboolean(Constants.DYNANA_FLAX, false)
                             AlertUtils.showCustomAlert(requireContext(), "DISCONNECTED")
                         }
                         ConnectionState.Disconnecting -> {
@@ -1953,12 +1961,14 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     private fun magtekProPaymentCall() {
 
-        ProgressUtils.showProgressDialog("Please tap, insert or swipe card", requireActivity())
-        ProgressUtils.setCallback(this)
 
 
         LogUtil.logE("mSessionManager", mSessionManager.isConnected.toString())
         if (mSessionManager.isConnected) {
+
+            ProgressUtils.showProgressDialog("Please tap, insert or swipe card", requireActivity())
+            ProgressUtils.setCallback(this)
+
             startTransaction()
         } else {
 
@@ -1983,6 +1993,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             val device = deviceList[0]
             mSessionManager.device = device
             mSessionManager.connectDevice()
+        } else {
+            if (!isShow) {
+                isShow = true
+                AlertUtils.showCustomAlert(requireContext(), "Please connect payment device.")
+            } else {
+                isShow = false
+            }
         }
 
     }
