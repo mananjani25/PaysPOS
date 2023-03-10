@@ -281,6 +281,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             val bundle = Bundle()
             bundle.putBoolean("isSwap", true)
             bundle.putBoolean("isDashboard", false)
+            viewModel.deleteCart()
             findNavController().navigate(
                 R.id.action_manualSalesNew_to_passcode,
                 bundle

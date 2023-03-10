@@ -59,10 +59,7 @@ import com.android.pos.utils.*
 import com.android.pos.utils.callback.DineInOrderCallBack
 import com.android.pos.utils.callback.ItemClickListner
 import com.android.pos.utils.callback.ItemListner
-import com.android.pos.utils.extensions.addOnWindowFocusChangeListener
-import com.android.pos.utils.extensions.alert
-import com.android.pos.utils.extensions.gone
-import com.android.pos.utils.extensions.visible
+import com.android.pos.utils.extensions.*
 import com.android.pos.utils.printer.PrinterClass
 import com.android.pos.utils.scanner.helpers.ScannerAppEngine
 import com.android.pos.utils.statusUtils.Resource
@@ -519,6 +516,15 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         onClick()
 
+        viewModel.showClockOutProgress.observe(requireActivity()) { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it) {
+                    ProgressUtils.showProgressDialog(requireActivity())
+                } else {
+                    ProgressUtils.dismissProgressDialog()
+                }
+            }
+        }
         if (prefProvider.getValueboolean(ONLINE_ORDER_ENABLE, false)) {
             binding.layoutHeader.linearOnlineorder?.visible()
         } else {
@@ -718,6 +724,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             bundle.putBoolean("isDashboard", false)
             if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
                 prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
+                viewModel.deleteCart()
                 findNavController().navigate(
                     R.id.action_dashboardCategoryBoldPOS_to_passcode,
                     bundle
@@ -1032,6 +1039,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 val bundle = Bundle()
                 bundle.putBoolean("isDashboard", false)
                 bundle.putBoolean("isSwap", false)
+                viewModel.deleteCart()
                 if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
                     findNavController().navigate(
                         R.id.action_dashboardCategoryBoldPOS_to_passcode,

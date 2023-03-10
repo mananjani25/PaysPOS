@@ -48,7 +48,6 @@ import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.android.pos.data.remote.Constants.IS_SYNC_MARKUP
 import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER
 import com.android.pos.data.remote.Constants.LOCK_SCREEN_TRANSACTION
-import com.android.pos.data.remote.Constants.MAX_ITEM_QUANTITY
 import com.android.pos.data.remote.Constants.ONLINE_ORDER_ENABLE
 import com.android.pos.data.remote.Constants.ONLY_SHOW_PRICE_GREATER_THAN_ZERO
 import com.android.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
@@ -218,6 +217,9 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
+
+    private val _showClockOutProgress = MutableLiveData<Event<Boolean>>()
+    val showClockOutProgress: LiveData<Event<Boolean>> = _showClockOutProgress
 
 
     private val _enableOnlineOrder = MutableLiveData<Event<Boolean>>()
@@ -4347,7 +4349,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     fun clockOut() {
-        _showProgress.value = Event(true)
+        _showClockOutProgress.value = Event(true)
         val data = HashMap<String, String>()
         data["employee_id"] = prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1).toString()
         data["terminal_id"] = prefProvider.getValueInt(Constants.TERMINAL_ID, -1).toString()
@@ -4357,7 +4359,6 @@ class DashBoardCategoryViewModel @Inject constructor(
             when (resource.status) {
                 Status.SUCCESS -> {
                     prefProvider.setValueboolean(Constants.IS_CLOCKOUT, false)
-                    _showProgress.value = Event(false)
 
                     resource.data.let {
                         if (it?.status == 200) {
@@ -4365,9 +4366,11 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
                                 _clockOut.value = Event(it.message)
+                                _showClockOutProgress.value = Event(false)
                             }
                         } else {
                             _snackbarText.value = Event(resource.message.toString())
+                            _showClockOutProgress.value = Event(false)
                         }
 
                     }
@@ -4376,11 +4379,11 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 Status.ERROR -> {
                     _snackbarText.value = Event(resource.message.toString())
-                    _showProgress.value = Event(false)
+                    _showClockOutProgress.value = Event(false)
                 }
 
                 Status.LOADING -> {
-                    _showProgress.value = Event(true)
+                    _showClockOutProgress.value = Event(true)
                 }
             }
         }
