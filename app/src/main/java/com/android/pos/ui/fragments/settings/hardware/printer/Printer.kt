@@ -402,7 +402,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                                             } else {
                                                 WIFI
                                             },
-                                            isActive = customerData[i].status,
+                                            isActive = customerData[i].customerStatus,
                                             type = customerData[i].receiptPrintType,
                                             DeviceInfo(
                                                 if (customerData[i].printer_type == BLUETOOTH) {
@@ -533,7 +533,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                                             } else {
                                                 WIFI
                                             },
-                                            isActive = kitchenData[i].status,
+                                            isActive = kitchenData[i].kitchenStatus,
                                             type = kitchenData[i].receiptPrintType,
                                             DeviceInfo(
                                                 if (kitchenData[i].printer_type == BLUETOOTH) {

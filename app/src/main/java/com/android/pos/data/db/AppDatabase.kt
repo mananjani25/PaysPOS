@@ -135,6 +135,17 @@ abstract class AppDatabase : RoomDatabase() {
 
         }
 
+        val MIGRATION_4_5:Migration = object : Migration(4,5){
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE TbCustomerPrint ADD COLUMN kitchenStatus boolean DEFAULT 0")
+                database.execSQL("ALTER TABLE TbCustomerPrint ADD COLUMN customerStatus boolean DEFAULT 0")
+                database.execSQL("ALTER TABLE TbCustomerPrint ADD COLUMN kitchenStatus boolean DEFAULT 0")
+                database.execSQL("ALTER TABLE TbCustomerPrint ADD COLUMN customerStatus boolean DEFAULT 0")
+
+            }
+
+        }
+
         private fun buildDatabase(appContext: Context) =
             Room.databaseBuilder(appContext, AppDatabase::class.java, DATABASE_NAME)
                 .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
