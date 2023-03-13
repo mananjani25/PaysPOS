@@ -31,6 +31,7 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.android.pos.R
 import com.android.pos.data.model.PrinterQueueModel
+import com.android.pos.data.model.TmpPrinterModel
 import com.android.pos.data.model.responseModel.GetKitchenReceiptSettingsResponse
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
@@ -103,6 +104,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     private var kitchenSettingModel = GetKitchenReceiptSettingsResponse.Data()
     var mPrinter: Printer? = null
     var arrayItems: ArrayList<PrinterQueueModel> = arrayListOf()
+    var isKitchenFlag:Boolean = false
 
     private val dashBoardCategoryViewModel by viewModels<DashBoardCategoryViewModel>()
 
@@ -178,9 +180,9 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     private var syncFloorPlan = object : BroadcastReceiver() {
         override fun onReceive(p0: Context?, p1: Intent?) {
             Log.e("SyncFloorPlan", "onReceiveSync")
-            if (findNavController(R.id.navHostFrag).currentDestination?.id == R.id.dineInFragment){
+            if (findNavController(R.id.navHostFrag).currentDestination?.id == R.id.dineInFragment) {
 
-                navController?.popBackStack(R.id.dineInFragment,true)
+                navController?.popBackStack(R.id.dineInFragment, true)
                 navController?.navigate(R.id.dineInFragment)
 
             }
@@ -207,7 +209,6 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         }
 
     }
-
 
 
     var broadCastReceiverPrinterQueueDataGet = object : BroadcastReceiver() {
@@ -768,6 +769,8 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         super.onCreate(savedInstanceState)
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN)
 
+        demoPrinterQueue()
+
         // connectionActionCable()
         val intentFilter = IntentFilter("PrinterQueue")
         registerReceiver(wifiStateReceiver, intentFilter)
@@ -935,6 +938,171 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         }
 
         observeShowProgress()
+
+    }
+
+    private fun demoPrinterQueue() {
+
+        viewModelPrinter.getKitchenPrinterList().observe(this) {
+            when (it.status) {
+                Status.SUCCESS -> {
+                    if (isKitchenFlag == false) {
+                        isKitchenFlag = true
+
+
+                        var list: ArrayList<TmpPrinterModel> = arrayListOf()
+                        list.add(TmpPrinterModel("Chicken Masala", 0))
+                        list.add(TmpPrinterModel("Chicken Masala", 0))
+                        list.add(TmpPrinterModel("Chicken Tikka", 1))
+                        list.add(TmpPrinterModel("Chicken Tikka", 1))
+                        list.add(TmpPrinterModel("Chicken Tikka", 1))
+                        list.add(TmpPrinterModel("Chicken Tikka", 1))
+                        list.add(TmpPrinterModel("Chicken Masala", 0))
+                        list.add(TmpPrinterModel("Chicken Masala", 0))
+                        list.add(TmpPrinterModel("Chicken Masala", 0))
+                        list.add(TmpPrinterModel("Chicken Tikka", 1))
+                        list.add(TmpPrinterModel("Chicken Masala", 0))
+                        list.add(TmpPrinterModel("Chicken Masala", 0))
+                        list.add(TmpPrinterModel("Cheese Naan", 1))
+                        list.add(TmpPrinterModel("Chicken Masala", 0))
+                        list.add(TmpPrinterModel("Chicken Tikka", 1))
+                        list.add(TmpPrinterModel("Chicken Masala", 0))
+                        list.add(TmpPrinterModel("Chicken Masala", 0))
+                        list.add(TmpPrinterModel("Cheese Naan", 1))
+                        list.add(TmpPrinterModel("Cheese Naan", 1))
+                        list.add(TmpPrinterModel("Cheese Naan", 1))
+                        list.add(TmpPrinterModel("Cheese Naan", 1))
+                        list.add(TmpPrinterModel("Chicken Masala", 0))
+                        list.add(TmpPrinterModel("Chicken Masala", 0))
+
+
+                        var printerList = it.data ?: arrayListOf()
+
+
+                        for (i in 0 until list.size) {
+                            for (j in 0 until printerList.size) {
+                                var printer = Printer(Printer.TM_M30, Printer.MODEL_ANK, this)
+                                if (printerList[j].name.equals(
+                                        "TM-m30",
+                                        true
+                                    ) && list[i].categoryID == 0
+                                ) {
+
+                                    generateReceipt(printer, printerList[j], list[i],i)
+
+                                } else if (printerList[j].name.equals(
+                                        "TM-m30_004542",
+                                        true
+                                    ) && list[i].categoryID  == 1){
+                                    generateReceipt(printer, printerList[j], list[i],i)
+
+
+                                }
+                            }
+
+
+                        }
+                    }
+
+
+                }
+                Status.ERROR -> {
+
+
+                }
+                Status.LOADING -> {
+
+                }
+
+
+            }
+        }
+
+    }
+
+    private fun generateReceipt(
+        printer: Printer,
+        kitchenReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
+        tmpPrinterModel: TmpPrinterModel,
+        orderId:Int
+    ) {
+
+        printer.setReceiveEventListener { printer, i, printerStatusInfo, s ->
+
+            Log.e(
+                TAG,
+                "PrinterEvent  ${Gson().toJson(printerStatusInfo)} other1 ${s}  other2 ${i}"
+            )
+            if (printerStatusInfo.online == 1) {
+                try {
+                    printer.disconnect()
+
+                } catch (e: java.lang.Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
+
+        try {
+
+            var printerAdd =
+                if (kitchenReceiptPrinters.printer_type == Constants.BLUETOOTH) "BT:" + kitchenReceiptPrinters.macAddress else "TCP:" + kitchenReceiptPrinters.ipAddress
+            printer.connect(
+                printerAdd,
+                Printer.PARAM_DEFAULT
+            )
+            printer.startMonitor()
+
+            printer.addFeedUnit(30)
+            printer.addFeedLine(2)
+
+            printer.addTextFont(Builder.FONT_E)
+            printer.addTextAlign(Builder.ALIGN_CENTER)
+            printer.addTextLang(Builder.LANG_EN)
+            printer.addTextSize(2, 2)
+            printer.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.TRUE,
+                Builder.COLOR_1
+            )
+
+            printer.addText("OrderID:" + orderId)
+            printer.addFeedLine(1)
+            printer.addFeedUnit(30)
+            printer.addFeedLine(1)
+
+
+            printer.addTextFont(Builder.FONT_E)
+            printer.addTextAlign(Builder.ALIGN_LEFT)
+            printer.addTextLang(Builder.LANG_EN)
+            printer.addTextSize(2, 2)
+            printer.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.TRUE,
+                Builder.COLOR_1
+            )
+
+
+            printer.addText(tmpPrinterModel.ItemName)
+            printer.addFeedLine(1)
+            printer.addFeedUnit(30)
+            printer.addFeedLine(1)
+            printer.addCut(Builder.CUT_FEED)
+
+            try{
+                printer.sendData(Printer.PARAM_DEFAULT)
+            }
+            catch (e:java.lang.Exception){
+                e.printStackTrace()
+            }
+
+
+
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
 
     }
 
