@@ -299,21 +299,26 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 
             val variationList = ArrayList<VariationsAttribute>()
             if (item.variationsAttributes.isNotEmpty()) {
-                val variation = variationAdapter.getItem()
-                variationList.add(variation)
-                item.name = item.name.substringBefore(" (") + " (" + variation.name + ")"
-                item.price = variation.price ?: 0.0
-                if (item.price == 0.0 && variation.priceType == "Variable") {
-                    AlertUtils.showCustomAlertWithListenerWithOK(
-                        requireContext(), "Please enter amount"
-                    ) { _, _ ->
+                if (variationAdapter.variationList.isNotEmpty()) {
+                    val variation = variationAdapter.getItem()
+                    variationList.add(variation)
+                    item.name = item.name.substringBefore(" (") + " (" + variation.name + ")"
+                    item.price = variation.price ?: 0.0
+                    if (item.price == 0.0 && variation.priceType == "Variable") {
+                        AlertUtils.showCustomAlertWithListenerWithOK(
+                            requireContext(), "Please enter amount"
+                        ) { _, _ ->
 
+                        }
+                        return@setOnClickListener
                     }
+                    item.variationsAttributes = variationList
+                } else {
                     return@setOnClickListener
                 }
-                item.variationsAttributes = variationList
 
             }
+
 
             if (isUpdateItem) {
                 if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
