@@ -167,7 +167,7 @@
             android:layout_height="@dimen/_23sdp"
             android:layout_alignParentEnd="true"
             android:layout_marginStart="@dimen/_5sdp"
-            android:background="@drawable/button_action_hover"
+            android:background="@color/btnColor"
             android:fontFamily="@font/sf_pro_display_semibold"
             android:gravity="center"
             android:paddingHorizontal="@dimen/padding_home_button"

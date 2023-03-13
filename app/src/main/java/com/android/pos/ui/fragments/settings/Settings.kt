@@ -236,7 +236,9 @@ class Settings : Fragment() {
             binding.txtEmployee.styleNormal()
             binding.txtReports.styleNormal()
 
-            setAdapter(0)
+            if(binding.rvBusiness.visibility == View.GONE) {
+                setAdapter(0)
+            }
 
         }
         binding.txtHardware.setOnClickListener {
@@ -352,7 +354,9 @@ class Settings : Fragment() {
         binding.rvBusiness.adapter = BusinessSettingAdapter(requireContext(), list, object :
             BusinessSettingAdapter.BusinessListInterface {
             override fun onClick(pos: Int) {
-                setupView(pos)
+                if (!list[pos].isSelected) {
+                    setupView(pos)
+                }
 
             }
 
@@ -418,7 +422,7 @@ class Settings : Fragment() {
 
     private fun loadFragment(frag: Fragment) {
         val fm: FragmentManager = requireActivity().supportFragmentManager
-        fm.beginTransaction().replace(binding.frameLayout.id, frag).commit()
+            fm.beginTransaction().replace(binding.frameLayout.id, frag).commit()
 
     }
 
