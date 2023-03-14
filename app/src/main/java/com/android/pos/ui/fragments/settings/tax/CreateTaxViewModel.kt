@@ -20,6 +20,8 @@ import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -74,32 +76,35 @@ class CreateTaxViewModel @Inject constructor(
 
     @RequiresApi(Build.VERSION_CODES.N)
     fun updateTaxDataInItem(tax: TaxData, itemIds: ArrayList<Int>) {
-        viewModelScope.launch {
-            var tempTaxData: ArrayList<TaxData> = arrayListOf()
-            val taxDataFromDb: TaxData = taxServiceChargeRepository.getItemsListOfTax(tax.id)
-            val oldItemIds: ArrayList<Int> = taxDataFromDb.itemIds as ArrayList<Int>
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                var tempTaxData: ArrayList<TaxData> = arrayListOf()
+                val taxDataFromDb: TaxData = taxServiceChargeRepository.getItemsListOfTax(tax.id)
+                val oldItemIds: ArrayList<Int> = taxDataFromDb.itemIds as ArrayList<Int>
 
-            // Remove Tax from Items
-            oldItemIds.forEach {
-                if (!itemIds.contains(it)) {
-                    val item: TbItem = posRepository.getItemById(it)
-                    tempTaxData = item.taxes as ArrayList<TaxData>
-                    tempTaxData.removeIf { it.id == tax.id }
-                    posRepository.updateTaxDataForItem(tempTaxData, it)
-                }
-            }
-
-            // Add Tax to Items
-            itemIds.forEach {
-                if (!oldItemIds.contains(it)) {
-                    val item: TbItem = posRepository.getItemById(it)
-                    tempTaxData = (item.taxes as ArrayList<TaxData>?)!!
-                    oldItemIds.remove(it)
-                    if (!tempTaxData.contains(element = tax)) {
-                        tempTaxData.add(tax)
+                // Remove Tax from Items
+                oldItemIds.forEach {
+                    if (!itemIds.contains(it)) {
+                        val item: TbItem? = posRepository.getSingleItem(it)
+                        tempTaxData = item?.taxes as ArrayList<TaxData>
+                        tempTaxData.removeIf { it.id == tax.id }
                         posRepository.updateTaxDataForItem(tempTaxData, it)
                     }
                 }
+
+                // Add Tax to Items
+                itemIds.forEach {
+                    if (!oldItemIds.contains(it)) {
+                        val item: TbItem? = posRepository.getSingleItem(it)
+                        tempTaxData = (item?.taxes as ArrayList<TaxData>?)!!
+                        if (!tempTaxData.contains(element = tax)) {
+                            tempTaxData.add(tax)
+                            posRepository.updateTaxDataForItem(tempTaxData, it)
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
     }

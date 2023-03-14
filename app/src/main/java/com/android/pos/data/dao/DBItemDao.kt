@@ -63,9 +63,6 @@ interface DBItemDao {
     fun itemOne(id: Int): TbItem?
 
 
-    @Query("SELECT * from TbItem  where TbItem.itemId = :id LIMIT 1")
-    suspend fun getItem(id: Int): TbItem?
-
     @Query("SELECT * from TbItem where TbItem.itemId  = :restId  and TbItem.isDeleted = 0 LIMIT 1")
     fun itemByInventoryId(restId: Int?): TbItem?
 
@@ -91,8 +88,6 @@ interface DBItemDao {
     @Query("UPDATE TbItem SET categoryId = :catId,categoryName = :catName  WHERE  TbItem.itemId = :itemId")
     suspend fun updateItem(catId: Int, catName: String, itemId: Int?): Int
 
-    @Query("UPDATE TbItem SET taxes = :taxes WHERE  TbItem.itemId = :itemId")
-    suspend fun updateItemTax(taxes: List<TaxData>, itemId: Int?): Int
 
 //    @Transaction
 //    @Query("SELECT * FROM TbItem")
@@ -108,7 +103,7 @@ interface DBItemDao {
     @Query("UPDATE TbItem SET itemQuantity = :qty WHERE  TbItem.itemId = :id")
     fun updateItemQty(id: Int?, qty: Int?)
 
-    @Query("UPDATE TbItem SET taxes  = :newItem WHERE  TbItem.itemId = :id")
-    suspend fun updateItemTaxes(id: Int, newItem: List<TaxData>)
+    @Query("UPDATE TbItem SET taxes = :taxes WHERE  TbItem.itemId = :id")
+    suspend fun updateItemTaxes(id: Int, taxes: List<TaxData>)
 
 }
