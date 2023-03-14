@@ -1446,12 +1446,14 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     }
 
     override fun onUpdatePrinterStatus(printerListModel: PrinterListModel, isChecked: Boolean) {
+        Log.e("checkDataPrinter","printerListModel:  ${Gson().toJson(printerListModel)}")
 
         viewModel.updatePrinterStatus(
             printerListModel.type,
             printerListModel.id!!,
             prefProvider.getValueInt(TERMINAL_ID, 1),
-            isChecked
+            isChecked,
+            printerListModel.currentPrinterType?: ""
         )
     }
 

@@ -125,8 +125,14 @@ class PosRepository @Inject constructor(
     suspend fun updatePrinter(id: Int, model: CreatePrinterRequestModel) =
         apiHelperNew.updatePrinter(id, model)
 
-    suspend fun updatePrinterStatus(id: Int, terminal_id: Int, status: Boolean) =
-        apiHelperNew.updatePrinterStatus(id, terminal_id, status)
+   /* suspend fun updatePrinterStatus(id: Int, terminal_id: Int, status: Boolean) =
+        apiHelperNew.updatePrinterStatus(id, terminal_id, status)*/
+
+    suspend fun updatePrinterStatusKitchen(id: Int, terminal_id: Int, status: Boolean) =
+        apiHelperNew.updatePrinterStatusKitchen(id, terminal_id, status)
+
+    suspend fun updatePrinterStatusCustomer(id: Int, terminal_id: Int, status: Boolean) =
+        apiHelperNew.updatePrinterStatusCustomer(id, terminal_id, status)
     /*fun syncVenueDetails() =
         performGetOperationNew(networkCall = { apiHelperNew.syncVenueDetails() })*/
 
