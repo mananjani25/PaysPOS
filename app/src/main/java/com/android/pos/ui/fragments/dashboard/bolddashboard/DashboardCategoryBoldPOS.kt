@@ -77,6 +77,10 @@ import com.sunmi.externalprinterlibrary.api.SunmiPrinter
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import com.zebra.scannercontrol.FirmwareUpdateEvent
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
 
@@ -175,12 +179,12 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         savedInstanceState: Bundle?
     ): View? {
         checkCashDrawerObserver()
-        syncData()
         Binding()
 
 //        hideSystemUI()
 
         binding = FragmentDashboardCategoryBoldPosBinding.inflate(inflater, container, false)
+        syncData()
         getCustomerDisplay(requireContext())?.let { display ->
             presentation = CustomDisplay(
                 display,
@@ -625,9 +629,17 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         if (!sync) {
             ProgressUtils.showProgressDialog(requireActivity())
             viewModel.syncInventoryModule(false)
-
+            binding.maskLayout?.visible()
+            hideLoaderAfterDelay()
         } else {
             viewModel.getOnlineOrderCount()
+        }
+    }
+
+    private fun hideLoaderAfterDelay() {
+        GlobalScope.launch(Dispatchers.Main) {
+            delay(10000)
+            binding.maskLayout?.gone()
         }
     }
 

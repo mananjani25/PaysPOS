@@ -4744,6 +4744,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                     resource.data.let { response ->
                         if (response?.status == 200) {
+                            Log.d("BINGE", "syncInventoryModule: START")
                             _showProgress.value = Event(false)
 //                            posRepository.saveDatabase(response)
 
@@ -4891,7 +4892,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 syncMarkeup = false
                                 prefProvider.setValueboolean(IS_SYNC_MARKUP, false)
                             }
-
+                            Log.d("BINGE", "syncInventoryModule: END")
                         } else {
                             _tableStatus.value = response?.let { Event(it.message) }
                         }
@@ -4924,7 +4925,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
             when (resource.status) {
                 Status.SUCCESS -> {
-
+                    Log.d("BINGE", "syncSettingModule: START")
                     resource.data.let { venueDetailsResponse ->
                         if (venueDetailsResponse?.status == 200) {
 
@@ -5223,6 +5224,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                             _snackbarText.value = Event(resource.message)
                         }
                     }
+                    Log.d("BINGE", "syncSettingModule: END")
                 }
 
                 Status.ERROR -> {
