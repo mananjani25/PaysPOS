@@ -769,7 +769,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         super.onCreate(savedInstanceState)
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN)
 
-        demoPrinterQueue()
+        //demoPrinterQueue()
 
         // connectionActionCable()
         val intentFilter = IntentFilter("PrinterQueue")
