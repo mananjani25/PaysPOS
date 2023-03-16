@@ -2557,14 +2557,20 @@ fun addWholeTbItemToGuest(
         }
     }
 
+    val price = (subTotal) / guestCount
 
-    val finalAmt = MethodUtils.roundOffAmount((subTotal) / guestCount)
+    var priceToShow = ""
+    if(price>0.0){
+        priceToShow = MethodUtils.roundOffAmount(price)
+    }
+
+    //val finalAmt = MethodUtils.roundOffAmount((subTotal) / guestCount)
 
 
     PrintSunmiUtils.orderTime(
         padLineCustomerItem(
             obj.itemQuantity.toString() + "x " + obj.name,
-            "" + finalAmt,
+            "" + priceToShow,
             if (font == Constants.LARGE) 23 else 48
         ).toString()
     )
