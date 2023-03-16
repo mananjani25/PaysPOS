@@ -81,8 +81,10 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     StatusChangeListener {
+    private var printerList: List<PrinterResponse.Data.KitchenReceiptPrinters> = arrayListOf()
     private val dashboardViewModel: DashBoardCategoryViewModel by viewModels()
     private val passcodeViewModel: PasscodeViewModel by viewModels()
+    private var globalListPrinters: ArrayList<TmpPrinterModel> = arrayListOf()
     private var printerQueueModelGlobal: PrinterQueueModel? = null
     private var isPrinterQueueRun: Boolean = false
     private var kitchenPrinterList: List<PrinterResponse.Data.KitchenReceiptPrinters> =
@@ -104,7 +106,8 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     private var kitchenSettingModel = GetKitchenReceiptSettingsResponse.Data()
     var mPrinter: Printer? = null
     var arrayItems: ArrayList<PrinterQueueModel> = arrayListOf()
-    var isKitchenFlag:Boolean = false
+    var isKitchenFlag: Boolean = false
+    var isPrinterOnline = false
 
     private val dashBoardCategoryViewModel by viewModels<DashBoardCategoryViewModel>()
 
@@ -769,7 +772,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         super.onCreate(savedInstanceState)
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN)
 
-        //demoPrinterQueue()
+        demoPrinterQueue()
 
         // connectionActionCable()
         val intentFilter = IntentFilter("PrinterQueue")
@@ -950,58 +953,66 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                         isKitchenFlag = true
 
 
-                        var list: ArrayList<TmpPrinterModel> = arrayListOf()
-                        list.add(TmpPrinterModel("Chicken Masala", 0))
-                        list.add(TmpPrinterModel("Chicken Masala", 0))
-                        list.add(TmpPrinterModel("Chicken Tikka", 1))
-                        list.add(TmpPrinterModel("Chicken Tikka", 1))
-                        list.add(TmpPrinterModel("Chicken Tikka", 1))
-                        list.add(TmpPrinterModel("Chicken Tikka", 1))
-                        list.add(TmpPrinterModel("Chicken Masala", 0))
-                        list.add(TmpPrinterModel("Chicken Masala", 0))
-                        list.add(TmpPrinterModel("Chicken Masala", 0))
-                        list.add(TmpPrinterModel("Chicken Tikka", 1))
-                        list.add(TmpPrinterModel("Chicken Masala", 0))
-                        list.add(TmpPrinterModel("Chicken Masala", 0))
-                        list.add(TmpPrinterModel("Cheese Naan", 1))
-                        list.add(TmpPrinterModel("Chicken Masala", 0))
-                        list.add(TmpPrinterModel("Chicken Tikka", 1))
-                        list.add(TmpPrinterModel("Chicken Masala", 0))
-                        list.add(TmpPrinterModel("Chicken Masala", 0))
-                        list.add(TmpPrinterModel("Cheese Naan", 1))
-                        list.add(TmpPrinterModel("Cheese Naan", 1))
-                        list.add(TmpPrinterModel("Cheese Naan", 1))
-                        list.add(TmpPrinterModel("Cheese Naan", 1))
-                        list.add(TmpPrinterModel("Chicken Masala", 0))
-                        list.add(TmpPrinterModel("Chicken Masala", 0))
+                        globalListPrinters = arrayListOf()
+
+                        globalListPrinters.add(TmpPrinterModel("Chicken Masala", 0))
+                        globalListPrinters.add(TmpPrinterModel("Chicken Masala", 0))
+                        globalListPrinters.add(TmpPrinterModel("Chicken Masala", 0))
+                        globalListPrinters.add(TmpPrinterModel("Chicken Masala", 0))
+                        globalListPrinters.add(TmpPrinterModel("Chicken Masala", 0))
+                        globalListPrinters.add(TmpPrinterModel("Chicken Masala", 0))
+                        globalListPrinters.add(TmpPrinterModel("Chicken Masala", 0))
+                        globalListPrinters.add(TmpPrinterModel("Chicken Masala", 0))
+                        globalListPrinters.add(TmpPrinterModel("Chicken Masala", 0))
+                        globalListPrinters.add(TmpPrinterModel("Chicken Masala", 0))
+                        globalListPrinters.add(TmpPrinterModel("Chicken Masala", 0))
+                        globalListPrinters.add(TmpPrinterModel("Chicken Masala", 0))
+                        globalListPrinters.add(TmpPrinterModel("Chicken Masala", 0))
+
+                        //list.add(TmpPrinterModel("Chicken Paneer", 0))
+                        /* list.add(TmpPrinterModel("Chicken Cheese", 1))
+                         list.add(TmpPrinterModel("Chicken Naan", 1))
+                         list.add(TmpPrinterModel("Chicken Lababdar", 1))*/
 
 
-                        var printerList = it.data ?: arrayListOf()
+                         printerList = it.data ?: arrayListOf()
 
+                        Log.e("checkPrinterListSize", "printerListSize  ${printerList.size}")
+                        Log.e("checkPrinterListSize", "datalist size  ${globalListPrinters.size}")
 
-                        for (i in 0 until list.size) {
-                            for (j in 0 until printerList.size) {
-                                var printer = Printer(Printer.TM_M30, Printer.MODEL_ANK, this)
-                                if (printerList[j].name.equals(
-                                        "TM-m30",
-                                        true
-                                    ) && list[i].categoryID == 0
-                                ) {
-
-                                    generateReceipt(printer, printerList[j], list[i],i)
-
-                                } else if (printerList[j].name.equals(
-                                        "TM-m30_004542",
-                                        true
-                                    ) && list[i].categoryID  == 1){
-                                    generateReceipt(printer, printerList[j], list[i],i)
-
-
-                                }
-                            }
-
-
+                        val printer = Printer(Printer.TM_U220, Printer.MODEL_ANK, this)
+                        if (globalListPrinters.isNotEmpty() && printerList.isNotEmpty()) {
+                            generateReceipt(
+                                printer,
+                                printerList[printerList.size - 1],
+                                globalListPrinters[globalListPrinters.size - 1],
+                                globalListPrinters.size - 1
+                            )
                         }
+
+                        /* globalListPrinters.forEach {
+
+                             generateReceipt(
+                                 printer,
+                                 printerList[printerList.size - 1],
+                                 it,
+                                 0
+                             )
+                         }*/
+//                        Thread.sleep(5000)
+
+                        /*  for (i in 0 until list.size) {
+                              for (j in 0 until printerList.size) {
+                                  Log.e("checkPrinterListSize","dataentryPrint ${i}  and new ${j}")
+
+
+
+
+
+                              }
+
+
+                          }*/
                     }
 
 
@@ -1024,34 +1035,67 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         printer: Printer,
         kitchenReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
         tmpPrinterModel: TmpPrinterModel,
-        orderId:Int
+        orderId: Int
     ) {
+        Log.e("checkId","orderId:  ${orderId}")
 
-        printer.setReceiveEventListener { printer, i, printerStatusInfo, s ->
 
-            Log.e(
-                TAG,
-                "PrinterEvent  ${Gson().toJson(printerStatusInfo)} other1 ${s}  other2 ${i}"
-            )
-            if (printerStatusInfo.online == 1) {
-                try {
-                    printer.disconnect()
 
-                } catch (e: java.lang.Exception) {
-                    e.printStackTrace()
-                }
-            }
-        }
 
         try {
+            Log.e(
+                "checkIpaddress",
+                "receivedIpAddress  ${kitchenReceiptPrinters.ipAddress}  and checkaddress ${isPrinterOnline}"
+            )
 
             var printerAdd =
                 if (kitchenReceiptPrinters.printer_type == Constants.BLUETOOTH) "BT:" + kitchenReceiptPrinters.macAddress else "TCP:" + kitchenReceiptPrinters.ipAddress
-            printer.connect(
-                printerAdd,
-                Printer.PARAM_DEFAULT
-            )
+
+
+            Log.e("checkPrinterConnection", "checkStatus  ${Gson().toJson(printer.status)}")
+            if (isPrinterOnline == false) {
+
+
+                printer.connect(
+                    printerAdd,
+                    Printer.PARAM_DEFAULT
+                )
+
+            }
             printer.startMonitor()
+
+
+
+
+            printer.setReceiveEventListener { printer, i, printerStatusInfo, s ->
+
+                Log.e(
+                    TAG,
+                    "PrinterEvent  ${Gson().toJson(printerStatusInfo)} other1 ${s}  other2 ${i}"
+                )
+
+
+                if (printerStatusInfo.errorStatus == 0){
+                    printer.endTransaction()
+                    printer.clearCommandBuffer()
+                    globalListPrinters.removeAt(orderId)
+                    makeCallReumeQueuePrint(printer)
+                }
+
+                /*if (printerStatusInfo.online == 1) {
+                    try {
+                        printer.disconnect()
+
+                    } catch (e: java.lang.Exception) {
+                        e.printStackTrace()
+                    }
+                }*/
+            }
+
+
+            isPrinterOnline = true
+
+
 
             printer.addFeedUnit(30)
             printer.addFeedLine(2)
@@ -1067,7 +1111,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 Builder.COLOR_1
             )
 
-            printer.addText("OrderID:" + orderId)
+            printer.addText("OrderID:" + orderId+1)
             printer.addFeedLine(1)
             printer.addFeedUnit(30)
             printer.addFeedLine(1)
@@ -1091,18 +1135,31 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             printer.addFeedLine(1)
             printer.addCut(Builder.CUT_FEED)
 
-            try{
+            printer.beginTransaction()
+            try {
+                Log.e("SendDataHowMuchTime", "checkTimePrin")
                 printer.sendData(Printer.PARAM_DEFAULT)
-            }
-            catch (e:java.lang.Exception){
+            } catch (e: java.lang.Exception) {
                 e.printStackTrace()
             }
-
 
 
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
         }
+
+    }
+
+    private fun makeCallReumeQueuePrint(printer: Printer) {
+        if (globalListPrinters.isNotEmpty() && printerList.isNotEmpty()) {
+            generateReceipt(
+                printer,
+                printerList[printerList.size - 1],
+                globalListPrinters[globalListPrinters.size - 1],
+                globalListPrinters.size - 1
+            )
+        }
+
 
     }
 
