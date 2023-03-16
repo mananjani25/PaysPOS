@@ -107,4 +107,6 @@ interface DBItemDao {
     @Query("UPDATE TbItem SET taxes  = :newItem WHERE  TbItem.itemId = :id")
     suspend fun updateItemTaxes(id: Int, newItem: List<TaxData>)
 
+    @Query("UPDATE TbItem SET modifier_set_ids = :modifierSetIds WHERE TbItem.itemId = :id")
+    suspend fun updateItemModifiers(id: Int, modifierSetIds: List<Int>)
 }
