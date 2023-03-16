@@ -344,7 +344,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             loadPaymentLayout()
             tipAmountCalculation()
         }
-        binding.tvFullAmount.setOnSingleClickListener {
+        binding.tvFullAmount.setOnClickListener {
             binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.button_action_hover))
             binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tv3ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
@@ -368,7 +368,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         }
 
-        binding.tv2ways.setOnSingleClickListener {
+        binding.tv2ways.setOnClickListener {
             binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.button_action_hover))
             binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tv3ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
@@ -392,7 +392,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             binding.tvwaysplit?.text = "$isSelectedCount Way Split Amount"
 
         }
-        binding.tv3ways.setOnSingleClickListener {
+        binding.tv3ways.setOnClickListener {
             binding.tv3ways.setBackgroundDrawable(resources.getDrawable(R.drawable.button_action_hover))
             binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
@@ -415,7 +415,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             binding.tvwaysplit?.visible()
             binding.tvwaysplit?.text = "$isSelectedCount Way Split Amount"
         }
-        binding.tv4ways.setOnSingleClickListener {
+        binding.tv4ways.setOnClickListener {
             binding.tv4ways.setBackgroundDrawable(resources.getDrawable(R.drawable.button_action_hover))
             binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
@@ -438,7 +438,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             binding.tvwaysplit?.visible()
             binding.tvwaysplit?.text = "$isSelectedCount Way Split Amount"
         }
-        binding.tv5ways.setOnSingleClickListener {
+        binding.tv5ways.setOnClickListener {
             binding.tv5ways.setBackgroundDrawable(resources.getDrawable(R.drawable.button_action_hover))
             binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
@@ -461,7 +461,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             binding.tvwaysplit?.visible()
             binding.tvwaysplit?.text = "$isSelectedCount Way Split Amount"
         }
-        binding.tv6ways.setOnSingleClickListener {
+        binding.tv6ways.setOnClickListener {
             binding.tv6ways.setBackgroundDrawable(resources.getDrawable(R.drawable.button_action_hover))
             binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
@@ -484,7 +484,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             binding.tvwaysplit?.visible()
             binding.tvwaysplit?.text = "$isSelectedCount Way Split Amount"
         }
-        binding.tvCustom.setOnSingleClickListener {
+        binding.tvCustom.setOnClickListener {
             binding.tvCustom.setBackgroundDrawable(resources.getDrawable(R.drawable.button_action_hover))
             binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))

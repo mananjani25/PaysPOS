@@ -1096,6 +1096,8 @@ class PosRepository @Inject constructor(
 
     }
 
-
+    suspend fun updateModifiersForItem(modifierSetIds: List<Int>, itemId: Int?) {
+        appDatabase.itemDao().updateItemModifiers(itemId!!, modifierSetIds)
+    }
 }
 

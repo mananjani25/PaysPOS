@@ -1,12 +1,15 @@
 package com.android.pos.ui.fragments.createmodifier
 
+import android.os.Build
 import android.text.TextUtils
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.R
 import com.android.pos.data.entities.Modifier
+import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.requestModel.CreateModifierRequest
 import com.android.pos.data.model.requestModel.CreateModifierRequestModel
 import com.android.pos.data.model.requestModel.ModifierSet
@@ -18,6 +21,8 @@ import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -49,6 +54,7 @@ class CreateModifierViewModel @Inject constructor(
         this.itemIdsViewModel = itemIds
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
     fun submit() {
 
         val data = modifierDetails.value
@@ -97,6 +103,7 @@ class CreateModifierViewModel @Inject constructor(
                                 resource.data?.let {
 
                                     _data.value = Event(it.message)
+                                    updateModifierDataInItem(it.data.modifierSet)
                                     posRepository.addModifierSets(it.data.modifierSet)
                                 }
                             } else {
@@ -150,5 +157,34 @@ class CreateModifierViewModel @Inject constructor(
         deleteList = delete
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
+    fun updateModifierDataInItem(modifierSet: com.android.pos.data.entities.ModifierSet) {
+        CoroutineScope(Dispatchers.IO).launch {
+            var tempModifierSetIds: ArrayList<Int> = arrayListOf()
+            val oldModifierSet: com.android.pos.data.entities.ModifierSet? =
+                modifierSet.id?.let { posRepository.getSingleModifier(it) }
+            val oldItemIds: ArrayList<Int> = oldModifierSet?.itemIds as ArrayList<Int>
+            // Remove modifier set ids from Items
+            oldItemIds.forEach {
+                if (!modifierSet.itemIds.contains(it)) {
+                    val item: TbItem? = posRepository.getSingleItem(it)
+                    tempModifierSetIds = item?.modifier_set_ids as ArrayList<Int>
+                    tempModifierSetIds.removeIf { it == modifierSet.id }
+                    posRepository.updateModifiersForItem(tempModifierSetIds, it)
+                }
+            }
 
+            // Add modifier set id to Items
+            modifierSet.itemIds.forEach {
+                if (!oldItemIds.contains(it)) {
+                    val item: TbItem? = posRepository.getSingleItem(it)
+                    tempModifierSetIds = (item?.modifier_set_ids as ArrayList<Int>?)!!
+                    if (!tempModifierSetIds.contains(element = modifierSet.id)) {
+                        tempModifierSetIds.add(modifierSet.id!!)
+                        posRepository.updateModifiersForItem(tempModifierSetIds, it)
+                    }
+                }
+            }
+        }
+    }
 }
