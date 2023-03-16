@@ -2019,6 +2019,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         viewModel.Basedata.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { baseResponse ->
                 if (baseResponse != null) {
+                    ProgressUtils.showProgressDialog(requireActivity())
                     passDiscountTotal = baseResponse.totalDiscount
                     passSCTotal = baseResponse.totalServiceCharges
                     wholeTableDiscount = 0.0
@@ -2592,6 +2593,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                             presentation.onDisplayChanged()
                             presentation.showTableDetails(baseResponse)
                         }
+                        ProgressUtils.dismissProgressDialog()
                         checkForAutoFire(true)
 
 
@@ -8869,6 +8871,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     }
 
     fun checkForAutoFire(isCheckAndFire: Boolean) {
+        ProgressUtils.showProgressDialog(requireActivity())
         var list = dineInTableAdapter.getList()
         val builder = ArrayList<String>()
         var listItem: ArrayList<TbItem> = arrayListOf()
@@ -9015,6 +9018,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             }
             if (!isCheckAndFire or (isCheckAndFire && autoPrintEnable)) {
                 var fireAllIds = android.text.TextUtils.join(",", builder)
+                ProgressUtils.dismissProgressDialog()
                 viewModel.fireItemToKitchen(orderId ?: 0, true, fireAllIds, true)
                 list.forEach {
                     if (it.isHeader == 1) {
