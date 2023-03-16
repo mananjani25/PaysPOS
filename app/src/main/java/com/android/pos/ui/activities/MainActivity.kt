@@ -35,6 +35,7 @@ import com.android.pos.data.model.TmpPrinterModel
 import com.android.pos.data.model.responseModel.GetKitchenReceiptSettingsResponse
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.remote.Constants.UNIQUE_ID
 import com.android.pos.data.repositories.UserRepository
 import com.android.pos.databinding.ParentActivityBinding
@@ -62,6 +63,7 @@ import com.epson.eposprint.Builder
 import com.felhr.usbserial.BuildConfig.APPLICATION_ID
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.gson.Gson
+import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
 import com.hosopy.actioncable.ActionCable
 import com.hosopy.actioncable.Channel
@@ -772,9 +774,9 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         super.onCreate(savedInstanceState)
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN)
 
-        demoPrinterQueue()
+       // demoPrinterQueue()
 
-        // connectionActionCable()
+        connectionActionCable()
         val intentFilter = IntentFilter("PrinterQueue")
         registerReceiver(wifiStateReceiver, intentFilter)
         getCustomerReceiptSettings()
@@ -1167,30 +1169,30 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         val uri = URI("wss://hugepos.com/cable")
         consumer = ActionCable.createConsumer(uri)
 
-        val appearanceChannel = Channel("printer_queue_channel")
+        val appearanceChannel = Channel("KitchenChannel")
         subscription = consumer?.subscriptions?.create(appearanceChannel)
 
         if (subscription != null) {
             subscription?.onConnected {
-                ToastUtil.showNormalToast(this, "Connected")
+
                 Log.e(TAG, "onActionConnected")
+                val params = JsonObject()
+                params.addProperty("id", prefProvider?.getValueInt(LOCATION_ID,0))
+                params.addProperty("url", BASE_URL + Constants.CREATE_QUEUE_PRINTER)
+                subscription?.perform("received", params)
 
 
             }?.onRejected {
-                ToastUtil.showNormalToast(this, "Connected")
                 Log.e(TAG, "onActiononRejected")
 
             }?.onReceived {
-                ToastUtil.showNormalToast(this, "Connected")
                 Log.e(TAG, "onActiononReceived  " + Gson().toJson(it))
 
 
             }?.onDisconnected {
-                ToastUtil.showNormalToast(this, "Connected")
                 Log.e(TAG, "onActiononDisconnected")
 
             }?.onFailed {
-                ToastUtil.showNormalToast(this, "Connected")
                 Log.e(TAG, "onActiononFailed")
                 //subscription = consumer?.subscriptions?.create(appearanceChannel)
                 try {
