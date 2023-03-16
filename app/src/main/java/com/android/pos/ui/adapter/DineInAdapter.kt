@@ -2,7 +2,6 @@ package com.android.pos.ui.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -117,6 +116,7 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>() {
                     binding.llCustomerDialog.visibility = View.GONE
 
                 } else {
+                    list.get(0).selectedPosition = bindingAdapterPosition
                     listner.onCustomerClicked(layoutPosition, false)
                 }
 
@@ -128,6 +128,7 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>() {
             popupMenu.setOnMenuItemClickListener { menuItem ->
                 when (menuItem.itemId) {
                     R.id.assign_customer -> {
+
                         if (list.get(layoutPosition).customer != null) {
                             //list.get(layoutPosition).customer = null
                             listner.onCustomerClicked(layoutPosition, true)

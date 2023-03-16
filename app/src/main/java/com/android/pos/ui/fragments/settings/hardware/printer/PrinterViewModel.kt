@@ -52,12 +52,14 @@ class PrinterViewModel @Inject constructor(
     }
 
 
-    fun updatePrinterStatus(type: String, id: Int, terminal_id: Int, status: Boolean) {
+    fun updatePrinterStatus(type: String, id: Int, terminal_id: Int, status: Boolean,checkedType:String) {
         _showProgress.value = Event(true)
         LogUtil.logE(TAG, "PrinterType: ${type}")
         viewModelScope.launch {
             val resource: com.android.pos.utils.statusUtils.Resource<DeletePrinterResponseModel> =
-                posRepository.updatePrinterStatus(id, terminal_id, status)
+                if (checkedType == Constants.CUSTOMER)
+                posRepository.updatePrinterStatusCustomer(id, terminal_id, status)
+            else posRepository.updatePrinterStatusKitchen(id, terminal_id, status)
 
             when (resource.status) {
                 Status.LOADING -> {
