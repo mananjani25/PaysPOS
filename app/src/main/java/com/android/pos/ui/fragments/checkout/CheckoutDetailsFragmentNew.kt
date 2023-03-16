@@ -60,6 +60,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragment(), magtekCallback,
     DeleteOptionCallback, IDeviceListCallback {
+    private var isShow: Boolean = false
     private lateinit var presentation: CustomDisplay
     private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
     private val passcodeViewModel by activityViewModels<PasscodeViewModel>()
@@ -343,7 +344,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             loadPaymentLayout()
             tipAmountCalculation()
         }
-        binding.tvFullAmount.setOnSingleClickListener {
+        binding.tvFullAmount.setOnClickListener {
             binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.button_action_hover))
             binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tv3ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
@@ -367,7 +368,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         }
 
-        binding.tv2ways.setOnSingleClickListener {
+        binding.tv2ways.setOnClickListener {
             binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.button_action_hover))
             binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tv3ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
@@ -391,7 +392,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             binding.tvwaysplit?.text = "$isSelectedCount Way Split Amount"
 
         }
-        binding.tv3ways.setOnSingleClickListener {
+        binding.tv3ways.setOnClickListener {
             binding.tv3ways.setBackgroundDrawable(resources.getDrawable(R.drawable.button_action_hover))
             binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
@@ -414,7 +415,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             binding.tvwaysplit?.visible()
             binding.tvwaysplit?.text = "$isSelectedCount Way Split Amount"
         }
-        binding.tv4ways.setOnSingleClickListener {
+        binding.tv4ways.setOnClickListener {
             binding.tv4ways.setBackgroundDrawable(resources.getDrawable(R.drawable.button_action_hover))
             binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
@@ -437,7 +438,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             binding.tvwaysplit?.visible()
             binding.tvwaysplit?.text = "$isSelectedCount Way Split Amount"
         }
-        binding.tv5ways.setOnSingleClickListener {
+        binding.tv5ways.setOnClickListener {
             binding.tv5ways.setBackgroundDrawable(resources.getDrawable(R.drawable.button_action_hover))
             binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
@@ -460,7 +461,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             binding.tvwaysplit?.visible()
             binding.tvwaysplit?.text = "$isSelectedCount Way Split Amount"
         }
-        binding.tv6ways.setOnSingleClickListener {
+        binding.tv6ways.setOnClickListener {
             binding.tv6ways.setBackgroundDrawable(resources.getDrawable(R.drawable.button_action_hover))
             binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
@@ -483,7 +484,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             binding.tvwaysplit?.visible()
             binding.tvwaysplit?.text = "$isSelectedCount Way Split Amount"
         }
-        binding.tvCustom.setOnSingleClickListener {
+        binding.tvCustom.setOnClickListener {
             binding.tvCustom.setBackgroundDrawable(resources.getDrawable(R.drawable.button_action_hover))
             binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
@@ -1196,11 +1197,6 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
 
         cartList = viewModel.cartModel
-        Log.e(
-            "ORDER_TYPE_check_data",
-            prefProvider.getValue(Constants.ORDER_TYPE_NAME, DEFAULT_ORDER)
-        )
-        Log.e("ORDER_TYPE_check_orderpeList", Gson().toJson(viewModel.ordertypelist))
 
         //Added (&& condition to check name) by Dharmesh to resolve issue BIS-352
         viewModel.ordertypelist.forEach {
@@ -1250,12 +1246,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             binding.tvCash2,
             binding.tvCash3
         )
-        Log.e("checkPaymentPrice", "cashDiscountSurcharge:   ${cashDiscountSurcharge}")
 
-        Log.e(
-            "ChceckPriceWithCash",
-            "getPriceWithCash  ${getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount}"
-        )
         MethodUtils.setPriceTextView(
             binding.tvCash,
             getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount
@@ -1892,13 +1883,22 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         ConnectionState.Connected -> {
                             LogUtil.logE("", "[CONNECTED]")
 
-                            // ProgressUtils.dismissProgressDialog()
+//                            ProgressUtils.dismissProgressDialog()
+                            prefProvider.setValueboolean(Constants.DYNANA_FLAX, true)
 
+                            ProgressUtils.showProgressDialog(
+                                "Please tap, insert or swipe card",
+                                requireActivity()
+                            )
+                            ProgressUtils.setCallback(this)
                             startTransaction()
                         }
                         ConnectionState.Disconnected -> {
                             LogUtil.logE("", "[DISCONNECTED]")
                             ProgressUtils.dismissProgressDialog()
+
+                            mSessionManager.isConnected = false
+                            prefProvider.setValueboolean(Constants.DYNANA_FLAX, false)
                             AlertUtils.showCustomAlert(requireContext(), "DISCONNECTED")
                         }
                         ConnectionState.Disconnecting -> {
@@ -1967,12 +1967,14 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     private fun magtekProPaymentCall() {
 
-        ProgressUtils.showProgressDialog("Please tap, insert or swipe card", requireActivity())
-        ProgressUtils.setCallback(this)
 
 
         LogUtil.logE("mSessionManager", mSessionManager.isConnected.toString())
         if (mSessionManager.isConnected) {
+
+            ProgressUtils.showProgressDialog("Please tap, insert or swipe card", requireActivity())
+            ProgressUtils.setCallback(this)
+
             startTransaction()
         } else {
 
@@ -1997,6 +1999,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             val device = deviceList[0]
             mSessionManager.device = device
             mSessionManager.connectDevice()
+        } else {
+            if (!isShow) {
+                isShow = true
+                AlertUtils.showCustomAlert(requireContext(), "Please connect payment device.")
+            } else {
+                isShow = false
+            }
         }
 
     }

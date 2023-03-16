@@ -42,6 +42,10 @@ class TaxServiceChargeRepository @Inject constructor(
     suspend fun getTaxesList(): Resource<GetTaxResponse> {
         return apiHelperNew.getTaxList()
     }
+
+    suspend fun getItemsListOfTax(taxId: Int) : TaxData
+       = appDatabase.taxDao().taxById(taxId)
+
     fun enableTaxes() =
         performGetOperationDatabase(
             databaseQuery = { appDatabase.taxDao().enableTax })

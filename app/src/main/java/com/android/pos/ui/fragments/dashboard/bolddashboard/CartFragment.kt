@@ -1,6 +1,8 @@
 package com.android.pos.ui.fragments.dashboard.bolddashboard
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -12,6 +14,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.android.pos.BuildConfig
@@ -117,6 +120,10 @@ class CartFragment(
     var isFromPayment: Boolean = false
     var isActiveOrder: Boolean = false
     var reorder: Boolean = false
+
+    private val DELAY_MILLIS = 100L
+
+    private var previousClickTimeMillis = 0L
 
     private var serviceChargesObserve: Observer<Resource<List<TbServiceCharge>>>? = null
     private lateinit var nameObserver: Observer<List<CartModel>>
@@ -458,7 +465,7 @@ class CartFragment(
 //            viewModel.redeemLoyaltyInfo.needToApplyLoyalty = p1
             prefProvider.setValueboolean(Constants.LOYALTY_ADDED, p1)
             prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED, p1)
-            addObserver()
+//            addObserver()
             if (this::presentation.isInitialized) {
                 presentation.show()
                 presentation.onDisplayChanged()
@@ -939,21 +946,33 @@ class CartFragment(
             if (view != null) {
 
 
-                viewModel.mAllWords(
+
+                viewModel.mAllWordsFlow(
                     prefProvider.getValue(ORDER_TYPE, TAKEOUT),
                     prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
-                ).observe(requireActivity()) {
+                ).asLiveData().observe(requireActivity()) {
 
-                    Log.e("All LOG : ORDER_TYPE", prefProvider.getValue(ORDER_TYPE, TAKEOUT))
-                    Log.e(
-                        "All LOG :EMPLOYEE_ID",
-                        prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0).toString()
-                    )
+
+                    Log.e("mAllWordsFlow", "asLiveData" + it.size)
+
+                    if (it.isEmpty()) {
+                        return@observe
+                    } else {
+                        val currentTimeMillis = System.currentTimeMillis()
+
+                        if (currentTimeMillis >= previousClickTimeMillis + DELAY_MILLIS) {
+                            previousClickTimeMillis = currentTimeMillis
+                        } else {
+                            Log.e("mAllWordsFlow", currentTimeMillis.toString())
+                            return@observe
+                        }
+                    }
 
                     if (this::presentation.isInitialized) {
-                        presentation.show()
+                        if (!presentation.isShowing)
+                            presentation.show()
                         if (it.isNotEmpty()) {
-                            presentation.onDisplayChanged()
+                            presentation.updateCustomerDisplay(it)
                         } else {
                             presentation.onLogOutOrClockOutWithApiService(apiService)
                         }
@@ -961,19 +980,11 @@ class CartFragment(
 
                     saveVisibility()
 
-                    LogUtil.logE("mAllWords :", "LIST SIZE :" + it.size.toString())
-                    LogUtil.logE(
-                        "mAllWords",
-                        "LIST EMPLOYEE :" + prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
-                            .toString()
-                    )
-
 
                     if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
                         binding.rvCartDineIn.visible()
                         binding.rvCartList.gone()
                         if (it.isNotEmpty()) {
-                            LogUtil.logE(TAG, "cartListDine:  ${Gson().toJson(it)}")
 
                             cartlist = it as ArrayList<CartModel>
                             if (isFromPayment) {
@@ -1000,6 +1011,10 @@ class CartFragment(
                             }
                             if (it[0].dineInList?.isNotEmpty() == true) {
                                 var dineInList = it[0].dineInList
+                                if (dineInList?.get(0)?.selectedPosition != -1){
+                                    Log.e("checkDineInHeaderPos","dineInSelectedItemHeaderPos:  ${viewModel.dineInHeaderPosition}")
+                                    dineInList?.get(0)?.selectedPosition = viewModel.dineInHeaderPosition
+                                }
 
                                 dineInCartAdapter.setList(
                                     dineInList?.toCollection(arrayListOf()) ?: arrayListOf()
@@ -1011,7 +1026,6 @@ class CartFragment(
                             LogUtil.logE(TAG, "isGuestPayment:  ${isGuestPayment}")
 
                             if (isFromPaymentDinein) {
-                                LogUtil.logE(TAG, "guestCalModel:  ${Gson().toJson(guestCalModel)}")
                                 viewModelPayment.dineInWholeDiscount =
                                     guestCalModel?.wholeOrderPassDiscount
                                 viewModelPayment.dineInWholeSC = guestCalModel?.wholeOrderPassSC
@@ -1042,7 +1056,6 @@ class CartFragment(
                                 binding.txtDineInProceed.setText("Update and Proceed")
 
                                 var getOldList = prefProvider.getValue(DINE_IN_UPDATE_LIST, "")
-                                LogUtil.logE(TAG, "getOldList  ${Gson().toJson(getOldList)}")
                                 if (getOldList.isEmpty()) {
                                     var listItemDine: ArrayList<GetOrderDetailsResponse.Data.OrderItem> =
                                         arrayListOf()
@@ -1233,12 +1246,9 @@ class CartFragment(
 
                     } else {
 
-
                         binding.rvCartDineIn.gone()
                         binding.rvCartList.visible()
-
                         checkOrderType()
-
 
                         if (it.isNotEmpty()) {
 
@@ -1275,7 +1285,7 @@ class CartFragment(
                             binding.rvCartList.removeAllViews()
                             binding.rvCartList.removeAllViewsInLayout()
 
-                            var filterItems = arrayListOf<TbItem>()
+                            val filterItems = arrayListOf<TbItem>()
                             it[0].items?.filter {
                                 !it.isDestroy
                             }.let {
@@ -1286,7 +1296,12 @@ class CartFragment(
                             Log.e("mAllWords", "filterItems  ${filterItems.size}")
                             cartAdapter.setList(filterItems)
                             if (filterItems.isNotEmpty()) {
-                                binding.rvCartList.smoothScrollToPosition(filterItems.size - 1)
+
+                                Handler(Looper.myLooper()!!).postDelayed(
+                                    { binding.rvCartList.smoothScrollToPosition(filterItems.size - 1) },
+                                    200
+                                )
+//                               binding.rvCartList.smoothScrollToPosition(filterItems.size - 1)
                             }
 
                             cartlist = it as ArrayList<CartModel>
@@ -1296,7 +1311,8 @@ class CartFragment(
                                 requireContext()
                             )
                             viewModel.setCartModel(it)
-                            setTaxBifurcationData(it[0].taxlistDynamic as ArrayList<TaxData>)
+                            it[0].taxlistDynamic?.toCollection(arrayListOf())
+                                ?.let { it1 -> setTaxBifurcationData(it1) }
                             if (viewModel.order_note.isNotEmpty()) {
                                 binding.relativeOrderNotes?.visibility = View.VISIBLE
                                 binding.txtOrderNote?.text = viewModel.order_note
@@ -1470,8 +1486,6 @@ class CartFragment(
                     if (isFromPayment || isFromPaymentDinein) {
                         binding.rvOrderType.gone()
                         binding.rlCartView.visible()
-
-
                     }
 
                 }
@@ -1590,6 +1604,7 @@ class CartFragment(
 
     override fun onCustomerClicked(position: Int, isRemoved: Boolean) {
         LogUtil.logE(TAG, "onCustomerClicked  ${isRemoved}")
+        viewModel.dineInHeaderPosition = position
         if (isRemoved) {
             if (cartlist.get(0).dineInList?.size!! >= position) {
                 val dineIn = cartlist.get(0).dineInList
@@ -1687,6 +1702,9 @@ class CartFragment(
 
 
     private fun setCartAdapter() {
+
+        binding.rvCartList.isNestedScrollingEnabled = false
+        binding.rvCartList.disableItemAnimator()
         cartAdapter = CartAdapter()
         cartAdapter.setCallback(this)
         binding.rvCartList.adapter = cartAdapter

@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.DineInCartModel
+import kotlinx.coroutines.flow.Flow
 
 /**
  * Created by vishal patel on 2/3/2018.
@@ -18,6 +19,9 @@ interface CartDao {
 
     @Query("select * from CartModel where CartModel.orderType = :orderType AND CartModel.isMaual = 0 AND CartModel.employeeID=:employee_Id")
     fun allItem(orderType: String, employee_Id: Int): LiveData<List<CartModel>>
+
+    @Query("select * from CartModel where CartModel.orderType = :orderType AND CartModel.isMaual = 0 AND CartModel.employeeID=:employee_Id")
+    fun allItemFlow(orderType: String, employee_Id: Int): Flow<List<CartModel>>
 
     @Query("select * from CartModel where CartModel.isMaual = 0 AND CartModel.employeeID=:employee_Id")
     fun allItemMod(employee_Id: Int): List<CartModel>
