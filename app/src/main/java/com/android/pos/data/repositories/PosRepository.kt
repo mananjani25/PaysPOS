@@ -268,6 +268,11 @@ class PosRepository @Inject constructor(
     fun getItemsbyId(itemId: Int) =
         performGetOperationDatabase(databaseQuery = { appDatabase.itemDao().itemById(itemId)!! })
 
+
+    suspend fun updateTaxDataForItem(taxes: List<TaxData>, itemId: Int?) {
+        appDatabase.itemDao().updateItemTaxes(itemId!!, taxes)
+    }
+
     fun getItemByProductCode(productCode: String) =
         performGetOperationDatabase(databaseQuery = {
             appDatabase.itemDao().itemByProductCode(productCode)!!
