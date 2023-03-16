@@ -1073,18 +1073,22 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 ""
             ) == "0.0"
         ) {
-            Log.e("AmtviewModeltotalPrice","totalPrice  ${viewModel.totalPrice}")
-            viewModel.totalServiceCharge =String.format("%.2f",viewModel.totalServiceCharge).toDouble()
-            WholetotalPrice = viewModel.subTotalPrice + viewModel.totalTax + String.format("%.2f",viewModel.totalServiceCharge).toDouble()
+            Log.e("AmtviewModeltotalPrice", "totalPrice  ${viewModel.totalPrice}")
+            viewModel.totalServiceCharge =
+                String.format("%.2f", viewModel.totalServiceCharge).toDouble()
+            WholetotalPrice = viewModel.subTotalPrice + viewModel.totalTax + String.format(
+                "%.2f",
+                viewModel.totalServiceCharge
+            ).toDouble()
 
             viewModel.totalPrice = WholetotalPrice
-            Log.e("checkWhole","WholetotalPrice:  ${WholetotalPrice}")
-            Log.e("checkWhole","subTotalPrice:  ${viewModel.subTotalPrice}")
-            Log.e("checkWhole","totalServiceCharge:  ${viewModel.totalServiceCharge}")
-            Log.e("checkWhole","totalTax:  ${viewModel.totalTax}")
-            Log.e("checkWhole","totalDiscount:  ${viewModel.totalDiscount}")
-            WholetotalPrice = String.format("%.2f",WholetotalPrice).toDouble()
-            Log.e("checkWholePrice","WholetotalPrice:  ${WholetotalPrice}")
+            Log.e("checkWhole", "WholetotalPrice:  ${WholetotalPrice}")
+            Log.e("checkWhole", "subTotalPrice:  ${viewModel.subTotalPrice}")
+            Log.e("checkWhole", "totalServiceCharge:  ${viewModel.totalServiceCharge}")
+            Log.e("checkWhole", "totalTax:  ${viewModel.totalTax}")
+            Log.e("checkWhole", "totalDiscount:  ${viewModel.totalDiscount}")
+            WholetotalPrice = String.format("%.2f", WholetotalPrice).toDouble()
+            Log.e("checkWholePrice", "WholetotalPrice:  ${WholetotalPrice}")
 
             prefProvider.setValue(
                 Constants.WHOLE_AMOUNT,
@@ -1194,14 +1198,19 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         cartList = viewModel.cartModel
 
+        //Added (&& condition to check name) by Dharmesh to resolve issue BIS-352
         viewModel.ordertypelist.forEach {
             if (prefProvider.getOrderTypeName(
                     Constants.ORDER_TYPE, DEFAULT_ORDER
-                ) == it.orderType
+                ) == it.orderType && prefProvider.getOrderTypeName(
+                    Constants.ORDER_TYPE_NAME, DEFAULT_ORDER
+                ) == it.name
             ) {
                 paymentviewModel.setOrderTypeId(it.id)
             }
+
         }
+
         paymentviewModel.saveActualValue(
             viewModel.totalPrice,
             viewModel.subTotalPrice,
@@ -1237,9 +1246,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             binding.tvCash2,
             binding.tvCash3
         )
-        Log.e("checkPaymentPrice", "cashDiscountSurcharge:   ${cashDiscountSurcharge}")
 
-        Log.e("ChceckPriceWithCash","getPriceWithCash  ${getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount}")
         MethodUtils.setPriceTextView(
             binding.tvCash,
             getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount
@@ -1336,12 +1343,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     private fun getCalCashDiscWithAmount(totalprice: Double, isCash: Boolean): Double {
         return if (isCash) {
             if (cashDiscountType == "CashDiscount") {
-                if (totalprice - cashDiscountSurcharge < 0.0){
+                if (totalprice - cashDiscountSurcharge < 0.0) {
                     0.0
+                } else {
+                    totalprice - cashDiscountSurcharge
                 }
-                else{
-                totalprice - cashDiscountSurcharge
-                    }
             } else {
                 totalprice
             }

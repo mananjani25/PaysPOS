@@ -245,7 +245,7 @@ class CartFragment(
             binding.rvOrderType.gone()
 
             binding.orderTypeDisplay.text =
-                getString(R.string.current_order) + " : " + prefProvider.getValue(ORDER_TYPE, "")
+                getString(R.string.current_order) + " : " + prefProvider.getValue(ORDER_TYPE_NAME, "")
         }
     }
 

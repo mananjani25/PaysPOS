@@ -63,6 +63,7 @@
                     android:layout_alignParentEnd="true"
                     android:background="@color/btnColorDark"
                     android:gravity="center"
+                    android:enabled="false"
                     android:paddingHorizontal="@dimen/_15sdp"
                     android:paddingTop="@dimen/_7sdp"
                     android:paddingBottom="@dimen/_7sdp"

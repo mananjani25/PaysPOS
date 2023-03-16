@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.DEFAULT_ORDER
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.databinding.ViewCategoryItemBoldBinding
 import com.android.pos.di.PrefProvider
@@ -145,6 +146,7 @@ class ItemAdapterPagDash(
                             )
                             if (prefProvider?.getValue(Constants.ORDER_TYPE, "").equals("")) {
                                 prefProvider?.setValue(Constants.ORDER_TYPE, TAKEOUT)
+                                prefProvider?.setValue(Constants.ORDER_TYPE_NAME, DEFAULT_ORDER)
                                 EventBus.getDefault().post("EventBus")
                             }
                             listener.onItemSelected(it)

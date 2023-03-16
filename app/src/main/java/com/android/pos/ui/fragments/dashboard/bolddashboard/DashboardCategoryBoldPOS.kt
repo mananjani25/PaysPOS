@@ -77,6 +77,10 @@ import com.sunmi.externalprinterlibrary.api.SunmiPrinter
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import com.zebra.scannercontrol.FirmwareUpdateEvent
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
 
@@ -175,12 +179,12 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         savedInstanceState: Bundle?
     ): View? {
         checkCashDrawerObserver()
-        syncData()
         Binding()
 
 //        hideSystemUI()
 
         binding = FragmentDashboardCategoryBoldPosBinding.inflate(inflater, container, false)
+        syncData()
         getCustomerDisplay(requireContext())?.let { display ->
             presentation = CustomDisplay(
                 display,
@@ -625,9 +629,17 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         if (!sync) {
             ProgressUtils.showProgressDialog(requireActivity())
             viewModel.syncInventoryModule(false)
-
+            binding.maskLayout?.visible()
+            hideLoaderAfterDelay()
         } else {
             viewModel.getOnlineOrderCount()
+        }
+    }
+
+    private fun hideLoaderAfterDelay() {
+        GlobalScope.launch(Dispatchers.Main) {
+            delay(10000)
+            binding.maskLayout?.gone()
         }
     }
 
@@ -742,7 +754,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             viewModel.syncInventoryModule(false)
         }
         binding.layoutHeader.imgCashdDrawer.setOnClickListener {
-
+            Log.d(TAG, "CASH-DRAWER: STEP 1 ")
             getCustomerPrinters()
             /*try {
                 SunmiPrintHelper.getInstance().openCashBox()
@@ -795,8 +807,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
             when (it.status) {
                 Status.SUCCESS -> {
+                    Log.d(TAG, "CASH-DRAWER: STEP 2 ")
                     if (it.data?.isNotEmpty() == true) {
                         for (i in 0 until it.data.size) {
+                            Log.d(TAG, "CASH-DRAWER: PrinterName($i) = ${it.data[i].name}")
                             if (it.data[i].name.startsWith("CloudPrint", true) == true) {
                                 if (woyouService != null) {
                                     woyouService!!.sendRAWData(byteArrayOf(0x1B, 0x45, 0x01), this)
@@ -850,6 +864,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                 }
 
                             } else {
+                                Log.d(TAG, "CASH-DRAWER: STEP 3 in TM-m30 ")
                                 var builder: Builder = Builder(
                                     if (it.data[i].name.substring(0, 6).toString()
                                             .lowercase() == "TM-m30".lowercase()
@@ -860,7 +875,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                     }, PrinterClass.language, requireActivity()
                                 )
 
-
+                                Log.d(TAG, "CASH-DRAWER: STEP 4")
                                 builder.addPulse(
                                     com.epson.epos2.printer.Printer.DRAWER_HIGH,
                                     com.epson.epos2.printer.Printer.PULSE_100
@@ -869,11 +884,13 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                 val status = IntArray(1)
                                 val battery = IntArray(1)
                                 try {
+                                    Log.d(TAG, "CASH-DRAWER: STEP 5")
                                     PrinterClass.getPrinter()?.sendData(
                                         builder,
                                         PrinterClass.BLUETOOTH_TIMEOUT, status, battery
                                     )
                                 } catch (e: java.lang.Exception) {
+                                    Log.d(TAG, "CASH-DRAWER: STEP 5 with error = ${e.localizedMessage} ")
                                     e.printStackTrace()
                                 }
 
