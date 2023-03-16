@@ -74,7 +74,7 @@ class ItemDialog : DialogFragment(), View.OnClickListener {
 
     private fun categoriesObserver() {
 
-        viewModel.items.observe(viewLifecycleOwner) {
+        viewModel.getItemsList(where).observe(viewLifecycleOwner) {
 
             it?.let { resource ->
                 when (resource.status) {

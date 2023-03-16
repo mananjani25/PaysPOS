@@ -112,8 +112,11 @@ class MenuFragment : DialogFragment() {
                 if (it) {
 
 
-                    viewModel.clearTableAll()
+//                    viewModel.clearTableAll()
+
+                    viewModel.cartModel = null
                     viewModel.clearTable()
+                    viewModel.deleteCart()
                     prefProvider.setClear()
                     prefProvider.setValue(Constants.AUTH_TOKEN, "")
                     prefProvider.setValue(Constants.BASE_URL_NEW, BASE_URL)
