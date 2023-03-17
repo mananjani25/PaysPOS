@@ -7,7 +7,6 @@ import android.content.ServiceConnection
 import android.graphics.Point
 import android.os.Bundle
 import android.os.IBinder
-import android.util.Log
 import android.view.*
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
@@ -36,7 +35,6 @@ import com.android.pos.utils.extensions.liveSnackBar
 import com.android.pos.utils.printer.PrinterClass
 import com.android.pos.utils.statusUtils.Status
 import com.epson.eposprint.Builder
-import com.epson.eposprint.Print
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.google.gson.JsonArray
@@ -461,11 +459,12 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                                     val status = IntArray(1)
                                     val battery = IntArray(1)
                                     try {
-                                        sendToTransaction()
+
                                         PrinterClass.getPrinter()?.sendData(
                                             builder,
                                             PrinterClass.BLUETOOTH_TIMEOUT, status, battery
                                         )
+                                        sendToTransaction()
                                     } catch (e: java.lang.Exception) {
                                         e.printStackTrace()
                                         sendToTransaction()
