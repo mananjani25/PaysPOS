@@ -7760,11 +7760,16 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                     var printerAdd =
                         if (data.printer_type == BLUETOOTH) "BT:" + data.macAddress else "TCP:" + data.ipAddress
-                    mPrinter.connect(
-                        printerAdd,
-                        Printer.PARAM_DEFAULT
-                    )
-                    mPrinter.startMonitor()
+                    if (mPrinter.status.connection == 0) {
+
+                        mPrinter.connect(
+                            printerAdd,
+                            Printer.PARAM_DEFAULT
+                        )
+                       // mPrinter.disconnect()
+                    }
+
+                  //  mPrinter.startMonitor()
 
                     generateReceiptForU220(mPrinter, data, type)
 

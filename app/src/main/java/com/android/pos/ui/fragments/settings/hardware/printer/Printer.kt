@@ -1529,6 +1529,14 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
             var printerAdd =
                 if (printerListModel.connectionType == BLUETOOTH) "BT:" + printerListModel.deviceModel?.macAddress else "TCP:" + printerListModel.deviceModel?.ipAddress
+            Log.e("checkPrinterConnection","connection:  ${mPrinter.status.connection}")
+            try {
+                mPrinter.disconnect()
+            }catch (e:Exception){
+                e.printStackTrace()
+            }
+
+
             mPrinter.connect(
                 printerAdd,
                 Printer.PARAM_DEFAULT

@@ -9,7 +9,10 @@ import android.os.*
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.WindowManager
 import android.view.animation.AlphaAnimation
 import android.view.animation.Animation
 import androidx.activity.OnBackPressedCallback
@@ -59,7 +62,9 @@ import com.android.pos.utils.*
 import com.android.pos.utils.callback.DineInOrderCallBack
 import com.android.pos.utils.callback.ItemClickListner
 import com.android.pos.utils.callback.ItemListner
-import com.android.pos.utils.extensions.*
+import com.android.pos.utils.extensions.alert
+import com.android.pos.utils.extensions.gone
+import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.printer.PrinterClass
 import com.android.pos.utils.scanner.helpers.ScannerAppEngine
 import com.android.pos.utils.statusUtils.Resource
@@ -872,7 +877,46 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                             } else {
                                 Log.d(TAG, "CASH-DRAWER: STEP 3 in TM-m30 ")
-                                var builder: Builder = Builder(
+
+
+                                try {
+                                    var mPrinter =
+                                        Printer(
+                                            Printer.TM_M30,
+                                            Printer.MODEL_ANK,
+                                            (activity as MainActivity).applicationContext
+                                        )
+
+
+                                    var printerAdd =
+                                        if (it.data[i].printer_type == Constants.BLUETOOTH) "BT:" + it.data[i].macAddress else "TCP:" + it.data[i].ipAddress
+                                    mPrinter.connect(
+                                        printerAdd,
+                                        Printer.PARAM_DEFAULT
+                                    )
+
+                                    mPrinter.addPulse(
+                                        com.epson.epos2.printer.Printer.DRAWER_HIGH,
+                                        com.epson.epos2.printer.Printer.PULSE_100
+                                    )
+
+                                    try {
+
+                                        mPrinter.sendData(Printer.PARAM_DEFAULT)
+                                        mPrinter.disconnect()
+                                    } catch (e: java.lang.Exception) {
+                                        try {
+                                            mPrinter.disconnect()
+                                        } catch (e: java.lang.Exception) {
+                                            e.printStackTrace()
+                                        }
+                                        e.printStackTrace()
+                                    }
+                                }catch (e:Exception){
+                                    e.printStackTrace()
+                                }
+
+                                /*var builder: Builder = Builder(
                                     if (it.data[i].name.substring(0, 6).toString()
                                             .lowercase() == "TM-m30".lowercase()
                                     ) {
@@ -899,7 +943,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                 } catch (e: java.lang.Exception) {
                                     Log.d(TAG, "CASH-DRAWER: STEP 5 with error = ${e.localizedMessage} ")
                                     e.printStackTrace()
-                                }
+                                }*/
 
 
                             }
@@ -1595,11 +1639,13 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                     var printerAdd =
                         if (data.printer_type == Constants.BLUETOOTH) "BT:" + data.macAddress else "TCP:" + data.ipAddress
-                    mPrinter.connect(
-                        printerAdd,
-                        Printer.PARAM_DEFAULT
-                    )
-                    mPrinter.startMonitor()
+                    if (mPrinter.status.connection == 0) {
+                        mPrinter.connect(
+                            printerAdd,
+                            Printer.PARAM_DEFAULT
+                        )
+                    }
+                    //mPrinter.startMonitor()
 
                     generateReceiptForU220(mPrinter, data, type, createOrderResponse.data)
 
@@ -2001,7 +2047,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
 
             try {
+                builder.beginTransaction()
                 builder.sendData(Printer.PARAM_DEFAULT)
+                builder.endTransaction()
+                builder.disconnect()
                 viewModel.downloadFinished(false)
                 if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
                     findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
