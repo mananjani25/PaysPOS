@@ -69,11 +69,15 @@ import com.android.pos.ui.adapter.DineInTableAdapter
 import com.android.pos.ui.fragments.checkout.CheckoutDineInPaymentViewModel
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
+import com.android.pos.ui.fragments.dashboard.bolddashboard.DashboardCategoryBoldPOS
 import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
 import com.android.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.android.pos.utils.*
+import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.liveSnackBar
+import com.android.pos.utils.extensions.runOnUiThread
+import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.printer.PrinterClass
 import com.android.pos.utils.statusUtils.Status
 import com.epson.epos2.printer.Printer
@@ -86,6 +90,8 @@ import com.sunmi.externalprinterlibrary.api.ConnectCallback
 import com.sunmi.externalprinterlibrary.api.SunmiPrinter
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
@@ -214,7 +220,26 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             var count: Int = bundle.getInt("count")
             addGuestToOrder(count)
         }
+
+        //showStaticLoader()
+
         return binding.root
+    }
+
+    private fun showStaticLoader() {
+        if (!SunmiPrinterApi.getInstance().isConnected) {
+            ProgressUtils.showProgressDialog(requireActivity())
+            Handler().postDelayed({
+                ProgressUtils.dismissProgressDialog()
+            }, 5000)
+
+
+        } else {
+            ProgressUtils.showProgressDialog(requireActivity())
+            Handler().postDelayed({
+                ProgressUtils.dismissProgressDialog()
+            }, 1000)
+        }
     }
 
 
@@ -1250,6 +1275,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
         viewModel.msgText.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
+                Log.d("###17MAR23", "Item Fired Done: Called - End All")
+//                if(pd != null && pd.isShowing){
+//                    pd.dismiss()
+//                }'
+                //binding.maskLayout?.gone()
+                ProgressUtils.dismissProgressDialog()
                 if (it.toString() != "null") {
                     AlertUtils.showCustomAlert(requireContext(), it)
                 }
@@ -2019,7 +2050,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         viewModel.Basedata.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { baseResponse ->
                 if (baseResponse != null) {
-                    ProgressUtils.showProgressDialog(requireActivity())
+                    Log.d("###17MAR23", "Basedata.observe: Called - Start")
                     passDiscountTotal = baseResponse.totalDiscount
                     passSCTotal = baseResponse.totalServiceCharges
                     wholeTableDiscount = 0.0
@@ -2587,13 +2618,13 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
                     if (dineInList.isNotEmpty()) {
+                        Log.d("###17MAR23", "dineInList.isNotEmpty(): Called - Start")
                         dineInTableAdapter.setList(dineInList)
                         if (this::presentation.isInitialized) {
                             presentation.show()
                             presentation.onDisplayChanged()
                             presentation.showTableDetails(baseResponse)
                         }
-                        ProgressUtils.dismissProgressDialog()
                         checkForAutoFire(true)
 
 
@@ -3026,7 +3057,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 viewHolder: RecyclerView.ViewHolder,
                 target: RecyclerView.ViewHolder
             ): Boolean {
-                if (target.layoutPosition != 0 && dineInTableAdapter.getList().get(viewHolder.layoutPosition).isHeader != 0) {
+                if (target.layoutPosition != 0 && dineInTableAdapter.getList()
+                        .get(viewHolder.layoutPosition).isHeader != 0
+                ) {
                     val oldPos = viewHolder.layoutPosition
                     val newPos = target.layoutPosition
 
@@ -3040,8 +3073,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         target.layoutPosition
                     )
                     return true
-                }
-                else{
+                } else {
                     return false
                 }
 
@@ -3174,6 +3206,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             SunmiPrinterApi.getInstance()
                 .setPrinter(SunmiPrinter.SunmiBlueToothPrinter, customerReceiptPrinters.ipAddress)
+
+            showStaticLoader()
 
             if (!SunmiPrinterApi.getInstance().isConnected) {
                 SunmiPrinterApi.getInstance()
@@ -7388,6 +7422,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
     ) {
 
+        Log.d("###17MAR23", "initKitchenPrinter: Called - Start")
+        Log.d("###17MAR23", "ProgressShow: Called - Start")
 
         if (data.name.startsWith(SUNMI_PRINTER, true)) {
 
@@ -7395,25 +7431,33 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 .setPrinter(SunmiPrinter.SunmiBlueToothPrinter, data.ipAddress)
 
             if (!SunmiPrinterApi.getInstance().isConnected) {
+//                runOnUiThread {
+//                    ProgressUtils.showProgressDialog(requireActivity())
+//                }
                 SunmiPrinterApi.getInstance()
                     .connectPrinter(requireContext(), object : ConnectCallback {
 
                         override fun onFound() {
+                            Log.d("###17MAR23", "SunmiPrinterFound: Called")
                             println("onFound")
                         }
 
                         override fun onUnfound() {
                             println("onUnfound")
+                            Log.d("###17MAR23", "SunmiPrinterUnfound: Called")
                         }
 
                         override fun onConnect() {
                             println("onConnect")
+                            Log.d("###17MAR23", "SunmiPrinterConnect: Called")
+                            //ProgressUtils.dismissProgressDialog()
                             generateKitchenReceiptSunmi(data, type, item)
 
                         }
 
                         override fun onDisconnect() {
                             println("onDisconnect")
+                            Log.d("###17MAR23", "SunmiPrinterDisConnect: Called")
                         }
 
                     })
@@ -8545,6 +8589,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         item: ArrayList<TbItem>
     ) {
         try {
+            ProgressUtils.showProgressDialog(requireActivity())
 
             PrintSunmiUtils.fontSize(kitchenSettingModel.fonts)
             SunmiPrinterApi.getInstance().printerInit()
@@ -8626,7 +8671,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
             PrintSunmiUtils.cutPaper()
-
+            ProgressUtils.dismissProgressDialog()
 
         } catch (e: Exception) {
             e.printStackTrace()
@@ -8871,7 +8916,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     }
 
     fun checkForAutoFire(isCheckAndFire: Boolean) {
-        ProgressUtils.showProgressDialog(requireActivity())
+        Log.d("###17MAR23", "checkForAutoFire: Called - Start - $isCheckAndFire")
         var list = dineInTableAdapter.getList()
         val builder = ArrayList<String>()
         var listItem: ArrayList<TbItem> = arrayListOf()
@@ -9018,7 +9063,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             }
             if (!isCheckAndFire or (isCheckAndFire && autoPrintEnable)) {
                 var fireAllIds = android.text.TextUtils.join(",", builder)
-                ProgressUtils.dismissProgressDialog()
+
                 viewModel.fireItemToKitchen(orderId ?: 0, true, fireAllIds, true)
                 list.forEach {
                     if (it.isHeader == 1) {
