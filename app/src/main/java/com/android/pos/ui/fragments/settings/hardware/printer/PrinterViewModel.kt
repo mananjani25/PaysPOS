@@ -57,7 +57,6 @@ class PrinterViewModel @Inject constructor(
         LogUtil.logE(TAG, "PrinterType: ${type}")
         viewModelScope.launch {
             val resource: com.android.pos.utils.statusUtils.Resource<DeletePrinterResponseModel> =
-
                 posRepository.updatePrinterStatus(id, terminal_id, status)
 
             when (resource.status) {

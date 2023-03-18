@@ -147,7 +147,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 binding.layoutHeader.txtBadgeCount.blink()
                 binding.layoutHeader.txtBadgeCount?.text = count.toString()
             } else {
-                 binding.layoutHeader.txtBadgeCount.clearAnimation()
+                binding.layoutHeader.txtBadgeCount.clearAnimation()
                 binding.layoutHeader.txtBadgeCount?.gone()
             }
         } else {
@@ -155,8 +155,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             binding.layoutHeader.txtBadgeCount?.gone()
         }
     }
-
-
 
 
     private fun View.blink(
@@ -198,7 +196,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
             )
         }
-        prefProvider.setValueboolean(IS_PAYMENT_SCREEN,false)
+        prefProvider.setValueboolean(IS_PAYMENT_SCREEN, false)
         val callback: OnBackPressedCallback =
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
@@ -912,7 +910,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                         }
                                         e.printStackTrace()
                                     }
-                                }catch (e:Exception){
+                                } catch (e: Exception) {
                                     e.printStackTrace()
                                 }
 
@@ -1038,7 +1036,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
 
                     if (cartList[0].dineInList?.isNotEmpty() == true) {
-                        Log.e("checkDineHeaderPos","dineInHeaderPosition:  ${viewModel.dineInHeaderPosition}")
+                        Log.e(
+                            "checkDineHeaderPos",
+                            "dineInHeaderPosition:  ${viewModel.dineInHeaderPosition}"
+                        )
 
                         var dineInList = cartList[0].dineInList
                         dineInList!![0]?.selectedPosition = viewModel.dineInHeaderPosition
@@ -1082,7 +1083,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 if (it) {
                     //ProgressUtils.showProgressDialog(requireActivity())
                 } else {
-                   // ProgressUtils.dismissProgressDialog()
+                    // ProgressUtils.dismissProgressDialog()
                 }
             }
         }
@@ -1625,33 +1626,49 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         TAG,
                         "PrinterEvent  ${Gson().toJson(printerStatusInfo)} other1 ${s}  other2 ${i}"
                     )
-                    if (printerStatusInfo.online == 1) {
+
                         try {
                             printer.disconnect()
+                            requireActivity().runOnUiThread {
+                                viewModel.downloadFinished(false)
+                                if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                                }
+                            }
 
                         } catch (e: java.lang.Exception) {
+                            try {
+                                requireActivity().runOnUiThread {
+                                    viewModel.downloadFinished(false)
+                                    if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                                        findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                                    }
+                                }
+                            }catch (e:Exception){
+
+                            }
                             e.printStackTrace()
                         }
-                    }
+
                 }
                 try {
                     Log.e(TAG, "printerDataType:  ${data.printer_type}")
 
                     var printerAdd =
                         if (data.printer_type == Constants.BLUETOOTH) "BT:" + data.macAddress else "TCP:" + data.ipAddress
-                    if (mPrinter.status.connection == 0) {
-                        mPrinter.connect(
-                            printerAdd,
-                            Printer.PARAM_DEFAULT
-                        )
-                    }
-                    //mPrinter.startMonitor()
+                    mPrinter.connect(
+                        printerAdd,
+                        Printer.PARAM_DEFAULT
+                    )
+                    mPrinter.startMonitor()
 
                     generateReceiptForU220(mPrinter, data, type, createOrderResponse.data)
 
                 } catch (e: java.lang.Exception) {
                     e.printStackTrace()
                 }
+
+
 
             } else {
 
@@ -2047,14 +2064,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
 
             try {
-                builder.beginTransaction()
                 builder.sendData(Printer.PARAM_DEFAULT)
-                builder.endTransaction()
-                builder.disconnect()
-                viewModel.downloadFinished(false)
-                if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+               // viewModel.downloadFinished(false)
+               /* if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
                     findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
-                }
+                }*/
 
                 //PrinterClass.getPrinter()?.sendData(builder, 0, status, battery)
             } catch (e: Exception) {
@@ -3570,7 +3584,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         } else {
             Log.e(TAG, "DineinNewCh NoOrderType")
             if (rolePermission.hasTablePermission(binding.root)) {
-               // prefProvider.setValue(ORDER_TYPE, DINE_IN)
+                // prefProvider.setValue(ORDER_TYPE, DINE_IN)
                 prefProvider.setValue(Constants.DINE_IN_UPDATE_LIST, "")
                 prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
                 findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragment)
