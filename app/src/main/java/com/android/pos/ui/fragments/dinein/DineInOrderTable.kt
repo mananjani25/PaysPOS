@@ -8589,7 +8589,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         item: ArrayList<TbItem>
     ) {
         try {
-            ProgressUtils.showProgressDialog(requireActivity())
+            //ProgressUtils.showProgressDialog(requireActivity())
 
             PrintSunmiUtils.fontSize(kitchenSettingModel.fonts)
             SunmiPrinterApi.getInstance().printerInit()
@@ -8671,7 +8671,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
             PrintSunmiUtils.cutPaper()
-            ProgressUtils.dismissProgressDialog()
+            //ProgressUtils.dismissProgressDialog()
 
         } catch (e: Exception) {
             e.printStackTrace()
