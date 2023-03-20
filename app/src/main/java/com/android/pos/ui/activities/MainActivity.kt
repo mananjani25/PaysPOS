@@ -29,6 +29,10 @@ import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
+import androidx.work.Data
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequest
+import androidx.work.WorkManager
 import com.android.pos.R
 import com.android.pos.data.model.PrinterQueueModel
 import com.android.pos.data.model.TmpPrinterModel
@@ -54,6 +58,7 @@ import com.android.pos.utils.*
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.statusUtils.Status
 import com.android.pos.utils.workmanager.ThreadPoolManager
+import com.android.pos.utils.workmanager.UploadWorker
 import com.epson.epos2.ConnectionListener
 import com.epson.epos2.printer.Printer
 import com.epson.epos2.printer.PrinterStatusInfo
@@ -77,6 +82,7 @@ import java.io.IOException
 import java.net.URI
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 
@@ -703,6 +709,57 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
     }
 
+    @SuppressLint("RestrictedApi")
+    private fun getKitOne(){
+
+        viewModelPrinter.getKitchenPrinterList().observe(this) {
+            when (it.status) {
+                Status.SUCCESS -> {
+                    ProgressUtils.dismissProgressDialog()
+                    if (it.data != null) {
+
+                        val data = Data.Builder()
+                            .putString("kitchenPrinterList", Gson().toJson(kitchenPrinterList))
+                            .put("kitchenSettingData", Gson().toJson(kitchenSettingModel))
+                            .put("location_id", prefProvider?.getValueInt(LOCATION_ID, 0))
+                            .put("base_url", prefProvider?.getValue(Constants.BASE_URL_NEW, ""))
+                            .build()
+
+                        val uploadWorkRequest =
+                            PeriodicWorkRequest.Builder(UploadWorker::class.java, 5, TimeUnit.SECONDS)
+                                .setInputData(data)
+                                .build()
+
+
+                        val workManager = WorkManager.getInstance(this)
+                        try {
+
+
+                            workManager.enqueueUniquePeriodicWork(
+                                "demo",
+                                ExistingPeriodicWorkPolicy.REPLACE,
+                                uploadWorkRequest
+                            )
+                        } catch (e: java.lang.Exception) {
+                            LogUtil.logE(TAG, "printerQueueLog  ${e.message.toString()}")
+                            e.printStackTrace()
+                        }
+
+                    }
+
+                }
+                Status.ERROR -> {
+                    ProgressUtils.dismissProgressDialog()
+
+                }
+                Status.LOADING -> {
+                    ProgressUtils.showProgressDialog(this)
+                }
+
+            }
+        }
+    }
+
     private fun getCustomerPrinters() {
         viewModelPrinter.getKitchenPrinterList().observe(this) {
             when (it.status) {
@@ -774,9 +831,11 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         super.onCreate(savedInstanceState)
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN)
 
-       // demoPrinterQueue()
+        //getKitOne()
+        //demoPrinterQueue()
 
-        connectionActionCable()
+
+       // connectionActionCable()
         val intentFilter = IntentFilter("PrinterQueue")
         registerReceiver(wifiStateReceiver, intentFilter)
         getCustomerReceiptSettings()

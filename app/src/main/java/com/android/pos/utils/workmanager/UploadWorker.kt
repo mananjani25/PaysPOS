@@ -65,25 +65,26 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
                 locationId = inputData.getInt("location_id", 0)
                 baseUrl = inputData.getString("base_url").toString()
-               /* var serializeObjKitchenPrinters = inputData.getString("kitchenPrinterList")
-                if (serializeObjKitchenPrinters?.isNotEmpty() == true) {
-                    val gson = Gson()
-                    val type =
-                        object :
-                            TypeToken<List<PrinterResponse.Data.KitchenReceiptPrinters>?>() {}.type
-                    kitchenPrinterList =
-                        gson.fromJson<Any>(
-                            serializeObjKitchenPrinters,
-                            type
-                        ) as ArrayList<PrinterResponse.Data.KitchenReceiptPrinters>
+
+                /* var serializeObjKitchenPrinters = inputData.getString("kitchenPrinterList")
+                 if (serializeObjKitchenPrinters?.isNotEmpty() == true) {
+                     val gson = Gson()
+                     val type =
+                         object :
+                             TypeToken<List<PrinterResponse.Data.KitchenReceiptPrinters>?>() {}.type
+                     kitchenPrinterList =
+                         gson.fromJson<Any>(
+                             serializeObjKitchenPrinters,
+                             type
+                         ) as ArrayList<PrinterResponse.Data.KitchenReceiptPrinters>
 
 
-                }*/
+                 }*/
 
 
 
 
-                LogUtil.logE(TAG,"onActionCableStarts")
+                LogUtil.logE(TAG, "onActionCableStarts")
                 connectActionCable()
 
             }
@@ -105,7 +106,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
         consumer = ActionCable.createConsumer(uri)
 
         // 2. Create subscription
-        val appearanceChannel = Channel("printer_queue_channel")
+        val appearanceChannel = Channel("KitchenChannel")
         // appearanceChannel.addParam("id",prefProvider.getValueInt(LOCATION_ID,0))
         subscription = consumer?.subscriptions?.create(appearanceChannel)
 
@@ -142,7 +143,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
                     } else {
                         val intent = Intent()
-                        intent.putExtra(Constants.DATA,"")
+                        intent.putExtra(Constants.DATA, "")
                         intent.action = PRINTER_QUEUE_DATA_RECEIVED
                         mContext.sendBroadcast(intent)
                         /* isPrinterRunning = false
@@ -516,24 +517,34 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
 
             }
-            if (printerQueuelist.size != 0) {
-                withContext(Dispatchers.Default) {
-
-                    val intent = Intent()
-                    intent.putExtra(Constants.DATA, Gson().toJson(printerQueuelist))
-                    intent.action = PRINTER_QUEUE_DATA_RECEIVED
-                    mContext.sendBroadcast(intent)
-                }
+            if (printerQueuelist.isNotEmpty()) {
+                val printer = Printer(Printer.TM_U220, Printer.MODEL_ANK, mContext)
+                callPrinter(printer)
 
 
-                /* configurePrinter(
+                /*for (i in 0 until printerQueuelist.size) {*/
+
+            }
+
+
+            /*   if (printerQueuelist.size != 0) {
+                   withContext(Dispatchers.Default) {
+
+                       val intent = Intent()
+                       intent.putExtra(Constants.DATA, Gson().toJson(printerQueuelist))
+                       intent.action = PRINTER_QUEUE_DATA_RECEIVED
+                       mContext.sendBroadcast(intent)
+                   }
+
+
+                   *//* configurePrinter(
                      printerQueuelist.get(printerQueuelist.size - 1),
                      printerQueuelist.size - 1
-                 )*/
+                 )*//*
 
             } else {
                 isPrinterRunning = false
-            }
+            }*/
 
             /*if (!printerBGRunning) {
               //  delay(2000)
@@ -542,11 +553,130 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
             }*/
         } else {
             val intent = Intent()
-            intent.putExtra(Constants.DATA,"")
+            intent.putExtra(Constants.DATA, "")
             intent.action = PRINTER_QUEUE_DATA_RECEIVED
             mContext.sendBroadcast(intent)
             isPrinterRunning = false
         }
+    }
+
+    private fun callPrinter(printer: Printer) {
+        try {
+            var obj = printerQueuelist[printerQueuelist.size - 1]
+
+
+            var printerAdd =
+                "TCP:192.168.3.31"
+
+
+
+            if (printer?.status.connection == 0) {
+
+                printer.connect(
+                    printerAdd,
+                    Printer.PARAM_DEFAULT
+                )
+            }
+
+
+            printer.startMonitor()
+
+
+
+
+            printer.setReceiveEventListener { printer, i, printerStatusInfo, s ->
+
+                Log.e(
+                    TAG,
+                    "PrinterEvent  ${Gson().toJson(printerStatusInfo)} other1 ${s}  other2 ${i}"
+                )
+
+
+                if (printerStatusInfo.errorStatus == 0) {
+                    printer.endTransaction()
+                    printer.clearCommandBuffer()
+                    printerQueuelist.removeAt(printerQueuelist.size - 1)
+                    resumePrinterQueue(printer)
+
+
+                }
+
+                /*if (printerStatusInfo.online == 1) {
+                try {
+                    printer.disconnect()
+
+                } catch (e: java.lang.Exception) {
+                    e.printStackTrace()
+                }
+            }*/
+            }
+
+
+
+
+
+            printer.addFeedUnit(30)
+            printer.addFeedLine(2)
+
+            printer.addTextFont(Builder.FONT_E)
+            printer.addTextAlign(Builder.ALIGN_CENTER)
+            printer.addTextLang(Builder.LANG_EN)
+            printer.addTextSize(2, 2)
+            printer.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.TRUE,
+                Builder.COLOR_1
+            )
+
+            printer.addText("OrderID:" + obj.orderID)
+            printer.addFeedLine(1)
+            printer.addFeedUnit(30)
+            printer.addFeedLine(1)
+
+
+            for (m in 0 until obj.orderItems.size) {
+                printer.addTextFont(Builder.FONT_E)
+                printer.addTextAlign(Builder.ALIGN_LEFT)
+                printer.addTextLang(Builder.LANG_EN)
+                printer.addTextSize(2, 2)
+                printer.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+
+
+                printer.addText(obj.orderItems[m].itemName)
+                printer.addFeedLine(1)
+                printer.addFeedUnit(30)
+            }
+            printer.addFeedLine(1)
+
+            printer.addCut(Builder.CUT_FEED)
+
+            //  printer.beginTransaction()
+            try {
+                Log.e("SendDataHowMuchTime", "checkTimePrin")
+                printer.sendData(Printer.PARAM_DEFAULT)
+            } catch (e: java.lang.Exception) {
+                e.printStackTrace()
+            }
+
+
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
+
+    }
+
+    private fun resumePrinterQueue(printer: Printer?) {
+        if (printerQueuelist.isEmpty()) {
+            printer?.let { callPrinter(it) }
+        }
+
+
     }
 
     private fun getQueueLocalData() {
@@ -568,7 +698,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
 
 
-            newKitchenPrinterInit(arrayItems[arrayItems.size - 1], arrayItems.size - 1,arrayItems)
+            newKitchenPrinterInit(arrayItems[arrayItems.size - 1], arrayItems.size - 1, arrayItems)
 
 
         } else {
@@ -580,7 +710,8 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
     private fun newKitchenPrinterInit(
         printerQueueModel: PrinterQueueModel,
         index: Int,
-        arrayItems: ArrayList<PrinterQueueModel>) {
+        arrayItems: ArrayList<PrinterQueueModel>
+    ) {
         LogUtil.logE(TAG, "kitchenPrinters  ${kitchenPrinterList.size}")
         for (i in 0 until kitchenPrinterList.size) {
             var modelName = -1
@@ -639,8 +770,12 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                         intent.action = Constants.PRITNER_QUEUE_DATA_DELETE
                         mContext.sendBroadcast(intent)
                         arrayItems.removeAt(index)
-                        if (arrayItems.isNotEmpty()){
-                            newKitchenPrinterInit(arrayItems.get(arrayItems.size - 1), arrayItems.size - 1,arrayItems)
+                        if (arrayItems.isNotEmpty()) {
+                            newKitchenPrinterInit(
+                                arrayItems.get(arrayItems.size - 1),
+                                arrayItems.size - 1,
+                                arrayItems
+                            )
                         }
 
                     }
