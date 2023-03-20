@@ -234,7 +234,7 @@ class CartFragment(
 
     private fun checkOrderType() {
 
-
+        saveVisibility()
         if (prefProvider.getValue(ORDER_TYPE, "").isEmpty()) {
             binding.rlCartView.gone()
             binding.rvOrderType.visible()
