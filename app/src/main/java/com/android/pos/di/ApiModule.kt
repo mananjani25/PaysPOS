@@ -1,12 +1,12 @@
 package com.android.pos.di
 
 import android.content.Context
-import com.android.pos.BuildConfig
 import com.android.pos.MainApplication
 import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants.AUTH_TOKEN
 import com.android.pos.data.remote.Constants.BASE_URL_NEW
 import com.android.pos.data.remote.NetworkConnectionInterceptor
+import com.localebro.okhttpprofiler.OkHttpProfilerInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -25,10 +25,10 @@ object ApiModule {
 
     // private const val BASE_URL = "https://possoft.io/api/v1/"
     //public const val BASE_URL = "https://boldpos.site/api/v1/"  // for BOLD POS
-   //public const val BASE_URL = "https://snackhq.com/api/v1/"  // for SNACK POS
+    public const val BASE_URL = "https://snackhq.com/api/v1/"  // for SNACK POS
     //  private const val BASE_URL = "http://34.205.43.53/api/v1/"
     //private const val BASE_URL = "https://possoft.io/api/v1/"
-    public const val BASE_URL = "https://hugepos.com/api/v1/"
+//    public const val BASE_URL = "https://hugepos.com/api/v1/"
 
     @Singleton
     @Provides
@@ -56,6 +56,7 @@ object ApiModule {
                 OkHttpClient.Builder().connectTimeout(50000, TimeUnit.MILLISECONDS)
                     .readTimeout(100000, TimeUnit.MILLISECONDS)
                     .addInterceptor(hostSelectionInterceptor)
+                    .addInterceptor(OkHttpProfilerInterceptor())
                     .addInterceptor { chain ->
                         chain.proceed(chain.request().newBuilder().also {
                             val authToken = prefProvider.getValue(AUTH_TOKEN, "")
@@ -81,8 +82,8 @@ object ApiModule {
 //                        if (BuildConfig.DEBUG) {
                             val logging = HttpLoggingInterceptor()
                             logging.setLevel(HttpLoggingInterceptor.Level.BODY)
-                            client.addInterceptor(logging)
-                            client.addInterceptor(networkConnectionInterceptor)
+                        client.addInterceptor(logging)
+                        client.addInterceptor(networkConnectionInterceptor)
 //                        }
                     }.build()
             )
