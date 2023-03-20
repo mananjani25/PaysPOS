@@ -638,8 +638,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         if (!sync) {
             ProgressUtils.showProgressDialog(requireActivity())
             viewModel.syncInventoryModule(false)
-            binding.maskLayout?.visible()
-            hideLoaderAfterDelay()
+            //binding.maskLayout?.visible()
+            //hideLoaderAfterDelay()
         } else {
             viewModel.getOnlineOrderCount()
         }

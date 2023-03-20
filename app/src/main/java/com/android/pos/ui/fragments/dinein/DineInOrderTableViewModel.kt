@@ -179,7 +179,7 @@ class DineInOrderTableViewModel @Inject constructor(
         isAllFired: Boolean,
         item: TbItem? = null
     ) {
-
+        Log.d("###17MAR23", "fireItemToKitchen: Called - Start")
         _showProgress.value = Event(true)
 
         viewModelScope.launch {
@@ -204,7 +204,7 @@ class DineInOrderTableViewModel @Inject constructor(
 
                 Status.ERROR -> {
                     _snackbarText.value = Event(resource.message)
-                    _showProgress.value = Event(false)
+                    //_showProgress.value = Event(false)
                 }
 
                 Status.LOADING -> {
@@ -215,6 +215,7 @@ class DineInOrderTableViewModel @Inject constructor(
     }
 
     fun apiCallOrderDetails(orderId: Int) {
+        Log.d("###17MAR23", "apiCallOrderDetails: Called - Start")
         _showProgress.value = Event(true)
         viewModelScope.launch {
             val resource = posRepository.orderDetailsById(orderId)
@@ -222,6 +223,7 @@ class DineInOrderTableViewModel @Inject constructor(
 
             when (resource.status) {
                 Status.SUCCESS -> {
+                    Log.d("###17MAR23", "apiCallOrderDetails: Called - End")
                     _showProgress.value = Event(false)
                     resource.data.let { logInResponse ->
                         if (logInResponse?.status == 200) {
@@ -346,6 +348,7 @@ class DineInOrderTableViewModel @Inject constructor(
     fun createQueuePrinter(
         createQueuePrinterModel: CreateQueuePrinterRequestModel
     ) {
+        Log.d("###17MAR23", "createQueuePrinter: Called - Start")
         _showProgress.value = Event(true)
 
         viewModelScope.launch {
