@@ -6,6 +6,7 @@ import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants.AUTH_TOKEN
 import com.android.pos.data.remote.Constants.BASE_URL_NEW
 import com.android.pos.data.remote.NetworkConnectionInterceptor
+import com.localebro.okhttpprofiler.OkHttpProfilerInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -24,7 +25,7 @@ object ApiModule {
 
     // private const val BASE_URL = "https://possoft.io/api/v1/"
     //public const val BASE_URL = "https://boldpos.site/api/v1/"  // for BOLD POS
-   public const val BASE_URL = "https://snackhq.com/api/v1/"  // for SNACK POS
+    public const val BASE_URL = "https://snackhq.com/api/v1/"  // for SNACK POS
     //  private const val BASE_URL = "http://34.205.43.53/api/v1/"
     //private const val BASE_URL = "https://possoft.io/api/v1/"
     //public const val BASE_URL = "https://hugepos.com/api/v1/"
