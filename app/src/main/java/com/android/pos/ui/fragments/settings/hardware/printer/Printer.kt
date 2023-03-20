@@ -402,7 +402,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                                             } else {
                                                 WIFI
                                             },
-                                            isActive = customerData[i].customerStatus,
+                                            isActive = customerData[i].status,
                                             type = customerData[i].receiptPrintType,
                                             DeviceInfo(
                                                 if (customerData[i].printer_type == BLUETOOTH) {
@@ -533,7 +533,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                                             } else {
                                                 WIFI
                                             },
-                                            isActive = kitchenData[i].kitchenStatus,
+                                            isActive = kitchenData[i].status,
                                             type = kitchenData[i].receiptPrintType,
                                             DeviceInfo(
                                                 if (kitchenData[i].printer_type == BLUETOOTH) {
@@ -1446,14 +1446,12 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     }
 
     override fun onUpdatePrinterStatus(printerListModel: PrinterListModel, isChecked: Boolean) {
-        Log.e("checkDataPrinter","printerListModel:  ${Gson().toJson(printerListModel)}")
 
         viewModel.updatePrinterStatus(
             printerListModel.type,
             printerListModel.id!!,
             prefProvider.getValueInt(TERMINAL_ID, 1),
-            isChecked,
-            printerListModel.currentPrinterType?: ""
+            isChecked
         )
     }
 
@@ -1531,6 +1529,23 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
             var printerAdd =
                 if (printerListModel.connectionType == BLUETOOTH) "BT:" + printerListModel.deviceModel?.macAddress else "TCP:" + printerListModel.deviceModel?.ipAddress
+            Log.e("checkConnec","${mPrinter.status.connection}")
+            try {
+                mPrinter.clearCommandBuffer()
+                mPrinter.disconnect()
+
+
+            }
+            catch (e:java.lang.Exception){
+                try {
+                    mPrinter.disconnect()
+                }
+                catch (e:java.lang.Exception){
+
+                }
+                e.printStackTrace()
+            }
+
             mPrinter.connect(
                 printerAdd,
                 Printer.PARAM_DEFAULT

@@ -1,7 +1,6 @@
 package com.android.pos.di
 
 import android.content.Context
-import com.android.pos.BuildConfig
 import com.android.pos.MainApplication
 import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants.AUTH_TOKEN
