@@ -20,7 +20,8 @@ android {
         versionName "3.14"
 
 
-        sourceSets { main { jniLibs.srcDirs = ['src/main/jniLibs/'] } }
+        sourceSets { main { jniLibs.srcDirs = ['src/m' +
+                                                       'ain/jniLibs/'] } }
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         ndk {
