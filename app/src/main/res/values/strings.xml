@@ -147,6 +147,7 @@
     <string name="per_item">Per Item</string>
     <string name="choose_between_selling_whole_or_decimal_quantities_for_the_item_learn_more">Choose between selling whole or decimal quantities for the item. Learn more</string>
     <string name="price">Price</string>
+    <string name="markup_price">Markup Price</string>
     <string name="sku">SKU</string>
     <string name="stock">Stock</string>
     <string name="receive_stock">Receive Stock</string>

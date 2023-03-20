@@ -45,8 +45,8 @@ class VariationListAdapter() :
     override fun onBindViewHolder(holder: VariationListAdapter.MyViewHolder, position: Int) {
 
         val itemBinding = holder.noteItemBinding
-        itemBinding.txtVariation.text = variationList[position].name
-        itemBinding.txtPrice.text = variationList[position].price?.let {
+        itemBinding.txtVariation.text = variationList[position].name + "hjghjg"
+        itemBinding.txtPrice.text = variationList[position].priceWithMarkup?.let {
             MethodUtils.roundOffAmount(
                 it
             )
