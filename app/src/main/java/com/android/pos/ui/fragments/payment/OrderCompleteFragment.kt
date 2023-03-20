@@ -278,7 +278,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 LogUtil.logE(TAG, "getREceiptModel  ${Gson().toJson(receiptModel)}")
                 if (!isFromCustomer) {
-                    getKitchenPrinters()
+                   // getKitchenPrinters()
                 }
             }
         }

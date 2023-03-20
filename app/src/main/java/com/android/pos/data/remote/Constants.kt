@@ -19,6 +19,8 @@ object Constants {
 
     const val CURRENT_VERSION = 1
 
+    const val IS_MASTER_TERMINAL = "is_master_terminal"
+
     const val MAX_ITEM_QUANTITY = 1000
     const val MAX_ITEM_QUANTITY_FOR_MANUAL_SALES = 15
 

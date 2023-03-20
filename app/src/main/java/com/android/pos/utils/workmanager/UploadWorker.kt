@@ -16,6 +16,7 @@ import com.android.pos.data.remote.Constants.PRINTER_QUEUE_DATA_RECEIVED
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.*
 import com.android.pos.utils.printer.PrinterClass
+import com.epson.epos2.ConnectionListener
 import com.epson.epos2.printer.Printer
 import com.epson.epos2.printer.PrinterStatusInfo
 import com.epson.epos2.printer.ReceiveListener
@@ -566,20 +567,46 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
 
             var printerAdd =
-                "TCP:192.168.3.31"
+                "TCP:192.168.0.100"
 
 
 
-            if (printer?.status.connection == 0) {
+            Log.e(TAG, "connection: ${printer.status.connection}")
+            printer.setConnectionEventListener(object : ConnectionListener {
+                override fun onConnection(p0: Any?, p1: Int) {
+                    Log.e(TAG, "checkConnection ${p0} other ${p1}")
+                }
 
+            })
+
+            printer.setConnectionEventListener { any, i ->
+                Log.e(TAG, "checkConnection12 ${any} other ${i}")
+
+
+            }
+
+
+            try {
                 printer.connect(
                     printerAdd,
                     Printer.PARAM_DEFAULT
                 )
+                printer.startMonitor()
+            } catch (e: Exception) {
+                try {
+                    printer.disconnect()
+                } catch (e: Exception) {
+
+                }
+
+                e.printStackTrace()
+
+
             }
 
 
-            printer.startMonitor()
+
+
 
 
 
@@ -593,10 +620,21 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
 
                 if (printerStatusInfo.errorStatus == 0) {
-                    printer.endTransaction()
-                    printer.clearCommandBuffer()
+                    /* printer.endTransaction()
+                     printer.clearCommandBuffer()*/
+                    printerQueuelist.get(printerQueuelist.size - 1).id?.let {
+                        val params = JsonObject()
+                        var deleteUrl =
+                            baseUrl + Constants.CREATE_QUEUE_PRINTER + "/" + it
+                        LogUtil.logE(TAG, "DeleteUrl ${deleteUrl}")
+                        params.addProperty("url", deleteUrl)
+                        subscription?.perform("delete_order", params)
+                    }
+                    printer.disconnect()
                     printerQueuelist.removeAt(printerQueuelist.size - 1)
-                    resumePrinterQueue(printer)
+                    Log.e(TAG, "checkQueueSize  ${printerQueuelist.size}")
+                    val printer1 = Printer(Printer.TM_U220, Printer.MODEL_ANK, mContext)
+                    resumePrinterQueue(printer1)
 
 
                 }
@@ -656,13 +694,11 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
             printer.addCut(Builder.CUT_FEED)
 
-            //  printer.beginTransaction()
-            try {
-                Log.e("SendDataHowMuchTime", "checkTimePrin")
-                printer.sendData(Printer.PARAM_DEFAULT)
-            } catch (e: java.lang.Exception) {
-                e.printStackTrace()
-            }
+            //   printer.beginTransaction()
+
+            Log.e("SendDataHowMuchTime", "checkTimePrin")
+
+            printer.sendData(Printer.PARAM_DEFAULT)
 
 
         } catch (e: java.lang.Exception) {
@@ -672,7 +708,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
     }
 
     private fun resumePrinterQueue(printer: Printer?) {
-        if (printerQueuelist.isEmpty()) {
+        if (printerQueuelist.isNotEmpty()) {
             printer?.let { callPrinter(it) }
         }
 
