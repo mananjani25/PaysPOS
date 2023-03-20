@@ -7740,15 +7740,16 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
                 }
+
                 mPrinter.setReceiveEventListener { printer, i, printerStatusInfo, s ->
 
                     Log.e(
                         TAG,
                         "PrinterEvent  ${Gson().toJson(printerStatusInfo)} other1 ${s}  other2 ${i}"
                     )
-                    if (printerStatusInfo.online == 1) {
+                    if (printerStatusInfo.connection == 1) {
                         try {
-                            printer.disconnect()
+                           printer.disconnect()
 
                         } catch (e: java.lang.Exception) {
                             e.printStackTrace()
@@ -7760,11 +7761,16 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                     var printerAdd =
                         if (data.printer_type == BLUETOOTH) "BT:" + data.macAddress else "TCP:" + data.ipAddress
-                    mPrinter.connect(
-                        printerAdd,
-                        Printer.PARAM_DEFAULT
-                    )
-                    mPrinter.startMonitor()
+                    if (mPrinter.status.connection == 0) {
+
+                        mPrinter.connect(
+                            printerAdd,
+                            Printer.PARAM_DEFAULT
+                        )
+                       // mPrinter.disconnect()
+                    }
+
+                  //  mPrinter.startMonitor()
 
                     generateReceiptForU220(mPrinter, data, type)
 
@@ -8175,6 +8181,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         try {
             mPrinter.sendData(Printer.PARAM_DEFAULT)
+            mPrinter.clearCommandBuffer()
+            mPrinter.endTransaction()
+
             /*  try {
                   mPrinter.disconnect()
               } catch (e: java.lang.Exception) {

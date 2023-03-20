@@ -66,6 +66,7 @@
                     android:paddingTop="@dimen/_7sdp"
                     android:paddingBottom="@dimen/_7sdp"
                     android:text="Done"
+                    android:enabled="false"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_7mdpi" />
 

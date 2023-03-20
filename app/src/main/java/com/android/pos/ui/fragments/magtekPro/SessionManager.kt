@@ -3,6 +3,8 @@ package com.android.pos.ui.fragments.magtekPro
 import android.content.Context
 import android.graphics.*
 import android.util.Log
+import com.android.pos.data.remote.Constants
+import com.android.pos.di.PrefProvider
 import com.android.pos.ui.fragments.checkout.CheckoutDetailsFragmentNew
 import com.android.pos.ui.fragments.checkout.CheckoutDineInFragmentNew
 import com.android.pos.utils.LogUtil
@@ -25,6 +27,10 @@ open class SessionManager @Inject constructor(@ApplicationContext private val mC
     private var mTransaction: Transaction? = null
     private var mGetSignatureFromDevice = false
     private var mFallbackManager: FallbackManager? = null
+
+    @Inject
+    lateinit var prefProvider: PrefProvider
+
 
     val transaction: ITransaction?
         get() = mTransaction
@@ -60,7 +66,7 @@ open class SessionManager @Inject constructor(@ApplicationContext private val mC
         }
     }
 
-    val isConnected: Boolean
+    var isConnected: Boolean = false
         get() {
             var connected = false
             val device = device
@@ -235,10 +241,14 @@ open class SessionManager @Inject constructor(@ApplicationContext private val mC
                     when (ConnectionStateBuilder.GetValue(data.StringValue())) {
                         ConnectionState.Connected -> {
                             sendToOutput("[CONNECTED]")
+
+                            prefProvider.setValueboolean(Constants.DYNANA_FLAX, true)
                             //updateDeviceStatusUI(true);
                         }
                         ConnectionState.Disconnected -> {
                             sendToOutput("[DISCONNECTED]")
+
+                            prefProvider.setValueboolean(Constants.DYNANA_FLAX, false)
                             //updateDeviceStatusUI(false);
                         }
                         ConnectionState.Disconnecting -> {

@@ -1,21 +1,27 @@
 package com.android.pos.ui.fragments.settings.tax
 
+import android.os.Build
 import android.text.TextUtils
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.R
 import com.android.pos.data.entities.TaxData
+import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.requestModel.CreateTaxRequestModel
 import com.android.pos.data.model.responseModel.CreateTaxResponse
 import com.android.pos.data.remote.Constants.LOCATION_ID
+import com.android.pos.data.repositories.PosRepository
 import com.android.pos.data.repositories.TaxServiceChargeRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -23,6 +29,7 @@ import javax.inject.Inject
 @HiltViewModel
 class CreateTaxViewModel @Inject constructor(
     private val taxServiceChargeRepository: TaxServiceChargeRepository,
+    private val posRepository: PosRepository,
     private val prefProvider: PrefProvider
 ) : ViewModel() {
 
@@ -67,6 +74,41 @@ class CreateTaxViewModel @Inject constructor(
         isEnableTax = taxData.isActive
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
+    fun updateTaxDataInItem(tax: TaxData, itemIds: ArrayList<Int>) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                var tempTaxData: ArrayList<TaxData> = arrayListOf()
+                val taxDataFromDb: TaxData = taxServiceChargeRepository.getItemsListOfTax(tax.id)
+                val oldItemIds: ArrayList<Int> = taxDataFromDb.itemIds as ArrayList<Int>
+
+                // Remove Tax from Items
+                oldItemIds.forEach {
+                    if (!itemIds.contains(it)) {
+                        val item: TbItem? = posRepository.getSingleItem(it)
+                        tempTaxData = item?.taxes as ArrayList<TaxData>
+                        tempTaxData.removeIf { it.id == tax.id }
+                        posRepository.updateTaxDataForItem(tempTaxData, it)
+                    }
+                }
+
+                // Add Tax to Items
+                itemIds.forEach {
+                    if (!oldItemIds.contains(it)) {
+                        val item: TbItem? = posRepository.getSingleItem(it)
+                        tempTaxData = (item?.taxes as ArrayList<TaxData>?)!!
+                        if (!tempTaxData.contains(element = tax)) {
+                            tempTaxData.add(tax)
+                            posRepository.updateTaxDataForItem(tempTaxData, it)
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
     fun setItemIds(itemIds: ArrayList<Int>) {
         this.itemIdsViewModel = itemIds
     }
@@ -87,6 +129,7 @@ class CreateTaxViewModel @Inject constructor(
         this.taxTypeViewModel = taxType
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
     fun submit(rates: Double) {
         val value = createTaxDetails.value
         if (TextUtils.isEmpty(value?.name?.trim())) {
@@ -156,6 +199,7 @@ class CreateTaxViewModel @Inject constructor(
                                          updatedAt = createTaxResponse.data.updatedAt
                                      )*/
 
+                                    updateTaxDataInItem(tax, taxData.itemIds as ArrayList<Int>)
                                     taxServiceChargeRepository.createTaxDatabase(tax)
 
                                     _data.value = Event(createTaxResponse)

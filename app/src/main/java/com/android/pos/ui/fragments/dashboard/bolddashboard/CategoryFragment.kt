@@ -498,14 +498,21 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
         lifecycleScope.launch {
             itemAdapter.submitData(PagingData.empty())
         }
+        Log.e(
+            "onCategorySelected",
+            "parentPosition : $parentPosition childPosition : $childPosition"
+        )
 
-        val categoryId =
-            categoryParentAdapter.getList()[parentPosition].list[childPosition].id
 
-        prefProvider.setValueInt(Constants.CAT_ID_SELECTED, categoryId)
-        Log.e(TAG,"cateSelectedcategoryId  ${categoryId}")
+        if (childPosition != -1 && parentPosition != -1) {
+            val categoryId =
+                categoryParentAdapter.getList()[parentPosition].list[childPosition].id
 
-        getItemsByCategory(categoryId)
+            prefProvider.setValueInt(Constants.CAT_ID_SELECTED, categoryId)
+            Log.e(TAG, "cateSelectedcategoryId  ${categoryId}")
+
+            getItemsByCategory(categoryId)
+        }
 
 
     }

@@ -16,8 +16,8 @@ android {
         applicationId "com.internetsoft.pos"
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 29
-        versionName "3.8"
+        versionCode 30
+        versionName "3.9"
 
 
         sourceSets { main { jniLibs.srcDirs = ['src/main/jniLibs/'] } }
@@ -193,4 +193,5 @@ dependencies {
     implementation 'com.sunmi:external-printerlibrary:1.0.10'
     implementation 'com.sunmi:printerlibrary:1.0.18'
     implementation 'org.greenrobot:eventbus:3.3.1'
+
 }

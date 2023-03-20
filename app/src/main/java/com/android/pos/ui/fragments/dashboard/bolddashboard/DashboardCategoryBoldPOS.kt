@@ -9,7 +9,10 @@ import android.os.*
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.WindowManager
 import android.view.animation.AlphaAnimation
 import android.view.animation.Animation
 import androidx.activity.OnBackPressedCallback
@@ -59,7 +62,6 @@ import com.android.pos.utils.*
 import com.android.pos.utils.callback.DineInOrderCallBack
 import com.android.pos.utils.callback.ItemClickListner
 import com.android.pos.utils.callback.ItemListner
-import com.android.pos.utils.extensions.addOnWindowFocusChangeListener
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.visible
@@ -77,6 +79,10 @@ import com.sunmi.externalprinterlibrary.api.SunmiPrinter
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import com.zebra.scannercontrol.FirmwareUpdateEvent
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
 
@@ -141,7 +147,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 binding.layoutHeader.txtBadgeCount.blink()
                 binding.layoutHeader.txtBadgeCount?.text = count.toString()
             } else {
-                 binding.layoutHeader.txtBadgeCount.clearAnimation()
+                binding.layoutHeader.txtBadgeCount.clearAnimation()
                 binding.layoutHeader.txtBadgeCount?.gone()
             }
         } else {
@@ -149,8 +155,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             binding.layoutHeader.txtBadgeCount?.gone()
         }
     }
-
-
 
 
     private fun View.blink(
@@ -175,12 +179,12 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         savedInstanceState: Bundle?
     ): View? {
         checkCashDrawerObserver()
-        syncData()
         Binding()
 
 //        hideSystemUI()
 
         binding = FragmentDashboardCategoryBoldPosBinding.inflate(inflater, container, false)
+        syncData()
         getCustomerDisplay(requireContext())?.let { display ->
             presentation = CustomDisplay(
                 display,
@@ -192,7 +196,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
             )
         }
-        prefProvider.setValueboolean(IS_PAYMENT_SCREEN,false)
+        prefProvider.setValueboolean(IS_PAYMENT_SCREEN, false)
         val callback: OnBackPressedCallback =
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
@@ -519,6 +523,15 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         onClick()
 
+        viewModel.showClockOutProgress.observe(requireActivity()) { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it) {
+                    ProgressUtils.showProgressDialog(requireActivity())
+                } else {
+                    ProgressUtils.dismissProgressDialog()
+                }
+            }
+        }
         if (prefProvider.getValueboolean(ONLINE_ORDER_ENABLE, false)) {
             binding.layoutHeader.linearOnlineorder?.visible()
         } else {
@@ -625,9 +638,17 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         if (!sync) {
             ProgressUtils.showProgressDialog(requireActivity())
             viewModel.syncInventoryModule(false)
-
+            //binding.maskLayout?.visible()
+            //hideLoaderAfterDelay()
         } else {
             viewModel.getOnlineOrderCount()
+        }
+    }
+
+    private fun hideLoaderAfterDelay() {
+        GlobalScope.launch(Dispatchers.Main) {
+            delay(10000)
+            binding.maskLayout?.gone()
         }
     }
 
@@ -718,6 +739,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             bundle.putBoolean("isDashboard", false)
             if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
                 prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
+                viewModel.deleteCart()
                 findNavController().navigate(
                     R.id.action_dashboardCategoryBoldPOS_to_passcode,
                     bundle
@@ -742,7 +764,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             viewModel.syncInventoryModule(false)
         }
         binding.layoutHeader.imgCashdDrawer.setOnClickListener {
-
+            Log.d(TAG, "CASH-DRAWER: STEP 1 ")
             getCustomerPrinters()
             /*try {
                 SunmiPrintHelper.getInstance().openCashBox()
@@ -795,8 +817,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
             when (it.status) {
                 Status.SUCCESS -> {
+                    Log.d(TAG, "CASH-DRAWER: STEP 2 ")
                     if (it.data?.isNotEmpty() == true) {
                         for (i in 0 until it.data.size) {
+                            Log.d(TAG, "CASH-DRAWER: PrinterName($i) = ${it.data[i].name}")
                             if (it.data[i].name.startsWith("CloudPrint", true) == true) {
                                 if (woyouService != null) {
                                     woyouService!!.sendRAWData(byteArrayOf(0x1B, 0x45, 0x01), this)
@@ -850,7 +874,47 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                 }
 
                             } else {
-                                var builder: Builder = Builder(
+                                Log.d(TAG, "CASH-DRAWER: STEP 3 in TM-m30 ")
+
+
+                                try {
+                                    var mPrinter =
+                                        Printer(
+                                            Printer.TM_M30,
+                                            Printer.MODEL_ANK,
+                                            (activity as MainActivity).applicationContext
+                                        )
+
+
+                                    var printerAdd =
+                                        if (it.data[i].printer_type == Constants.BLUETOOTH) "BT:" + it.data[i].macAddress else "TCP:" + it.data[i].ipAddress
+                                    mPrinter.connect(
+                                        printerAdd,
+                                        Printer.PARAM_DEFAULT
+                                    )
+
+                                    mPrinter.addPulse(
+                                        com.epson.epos2.printer.Printer.DRAWER_HIGH,
+                                        com.epson.epos2.printer.Printer.PULSE_100
+                                    )
+
+                                    try {
+
+                                        mPrinter.sendData(Printer.PARAM_DEFAULT)
+                                        mPrinter.disconnect()
+                                    } catch (e: java.lang.Exception) {
+                                        try {
+                                            mPrinter.disconnect()
+                                        } catch (e: java.lang.Exception) {
+                                            e.printStackTrace()
+                                        }
+                                        e.printStackTrace()
+                                    }
+                                } catch (e: Exception) {
+                                    e.printStackTrace()
+                                }
+
+                                /*var builder: Builder = Builder(
                                     if (it.data[i].name.substring(0, 6).toString()
                                             .lowercase() == "TM-m30".lowercase()
                                     ) {
@@ -860,7 +924,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                     }, PrinterClass.language, requireActivity()
                                 )
 
-
+                                Log.d(TAG, "CASH-DRAWER: STEP 4")
                                 builder.addPulse(
                                     com.epson.epos2.printer.Printer.DRAWER_HIGH,
                                     com.epson.epos2.printer.Printer.PULSE_100
@@ -869,13 +933,15 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                 val status = IntArray(1)
                                 val battery = IntArray(1)
                                 try {
+                                    Log.d(TAG, "CASH-DRAWER: STEP 5")
                                     PrinterClass.getPrinter()?.sendData(
                                         builder,
                                         PrinterClass.BLUETOOTH_TIMEOUT, status, battery
                                     )
                                 } catch (e: java.lang.Exception) {
+                                    Log.d(TAG, "CASH-DRAWER: STEP 5 with error = ${e.localizedMessage} ")
                                     e.printStackTrace()
-                                }
+                                }*/
 
 
                             }
@@ -918,17 +984,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
 
     override fun onItemSelected(item: TbItem) {
-        Log.e(TAG, "onItemSelectedItem:  ${Gson().toJson(item)}")
         item.timeStamp = randomOfflineId()
-
-        Log.e(
-            TAG,
-            "getCartList  ${Gson().toJson(cartList)} viewmodeCartList ${Gson().toJson(viewModel.cartModel)}"
-        )
 
         if (cartList.isEmpty() && viewModel.cartModel != null) {
             viewModel.cartModel?.let {
-
                 cartList.add(it)
             }
         }
@@ -977,7 +1036,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
 
                     if (cartList[0].dineInList?.isNotEmpty() == true) {
-                        Log.e("checkDineHeaderPos","dineInHeaderPosition:  ${viewModel.dineInHeaderPosition}")
+                        Log.e(
+                            "checkDineHeaderPos",
+                            "dineInHeaderPosition:  ${viewModel.dineInHeaderPosition}"
+                        )
 
                         var dineInList = cartList[0].dineInList
                         dineInList!![0]?.selectedPosition = viewModel.dineInHeaderPosition
@@ -1021,7 +1083,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 if (it) {
                     //ProgressUtils.showProgressDialog(requireActivity())
                 } else {
-                   // ProgressUtils.dismissProgressDialog()
+                    // ProgressUtils.dismissProgressDialog()
                 }
             }
         }
@@ -1094,8 +1156,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             prefProvider.getValue(ORDER_TYPE, TAKEOUT),
             prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
         ).observe(requireActivity()) {
-            Log.e(TAG, "MAllWords:::  ${Gson().toJson(it)}")
-            Log.e(TAG, "OrderTypeCheck ${prefProvider.getValue(ORDER_TYPE, "")}")
 
             if (prefProvider.getValue(ORDER_TYPE, "").trim().isEmpty()) {
                 binding.layoutHeader.txtKeypad.gone()
@@ -1116,10 +1176,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 cartList.addAll(it.toCollection(arrayListOf()))
             }
 
-            if (this::presentation.isInitialized) {
-                presentation.show()
-                presentation.onDisplayChanged()
-            }
+//            if (this::presentation.isInitialized) {
+//                presentation.show()
+//                presentation.onDisplayChanged()
+//            }
 
             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
 
@@ -1566,14 +1626,30 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         TAG,
                         "PrinterEvent  ${Gson().toJson(printerStatusInfo)} other1 ${s}  other2 ${i}"
                     )
-                    if (printerStatusInfo.online == 1) {
+
                         try {
                             printer.disconnect()
+                            requireActivity().runOnUiThread {
+                                viewModel.downloadFinished(false)
+                                if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                                }
+                            }
 
                         } catch (e: java.lang.Exception) {
+                            try {
+                                requireActivity().runOnUiThread {
+                                    viewModel.downloadFinished(false)
+                                    if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                                        findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                                    }
+                                }
+                            }catch (e:Exception){
+
+                            }
                             e.printStackTrace()
                         }
-                    }
+
                 }
                 try {
                     Log.e(TAG, "printerDataType:  ${data.printer_type}")
@@ -1591,6 +1667,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 } catch (e: java.lang.Exception) {
                     e.printStackTrace()
                 }
+
+
 
             } else {
 
@@ -1987,10 +2065,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
             try {
                 builder.sendData(Printer.PARAM_DEFAULT)
-                viewModel.downloadFinished(false)
-                if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+               // viewModel.downloadFinished(false)
+               /* if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
                     findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
-                }
+                }*/
 
                 //PrinterClass.getPrinter()?.sendData(builder, 0, status, battery)
             } catch (e: Exception) {
@@ -3506,7 +3584,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         } else {
             Log.e(TAG, "DineinNewCh NoOrderType")
             if (rolePermission.hasTablePermission(binding.root)) {
-               // prefProvider.setValue(ORDER_TYPE, DINE_IN)
+                // prefProvider.setValue(ORDER_TYPE, DINE_IN)
                 prefProvider.setValue(Constants.DINE_IN_UPDATE_LIST, "")
                 prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
                 findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragment)

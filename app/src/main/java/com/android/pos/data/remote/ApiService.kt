@@ -212,6 +212,20 @@ interface ApiService {
         @Query("status") status: Boolean
     ): DeletePrinterResponseModel
 
+    @PUT(UPDATE_PRINTER_STATUS)
+    suspend fun updatePrinterStatusKitchen(
+        @Path("id") Id: Int,
+        @Query("terminal_id") terminal_id: Int,
+        @Query("kitchen_status") status: Boolean
+    ): DeletePrinterResponseModel
+
+    @PUT(UPDATE_PRINTER_STATUS)
+    suspend fun updatePrinterStatusCustomer(
+        @Path("id") Id: Int,
+        @Query("terminal_id") terminal_id: Int,
+        @Query("customer_status") status: Boolean
+    ): DeletePrinterResponseModel
+
     @PUT(UPDATE_SERVICECHARGE)
     suspend fun updateServiceChargeTakeoutEnable(
         @Path("id") Id: Int,
