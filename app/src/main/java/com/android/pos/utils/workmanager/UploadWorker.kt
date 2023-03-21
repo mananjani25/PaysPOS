@@ -614,19 +614,27 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                 if (printerStatusInfo.errorStatus == 0) {
                     /* printer.endTransaction()
                      printer.clearCommandBuffer()*/
-                    printerQueuelist.get(printerQueuelist.size - 1).id?.let {
-                        val params = JsonObject()
-                        var deleteUrl =
-                            baseUrl + Constants.CREATE_QUEUE_PRINTER + "/" + it
-                        LogUtil.logE(TAG, "DeleteUrl ${deleteUrl}")
-                        params.addProperty("url", deleteUrl)
-                        subscription?.perform("delete_order", params)
-                    }
-                    printer.disconnect()
-                    printerQueuelist.removeAt(printerQueuelist.size - 1)
-                    Log.e(TAG, "checkQueueSize  ${printerQueuelist.size}")
-                    val printer1 = Printer(Printer.TM_U220, Printer.MODEL_ANK, mContext)
-                    resumePrinterQueue(printer1)
+                         if (printerQueuelist.size >= 1) {
+                             printer.disconnect()
+                             Log.e(TAG, "checkQueueSize  ${printerQueuelist.size}")
+                             printerQueuelist.get(printerQueuelist.size - 1).id?.let {
+                                 val params = JsonObject()
+                                 var deleteUrl =
+                                     baseUrl + Constants.CREATE_QUEUE_PRINTER + "/" + it
+                                 LogUtil.logE(TAG, "DeleteUrl ${deleteUrl}")
+                                 params.addProperty("url", deleteUrl)
+                                 subscription?.perform("delete_order", params)
+                             }
+                             printerQueuelist.removeAt(printerQueuelist.size - 1)
+                         }
+
+
+
+
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        val printer1 = Printer(Printer.TM_U220, Printer.MODEL_ANK, mContext)
+                        resumePrinterQueue(printer1)
+                    },2000)
 
 
                 }
