@@ -9,9 +9,7 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Color
 import android.graphics.Point
-import android.graphics.drawable.ColorDrawable
 import android.os.*
 import android.util.Base64
 import android.util.Log
@@ -165,7 +163,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private var customerSettingModel = GetCustomerReceiptSettingsResponse.Data()
     private var kitchenSettingModel = GetKitchenReceiptSettingsResponse.Data()
     private var splitList: ArrayList<SplitDetailListModel> = arrayListOf()
-    private lateinit var printerDialog: PrinterDialog
+   /* private lateinit var printerDialog: PrinterDialog*/
     private var isGuestPaymentTotal = false
     private var cartList: CartModel? = null
     private var paidAmount: Double = 0.0
@@ -205,7 +203,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             )
         }
 
-        printerDialog = PrinterDialog()
+       /* printerDialog = PrinterDialog()*/
         progressDialog()
 
         prefProvider.setValueboolean(Constants.TIP_ADDED, false)
@@ -9468,7 +9466,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
     fun progressDialog() {
-        pd = Dialog(requireActivity())
+       /* pd = Dialog(requireActivity())
         pd.setContentView(R.layout.view_loading)
         // pd.setProgressStyle(ProgressDialog.BUTTON_NEUTRAL)
 //        pd.setMessage("Please Wait..")
@@ -9478,16 +9476,16 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         )
         pd.setCanceledOnTouchOutside(false)
         pd.setCancelable(false)
-        pd.show()
+        pd.show()*/
 
 
     }
 
     override fun onPause() {
         super.onPause()
-        if (pd != null && pd.isShowing) {
+      /*  if (pd != null && pd.isShowing) {
             pd.dismiss()
-        }
+        }*/
         if (this::presentation.isInitialized) {
             presentation.hide()
         }
