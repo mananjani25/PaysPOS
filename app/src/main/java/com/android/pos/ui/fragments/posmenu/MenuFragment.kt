@@ -114,12 +114,15 @@ class MenuFragment : DialogFragment() {
 
 //                    viewModel.clearTableAll()
 
+                    requireActivity().viewModelStore.clear()
                     viewModel.cartModel = null
+                    viewModel.setCartModel(emptyList())
                     viewModel.clearTable()
                     viewModel.deleteCart()
                     prefProvider.setClear()
                     prefProvider.setValue(Constants.AUTH_TOKEN, "")
                     prefProvider.setValue(Constants.BASE_URL_NEW, BASE_URL)
+
                     findNavController().navigate(R.id.action_global_login)
 
 

@@ -986,6 +986,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     override fun onItemSelected(item: TbItem) {
         item.timeStamp = randomOfflineId()
 
+        Log.e("viewModel.cartModel",Gson().toJson(viewModel.cartModel))
+
         if (cartList.isEmpty() && viewModel.cartModel != null) {
             viewModel.cartModel?.let {
                 cartList.add(it)
