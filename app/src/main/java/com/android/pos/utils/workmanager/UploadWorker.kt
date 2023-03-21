@@ -107,7 +107,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
         consumer = ActionCable.createConsumer(uri)
 
         // 2. Create subscription
-        val appearanceChannel = Channel("KitchenChannel")
+        val appearanceChannel = Channel("PrinterQueueChannel")
         // appearanceChannel.addParam("id",prefProvider.getValueInt(LOCATION_ID,0))
         subscription = consumer?.subscriptions?.create(appearanceChannel)
 
@@ -133,8 +133,6 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                 if (it != null) {
 
                     if (it.asJsonObject.has("printer_queue")) {
-                        printerQueuelist.clear()
-                        printerQueuelist = arrayListOf()
                         isPrinterRunning = true
                         globalPrinterQueue = it.asJsonObject.get("printer_queue")
                         GlobalScope.launch(Dispatchers.IO) {
@@ -143,36 +141,17 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
 
                     } else {
-                        val intent = Intent()
+
+                        val params = JsonObject()
+                        params.addProperty("id", locationId)
+                        params.addProperty("url", requestURL)
+                        subscription?.perform("received", params)
+
+                        /*val intent = Intent()
                         intent.putExtra(Constants.DATA, "")
                         intent.action = PRINTER_QUEUE_DATA_RECEIVED
-                        mContext.sendBroadcast(intent)
-                        /* isPrinterRunning = false
-                         printerQueuelist.clear()
-                         printerQueuelist = arrayListOf()
-                         LogUtil.logE(TAG, "NoPrinterQueueData")
-                         if (!printerQueueData) {
-                             val params = JsonObject()
-                             params.addProperty("id", locationId)
-                             params.addProperty("url", requestURL)
-                             subscription?.perform("received", params)
+                        mContext.sendBroadcast(intent)*/
 
-                             printerQueueData = true
-                         }*/
-
-                        /* val params2 = JsonObject()
-                         params2.addProperty("id", locationId)
-                         params2.addProperty(
-                             "url",
-                             baseUrl + Constants.CREATE_QUEUE_PRINTER
-                         )
-                         subscription?.perform("received", params2)*/
-
-                        /* subscription = consumer?.subscriptions?.create(appearanceChannel)
-                         val params = JsonObject()
-                         params.addProperty("id", locationId)
-                         subscription?.perform("received", params)
- */
 
                     }
 
@@ -378,95 +357,97 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
     private suspend fun getQueueDataResponse(model: JsonElement) {
         if (model.asJsonObject.has("data")) {
+
             isPrinterRunning = true
 
 
             var dataList: JsonArray = model.asJsonObject.get("data").asJsonArray
+            if (dataList?.asJsonArray?.size() != 0) {
 
-            printerQueuelist.clear()
-            printerQueuelist = arrayListOf()
+                printerQueuelist.clear()
+                printerQueuelist = arrayListOf()
 
-            dataList.forEachIndexed { index, it ->
-                val printerQueueModel: PrinterQueueModel = PrinterQueueModel()
+                dataList.forEachIndexed { index, it ->
+                    val printerQueueModel: PrinterQueueModel = PrinterQueueModel()
 
-                val obj = it.asJsonObject.get("order_data").asJsonObject
+                    val obj = it.asJsonObject.get("order_data").asJsonObject
 
-                if (obj.asJsonObject.has("order_items_attributes")) {
-                    var itemArray = obj.asJsonObject.get("order_items_attributes").asJsonArray
-                    var itemAttribute: ArrayList<CreateOrderResponse.Data.Order.OrderItem> =
-                        arrayListOf()
-                    var itemModifiers: ArrayList<CreateOrderResponse.Data.Order.OrderItem.OrderItemModifiers> =
-                        arrayListOf()
+                    if (obj.asJsonObject.has("order_items_attributes")) {
+                        var itemArray = obj.asJsonObject.get("order_items_attributes").asJsonArray
+                        var itemAttribute: ArrayList<CreateOrderResponse.Data.Order.OrderItem> =
+                            arrayListOf()
+                        var itemModifiers: ArrayList<CreateOrderResponse.Data.Order.OrderItem.OrderItemModifiers> =
+                            arrayListOf()
 
 
-                    itemArray.forEach {
-                        if (it.asJsonObject.has("order_item_modifiers_attributes")) {
-                            var modifiersList =
-                                it.asJsonObject.get("order_item_modifiers_attributes").asJsonArray
+                        itemArray.forEach {
+                            if (it.asJsonObject.has("order_item_modifiers_attributes")) {
+                                var modifiersList =
+                                    it.asJsonObject.get("order_item_modifiers_attributes").asJsonArray
 
-                            if (modifiersList.size() != 0) {
-                                modifiersList.forEach {
-                                    val jsonObj = it.asJsonObject
-                                    itemModifiers.add(
-                                        CreateOrderResponse.Data.Order.OrderItem.OrderItemModifiers(
-                                            name = jsonObj.get("name").asString,
-                                            id = 0,
-                                            orderItemId = 0,
-                                            orderId = 0,
-                                            quantity = jsonObj.get("quantity").asInt,
-                                            price = 0.0,
-                                            modifierSetId = 0,
-                                            updatedAt = "",
-                                            createdAt = "",
-                                            totalPrice = 0.0,
-                                            isModifier = false
+                                if (modifiersList.size() != 0) {
+                                    modifiersList.forEach {
+                                        val jsonObj = it.asJsonObject
+                                        itemModifiers.add(
+                                            CreateOrderResponse.Data.Order.OrderItem.OrderItemModifiers(
+                                                name = jsonObj.get("name").asString,
+                                                id = 0,
+                                                orderItemId = 0,
+                                                orderId = 0,
+                                                quantity = jsonObj.get("quantity").asInt,
+                                                price = 0.0,
+                                                modifierSetId = 0,
+                                                updatedAt = "",
+                                                createdAt = "",
+                                                totalPrice = 0.0,
+                                                isModifier = false
+                                            )
                                         )
-                                    )
 
+
+                                    }
 
                                 }
-
                             }
+                            var orderItem = CreateOrderResponse.Data.Order.OrderItem(
+                                categoryId = it.asJsonObject.get("category_id").asInt,
+                                completedInKitchen = false,
+                                discountAmount = 0.0,
+                                discountId = 0,
+                                discountType = "",
+                                employeeId = it.asJsonObject.get("employee_id").asInt,
+                                float = 0.0,
+                                id = 0,
+                                isPaid = false,
+                                isPrinted = false,
+                                itemId = it.asJsonObject.get("item_id").asInt,
+                                itemName = it.asJsonObject.get("item_name").asString,
+                                note = it.asJsonObject.get("note").asString,
+                                orderItemModifiers = itemModifiers,
+                                price = it.asJsonObject.get("price").asDouble,
+                                quantity = it.asJsonObject.get("quantity").asInt,
+                                timestamp = "",
+                                totalPrice = 0.0,
+                                orderId = 0
+                            )
+
+                            itemAttribute.add(orderItem)
+
+
                         }
-                        var orderItem = CreateOrderResponse.Data.Order.OrderItem(
-                            categoryId = it.asJsonObject.get("category_id").asInt,
-                            completedInKitchen = false,
-                            discountAmount = 0.0,
-                            discountId = 0,
-                            discountType = "",
-                            employeeId = it.asJsonObject.get("employee_id").asInt,
-                            float = 0.0,
-                            id = 0,
-                            isPaid = false,
-                            isPrinted = false,
-                            itemId = it.asJsonObject.get("item_id").asInt,
-                            itemName = it.asJsonObject.get("item_name").asString,
-                            note = it.asJsonObject.get("note").asString,
-                            orderItemModifiers = itemModifiers,
-                            price = it.asJsonObject.get("price").asDouble,
-                            quantity = it.asJsonObject.get("quantity").asInt,
-                            timestamp = "",
-                            totalPrice = 0.0,
-                            orderId = 0
-                        )
+                        printerQueueModel.orderItems = itemAttribute
+                        printerQueueModel.orderID = ""
+                        printerQueueModel.orderType = it.asJsonObject.get("order_type").asString
+                        printerQueueModel.id = it.asJsonObject.get("id").asInt
+                        printerQueueModel.offlineId = obj.asJsonObject.get("offline_id").asString
+                        printerQueueModel.paymentType = "Cash"
+                        printerQueueModel.status = Constants.PENDING
+                        printerQueueModel.totalAmt = obj.asJsonObject.get("total_amount").asDouble
+                        printerQueueModel.orderID = "" + it.asJsonObject.get("orderid").asInt
+                        //obj.asJsonObject.get("terminal_name")?.asString ?: ""
+                        printerQueueModel.position = index
 
-                        itemAttribute.add(orderItem)
-
-
-                    }
-                    printerQueueModel.orderItems = itemAttribute
-                    printerQueueModel.orderID = ""
-                    printerQueueModel.orderType = it.asJsonObject.get("order_type").asString
-                    printerQueueModel.id = it.asJsonObject.get("id").asInt
-                    printerQueueModel.offlineId = obj.asJsonObject.get("offline_id").asString
-                    printerQueueModel.paymentType = "Cash"
-                    printerQueueModel.status = Constants.PENDING
-                    printerQueueModel.totalAmt = obj.asJsonObject.get("total_amount").asDouble
-                    printerQueueModel.orderID = "" + it.asJsonObject.get("orderid").asInt
-                    //obj.asJsonObject.get("terminal_name")?.asString ?: ""
-                    printerQueueModel.position = index
-
-                    /*if (it.asJsonObject.has("customer_data")) {
+                        /*if (it.asJsonObject.has("customer_data")) {
                         if (it.asJsonObject.get("customer_data").asJsonObject.has("first_name") && it.asJsonObject.get(
                                 "customer_data"
                             ).asJsonObject.get("first_name").toString().isNotEmpty()
@@ -513,18 +494,24 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                     }*/
 
 
-                    printerQueuelist.add(printerQueueModel)
+                        printerQueuelist.add(printerQueueModel)
+                    }
+
+
                 }
+                if (printerQueuelist.isNotEmpty()) {
+                    val printer = Printer(Printer.TM_U220, Printer.MODEL_ANK, mContext)
+                    callPrinter(printer)
 
 
-            }
-            if (printerQueuelist.isNotEmpty()) {
-                val printer = Printer(Printer.TM_U220, Printer.MODEL_ANK, mContext)
-                callPrinter(printer)
+                    /*for (i in 0 until printerQueuelist.size) {*/
 
-
-                /*for (i in 0 until printerQueuelist.size) {*/
-
+                }
+            }else{
+                val params = JsonObject()
+                params.addProperty("id", locationId)
+                params.addProperty("url", baseUrl + Constants.CREATE_QUEUE_PRINTER)
+                subscription?.perform("received", params)
             }
 
 
@@ -610,7 +597,6 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
 
 
-
             printer.setReceiveEventListener { printer, i, printerStatusInfo, s ->
 
                 Log.e(
@@ -635,6 +621,14 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                     Log.e(TAG, "checkQueueSize  ${printerQueuelist.size}")
                     val printer1 = Printer(Printer.TM_U220, Printer.MODEL_ANK, mContext)
                     resumePrinterQueue(printer1)
+
+
+                }
+                else{
+                    val params = JsonObject()
+                    params.addProperty("id", locationId)
+                    params.addProperty("url", baseUrl + Constants.CREATE_QUEUE_PRINTER)
+                    subscription?.perform("received", params)
 
 
                 }
@@ -710,6 +704,11 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
     private fun resumePrinterQueue(printer: Printer?) {
         if (printerQueuelist.isNotEmpty()) {
             printer?.let { callPrinter(it) }
+        } else if (printerQueuelist.isEmpty()) {
+            val params = JsonObject()
+            params.addProperty("id", locationId)
+            params.addProperty("url", baseUrl + Constants.CREATE_QUEUE_PRINTER)
+            subscription?.perform("received", params)
         }
 
 
