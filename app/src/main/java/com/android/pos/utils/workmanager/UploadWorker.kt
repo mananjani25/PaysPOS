@@ -3,6 +3,8 @@ package com.android.pos.utils.workmanager
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
@@ -141,11 +143,13 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
 
                     } else {
+                        Handler(Looper.getMainLooper()).postDelayed({
 
-                        val params = JsonObject()
-                        params.addProperty("id", locationId)
-                        params.addProperty("url", requestURL)
-                        subscription?.perform("received", params)
+                            val params = JsonObject()
+                            params.addProperty("id", locationId)
+                            params.addProperty("url", requestURL)
+                            subscription?.perform("received", params)
+                        },5000)
 
                         /*val intent = Intent()
                         intent.putExtra(Constants.DATA, "")
@@ -508,10 +512,12 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
                 }
             }else{
+                Handler(Looper.getMainLooper()).postDelayed({
                 val params = JsonObject()
                 params.addProperty("id", locationId)
                 params.addProperty("url", baseUrl + Constants.CREATE_QUEUE_PRINTER)
                 subscription?.perform("received", params)
+                },5000)
             }
 
 
@@ -625,10 +631,15 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
                 }
                 else{
-                    val params = JsonObject()
-                    params.addProperty("id", locationId)
-                    params.addProperty("url", baseUrl + Constants.CREATE_QUEUE_PRINTER)
-                    subscription?.perform("received", params)
+
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        val params = JsonObject()
+                        params.addProperty("id", locationId)
+                        params.addProperty("url", baseUrl + Constants.CREATE_QUEUE_PRINTER)
+                        subscription?.perform("received", params)
+
+
+                    },5000)
 
 
                 }
