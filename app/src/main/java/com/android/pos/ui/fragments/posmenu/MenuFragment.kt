@@ -114,7 +114,7 @@ class MenuFragment : DialogFragment() {
                 if (it) {
 
 
-                    viewModel.cartModel = null
+                    dashBoardCategoryViewModel.cartModel = null
                     viewModel.destroyedList = arrayListOf()
                     viewModel.clearTable()
                     viewModel.deleteCart()
