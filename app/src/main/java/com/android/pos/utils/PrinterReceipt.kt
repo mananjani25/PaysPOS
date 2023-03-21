@@ -3304,9 +3304,10 @@ fun getModifierItemPriceToShow(modifierPrice: Double, modifierQty: Int): String 
 }
 
 fun getItemNameToShow(itemName: String): String {
-    var updatedItemName = itemName
-    if(updatedItemName.length > 15){
-        updatedItemName = updatedItemName.substring(0, 15) + "..."
-    }
-    return updatedItemName
+//    Commented below code to hide 15 char limit for item/modifier names to prevent receipt disruption with big names.
+//    var updatedItemName = itemName
+//    if(updatedItemName.length > 15){
+//        updatedItemName = updatedItemName.substring(0, 15) + "..."
+//    }
+    return itemName
 }
