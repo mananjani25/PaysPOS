@@ -502,7 +502,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         prefProvider.setValue(CUSTOMER_NAME, "")
         prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
         prefProvider.setValueboolean(Constants.LOYALTY_ADDED, false)
-        binding.txtAddCustomer.text = "Add Customer"
+        binding.txtAddCustomer.text = getString(R.string.add_customer2)
         //  binding.txtCrtNewCustomer.text = "Add Customer"
         binding.txtLoyaltyPoints.gone()
         refreshItemCalculation()

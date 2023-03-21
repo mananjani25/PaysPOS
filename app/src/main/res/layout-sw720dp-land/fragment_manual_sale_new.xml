@@ -187,38 +187,35 @@
                     android:background="?attr/selectableItemBackground"
                     android:paddingEnd="@dimen/_4sdp">
 
-                    <RelativeLayout
-                        android:id="@+id/relHeader"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true">
-
-                        <TextView
-                            style="@style/CustomFontSemiBold"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerVertical="true"
-                            android:paddingHorizontal="@dimen/_4sdp"
-                            android:paddingVertical="@dimen/_5sdp"
-                            android:text="@string/add_custom_item"
-                            android:textColor="@color/txtColor"
-                            android:textSize="@dimen/_6mdpi" />
-
-
                         <androidx.appcompat.widget.LinearLayoutCompat
-                            android:layout_width="wrap_content"
+                            android:id="@+id/relHeader"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_alignParentEnd="true"
                             android:gravity="center_vertical"
+                            android:layout_alignParentTop="true"
                             android:orientation="horizontal">
 
                             <TextView
-                                android:id="@+id/txtAddCustomer"
                                 style="@style/CustomFontSemiBold"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_centerVertical="true"
+                                android:paddingHorizontal="@dimen/_4sdp"
+                                android:paddingVertical="@dimen/_5sdp"
+                                android:text="@string/add_custom_item"
+                                android:textColor="@color/txtColor"
+                                android:textSize="@dimen/_6mdpi" />
+
+                            <TextView
+                                android:id="@+id/txtAddCustomer"
+                                style="@style/CustomFontSemiBold"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="7"
+                                android:layout_centerVertical="true"
                                 android:gravity="end"
+                                android:ellipsize="end"
+                                android:singleLine="true"
                                 android:padding="@dimen/_6sdp"
                                 android:text="@string/add_customer2"
                                 android:textColor="@color/btnColor"
@@ -238,9 +235,6 @@
                                 android:src="@drawable/ic_dot_menu"
                                 app:tint="@color/txtColor" />
                         </androidx.appcompat.widget.LinearLayoutCompat>
-
-
-                    </RelativeLayout>
 
                     <LinearLayout
                         android:id="@+id/llCustomer"
