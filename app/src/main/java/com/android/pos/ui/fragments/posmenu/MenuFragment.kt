@@ -114,11 +114,6 @@ class MenuFragment : DialogFragment() {
                 if (it) {
 
 
-//                    viewModel.clearTableAll()
-
-                    Log.e("viewModel.cartModel1",Gson().toJson(viewModel.cartModel))
-                    Log.e("viewModel.cartModel1",Gson().toJson(viewModel.destroyedList))
-//                    requireActivity().viewModelStore.clear()
                     viewModel.cartModel = null
                     viewModel.destroyedList = arrayListOf()
                     viewModel.clearTable()
@@ -127,8 +122,6 @@ class MenuFragment : DialogFragment() {
                     prefProvider.setValue(Constants.AUTH_TOKEN, "")
                     prefProvider.setValue(Constants.BASE_URL_NEW, BASE_URL)
 
-                    Log.e("viewModel.cartModel2",Gson().toJson(viewModel.cartModel))
-                    Log.e("viewModel.cartModel2",Gson().toJson(viewModel.destroyedList))
 
                     findNavController().navigate(R.id.action_global_login)
 
