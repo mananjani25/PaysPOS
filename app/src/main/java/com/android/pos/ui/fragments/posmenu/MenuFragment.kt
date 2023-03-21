@@ -2,6 +2,7 @@ package com.android.pos.ui.fragments.posmenu
 
 import android.app.Dialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,6 +28,7 @@ import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.getCustomerDisplay
 import com.android.pos.utils.extensions.visible
+import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -114,14 +116,19 @@ class MenuFragment : DialogFragment() {
 
 //                    viewModel.clearTableAll()
 
-                    requireActivity().viewModelStore.clear()
+                    Log.e("viewModel.cartModel1",Gson().toJson(viewModel.cartModel))
+                    Log.e("viewModel.cartModel1",Gson().toJson(viewModel.destroyedList))
+//                    requireActivity().viewModelStore.clear()
                     viewModel.cartModel = null
-                    viewModel.setCartModel(emptyList())
+                    viewModel.destroyedList = arrayListOf()
                     viewModel.clearTable()
                     viewModel.deleteCart()
                     prefProvider.setClear()
                     prefProvider.setValue(Constants.AUTH_TOKEN, "")
                     prefProvider.setValue(Constants.BASE_URL_NEW, BASE_URL)
+
+                    Log.e("viewModel.cartModel2",Gson().toJson(viewModel.cartModel))
+                    Log.e("viewModel.cartModel2",Gson().toJson(viewModel.destroyedList))
 
                     findNavController().navigate(R.id.action_global_login)
 

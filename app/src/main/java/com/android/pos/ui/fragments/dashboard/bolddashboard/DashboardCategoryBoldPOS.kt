@@ -990,7 +990,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
         if (cartList.isEmpty() && viewModel.cartModel != null) {
             viewModel.cartModel?.let {
-                cartList.add(it)
+              //  cartList.add(it)
             }
         }
 
