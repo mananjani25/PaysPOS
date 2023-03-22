@@ -79,14 +79,12 @@ import com.squareup.okhttp.OkHttpClient
 import com.squareup.okhttp.Request
 import com.squareup.okhttp.Response
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.InputStream
+import java.lang.Runnable
 import java.net.HttpURLConnection
 import java.net.URL
 import java.text.NumberFormat
@@ -389,7 +387,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     fun deleteCart() {
         prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
         cartModel = null
-        viewModelScope.launch {
+        GlobalScope.launch {
             posRepository.deleteCart(prefProvider.getValueInt(EMPLOYEE_ID, 0))
             destroyedList.clear()
         }
@@ -3645,7 +3643,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun clearTable() {
 
-        viewModelScope.launch {
+        GlobalScope.launch {
             posRepository.deleteCart(prefProvider.getValueInt(EMPLOYEE_ID, 0))
             posRepository.clearTable()
         }

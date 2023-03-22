@@ -205,12 +205,12 @@ interface ApiService {
     ): BaseResponse
 
 
-  /*  @PUT(UPDATE_PRINTER_STATUS)
+    @PUT(UPDATE_PRINTER_STATUS)
     suspend fun updatePrinterStatus(
         @Path("id") Id: Int,
         @Query("terminal_id") terminal_id: Int,
         @Query("status") status: Boolean
-    ): DeletePrinterResponseModel*/
+    ): DeletePrinterResponseModel
 
     @PUT(UPDATE_PRINTER_STATUS)
     suspend fun updatePrinterStatusKitchen(

@@ -194,4 +194,5 @@ dependencies {
     implementation 'com.sunmi:external-printerlibrary:1.0.10'
     implementation 'com.sunmi:printerlibrary:1.0.18'
     implementation 'org.greenrobot:eventbus:3.3.1'
+
 }

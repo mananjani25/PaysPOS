@@ -12,6 +12,7 @@ import com.android.pos.utils.scanner.helpers.Barcode
 import com.android.pos.utils.scanner.helpers.Foreground
 import com.android.pos.utils.scanner.helpers.ScannerAppEngine
 import com.google.firebase.FirebaseApp
+import com.testfairy.TestFairy
 import com.zebra.scannercontrol.DCSScannerInfo
 import com.zebra.scannercontrol.SDKHandler
 import dagger.hilt.android.HiltAndroidApp

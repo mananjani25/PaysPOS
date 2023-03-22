@@ -251,7 +251,7 @@ class Categories(val clickedPosition: Int) : Fragment(),ItemCallback {
             isreOrder = true
             LogUtil.logE(TAG, "positionnewPos  ${newPos}")
             LogUtil.logE(TAG, "positionoldPos  ${oldPos}")
-            viewModel.reOrderCategory(categoryIdOld, newPos, oldPos)
+            viewModel.reOrderCategory(categoryIdOld, oldPos, newPos)
         }
 
     }

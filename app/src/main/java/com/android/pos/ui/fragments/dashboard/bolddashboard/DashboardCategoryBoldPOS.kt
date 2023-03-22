@@ -9,7 +9,10 @@ import android.os.*
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.WindowManager
 import android.view.animation.AlphaAnimation
 import android.view.animation.Animation
 import androidx.activity.OnBackPressedCallback
@@ -59,7 +62,9 @@ import com.android.pos.utils.*
 import com.android.pos.utils.callback.DineInOrderCallBack
 import com.android.pos.utils.callback.ItemClickListner
 import com.android.pos.utils.callback.ItemListner
-import com.android.pos.utils.extensions.*
+import com.android.pos.utils.extensions.alert
+import com.android.pos.utils.extensions.gone
+import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.printer.PrinterClass
 import com.android.pos.utils.scanner.helpers.ScannerAppEngine
 import com.android.pos.utils.statusUtils.Resource
@@ -142,7 +147,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 binding.layoutHeader.txtBadgeCount.blink()
                 binding.layoutHeader.txtBadgeCount?.text = count.toString()
             } else {
-                 binding.layoutHeader.txtBadgeCount.clearAnimation()
+                binding.layoutHeader.txtBadgeCount.clearAnimation()
                 binding.layoutHeader.txtBadgeCount?.gone()
             }
         } else {
@@ -150,8 +155,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             binding.layoutHeader.txtBadgeCount?.gone()
         }
     }
-
-
 
 
     private fun View.blink(
@@ -193,7 +196,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
             )
         }
-        prefProvider.setValueboolean(IS_PAYMENT_SCREEN,false)
+        prefProvider.setValueboolean(IS_PAYMENT_SCREEN, false)
         val callback: OnBackPressedCallback =
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
@@ -635,8 +638,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         if (!sync) {
             ProgressUtils.showProgressDialog(requireActivity())
             viewModel.syncInventoryModule(false)
-            binding.maskLayout?.visible()
-            hideLoaderAfterDelay()
+            //binding.maskLayout?.visible()
+            //hideLoaderAfterDelay()
         } else {
             viewModel.getOnlineOrderCount()
         }
@@ -872,7 +875,46 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                             } else {
                                 Log.d(TAG, "CASH-DRAWER: STEP 3 in TM-m30 ")
-                                var builder: Builder = Builder(
+
+
+                                try {
+                                    var mPrinter =
+                                        Printer(
+                                            Printer.TM_M30,
+                                            Printer.MODEL_ANK,
+                                            (activity as MainActivity).applicationContext
+                                        )
+
+
+                                    var printerAdd =
+                                        if (it.data[i].printer_type == Constants.BLUETOOTH) "BT:" + it.data[i].macAddress else "TCP:" + it.data[i].ipAddress
+                                    mPrinter.connect(
+                                        printerAdd,
+                                        Printer.PARAM_DEFAULT
+                                    )
+
+                                    mPrinter.addPulse(
+                                        com.epson.epos2.printer.Printer.DRAWER_HIGH,
+                                        com.epson.epos2.printer.Printer.PULSE_100
+                                    )
+
+                                    try {
+
+                                        mPrinter.sendData(Printer.PARAM_DEFAULT)
+                                        mPrinter.disconnect()
+                                    } catch (e: java.lang.Exception) {
+                                        try {
+                                            mPrinter.disconnect()
+                                        } catch (e: java.lang.Exception) {
+                                            e.printStackTrace()
+                                        }
+                                        e.printStackTrace()
+                                    }
+                                } catch (e: Exception) {
+                                    e.printStackTrace()
+                                }
+
+                                /*var builder: Builder = Builder(
                                     if (it.data[i].name.substring(0, 6).toString()
                                             .lowercase() == "TM-m30".lowercase()
                                     ) {
@@ -899,7 +941,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                 } catch (e: java.lang.Exception) {
                                     Log.d(TAG, "CASH-DRAWER: STEP 5 with error = ${e.localizedMessage} ")
                                     e.printStackTrace()
-                                }
+                                }*/
 
 
                             }
@@ -944,9 +986,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     override fun onItemSelected(item: TbItem) {
         item.timeStamp = randomOfflineId()
 
+        Log.e("viewModel.cartModel",Gson().toJson(viewModel.cartModel))
+
         if (cartList.isEmpty() && viewModel.cartModel != null) {
             viewModel.cartModel?.let {
-                cartList.add(it)
+              cartList.add(it)
             }
         }
 
@@ -994,7 +1038,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
 
                     if (cartList[0].dineInList?.isNotEmpty() == true) {
-                        Log.e("checkDineHeaderPos","dineInHeaderPosition:  ${viewModel.dineInHeaderPosition}")
+                        Log.e(
+                            "checkDineHeaderPos",
+                            "dineInHeaderPosition:  ${viewModel.dineInHeaderPosition}"
+                        )
 
                         var dineInList = cartList[0].dineInList
                         dineInList!![0]?.selectedPosition = viewModel.dineInHeaderPosition
@@ -1038,7 +1085,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 if (it) {
                     //ProgressUtils.showProgressDialog(requireActivity())
                 } else {
-                   // ProgressUtils.dismissProgressDialog()
+                    // ProgressUtils.dismissProgressDialog()
                 }
             }
         }
@@ -1581,14 +1628,30 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         TAG,
                         "PrinterEvent  ${Gson().toJson(printerStatusInfo)} other1 ${s}  other2 ${i}"
                     )
-                    if (printerStatusInfo.online == 1) {
+
                         try {
                             printer.disconnect()
+                            requireActivity().runOnUiThread {
+                                viewModel.downloadFinished(false)
+                                if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                                }
+                            }
 
                         } catch (e: java.lang.Exception) {
+                            try {
+                                requireActivity().runOnUiThread {
+                                    viewModel.downloadFinished(false)
+                                    if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                                        findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                                    }
+                                }
+                            }catch (e:Exception){
+
+                            }
                             e.printStackTrace()
                         }
-                    }
+
                 }
                 try {
                     Log.e(TAG, "printerDataType:  ${data.printer_type}")
@@ -1606,6 +1669,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 } catch (e: java.lang.Exception) {
                     e.printStackTrace()
                 }
+
+
 
             } else {
 
@@ -2002,10 +2067,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
             try {
                 builder.sendData(Printer.PARAM_DEFAULT)
-                viewModel.downloadFinished(false)
-                if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+               // viewModel.downloadFinished(false)
+               /* if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
                     findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
-                }
+                }*/
 
                 //PrinterClass.getPrinter()?.sendData(builder, 0, status, battery)
             } catch (e: Exception) {
@@ -3521,7 +3586,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         } else {
             Log.e(TAG, "DineinNewCh NoOrderType")
             if (rolePermission.hasTablePermission(binding.root)) {
-               // prefProvider.setValue(ORDER_TYPE, DINE_IN)
+                // prefProvider.setValue(ORDER_TYPE, DINE_IN)
                 prefProvider.setValue(Constants.DINE_IN_UPDATE_LIST, "")
                 prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
                 findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragment)

@@ -6,7 +6,6 @@ import com.epson.epos2.Epos2Exception
 import com.epson.epos2.printer.Printer
 import com.epson.epos2.printer.PrinterStatusInfo
 import com.epson.epos2.printer.ReceiveListener
-import java.lang.Exception
 
 class ReceiptPrinter private constructor() : ReceiveListener {
     private var mContext: Context? = null
@@ -18,7 +17,7 @@ class ReceiptPrinter private constructor() : ReceiveListener {
         /* 创建打印 数据 */if (!createReceiptData(datas)) {
             finalizeObject()
         }
-        /*打印*/if (!printData()) {
+        /*打印*/if (!printData(ipAddress=datas)) {
             finalizeObject()
         }
     }
@@ -30,7 +29,7 @@ class ReceiptPrinter private constructor() : ReceiveListener {
         mPrinter = try {
             // ((SpnModelsItem) mSpnLang.getSelectedItem()).getModelConstant()
             //            mPrinter = new Printer(((SpnModelsItem) mSpnSeries.getSelectedItem()).getModelConstant(),
-            Printer(Printer.TM_T88, Printer.MODEL_ANK, mContext)
+            Printer(Printer.TM_U220, Printer.MODEL_ANK, mContext)
             //
         } catch (e: Exception) {
             //ShowMsg.showException(e, "Printer", mContext)
@@ -136,12 +135,12 @@ class ReceiptPrinter private constructor() : ReceiveListener {
     /**
      * 打印数据
      */
-    private fun printData(): Boolean {
+    private fun printData(ipAddress: String): Boolean {
         if (mPrinter == null) {
             return false
         }
         //连接打印设备
-        if (!connectPrinter()) {
+        if (!connectPrinter(ipAddress)) {
             return false
         }
         //当前的打印状态
@@ -180,14 +179,14 @@ class ReceiptPrinter private constructor() : ReceiveListener {
      *
      * @return
      */
-    private fun connectPrinter(): Boolean {
+    private fun connectPrinter(ipAddress:String): Boolean {
         var isBeginTransaction = false
         if (mPrinter == null) {
             return false
         }
         try {
             //连接 USB设备地址我的 EPSON TM-T88IV型号地址: USB:/dev/bus/usb/004/002  必须通过开启搜索设备设置连接机型
-//            mPrinter.connect(mEditTarget.getText().toString(), Printer.PARAM_DEFAULT);
+            mPrinter?.connect(ipAddress, Printer.PARAM_DEFAULT);
            // mPrinter!!.connect(MainActivity.getPrinterTarget(), Printer.PARAM_DEFAULT)
         } catch (e: Exception) {
             //ShowMsg.showException(e, "connect fail", mContext)

@@ -234,7 +234,7 @@ class CartFragment(
 
     private fun checkOrderType() {
 
-
+        saveVisibility()
         if (prefProvider.getValue(ORDER_TYPE, "").isEmpty()) {
             binding.rlCartView.gone()
             binding.rvOrderType.visible()
@@ -2074,116 +2074,120 @@ class CartFragment(
 
         }
         binding.tvSave.setOnClickListener {
-            prefProvider.setValueboolean(OPEN_ORDER_UPDATE_FOR_PRINT, false)
-            if (isOrderUpdate == false) {
-                prefProvider.setValue(
-                    Constants.OPEN_ORDER_ITEMS,
-                    ""
-                )
+            try {
+                prefProvider.setValueboolean(OPEN_ORDER_UPDATE_FOR_PRINT, false)
+                if (isOrderUpdate == false) {
+                    prefProvider.setValue(
+                        Constants.OPEN_ORDER_ITEMS,
+                        ""
+                    )
 
-            }
-            if (cartAdapter.cartList.isNotEmpty()) {
-                prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
+                }
+                if (cartAdapter.cartList.isNotEmpty()) {
+                    prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
 
-                prefProvider.setValue(ORDER_TYPE, prefProvider.getValue(ORDER_TYPE, ""))
-                prefProvider.setValue("PaidAmount", "")
-                prefProvider.setValue(WHOLE_AMOUNT, "")
-                prefProvider.setValueInt("cardCount", 0)
-                prefProvider.setValue(Constants.SUB_TOTAL, "")
-                prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
-                prefProvider.setValue(Constants.TOTAL_DISCOUNT, "")
-                prefProvider.setValue(Constants.TIP, "")
-                prefProvider.setValue(Constants.TAX_CHARGE, "")
-                prefProvider.setValue(Constants.SERVICE_CHARGE, "")
-                if (prefProvider.getValue(ORDER_TYPE, "") != Constants.DINE_IN) {
+                    prefProvider.setValue(ORDER_TYPE, prefProvider.getValue(ORDER_TYPE, ""))
+                    prefProvider.setValue("PaidAmount", "")
+                    prefProvider.setValue(WHOLE_AMOUNT, "")
+                    prefProvider.setValueInt("cardCount", 0)
+                    prefProvider.setValue(Constants.SUB_TOTAL, "")
+                    prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
+                    prefProvider.setValue(Constants.TOTAL_DISCOUNT, "")
+                    prefProvider.setValue(Constants.TIP, "")
+                    prefProvider.setValue(Constants.TAX_CHARGE, "")
+                    prefProvider.setValue(Constants.SERVICE_CHARGE, "")
+                    if (prefProvider.getValue(ORDER_TYPE, "") != Constants.DINE_IN) {
 
-                    var ordertype = ""
-                    var ordertypeId = 0
-                    viewModel.ordertypelist.forEach {
-                        if (it.orderType == OPEN_ORDER) {
-                            ordertype = it.orderType
-                            ordertypeId = it.id
-                        }
-                    }
-
-                    if (viewModel.restrictedAmount(binding.txtTotal)) {
-
-
-                        viewModelPayment.updateOrder(
-                            isOrderUpdate,
-                            orderId,
-                            paymentId,
-                            paymentOfflineId,
-                            orderOfflineId
-                        )
-
-                        val cartList = viewModel.generateCombinedItems(viewModel.cartModel!!)
-                        cartList.openOrderType = Constants.PICK_UP
-                        cartList.orderType = ordertype
-                        cartList.orderTypeId = ordertypeId
-
-                        val totalAmountTobeSave =
-                            if (viewModel.redeemLoyaltyInfo.isLoyaltyApplied == true) {
-                                (viewModel.redeemLoyaltyInfo.getAmountToBePaid() ?: 0.0)
-                            } else {
-                                viewModel.totalPrice
+                        var ordertype = ""
+                        var ordertypeId = 0
+                        viewModel.ordertypelist.forEach {
+                            if (it.orderType == OPEN_ORDER) {
+                                ordertype = it.orderType
+                                ordertypeId = it.id
                             }
+                        }
 
-                        cartList.openOrderType = Constants.PICK_UP
-                        if (!isOrderUpdate)
-                            cartList.customer = assignCustomer
-
-                        val formatterdate = SimpleDateFormat("yyyy-MM-dd")
-                        val formattertime = SimpleDateFormat("hh:mm a")
-                        val date = Date()
-                        future_delivery_date = formatterdate.format(date)
-                        future_delivery_time = formattertime.format(date)
-
-                        LogUtil.logE(TAG, "UpdateOrderItemsList  ${cartList.items?.size}")
-                        val request = viewModelPayment.createOpenOrderRequest(
-                            cartList,
-                            viewModel.subTotalPrice,
-                            totalAmountTobeSave,
-                            viewModel.totalServiceCharge,
-                            viewModel.totalTax,
-                            OPEN_ORDER,
-                            future_delivery_date,
-                            future_delivery_time,
-                            false,
-                            viewModel.totalDiscount,
-                            0.00,
-                            -1,
-                            viewModel.redeemLoyaltyInfo,
-                            MethodUtils.calculateCashDiscount(
-                                viewModel.totalPrice,
-                                prefProvider,
-                                requireContext()
-                            ),
-                            false,
-                            "Cash",
-                            cashDiscountType
-
-                        )
-                        isSaveOrder = true
-                        viewModelPayment.saveOrder(true)
-                        viewModelPayment.submit(request)
+                        if (viewModel.restrictedAmount(binding.txtTotal)) {
 
 
+                            viewModelPayment.updateOrder(
+                                isOrderUpdate,
+                                orderId,
+                                paymentId,
+                                paymentOfflineId,
+                                orderOfflineId
+                            )
 
-                        isOrderUpdate = false
-                        binding.tvSave.text = getString(R.string.save)
+                            val cartList = viewModel.generateCombinedItems(viewModel.cartModel!!)
+                            cartList.openOrderType = Constants.PICK_UP
+                            cartList.orderType = ordertype
+                            cartList.orderTypeId = ordertypeId
 
-                    } else {
-                        showMessage()
-                    }
+                            val totalAmountTobeSave =
+                                if (viewModel.redeemLoyaltyInfo.isLoyaltyApplied == true) {
+                                    (viewModel.redeemLoyaltyInfo.getAmountToBePaid() ?: 0.0)
+                                } else {
+                                    viewModel.totalPrice
+                                }
+
+                            cartList.openOrderType = Constants.PICK_UP
+                            if (!isOrderUpdate)
+                                cartList.customer = assignCustomer
+
+                            val formatterdate = SimpleDateFormat("yyyy-MM-dd")
+                            val formattertime = SimpleDateFormat("hh:mm a")
+                            val date = Date()
+                            future_delivery_date = formatterdate.format(date)
+                            future_delivery_time = formattertime.format(date)
+
+                            LogUtil.logE(TAG, "UpdateOrderItemsList  ${cartList.items?.size}")
+                            val request = viewModelPayment.createOpenOrderRequest(
+                                cartList,
+                                viewModel.subTotalPrice,
+                                totalAmountTobeSave,
+                                viewModel.totalServiceCharge,
+                                viewModel.totalTax,
+                                OPEN_ORDER,
+                                future_delivery_date,
+                                future_delivery_time,
+                                false,
+                                viewModel.totalDiscount,
+                                0.00,
+                                -1,
+                                viewModel.redeemLoyaltyInfo,
+                                MethodUtils.calculateCashDiscount(
+                                    viewModel.totalPrice,
+                                    prefProvider,
+                                    requireContext()
+                                ),
+                                false,
+                                "Cash",
+                                cashDiscountType
+
+                            )
+                            isSaveOrder = true
+                            viewModelPayment.saveOrder(true)
+                            viewModelPayment.submit(request)
+
+
+
+                            isOrderUpdate = false
+                            binding.tvSave.text = getString(R.string.save)
+
+                        } else {
+                            showMessage()
+                        }
 //                }
+                    }
+                } else {
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        requireContext(),
+                        resources.getString(R.string.please_add_Atleast_one_item_in_cart)
+                    ) { _, _ ->
+                    }
                 }
-            } else {
-                AlertUtils.showCustomAlertWithListenerWithOK(
-                    requireContext(),
-                    resources.getString(R.string.please_add_Atleast_one_item_in_cart)
-                ) { _, _ ->
-                }
+            } catch (e: Exception){
+                e.printStackTrace()
             }
         }
     }
