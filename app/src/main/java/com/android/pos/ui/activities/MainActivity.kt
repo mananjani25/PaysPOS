@@ -39,7 +39,6 @@ import com.android.pos.data.model.TmpPrinterModel
 import com.android.pos.data.model.responseModel.GetKitchenReceiptSettingsResponse
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
-import com.android.pos.data.remote.Constants.IS_MASTER_TERMINAL
 import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.remote.Constants.UNIQUE_ID
 import com.android.pos.data.repositories.UserRepository
@@ -765,7 +764,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         }
     }
 
-    private fun getCustomerPrinters() {
+    private fun getKitchenPrinters() {
         viewModelPrinter.getKitchenPrinterList().observe(this) {
             when (it.status) {
                 Status.SUCCESS -> {
@@ -773,6 +772,9 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                     if (it.data != null) {
                         kitchenPrinterList = emptyList()
                         kitchenPrinterList = it.data
+                        if (prefProvider?.getValueboolean(Constants.IS_MASTER_TERMINAL, false) == true) {
+                            getKitOne()
+                        }
 
                         LogUtil.logE("getCustomerPrinters", Gson().toJson(kitchenPrinterList))
                     }
@@ -836,9 +838,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         super.onCreate(savedInstanceState)
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN)
 
-        if (prefProvider?.getValueboolean(IS_MASTER_TERMINAL, false) == true) {
-            getKitOne()
-        }
+
         //demoPrinterQueue()
 
         // connectionActionCable()
@@ -856,7 +856,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         consumer = ActionCable.createConsumer(uri)
         getPrinterQueueData()
 
-        getCustomerPrinters()
+        getKitchenPrinters()
 
 
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this)

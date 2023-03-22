@@ -12,7 +12,6 @@ import com.android.pos.data.model.responseModel.GetKitchenReceiptSettingsRespons
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.PRINTER_QUEUE_DATA
-import com.android.pos.data.remote.Constants.PRINTER_QUEUE_DATA_RECEIVED
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.*
 import com.android.pos.utils.printer.PrinterClass
@@ -66,7 +65,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                 locationId = inputData.getInt("location_id", 0)
                 baseUrl = inputData.getString("base_url").toString()
 
-                /* var serializeObjKitchenPrinters = inputData.getString("kitchenPrinterList")
+                 var serializeObjKitchenPrinters = inputData.getString("kitchenPrinterList")
                  if (serializeObjKitchenPrinters?.isNotEmpty() == true) {
                      val gson = Gson()
                      val type =
@@ -79,7 +78,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                          ) as ArrayList<PrinterResponse.Data.KitchenReceiptPrinters>
 
 
-                 }*/
+                 }
 
 
 
@@ -134,13 +133,16 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                     if (it.asJsonObject.has("printer_queue")) {
                         isPrinterRunning = true
                         globalPrinterQueue = it.asJsonObject.get("printer_queue")
-                        GlobalScope.launch(Dispatchers.IO) {
+                        runBlocking {
                             getQueueDataResponse(it.asJsonObject.get("printer_queue"))
                         }
 
 
                     } else {
-                        GlobalScope.launch {
+
+                        runBlocking {
+
+
                             delay(5000)
 
                             val params = JsonObject()
@@ -148,6 +150,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                             params.addProperty("url", requestURL)
                             subscription?.perform("received", params)
                         }
+
 
                         /*val intent = Intent()
                         intent.putExtra(Constants.DATA, "")
@@ -510,7 +513,8 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
                 }
             } else {
-                GlobalScope.launch {
+
+                runBlocking {
                     delay(5000)
                     val params = JsonObject()
                     params.addProperty("id", locationId)
@@ -545,21 +549,28 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                 getQueueLocalData()
             }*/
         } else {
-            val intent = Intent()
+            runBlocking {
+                delay(5000)
+                val params = JsonObject()
+                params.addProperty("id", locationId)
+                params.addProperty("url", baseUrl + Constants.CREATE_QUEUE_PRINTER)
+                subscription?.perform("received", params)
+            }
+           /* val intent = Intent()
             intent.putExtra(Constants.DATA, "")
             intent.action = PRINTER_QUEUE_DATA_RECEIVED
             mContext.sendBroadcast(intent)
-            isPrinterRunning = false
+            isPrinterRunning = false*/
         }
     }
 
-    private fun callPrinter(printer: Printer) {
+    suspend fun callPrinter(printer: Printer) {
         try {
             var obj = printerQueuelist[printerQueuelist.size - 1]
 
 
             var printerAdd =
-                "TCP:192.168.0.100"
+                "TCP:"+kitchenPrinterList.get(0).ipAddress
 
 
 
@@ -573,11 +584,11 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                 )
 
             } catch (e: Exception) {
-                /* try {
+                 try {
                      printer.disconnect()
                  } catch (e: Exception) {
 
-                 }*/
+                 }
 
                 e.printStackTrace()
 
@@ -624,7 +635,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
 
 
-                    GlobalScope.launch {
+                    runBlocking {
                         delay(5000)
                         val printer1 = Printer(Printer.TM_U220, Printer.MODEL_ANK, mContext)
                         resumePrinterQueue(printer1)
@@ -632,13 +643,15 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
 
                 } else {
-                    GlobalScope.launch {
+                    runBlocking {
+
                         delay(5000)
 
                         val params = JsonObject()
                         params.addProperty("id", locationId)
                         params.addProperty("url", baseUrl + Constants.CREATE_QUEUE_PRINTER)
                         subscription?.perform("received", params)
+
                     }
 
 
@@ -712,7 +725,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
     }
 
-    private fun resumePrinterQueue(printer: Printer?) {
+    suspend fun resumePrinterQueue(printer: Printer?) {
         if (printerQueuelist.isNotEmpty()) {
             printer?.let { callPrinter(it) }
         } else if (printerQueuelist.isEmpty()) {
