@@ -18,7 +18,6 @@ import com.android.pos.data.remote.Constants.PRINTER_QUEUE_DATA_RECEIVED
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.*
 import com.android.pos.utils.printer.PrinterClass
-import com.epson.epos2.ConnectionListener
 import com.epson.epos2.printer.Printer
 import com.epson.epos2.printer.PrinterStatusInfo
 import com.epson.epos2.printer.ReceiveListener
@@ -565,18 +564,6 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
 
             Log.e(TAG, "connection: ${printer.status.connection}")
-            printer.setConnectionEventListener(object : ConnectionListener {
-                override fun onConnection(p0: Any?, p1: Int) {
-                    Log.e(TAG, "checkConnection ${p0} other ${p1}")
-                }
-
-            })
-
-            printer.setConnectionEventListener { any, i ->
-                Log.e(TAG, "checkConnection12 ${any} other ${i}")
-
-
-            }
 
 
             try {
@@ -584,17 +571,23 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                     printerAdd,
                     Printer.PARAM_DEFAULT
                 )
-                printer.startMonitor()
+
             } catch (e: Exception) {
-                try {
+               /* try {
                     printer.disconnect()
                 } catch (e: Exception) {
 
-                }
+                }*/
 
                 e.printStackTrace()
 
 
+            }
+
+            try {
+                printer.startMonitor()
+            }catch (e:Exception){
+                e.printStackTrace()
             }
 
 
