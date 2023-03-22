@@ -3,8 +3,6 @@ package com.android.pos.utils.workmanager
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
@@ -142,13 +140,14 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
 
                     } else {
-                        Handler(Looper.getMainLooper()).postDelayed({
+                        GlobalScope.launch {
+                            delay(5000)
 
                             val params = JsonObject()
                             params.addProperty("id", locationId)
                             params.addProperty("url", requestURL)
                             subscription?.perform("received", params)
-                        },5000)
+                        }
 
                         /*val intent = Intent()
                         intent.putExtra(Constants.DATA, "")
@@ -510,13 +509,14 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                     /*for (i in 0 until printerQueuelist.size) {*/
 
                 }
-            }else{
-                Handler(Looper.getMainLooper()).postDelayed({
-                val params = JsonObject()
-                params.addProperty("id", locationId)
-                params.addProperty("url", baseUrl + Constants.CREATE_QUEUE_PRINTER)
-                subscription?.perform("received", params)
-                },5000)
+            } else {
+                GlobalScope.launch {
+                    delay(5000)
+                    val params = JsonObject()
+                    params.addProperty("id", locationId)
+                    params.addProperty("url", baseUrl + Constants.CREATE_QUEUE_PRINTER)
+                    subscription?.perform("received", params)
+                }
             }
 
 
@@ -573,11 +573,11 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                 )
 
             } catch (e: Exception) {
-               /* try {
-                    printer.disconnect()
-                } catch (e: Exception) {
+                /* try {
+                     printer.disconnect()
+                 } catch (e: Exception) {
 
-                }*/
+                 }*/
 
                 e.printStackTrace()
 
@@ -586,7 +586,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
             try {
                 printer.startMonitor()
-            }catch (e:Exception){
+            } catch (e: Exception) {
                 e.printStackTrace()
             }
 
@@ -607,40 +607,39 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                 if (printerStatusInfo.errorStatus == 0) {
                     /* printer.endTransaction()
                      printer.clearCommandBuffer()*/
-                         if (printerQueuelist.size >= 1) {
-                             printer.disconnect()
-                             Log.e(TAG, "checkQueueSize  ${printerQueuelist.size}")
-                             printerQueuelist.get(printerQueuelist.size - 1).id?.let {
-                                 val params = JsonObject()
-                                 var deleteUrl =
-                                     baseUrl + Constants.CREATE_QUEUE_PRINTER + "/" + it
-                                 LogUtil.logE(TAG, "DeleteUrl ${deleteUrl}")
-                                 params.addProperty("url", deleteUrl)
-                                 subscription?.perform("delete_order", params)
-                             }
-                             printerQueuelist.removeAt(printerQueuelist.size - 1)
-                         }
+                    if (printerQueuelist.size >= 1) {
+                        printer.disconnect()
+                        Log.e(TAG, "checkQueueSize  ${printerQueuelist.size}")
+                        printerQueuelist.get(printerQueuelist.size - 1).id?.let {
+                            val params = JsonObject()
+                            var deleteUrl =
+                                baseUrl + Constants.CREATE_QUEUE_PRINTER + "/" + it
+                            LogUtil.logE(TAG, "DeleteUrl ${deleteUrl}")
+                            params.addProperty("url", deleteUrl)
+                            subscription?.perform("delete_order", params)
+                        }
+                        printerQueuelist.removeAt(printerQueuelist.size - 1)
+                    }
 
 
 
 
-                    Handler(Looper.getMainLooper()).postDelayed({
+                    GlobalScope.launch {
+                        delay(5000)
                         val printer1 = Printer(Printer.TM_U220, Printer.MODEL_ANK, mContext)
                         resumePrinterQueue(printer1)
-                    },2000)
+                    }
 
 
-                }
-                else{
+                } else {
+                    GlobalScope.launch {
+                        delay(5000)
 
-                    Handler(Looper.getMainLooper()).postDelayed({
                         val params = JsonObject()
                         params.addProperty("id", locationId)
                         params.addProperty("url", baseUrl + Constants.CREATE_QUEUE_PRINTER)
                         subscription?.perform("received", params)
-
-
-                    },5000)
+                    }
 
 
                 }
