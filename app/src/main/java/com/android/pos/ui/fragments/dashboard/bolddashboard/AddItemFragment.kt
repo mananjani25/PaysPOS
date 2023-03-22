@@ -102,6 +102,8 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
         isUpdateItem = requireArguments().getBoolean(Constants.IS_UPDATE_ITEM)
         Log.e("GetDataAdd","isUpdateItem:    ${isUpdateItem}")
 
+        binding.txtDone.isEnabled = isUpdateItem
+
         return binding.root
     }
 
