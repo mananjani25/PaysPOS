@@ -5770,7 +5770,23 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         kitchenPrinterList = it.data
                         val remain = requireArguments().getDouble("remainingAmount")
                         if (requireArguments().getBoolean("isDineIn")) {
-                            customerPrintWholeOrder()
+                            //Kept a condition here to check if auto-printing is on/off in each printer settings
+                            if (kitchenPrinterList.isNotEmpty()) {
+                                for (i in kitchenPrinterList.indices) {
+                                    if (kitchenPrinterList[i].status) {
+                                        kitchenPrinterList[i].orderTypes.forEach {
+                                            if (it.orderTypeId == receiptModel?.order?.orderTypeId) {
+                                                it.printerSettings.forEach {
+                                                    if (it.printType.lowercase() == CUSTOMER.lowercase() && it.autoPrinting
+                                                    ) {
+                                                        customerPrintWholeOrder()
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
 
                         } else {
                             getCustomerPrinters(true)
@@ -9092,9 +9108,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
 
             SunmiPrinterApi.getInstance().lineWrap(1)
+            Log.d(TAG, "generateKitchenReceiptSunmi: $kitchenSettingModel")
+            Log.d(TAG, "generateKitchenReceiptSunmi: ${receiptModel?.order?.customer}")
             if (kitchenSettingModel.showCustomerAddress != false or kitchenSettingModel.showCustomerPhone != false or kitchenSettingModel.showCustomerName != false) {
+                Log.d(TAG, "generateKitchenReceiptSunmi: inSIDE IF")
                 if (receiptModel?.order?.customer != null) {
-
+                    Log.d(TAG, "generateKitchenReceiptSunmi: customer != null")
 
                     PrintSunmiUtils.customerDetails()
 

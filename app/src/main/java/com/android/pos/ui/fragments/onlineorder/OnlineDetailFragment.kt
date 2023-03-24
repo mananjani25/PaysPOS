@@ -535,7 +535,7 @@ class OnlineDetailFragment(
 
                 )
                 if (param1 == "4") {
-                    datePickerDialog.datePicker.minDate =myCalendar1.timeInMillis
+                    datePickerDialog.datePicker.minDate = myCalendar1.timeInMillis
                 } else {
                     datePickerDialog.datePicker.maxDate = Date().time
                 }
@@ -554,7 +554,7 @@ class OnlineDetailFragment(
             )
         )
 
-        adapter = OnlineOrderAdapter(requireContext(),prefProvider)
+        adapter = OnlineOrderAdapter(requireContext(), prefProvider)
         adapter.setCallback(this)
         binding.rvOpenOrder?.adapter = adapter
     }
@@ -651,15 +651,15 @@ class OnlineDetailFragment(
                             adapter.orderList[pos].magensa_response_data
                         )
                     }
-                    bundle.putString("isFrom","rejectOnlineOrder")
-                    if (prefProvider.isAdmin()||prefProvider.isManager()){
+                    bundle.putString("isFrom", "rejectOnlineOrder")
+                    if (prefProvider.isAdmin() || prefProvider.isManager()) {
                         if (findNavController().currentDestination?.id == R.id.onlineOrderFragment) {
                             findNavController().navigate(
                                 R.id.action_onlineOrder_to_reasonForrefundonline,
                                 bundle
                             )
                         }
-                    }else{
+                    } else {
                         if (findNavController().currentDestination?.id == R.id.onlineOrderFragment) {
                             findNavController().navigate(
                                 R.id.action_onlineOrder_to_passcodeManager,
@@ -813,14 +813,14 @@ class OnlineDetailFragment(
                     )
                     mPrinter.startMonitor()
 
-                    generateKitchenReceiptU220(data, type, orderData,mPrinter)
+                    generateKitchenReceiptU220(data, type, orderData, mPrinter)
 
-                   // generateReceiptForU220(mPrinter, data, type)
+                    // generateReceiptForU220(mPrinter, data, type)
 
                 } catch (e: java.lang.Exception) {
                     e.printStackTrace()
                 }
-            }else{
+            } else {
                 PrinterClass.closePrinter()
                 if (PrinterClass.getPrinter() == null) {
                     //  printerDialog.show(requireContext())
@@ -869,51 +869,56 @@ class OnlineDetailFragment(
 
             }
 
-          /*  PrinterClass.closePrinter()
-            if (PrinterClass.getPrinter() == null) {
-                //  printerDialog.show(requireContext())
+            /*  PrinterClass.closePrinter()
+              if (PrinterClass.getPrinter() == null) {
+                  //  printerDialog.show(requireContext())
 
-                var printer: Print? = Print(requireContext())
-
-
-                val enabled = Print.FALSE
-
-                try {
-
-                    printer?.openPrinter(
-                        if (data.printer_type == Constants.BLUETOOTH) {
-                            Print.DEVTYPE_BLUETOOTH
-                        } else {
-                            Print.DEVTYPE_TCP
-                        },
-                        data.ipAddress,
-                        enabled,
-                        1000
-                    )
-
-                } catch (e: Exception) {
-                    //  printerDialog.dismiss()
-                    LogUtil.logE(TAG, "PrinterException: " + e.message)
-                    printer = null
-                    return
-                }
-
-                if (printer != null) {
-                    PrinterClass.setPrinter(printer)
+                  var printer: Print? = Print(requireContext())
 
 
-                    generateKitchenReceipt(data, type, orderData)
+                  val enabled = Print.FALSE
 
-                }
+                  try {
 
-            } else {
-                LogUtil.logE(TAG, "PrinterIsNotNull:")
-            }*/
+                      printer?.openPrinter(
+                          if (data.printer_type == Constants.BLUETOOTH) {
+                              Print.DEVTYPE_BLUETOOTH
+                          } else {
+                              Print.DEVTYPE_TCP
+                          },
+                          data.ipAddress,
+                          enabled,
+                          1000
+                      )
+
+                  } catch (e: Exception) {
+                      //  printerDialog.dismiss()
+                      LogUtil.logE(TAG, "PrinterException: " + e.message)
+                      printer = null
+                      return
+                  }
+
+                  if (printer != null) {
+                      PrinterClass.setPrinter(printer)
+
+
+                      generateKitchenReceipt(data, type, orderData)
+
+                  }
+
+              } else {
+                  LogUtil.logE(TAG, "PrinterIsNotNull:")
+              }*/
         }
 
     }
 
-    private fun generateKitchenReceiptU220(customerReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters, type: String, orderData: OnlineOrderStatusUpdateResponse, builder: Printer) {
+    private fun generateKitchenReceiptU220(
+        customerReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
+        type: String,
+        orderData: OnlineOrderStatusUpdateResponse,
+        builder: Printer
+    ) {
 
         try {
             val pname = if (customerReceiptPrinters.name.substring(0, 6).toString()
@@ -959,10 +964,10 @@ class OnlineDetailFragment(
                     Builder.TRUE,
                     Builder.COLOR_1
                 )
-                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE,false)){
+                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
                     builder.addText("OrderID:" + orderData?.data.custom_order_id)
-                }else
-                { builder.addText("OrderID:" + orderData?.data.id)
+                } else {
+                    builder.addText("OrderID:" + orderData?.data.id)
 
                 }
                 builder.addFeedUnit(30)
@@ -1234,10 +1239,9 @@ class OnlineDetailFragment(
                     Builder.COLOR_1
                 )
 
-                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE,false))
-                {
+                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
                     builder.addText("OrderID:" + orderData?.data.custom_order_id)
-                }else{
+                } else {
                     builder.addText("OrderID:" + orderData?.data.id)
                 }
                 builder.addFeedUnit(30)
@@ -1515,23 +1519,23 @@ class OnlineDetailFragment(
 
 
 */
-      /*  try {
-            PrinterClass.getPrinter()?.sendData(
-                builder,
-                timeOut, status, battery
-            )
+        /*  try {
+              PrinterClass.getPrinter()?.sendData(
+                  builder,
+                  timeOut, status, battery
+              )
 
-            //printerDialog.dismiss()
-            PrinterClass.closePrinter()
+              //printerDialog.dismiss()
+              PrinterClass.closePrinter()
 
-            //PrinterClass.getPrinter()?.sendData(builder, 0, status, battery)
-        } catch (e: Exception) {
-//                printerDialog.dismiss()
-            PrinterClass.closePrinter()
-            e.printStackTrace()
-            LogUtil.logE(TAG, "PrinterError: " + e.localizedMessage)
-        }
-*/
+              //PrinterClass.getPrinter()?.sendData(builder, 0, status, battery)
+          } catch (e: Exception) {
+  //                printerDialog.dismiss()
+              PrinterClass.closePrinter()
+              e.printStackTrace()
+              LogUtil.logE(TAG, "PrinterError: " + e.localizedMessage)
+          }
+  */
     }
 
     private fun generateKitchenReceipt(
@@ -1585,10 +1589,10 @@ class OnlineDetailFragment(
                     Builder.TRUE,
                     Builder.COLOR_1
                 )
-                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE,false)){
+                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
                     builder.addText("OrderID:" + orderData?.data.custom_order_id)
-                }else
-                { builder.addText("OrderID:" + orderData?.data.id)
+                } else {
+                    builder.addText("OrderID:" + orderData?.data.id)
 
                 }
                 builder.addTextLineSpace(30)
@@ -1869,10 +1873,9 @@ class OnlineDetailFragment(
                     Builder.COLOR_1
                 )
 
-                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE,false))
-                {
+                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
                     builder.addText("OrderID:" + orderData?.data.custom_order_id)
-                }else{
+                } else {
                     builder.addText("OrderID:" + orderData?.data.id)
                 }
                 builder.addTextLineSpace(30)
@@ -2023,7 +2026,8 @@ class OnlineDetailFragment(
                         )
                         builder.addText("Customer Details" + "\n")
 
-                        builder.addFeedLine(1)
+                        // Commented below line to resolve BIS-389 issue
+                        //builder.addFeedLine(1)
                         addHorizontalLine(builder)
 
                         if (kitchenSettingModel.showCustomerName) {
@@ -2086,38 +2090,39 @@ class OnlineDetailFragment(
                      Builder.COLOR_1
                  )
                  builder.addText(receiptModel?.order?.customer?.email)*/
+                        if (kitchenSettingModel.showCustomerAddress) {
 
+                            if (orderData?.data?.customer?.addresses?.isNotEmpty() == true) {
 
-                        if (orderData?.data?.customer?.addresses?.isNotEmpty() == true) {
+                                builder.addTextLineSpace(30)
+                                builder.addFeedUnit(30)
+                                builder.addTextFont(Builder.FONT_E)
+                                builder.addTextAlign(Builder.ALIGN_LEFT)
+                                //builder.addTextLineSpace(20)
+                                builder.addTextLang(Builder.LANG_EN)
+                                builder.addTextSize(fontSizeH, fontSizeW)
+                                builder.addTextStyle(
+                                    Builder.FALSE,
+                                    Builder.FALSE,
+                                    Builder.TRUE,
+                                    Builder.COLOR_1
+                                )
 
-                            builder.addTextLineSpace(30)
-                            builder.addFeedUnit(30)
-                            builder.addTextFont(Builder.FONT_E)
-                            builder.addTextAlign(Builder.ALIGN_LEFT)
-                            //builder.addTextLineSpace(20)
-                            builder.addTextLang(Builder.LANG_EN)
-                            builder.addTextSize(fontSizeH, fontSizeW)
-                            builder.addTextStyle(
-                                Builder.FALSE,
-                                Builder.FALSE,
-                                Builder.TRUE,
-                                Builder.COLOR_1
-                            )
+                                orderData?.data?.customer?.addresses.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
+                                    .forEach {
 
-                            orderData?.data?.customer?.addresses.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
-                                .forEach {
-
-                                    if (it.typeOfAddress.equals(
-                                            Constants.BILLING_ADDRESS,
-                                            ignoreCase = true
-                                        )
-                                    ) {
-                                        builder.addText(
-                                            it.fullAddress
-                                        )
+                                        if (it.typeOfAddress.equals(
+                                                Constants.BILLING_ADDRESS,
+                                                ignoreCase = true
+                                            )
+                                        ) {
+                                            builder.addText(
+                                                it.fullAddress
+                                            )
+                                        }
                                     }
-                                }
 //                            builder.addText(orderData?.data?.customer?.addresses.get(orderData?.data?.customer?.addresses.size - 1).fullAddress)
+                            }
                         }
                     }
 
@@ -2181,11 +2186,11 @@ class OnlineDetailFragment(
 
             PrintSunmiUtils.fontSize(kitchenSettingModel.fonts)
             SunmiPrinterApi.getInstance().lineWrap(2)
-            if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE,false)){
+            if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
                 PrintSunmiUtils.orderIdSunmi(
                     "OrderID:" + orderData?.data.custom_order_id
                 )
-            }else{
+            } else {
                 PrintSunmiUtils.orderIdSunmi(
                     "OrderID:" + orderData?.data.id
                 )
@@ -2349,9 +2354,9 @@ class OnlineDetailFragment(
 
             SunmiPrintHelper.getInstance().initPrinter()
             SunmiPrintHelper.getInstance().lineWrap(2)
-            if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE,false)){
+            if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
                 PrintSunmiUtils.headerText("OrderID:" + orderData?.data.custom_order_id)
-            }else{
+            } else {
                 PrintSunmiUtils.headerText("OrderID:" + orderData?.data.id)
             }
             SunmiPrintHelper.getInstance().lineWrap(1)
