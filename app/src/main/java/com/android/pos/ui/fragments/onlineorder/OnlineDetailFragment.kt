@@ -1098,7 +1098,7 @@ class OnlineDetailFragment(
                 }
 
 
-                if (kitchenSettingModel.showCustomerAddress != false or kitchenSettingModel.showCustomerPhone != false or kitchenSettingModel.showCustomerName != false) {
+                if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName != false) {
                     if (orderData?.data?.customer != null) {
 
                         builder.addFeedUnit(30)
@@ -1368,7 +1368,7 @@ class OnlineDetailFragment(
                 }
 
 
-                if (kitchenSettingModel.showCustomerAddress != false or kitchenSettingModel.showCustomerPhone != false or kitchenSettingModel.showCustomerName != false) {
+                if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName != false) {
                     if (orderData?.data?.customer != null) {
 
                         builder.addFeedUnit(30)
@@ -1728,7 +1728,7 @@ class OnlineDetailFragment(
                 }
 
 
-                if (kitchenSettingModel.showCustomerAddress != false or kitchenSettingModel.showCustomerPhone != false or kitchenSettingModel.showCustomerName != false) {
+                if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName != false) {
                     if (orderData?.data?.customer != null) {
 
                         builder.addTextLineSpace(30)
@@ -2007,7 +2007,7 @@ class OnlineDetailFragment(
                 }
 
 
-                if (kitchenSettingModel.showCustomerAddress != false or kitchenSettingModel.showCustomerPhone != false or kitchenSettingModel.showCustomerName != false) {
+                if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName != false) {
                     if (orderData?.data?.customer != null) {
 
                         builder.addTextLineSpace(30)
@@ -2251,7 +2251,7 @@ class OnlineDetailFragment(
             }
 
 
-            if (kitchenSettingModel.showCustomerAddress != false or kitchenSettingModel.showCustomerPhone != false or kitchenSettingModel.showCustomerName != false) {
+            if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName != false) {
                 if (orderData?.data?.customer != null) {
                     SunmiPrinterApi.getInstance().lineWrap(1)
                     PrintSunmiUtils.customerDetails()
@@ -2401,7 +2401,7 @@ class OnlineDetailFragment(
             }
 
 
-            if (kitchenSettingModel.showCustomerAddress != false or kitchenSettingModel.showCustomerPhone != false or kitchenSettingModel.showCustomerName != false) {
+            if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName != false) {
                 if (orderData?.data?.customer != null) {
 
                     PrintSunmiUtils.customerDetailsInner()
