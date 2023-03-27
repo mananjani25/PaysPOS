@@ -1582,6 +1582,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             } else {
                 myRequest.completed_all_payments = true
             }
+            println("submit request in case of order id -1")
             paymentviewModel.submit(myRequest)
         } else {
             val paymentReq = myRequest.order.paymentAttributes
@@ -2078,6 +2079,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     offlineId = createOrder.data.order.offlineId
                 )
             }
+            println("create printer queue request checkout details new")
             val createRequest = CreateQueuePrinterRequestModel(
                 location_id = prefProvider.getValueInt(Constants.LOCATION_ID, 0),
                 order_type = prefProvider.getValue(Constants.ORDER_TYPE, ""),

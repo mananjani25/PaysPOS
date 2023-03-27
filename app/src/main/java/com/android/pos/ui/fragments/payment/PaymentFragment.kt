@@ -41,10 +41,7 @@ import com.android.pos.data.remote.Constants.TOTAL_PRICE_ACTUAL
 import com.android.pos.data.remote.Constants.TOTAL_SERVICE_CHARGE_ACTUAL
 import com.android.pos.databinding.PaymentFragmentBinding
 import com.android.pos.di.PrefProvider
-import com.android.pos.utils.AlertUtils
-import com.android.pos.utils.LogUtil
-import com.android.pos.utils.MethodUtils
-import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.*
 import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.visible
 import com.google.gson.Gson
@@ -1138,6 +1135,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 
     private fun createQueuePrinter(createOrder: CreateOrderResponse) {
         val listPrinter: List<Int> = listOf()
+        println("printer queue payment  cart list : ${cartList?.items?.size}")
         val orderRequest = cartList?.let {
 
             viewModel.createOrderRequest(
@@ -1161,6 +1159,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 true, offlineId = createOrder.data.order.offlineId
             )
         }
+        println("create request printer queue from payment fragment")
         val createRequest = CreateQueuePrinterRequestModel(
             location_id = prefProvider.getValueInt(LOCATION_ID, 0),
             order_type = prefProvider.getValue(ORDER_TYPE, ""),
