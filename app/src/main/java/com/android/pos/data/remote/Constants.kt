@@ -625,6 +625,7 @@ object Constants {
     const val SYNC_SETTING_NOTIFICATION = "sync_setting_notification"
     const val SYNC_MARKUP = "MarkupSync"
     const val IS_SYNC_MARKUP = "is_markup_sync"
+    const val MASTER_TEMINAL_CHANGED = "master_teminal_changed"
 
 
     // dinein

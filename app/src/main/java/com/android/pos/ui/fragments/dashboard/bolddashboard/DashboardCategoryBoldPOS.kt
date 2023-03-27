@@ -2245,11 +2245,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                                         "statusPrinter  ${it.data[i].status}"
                                                     )
                                                     if (it.data[i].status) {
-                                                        initKitchenPrinter(
+                                                        /*initKitchenPrinter(
                                                             it.data.get(i),
                                                             Constants.KITCHEN,
                                                             createOrderResponse
-                                                        )
+                                                        )*/
                                                     }
                                                 }
 

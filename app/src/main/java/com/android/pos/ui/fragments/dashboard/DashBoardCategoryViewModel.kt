@@ -2,6 +2,7 @@ package com.android.pos.ui.fragments.dashboard
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.StrictMode
@@ -4958,6 +4959,10 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 else{
                                     prefProvider.setValueboolean(Constants.IS_MASTER_TERMINAL, false)
                                 }
+
+                                val intent = Intent()
+                                intent.action = Constants.MASTER_TEMINAL_CHANGED
+                                MainApplication.getInstance()?.baseContext?.sendBroadcast(intent)
 
 
                                 try {

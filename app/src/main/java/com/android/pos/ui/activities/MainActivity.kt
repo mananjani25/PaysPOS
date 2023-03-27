@@ -39,7 +39,9 @@ import com.android.pos.data.model.TmpPrinterModel
 import com.android.pos.data.model.responseModel.GetKitchenReceiptSettingsResponse
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.IS_MASTER_TERMINAL
 import com.android.pos.data.remote.Constants.LOCATION_ID
+import com.android.pos.data.remote.Constants.PRINTER_QUEUE_BACKGROUND
 import com.android.pos.data.remote.Constants.UNIQUE_ID
 import com.android.pos.data.repositories.UserRepository
 import com.android.pos.databinding.ParentActivityBinding
@@ -187,6 +189,22 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         }
 
     }
+
+    private var masterTerminal = object : BroadcastReceiver(){
+        override fun onReceive(p0: Context?, p1: Intent?) {
+
+            Log.e("checkMAsterTeminal","check  prefProvider?.getValueboolean(IS_MASTER_TERMINAL,false)")
+            if (prefProvider?.getValueboolean(IS_MASTER_TERMINAL,false) == true){
+                getKitOne()
+
+            }
+            else{
+                WorkManager.getInstance(this@MainActivity).cancelAllWork()
+            }
+        }
+
+    }
+
     private var syncFloorPlan = object : BroadcastReceiver() {
         override fun onReceive(p0: Context?, p1: Intent?) {
             Log.e("SyncFloorPlan", "onReceiveSync")
@@ -735,7 +753,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                         try {
 
                             workManager.enqueueUniqueWork(
-                                "printer_queue", ExistingWorkPolicy.REPLACE,
+                                PRINTER_QUEUE_BACKGROUND, ExistingWorkPolicy.REPLACE,
                                 uploadWorkRequest
                             )
                         } catch (e: java.lang.Exception) {
@@ -879,6 +897,11 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         registerReceiver(
             syncFloorPlan,
             IntentFilter(Constants.SYNC_FLOORPLAN)
+        )
+
+        registerReceiver(
+            masterTerminal,
+            IntentFilter(Constants.MASTER_TEMINAL_CHANGED)
         )
 
         registerReceiver(
