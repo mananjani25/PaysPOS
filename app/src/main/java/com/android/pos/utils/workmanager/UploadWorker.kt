@@ -813,6 +813,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
             printer.addCut(Builder.CUT_FEED)
 
+
             printer.beginTransaction()
 
 
@@ -1943,7 +1944,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
         Log.e(TAG, "onPrinterSucces str: ${p3}  intCode ${p1} getStatusInfo ${Gson().toJson(p2)}")
 
 
-        if (p1 == 0) {
+        if (p1 >= 0) {
             p0?.clearCommandBuffer()
             p0?.endTransaction()
             val params = JsonObject()
