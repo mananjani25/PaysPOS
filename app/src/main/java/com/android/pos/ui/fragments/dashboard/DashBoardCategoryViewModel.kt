@@ -4955,6 +4955,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 if (it.settingData.data.isMasterTeminal) {
                                     prefProvider.setValueboolean(Constants.IS_MASTER_TERMINAL, true)
                                 }
+                                else{
+                                    prefProvider.setValueboolean(Constants.IS_MASTER_TERMINAL, false)
+                                }
 
 
                                 try {
