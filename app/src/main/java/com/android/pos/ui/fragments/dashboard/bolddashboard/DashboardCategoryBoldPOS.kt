@@ -3378,8 +3378,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
     private fun createQueuePrinter(createOrder: CreateOrderResponse) {
         val listPrinter: List<Int> = listOf()
-        println("questart callback in dashboard")
-        println("cart model >> ${viewModel.cartModel?.items?.size}")
 
         if (viewModel.cartModel != null) {
             val orderRequest = viewModel.cartModel?.let {

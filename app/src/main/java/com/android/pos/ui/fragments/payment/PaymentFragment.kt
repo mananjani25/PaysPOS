@@ -1135,7 +1135,6 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 
     private fun createQueuePrinter(createOrder: CreateOrderResponse) {
         val listPrinter: List<Int> = listOf()
-        println("printer queue payment  cart list : ${cartList?.items?.size}")
         val orderRequest = cartList?.let {
 
             viewModel.createOrderRequest(
@@ -1159,7 +1158,6 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 true, offlineId = createOrder.data.order.offlineId
             )
         }
-        println("create request printer queue from payment fragment")
         val createRequest = CreateQueuePrinterRequestModel(
             location_id = prefProvider.getValueInt(LOCATION_ID, 0),
             order_type = prefProvider.getValue(ORDER_TYPE, ""),

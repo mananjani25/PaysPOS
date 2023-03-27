@@ -8863,7 +8863,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         if (prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)) {
             viewModel.fireSingleStatus.observe(viewLifecycleOwner) {
                 it.getContentIfNotHandled()?.let {
-                    println("single item fire called : ")
                     var itemList: ArrayList<OrderItemsAttribute> = arrayListOf()
                     val itemModel = OrderItemsAttribute()
                     itemModel.category_id = it.categoryId
@@ -8899,7 +8898,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     orderRequest.openOrderType = "Dine In"
 
 
-                    println("dine in single item fire ")
                     val createQueueRequest = CreateQueuePrinterRequestModel(
                         location_id = prefProvider.getValueInt(LOCATION_ID, 0),
                         order_type = "Dine In",
@@ -8910,7 +8908,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
                     )
-//                    viewModel.createQueuePrinter(createQueueRequest)
+                    viewModel.createQueuePrinter(createQueueRequest)
                 }
 
 
