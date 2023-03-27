@@ -2079,7 +2079,6 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     offlineId = createOrder.data.order.offlineId
                 )
             }
-            println("create printer queue request checkout details new")
             val createRequest = CreateQueuePrinterRequestModel(
                 location_id = prefProvider.getValueInt(Constants.LOCATION_ID, 0),
                 order_type = prefProvider.getValue(Constants.ORDER_TYPE, ""),

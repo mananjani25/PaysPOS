@@ -2526,9 +2526,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
     private fun observeQueueCreate() {
         paymentviewModel.queueStartSaveOrder.observe(requireActivity()) { event ->
-            println("star save order called>>>")
             event.getContentIfNotHandled()?.let {
-                println("star save order called  $it")
                 createQueuePrinter(it)
             }
         }
@@ -2536,7 +2534,6 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
     private fun createQueuePrinter(createOrder: CreateOrderResponse) {
         val listPrinter: List<Int> = listOf()
-        println("printer queue payment  cart list : ${cartList?.items?.size}")
         val orderRequest = cartList?.let {
 
             paymentviewModel.createOrderRequest(
@@ -2560,7 +2557,6 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 true, offlineId = createOrder.data.order.offlineId
             )
         }
-        println("create request printer queue from checkout dine in")
         val createRequest = CreateQueuePrinterRequestModel(
             location_id = prefProvider.getValueInt(Constants.LOCATION_ID, 0),
             order_type = prefProvider.getValue(Constants.ORDER_TYPE, ""),
@@ -2570,7 +2566,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             terminal_id = prefProvider.getValueInt(Constants.TERMINAL_ID, 0)
 
         )
-//        viewModel.createQueuePrinter(createRequest, createOrder)
+        paymentviewModel.createQueuePrinter(createRequest, createOrder)
     }
 
 }
