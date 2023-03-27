@@ -193,7 +193,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     private var masterTerminal = object : BroadcastReceiver(){
         override fun onReceive(p0: Context?, p1: Intent?) {
 
-            Log.e("checkMAsterTeminal","check  prefProvider?.getValueboolean(IS_MASTER_TERMINAL,false)")
+            Log.e("checkMAsterTeminal","check  ${prefProvider?.getValueboolean(IS_MASTER_TERMINAL,false)}")
             if (prefProvider?.getValueboolean(IS_MASTER_TERMINAL,false) == true){
                 getKitOne()
 

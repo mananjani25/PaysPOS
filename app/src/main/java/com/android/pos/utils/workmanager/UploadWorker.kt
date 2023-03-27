@@ -6,11 +6,13 @@ import android.os.Build
 import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.android.pos.R
 import com.android.pos.data.model.PrinterQueueModel
 import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.model.responseModel.GetKitchenReceiptSettingsResponse
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.IS_MASTER_TERMINAL
 import com.android.pos.data.remote.Constants.PRINTER_QUEUE_DATA
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.*
@@ -122,71 +124,106 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                 subscription?.perform("received", params)
             }?.onRejected {
                 LogUtil.logE(TAG, "onActiononRejected")
-                subscription = consumer?.subscriptions?.create(appearanceChannel)
-                val params = JsonObject()
-                params.addProperty("id", locationId)
-                subscription?.perform("received", params)
+                if (mContext.getSharedPreferences(
+                        mContext.resources.getString(R.string.app_name),
+                        Context.MODE_PRIVATE
+                    ).getBoolean(IS_MASTER_TERMINAL, false) == true
+                ) {
+                    subscription = consumer?.subscriptions?.create(appearanceChannel)
+                    val params = JsonObject()
+                    params.addProperty("id", locationId)
+                    subscription?.perform("received", params)
+                }
             }?.onReceived {
                 LogUtil.logE(TAG, "onActiononReceived  " + Gson().toJson(it))
 
 
 
+                Log.e(
+                    TAG, "isMAsterTerminal:  ${
+                        mContext.getSharedPreferences(
+                            mContext.resources.getString(R.string.app_name),
+                            Context.MODE_PRIVATE
+                        ).getBoolean(IS_MASTER_TERMINAL, false)
+                    }"
+                )
 
-                if (it != null) {
+                if (mContext.getSharedPreferences(
+                        mContext.resources.getString(R.string.app_name),
+                        Context.MODE_PRIVATE
+                    ).getBoolean(IS_MASTER_TERMINAL, false) == true
+                ) {
 
-                    if (it.asJsonObject.has("printer_queue")) {
-                        isPrinterRunning = true
-                        globalPrinterQueue = it.asJsonObject.get("printer_queue")
-                        runBlocking {
-                            getQueueDataResponse(it.asJsonObject.get("printer_queue"))
-                        }
+                    if (it != null) {
 
-
-                    } else {
-
-                        runBlocking {
-
-
-                            delay(5000)
-
-                            val params = JsonObject()
-                            params.addProperty("id", locationId)
-                            params.addProperty("url", requestURL)
-                            subscription?.perform("received", params)
-                        }
+                        if (it.asJsonObject.has("printer_queue")) {
+                            isPrinterRunning = true
+                            globalPrinterQueue = it.asJsonObject.get("printer_queue")
+                            runBlocking {
+                                getQueueDataResponse(it.asJsonObject.get("printer_queue"))
+                            }
 
 
-                        /*val intent = Intent()
+                        } else {
+
+                            runBlocking {
+
+
+                                delay(5000)
+
+                                val params = JsonObject()
+                                params.addProperty("id", locationId)
+                                params.addProperty("url", requestURL)
+                                subscription?.perform("received", params)
+                            }
+
+
+                            /*val intent = Intent()
                         intent.putExtra(Constants.DATA, "")
                         intent.action = PRINTER_QUEUE_DATA_RECEIVED
                         mContext.sendBroadcast(intent)*/
 
 
-                    }
+                        }
 
-                } else {
-                    /*  val params = JsonObject()
+                    } else {
+                        /*  val params = JsonObject()
                       params.addProperty("id", locationId)
                       params.addProperty("url", requestURL)
                       subscription?.perform("received", params)*/
 
-                    GlobalScope.launch(Dispatchers.IO) {
-                        delay(10000)
-                        /*val params2 = JsonObject()
+                        GlobalScope.launch(Dispatchers.IO) {
+                            delay(10000)
+                            /*val params2 = JsonObject()
                         params2.addProperty("id", locationId)
                         params2.addProperty(
                             "url", baseUrl + Constants.CREATE_QUEUE_PRINTER
                         )
                         subscription?.perform("received", params2)*/
+                        }
                     }
+                } else {
+                    consumer?.disconnect()
+                    subscription?.onDisconnected(object : Subscription.DisconnectedCallback {
+                        override fun call() {
+                            Log.e(TAG, "Action Cable is Disconnected..")
+                        }
+
+                    })
                 }
 
             }?.onDisconnected {
                 LogUtil.logE(TAG, "onActiononDisconnected")
-                subscription = consumer?.subscriptions?.create(appearanceChannel)
-                val params = JsonObject()
-                params.addProperty("id", locationId)
-                subscription?.perform("received", params)
+                if (mContext.getSharedPreferences(
+                        mContext.resources.getString(R.string.app_name),
+                        Context.MODE_PRIVATE
+                    ).getBoolean(IS_MASTER_TERMINAL, false) == true
+                ) {
+                    subscription = consumer?.subscriptions?.create(appearanceChannel)
+                    val params = JsonObject()
+                    params.addProperty("id", locationId)
+                    subscription?.perform("received", params)
+                }
             }?.onFailed {
                 LogUtil.logE(TAG, "onActiononFailed")
                 //subscription = consumer?.subscriptions?.create(appearanceChannel)
@@ -196,7 +233,13 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                     val params = JsonObject()
                     params.addProperty("id", locationId)
                     subscription?.perform("received", params)*/
-                    consumer?.connect()
+                    if (mContext.getSharedPreferences(
+                            mContext.resources.getString(R.string.app_name),
+                            Context.MODE_PRIVATE
+                        ).getBoolean(IS_MASTER_TERMINAL, false) == true
+                    ) {
+                        consumer?.connect()
+                    }
 
                 } catch (e: java.lang.Exception) {
                     e.printStackTrace()
@@ -515,7 +558,10 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
             } else {
                 runBlocking {
                     delay(5000)
-                    Log.e(TAG,"requestUrl:  ${baseUrl + Constants.CREATE_QUEUE_PRINTER} locationID ${locationId}")
+                    Log.e(
+                        TAG,
+                        "requestUrl:  ${baseUrl + Constants.CREATE_QUEUE_PRINTER} locationID ${locationId}"
+                    )
                     val params = JsonObject()
                     params.addProperty("id", locationId)
                     params.addProperty("url", baseUrl + Constants.CREATE_QUEUE_PRINTER)
