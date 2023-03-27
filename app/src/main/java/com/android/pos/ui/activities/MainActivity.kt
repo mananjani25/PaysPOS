@@ -30,8 +30,8 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import androidx.work.Data
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.PeriodicWorkRequest
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import com.android.pos.R
 import com.android.pos.data.model.PrinterQueueModel
@@ -82,7 +82,6 @@ import java.io.IOException
 import java.net.URI
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 
@@ -717,20 +716,17 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 Status.SUCCESS -> {
                     ProgressUtils.dismissProgressDialog()
                     if (it.data != null) {
-
                         val data = Data.Builder()
                             .putString("kitchenPrinterList", Gson().toJson(kitchenPrinterList))
-                            .put("kitchenSettingData", Gson().toJson(kitchenSettingModel))
+                            // .put("kitchenSettingData", Gson().toJson(kitchenSettingModel))
                             .put("location_id", prefProvider?.getValueInt(LOCATION_ID, 0))
                             .put("base_url", prefProvider?.getValue(Constants.BASE_URL_NEW, ""))
                             .build()
 
                         val uploadWorkRequest =
-                            PeriodicWorkRequest.Builder(
-                                UploadWorker::class.java,
-                                5,
-                                TimeUnit.SECONDS
-                            )
+                            OneTimeWorkRequest.Builder(
+                                UploadWorker::class.java
+                            ).addTag(Constants.PRINTER_QUEUE_BACKGROUND)
                                 .setInputData(data)
                                 .build()
 
@@ -738,10 +734,8 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                         val workManager = WorkManager.getInstance(this)
                         try {
 
-
-                            workManager.enqueueUniquePeriodicWork(
-                                "demo",
-                                ExistingPeriodicWorkPolicy.REPLACE,
+                            workManager.enqueueUniqueWork(
+                                "printer_queue", ExistingWorkPolicy.REPLACE,
                                 uploadWorkRequest
                             )
                         } catch (e: java.lang.Exception) {
@@ -772,7 +766,11 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                     if (it.data != null) {
                         kitchenPrinterList = emptyList()
                         kitchenPrinterList = it.data
-                        if (prefProvider?.getValueboolean(Constants.IS_MASTER_TERMINAL, false) == true) {
+                        if (prefProvider?.getValueboolean(
+                                Constants.IS_MASTER_TERMINAL,
+                                false
+                            ) == true
+                        ) {
                             getKitOne()
                         }
 

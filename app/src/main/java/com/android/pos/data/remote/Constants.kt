@@ -16,6 +16,7 @@ object Constants {
     const val ARG_PARAM1 = "param1"
     const val ARG_PARAM2 = "param2"
     const val ARG_PARAM3 = "param2"
+    const val PRINTER_QUEUE_BACKGROUND = "printer_queue_background"
 
     const val CURRENT_VERSION = 1
 
