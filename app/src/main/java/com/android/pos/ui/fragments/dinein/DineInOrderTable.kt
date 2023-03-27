@@ -8835,13 +8835,13 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                 var orderRequest = OrderAttributeRequestModel()
 
+                orderRequest.orderItemsAttributes = orderItemsAttributes
                 orderRequest.orderTypeId = prefProvider.getValueInt(ORDER_TYPE_ID, 0)
                 orderRequest.totalAmount = getOrderDetailsResponse?.totalAmount ?: 0.0
 
                 orderRequest.offlineId = getOrderDetailsResponse?.offlineId ?: randomOfflineId()
                 orderRequest.id = getOrderDetailsResponse?.id ?: 0
                 orderRequest.openOrderType = "Dine In"
-                println("fire all create request")
 
                 val createQueueRequest = CreateQueuePrinterRequestModel(
                     location_id = prefProvider.getValueInt(LOCATION_ID, 0),
@@ -8886,9 +8886,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                     itemModel.orderItemModifiersAttributes = listModifiers
 
-
+                    itemList.add(itemModel)
                     var orderRequest = OrderAttributeRequestModel()
 
+                    orderRequest.orderItemsAttributes = itemList
                     orderRequest.orderTypeId = prefProvider.getValueInt(ORDER_TYPE_ID, 0)
                     orderRequest.totalAmount = getOrderDetailsResponse?.totalAmount ?: 0.0
 
@@ -8909,7 +8910,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
                     )
-                    viewModel.createQueuePrinter(createQueueRequest)
+//                    viewModel.createQueuePrinter(createQueueRequest)
                 }
 
 

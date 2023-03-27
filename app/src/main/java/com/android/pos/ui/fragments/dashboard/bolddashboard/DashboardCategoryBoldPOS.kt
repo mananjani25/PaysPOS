@@ -3406,7 +3406,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     offlineId = createOrder.data.order.offlineId
                 )
             }
-            println("create queue request")
             val createRequest = CreateQueuePrinterRequestModel(
                 location_id = prefProvider.getValueInt(Constants.LOCATION_ID, 0),
                 order_type = prefProvider.getValue(ORDER_TYPE, ""),
