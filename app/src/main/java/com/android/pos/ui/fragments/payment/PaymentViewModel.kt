@@ -380,6 +380,10 @@ open class PaymentViewModel @Inject constructor(
                             if (order.payments.isNotEmpty()) {
                                 if (order.payments[order.payments.size - 1].amount + order.payments[order.payments.size - 1].tips == totalPayAmounts) {
                                     _data.value = Event(createOrderResponse)
+                                    if (prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)) {
+                                        LogUtil.logE(TAG, "QueueStart")
+                                        _queueStartSaveOrder.value = Event(createOrderResponse)
+                                    }
                                 } else {
                                     cashOutApi(createOrderResponse, "out")
                                 }
@@ -442,6 +446,10 @@ open class PaymentViewModel @Inject constructor(
 
                             resource.data?.let {
                                 _data.value = Event(createOrderResponse)
+                                if (prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)) {
+                                    LogUtil.logE(TAG, "QueueStart")
+                                    _queueStartSaveOrder.value = Event(createOrderResponse)
+                                }
                             }
 
                         } else {
@@ -1920,6 +1928,7 @@ open class PaymentViewModel @Inject constructor(
                                     )
                                 }
 
+                                println("onlySave : $onlySave")
                                 if (onlySave) {
                                     _data.value = Event(createOrderResponse)
                                 } else {
@@ -1927,6 +1936,11 @@ open class PaymentViewModel @Inject constructor(
                                         cashLogApi(createOrderResponse, "in")
                                     } else {
                                         _data.value = Event(createOrderResponse)
+                                        println("is prnter queue enabled : ${prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)}")
+                                        if (prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)) {
+                                            LogUtil.logE(TAG, "QueueStart")
+                                            _queueStartSaveOrder.value = Event(createOrderResponse)
+                                        }
                                     }
                                 }
 

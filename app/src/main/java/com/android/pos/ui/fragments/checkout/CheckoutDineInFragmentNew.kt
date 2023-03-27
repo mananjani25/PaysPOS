@@ -22,6 +22,7 @@ import com.android.pos.data.entities.RedeemLoyaltyInfo
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.CheckOutDineInDataModel
 import com.android.pos.data.model.requestModel.*
+import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.model.responseModel.GuestPaymentAttributes
 import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants
@@ -237,6 +238,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         observeData()
         callback()
         setUpManualCardFocusChanged()
+        observeQueueCreate()
     }
 
     private fun setUpManualCardFocusChanged() {
@@ -2520,6 +2522,55 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             }
         }
 
+    }
+
+    private fun observeQueueCreate() {
+        paymentviewModel.queueStartSaveOrder.observe(requireActivity()) { event ->
+            println("star save order called>>>")
+            event.getContentIfNotHandled()?.let {
+                println("star save order called  $it")
+                createQueuePrinter(it)
+            }
+        }
+    }
+
+    private fun createQueuePrinter(createOrder: CreateOrderResponse) {
+        val listPrinter: List<Int> = listOf()
+        println("printer queue payment  cart list : ${cartList?.items?.size}")
+        val orderRequest = cartList?.let {
+
+            paymentviewModel.createOrderRequest(
+                it,
+                subTotalPrice,
+                (totalPrice + tipAmount),
+                totalServiceCharge,
+                totalTax,
+                prefProvider.getValue(Constants.ORDER_TYPE, "").toString(),
+                future_delivery_date,
+                future_delivery_time,
+                true,
+                totalDiscount,
+                tipAmount,
+                splitValue,
+                redeemLoyaltyInfo,
+                cashDiscountSurcharge,
+                true,
+                paymentType, cashDiscountType,
+                tipID,
+                true, offlineId = createOrder.data.order.offlineId
+            )
+        }
+        println("create request printer queue from checkout dine in")
+        val createRequest = CreateQueuePrinterRequestModel(
+            location_id = prefProvider.getValueInt(Constants.LOCATION_ID, 0),
+            order_type = prefProvider.getValue(Constants.ORDER_TYPE, ""),
+            printer_id = listPrinter,
+            order_item_attributes = orderRequest?.order?.orderItemsAttributes ?: listOf(),
+            order_data = orderRequest?.order ?: OrderAttributeRequestModel(),
+            terminal_id = prefProvider.getValueInt(Constants.TERMINAL_ID, 0)
+
+        )
+//        viewModel.createQueuePrinter(createRequest, createOrder)
     }
 
 }
