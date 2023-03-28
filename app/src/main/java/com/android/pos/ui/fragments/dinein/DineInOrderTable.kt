@@ -8921,7 +8921,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         Log.d("###17MAR23", "checkForAutoFire: Called - Start - $isCheckAndFire")
         var list = dineInTableAdapter.getList()
         val builder = ArrayList<String>()
+        val firedBuilder = ArrayList<String>()
         var listItem: ArrayList<TbItem> = arrayListOf()
+        var firedItemsList: ArrayList<TbItem> = arrayListOf()
         LogUtil.logE(TAG, "dineInList:  ${Gson().toJson(list)}")
         list.forEach {
             if (it.isHeader == 1) {
@@ -8933,6 +8935,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 it.item?.orderItemId?.let {
                     builder.add(it.toString())
 
+                }
+                it.item?.let {
+                    if (it.isFired) {
+                        firedItemsList.add(it)
+                        firedBuilder.add(it.orderItemId.toString())
+                    }
                 }
                 //  it.item?.isFired = true
 
@@ -9063,7 +9071,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     }
                 }
             }
-            if (!isCheckAndFire or (isCheckAndFire && autoPrintEnable)) {
+
+            println("isCheckAndFire >> $isCheckAndFire ====== ")
+            if (isCheckAndFire && autoPrintEnable) {
                 var fireAllIds = android.text.TextUtils.join(",", builder)
 
                 viewModel.fireItemToKitchen(orderId ?: 0, true, fireAllIds, true)
@@ -9073,6 +9083,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     }
                 }
                 dineInTableAdapter.updateStatus(0, true)
+            } else {
+                var fireIds = android.text.TextUtils.join(",", firedBuilder)
+                println("fire ids >> $fireIds  ")
+                viewModel.fireItemToKitchen(orderId ?: 0, true, fireIds, true)
+
             }
         }
 
