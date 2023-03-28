@@ -1925,7 +1925,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         for (i in 0 until kitchenPrinterList.size) {
             if (kitchenPrinterList[i].status) {
 
-               // initKitchenPrinter(kitchenPrinterList.get(i), Constants.KITCHEN, listItem)
+                // initKitchenPrinter(kitchenPrinterList.get(i), Constants.KITCHEN, listItem)
             }
         }
 
@@ -9052,7 +9052,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                         ) {
                                             LogUtil.logE(TAG, "printerName  ${kit.name} ")
                                             autoPrintEnable = true
-                                           // initKitchenPrinter(kit, Constants.KITCHEN, listItem)
+                                            // initKitchenPrinter(kit, Constants.KITCHEN, listItem)
                                         }
                                     }
                                 }
@@ -9068,6 +9068,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             println("isCheckAndFire >> $isCheckAndFire ====== ")
             if (isCheckAndFire && autoPrintEnable) {
+
                 var fireAllIds = android.text.TextUtils.join(",", builder)
 
                 viewModel.fireItemToKitchen(orderId ?: 0, true, fireAllIds, true)
@@ -9077,11 +9078,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     }
                 }
                 dineInTableAdapter.updateStatus(0, true)
-            } else {
+            } else if (autoPrintEnable && !isCheckAndFire && firedBuilder.isNotEmpty()) {
                 var fireIds = android.text.TextUtils.join(",", firedBuilder)
                 println("fire ids >> $fireIds  ")
                 viewModel.fireItemToKitchen(orderId ?: 0, true, fireIds, true)
-
             }
         }
 
