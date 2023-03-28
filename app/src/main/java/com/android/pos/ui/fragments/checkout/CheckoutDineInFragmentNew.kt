@@ -2189,7 +2189,8 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             true,
             0
         )
-
+        val currencyCode = byteArrayOf(0x08, 0x40)
+        transaction.setCurrencyCode(currencyCode)
         mSessionManager.startTransaction(transaction, getSignature = false, fallback = false)
 
 
@@ -2211,7 +2212,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
     }
 
     private fun navigateOnPaymentSuccess() {
-        dineinOrderVieweModel.onPayment.observe(viewLifecycleOwner, { event ->
+        dineinOrderVieweModel.onPayment.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { str ->
                 LogUtil.logE(TAG, "getstr:   $str")
                 /*AlertUtils.showCustomAlertWithListenerWithOK(requireContext(), str) { _, _ ->*/
@@ -2223,7 +2224,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 /*}*/
 
             }
-        })
+        }
     }
 
     private fun gotoPay() {
