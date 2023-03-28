@@ -17,6 +17,7 @@ object LogUtil {
 
     fun logE(key: String, message: String) {
         Log.e(key, message)
+        println("$key :: $message")
     }
     fun logEN(key: String, message: String) {
         Log.e(key, message)
