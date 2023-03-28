@@ -51,7 +51,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
     @set:Inject
     internal var prefProvider: PrefProvider? = null
     val printer = Printer(Printer.TM_U220, Printer.MODEL_ANK, context)
-
+    var printerBreak: Boolean = false
 
     private var subscription: Subscription? = null
     private var consumer: Consumer? = null
@@ -729,9 +729,13 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                         printerAdd,
                         Printer.PARAM_DEFAULT
                     )
+                    printerBreak = false
                 }
 
             } catch (e: Exception) {
+
+                printerBreak = true
+
                 /* try {
                      // printer?.disconnect()
                      delay(1000)
@@ -751,14 +755,34 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
             }
 
-            try {
-                if (printer.status.connection == 0) {
-                    printer.interval = 1000
-                    printer.startMonitor()
+            if (printerBreak) {
+
+                try {
+
+                    printer.disconnect()
+                    delay(2000)
+                    val params = JsonObject()
+                    params.addProperty("id", locationId)
+                    params.addProperty("url", baseUrl + Constants.CREATE_QUEUE_PRINTER)
+                    subscription?.perform("received", params)
+                } catch (e: java.lang.Exception) {
+                    delay(2000)
+                    val params = JsonObject()
+                    params.addProperty("id", locationId)
+                    params.addProperty("url", baseUrl + Constants.CREATE_QUEUE_PRINTER)
+                    subscription?.perform("received", params)
+                    e.printStackTrace()
                 }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+
+            } else {
+                try {
+                    if (printer.status.connection == 0) {
+                        printer.interval = 1000
+                        printer.startMonitor()
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
 
 
 
@@ -772,29 +796,12 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
 
 
-            printer.addFeedUnit(30)
-            printer.addFeedLine(2)
 
-            printer.addTextFont(Builder.FONT_E)
-            printer.addTextAlign(Builder.ALIGN_CENTER)
-            printer.addTextLang(Builder.LANG_EN)
-            printer.addTextSize(2, 2)
-            printer.addTextStyle(
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.TRUE,
-                Builder.COLOR_1
-            )
+                printer.addFeedUnit(30)
+                printer.addFeedLine(2)
 
-            printer.addText("OrderID:" + obj.orderID)
-            printer.addFeedLine(1)
-            printer.addFeedUnit(30)
-            printer.addFeedLine(1)
-
-
-            for (m in 0 until obj.orderItems.size) {
                 printer.addTextFont(Builder.FONT_E)
-                printer.addTextAlign(Builder.ALIGN_LEFT)
+                printer.addTextAlign(Builder.ALIGN_CENTER)
                 printer.addTextLang(Builder.LANG_EN)
                 printer.addTextSize(2, 2)
                 printer.addTextStyle(
@@ -804,20 +811,39 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                     Builder.COLOR_1
                 )
 
-
-                printer.addText(obj.orderItems[m].itemName)
+                printer.addText("OrderID:" + obj.orderID)
                 printer.addFeedLine(1)
                 printer.addFeedUnit(30)
+                printer.addFeedLine(1)
+
+
+                for (m in 0 until obj.orderItems.size) {
+                    printer.addTextFont(Builder.FONT_E)
+                    printer.addTextAlign(Builder.ALIGN_LEFT)
+                    printer.addTextLang(Builder.LANG_EN)
+                    printer.addTextSize(2, 2)
+                    printer.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.TRUE,
+                        Builder.COLOR_1
+                    )
+
+
+                    printer.addText(obj.orderItems[m].itemName)
+                    printer.addFeedLine(1)
+                    printer.addFeedUnit(30)
+                }
+                printer.addFeedLine(1)
+
+                printer.addCut(Builder.CUT_FEED)
+
+
+                // printer.beginTransaction()
+
+
+                printer.sendData(Printer.PARAM_DEFAULT)
             }
-            printer.addFeedLine(1)
-
-            printer.addCut(Builder.CUT_FEED)
-
-
-            printer.beginTransaction()
-
-
-            printer.sendData(Printer.PARAM_DEFAULT)
 
 
         } catch (e: java.lang.Exception) {
@@ -1946,7 +1972,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
         if (p1 >= 0) {
             p0?.clearCommandBuffer()
-            p0?.endTransaction()
+            //p0?.endTransaction()
             val params = JsonObject()
             var deleteUrl = baseUrl + Constants.CREATE_QUEUE_PRINTER + "/" + printerQueueModel.id
             LogUtil.logE(TAG, "DeleteUrl ${deleteUrl}")
