@@ -99,6 +99,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     private lateinit var presentation: CustomDisplay
     private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
     private val passcodeViewModel by activityViewModels<PasscodeViewModel>()
+    private var fireItemsList: ArrayList<TbItem> = arrayListOf()
 
     private var passSCTotal: Double = 0.0
     private var passDiscountTotal: Double = 0.0
@@ -381,6 +382,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         binding.txtFireAll.setOnClickListener {
 
             checkForAutoFire(false)
+
+
             /*val list = dineInTableAdapter.getList()
             val idsStr = java.lang.StringBuilder()
             list.forEach {
@@ -1906,7 +1909,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     }
 
     override fun onWholeTableToKitchen(ids: String, list: ArrayList<TbItem>) {
-        LogUtil.logE(TAG, "WholeTableITem")
+        LogUtil.logE(TAG, "WholeTableITem ${list.size}")
+        fireItemsList = arrayListOf()
+        fireItemsList.addAll(list)
         viewModel.fireItemToKitchen(orderId ?: 0, true, ids, true)
         for (i in 0 until kitchenPrinterList.size) {
             if (kitchenPrinterList[i].status) {
@@ -8772,47 +8777,47 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             if (prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)) {
 
                 var orderItemsAttributes: ArrayList<OrderItemsAttribute> = arrayListOf()
-                getOrderDetailsResponse?.orderItems?.forEach {
+                fireItemsList?.forEach {
                     val orderItem = OrderItemsAttribute()
                     orderItem.category_id = it.categoryId
-                    orderItem.discountAmount = it.discountAmount
+                    // orderItem.discountAmount = it.discountAmount
                     orderItem.discountId = it.discountId
                     orderItem.discountType = it.discountType.toString()
-                    orderItem.employeeId = it.employeeId
+                    // orderItem.employeeId = it.employeeId
                     orderItem.id = it.id
                     orderItem.isPaid = it.isPaid
                     orderItem.itemId = it.itemId
-                    orderItem.itemName = it.itemName
+                    orderItem.itemName = it.name
                     orderItem.note = it.note
-                    orderItem.orderId = it.orderId
+                    orderItem.orderId = it.orderItemId
                     orderItem.note = it.note
                     var taxList: ArrayList<OrderItemTaxesAttribute> = arrayListOf()
-                    it.orderItemTaxes.forEach { tax ->
-                        var taxModel = OrderItemTaxesAttribute()
-                        taxModel.taxType = tax.taxType
-                        taxModel.orderId = tax.orderId
-                        taxModel.name = tax.name
-                        taxModel.taxTotalAmount = tax.amount ?: 0.0
-                        taxModel.id = tax.id
-                        taxModel.isDefault = tax.isDefault
-                        taxModel.orderItemId = tax.orderItemId
-                        taxModel.rate = tax.rate
-                        taxModel.taxId = tax.taxId
+                    /* it.taxes.forEach { tax ->
+                         var taxModel = OrderItemTaxesAttribute()
+                         taxModel.taxType = tax.taxType.toString()
+                         taxModel.orderId = tax.orderTaxId
+                         taxModel.name = tax?.name ?:""
+                         taxModel.taxTotalAmount = tax.totalTaxTypePrice ?: 0.0
+                         taxModel.id = tax.id
+                         taxModel.isDefault = tax.isDefault
+                         taxModel.orderItemId = tax.order
+                         taxModel.rate = tax.rate
+                         taxModel.taxId = tax.taxId
 
-                        taxList.add(taxModel)
+                         taxList.add(taxModel)
 
-                    }
+                     }*/
                     orderItem.orderItemTaxesAttributes = taxList
 
                     var listModifiers: ArrayList<OrderItemModifierAttribute> = arrayListOf()
-                    it.orderItemModifiers.forEach {
+                    it.modifiers.forEach {
                         var modifierModel = OrderItemModifierAttribute()
                         modifierModel.id = it.id
-                        modifierModel.order_item_id = it.orderItemId
-                        modifierModel.orderId = it.orderId
+                        modifierModel.order_item_id = it.orderModifierId
+                        //modifierModel.orderId = it.order
                         modifierModel.name = it.name
-                        modifierModel.quantity = it.quantity
-                        modifierModel.modifier_set_id = it.modifierId?.toInt() ?: 0
+                        modifierModel.quantity = it.itemQuantity
+                        //modifierModel.modifier_set_id = it.modifierId?.toInt() ?: 0
                         modifierModel.price = it.price
                         modifierModel.modifier_quantity = it.modifier_quantity!!
 
@@ -8848,6 +8853,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                 )
                 viewModel.createQueuePrinter(createQueueRequest)
+                fireItemsList.clear()
+                fireItemsList = arrayListOf()
             }
 
         }
@@ -8919,10 +8926,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         var listItem: ArrayList<TbItem> = arrayListOf()
         var firedItemsList: ArrayList<TbItem> = arrayListOf()
         LogUtil.logE(TAG, "dineInList:  ${Gson().toJson(list)}")
+        fireItemsList = arrayListOf()
         list.forEach {
             if (it.isHeader == 1) {
                 it.item?.let {
                     if (!it.isFired) {
+                        fireItemsList.add(it)
                         listItem.add(it)
                     }
                 }
@@ -9078,7 +9087,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     }
                 }
                 dineInTableAdapter.updateStatus(0, true)
-            } else if (autoPrintEnable && !isCheckAndFire && firedBuilder.isNotEmpty()) {
+            } else if (!isCheckAndFire && firedBuilder.isNotEmpty()) {
                 var fireIds = android.text.TextUtils.join(",", firedBuilder)
                 println("fire ids >> $fireIds  ")
                 viewModel.fireItemToKitchen(orderId ?: 0, true, fireIds, true)
