@@ -13,14 +13,15 @@ android {
     buildToolsVersion "30.0.3"
 
     defaultConfig {
-        applicationId "com.internetsoft.pos"
+        applicationId "com.internetsoft.pos_1"
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 30
-        versionName "3.9"
+        versionCode 35
+        versionName "3.14"
 
 
-        sourceSets { main { jniLibs.srcDirs = ['src/main/jniLibs/'] } }
+        sourceSets { main { jniLibs.srcDirs = ['src/m' +
+                                                       'ain/jniLibs/'] } }
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         ndk {

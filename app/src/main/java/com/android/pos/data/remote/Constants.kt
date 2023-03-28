@@ -16,8 +16,11 @@ object Constants {
     const val ARG_PARAM1 = "param1"
     const val ARG_PARAM2 = "param2"
     const val ARG_PARAM3 = "param2"
+    const val PRINTER_QUEUE_BACKGROUND = "printer_queue_background"
 
     const val CURRENT_VERSION = 1
+
+    const val IS_MASTER_TERMINAL = "is_master_terminal"
 
     const val MAX_ITEM_QUANTITY = 1000
     const val MAX_ITEM_QUANTITY_FOR_MANUAL_SALES = 15
@@ -622,6 +625,7 @@ object Constants {
     const val SYNC_SETTING_NOTIFICATION = "sync_setting_notification"
     const val SYNC_MARKUP = "MarkupSync"
     const val IS_SYNC_MARKUP = "is_markup_sync"
+    const val MASTER_TEMINAL_CHANGED = "master_teminal_changed"
 
 
     // dinein

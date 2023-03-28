@@ -2,6 +2,7 @@ package com.android.pos.ui.fragments.dashboard
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.StrictMode
@@ -158,7 +159,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         isGuestPay = value
     }
 
-    fun getIsGuestPay():Boolean{
+    fun getIsGuestPay(): Boolean {
         return isGuestPay
     }
 
@@ -594,10 +595,10 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     } else {
                                         Log.e("AddedInElse", "GotMod")
 
-                                        if(list[i].itemId == item.itemId && list[i].itemQuantity == 1000){
+                                        if (list[i].itemId == item.itemId && list[i].itemQuantity == 1000) {
                                             isDineInItem1000 = true
                                             break
-                                        }else{
+                                        } else {
                                             if (list[i].itemId == item.itemId && checkVariation(
                                                     list[i],
                                                     item
@@ -658,7 +659,10 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                         } else if (mod.id == modifier.id && mod.modifier_quantity != modifier.modifier_quantity) {
                                                             item.id += 1
                                                             isBreak = false
-                                                            Log.e(TAG, "newCartLogicModifier: isBreak")
+                                                            Log.e(
+                                                                TAG,
+                                                                "newCartLogicModifier: isBreak"
+                                                            )
 
                                                             return@forEach
                                                         }
@@ -700,7 +704,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 }
                             }
 
-                            if(!isDineInItem1000){
+                            if (!isDineInItem1000) {
                                 list.forEach {
                                     if (it.id == item?.id && it.itemId == item.itemId) {
                                         item.id += 1
@@ -711,7 +715,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     list.forEach { it1 ->
                                         var listd = list.filter { it.itemId == it1.itemId }
                                         if (listd.size > 1) {
-                                            it1.customItemID = kotlin.random.Random.nextInt(10, 10000)
+                                            it1.customItemID =
+                                                kotlin.random.Random.nextInt(10, 10000)
 
                                         }
 
@@ -731,7 +736,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                 model.itemQuantity =
                                                     model.itemQuantity + item.itemQuantity
                                                 model.price = item.price
-                                                model.variationsAttributes = item.variationsAttributes
+                                                model.variationsAttributes =
+                                                    item.variationsAttributes
                                                 item.modifiers.forEach {
                                                     model.modifiers.forEach { tbmodfier ->
                                                         if (it.id == tbmodfier.id) {
@@ -1102,10 +1108,10 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 } else {
 
                                     Log.e("AddedInElse", "Item Qty = ${list[i].itemQuantity}")
-                                    if(list[i].itemId == item.itemId && list[i].itemQuantity == 1000){
+                                    if (list[i].itemId == item.itemId && list[i].itemQuantity == 1000) {
                                         isItem1000 = true
                                         break
-                                    }else{
+                                    } else {
                                         if (list[i].itemId == item.itemId && checkVariation(
                                                 list[i],
                                                 item
@@ -1114,7 +1120,11 @@ class DashBoardCategoryViewModel @Inject constructor(
                                             Log.d(TAG, "cartLogic: " + i)
 
                                             var listTmp =
-                                                combineItem(list.toCollection(arrayListOf()), item, i)
+                                                combineItem(
+                                                    list.toCollection(arrayListOf()),
+                                                    item,
+                                                    i
+                                                )
                                             list.clear()
                                             Log.d(
                                                 TAG,
@@ -1141,7 +1151,10 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                         if (list[i].variationsAttributes.isNotEmpty() && list[i].variationsAttributes[0].id == item.variationsAttributes[0].id) {
                                                             item.id += 1
                                                             isBreak = true
-                                                            Log.d(TAG, "newCartLogicModifier: isBreak")
+                                                            Log.d(
+                                                                TAG,
+                                                                "newCartLogicModifier: isBreak"
+                                                            )
 
                                                             return@forEach
                                                         } /*else if (list[i].variationsAttributes.isEmpty() == true) {
@@ -1194,14 +1207,12 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     }
 
 
-
-
                                 }
 
                             }
                         }
 
-                        if(!isItem1000){
+                        if (!isItem1000) {
                             list.forEach {
                                 if (it.id == item?.id && it.itemId == item.itemId) {
                                     item.id += 1
@@ -1217,7 +1228,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     if (index != -1) {
                                         if (item != null) {
                                             model.name = item.name
-                                            model.itemQuantity = model.itemQuantity + item.itemQuantity
+                                            model.itemQuantity =
+                                                model.itemQuantity + item.itemQuantity
                                             model.price = item.price
                                             model.variationsAttributes = item.variationsAttributes
                                             item.modifiers.forEach {
@@ -2995,7 +3007,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     //loyalty point and price calculation
                     amountToBePaid = finalTotal
 
-                    Log.e("checkAmountTobe","amountToBePaid:  ${amountToBePaid}")
+                    Log.e("checkAmountTobe", "amountToBePaid:  ${amountToBePaid}")
                     if (selectedCustomer == null) {
                         totalPrice = amountToBePaid
                         MethodUtils.setPriceTextView(
@@ -3570,12 +3582,12 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     fun getOnlineOrderCount() {
-      //  _showProgress.value = Event(true)
+        //  _showProgress.value = Event(true)
         viewModelScope.launch {
             val resource = posRepository.getOnlineOrderNotificationCount()
             when (resource.status) {
                 Status.SUCCESS -> {
-                  //  _showProgress.value = Event(false)
+                    //  _showProgress.value = Event(false)
                     resource.data?.let { it ->
                         _onlineOrderCount.value = Event(it.data)
                     }
@@ -3586,7 +3598,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 }
 
                 Status.LOADING -> {
-                  //  _showProgress.value = Event(true)
+                    //  _showProgress.value = Event(true)
                 }
 
             }
@@ -4463,10 +4475,9 @@ class DashBoardCategoryViewModel @Inject constructor(
         Log.e(TAG, "totalDiscountDineIn  ${totalDiscount}")
         val orderModel: OrderAttributeRequestModel = OrderAttributeRequestModel()
         var ttotalDiscount = totalDiscount
-        if (BuildConfig.DEBUG == false){
-            ttotalDiscount = cartModel.discountPrice  + totalDiscount
-        }
-        else{
+        if (BuildConfig.DEBUG == false) {
+            ttotalDiscount = cartModel.discountPrice + totalDiscount
+        } else {
             ttotalDiscount = totalDiscount
         }
 
@@ -4942,6 +4953,17 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                                 }
 
+                                if (it.settingData.data.isMasterTeminal) {
+                                    prefProvider.setValueboolean(Constants.IS_MASTER_TERMINAL, true)
+                                }
+                                else{
+                                    prefProvider.setValueboolean(Constants.IS_MASTER_TERMINAL, false)
+                                }
+
+                                val intent = Intent()
+                                intent.action = Constants.MASTER_TEMINAL_CHANGED
+                                MainApplication.getInstance()?.baseContext?.sendBroadcast(intent)
+
 
                                 try {
 
@@ -5331,7 +5353,11 @@ class DashBoardCategoryViewModel @Inject constructor(
             model.serviceCharge = serviceChargesList
             // model.orderTypeId = 1
             ordertypelist.forEach {
-                if (it.name.lowercase() == prefProvider.getOrderTypeName(ORDER_TYPE_NAME, DEFAULT_ORDER).lowercase()) {
+                if (it.name.lowercase() == prefProvider.getOrderTypeName(
+                        ORDER_TYPE_NAME,
+                        DEFAULT_ORDER
+                    ).lowercase()
+                ) {
                     model.orderTypeId = it.id
                 }
             }
@@ -5381,7 +5407,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 //loyalty point and price calculation
                 amountToBePaid = finalTotal
 
-                Log.e("checkDineInFinalAmt","finalTotal:  ${finalTotal}")
+                Log.e("checkDineInFinalAmt", "finalTotal:  ${finalTotal}")
                 totalPrice = MethodUtils.roundOffAmountDouble(finalTotal)
 
                 if (MethodUtils.isEnableCashDiscount(context)) {
@@ -5391,13 +5417,13 @@ class DashBoardCategoryViewModel @Inject constructor(
                         context
                     )
 
-                 //   cashdiscountAmount = model.cashDiscount
+                    //   cashdiscountAmount = model.cashDiscount
 
                 } else {
                     cashdiscountAmount = 0.0
                 }
 
-                Log.e("checkDineInFinalAmt","checkCashDiscountAmt:  ${cashdiscountAmount}")
+                Log.e("checkDineInFinalAmt", "checkCashDiscountAmt:  ${cashdiscountAmount}")
                 val nf: NumberFormat = NumberFormat.getNumberInstance()
                 nf.maximumFractionDigits = 2
                 val rounded: String = nf.format(cashdiscountAmount)

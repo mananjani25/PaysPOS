@@ -69,15 +69,11 @@ import com.android.pos.ui.adapter.DineInTableAdapter
 import com.android.pos.ui.fragments.checkout.CheckoutDineInPaymentViewModel
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
-import com.android.pos.ui.fragments.dashboard.bolddashboard.DashboardCategoryBoldPOS
 import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
 import com.android.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.android.pos.utils.*
-import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.liveSnackBar
-import com.android.pos.utils.extensions.runOnUiThread
-import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.printer.PrinterClass
 import com.android.pos.utils.statusUtils.Status
 import com.epson.epos2.printer.Printer
@@ -90,8 +86,6 @@ import com.sunmi.externalprinterlibrary.api.ConnectCallback
 import com.sunmi.externalprinterlibrary.api.SunmiPrinter
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
@@ -1916,7 +1910,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         viewModel.fireItemToKitchen(orderId ?: 0, true, ids, true)
         for (i in 0 until kitchenPrinterList.size) {
             if (kitchenPrinterList[i].status) {
-                initKitchenPrinter(kitchenPrinterList.get(i), Constants.KITCHEN, list)
+                //initKitchenPrinter(kitchenPrinterList.get(i), Constants.KITCHEN, list)
             }
         }
     }
@@ -1931,7 +1925,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         for (i in 0 until kitchenPrinterList.size) {
             if (kitchenPrinterList[i].status) {
 
-                initKitchenPrinter(kitchenPrinterList.get(i), Constants.KITCHEN, listItem)
+               // initKitchenPrinter(kitchenPrinterList.get(i), Constants.KITCHEN, listItem)
             }
         }
 
@@ -9058,7 +9052,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                         ) {
                                             LogUtil.logE(TAG, "printerName  ${kit.name} ")
                                             autoPrintEnable = true
-                                            initKitchenPrinter(kit, Constants.KITCHEN, listItem)
+                                           // initKitchenPrinter(kit, Constants.KITCHEN, listItem)
                                         }
                                     }
                                 }
@@ -9066,7 +9060,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                         }
                     } else {
-                        initKitchenPrinter(kit, Constants.KITCHEN, listItem)
+                        //initKitchenPrinter(kit, Constants.KITCHEN, listItem)
 
                     }
                 }
