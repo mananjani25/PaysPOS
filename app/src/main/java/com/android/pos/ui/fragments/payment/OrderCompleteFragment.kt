@@ -895,7 +895,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 if (isDineIn) {
                     LogUtil.logE(TAG, "receiptModel:  ${Gson().toJson(receiptModel)}")
-                    customerPrintWholeOrder()
+                    customerPrintWholeOrder(false)
 
                 } else {
                     getCustomerPrinters(false)
@@ -972,7 +972,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         }
     }
 
-    private fun customerPrintWholeOrder() {
+    private fun customerPrintWholeOrder(shouldCheckForAutoPrinting: Boolean) {
 
         var guestPos = requireArguments().getInt(GUEST_POSITION)
         LogUtil.logE(TAG, "getGuestPosition  ${guestPos}")
@@ -995,17 +995,40 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
 
         }
-        customerPrinterDineIn?.forEach {
-            if (it.status) {
-                initDineInPrinter(
-                    it,
-                    Constants.CUSTOMER,
-                    paymentType,
-                    true,
-                    listGuestItem = listItem,
-                    dineInList.get(guestPos).title.toString(),
-                    listItemWT
-                )
+        customerPrinterDineIn?.forEach { cpd ->
+            if (cpd.status) {
+
+                if (shouldCheckForAutoPrinting) {
+                    cpd.orderTypes.forEach {
+                        if (it.orderTypeId == receiptModel?.order?.orderTypeId) {
+                            it.printerSettings.forEach {
+                                if (it.printType.lowercase() == CUSTOMER.lowercase() && it.autoPrinting
+                                ) {
+                                    initDineInPrinter(
+                                        cpd,
+                                        Constants.CUSTOMER,
+                                        paymentType,
+                                        true,
+                                        listGuestItem = listItem,
+                                        dineInList.get(guestPos).title.toString(),
+                                        listItemWT
+                                    )
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    initDineInPrinter(
+                        cpd,
+                        Constants.CUSTOMER,
+                        paymentType,
+                        true,
+                        listGuestItem = listItem,
+                        dineInList.get(guestPos).title.toString(),
+                        listItemWT
+                    )
+                }
+
             }
 
         }
@@ -5250,11 +5273,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                             var customerName = dineInList[i]?.customer?.first_name + " "
 
-                            if(dineInList[i]?.customer?.last_name != null) {
-                                 customerName += dineInList[i].customer?.last_name
-                             }
+                            if (dineInList[i]?.customer?.last_name != null) {
+                                customerName += dineInList[i].customer?.last_name
+                            }
                             PrintSunmiUtils.normalTextCenter(customerName)
-
 
 
                         }
@@ -5770,24 +5792,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         kitchenPrinterList = it.data
                         val remain = requireArguments().getDouble("remainingAmount")
                         if (requireArguments().getBoolean("isDineIn")) {
-                            //Kept a condition here to check if auto-printing is on/off in each printer settings
-                            if (kitchenPrinterList.isNotEmpty()) {
-                                for (i in kitchenPrinterList.indices) {
-                                    if (kitchenPrinterList[i].status) {
-                                        kitchenPrinterList[i].orderTypes.forEach {
-                                            if (it.orderTypeId == receiptModel?.order?.orderTypeId) {
-                                                it.printerSettings.forEach {
-                                                    if (it.printType.lowercase() == CUSTOMER.lowercase() && it.autoPrinting
-                                                    ) {
-                                                        customerPrintWholeOrder()
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-
+                            customerPrintWholeOrder(true)
                         } else {
                             getCustomerPrinters(true)
                         }
@@ -7765,7 +7770,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     )
                     if (printerStatusInfo.connection == 1) {
                         try {
-                           printer.disconnect()
+                            printer.disconnect()
 
                         } catch (e: java.lang.Exception) {
                             e.printStackTrace()
@@ -7783,10 +7788,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             printerAdd,
                             Printer.PARAM_DEFAULT
                         )
-                       // mPrinter.disconnect()
+                        // mPrinter.disconnect()
                     }
 
-                  //  mPrinter.startMonitor()
+                    //  mPrinter.startMonitor()
 
                     generateReceiptForU220(mPrinter, data, type)
 
@@ -9110,7 +9115,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             SunmiPrinterApi.getInstance().lineWrap(1)
             if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName != false) {
                 if (receiptModel?.order?.customer != null) {
-                
+
                     PrintSunmiUtils.customerDetails()
 
                     if (kitchenSettingModel.showCustomerName) {
