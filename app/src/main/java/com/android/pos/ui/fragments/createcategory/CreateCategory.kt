@@ -202,7 +202,7 @@ class CreateCategory : Fragment() {
                 when (resource.status) {
                     Status.SUCCESS -> {
                         binding.recyclerViewItemsList.visibility = View.VISIBLE
-                        it.data?.let { it1 -> adapter.add(it1, categoryData?.name!!) }
+                        it.data?.let { it1 -> adapter.add(it1) }
 
                         if (isEdit) {
                             categoryData?.item_ids?.let { it1 -> adapter.selectedItemFromEdit(it1) }
@@ -225,6 +225,9 @@ class CreateCategory : Fragment() {
 
     private fun setAdapter() {
         binding.recyclerViewItemsList.adapter = adapter
+        if(categoryData != null){
+            adapter.categoryName(categoryData?.name!!)
+        }
     }
 
     private fun viewProfile(profileImage: String?) {

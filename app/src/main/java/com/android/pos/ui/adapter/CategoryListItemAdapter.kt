@@ -71,9 +71,12 @@ class CategoryListItemAdapter :
         return inventory.size
     }
 
-    fun add(inventory: List<TbItem?>, category: String) {
+    fun add(inventory: List<TbItem?>) {
         this.inventory = inventory as ArrayList<TbItem>
-        this.categoryName = category
+    }
+
+    fun categoryName(categoryName: String){
+        this.categoryName = categoryName
     }
 
     fun selectedItemFromEdit(itemIds: List<Int>) {
