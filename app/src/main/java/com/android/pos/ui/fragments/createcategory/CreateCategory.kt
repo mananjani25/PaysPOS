@@ -46,6 +46,7 @@ class CreateCategory : Fragment() {
     private var listCategory: ArrayList<CategoryListItemModel> = arrayListOf()
     var isEdit: Boolean = false
     private var categoryData: TbCategory? = null
+    private var defaultCategoryData: TbCategory? = null
     private var adapter = CategoryListItemAdapter()
 
     override fun onCreateView(
@@ -64,6 +65,7 @@ class CreateCategory : Fragment() {
 
         if (isEdit) {
             categoryData = arguments?.getParcelable("categoryObject")!!
+            defaultCategoryData = arguments?.getParcelable("DefaultCategoryObject")
             binding.header.txtSave.text = getString(R.string.update)
             binding.header.txtTitle.text = getString(R.string.update_category)
 
@@ -105,11 +107,12 @@ class CreateCategory : Fragment() {
 
                 viewModel.submit(
                     adapter.getIds(), newImagePathToUpload,
-                    categoryData?.name.toString(),
-                    adapter.getTbItemsList()
+                    adapter.getTbItemsList(),
+                    defaultCategoryData
                 )
             } else {
-                viewModel.submit(adapter.getIds(), newImagePathToUpload, "",  adapter.getTbItemsList())
+                viewModel.submit(adapter.getIds(), newImagePathToUpload,  adapter.getTbItemsList(),
+                defaultCategoryData)
             }
         }
         binding.header.imgBack.setOnClickListener {
@@ -199,7 +202,7 @@ class CreateCategory : Fragment() {
                 when (resource.status) {
                     Status.SUCCESS -> {
                         binding.recyclerViewItemsList.visibility = View.VISIBLE
-                        it.data?.let { it1 -> adapter.add(it1) }
+                        it.data?.let { it1 -> adapter.add(it1, categoryData?.name!!) }
 
                         if (isEdit) {
                             categoryData?.item_ids?.let { it1 -> adapter.selectedItemFromEdit(it1) }
