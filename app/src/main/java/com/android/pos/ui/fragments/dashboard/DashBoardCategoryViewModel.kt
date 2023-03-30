@@ -4745,7 +4745,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                             val mData = response.data
                             val mCategory = mData.categories
                             val categoryModelList = ArrayList<TbCategory>()
-                            var inventoryModelList = ArrayList<TbItem>()
+                            val inventoryModelList = ArrayList<TbItem>()
 
                             val modifierSetList = ArrayList<ModifierSet>()
                             val itemModifierSetList = ArrayList<ItemModifierSets>()
@@ -4766,10 +4766,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 }
                                 categoryModelList.add(model)
 
-
-
-
                                 category.items.forEach {
+
                                     it.modifierSets.forEach { modifierset ->
                                         val itemModifierSets = ItemModifierSets().apply {
                                             itemId = it.id
@@ -4789,23 +4787,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                             }
 
 
-//                            mData.modifierSets.forEach { modifierSets ->
-//
-//                                val itemModifierSets = ItemModifierSets().apply {
-//                                    itemId = this.modifierSetId
-//                                    modifierSetId = modifierSets.id!!
-//                                    minRequired = modifierSets.min_required
-//                                    maxAllowed = modifierSets.max_allowed
-//                                    isDeleted = modifierSets.isDeleted
-//                                }
-//
-//                                itemModifierSetList.add(itemModifierSets)
-//                            }
                             modifierSetList.addAll(mData.modifierSets)
-
-
-
-
 
                             delay(1000)
 
@@ -4930,14 +4912,12 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     _checkCashDrawerPermission.value = true
                                 } else {
 
-                                    ThreadPoolManager.instance.executeTask(Runnable {
+                                    ThreadPoolManager.instance.executeTask {
 
                                         rolePermission.findCurrentUserRoleAndSave(
                                             appDatabase.teamRoleDao().allRoleList()
                                         )
-
-
-                                    })
+                                    }
 
 
                                 }
