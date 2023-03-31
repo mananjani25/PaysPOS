@@ -126,7 +126,7 @@ class TbItem : Parcelable {
         }
         val removeItems: ArrayList<TaxData> = arrayListOf()
 
-        var itemListIds: ArrayList<Int> = arrayListOf()
+        val itemListIds: ArrayList<Int> = arrayListOf()
 
         for (m in 0 until itemList.size) {
 
@@ -189,10 +189,10 @@ class TbItem : Parcelable {
         modeTb.categoryName = item.categoryName
 
 
-//        if (item.name == "34asdfghjklpoiuytrewqasdfghjkff") {
-//            Log.e("price_without_markup_1", modeTb.price_without_markup.toString())
-//            Log.e("price_without_markup_2", item.price_without_markup.toString())
-//        }
+        if (item.name.trim().equals("Veg slice",true)) {
+            Log.e("price_without_markup_1", Gson().toJson(modeTb.modifier_set_ids))
+            Log.e("price_without_markup_2", Gson().toJson(item.modifier_set_ids))
+        }
         /*  if (item.itemModifierSetsSort?.isNotEmpty() == true) {
               modeTb.itemModifierSetsSort = item.itemModifierSetsSort
           } else {
@@ -200,7 +200,7 @@ class TbItem : Parcelable {
           }*/
         if (item.modifier_set_ids.isEmpty() && model.modifier_set_ids.isEmpty()) {
 
-            var listMod: ArrayList<Int> = arrayListOf()
+            val listMod: ArrayList<Int> = arrayListOf()
             listMod.addAll(item.modifier_set_ids)
             listMod.addAll(modeTb.modifier_set_ids)
 
@@ -210,15 +210,16 @@ class TbItem : Parcelable {
             modeTb.modifier_set_ids = item.modifier_set_ids
 
         } else {
-            modeTb.modifier_set_ids = model.modifier_set_ids
+
+            modeTb.modifier_set_ids = item.modifier_set_ids
 
         }
 
         if (item.variationsAttributes.isNotEmpty() && model.variationsAttributes.isNotEmpty()) {
-            var variationList: ArrayList<VariationsAttribute> = arrayListOf()
+            val variationList: ArrayList<VariationsAttribute> = arrayListOf()
             variationList.addAll(model.variationsAttributes)
-            var removeVar: ArrayList<VariationsAttribute> = arrayListOf()
-            var listIdsVariation: ArrayList<Int> = arrayListOf()
+            val removeVar: ArrayList<VariationsAttribute> = arrayListOf()
+            val listIdsVariation: ArrayList<Int> = arrayListOf()
             model.variationsAttributes.forEach {
                 it.id?.let { it1 -> listIdsVariation.add(it1) }
             }
