@@ -105,6 +105,7 @@ import com.sunmi.externalprinterlibrary.api.ConnectCallback
 import com.sunmi.externalprinterlibrary.api.SunmiPrinter
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.IOException
@@ -3418,7 +3419,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
 
-            viewLifecycleOwner.lifecycleScope.launch {
+            GlobalScope.launch {
                 delay(200)
                 setService()
             }
@@ -6143,7 +6144,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         } else if (customerReceiptPrinters.name.startsWith(SUNMI_INNER_PRINTER, true)) {
 
             SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
-            viewLifecycleOwner.lifecycleScope.launch {
+            GlobalScope.launch {
                 delay(100)
                 setService1()
             }
@@ -7691,7 +7692,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         override fun onConnect() {
                             println("onConnect")
 
-                            viewLifecycleOwner.lifecycleScope.launch {
+                            GlobalScope.launch {
                                 delay(200)
                                 generateKitchenReceiptSunmi(data, type)
                             }
@@ -7705,16 +7706,17 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                     })
             } else {
-                viewLifecycleOwner.lifecycleScope.launch {
+                GlobalScope.launch {
                     delay(200)
                     generateKitchenReceiptSunmi(data, type)
                 }
             }
 
-        } else if (data.name.startsWith(SUNMI_INNER_PRINTER, true)) {
+        }
+        else if (data.name.startsWith(SUNMI_INNER_PRINTER, true)) {
 
             SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
-            viewLifecycleOwner.lifecycleScope.launch {
+            GlobalScope.launch {
                 delay(200)
                 setService2()
             }
