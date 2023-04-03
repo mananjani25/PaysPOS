@@ -190,15 +190,17 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
     }
 
-    private var masterTerminal = object : BroadcastReceiver(){
+    private var masterTerminal = object : BroadcastReceiver() {
         override fun onReceive(p0: Context?, p1: Intent?) {
 
-            Log.e("checkMAsterTeminal","check  ${prefProvider?.getValueboolean(IS_MASTER_TERMINAL,false)}")
-            if (prefProvider?.getValueboolean(IS_MASTER_TERMINAL,false) == true){
+            Log.e(
+                "checkMAsterTeminal",
+                "check  ${prefProvider?.getValueboolean(IS_MASTER_TERMINAL, false)}"
+            )
+            if (prefProvider?.getValueboolean(IS_MASTER_TERMINAL, false) == true) {
                 getKitOne()
 
-            }
-            else{
+            } else {
                 WorkManager.getInstance(this@MainActivity).cancelAllWork()
             }
         }
@@ -734,8 +736,12 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 Status.SUCCESS -> {
                     ProgressUtils.dismissProgressDialog()
                     if (it.data != null) {
+                        prefProvider?.setValue(
+                            Constants.KITCHEN_PRINTER_LIST_PREF,
+                            Gson().toJson(it.data).toString()
+                        )
                         val data = Data.Builder()
-                            .putString("kitchenPrinterList", Gson().toJson(kitchenPrinterList))
+                            //.putString("kitchenPrinterList", Gson().toJson(kitchenPrinterList))
                             // .put("kitchenSettingData", Gson().toJson(kitchenSettingModel))
                             .put("location_id", prefProvider?.getValueInt(LOCATION_ID, 0))
                             .put("base_url", prefProvider?.getValue(Constants.BASE_URL_NEW, ""))

@@ -13,8 +13,6 @@ import com.android.pos.data.model.responseModel.GetKitchenReceiptSettingsRespons
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.IS_MASTER_TERMINAL
-import com.android.pos.data.remote.Constants.PRINTER_QUEUE_DATA
-import com.android.pos.di.PrefProvider
 import com.android.pos.utils.*
 import com.android.pos.utils.printer.PrinterClass
 import com.epson.epos2.printer.Printer
@@ -37,7 +35,6 @@ import org.jetbrains.annotations.NotNull
 import java.net.URI
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import javax.inject.Inject
 
 
 class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters) :
@@ -48,8 +45,6 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
     private var isConnectedU220: Boolean = false
     val printerQueueModel: PrinterQueueModel = PrinterQueueModel()
 
-    @set:Inject
-    internal var prefProvider: PrefProvider? = null
     val printer = Printer(Printer.TM_U220, Printer.MODEL_ANK, context)
     var printerBreak: Boolean = false
 
@@ -63,15 +58,27 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
     private var mContext: Context = context
     private var isPrinterRunning: Boolean = false
     private var printerBGRunning: Boolean = false
+    private var dynamicPrinterList: ArrayList<PrinterResponse.Data.KitchenReceiptPrinters> =
+        arrayListOf()
+
+
     override suspend fun doWork(): Result {
 
         try {
+
+
             withContext(Dispatchers.IO) {
 
                 locationId = inputData.getInt("location_id", 0)
                 baseUrl = inputData.getString("base_url").toString()
 
-                var serializeObjKitchenPrinters = inputData.getString("kitchenPrinterList")
+
+
+
+                var serializeObjKitchenPrinters = mContext.getSharedPreferences(
+                    mContext.resources.getString(R.string.app_name),
+                    Context.MODE_PRIVATE
+                ).getString(Constants.KITCHEN_PRINTER_LIST_PREF,"")
                 if (serializeObjKitchenPrinters?.isNotEmpty() == true) {
                     val gson = Gson()
                     val type =
@@ -87,6 +94,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                 }
 
 
+                Log.e(TAG,"kitchenPrinterList: ${Gson().toJson(kitchenPrinterList)}")
 
 
                 LogUtil.logE(TAG, "onActionCableStarts")
@@ -866,7 +874,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
     }
 
     private fun getQueueLocalData() {
-        val serializedObject: String = prefProvider?.getValue(PRINTER_QUEUE_DATA, "") ?: ""
+        val serializedObject: String = ""
         if (serializedObject.isNotEmpty()) {
             printerBGRunning = true
             val gson = Gson()

@@ -20,6 +20,8 @@ object Constants {
 
     const val CURRENT_VERSION = 1
 
+    const val KITCHEN_PRINTER_LIST_PREF = "kitchen_printer_list_pref"
+
     const val IS_MASTER_TERMINAL = "is_master_terminal"
 
     const val MAX_ITEM_QUANTITY = 1000
