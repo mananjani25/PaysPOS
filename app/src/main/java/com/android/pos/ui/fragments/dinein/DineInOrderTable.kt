@@ -3578,57 +3578,65 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 prefProvider.getValue(Constants.BUSINESS_NAME, "").toString()
             )
             builder.addFeedLine(1)
-            builder.addTextFont(Builder.FONT_E)
-            builder.addTextAlign(Builder.ALIGN_CENTER)
-            builder.addTextLang(Builder.LANG_EN)
-            addCustomerTextSize(builder, customerSettingModel.fonts)
 
-            builder.addTextStyle(
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.COLOR_1
-            )
+            if(customerSettingModel.showVenueAddress) {
 
-            addBuilderText(
-                builder,
-                prefProvider.getValue(Constants.BUSINESS_ADDRESS, "")
-                    .toString()
-            )
-            builder.addFeedLine(1)
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, customerSettingModel.fonts)
 
-            builder.addTextFont(Builder.FONT_E)
-            builder.addTextAlign(Builder.ALIGN_CENTER)
-            builder.addTextLang(Builder.LANG_EN)
-            addCustomerTextSize(builder, customerSettingModel.fonts)
-            builder.addTextStyle(
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.COLOR_1
-            )
-            addBuilderText(
-                builder,
-                MethodUtils.getUSFormatNumber(
-                    prefProvider.getValue(Constants.BUSINESS_PHONE_NO, "").toString()
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
                 )
-            )
 
-            builder.addFeedLine(1)
+                addBuilderText(
+                    builder,
+                    prefProvider.getValue(Constants.BUSINESS_ADDRESS, "")
+                        .toString()
+                )
+                builder.addFeedLine(1)
+            }
 
-            builder.addTextFont(Builder.FONT_E)
+            if (customerSettingModel.showVenuePhone) {
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, customerSettingModel.fonts)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+                addBuilderText(
+                    builder,
+                    MethodUtils.getUSFormatNumber(
+                        prefProvider.getValue(Constants.BUSINESS_PHONE_NO, "").toString()
+                    )
+                )
 
-            builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(2, 2)
-            builder.addTextStyle(
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.COLOR_1
-            )
-            builder.addTextAlign(Builder.ALIGN_CENTER)
+                builder.addFeedLine(1)
+            }
 
-            builder.addText(getOrderDetailsResponse?.orderType + "\n")
+            if(customerSettingModel.showOrderType) {
+                builder.addTextFont(Builder.FONT_E)
+
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(2, 2)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+
+                builder.addText(getOrderDetailsResponse?.orderTypeName + "\n")
+            }
 
             if (customerSettingModel.fonts == Constants.LARGE) {
 
@@ -4578,12 +4586,20 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             PrintSunmiUtils.printBusinessDetails(
                 prefProvider.getValue(Constants.BUSINESS_NAME, ""),
-                prefProvider.getValue(Constants.BUSINESS_ADDRESS, ""),
-                prefProvider.getValue(Constants.BUSINESS_PHONE_NO, "")
+                if (customerSettingModel.showVenueAddress) prefProvider.getValue(
+                    Constants.BUSINESS_ADDRESS,
+                    ""
+                ) else "",
+                if (customerSettingModel.showVenuePhone) prefProvider.getValue(
+                    Constants.BUSINESS_PHONE_NO,
+                    ""
+                ) else ""
             )
             SunmiPrinterApi.getInstance().lineWrap(1)
-            getOrderDetailsResponse?.orderType?.let { PrintSunmiUtils.printOrderType(it) }
-            SunmiPrinterApi.getInstance().lineWrap(1)
+            if(customerSettingModel.showOrderType) {
+                getOrderDetailsResponse?.orderTypeName?.let { PrintSunmiUtils.printOrderType(it) }
+                SunmiPrinterApi.getInstance().lineWrap(1)
+            }
 
             if (customerSettingModel.fonts == Constants.LARGE) {
 
@@ -5083,11 +5099,19 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             PrintSunmiUtils.printBusinessDetailsInner(
                 prefProvider.getValue(Constants.BUSINESS_NAME, ""),
-                prefProvider.getValue(Constants.BUSINESS_ADDRESS, ""),
-                prefProvider.getValue(Constants.BUSINESS_PHONE_NO, "")
+                if (customerSettingModel.showVenueAddress) prefProvider.getValue(
+                    Constants.BUSINESS_ADDRESS,
+                    ""
+                ) else "",
+                if (customerSettingModel.showVenuePhone) prefProvider.getValue(
+                    Constants.BUSINESS_PHONE_NO,
+                    ""
+                ) else ""
             )
             SunmiPrintHelper.getInstance().lineWrap(1)
-            getOrderDetailsResponse?.orderType?.let { PrintSunmiUtils.headerText(it) }
+            if(customerSettingModel.showOrderType) {
+                getOrderDetailsResponse?.orderTypeName?.let { PrintSunmiUtils.headerText(it) }
+            }
             SunmiPrintHelper.getInstance().lineWrap(1)
 
             if (customerSettingModel.fonts == Constants.LARGE) {
@@ -5584,57 +5608,63 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 prefProvider.getValue(Constants.BUSINESS_NAME, "").toString()
             )
             builder.addFeedLine(1)
-            builder.addTextFont(Builder.FONT_E)
-            builder.addTextAlign(Builder.ALIGN_CENTER)
-            builder.addTextLang(Builder.LANG_EN)
-            addCustomerTextSize(builder, customerSettingModel.fonts)
+            if(customerSettingModel.showVenueAddress) {
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, customerSettingModel.fonts)
 
-            builder.addTextStyle(
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.COLOR_1
-            )
-
-            addBuilderText(
-                builder,
-                prefProvider.getValue(Constants.BUSINESS_ADDRESS, "")
-                    .toString()
-            )
-            builder.addFeedLine(1)
-
-            builder.addTextFont(Builder.FONT_E)
-            builder.addTextAlign(Builder.ALIGN_CENTER)
-            builder.addTextLang(Builder.LANG_EN)
-            addCustomerTextSize(builder, customerSettingModel.fonts)
-            builder.addTextStyle(
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.COLOR_1
-            )
-            addBuilderText(
-                builder,
-                MethodUtils.getUSFormatNumber(
-                    prefProvider.getValue(Constants.BUSINESS_PHONE_NO, "").toString()
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
                 )
-            )
 
-            builder.addFeedLine(1)
+                addBuilderText(
+                    builder,
+                    prefProvider.getValue(Constants.BUSINESS_ADDRESS, "")
+                        .toString()
+                )
+                builder.addFeedLine(1)
+            }
 
-            builder.addTextFont(Builder.FONT_E)
+            if(customerSettingModel.showVenuePhone) {
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, customerSettingModel.fonts)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+                addBuilderText(
+                    builder,
+                    MethodUtils.getUSFormatNumber(
+                        prefProvider.getValue(Constants.BUSINESS_PHONE_NO, "").toString()
+                    )
+                )
 
-            builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(2, 2)
-            builder.addTextStyle(
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.COLOR_1
-            )
-            builder.addTextAlign(Builder.ALIGN_CENTER)
+                builder.addFeedLine(1)
+            }
 
-            builder.addText(getOrderDetailsResponse?.orderType + "\n")
+            if(customerSettingModel.showOrderType) {
+                builder.addTextFont(Builder.FONT_E)
+
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(2, 2)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+
+                builder.addText(getOrderDetailsResponse?.orderTypeName + "\n")
+            }
 
             if (customerSettingModel.fonts == Constants.LARGE) {
 
@@ -6515,13 +6545,21 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             PrintSunmiUtils.printBusinessDetails(
                 prefProvider.getValue(Constants.BUSINESS_NAME, ""),
-                prefProvider.getValue(Constants.BUSINESS_ADDRESS, ""),
-                prefProvider.getValue(Constants.BUSINESS_PHONE_NO, "")
+                if (customerSettingModel.showVenueAddress) prefProvider.getValue(
+                    Constants.BUSINESS_ADDRESS,
+                    ""
+                ) else "",
+                if (customerSettingModel.showVenuePhone) prefProvider.getValue(
+                    Constants.BUSINESS_PHONE_NO,
+                    ""
+                ) else ""
             )
 
             SunmiPrinterApi.getInstance().lineWrap(1)
-            getOrderDetailsResponse?.orderType?.let { PrintSunmiUtils.printOrderType(it) }
-            SunmiPrinterApi.getInstance().lineWrap(1)
+            if(customerSettingModel.showOrderType) {
+                getOrderDetailsResponse?.orderTypeName?.let { PrintSunmiUtils.printOrderType(it) }
+                SunmiPrinterApi.getInstance().lineWrap(1)
+            }
 
             if (customerSettingModel.fonts == Constants.LARGE) {
 
@@ -6962,14 +7000,22 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             PrintSunmiUtils.printBusinessDetailsInner(
                 prefProvider.getValue(Constants.BUSINESS_NAME, ""),
-                prefProvider.getValue(Constants.BUSINESS_ADDRESS, ""),
-                prefProvider.getValue(Constants.BUSINESS_PHONE_NO, "")
+                if (customerSettingModel.showVenueAddress) prefProvider.getValue(
+                    Constants.BUSINESS_ADDRESS,
+                    ""
+                ) else "",
+                if (customerSettingModel.showVenuePhone) prefProvider.getValue(
+                    Constants.BUSINESS_PHONE_NO,
+                    ""
+                ) else ""
             )
 
 
             SunmiPrintHelper.getInstance().lineWrap(1)
-            getOrderDetailsResponse?.orderType?.let { PrintSunmiUtils.headerText(it) }
-            SunmiPrintHelper.getInstance().lineWrap(1)
+            if(customerSettingModel.showOrderType) {
+                getOrderDetailsResponse?.orderTypeName?.let { PrintSunmiUtils.headerText(it) }
+                SunmiPrintHelper.getInstance().lineWrap(1)
+            }
 
             if (customerSettingModel.fonts == Constants.LARGE) {
 
@@ -7651,7 +7697,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     )
                     builder.addTextAlign(Builder.ALIGN_CENTER)
 
-                    addBuilderTextForU220(builder, getOrderDetailsResponse?.orderType.toString())
+                    addBuilderTextForU220(builder, getOrderDetailsResponse?.orderTypeName.toString())
                 }
 
                 builder.addFeedLine(2)
@@ -7864,7 +7910,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 )
                 builder.addTextAlign(Builder.ALIGN_CENTER)
 
-                addBuilderTextForU220(builder, getOrderDetailsResponse?.orderType.toString())
+                addBuilderTextForU220(builder, getOrderDetailsResponse?.orderTypeName.toString())
             }
 
             builder.addFeedLine(2)
@@ -8092,7 +8138,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     )
                     builder.addTextAlign(Builder.ALIGN_CENTER)
 
-                    addBuilderText(builder, getOrderDetailsResponse?.orderType.toString())
+                    addBuilderText(builder, getOrderDetailsResponse?.orderTypeName.toString())
                 }
 
                 builder.addFeedLine(2)
@@ -8260,7 +8306,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     )
                     builder.addTextAlign(Builder.ALIGN_CENTER)
 
-                    addBuilderText(builder, getOrderDetailsResponse?.orderType.toString())
+                    addBuilderText(builder, getOrderDetailsResponse?.orderTypeName.toString())
                 }
 
                 builder.addFeedLine(2)
@@ -8603,7 +8649,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             if (kitchenSettingModel.showOrderType) {
 
-                PrintSunmiUtils.printOrderType(getOrderDetailsResponse?.orderType.toString())
+                PrintSunmiUtils.printOrderType(getOrderDetailsResponse?.orderTypeName.toString())
 
                 SunmiPrinterApi.getInstance().lineWrap(1)
             }
@@ -8698,7 +8744,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             if (kitchenSettingModel.showOrderType) {
 
-                PrintSunmiUtils.headerText(getOrderDetailsResponse?.orderType.toString())
+                PrintSunmiUtils.headerText(getOrderDetailsResponse?.orderTypeName.toString())
 
                 SunmiPrintHelper.getInstance().lineWrap(1)
             }

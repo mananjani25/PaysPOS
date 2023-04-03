@@ -2507,15 +2507,23 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             PrintSunmiUtils.printBusinessDetails(
                 prefProvider.getValue(BUSINESS_NAME, ""),
-                prefProvider.getValue(BUSINESS_ADDRESS, ""),
-                prefProvider.getValue(BUSINESS_PHONE_NO, "")
+                if (customerSettingModel.showVenueAddress) prefProvider.getValue(
+                    BUSINESS_ADDRESS,
+                    ""
+                ) else "",
+                if (customerSettingModel.showVenuePhone) prefProvider.getValue(
+                    BUSINESS_PHONE_NO,
+                    ""
+                ) else ""
             )
 
 
 
             SunmiPrinterApi.getInstance().lineWrap(1)
-            getDineInOrderDetails?.orderType?.trim()?.let { PrintSunmiUtils.printOrderType(it) }
-            SunmiPrinterApi.getInstance().lineWrap(1)
+            if(customerSettingModel.showOrderType) {
+                getDineInOrderDetails?.orderTypeName?.trim()?.let { PrintSunmiUtils.printOrderType(it) }
+                SunmiPrinterApi.getInstance().lineWrap(1)
+            }
 
             if (customerSettingModel.fonts == LARGE) {
 
@@ -2923,17 +2931,23 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             PrintSunmiUtils.printBusinessDetailsInner(
                 prefProvider.getValue(BUSINESS_NAME, ""),
-                prefProvider.getValue(BUSINESS_ADDRESS, ""),
-                prefProvider.getValue(BUSINESS_PHONE_NO, "")
+                if (customerSettingModel.showVenueAddress) {
+                    prefProvider.getValue(BUSINESS_ADDRESS, "")
+                } else "",
+                if (customerSettingModel.showVenuePhone) prefProvider.getValue(
+                    BUSINESS_PHONE_NO,
+                    ""
+                ) else ""
             )
 
 
 
             SunmiPrintHelper.getInstance().lineWrap(1)
 
-            getDineInOrderDetails?.orderType?.trim()?.let { PrintSunmiUtils.headerText(it) }
-
-            SunmiPrintHelper.getInstance().lineWrap(1)
+            if(customerSettingModel.showOrderType) {
+                getDineInOrderDetails?.orderTypeName?.trim()?.let { PrintSunmiUtils.headerText(it) }
+                SunmiPrintHelper.getInstance().lineWrap(1)
+            }
 
             if (customerSettingModel.fonts == LARGE) {
 
@@ -4575,13 +4589,21 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             PrintSunmiUtils.printBusinessDetails(
                 prefProvider.getValue(BUSINESS_NAME, ""),
-                prefProvider.getValue(BUSINESS_ADDRESS, ""),
-                prefProvider.getValue(BUSINESS_PHONE_NO, "")
+                if (customerSettingModel.showVenueAddress) prefProvider.getValue(
+                    BUSINESS_ADDRESS,
+                    ""
+                ) else "",
+                if (customerSettingModel.showVenuePhone) prefProvider.getValue(
+                    BUSINESS_PHONE_NO,
+                    ""
+                ) else ""
             )
 
             SunmiPrinterApi.getInstance().lineWrap(1)
-            getDineInOrderDetails?.orderType?.trim()?.let { PrintSunmiUtils.printOrderType(it) }
-            SunmiPrinterApi.getInstance().lineWrap(1)
+            if(customerSettingModel.showOrderType) {
+                getDineInOrderDetails?.orderType?.trim()?.let { PrintSunmiUtils.printOrderType(it) }
+                SunmiPrinterApi.getInstance().lineWrap(1)
+            }
 
             if (customerSettingModel.fonts == LARGE) {
 
@@ -5098,14 +5120,20 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             PrintSunmiUtils.printBusinessDetailsInner(
                 prefProvider.getValue(BUSINESS_NAME, ""),
-                prefProvider.getValue(BUSINESS_ADDRESS, ""),
-                prefProvider.getValue(BUSINESS_PHONE_NO, "")
+                if (customerSettingModel.showVenueAddress) {
+                    prefProvider.getValue(BUSINESS_ADDRESS, "")
+                } else "",
+                if (customerSettingModel.showVenuePhone) prefProvider.getValue(
+                    BUSINESS_PHONE_NO,
+                    ""
+                ) else ""
             )
 
             SunmiPrintHelper.getInstance().lineWrap(1)
-
-            getDineInOrderDetails?.orderType?.trim()?.let { PrintSunmiUtils.headerText(it) }
-            SunmiPrintHelper.getInstance().lineWrap(1)
+            if (customerSettingModel.showOrderType) {
+                getDineInOrderDetails?.orderTypeName?.trim()?.let { PrintSunmiUtils.headerText(it) }
+                SunmiPrintHelper.getInstance().lineWrap(1)
+            }
 
             if (customerSettingModel.fonts == LARGE) {
 
@@ -6331,36 +6359,39 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 )
             }
 
+            if(customerSettingModel.showWebsiteAddress) {
+                receiptModel?.order?.venue_website?.let {
+                    builder.addFeedLine(1)
 
-            receiptModel?.order?.venue_website?.let {
+                    builder.addTextFont(Builder.FONT_E)
+                    builder.addTextAlign(Builder.ALIGN_CENTER)
+                    builder.addTextLang(Builder.LANG_EN)
+                    addCustomerTextSize(builder, customerSettingModel.fonts)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.COLOR_1
+                    )
+                    addBuilderText(builder, it)
+                }
+            }
+            if(customerSettingModel.showOrderType) {
                 builder.addFeedLine(1)
 
                 builder.addTextFont(Builder.FONT_E)
-                builder.addTextAlign(Builder.ALIGN_CENTER)
+
                 builder.addTextLang(Builder.LANG_EN)
-                addCustomerTextSize(builder, customerSettingModel.fonts)
+                builder.addTextSize(2, 2)
                 builder.addTextStyle(
                     Builder.FALSE,
                     Builder.FALSE,
                     Builder.FALSE,
                     Builder.COLOR_1
                 )
-                addBuilderText(builder, it)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+                builder.addText(receiptModel?.order?.orderTypeName + "\n")
             }
-            builder.addFeedLine(1)
-
-            builder.addTextFont(Builder.FONT_E)
-
-            builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(2, 2)
-            builder.addTextStyle(
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.COLOR_1
-            )
-            builder.addTextAlign(Builder.ALIGN_CENTER)
-            builder.addText(receiptModel?.order?.orderType + "\n")
             /*if (receiptModel?.order?.orderType?.lowercase() == OPEN_ORDER.lowercase()
                 || receiptModel?.order?.orderType?.lowercase() == OPEN_ORDER.lowercase()
             ) {
@@ -6777,87 +6808,89 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 )
             }
 
-            if (receiptModel?.order?.payments?.isNotEmpty() == true && receiptModel?.order?.payments?.get(
-                    receiptModel?.order?.payments?.size!! - 1
-                )?.paymentType?.lowercase() == "Card".lowercase() && receiptModel?.order?.payments?.get(
-                    receiptModel?.order?.payments?.size!! - 1
-                )?.cash_discount_type?.lowercase() == "SurCharge".lowercase()
-            ) {
+            if(customerSettingModel.showCashDisSurCharg) {
+                if (receiptModel?.order?.payments?.isNotEmpty() == true && receiptModel?.order?.payments?.get(
+                        receiptModel?.order?.payments?.size!! - 1
+                    )?.paymentType?.lowercase() == "Card".lowercase() && receiptModel?.order?.payments?.get(
+                        receiptModel?.order?.payments?.size!! - 1
+                    )?.cash_discount_type?.lowercase() == "SurCharge".lowercase()
+                ) {
 
-                if (receiptModel?.order?.totalCashDiscountFee != null) {
-                    builder.addTextLineSpace(30)
-                    builder.addFeedUnit(30)
-                    builder.addTextFont(Builder.FONT_E)
-                    // builder.addTextAlign(Builder.ALIGN_LEFT)
-                    builder.addTextLang(Builder.LANG_EN)
-                    addCustomerTextSize(builder, customerSettingModel.fonts)
-                    builder.addTextStyle(
-                        Builder.FALSE,
-                        Builder.FALSE,
-                        Builder.FALSE,
-                        Builder.COLOR_1
-                    )
-
-                    builder.addText(
-                        padLine(
-                            "SurCharge",
-                            "$" + MethodUtils.roundOffAmountString(
-                                receiptModel?.order?.payments?.get(
-                                    receiptModel?.order?.payments?.size?.minus(1) ?: 0
-                                )?.cash_discount_or_surcharge ?: 0.0
-                            ),
-                            if (customerSettingModel.fonts == LARGE) {
-                                24
-                            } else {
-                                48
-                            }
+                    if (receiptModel?.order?.totalCashDiscountFee != null) {
+                        builder.addTextLineSpace(30)
+                        builder.addFeedUnit(30)
+                        builder.addTextFont(Builder.FONT_E)
+                        // builder.addTextAlign(Builder.ALIGN_LEFT)
+                        builder.addTextLang(Builder.LANG_EN)
+                        addCustomerTextSize(builder, customerSettingModel.fonts)
+                        builder.addTextStyle(
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.COLOR_1
                         )
-                    )
-                }
 
-
-            } else if (receiptModel?.order?.payments?.isNotEmpty() == true && receiptModel?.order?.payments?.get(
-                    receiptModel?.order?.payments?.size!! - 1
-                )?.cash_discount_type?.lowercase() == "CashDiscount".lowercase()
-            ) {
-
-                if (receiptModel?.order?.totalCashDiscountFee != null) {
-                    builder.addTextLineSpace(30)
-                    builder.addFeedUnit(30)
-                    builder.addTextFont(Builder.FONT_E)
-                    // builder.addTextAlign(Builder.ALIGN_LEFT)
-                    builder.addTextLang(Builder.LANG_EN)
-                    addCustomerTextSize(builder, customerSettingModel.fonts)
-                    builder.addTextStyle(
-                        Builder.FALSE,
-                        Builder.FALSE,
-                        Builder.FALSE,
-                        Builder.COLOR_1
-                    )
-
-                    builder.addText(
-                        padLine(
-                            "Cash Discount",
-                            if (receiptModel?.order?.totalCashDiscountFee == 0.0) {
+                        builder.addText(
+                            padLine(
+                                "SurCharge",
                                 "$" + MethodUtils.roundOffAmountString(
                                     receiptModel?.order?.payments?.get(
                                         receiptModel?.order?.payments?.size?.minus(1) ?: 0
                                     )?.cash_discount_or_surcharge ?: 0.0
-                                )
-                            } else {
-                                "-$" + MethodUtils.roundOffAmountString(
-                                    receiptModel?.order?.payments?.get(
-                                        receiptModel?.order?.payments?.size?.minus(1) ?: 0
-                                    )?.cash_discount_or_surcharge ?: 0.0
-                                )
-                            },
-                            if (customerSettingModel.fonts == LARGE) {
-                                24
-                            } else {
-                                48
-                            }
+                                ),
+                                if (customerSettingModel.fonts == LARGE) {
+                                    24
+                                } else {
+                                    48
+                                }
+                            )
                         )
-                    )
+                    }
+
+
+                } else if (receiptModel?.order?.payments?.isNotEmpty() == true && receiptModel?.order?.payments?.get(
+                        receiptModel?.order?.payments?.size!! - 1
+                    )?.cash_discount_type?.lowercase() == "CashDiscount".lowercase()
+                ) {
+
+                    if (receiptModel?.order?.totalCashDiscountFee != null) {
+                        builder.addTextLineSpace(30)
+                        builder.addFeedUnit(30)
+                        builder.addTextFont(Builder.FONT_E)
+                        // builder.addTextAlign(Builder.ALIGN_LEFT)
+                        builder.addTextLang(Builder.LANG_EN)
+                        addCustomerTextSize(builder, customerSettingModel.fonts)
+                        builder.addTextStyle(
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.COLOR_1
+                        )
+
+                        builder.addText(
+                            padLine(
+                                "Cash Discount",
+                                if (receiptModel?.order?.totalCashDiscountFee == 0.0) {
+                                    "$" + MethodUtils.roundOffAmountString(
+                                        receiptModel?.order?.payments?.get(
+                                            receiptModel?.order?.payments?.size?.minus(1) ?: 0
+                                        )?.cash_discount_or_surcharge ?: 0.0
+                                    )
+                                } else {
+                                    "-$" + MethodUtils.roundOffAmountString(
+                                        receiptModel?.order?.payments?.get(
+                                            receiptModel?.order?.payments?.size?.minus(1) ?: 0
+                                        )?.cash_discount_or_surcharge ?: 0.0
+                                    )
+                                },
+                                if (customerSettingModel.fonts == LARGE) {
+                                    24
+                                } else {
+                                    48
+                                }
+                            )
+                        )
+                    }
                 }
             }
 
@@ -7551,7 +7584,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
             LogUtil.logE(TAG, "showOrderNote:  ${receiptModel?.order?.note}")
-            if (receiptModel?.order?.note != null && receiptModel?.order?.note != "") {
+            if (receiptModel?.order?.note != null && receiptModel?.order?.note != "" && customerSettingModel.showOrderNote) {
 
                 builder.addFeedLine(2)
                 builder.addTextFont(Builder.FONT_B)
@@ -7891,7 +7924,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             )
             mPrinter.addTextAlign(Builder.ALIGN_CENTER)
 
-            addBuilderTextForU220(mPrinter, receiptModel?.order?.orderType.toString())
+            addBuilderTextForU220(mPrinter, receiptModel?.order?.orderTypeName.toString())
         }
         var tmps = "Open Order".toString().trim()
             .toString().lowercase()
@@ -8280,7 +8313,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     )
                     builder.addTextAlign(Builder.ALIGN_CENTER)
 
-                    addBuilderText(builder, receiptModel?.order?.orderType.toString())
+                    addBuilderText(builder, receiptModel?.order?.orderTypeName.toString())
                 }
                 var tmps = "Open Order".toString().trim()
                     .toString().lowercase()
@@ -9006,7 +9039,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             if (kitchenSettingModel.showOrderType) {
 
 
-                PrintSunmiUtils.printOrderType(receiptModel?.order?.orderType.toString())
+                PrintSunmiUtils.printOrderType(receiptModel?.order?.orderTypeName.toString())
                 SunmiPrinterApi.getInstance().lineWrap(1)
 
             }
@@ -9184,7 +9217,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             SunmiPrintHelper.getInstance().lineWrap(1)
 
             if (kitchenSettingModel.showOrderType) {
-                PrintSunmiUtils.headerText(receiptModel?.order?.orderType.toString())
+                PrintSunmiUtils.headerText(receiptModel?.order?.orderTypeName.toString())
                 SunmiPrintHelper.getInstance().lineWrap(1)
             }
 
@@ -9591,7 +9624,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             if (customerSettingModel.showOrderType) {
                 SunmiPrinterApi.getInstance().lineWrap(2)
 
-                receiptModel?.order?.orderType?.trim()?.let { PrintSunmiUtils.printOrderType(it) }
+                receiptModel?.order?.orderTypeName?.trim()?.let { PrintSunmiUtils.printOrderType(it) }
             }
 
 
@@ -10183,7 +10216,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
             LogUtil.logE(TAG, "showOrderNote:  ${receiptModel?.order?.note}")
-            if (receiptModel?.order?.note != null && receiptModel?.order?.note != "") {
+            if (receiptModel?.order?.note != null && receiptModel?.order?.note != "" && customerSettingModel.showOrderNote) {
 
                 PrintSunmiUtils.orderNote(receiptModel?.order?.note!!)
 
@@ -10266,8 +10299,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 //            SunmiPrinterApi.getInstance().lineWrap(1)
 
             SunmiPrintHelper.getInstance().lineWrap(1)
-            receiptModel?.order?.orderType?.trim()?.let { PrintSunmiUtils.headerText(it) }
-            SunmiPrintHelper.getInstance().lineWrap(1)
+            if(customerSettingModel.showOrderType) {
+                receiptModel?.order?.orderTypeName?.trim()?.let { PrintSunmiUtils.headerText(it) }
+                SunmiPrintHelper.getInstance().lineWrap(1)
+            }
 
             /*    if (receiptModel?.order?.orderType?.lowercase() == OPEN_ORDER.lowercase()
                     || receiptModel?.order?.orderType?.lowercase() == OPEN_ORDER.lowercase()
@@ -10844,7 +10879,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
             LogUtil.logE(TAG, "showOrderNote:  ${receiptModel?.order?.note}")
-            if (receiptModel?.order?.note != null && receiptModel?.order?.note != "") {
+            if (receiptModel?.order?.note != null && receiptModel?.order?.note != "" && customerSettingModel.showOrderNote) {
 
                 PrintSunmiUtils.orderNoteInner(receiptModel?.order?.note!!)
 
