@@ -3622,6 +3622,26 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 builder.addFeedLine(1)
             }
 
+            if (customerSettingModel.showWebsiteAddress) {
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, customerSettingModel.fonts)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+                addBuilderText(
+                    builder,
+                    prefProvider.getValue(Constants.BUSINESS_WEBSITE, "")
+
+                )
+
+                builder.addFeedLine(1)
+            }
+
             if(customerSettingModel.showOrderType) {
                 builder.addTextFont(Builder.FONT_E)
 
@@ -4595,7 +4615,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     ""
                 ) else ""
             )
-            SunmiPrinterApi.getInstance().lineWrap(1)
+            if (customerSettingModel.showWebsiteAddress) {
+                PrintSunmiUtils.venueWebsite(prefProvider.getValue(Constants.BUSINESS_WEBSITE, ""))
+            }else {
+                SunmiPrinterApi.getInstance().lineWrap(1)
+            }
             if(customerSettingModel.showOrderType) {
                 getOrderDetailsResponse?.orderTypeName?.let { PrintSunmiUtils.printOrderType(it) }
                 SunmiPrinterApi.getInstance().lineWrap(1)
@@ -5108,7 +5132,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     ""
                 ) else ""
             )
-            SunmiPrintHelper.getInstance().lineWrap(1)
+            if (customerSettingModel.showWebsiteAddress) {
+                PrintSunmiUtils.venueWebsiteInner(prefProvider.getValue(Constants.BUSINESS_WEBSITE, ""))
+            } else {
+                SunmiPrintHelper.getInstance().lineWrap(1)
+            }
             if(customerSettingModel.showOrderType) {
                 getOrderDetailsResponse?.orderTypeName?.let { PrintSunmiUtils.headerText(it) }
             }
@@ -5645,6 +5673,25 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     MethodUtils.getUSFormatNumber(
                         prefProvider.getValue(Constants.BUSINESS_PHONE_NO, "").toString()
                     )
+                )
+
+                builder.addFeedLine(1)
+            }
+
+            if(customerSettingModel.showWebsiteAddress) {
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, customerSettingModel.fonts)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+                addBuilderText(
+                    builder,
+                    prefProvider.getValue(Constants.BUSINESS_WEBSITE, "")
                 )
 
                 builder.addFeedLine(1)
@@ -6555,7 +6602,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 ) else ""
             )
 
-            SunmiPrinterApi.getInstance().lineWrap(1)
+            if (customerSettingModel.showWebsiteAddress) {
+                PrintSunmiUtils.venueWebsite(prefProvider.getValue(Constants.BUSINESS_WEBSITE, ""))
+            }else {
+                SunmiPrinterApi.getInstance().lineWrap(1)
+            }
             if(customerSettingModel.showOrderType) {
                 getOrderDetailsResponse?.orderTypeName?.let { PrintSunmiUtils.printOrderType(it) }
                 SunmiPrinterApi.getInstance().lineWrap(1)
@@ -7010,8 +7061,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 ) else ""
             )
 
-
-            SunmiPrintHelper.getInstance().lineWrap(1)
+            if (customerSettingModel.showWebsiteAddress) {
+                PrintSunmiUtils.venueWebsiteInner(prefProvider.getValue(Constants.BUSINESS_WEBSITE, ""))
+            } else {
+                SunmiPrintHelper.getInstance().lineWrap(1)
+            }
             if(customerSettingModel.showOrderType) {
                 getOrderDetailsResponse?.orderTypeName?.let { PrintSunmiUtils.headerText(it) }
                 SunmiPrintHelper.getInstance().lineWrap(1)

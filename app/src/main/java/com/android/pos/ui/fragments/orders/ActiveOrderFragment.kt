@@ -1288,6 +1288,25 @@ class ActiveOrderFragment(
                 )
             }
 
+            if(customerSettingModel.showWebsiteAddress) {
+                builder.addFeedLine(1)
+
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, customerSettingModel.fonts)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+                addBuilderText(
+                    builder,
+                    prefProvider.getValue(Constants.BUSINESS_WEBSITE, "")
+                )
+            }
+
             if(customerSettingModel.showOrderType) {
                 builder.addFeedLine(1)
 
@@ -2300,6 +2319,10 @@ class ActiveOrderFragment(
                 ) else ""
             )
 
+            if (customerSettingModel.showWebsiteAddress) {
+                PrintSunmiUtils.venueWebsite(prefProvider.getValue(Constants.BUSINESS_WEBSITE, ""))
+            }
+
             if(customerSettingModel.showOrderType) {
                 PrintSunmiUtils.printOrderType(receiptModel?.orderTypeName?.trim())
             }
@@ -2846,7 +2869,11 @@ class ActiveOrderFragment(
                     ""
                 ) else ""
             )
-            SunmiPrintHelper.getInstance().lineWrap(1)
+            if (customerSettingModel.showWebsiteAddress) {
+                PrintSunmiUtils.venueWebsiteInner(prefProvider.getValue(Constants.BUSINESS_WEBSITE, ""))
+            }else {
+                SunmiPrintHelper.getInstance().lineWrap(1)
+            }
             if(customerSettingModel.showOrderType) {
                 PrintSunmiUtils.headerText(receiptModel?.orderTypeName?.trim())
             }
