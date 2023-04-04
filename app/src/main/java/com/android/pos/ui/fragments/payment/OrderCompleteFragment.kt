@@ -1775,7 +1775,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             "Total Discount",
 
                             if (finaldisLocal == 0.0) {
-                                "$" + MethodUtils.roundOffAmountString(0.0)
+                                "-$" + MethodUtils.roundOffAmountString(0.0)
                             } else {
 
                                 "-$" + MethodUtils.roundOffAmountString(
@@ -2676,7 +2676,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     "Total Discount",
 
                     if (finaldisLocal == 0.0) {
-                        "$" + MethodUtils.roundOffAmountString(0.0)
+                        "-$" + MethodUtils.roundOffAmountString(0.0)
                     } else {
                         "-$" + MethodUtils.roundOffAmountString(
                             checkOutDineInModel?.totalDiscount ?: 0.0
@@ -3112,7 +3112,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     "Total Discount",
 
                     if (finaldisLocal == 0.0) {
-                        "$" + MethodUtils.roundOffAmountString(0.0)
+                        "-$" + MethodUtils.roundOffAmountString(0.0)
                     } else {
                         "-$" + MethodUtils.roundOffAmountString(
                             checkOutDineInModel?.totalDiscount ?: 0.0
@@ -3914,7 +3914,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             "Total Discount",
 
                             if (getDineInOrderDetails?.totalDiscount == 0.0) {
-                                "$" + MethodUtils.roundOffAmountString(0.0)
+                                "-$" + MethodUtils.roundOffAmountString(0.0)
                             } else {
                                 getDineInOrderDetails?.totalDiscount?.let {
                                     "-$" + MethodUtils.roundOffAmountString(it)
@@ -4870,7 +4870,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     "Total Discount",
 
                     if (getDineInOrderDetails?.totalDiscount == 0.0) {
-                        "$" + MethodUtils.roundOffAmountString(0.0)
+                        "-$" + MethodUtils.roundOffAmountString(0.0)
                     } else {
                         getDineInOrderDetails?.totalDiscount?.let {
                             "-$" + MethodUtils.roundOffAmountString(it)
@@ -5403,7 +5403,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     "Total Discount",
 
                     if (getDineInOrderDetails?.totalDiscount == 0.0) {
-                        "$" + MethodUtils.roundOffAmountString(0.0)
+                        "-$" + MethodUtils.roundOffAmountString(0.0)
                     } else {
                         getDineInOrderDetails?.totalDiscount?.let {
                             "-$" + MethodUtils.roundOffAmountString(it)
@@ -6771,7 +6771,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         "Total Discount",
 
                         if (receiptModel?.order?.totalDiscount == 0.0) {
-                            "$" + MethodUtils.roundOffAmountString(receiptModel?.order?.totalDiscount!!)
+                            "-$" + MethodUtils.roundOffAmountString(receiptModel?.order?.totalDiscount!!)
                         } else {
                             "-$" + MethodUtils.roundOffAmountString(receiptModel?.order?.totalDiscount!!)
                         },
@@ -9859,7 +9859,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 val str1 = padLine(
                     "Total Discount",
                     if (receiptModel?.order?.totalDiscount == 0.0) {
-                        "$" + MethodUtils.roundOffAmountString(receiptModel?.order?.totalDiscount!!)
+                        "-$" + MethodUtils.roundOffAmountString(receiptModel?.order?.totalDiscount!!)
                     } else {
                         "-$" + MethodUtils.roundOffAmountString(receiptModel?.order?.totalDiscount!!)
                     }, if (customerSettingModel.fonts == LARGE) 23 else 48
@@ -10529,7 +10529,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 val str1 = padLine(
                     "Total Discount",
                     if (receiptModel?.order?.totalDiscount == 0.0) {
-                        "$" + MethodUtils.roundOffAmountString(receiptModel?.order?.totalDiscount!!)
+                        "-$" + MethodUtils.roundOffAmountString(receiptModel?.order?.totalDiscount!!)
                     } else {
                         "-$" + MethodUtils.roundOffAmountString(receiptModel?.order?.totalDiscount!!)
                     }, if (customerSettingModel.fonts == LARGE) 23 else 48

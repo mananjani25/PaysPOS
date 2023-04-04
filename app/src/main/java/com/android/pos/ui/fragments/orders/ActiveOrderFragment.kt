@@ -1582,7 +1582,7 @@ class ActiveOrderFragment(
                         "Total Discount",
 
                         if (receiptModel.totalDiscount == 0.0) {
-                            "$" + MethodUtils.roundOffAmountString(receiptModel.totalDiscount)
+                            "-$" + MethodUtils.roundOffAmountString(receiptModel.totalDiscount)
                         } else {
                             "-$" + MethodUtils.roundOffAmountString(receiptModel.totalDiscount)
                         },
@@ -2451,7 +2451,7 @@ class ActiveOrderFragment(
                     "Total Discount",
 
                     if (receiptModel.totalDiscount == 0.0) {
-                        "$" + MethodUtils.roundOffAmountString(receiptModel.totalDiscount)
+                        "-$" + MethodUtils.roundOffAmountString(receiptModel.totalDiscount)
                     } else {
                         "-$" + MethodUtils.roundOffAmountString(receiptModel.totalDiscount)
                     },
@@ -2971,7 +2971,7 @@ class ActiveOrderFragment(
                     "Total Discount",
 
                     if (receiptModel.totalDiscount == 0.0) {
-                        "$" + MethodUtils.roundOffAmountString(receiptModel.totalDiscount)
+                        "-$" + MethodUtils.roundOffAmountString(receiptModel.totalDiscount)
                     } else {
                         "-$" + MethodUtils.roundOffAmountString(receiptModel.totalDiscount)
                     },
