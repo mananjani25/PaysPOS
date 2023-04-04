@@ -1415,18 +1415,22 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 s: CharSequence, start: Int, before: Int,
                 count: Int
             ) {
-                val enteredString = s.toString()
-                if (enteredString.startsWith("0")) {
+                if(s.toString().isNotEmpty()) {
+                    val enteredString = s.toString()
+                    totalquantity = s.toString().toInt()
+                    if (enteredString.startsWith("0")) {
 
-                    if (enteredString.length > 0) {
-                        txtQty.setText(enteredString.substring(1))
-                    } else {
-                        txtQty.setText("")
+                        if (enteredString.length > 0) {
+                            txtQty.setText(enteredString.substring(1))
+                        } else {
+                            txtQty.setText("")
+                        }
+                    } else if (s.toString().trim().isNotEmpty() && s.toString().toInt() > 1000) {
+                        txtQty.setText("1000")
+                        totalquantity = txtQty.text.toString().toInt()
                     }
-                } else if (s.toString().trim().isNotEmpty() && s.toString().toInt() > 15) {
-                    txtQty.setText("15")
+                    txtQty.setSelection(txtQty.text!!.length)
                 }
-
             }
 
             override fun beforeTextChanged(
@@ -1497,17 +1501,15 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         }
 
         llPlus.setOnClickListener {
-            qty += 1
-            totalquantity = qty
-            txtQty.setText(qty.toString())
+            totalquantity += 1
+            txtQty.setText(totalquantity.toString())
         }
         llMinus.setOnClickListener {
 
-            if (qty > 1) {
-                qty -= 1
+            if (totalquantity > 1) {
+                totalquantity -= 1
             }
-            totalquantity = qty
-            txtQty.setText(qty.toString())
+            txtQty.setText(totalquantity.toString())
         }
 
         btnRemove.setOnClickListener {
