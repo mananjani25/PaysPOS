@@ -1938,7 +1938,7 @@ fun addOrdersForKitchen(
                     )
 
                     builder.addText(obj.quantity.toString() + " " + obj.itemName.uppercase())
-
+                    builder.addFeedLine(1)
                     if (obj.orderItemModifiers.isNotEmpty()) {
                         for (j in 0 until obj.orderItemModifiers.size) {
                             val modifierObj = obj.orderItemModifiers.get(j)
@@ -1968,7 +1968,9 @@ fun addOrdersForKitchen(
 
 
                         }
+                        builder.addFeedLine(1)
                     }
+
                     if (obj.note.isNotEmpty()) {
                         builder.addTextLineSpace(30)
                         builder.addFeedUnit(30)
@@ -1985,6 +1987,7 @@ fun addOrdersForKitchen(
                         )
                         builder.addText("  Note:" + obj.note)
 
+                        builder.addFeedLine(1)
                     }
 
 
