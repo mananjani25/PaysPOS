@@ -1334,45 +1334,29 @@ class TransactionDetailsFragment : Fragment() {
             builder.addTextAlign(Builder.ALIGN_CENTER)
 
             addBuilderText(builder, prefProvider.getValue(Constants.BUSINESS_NAME, "").toString())
-            builder.addFeedLine(1)
-            builder.addTextFont(Builder.FONT_E)
-            builder.addTextAlign(Builder.ALIGN_CENTER)
-            builder.addTextLang(Builder.LANG_EN)
-            addCustomerTextSize(builder, customerSettingModel.fonts)
 
-            builder.addTextStyle(
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.COLOR_1
-            )
+            if(customerSettingModel.showVenueAddress) {
+                builder.addFeedLine(1)
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, customerSettingModel.fonts)
 
-            addBuilderText(
-                builder,
-                prefProvider.getValue(Constants.BUSINESS_ADDRESS, "")
-                    .toString()
-            )
-            builder.addFeedLine(1)
-
-            builder.addTextFont(Builder.FONT_E)
-            builder.addTextAlign(Builder.ALIGN_CENTER)
-            builder.addTextLang(Builder.LANG_EN)
-            addCustomerTextSize(builder, customerSettingModel.fonts)
-            builder.addTextStyle(
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.COLOR_1
-            )
-            addBuilderText(
-                builder,
-                MethodUtils.getUSFormatNumber(
-                    prefProvider.getValue(Constants.BUSINESS_PHONE_NO, "").toString()
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
                 )
-            )
 
 
-            paymentDetailsResponse?.data?.order?.venue_website?.let {
+                addBuilderText(
+                    builder,
+                    prefProvider.getValue(Constants.BUSINESS_ADDRESS, "")
+                        .toString()
+                )
+            }
+            if(customerSettingModel.showVenuePhone) {
                 builder.addFeedLine(1)
 
                 builder.addTextFont(Builder.FONT_E)
@@ -1385,22 +1369,50 @@ class TransactionDetailsFragment : Fragment() {
                     Builder.FALSE,
                     Builder.COLOR_1
                 )
-                addBuilderText(builder, it)
+
+                addBuilderText(
+                    builder,
+                    MethodUtils.getUSFormatNumber(
+                        prefProvider.getValue(Constants.BUSINESS_PHONE_NO, "").toString()
+                    )
+                )
             }
-            builder.addFeedLine(1)
 
-            builder.addTextFont(Builder.FONT_E)
 
-            builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(2, 2)
-            builder.addTextStyle(
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.COLOR_1
-            )
-            builder.addTextAlign(Builder.ALIGN_CENTER)
-            builder.addText(paymentDetailsResponse.data.order.order_type + "\n")
+            if(customerSettingModel.showWebsiteAddress) {
+                paymentDetailsResponse?.data?.order?.venue_website?.let {
+                    builder.addFeedLine(1)
+
+                    builder.addTextFont(Builder.FONT_E)
+                    builder.addTextAlign(Builder.ALIGN_CENTER)
+                    builder.addTextLang(Builder.LANG_EN)
+                    addCustomerTextSize(builder, customerSettingModel.fonts)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.COLOR_1
+                    )
+                    addBuilderText(builder, it)
+                }
+            }
+            if (customerSettingModel.showOrderType) {
+                builder.addFeedLine(1)
+
+                builder.addTextFont(Builder.FONT_E)
+
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(2, 2)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+
+                builder.addText(paymentDetailsResponse.data.order.order_type_name + "\n")
+            }
 
             if (customerSettingModel.fonts == Constants.LARGE) {
 
@@ -1796,7 +1808,8 @@ class TransactionDetailsFragment : Fragment() {
 
 
 
-            if (paymentDetailsResponse.data?.cash_discount_or_surcharge != null && paymentDetailsResponse.data?.cash_discount_or_surcharge != 0.0) {
+            if (paymentDetailsResponse.data?.cash_discount_or_surcharge != null && paymentDetailsResponse.data?.cash_discount_or_surcharge != 0.0
+                && customerSettingModel.showCashDisSurCharg) {
 
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
@@ -1950,7 +1963,7 @@ class TransactionDetailsFragment : Fragment() {
 
 
 
-            if (paymentDetailsResponse?.data?.order.refund_detail != null && paymentDetailsResponse?.data?.order?.refund_detail?.refunded_amount != 0.0) {
+            if (paymentDetailsResponse?.data?.order.refund_detail != null && paymentDetailsResponse?.data?.order?.refund_detail?.refunded_amount != 0.0 && customerSettingModel.showRefundAmount) {
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
 
@@ -2499,18 +2512,27 @@ class TransactionDetailsFragment : Fragment() {
 
             PrintSunmiUtils.printBusinessDetails(
                 prefProvider.getValue(Constants.BUSINESS_NAME, ""),
-                prefProvider.getValue(Constants.BUSINESS_ADDRESS, ""),
-                prefProvider.getValue(Constants.BUSINESS_PHONE_NO, "")
+                if (customerSettingModel.showVenueAddress) prefProvider.getValue(
+                    Constants.BUSINESS_ADDRESS,
+                    ""
+                ) else "",
+                if (customerSettingModel.showVenuePhone) prefProvider.getValue(
+                    Constants.BUSINESS_PHONE_NO,
+                    ""
+                ) else ""
             )
 
-            if (paymentDetailsResponse.data.order.venue_website.isNotEmpty()) {
+            if (paymentDetailsResponse.data.order.venue_website.isNotEmpty() && customerSettingModel.showWebsiteAddress) {
                 PrintSunmiUtils.venueWebsite(paymentDetailsResponse.data.order.venue_website)
             } else {
                 SunmiPrinterApi.getInstance().lineWrap(1)
             }
             SunmiPrinterApi.getInstance().lineWrap(1)
-            PrintSunmiUtils.printOrderType(paymentDetailsResponse.data.order.order_type.trim())
-            SunmiPrinterApi.getInstance().lineWrap(1)
+            if(customerSettingModel.showOrderType) {
+                PrintSunmiUtils.printOrderType(paymentDetailsResponse.data.order.order_type_name.trim())
+                SunmiPrinterApi.getInstance().lineWrap(1)
+            }
+
 
             if (customerSettingModel.fonts == Constants.LARGE) {
 
@@ -2695,7 +2717,7 @@ class TransactionDetailsFragment : Fragment() {
 
 
 
-            if (paymentDetailsResponse.data?.cash_discount_or_surcharge != null) {
+            if (paymentDetailsResponse.data?.cash_discount_or_surcharge != null && customerSettingModel.showCashDisSurCharg) {
 
                 if (paymentDetailsResponse?.data?.payment_type.lowercase() == "Card".lowercase() && paymentDetailsResponse?.data?.cash_discount_type.lowercase() == "SurCharge".lowercase()) {
                     val surCharge =
@@ -2772,7 +2794,7 @@ class TransactionDetailsFragment : Fragment() {
             )
 
 
-            if (paymentDetailsResponse?.data?.order.refund_detail != null && paymentDetailsResponse?.data?.order?.refund_detail?.refunded_amount != 0.0) {
+            if (paymentDetailsResponse?.data?.order.refund_detail != null && paymentDetailsResponse?.data?.order?.refund_detail?.refunded_amount != 0.0 && customerSettingModel.showRefundAmount) {
 
                 PrintSunmiUtils.refundAmount(
                     padLine(
@@ -2970,17 +2992,25 @@ class TransactionDetailsFragment : Fragment() {
 
             PrintSunmiUtils.printBusinessDetailsInner(
                 prefProvider.getValue(Constants.BUSINESS_NAME, ""),
-                prefProvider.getValue(Constants.BUSINESS_ADDRESS, ""),
-                prefProvider.getValue(Constants.BUSINESS_PHONE_NO, "")
+                if (customerSettingModel.showVenueAddress) prefProvider.getValue(
+                    Constants.BUSINESS_ADDRESS,
+                    ""
+                ) else "",
+                if (customerSettingModel.showVenuePhone) prefProvider.getValue(
+                    Constants.BUSINESS_PHONE_NO,
+                    ""
+                ) else ""
             )
 
-            if (paymentDetailsResponse.data.order.venue_website.isNotEmpty()) {
+            if (paymentDetailsResponse.data.order.venue_website.isNotEmpty() && customerSettingModel.showWebsiteAddress) {
                 PrintSunmiUtils.normalTextCenter(paymentDetailsResponse.data.order.venue_website)
             } else {
                 SunmiPrintHelper.getInstance().lineWrap(1)
             }
 
-            PrintSunmiUtils.headerText(paymentDetailsResponse.data.order.order_type.trim())
+            if(customerSettingModel.showOrderType) {
+                PrintSunmiUtils.headerText(paymentDetailsResponse.data.order.order_type_name.trim())
+            }
 
 
             if (customerSettingModel.fonts == Constants.LARGE) {
@@ -3157,7 +3187,7 @@ class TransactionDetailsFragment : Fragment() {
 
 
 
-            if (paymentDetailsResponse.data?.cash_discount_or_surcharge != null) {
+            if (paymentDetailsResponse.data?.cash_discount_or_surcharge != null && customerSettingModel.showCashDisSurCharg) {
 
                 if (paymentDetailsResponse?.data?.payment_type.lowercase() == "Card".lowercase() && paymentDetailsResponse?.data?.cash_discount_type.lowercase() == "SurCharge".lowercase()) {
                     val surCharge =
@@ -3234,7 +3264,7 @@ class TransactionDetailsFragment : Fragment() {
             )
 
 
-            if (paymentDetailsResponse?.data?.order.refund_detail != null && paymentDetailsResponse?.data?.order?.refund_detail?.refunded_amount != 0.0) {
+            if (paymentDetailsResponse?.data?.order.refund_detail != null && paymentDetailsResponse?.data?.order?.refund_detail?.refunded_amount != 0.0 && customerSettingModel.showRefundAmount) {
 
                 PrintSunmiUtils.boldText(
                     padLine(

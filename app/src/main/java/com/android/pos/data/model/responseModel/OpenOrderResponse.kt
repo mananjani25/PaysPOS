@@ -117,7 +117,9 @@ data class OpenOrderResponse(
             val cashDiscountType: String,
             @SerializedName("updated_at")
             val updatedAt: String,
-            var isCheck: Boolean = false
+            var isCheck: Boolean = false,
+            @SerializedName("order_type_name")
+            val orderTypeName: String,
         ) {
             data class OrderItem(
                 @SerializedName("category_id")

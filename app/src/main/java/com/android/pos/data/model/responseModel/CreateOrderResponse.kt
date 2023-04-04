@@ -113,7 +113,9 @@ data class CreateOrderResponse(
             @SerializedName("venue_website")
             val venue_website: String,
             @SerializedName("loyalty_amount")
-            val loyaltyAmount: Double
+            val loyaltyAmount: Double,
+            @SerializedName("order_type_name")
+            val orderTypeName: String,
         ) {
 
             @Parcelize

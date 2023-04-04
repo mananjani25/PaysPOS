@@ -113,7 +113,9 @@ data class GetOrderDetailsResponse(
         @SerializedName("venue_website")
         val venueWebsite: String,
         @SerializedName("merged_table_nos")
-        val mergedTableNos: String = ""
+        val mergedTableNos: String = "",
+        @SerializedName("order_type_name")
+        val orderTypeName: String,
 
     ) : Parcelable {
         @Parcelize
