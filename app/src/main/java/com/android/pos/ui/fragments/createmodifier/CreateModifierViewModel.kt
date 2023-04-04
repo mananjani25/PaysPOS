@@ -176,12 +176,14 @@ class CreateModifierViewModel @Inject constructor(
 
             // Add modifier set id to Items
             modifierSet.itemIds.forEach {
-                if (!oldItemIds?.contains(it)!!) {
-                    val item: TbItem? = posRepository.getSingleItem(it)
-                    tempModifierSetIds = (item?.modifier_set_ids as ArrayList<Int>?)!!
-                    if (!tempModifierSetIds.contains(element = modifierSet.id)) {
-                        tempModifierSetIds.add(modifierSet.id!!)
-                        posRepository.updateModifiersForItem(tempModifierSetIds, it)
+                if (oldItemIds != null) {
+                    if (!oldItemIds.contains(it)) {
+                        val item: TbItem? = posRepository.getSingleItem(it)
+                        tempModifierSetIds = (item?.modifier_set_ids as ArrayList<Int>?)!!
+                        if (!tempModifierSetIds.contains(element = modifierSet.id)) {
+                            tempModifierSetIds.add(modifierSet.id!!)
+                            posRepository.updateModifiersForItem(tempModifierSetIds, it)
+                        }
                     }
                 }
             }
