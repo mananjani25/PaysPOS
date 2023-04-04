@@ -921,7 +921,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                 val mPrinter =
                     com.epson.epos2.printer.Printer(modelName, Printer.MODEL_ANK, mContext)
 
-                mPrinter.setReceiveEventListener { printarrayItemser, i, printerStatusInfo, s ->
+                /*mPrinter.setReceiveEventListener { printarrayItemser, i, printerStatusInfo, s ->
 
                     LogUtil.logE(
                         "PrinterDataCh",
@@ -929,7 +929,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                             Gson().toJson(printerStatusInfo)
                         }  string: ${s}"
                     )
-                }
+                }*/
 
                 mPrinter.setReceiveEventListener(object : ReceiveListener {
                     override fun onPtrReceive(
@@ -938,7 +938,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                         p2: PrinterStatusInfo?,
                         p3: String?
                     ) {
-                        LogUtil.logE("getPrintReceive", "online ${Gson().toJson(p2)}  data${p3}")
+                        LogUtil.logE(TAG, "online ${Gson().toJson(p2)}  data${p3}")
                         try {
 
                             printerQueueModel.id?.let {
