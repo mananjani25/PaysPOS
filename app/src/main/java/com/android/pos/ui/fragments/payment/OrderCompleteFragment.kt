@@ -4325,6 +4325,21 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             }
                         )
                     )
+                    builder.addText(
+                        padLine(
+                            "Total",
+                            if (customerSettingModel.showTipLineForCash) {
+                                "_____________"
+                            } else {
+                                ""
+                            },
+                            if (customerSettingModel.fonts == LARGE) {
+                                24
+                            } else {
+                                48
+                            }
+                        )
+                    )
                 }
 
 
@@ -5067,9 +5082,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                     if (customerSettingModel.fonts == LARGE) {
                         PrintSunmiUtils.tips("Tips      _____________")
+                        PrintSunmiUtils.tips("Total     _____________")
                         SunmiPrinterApi.getInstance().lineWrap(1)
                     } else {
                         PrintSunmiUtils.tips("Tips                              _____________")
+                        PrintSunmiUtils.tips("Total                             _____________")
                     }
 
 
@@ -5599,9 +5616,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                     if (customerSettingModel.fonts == LARGE) {
                         PrintSunmiUtils.boldText("Tips      _____________")
+                        PrintSunmiUtils.boldText("Total     _____________")
                         SunmiPrintHelper.getInstance().lineWrap(1)
                     } else {
                         PrintSunmiUtils.boldText("Tips                              _____________")
+                        PrintSunmiUtils.boldText("Total                             _____________")
                     }
 
 
@@ -7296,6 +7315,21 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 builder.addText(
                     padLine(
                         "Tips",
+                        if (customerSettingModel.showTipLineForCash) {
+                            "_____________"
+                        } else {
+                            ""
+                        },
+                        if (customerSettingModel.fonts == LARGE) {
+                            24
+                        } else {
+                            48
+                        }
+                    )
+                )
+                builder.addText(
+                    padLine(
+                        "Total",
                         if (customerSettingModel.showTipLineForCash) {
                             "_____________"
                         } else {
@@ -10140,9 +10174,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                     if (customerSettingModel.fonts == LARGE) {
                         PrintSunmiUtils.tips("Tips      _____________")
+                        PrintSunmiUtils.tips("Total     _____________")
                         SunmiPrinterApi.getInstance().lineWrap(1)
                     } else {
                         PrintSunmiUtils.tips("Tips                              _____________")
+                        PrintSunmiUtils.tips("Total                             _____________")
                     }
 
 
@@ -10807,8 +10843,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                     if (customerSettingModel.fonts == LARGE) {
                         PrintSunmiUtils.boldText("Tips      _____________")
+                        PrintSunmiUtils.boldText("Total     _____________")
                     } else {
                         PrintSunmiUtils.boldText("Tips                              _____________")
+                        PrintSunmiUtils.boldText("Total                             _____________")
                     }
 
                     SunmiPrintHelper.getInstance().lineWrap(1)
