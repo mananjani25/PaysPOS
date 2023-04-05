@@ -351,6 +351,8 @@ object Constants {
 
     const val TIME_DETAILS = "time_details"
 
+    const val CUSTOMER_SIGN_REQUIRED_ON_CD = "customer_sign_required_on_cd"
+
 
     fun createRequestModelForUpdatePritnerType(
         oldList: ArrayList<PrinterResponse.Data.OrderTypes>?,

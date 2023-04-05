@@ -115,8 +115,9 @@ data class VenueDetailsResponse(
         @SerializedName("shift_report_configuration")
         val shift_report_configuration: ShiftRportConfiguration?,
         @SerializedName("time_zone_options")
-        val time_zone_options: List<TbTimeZones>
-
+        val time_zone_options: List<TbTimeZones>,
+        @SerializedName("customer_sign_required_on_cd")
+        val customer_sign_required_on_cd: Boolean,
     ) {
         data class Printer(
             @SerializedName("customer_receipt_printers")

@@ -142,8 +142,6 @@ open class PaymentViewModel @Inject constructor(
                     _showProgress.value = Event(false)
                     resource.data.let { response ->
                         if (response?.status == 200) {
-                            Log.d("MERA", "ON CREATE ORDER RESPONSE: CALLED - Order ID = ${response.data.order.id}")
-                            Log.d("MERA", "ON CREATE ORDER RESPONSE: CALLED - PaymentID = ${response.data.order.payments[0].id}")
 
                             resource.data?.let { createOrderResponse ->
                                 if (createOrderResponse.data.order.customer != null) {

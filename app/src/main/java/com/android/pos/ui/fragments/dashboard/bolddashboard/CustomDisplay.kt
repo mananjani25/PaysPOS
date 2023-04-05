@@ -22,6 +22,7 @@ import com.android.pos.data.model.responseModel.MagtekOnlineOrderRefundResponse
 import com.android.pos.data.model.responseModel.TimeDetailsResponse
 import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.CUSTOMER_SIGN_REQUIRED_ON_CD
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.TAKEOUT
@@ -1401,7 +1402,7 @@ class CustomDisplay(
 
         mOrderID = orderId
         mIsCardPayment = isCardPayment
-        mIsSignatureRequired = isSignatureRequired
+        mIsSignatureRequired = prefProvider.getValueboolean(CUSTOMER_SIGN_REQUIRED_ON_CD, false)
         mTransactionViewModel = transactionViewModel
 
         magensaResponse = paymentViewModel.magensaResponse ?: ""
