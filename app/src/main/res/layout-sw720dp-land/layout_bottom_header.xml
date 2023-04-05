@@ -6,6 +6,7 @@
 
     <RelativeLayout
         android:id="@+id/rlRoot"
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="@dimen/_23sdp"
         android:background="@color/bg_color"

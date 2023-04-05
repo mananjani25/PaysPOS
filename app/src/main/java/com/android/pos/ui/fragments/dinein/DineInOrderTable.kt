@@ -69,11 +69,15 @@ import com.android.pos.ui.adapter.DineInTableAdapter
 import com.android.pos.ui.fragments.checkout.CheckoutDineInPaymentViewModel
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
+import com.android.pos.ui.fragments.dashboard.bolddashboard.DashboardCategoryBoldPOS
 import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
 import com.android.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.android.pos.utils.*
+import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.liveSnackBar
+import com.android.pos.utils.extensions.runOnUiThread
+import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.printer.PrinterClass
 import com.android.pos.utils.statusUtils.Status
 import com.epson.epos2.printer.Printer
@@ -86,6 +90,8 @@ import com.sunmi.externalprinterlibrary.api.ConnectCallback
 import com.sunmi.externalprinterlibrary.api.SunmiPrinter
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
@@ -179,6 +185,16 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
         progressDialog()
         optionType = prefProvider.getValue(Constants.OPTION_TYPE, "")
+        getCustomerDisplay(requireContext())?.let { display ->
+            presentation = CustomDisplay(
+                display,
+                requireContext(),
+                viewLifecycleOwner,
+                dashboardViewModel,
+                passcodeViewModel,
+                viewModel
+            )
+        }
         observeShowProgress()
         setupSnackbar()
         getCustomerList()
@@ -193,16 +209,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         observeTipsList()
         observeAddGuest()
 
-        getCustomerDisplay(requireContext())?.let { display ->
-            presentation = CustomDisplay(
-                display,
-                requireContext(),
-                viewLifecycleOwner,
-                dashboardViewModel,
-                passcodeViewModel,
-                viewModel
-            )
-        }
+
 
         navigateDineInOrderNew()
         observeUnMergeTable()
@@ -213,16 +220,28 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             var count: Int = bundle.getInt("count")
             addGuestToOrder(count)
         }
+
+        //showStaticLoader()
+
         return binding.root
     }
 
-    override fun onResume() {
-        super.onResume()
-//        if (this::presentation.isInitialized) {
-//            presentation.show()
-//            presentation.onDisplayChanged()
-//        }
+    private fun showStaticLoader() {
+        if (!SunmiPrinterApi.getInstance().isConnected) {
+            ProgressUtils.showProgressDialog(requireActivity())
+            Handler().postDelayed({
+                ProgressUtils.dismissProgressDialog()
+            }, 5000)
+
+
+        } else {
+            ProgressUtils.showProgressDialog(requireActivity())
+            Handler().postDelayed({
+                ProgressUtils.dismissProgressDialog()
+            }, 1000)
+        }
     }
+
 
     private fun observeAddGuest() {
         viewModel.updateOrder.observe(viewLifecycleOwner) { event ->
@@ -241,7 +260,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         viewModel.customer().observe(viewLifecycleOwner) {
             if (it.isNotEmpty()) {
                 allCustomerList = it.toCollection(arrayListOf())
-                presentation.setCustomerList(it.toCollection(arrayListOf()))
+                if (this::presentation.isInitialized) {
+                    presentation.setCustomerList(it.toCollection(arrayListOf()))
+                }
             }
         }
     }
@@ -771,6 +792,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             val newList: ArrayList<DineInModel> = arrayListOf()
 
 
+            dashboardViewModel.dineInHeaderPosition = 0
             for (i in 0 until list.size) {
                 val model = DineInModel()
                 if (list[i].isHeader == 0) {
@@ -1253,6 +1275,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
         viewModel.msgText.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
+                Log.d("###17MAR23", "Item Fired Done: Called - End All")
+//                if(pd != null && pd.isShowing){
+//                    pd.dismiss()
+//                }'
+                //binding.maskLayout?.gone()
+                ProgressUtils.dismissProgressDialog()
                 if (it.toString() != "null") {
                     AlertUtils.showCustomAlert(requireContext(), it)
                 }
@@ -2022,6 +2050,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         viewModel.Basedata.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { baseResponse ->
                 if (baseResponse != null) {
+                    Log.d("###17MAR23", "Basedata.observe: Called - Start")
                     passDiscountTotal = baseResponse.totalDiscount
                     passSCTotal = baseResponse.totalServiceCharges
                     wholeTableDiscount = 0.0
@@ -2242,10 +2271,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                                                                 val itemTaxPrice =
                                                                     (tax.rate * totalPrice) / 100
-                                                                LogUtil.logE(
-                                                                    "itemTaxPrice",
-                                                                    "" + itemTaxPrice
-                                                                )
+
 
                                                                 itemTaxPrice
                                                                 // MethodUtils.getTwoDecimal(itemTaxPrice)
@@ -2394,13 +2420,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                         }
 
                                         totalPriceWT = subTotalWT + totalTaxWT + serviceChargeWT
-                                        LogUtil.logE("TODO", "totalPriceWT:  ${totalPriceWT}")
 
                                         guestShareTotal =
                                             totalPriceWT / (baseResponse.guestAttributes.size - 1)
-                                        LogUtil.logE("TODO", "subTotalWT:  ${subTotalWT}")
-                                        LogUtil.logE("TODO", "totalTaxWT:  ${totalTaxWT}")
-                                        LogUtil.logE("TODO", "serviceChargeWT:  ${serviceChargeWT}")
 
                                     }
 
@@ -2433,12 +2455,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                         baseResponse.guestAttributes.size - 1
                                     )
                                 ) {
-                                    Log.d(
-                                        TAG,
-                                        "calculateDineInServiceCharge: DashBoard " + it.min_guest_count + "....." + it.max_guest_count + " in between " + baseResponse.guestAttributes.size.minus(
-                                            1
-                                        )
-                                    )
+
                                     isApplied = true
                                     totalServiceChargeAmount += (totalSubTotal * it.percentage) / 100
                                     return@forEach
@@ -2460,15 +2477,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     totalTaxAmount = MethodUtils.getTwoDecimal(totalTaxAmount)
                     totalServiceChargeAmount = MethodUtils.getTwoDecimal(totalServiceChargeAmount)
 
-                    Log.e("JAN2023", "totalSubTotal  ${totalSubTotal}")
-                    Log.e("JAN2023", "totalTaxAmount  ${totalTaxAmount}")
-                    Log.e("JAN2023", "totalServiceChargeAmount  ${totalServiceChargeAmount}")
-                    Log.e("JAN2023", "orderDiscount  ${orderDiscount}")
 
                     var finalAmount =
                         totalSubTotal + totalTaxAmount + totalServiceChargeAmount - orderDiscount
-                    LogUtil.logE("TODO", "finalAmount  ${finalAmount}")
-                    LogUtil.logE("TODO", "guestShareTotal  ${guestShareTotal}")
+
                     dineInList.get(0).guestDividedAmt =
                         guestShareTotal
                     dineInList.get(0).totalGuestCount = baseResponse.guestAttributes.size - 1
@@ -2478,7 +2490,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         totalTaxWT / (baseResponse.guestAttributes.size - 1)
                     dineInList.get(0).wholeTableSurTax =
                         serviceChargeWT / (baseResponse.guestAttributes.size - 1)
-                    LogUtil.logE("WholeDiscount", "wholeTableDiscount  ${wholeTableDiscount}")
                     dineInList.get(0).wholeTableDiscont =
                         MethodUtils.roundOffAmountDouble(wholeTableDiscount / (baseResponse.guestAttributes.size - 1))
 
@@ -2488,13 +2499,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
 
-                    LogUtil.logE(TAG, "totalTaxAmount:  ${totalTaxAmount}")
                     viewModel.totalTaxAmount = totalTaxAmount
                     subTotalDInin = totalSubTotal - orderDiscount
                     serviceCharge = totalServiceChargeAmount
                     totalDiscount = orderDiscount + totalItemDiscount
                     finalTaxAmt = totalTaxAmount
-                    LogUtil.logE(TAG, "GotsubTotalDIninfinalAmount  ${finalAmount}")
                     binding.txtTotalAmountNew.text = MethodUtils.roundOffAmount(
                         finalAmount
                     )
@@ -2517,7 +2526,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                 }
                             }
                         }*/
-                    LogUtil.logE("TODO", "paidGuestCount:  ${paidGuestCount}")
                     if (paidGuestCount > 0) {
 
                         paidGuestAmount = paidGuestCount
@@ -2534,8 +2542,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                         //subTotalDInin -= baseResponse.totalDiscount
 
-
-                        Log.d("TODO", "suTotalPaidGuest: " + subTotalDInin)
 
                         var tempServicecharge = 0.0
                         if (paidGuestCount > 0) {
@@ -2612,6 +2618,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
                     if (dineInList.isNotEmpty()) {
+                        Log.d("###17MAR23", "dineInList.isNotEmpty(): Called - Start")
                         dineInTableAdapter.setList(dineInList)
                         if (this::presentation.isInitialized) {
                             presentation.show()
@@ -2655,8 +2662,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         var dineInItems: ArrayList<TbItem> = arrayListOf()
         var newDineInList: ArrayList<DineInModel> = arrayListOf()
         var dineinModel: DineInModel = DineInModel()
-        LogUtil.logE(TAG, "orderDiscountGEt:  ${list[0].orderDiscount}")
-        LogUtil.logE(TAG, "dineExtractList  ${Gson().toJson(list)}")
+
         for (i in 0 until list.size) {
             if (list[i].isHeader == 1) {
                 list.get(i).item?.let {
@@ -2741,7 +2747,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         var totalTablePrice = 0.0
         var WTDiscount = 0.0
         var guestCount = 0
-        Log.e("checkDragTo", "dragTodragTo  ${dragTo}")
         if (dragTo != -1) {
             oldList.get(dragTo).item?.guestItemId?.let { listOfMoveItemIds.add(it) }
             oldList.get(dragTo).item?.guestItemId = null
@@ -2810,7 +2815,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                                         val itemTaxPrice =
                                             (tax.rate * totalPrice) / 100
-                                        LogUtil.logE("itemTaxPrice", "" + itemTaxPrice)
                                         MethodUtils.getTwoDecimal(itemTaxPrice)
                                         /* String.format("%.2f", itemTaxPrice)
                                          .toDouble()*/
@@ -2851,10 +2855,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                 )
                             ) {
                                 isApplied = true
-                                Log.d(
-                                    TAG,
-                                    "calculateDineInServiceCharge: DashBoard " + it.min_guest_count + "....." + it.max_guest_count + " in between " + (guestCount - 1)
-                                )
+
                                 WTServiceCharge += (wholeTableAmt * it.percentage) / 100
                                 return@forEach
                             }
@@ -2871,11 +2872,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 }
 
             }
-            LogUtil.logE("AfterMove", "wholeTableAmt  ${wholeTableAmt}")
-            LogUtil.logE("AfterMove", "WTServiceCharge  ${WTServiceCharge}")
-            LogUtil.logE("AfterMove", "WTTax  ${WTTax}")
-            LogUtil.logE("AfterMove", "WTTax  ${WTDiscount}")
-            LogUtil.logE("AfterMode", "guestCount  ${guestCount}")
+
             guestShare = (wholeTableAmt + WTServiceCharge + WTTax) / (guestCount - 1)
 
 
@@ -2891,8 +2888,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     model.customer = oldList.get(i).customer
 
                     model.guestDividedAmt = guestShare
-                    Log.d("two", "navigateDineInOrder: " + model.guestDividedAmt)
-                    LogUtil.logE(TAG, "OLDListGuestId:  ${oldList.get(i).id}")
+
                     model.id = oldList.get(i).id
                 }
                 model.isHeader = oldList.get(i).isHeader
@@ -3061,20 +3057,26 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 viewHolder: RecyclerView.ViewHolder,
                 target: RecyclerView.ViewHolder
             ): Boolean {
-                val oldPos = viewHolder.layoutPosition
-                val newPos = target.layoutPosition
+                if (target.layoutPosition != 0 && dineInTableAdapter.getList()
+                        .get(viewHolder.layoutPosition).isHeader != 0
+                ) {
+                    val oldPos = viewHolder.layoutPosition
+                    val newPos = target.layoutPosition
 
-                if (dragFrom == -1) {
-                    dragFrom = oldPos
+                    if (dragFrom == -1) {
+                        dragFrom = oldPos
+                    }
+                    dragTo = newPos
+
+                    dineInTableAdapter.onItemMove(
+                        viewHolder.layoutPosition,
+                        target.layoutPosition
+                    )
+                    return true
+                } else {
+                    return false
                 }
-                dragTo = newPos
 
-                dineInTableAdapter.onItemMove(
-                    viewHolder.layoutPosition,
-                    target.layoutPosition
-                )
-
-                return true
             }
 
             override fun isLongPressDragEnabled(): Boolean {
@@ -3205,6 +3207,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             SunmiPrinterApi.getInstance()
                 .setPrinter(SunmiPrinter.SunmiBlueToothPrinter, customerReceiptPrinters.ipAddress)
 
+            showStaticLoader()
+
             if (!SunmiPrinterApi.getInstance().isConnected) {
                 SunmiPrinterApi.getInstance()
                     .connectPrinter(requireContext(), object : ConnectCallback {
@@ -3275,7 +3279,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
 
             if (guestPrint && getOrderDetailsResponse?.guestAttributes?.size!! > 2) {
-                LogUtil.logE("addDineInInner", "3333333")
 
                 viewLifecycleOwner.lifecycleScope.launch {
                     delay(100)
@@ -3296,7 +3299,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             } else {
 
-                LogUtil.logE("addDineInInner", "4444444")
 
                 viewLifecycleOwner.lifecycleScope.launch {
                     delay(100)
@@ -7420,6 +7422,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
     ) {
 
+        Log.d("###17MAR23", "initKitchenPrinter: Called - Start")
+        Log.d("###17MAR23", "ProgressShow: Called - Start")
 
         if (data.name.startsWith(SUNMI_PRINTER, true)) {
 
@@ -7427,25 +7431,33 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 .setPrinter(SunmiPrinter.SunmiBlueToothPrinter, data.ipAddress)
 
             if (!SunmiPrinterApi.getInstance().isConnected) {
+//                runOnUiThread {
+//                    ProgressUtils.showProgressDialog(requireActivity())
+//                }
                 SunmiPrinterApi.getInstance()
                     .connectPrinter(requireContext(), object : ConnectCallback {
 
                         override fun onFound() {
+                            Log.d("###17MAR23", "SunmiPrinterFound: Called")
                             println("onFound")
                         }
 
                         override fun onUnfound() {
                             println("onUnfound")
+                            Log.d("###17MAR23", "SunmiPrinterUnfound: Called")
                         }
 
                         override fun onConnect() {
                             println("onConnect")
+                            Log.d("###17MAR23", "SunmiPrinterConnect: Called")
+                            //ProgressUtils.dismissProgressDialog()
                             generateKitchenReceiptSunmi(data, type, item)
 
                         }
 
                         override fun onDisconnect() {
                             println("onDisconnect")
+                            Log.d("###17MAR23", "SunmiPrinterDisConnect: Called")
                         }
 
                     })
@@ -8577,6 +8589,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         item: ArrayList<TbItem>
     ) {
         try {
+            //ProgressUtils.showProgressDialog(requireActivity())
 
             PrintSunmiUtils.fontSize(kitchenSettingModel.fonts)
             SunmiPrinterApi.getInstance().printerInit()
@@ -8658,7 +8671,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
             PrintSunmiUtils.cutPaper()
-
+            //ProgressUtils.dismissProgressDialog()
 
         } catch (e: Exception) {
             e.printStackTrace()
@@ -8903,6 +8916,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     }
 
     fun checkForAutoFire(isCheckAndFire: Boolean) {
+        Log.d("###17MAR23", "checkForAutoFire: Called - Start - $isCheckAndFire")
         var list = dineInTableAdapter.getList()
         val builder = ArrayList<String>()
         var listItem: ArrayList<TbItem> = arrayListOf()
@@ -9049,6 +9063,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             }
             if (!isCheckAndFire or (isCheckAndFire && autoPrintEnable)) {
                 var fireAllIds = android.text.TextUtils.join(",", builder)
+
                 viewModel.fireItemToKitchen(orderId ?: 0, true, fireAllIds, true)
                 list.forEach {
                     if (it.isHeader == 1) {

@@ -6,9 +6,6 @@
     tools:ignore="MissingDefaultResource">
 
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
     <TableLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -108,5 +105,4 @@
 
         </TableRow>
     </TableLayout>
-    </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

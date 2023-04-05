@@ -102,6 +102,7 @@
                     android:inputType="textVisiblePassword"
                     android:minLines="1"
                     android:maxLength="60"
+                    android:digits="@string/character_digits_String"
                     android:padding="@dimen/_9sdp"
                     android:singleLine="true"
                     android:textColor="@color/txtColor"
@@ -217,7 +218,7 @@
                     android:inputType="textVisiblePassword|textMultiLine"
                     android:minLines="3"
                     android:padding="@dimen/_5sdp"
-
+                    android:digits="@string/character_digits_String"
                     android:textColor="@color/txtColor"
                     android:textColorHint="@color/hintColor"
                     android:textSize="@dimen/_6ssp" />

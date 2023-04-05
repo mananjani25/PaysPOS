@@ -18,6 +18,8 @@ import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DELETE
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
+import com.android.pos.data.remote.Constants.MAX_ITEM_QUANTITY
+import com.android.pos.data.remote.Constants.MAX_ITEM_QUANTITY_FOR_MANUAL_SALES
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.SERVICECHARGE_TAKEOUT_OPENORDER
 import com.android.pos.data.remote.Constants.TAKEOUT
@@ -58,7 +60,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
     private lateinit var modifiersAdapter: ModifiersAdapter
     private var isUpdateItem: Boolean = false
 
-    private var adapter: ItemModifierSetAdapter? = null
+    private var itemModifiersAdapter: ItemModifierSetAdapter? = null
     private var intArray: IntArray? = null
     private var mainModifiersId: ArrayList<Int> = arrayListOf()
     private var mainVariationId: ArrayList<Int> = arrayListOf()
@@ -99,6 +101,8 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
         variationAdapter.setCallback(this)
         isUpdateItem = requireArguments().getBoolean(Constants.IS_UPDATE_ITEM)
         Log.e("GetDataAdd","isUpdateItem:    ${isUpdateItem}")
+
+        binding.txtDone.isEnabled = isUpdateItem
 
         return binding.root
     }
@@ -147,9 +151,12 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
             override fun afterTextChanged(s: Editable?) {
                 if (s.toString().isNotEmpty()) {
                     qty = s.toString().toInt()
-                    if (qty > 15) {
-                        qty = 15
-                        binding.edttxtQuantity.setText("15")
+                    if (!item.isManualSales &&  qty > MAX_ITEM_QUANTITY) {
+                        qty = MAX_ITEM_QUANTITY
+                        binding.edttxtQuantity.setText(MAX_ITEM_QUANTITY.toString())
+                    } else if(item.isManualSales &&  qty > MAX_ITEM_QUANTITY_FOR_MANUAL_SALES){
+                        qty = MAX_ITEM_QUANTITY_FOR_MANUAL_SALES
+                        binding.edttxtQuantity.setText(MAX_ITEM_QUANTITY_FOR_MANUAL_SALES.toString())
                     } else if (qty == 0) {
                         binding.edttxtQuantity.setText("1")
                     }
@@ -259,11 +266,10 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 
 
 
+            if (item.modifier_set_ids.isNotEmpty() && itemModifiersAdapter != null) {
+                if (minMaxValidationCheck(itemModifiersAdapter)) {
 
-            if (item.modifier_set_ids.isNotEmpty() && adapter != null) {
-                if (minMaxValidationCheck(adapter)) {
-
-                    val modifiers = adapter?.getSelectedModifiers()
+                    val modifiers = itemModifiersAdapter?.getSelectedModifiers()
 
                     if (modifiers?.isNotEmpty() == true) {
                         modifiers.forEach {
@@ -294,21 +300,26 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 
             val variationList = ArrayList<VariationsAttribute>()
             if (item.variationsAttributes.isNotEmpty()) {
-                val variation = variationAdapter.getItem()
-                variationList.add(variation)
-                item.name = item.name.substringBefore(" (") + " (" + variation.name + ")"
-                item.price = variation.price ?: 0.0
-                if (item.price == 0.0 && variation.priceType == "Variable") {
-                    AlertUtils.showCustomAlertWithListenerWithOK(
-                        requireContext(), "Please enter amount"
-                    ) { _, _ ->
+                if (variationAdapter.variationList.isNotEmpty()) {
+                    val variation = variationAdapter.getItem()
+                    variationList.add(variation)
+                    item.name = item.name.substringBefore(" (") + " (" + variation.name + ")"
+                    item.price = variation.price ?: 0.0
+                    if (item.price == 0.0 && variation.priceType == "Variable") {
+                        AlertUtils.showCustomAlertWithListenerWithOK(
+                            requireContext(), "Please enter amount"
+                        ) { _, _ ->
 
+                        }
+                        return@setOnClickListener
                     }
+                    item.variationsAttributes = variationList
+                } else {
                     return@setOnClickListener
                 }
-                item.variationsAttributes = variationList
 
             }
+
 
             if (isUpdateItem) {
                 if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
@@ -613,36 +624,9 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                                     }
                                                 }
 
-//                                    if (item.variationsAttributes.isNotEmpty()) {
-//                                        val resultVariationDetails =
-//                                            getNavigationResultLiveData<VariationsAttribute>(
-//                                                Constants.DIALOG_KEY_VARIATION_DETAILS
-//                                            )
-//                                        resultVariationDetails?.observe(viewLifecycleOwner) {
-//                                            variationAdapter?.updateVariation(it)
-//                                            var variation: VariationsAttribute? = null
-//                                            if (variationAdapter != null) {
-//                                                variation = variationAdapter.getItem()
-//                                            } else if (it != null) {
-//                                                variation = it
-//                                            }
-//
-//
-//
-//
-//                                            if (variation != null) {
-//                                                variation?.price?.let {
-//                                                    item.price = it
-//                                                }
-//
-//                                            } else {
-//                                                item.price = item.price
-//                                            }
-//                                        }
-//                                    }
                                             }
                                         }
-
+                                    binding.txtDone.isEnabled = true
                                 }
 
 
@@ -650,7 +634,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                 } else binding.dividerLine.root.visibility = View.GONE
 
                                 if (intArray!!.isNotEmpty()) {
-                                    if (adapter == null) {
+                                    if (itemModifiersAdapter == null) {
                                         binding.dividerLine2.root.visibility = View.GONE
                                     } else {
                                         binding.dividerLine2.root.visibility = View.VISIBLE
@@ -659,13 +643,13 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                     Log.e(TAG, "intArrayList   ${Gson().toJson(intArray)}")
                                     viewModel.modifierSet(intArray!!).observe(requireActivity()) {
                                         if (it.data != null && it.data.isNotEmpty() && view != null) {
-                                            adapter = ItemModifierSetAdapter(
+                                            itemModifiersAdapter = ItemModifierSetAdapter(
                                                 viewModel,
                                                 item.itemId,
                                                 viewLifecycleOwner
                                             )
-                                            adapter?.setLongCallback(this)
-                                            binding.rvModifiersList.adapter = adapter
+                                            itemModifiersAdapter?.setLongCallback(this)
+                                            binding.rvModifiersList.adapter = itemModifiersAdapter
                                             binding.rvModifiersList.visibility = View.VISIBLE
 
                                             if (isUpdateItem) {
@@ -719,11 +703,13 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                                 "getdataModSets:  ${Gson().toJson(dataMod)}"
                                             )
 
-                                            adapter?.add(dataMod)
+                                            itemModifiersAdapter?.add(dataMod)
+                                            binding.txtDone.isEnabled = true
 
                                         } else {
                                             binding.rvModifiersList.visibility = View.GONE
                                             binding.dividerLine2.root.visibility = View.GONE
+                                            binding.txtDone.isEnabled = true
                                         }
                                     }
 
@@ -1137,15 +1123,15 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
         binding.linearDonemodifier.setOnClickListener {
             MethodUtils.hideKeyboard(requireActivity())
             counter = binding.edtQntModifir.text.toString().toInt()
-            if (adapter?.filterList?.isNotEmpty() == true) {
-                adapter?.filterList?.forEachIndexed { indexset, modifierset ->
+            if (itemModifiersAdapter?.filterList?.isNotEmpty() == true) {
+                itemModifiersAdapter?.filterList?.forEachIndexed { indexset, modifierset ->
                     modifierset.modifiers.forEachIndexed { index, modifier ->
                         if (modifier.id == modifier_id) {
-                            adapter?.filterList!![indexset].modifiers[index].isChecked = true
-                            adapter?.filterList!![indexset].modifiers[index].modifier_quantity =
+                            itemModifiersAdapter?.filterList!![indexset].modifiers[index].isChecked = true
+                            itemModifiersAdapter?.filterList!![indexset].modifiers[index].modifier_quantity =
                                 counter
-                            adapter?.filterList!![indexset].modifiers[index].itemQuantity = counter
-                            adapter?.notifyDataSetChanged()
+                            itemModifiersAdapter?.filterList!![indexset].modifiers[index].itemQuantity = counter
+                            itemModifiersAdapter?.notifyDataSetChanged()
                         }
                     }
 

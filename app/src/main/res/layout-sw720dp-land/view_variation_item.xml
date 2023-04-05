@@ -48,6 +48,17 @@
                 android:textSize="@dimen/_5mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvMarkupPrice"
+                style="@style/CustomFontSemiBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="$10.00"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_5mdpi" />
+
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvPrice"
                 style="@style/CustomFontSemiBold"
                 android:layout_width="0dp"

@@ -4,10 +4,7 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.os.Build
-import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
+import android.os.*
 import android.util.Base64
 import android.util.Log
 import android.view.LayoutInflater
@@ -40,8 +37,6 @@ import com.android.pos.databinding.FragmentReportEodBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.*
 import com.android.pos.ui.adapter.boldpos.SalesPerCategorySummary
-import com.android.pos.ui.fragments.dashboard.bolddashboard.DashboardCategoryBoldPOS
-import com.android.pos.ui.fragments.loginscreen.ClockInOwnerViewModel
 import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
 import com.android.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
@@ -57,14 +52,15 @@ import com.sunmi.externalprinterlibrary.api.ConnectCallback
 import com.sunmi.externalprinterlibrary.api.SunmiPrinter
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 import javax.inject.Inject
 import kotlin.math.abs
 
@@ -72,7 +68,7 @@ import kotlin.math.abs
 class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     private var eodReportConfiguration: ShiftRportConfiguration? = null
-    private var eodReportData: EodReportResponse.Data? = null
+    var eodReportData: EodReportResponse.Data? = null
     private var shiftReportsSettingModel: ShiftRportConfiguration? = null
     private var defaultEmployeePos: Int = 0
     private lateinit var binding: FragmentReportEodBinding
@@ -196,7 +192,6 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                                 bundle
                             )
                         }
-
 
 
                     }
@@ -408,10 +403,14 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: String?) {
         // Do something
-        if (event.equals("1")){
+        if (event.equals("1")) {
             sendEmail()
-        }else if (event.equals("2")){
+        } else if (event.equals("2")) {
             generateEODReport()
+        } else {
+            if (event != null) {
+                viewModel.getReportSummary(event)
+            }
         }
 
     }
@@ -2634,12 +2633,12 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
             timecalender.set(Calendar.HOUR_OF_DAY, hour)
             timecalender.set(Calendar.MINUTE, minute)
             viewModel.startDate.value = timeCalculateForStartEndTime(hour, minute, "isstart")
-            if (differnceTrue(viewModel.startDate.value!!, viewModel.endDate.value) <= 30) {
+            if (differnceTrue(viewModel.startDate.value!!, viewModel.endDate.value) <= 7) {
                 viewModel.getReportSummary("")
             } else {
                 AlertUtils.showCustomAlertWithListenerWithOK(
                     requireActivity(),
-                    "Please Select date in 30 Days."
+                    "Please Select date in 7 Days."
                 ) { _, _ ->
                 }
             }
@@ -2651,12 +2650,12 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
             timecalender.set(Calendar.MINUTE, minute)
 
             viewModel.endDate.value = timeCalculateForStartEndTime(hour, minute, "isend")
-            if (differnceTrue(viewModel.endDate.value!!, viewModel.startDate.value) <= 30) {
+            if (differnceTrue(viewModel.endDate.value!!, viewModel.startDate.value) <= 7) {
                 viewModel.getReportSummary("")
             } else {
                 AlertUtils.showCustomAlertWithListenerWithOK(
                     requireActivity(),
-                    "Please Select date in 30 Days."
+                    "Please Select date in 7 Days."
                 ) { _, _ ->
                 }
             }
@@ -2825,7 +2824,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
         viewModel.endDateSelection.observe(requireActivity()) { event ->
             event.getContentIfNotHandled()?.let {
 
-               val dialog = DatePickerDialog(
+                val dialog = DatePickerDialog(
                     requireActivity(),
                     android.R.style.Theme_Material_Light_Dialog,
                     endDate,
@@ -2853,419 +2852,469 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
                 eodReportData = it
 
+                val uiScope = CoroutineScope(Dispatchers.Main)
+                uiScope.launch {
 
-                //salesSummary
-                showHide(
-                    rvMedia = binding.rvSalesSummary,
-                    textView = binding.txtSalesSummary,
-                    headerView = null,
-                    visible = it.salesSummary.isNotEmpty()
-                )
-                salesReportAdapter.add(it.salesSummary)
+                    Log.d(TAG, "INSIDE JOB: CALLED")
+                    ProgressUtils.showProgressDialog(requireActivity())
 
-                showHide(
-                    rvMedia = binding.rvCashLog,
-                    textView = binding.txtCashLog,
-                    headerView = null,
-                    visible = it.cashLogDetails.isNotEmpty()
-                )
-                cashLogAdapter.add(it.cashLogDetails)
+                    delay(3000)
 
-                showHide(
-                    rvMedia = binding.rvSalesTaxSummary,
-                    textView = binding.txtSalesTaxSummary,
-                    headerView = null,
-                    visible = it.salesAndTaxesSummary.isNotEmpty()
-                )
-                if (it.salesAndTaxesSummary.isEmpty()) {
-                    binding.headerSalesTaxSummary.gone()
-                }
-                salesTaxSummaryAdapter.add(it.salesAndTaxesSummary)
-
-
-                showHide(
-                    rvMedia = binding.rvTaxDetails,
-                    textView = binding.txtTaxDetails,
-                    headerView = null,
-                    visible = it.taxDetails.isNotEmpty()
-                )
-                taxDetailsAdapter.add(it.taxDetails)
-
-
-                showHide(
-                    rvMedia = binding.rvRefundDetails,
-                    textView = binding.txtRefundDetails,
-                    headerView = null,
-                    visible = it.refundDetails.isNotEmpty()
-                )
-                refundDetailsAdapter.add(it.refundDetails)
-
-                showHide(
-                    rvMedia = binding.rvDiscountDetails,
-                    textView = binding.txtDiscountDetails,
-                    headerView = null,
-                    visible = it.discountDetails.isNotEmpty()
-                )
-                discountDetailsAdapter.add(it.discountDetails)
-
-
-                showHide(
-                    rvMedia = binding.rvCashPayments,
-                    textView = binding.txtCashPayments,
-                    headerView = null,
-                    visible = it.totalCashPayments.isNotEmpty()
-                )
-                cashPaymentsAdapter.add(it.totalCashPayments)
-
-
-                showHide(
-                    rvMedia = binding.rvTotalPayments,
-                    textView = binding.txtTotalPayments,
-                    headerView = null,
-                    visible = it.totalPayments.isNotEmpty()
-                )
-                totalPaymentsAdapter.add(it.totalPayments)
-
-
-                showHide(
-                    rvMedia = binding.rvPaymentDetails,
-                    textView = binding.txtPaymentDetails,
-                    headerView = binding.ilPaymentDetails,
-                    visible = it.paymentDetails.isNotEmpty()
-                )
-                paymentDetailsAdapter.add(it.paymentDetails)
-
-
-                showHide(
-                    rvMedia = binding.rvServiceChargeDetails,
-                    textView = binding.txtServiceChargeDetails,
-                    headerView = null,
-                    visible = it.serviceChargeDetails.isNotEmpty()
-                )
-                serviceChargeDetailsAdapter.add(it.serviceChargeDetails)
-
-
-                it.employeeGuestDetails?.let { it1 ->
-                    showHide(
-                        rvMedia = binding.rvemployeeGuestDetails,
-                        textView = binding.txtemployeeGuestDetails,
-                        headerView = null,
-                        visible = it1.isNotEmpty()
-                    )
-                }
-                if (it.employeeGuestDetails?.isNotEmpty() == true)
-                    employeeGuestDetailsAdapter.add(it.employeeGuestDetails[0])
-
-
-                showHide(
-                    rvMedia = binding.rvCreditAuditTip,
-                    textView = binding.txtCreditAuditTip,
-                    headerView = null,
-                    visible = it.creditTipAudit.isNotEmpty()
-                )
-                creditTipAuditAdapter.add(it.creditTipAudit)
-
-                it.salesPerCategorySummary?.let { it1 ->
-                    showHide(
-                        rvMedia = binding.rvSaleCategorySummary,
-                        textView = binding.txtSaleCategorySummary,
-                        headerView = null,
-                        visible = it1.isNotEmpty()
-                    )
-                }
-
-                LogUtil.logE(TAG, "clock in out Data:  ${Gson().toJson(it.clockInClockOut)}")
-                it.clockInClockOut?.let {
-                    if (it.isNotEmpty()) {
-                        var list: ArrayList<ClockinOutReportModel> = arrayListOf()
-                        it.forEach {
-                            if (it.size == 5) {
-                                val model = ClockinOutReportModel()
-                                it.forEach {
-
-
-                                    if (it.key == "Employee") {
-                                        model.empName = it.value
-
-
-                                    } else if (it.key == "Clock In") {
-                                        model.clockIn = it.value
-                                    } else if (it.key == "Clock Out") {
-                                        model.clockOutval = it.value
-
-                                    } else if (it.key == "Total Working Hour") {
-                                        model.totalTime = it.value
-                                    } else if (it.key == "Actual In Time") {
-                                        model.actualTime = it.value
-                                    }
-
-
-                                }
-                                list.add(model)
-
-                            }
-                        }
-                        LogUtil.logE(TAG, "clockinData ${list.size}")
-
-                        clockInClockOutAdapter.setList(list)
-                    } else {
-                        binding.rvClockInClockOut?.gone()
-                        binding.txtClockInClockOut?.gone()
-                        binding.linearClockInOut?.gone()
+                    val job = async(Dispatchers.Main) {
+                        updateData(it)
                     }
+                    job.await()
 
+                    Log.d(TAG, "AFTER JOB ENDS: CALLED")
+                    ProgressUtils.dismissProgressDialog()
 
                 }
 
-                if (it.salesPerCategorySummary != null) {
+//                uiScope.executeAsyncTask(
+//                    onPostExecute = {
+//                        ProgressUtils.dismissProgressDialog()
+//                    },
+//                    onPreExecute = {
+//                        ProgressUtils.showProgressDialog(requireActivity())
+//                    },
+//                    doInBackground = {
+//                        updateData(it)
+//                    }
+//                )
 
-                    var arrayListSalePerCategory: ArrayList<KeyValue> = arrayListOf()
-
-                    it.salesPerCategorySummary.forEachIndexed { index, arrayList ->
-                        if (index == 0) {
-                            arrayListSalePerCategory.add(KeyValue("Cash Sales", ""))
-                            arrayList.forEach {
-                                arrayListSalePerCategory.add(it)
-                            }
-                        } else if (index == 1) {
-                            arrayListSalePerCategory.add(KeyValue("Credit/Non Cash Sales", ""))
-                            arrayList.forEach {
-                                arrayListSalePerCategory.add(it)
-                            }
-
-                        }
-                    }
-                    if (arrayListSalePerCategory.isNotEmpty()) {
-                        saleCategorySummaryAdapter.add(arrayListSalePerCategory)
-                        saleCategorySummaryAdapter.notifyDataSetChanged()
-                    }
-                }
-
-
-
-                showHide(
-                    rvMedia = binding.rvTipsDetails,
-                    textView = binding.txtTipsDetails,
-                    headerView = binding.ilTipsDetails,
-                    visible = it.tipDetails.isNotEmpty()
-                )
-                tipDetailsAdapter.add(it.tipDetails)
-
-                showHide(
-                    rvMedia = binding.rvPendingPayments,
-                    textView = binding.txtPendingPayments,
-                    headerView = null,
-                    visible = it.totalCreditPaymentDetails.isNotEmpty()
-                )
-                creditPaymentDetailsAdapter.add(it.totalCreditPaymentDetails)
-
-
-                showHide(
-                    rvMedia = binding.rvRefundAndVoid,
-                    textView = binding.txtCashEventSummary,
-                    headerView = null,
-                    visible = it.refundAndVoidDetails.isNotEmpty()
-                )
-                if (it.refundAndVoidDetails.isEmpty()) {
-                    binding.headerRefundsVoids.gone()
-                }
-                cashEventSummaryAdapter.add(it.refundAndVoidDetails)
-
-
-                showHide(
-                    rvMedia = binding.rvOtherDetails,
-                    textView = null,
-                    headerView = null,
-                    visible = it.otherDetails.isNotEmpty()
-                )
-                otherDetailsAdapter.add(it.otherDetails)
-
-
-                showHide(
-                    rvMedia = binding.rvCreditCardBreakDown,
-                    textView = binding.txtCreditCardBreakDown,
-                    headerView = null,
-                    visible = it.otherDetails.isNotEmpty()
-                )
-                if (it.creditCardBreakdown.isEmpty()) {
-                    binding.ilCreditCardBreakDown.gone()
-                } else {
-                    binding.ilCreditCardBreakDown.visible()
-                }
-                creditCardBreakdownAdapter.add(it.creditCardBreakdown)
-
-                showHide(
-                    rvMedia = binding.rvSalesDetails,
-                    textView = binding.txtSalesDetails,
-                    headerView = null,
-                    visible = it.orderSalesDetails.data.isNotEmpty()
-                )
-
-                if (it.orderSalesDetails.data.isNotEmpty()) {
-                    binding.llHeader.visible()
-                    binding.llTotal.visible()
-                    MethodUtils.setPriceTextView(binding.txtTotalAmount, it.orderSalesDetails.total)
-
-                } else {
-                    binding.llHeader.gone()
-                    binding.llTotal.gone()
-                }
-
-                salesOrderDetailsAdapter.add(it.orderSalesDetails.data)
-
-
-                binding.linReports.visible()
-
-                shiftReportsSettingModel?.orderSalesDetails?.let { it1 ->
-                    showHide(
-                        binding.rvSalesDetails, binding.txtSalesDetails, null,
-                        it1
-                    )
-                }
-
-                if (shiftReportsSettingModel?.orderSalesDetails == false) {
-                    binding.llHeader.gone()
-                    binding.llTotal.gone()
-                }
-
-                shiftReportsSettingModel?.salesSummary?.let { it1 ->
-                    showHide(
-                        binding.rvSalesSummary, binding.txtSalesSummary, null,
-                        it1
-                    )
-                }
-
-                shiftReportsSettingModel?.salesAndTaxSummary?.let { it1 ->
-                    showHide(
-                        binding.rvSalesTaxSummary, binding.txtSalesTaxSummary, null,
-                        it1
-                    )
-                }
-
-                if (shiftReportsSettingModel?.salesAndTaxSummary == false) {
-                    binding.headerSalesTaxSummary.gone()
-                }
-
-
-                shiftReportsSettingModel?.paymentDetails?.let { it1 ->
-                    showHide(
-                        binding.rvPaymentDetails,
-                        binding.txtPaymentDetails,
-                        binding.ilPaymentDetails,
-                        it1
-                    )
-                }
-
-                shiftReportsSettingModel?.tipsDetails?.let { it1 ->
-                    showHide(
-                        binding.rvTipsDetails, binding.txtTipsDetails, binding.ilTipsDetails,
-                        it1
-                    )
-                }
-                shiftReportsSettingModel?.taxDetails?.let { it1 ->
-                    showHide(
-                        binding.rvTaxDetails, binding.txtTaxDetails, null,
-                        it1
-                    )
-                }
-                shiftReportsSettingModel?.refundOrVoids?.let { it1 ->
-                    showHide(
-                        binding.rvRefundAndVoid, binding.txtCashEventSummary, null,
-                        it1
-                    )
-                }
-
-                if (shiftReportsSettingModel?.refundOrVoids == false) {
-                    binding.headerRefundsVoids.gone()
-                }
-
-                shiftReportsSettingModel?.refundDetails?.let { it1 ->
-                    showHide(
-                        binding.rvRefundDetails, binding.txtRefundDetails, null,
-                        it1
-                    )
-                }
-
-                shiftReportsSettingModel?.discountDetails?.let { it1 ->
-                    showHide(
-                        binding.rvDiscountDetails, binding.txtDiscountDetails, null,
-                        it1
-                    )
-                }
-                shiftReportsSettingModel?.totalCreditPayments?.let { it1 ->
-                    showHide(
-                        binding.rvPendingPayments, binding.txtPendingPayments, null,
-                        it1
-                    )
-                }
-
-                shiftReportsSettingModel?.totalCashPayments?.let { it1 ->
-                    showHide(
-                        binding.rvCashPayments, binding.txtCashPayments, null,
-                        it1
-                    )
-                }
-                shiftReportsSettingModel?.totalPayments?.let { it1 ->
-                    showHide(
-                        binding.rvTotalPayments, binding.txtTotalPayments, null,
-                        it1
-                    )
-                }
-                shiftReportsSettingModel?.creditCardBreakdown?.let { it1 ->
-                    showHide(
-                        binding.rvCreditCardBreakDown, binding.txtCreditCardBreakDown, null,
-                        it1
-                    )
-                }
-
-                if (shiftReportsSettingModel?.creditCardBreakdown == false) {
-                    binding.ilCreditCardBreakDown.gone()
-                }
-
-                shiftReportsSettingModel?.serviceChargeDetails?.let { it1 ->
-                    showHide(
-                        binding.rvServiceChargeDetails, binding.txtServiceChargeDetails, null,
-                        it1
-                    )
-                }
-                shiftReportsSettingModel?.cashLogDetails?.let { it1 ->
-                    showHide(
-                        binding.rvCashLog, binding.txtCashLog, null,
-                        it1
-                    )
-                }
-                shiftReportsSettingModel?.otherDetails?.let { it1 ->
-                    showHide(
-                        binding.rvOtherDetails, binding.txtOtherDetails, null,
-                        it1
-                    )
-                }
-
-                shiftReportsSettingModel?.creditTipAudit?.let { it1 ->
-                    showHide(
-                        binding.rvCreditAuditTip, binding.txtCreditAuditTip, null,
-                        it1
-                    )
-                }
-                shiftReportsSettingModel?.cashCreditPerSalesCategorySummary?.let { it1 ->
-                    showHide(
-                        binding.rvSaleCategorySummary, binding.txtSaleCategorySummary, null,
-                        it1
-                    )
-                }
-
-                shiftReportsSettingModel?.employeeGuestReport?.let { it1 ->
-                    showHide(
-                        binding.rvemployeeGuestDetails, binding.txtemployeeGuestDetails, null,
-                        it1
-                    )
-                }
-
-                binding.txtClockOut.isClickable = true
-                binding.txtClockOut.isFocusable = true
+//                val executor: ExecutorService = Executors.newSingleThreadExecutor()
+//                val handler = Handler(Looper.getMainLooper())
+//                executor.execute {
+//
+//                    handler.post {
+//                        //UI Thread work here
+//                        ProgressUtils.showProgressDialog(requireActivity())
+//                    }
+//
+//                    //Background work here
+//                    runOnUiThread(){
+//                        updateData(it)
+//                    }
+//
+//                    handler.post {
+//                        //UI Thread work here
+//                        ProgressUtils.dismissProgressDialog()
+//                    }
+//                }
 
             }
         })
+    }
+
+    fun updateData(it: EodReportResponse.Data) {
+
+        showHide(
+            rvMedia = binding.rvSalesSummary,
+            textView = binding.txtSalesSummary,
+            headerView = null,
+            visible = it.salesSummary.isNotEmpty()
+        )
+        salesReportAdapter.add(it.salesSummary)
+
+        showHide(
+            rvMedia = binding.rvCashLog,
+            textView = binding.txtCashLog,
+            headerView = null,
+            visible = it.cashLogDetails.isNotEmpty()
+        )
+        cashLogAdapter.add(it.cashLogDetails)
+
+        showHide(
+            rvMedia = binding.rvSalesTaxSummary,
+            textView = binding.txtSalesTaxSummary,
+            headerView = null,
+            visible = it.salesAndTaxesSummary.isNotEmpty()
+        )
+        if (it.salesAndTaxesSummary.isEmpty()) {
+            binding.headerSalesTaxSummary.gone()
+        }
+        salesTaxSummaryAdapter.add(it.salesAndTaxesSummary)
+
+
+        showHide(
+            rvMedia = binding.rvTaxDetails,
+            textView = binding.txtTaxDetails,
+            headerView = null,
+            visible = it.taxDetails.isNotEmpty()
+        )
+        taxDetailsAdapter.add(it.taxDetails)
+
+
+        showHide(
+            rvMedia = binding.rvRefundDetails,
+            textView = binding.txtRefundDetails,
+            headerView = null,
+            visible = it.refundDetails.isNotEmpty()
+        )
+        refundDetailsAdapter.add(it.refundDetails)
+
+        showHide(
+            rvMedia = binding.rvDiscountDetails,
+            textView = binding.txtDiscountDetails,
+            headerView = null,
+            visible = it.discountDetails.isNotEmpty()
+        )
+        discountDetailsAdapter.add(it.discountDetails)
+
+
+        showHide(
+            rvMedia = binding.rvCashPayments,
+            textView = binding.txtCashPayments,
+            headerView = null,
+            visible = it.totalCashPayments.isNotEmpty()
+        )
+        cashPaymentsAdapter.add(it.totalCashPayments)
+
+
+        showHide(
+            rvMedia = binding.rvTotalPayments,
+            textView = binding.txtTotalPayments,
+            headerView = null,
+            visible = it.totalPayments.isNotEmpty()
+        )
+        totalPaymentsAdapter.add(it.totalPayments)
+
+
+        showHide(
+            rvMedia = binding.rvPaymentDetails,
+            textView = binding.txtPaymentDetails,
+            headerView = binding.ilPaymentDetails,
+            visible = it.paymentDetails.isNotEmpty()
+        )
+        paymentDetailsAdapter.add(it.paymentDetails)
+
+
+        showHide(
+            rvMedia = binding.rvServiceChargeDetails,
+            textView = binding.txtServiceChargeDetails,
+            headerView = null,
+            visible = it.serviceChargeDetails.isNotEmpty()
+        )
+        serviceChargeDetailsAdapter.add(it.serviceChargeDetails)
+
+
+        it.employeeGuestDetails?.let { it1 ->
+            showHide(
+                rvMedia = binding.rvemployeeGuestDetails,
+                textView = binding.txtemployeeGuestDetails,
+                headerView = null,
+                visible = it1.isNotEmpty()
+            )
+        }
+        if (it.employeeGuestDetails?.isNotEmpty() == true)
+            employeeGuestDetailsAdapter.add(it.employeeGuestDetails[0])
+
+
+        showHide(
+            rvMedia = binding.rvCreditAuditTip,
+            textView = binding.txtCreditAuditTip,
+            headerView = null,
+            visible = it.creditTipAudit.isNotEmpty()
+        )
+        creditTipAuditAdapter.add(it.creditTipAudit)
+
+        it.salesPerCategorySummary?.let { it1 ->
+            showHide(
+                rvMedia = binding.rvSaleCategorySummary,
+                textView = binding.txtSaleCategorySummary,
+                headerView = null,
+                visible = it1.isNotEmpty()
+            )
+        }
+
+        LogUtil.logE(TAG, "clock in out Data:  ${Gson().toJson(it.clockInClockOut)}")
+        it.clockInClockOut?.let {
+            if (it.isNotEmpty()) {
+                var list: ArrayList<ClockinOutReportModel> = arrayListOf()
+                it.forEach {
+                    if (it.size == 5) {
+                        val model = ClockinOutReportModel()
+                        it.forEach {
+
+
+                            if (it.key == "Employee") {
+                                model.empName = it.value
+
+
+                            } else if (it.key == "Clock In") {
+                                model.clockIn = it.value
+                            } else if (it.key == "Clock Out") {
+                                model.clockOutval = it.value
+
+                            } else if (it.key == "Total Working Hour") {
+                                model.totalTime = it.value
+                            } else if (it.key == "Actual In Time") {
+                                model.actualTime = it.value
+                            }
+
+
+                        }
+                        list.add(model)
+
+                    }
+                }
+                LogUtil.logE(TAG, "clockinData ${list.size}")
+
+                clockInClockOutAdapter.setList(list)
+            } else {
+                binding.rvClockInClockOut?.gone()
+                binding.txtClockInClockOut?.gone()
+                binding.linearClockInOut?.gone()
+            }
+
+
+        }
+
+        if (it.salesPerCategorySummary != null) {
+
+            var arrayListSalePerCategory: ArrayList<KeyValue> = arrayListOf()
+
+            it.salesPerCategorySummary.forEachIndexed { index, arrayList ->
+                if (index == 0) {
+                    arrayListSalePerCategory.add(KeyValue("Cash Sales", ""))
+                    arrayList.forEach {
+                        arrayListSalePerCategory.add(it)
+                    }
+                } else if (index == 1) {
+                    arrayListSalePerCategory.add(KeyValue("Credit/Non Cash Sales", ""))
+                    arrayList.forEach {
+                        arrayListSalePerCategory.add(it)
+                    }
+
+                }
+            }
+            if (arrayListSalePerCategory.isNotEmpty()) {
+                saleCategorySummaryAdapter.add(arrayListSalePerCategory)
+                saleCategorySummaryAdapter.notifyDataSetChanged()
+            }
+        }
+
+
+
+        showHide(
+            rvMedia = binding.rvTipsDetails,
+            textView = binding.txtTipsDetails,
+            headerView = binding.ilTipsDetails,
+            visible = it.tipDetails.isNotEmpty()
+        )
+        tipDetailsAdapter.add(it.tipDetails)
+
+        showHide(
+            rvMedia = binding.rvPendingPayments,
+            textView = binding.txtPendingPayments,
+            headerView = null,
+            visible = it.totalCreditPaymentDetails.isNotEmpty()
+        )
+        creditPaymentDetailsAdapter.add(it.totalCreditPaymentDetails)
+
+
+        showHide(
+            rvMedia = binding.rvRefundAndVoid,
+            textView = binding.txtCashEventSummary,
+            headerView = null,
+            visible = it.refundAndVoidDetails.isNotEmpty()
+        )
+        if (it.refundAndVoidDetails.isEmpty()) {
+            binding.headerRefundsVoids.gone()
+        }
+        cashEventSummaryAdapter.add(it.refundAndVoidDetails)
+
+
+        showHide(
+            rvMedia = binding.rvOtherDetails,
+            textView = null,
+            headerView = null,
+            visible = it.otherDetails.isNotEmpty()
+        )
+        otherDetailsAdapter.add(it.otherDetails)
+
+
+        showHide(
+            rvMedia = binding.rvCreditCardBreakDown,
+            textView = binding.txtCreditCardBreakDown,
+            headerView = null,
+            visible = it.otherDetails.isNotEmpty()
+        )
+        if (it.creditCardBreakdown.isEmpty()) {
+            binding.ilCreditCardBreakDown.gone()
+        } else {
+            binding.ilCreditCardBreakDown.visible()
+        }
+        creditCardBreakdownAdapter.add(it.creditCardBreakdown)
+
+        showHide(
+            rvMedia = binding.rvSalesDetails,
+            textView = binding.txtSalesDetails,
+            headerView = null,
+            visible = it.orderSalesDetails.data.isNotEmpty()
+        )
+
+        if (it.orderSalesDetails.data.isNotEmpty()) {
+            binding.llHeader.visible()
+            binding.llTotal.visible()
+            MethodUtils.setPriceTextView(binding.txtTotalAmount, it.orderSalesDetails.total)
+
+        } else {
+            binding.llHeader.gone()
+            binding.llTotal.gone()
+        }
+
+        salesOrderDetailsAdapter.add(it.orderSalesDetails.data)
+
+        binding.linReports.visible()
+
+        shiftReportsSettingModel?.orderSalesDetails?.let { it1 ->
+            showHide(
+                binding.rvSalesDetails, binding.txtSalesDetails, null,
+                it1
+            )
+        }
+
+        if (shiftReportsSettingModel?.orderSalesDetails == false) {
+            binding.llHeader.gone()
+            binding.llTotal.gone()
+        }
+
+        shiftReportsSettingModel?.salesSummary?.let { it1 ->
+            showHide(
+                binding.rvSalesSummary, binding.txtSalesSummary, null,
+                it1
+            )
+        }
+
+        shiftReportsSettingModel?.salesAndTaxSummary?.let { it1 ->
+            showHide(
+                binding.rvSalesTaxSummary, binding.txtSalesTaxSummary, null,
+                it1
+            )
+        }
+
+        if (shiftReportsSettingModel?.salesAndTaxSummary == false) {
+            binding.headerSalesTaxSummary.gone()
+        }
+
+
+        shiftReportsSettingModel?.paymentDetails?.let { it1 ->
+            showHide(
+                binding.rvPaymentDetails,
+                binding.txtPaymentDetails,
+                binding.ilPaymentDetails,
+                it1
+            )
+        }
+
+        shiftReportsSettingModel?.tipsDetails?.let { it1 ->
+            showHide(
+                binding.rvTipsDetails, binding.txtTipsDetails, binding.ilTipsDetails,
+                it1
+            )
+        }
+        shiftReportsSettingModel?.taxDetails?.let { it1 ->
+            showHide(
+                binding.rvTaxDetails, binding.txtTaxDetails, null,
+                it1
+            )
+        }
+        shiftReportsSettingModel?.refundOrVoids?.let { it1 ->
+            showHide(
+                binding.rvRefundAndVoid, binding.txtCashEventSummary, null,
+                it1
+            )
+        }
+
+        if (shiftReportsSettingModel?.refundOrVoids == false) {
+            binding.headerRefundsVoids.gone()
+        }
+
+        shiftReportsSettingModel?.refundDetails?.let { it1 ->
+            showHide(
+                binding.rvRefundDetails, binding.txtRefundDetails, null,
+                it1
+            )
+        }
+
+        shiftReportsSettingModel?.discountDetails?.let { it1 ->
+            showHide(
+                binding.rvDiscountDetails, binding.txtDiscountDetails, null,
+                it1
+            )
+        }
+        shiftReportsSettingModel?.totalCreditPayments?.let { it1 ->
+            showHide(
+                binding.rvPendingPayments, binding.txtPendingPayments, null,
+                it1
+            )
+        }
+
+        shiftReportsSettingModel?.totalCashPayments?.let { it1 ->
+            showHide(
+                binding.rvCashPayments, binding.txtCashPayments, null,
+                it1
+            )
+        }
+        shiftReportsSettingModel?.totalPayments?.let { it1 ->
+            showHide(
+                binding.rvTotalPayments, binding.txtTotalPayments, null,
+                it1
+            )
+        }
+        shiftReportsSettingModel?.creditCardBreakdown?.let { it1 ->
+            showHide(
+                binding.rvCreditCardBreakDown, binding.txtCreditCardBreakDown, null,
+                it1
+            )
+        }
+
+        if (shiftReportsSettingModel?.creditCardBreakdown == false) {
+            binding.ilCreditCardBreakDown.gone()
+        }
+
+        shiftReportsSettingModel?.serviceChargeDetails?.let { it1 ->
+            showHide(
+                binding.rvServiceChargeDetails, binding.txtServiceChargeDetails, null,
+                it1
+            )
+        }
+        shiftReportsSettingModel?.cashLogDetails?.let { it1 ->
+            showHide(
+                binding.rvCashLog, binding.txtCashLog, null,
+                it1
+            )
+        }
+        shiftReportsSettingModel?.otherDetails?.let { it1 ->
+            showHide(
+                binding.rvOtherDetails, binding.txtOtherDetails, null,
+                it1
+            )
+        }
+
+        shiftReportsSettingModel?.creditTipAudit?.let { it1 ->
+            showHide(
+                binding.rvCreditAuditTip, binding.txtCreditAuditTip, null,
+                it1
+            )
+        }
+        shiftReportsSettingModel?.cashCreditPerSalesCategorySummary?.let { it1 ->
+            showHide(
+                binding.rvSaleCategorySummary, binding.txtSaleCategorySummary, null,
+                it1
+            )
+        }
+
+        shiftReportsSettingModel?.employeeGuestReport?.let { it1 ->
+            showHide(
+                binding.rvemployeeGuestDetails, binding.txtemployeeGuestDetails, null,
+                it1
+            )
+        }
+
+        binding.txtClockOut.isClickable = true
+        binding.txtClockOut.isFocusable = true
     }
 
     private fun showHide(

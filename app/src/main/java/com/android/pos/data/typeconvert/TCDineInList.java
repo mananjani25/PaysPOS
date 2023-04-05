@@ -3,7 +3,6 @@ package com.android.pos.data.typeconvert;
 import androidx.room.TypeConverter;
 
 import com.android.pos.data.model.DineInModel;
-import com.android.pos.data.model.responseModel.PrinterResponse;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -28,6 +27,16 @@ public class TCDineInList {
 
     @TypeConverter
     public static String someObjectListToString(List<DineInModel> someObjects) {
-        return gson.toJson(someObjects);
+        if (someObjects == null) {
+            return "";
+        } else {
+            someObjects.size();
+            try {
+                return gson.toJson(someObjects);
+            } catch (Exception e) {
+                return "";
+            }
+
+        }
     }
 }

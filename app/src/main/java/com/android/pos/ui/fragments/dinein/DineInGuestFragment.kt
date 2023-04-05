@@ -30,7 +30,6 @@ import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.statusUtils.Resource
-import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -38,7 +37,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class DineInGuestFragment : Fragment(), GuestListAdapter.GuestListner {
     private lateinit var binding: FragmentDineInGuestBinding
-    private lateinit var dineInFloorTableModel: GetFloorPlanResponse.Data.FloorPlanTable
+    private var dineInFloorTableModel: GetFloorPlanResponse.Data.FloorPlanTable?=null
     private lateinit var guestListAdapter: GuestListAdapter
     private val viewModel by viewModels<DineInViewModel>()
     private val TAG = "DineInGuestFragment"
@@ -55,7 +54,7 @@ class DineInGuestFragment : Fragment(), GuestListAdapter.GuestListner {
     ): View? {
         binding = FragmentDineInGuestBinding.inflate(inflater, container, false)
 
-        dineInFloorTableModel = arguments?.getParcelable("dineInFloorTableObject")!!
+        dineInFloorTableModel = arguments?.getParcelable("dineInFloorTableObject")
         tableStatusCheck()
         tableStatusSucess()
         observeShowProgress()
@@ -93,7 +92,7 @@ class DineInGuestFragment : Fragment(), GuestListAdapter.GuestListner {
             "numberOfGuest" to guestCount,
             "floorplan" to dineInFloorTableModel
         )
-        prefProvider.setValueInt(DINE_IN_TABLE_ID, dineInFloorTableModel.id)
+        prefProvider.setValueInt(DINE_IN_TABLE_ID, dineInFloorTableModel?.id ?:0)
         prefProvider.setValueboolean(Constants.DINE_IN_STATUS, true)
 
 
@@ -115,7 +114,8 @@ class DineInGuestFragment : Fragment(), GuestListAdapter.GuestListner {
         binding.rvNumberOfGuests.adapter = guestListAdapter
 
         val numberOfGuestList = ArrayList<Int>()
-        for (i in 1..dineInFloorTableModel.chairCount) {
+        var count = dineInFloorTableModel?.chairCount ?: 1
+        for (i in 1..count) {
             numberOfGuestList.add(i)
         }
         guestListAdapter.addGuests(numberOfGuestList)
@@ -139,25 +139,25 @@ class DineInGuestFragment : Fragment(), GuestListAdapter.GuestListner {
         }
 
         binding.imgUnMergeTable.setOnClickListener {
-            viewModel.unMergeTable(dineInFloorTableModel.id)
+            viewModel.unMergeTable(dineInFloorTableModel?.id ?:0)
         }
     }
 
     override fun onGuestSelected(numberOfGuest: Int) {
         guestCount = numberOfGuest
 
-        Log.e(TAG, "DineMergeStatus  ${dineInFloorTableModel.status}")
+        Log.e(TAG, "DineMergeStatus  ${dineInFloorTableModel?.status}")
 
-        if (dineInFloorTableModel.status == AVAILABLE) {
+        if (dineInFloorTableModel?.status == AVAILABLE) {
             viewModelDash.deleteCart()
             prefProvider.setValue(Constants.CUSTOMER_NAME, "")
             prefProvider.setValue(Constants.PREF_CUSTOMER, "")
             prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
         }
-        if (dineInFloorTableModel.status == MERGED) {
-            viewModel.getTableStatus(dineInFloorTableModel.id, MERGED)
+        if (dineInFloorTableModel?.status == MERGED) {
+            viewModel.getTableStatus(dineInFloorTableModel?.id ?:0, MERGED)
         } else {
-            viewModel.getTableStatus(dineInFloorTableModel.id, OCCUPIED)
+            viewModel.getTableStatus(dineInFloorTableModel?.id ?:0, OCCUPIED)
         }
 
         /*

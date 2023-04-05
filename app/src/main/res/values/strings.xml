@@ -8,7 +8,7 @@
     <string name="tv_hint_password">Password <font color='#E90C0C'>*</font></string>
     <string name="tv_login">Login</string>
     <string name="tv_info_provider">If you forgot password, please <font color='#00A3E0'>contact</font> your sales provider</string>
-    <string name="tv_pos_2021">&#169; SNACK POS 2022</string>
+    <string name="tv_pos_2021">&#169; SNACK POS 2023</string>
     <string name="save">Save</string>
     <string name="category_name">Category Name <font color='#E90C0C'>*</font></string>
     <string name="assign_item_to_category">Assign Item to category</string>
@@ -70,6 +70,7 @@
 
     <string name="category_name_validate">Please enter Category Name</string>
     <string name="modifier_name_validate">Please enter Modifier Name</string>
+    <string name="modifier_set_name_validate">All modifier names must be different</string>
     <string name="option_name_validate">Please enter Option Name</string>
     <string name="display_option_name_validate">Please enter Display Name</string>
 
@@ -146,6 +147,7 @@
     <string name="per_item">Per Item</string>
     <string name="choose_between_selling_whole_or_decimal_quantities_for_the_item_learn_more">Choose between selling whole or decimal quantities for the item. Learn more</string>
     <string name="price">Price</string>
+    <string name="markup_price">Markup Price</string>
     <string name="sku">SKU</string>
     <string name="stock">Stock</string>
     <string name="receive_stock">Receive Stock</string>
@@ -272,8 +274,8 @@
     <string name="tv_show_order_print_time"><![CDATA[SHOW ORDER & PRINT TIME]]></string>
     <string name="tv_order_time">Order Date &amp; Time</string>
     <string name="tv_print_time">Print Date &amp; Time</string>
-    <string name="tv_show_refund_text_amount">SHOW REFUND TEXT AMOUNT</string>
-    <string name="tv_refund_text_amount">Refund Text/Amount</string>
+    <string name="tv_show_refund_amount">SHOW REFUND AMOUNT</string>
+    <string name="tv_refund_text_amount">Refund Amount</string>
     <string name="tv_show_venue_information">SHOW VENUE INFORMATION</string>
     <string name="tv_logo">Logo</string>
     <string name="tv_photo">Photo</string>
@@ -288,6 +290,7 @@
     <string name="tv_show_tip_line_for_cash">SHOW TIP LINE FOR CASH</string>
     <string name="tv_tip_line_for_cash">Tip Line for Cash</string>
     <string name="tv_show_qr_code">SHOW QR CODE</string>
+    <string name="tv_show_cash_or_surcharge">SHOW CASH DISCOUNT OR SURCHARGE</string>
     <string name="tv_qr_code">QR Code</string>
     <string name="tv_show_custom_note">SHOW CUSTOM NOTE</string>
     <string name="tv_custom_note">Custom Note</string>
@@ -840,8 +843,8 @@
     <string name="online_orders">ONLINE ORDERS</string>
     <string name="no_employees_found">No Employees Found</string>
     <string name="search_by_order_id_employee_customer_name">Search by Order id, employee, customer name</string>
-    <string name="search_by_customer_name_order_id_receipt_id_amount">Search by Customer name, order id, receipt id, $ amount</string>
-
+    <string name="search_by_customer_name_order_id_receipt_id_amount">Search by employee name/customer name/order id/receipt id/$ amount</string>
+    <string name="serving_efficiency">Serving Efficiency</string>
 
 </resources>
 

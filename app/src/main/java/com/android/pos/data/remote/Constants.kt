@@ -19,6 +19,9 @@ object Constants {
 
     const val CURRENT_VERSION = 1
 
+    const val MAX_ITEM_QUANTITY = 1000
+    const val MAX_ITEM_QUANTITY_FOR_MANUAL_SALES = 15
+
     // payment magtek
 
     const val TSYS_PRODUCTION = "TSYS - Production"
@@ -615,6 +618,7 @@ object Constants {
     const val ONLINE_ORDER_GET_NOTIFICATION = "online_order_get_notification"
     const val ONLINE_ORDER_REFRESH = "online_order_refresh"
     const val SYNC_NOTIFICATION = "sync_notification"
+    const val SYNC_FLOORPLAN = "sync_floorplan"
     const val SYNC_SETTING_NOTIFICATION = "sync_setting_notification"
     const val SYNC_MARKUP = "MarkupSync"
     const val IS_SYNC_MARKUP = "is_markup_sync"

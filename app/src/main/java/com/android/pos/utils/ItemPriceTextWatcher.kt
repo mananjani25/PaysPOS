@@ -3,17 +3,22 @@ package com.android.pos.utils
 import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
+import android.util.Log
 import androidx.appcompat.widget.AppCompatEditText
+import java.lang.String.format
 import java.text.NumberFormat
 import java.util.*
+import java.util.regex.Pattern
 
-class AmountTextWatcher(private val editText: AppCompatEditText, private val isManual: Boolean) :
+//By Dharmesh Basapati
+//Created this new Class same as AmountTextWatcher.kt for resolving BIS-294 and 295 issue(s)
+class ItemPriceTextWatcher(private val editText: AppCompatEditText, private val isManual: Boolean) :
     TextWatcher {
     var current = ""
-    val TAG = "AmountTextWatcher"
+    val TAG = "ItemPriceTextWatcher"
     override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
         editText.setInputType(InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL)
-        if (s.toString() != current && s.length<9) {
+        if (s.toString() != current && s.length < 12) { // Increased 9 to 12 in length check for accepting this - 9999999.99
             editText.removeTextChangedListener(this)
 
 
@@ -31,13 +36,7 @@ class AmountTextWatcher(private val editText: AppCompatEditText, private val isM
 
             current = formatted
             editText.setText(formatted.replace("""[,]""".toRegex(), ""))
-
-            // To prevent setting cursor at the end of the string even if user manually changes the cursor position
-            if ((start > 0 && start < editText.text.toString().length - 1)) {
-                editText.setSelection(start + 1)
-            } else {
-                editText.setSelection(formatted.replace("""[,]""".toRegex(), "").length)
-            }
+            editText.setSelection(formatted.replace("""[,]""".toRegex(), "").length)
 
             editText.addTextChangedListener(this)
         }
@@ -46,6 +45,7 @@ class AmountTextWatcher(private val editText: AppCompatEditText, private val isM
     override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
         editText.setInputType(InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL)
     }
+
     override fun afterTextChanged(s: Editable) {
         editText.setInputType(InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL)
     }

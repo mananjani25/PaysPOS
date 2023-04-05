@@ -119,6 +119,9 @@
                     style="@style/CustomFontMediumStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:maxWidth="@dimen/_100sdp"
+                    android:ellipsize="end"
+                    android:maxLines="1"
                     android:layout_gravity="center"
                     android:text="ELEANOR RUSSELL"
                     android:textSize="@dimen/_6mdpi" />
@@ -164,7 +167,7 @@
             android:layout_height="@dimen/_23sdp"
             android:layout_alignParentEnd="true"
             android:layout_marginStart="@dimen/_5sdp"
-            android:background="@drawable/button_action_hover"
+            android:background="@color/btnColor"
             android:fontFamily="@font/sf_pro_display_semibold"
             android:gravity="center"
             android:paddingHorizontal="@dimen/padding_home_button"

@@ -229,18 +229,25 @@ class OnlineOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
 
                     for (it in orderList) {
                         Log.d(TAG, "performFiltering: " + it.offlineId)
-                        if (it.offlineId.lowercase(Locale.getDefault())
+                        /*if (it.offlineId.lowercase(Locale.getDefault())
                                 .contains(charString.lowercase(Locale.getDefault()))
                         ) {
                             fList.add(it)
-                        } else if (it.id.toString().contains(charString)) {
-
+                        } else*/ if ((if (prefProvider.getValueboolean(Constants.ORDER_NUMBER_STARTING_FROM_ONE,false))
+                                it.custom_order_id.toString().lowercase(Locale.getDefault()) else
+                                it.id.toString().lowercase(Locale.getDefault()))
+                                .contains(charString.lowercase(Locale.getDefault()))) {
                             fList.add(it)
                         } else if (it.customer != null && it.customer.firstName.lowercase(Locale.getDefault())
                                 .contains(charString.lowercase(Locale.getDefault()))
                         ) {
                             fList.add(it)
                         } else if (it.customer != null && it.customer.lastName.lowercase(Locale.getDefault())
+                                .contains(charString.lowercase(Locale.getDefault()))
+                        ) {
+                            fList.add(it)
+                        } else if (it.customer != null && ((it.customer.firstName.lowercase(Locale.getDefault()) + " "
+                                    + it.customer.lastName.lowercase(Locale.getDefault())))
                                 .contains(charString.lowercase(Locale.getDefault()))
                         ) {
                             fList.add(it)
@@ -251,6 +258,10 @@ class OnlineOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
                             ) {
                                 fList.add(it)
                             } else if (it.employee.lastName.lowercase(Locale.getDefault())
+                                    .contains(charString.lowercase(Locale.getDefault()))
+                            ) {
+                                fList.add(it)
+                            } else if (it.employee.name.lowercase(Locale.getDefault())
                                     .contains(charString.lowercase(Locale.getDefault()))
                             ) {
                                 fList.add(it)

@@ -39,9 +39,17 @@ class ItemsViewModel @Inject constructor(
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
 
-    val items = posRepository.getItemsList()
+    val items = posRepository.getWholeItemsWithManualFromPos()
     val hideItemsListPos = posRepository.unhideItemListPOS()
     val hideItemsListWebsite = posRepository.unhideItemListWebsite()
+
+    fun getItemsList(screenType: String): LiveData<Resource<List<TbItem?>>> {
+        return if (screenType == "tax") {
+            posRepository.getWholeItemsWithManualFromPos()
+        } else {
+            posRepository.getWholeItemFromPos()
+        }
+    }
 
     fun inventoryCounts(): LiveData<Resource<InventoryCountsResponse>> =
         posRepository.inventoryCounts()

@@ -24,6 +24,7 @@ import com.android.pos.utils.performGetOperation
 import com.android.pos.utils.performGetOperationDatabase
 import com.android.pos.utils.performGetOperationNew
 import com.android.pos.utils.statusUtils.Resource
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 
@@ -127,6 +128,12 @@ class PosRepository @Inject constructor(
 
     suspend fun updatePrinterStatus(id: Int, terminal_id: Int, status: Boolean) =
         apiHelperNew.updatePrinterStatus(id, terminal_id, status)
+
+  /*  suspend fun updatePrinterStatusKitchen(id: Int, terminal_id: Int, status: Boolean) =
+        apiHelperNew.updatePrinterStatusKitchen(id, terminal_id, status)
+
+    suspend fun updatePrinterStatusCustomer(id: Int, terminal_id: Int, status: Boolean) =
+        apiHelperNew.updatePrinterStatusCustomer(id, terminal_id, status)*/
     /*fun syncVenueDetails() =
         performGetOperationNew(networkCall = { apiHelperNew.syncVenueDetails() })*/
 
@@ -255,6 +262,8 @@ class PosRepository @Inject constructor(
     fun getWholeItemFromPos() =
         performGetOperationDatabase(databaseQuery = { appDatabase.itemDao().allItemFromPos!! })
 
+    fun getWholeItemsWithManualFromPos() =
+        performGetOperationDatabase(databaseQuery = { appDatabase.itemDao().allItemsWithManualFromPos!! })
 
     fun getTimeZones() =
         performGetOperationDatabase(databaseQuery = { appDatabase.timeZonesDao().allItem })
@@ -264,6 +273,11 @@ class PosRepository @Inject constructor(
 
     fun getItemsbyId(itemId: Int) =
         performGetOperationDatabase(databaseQuery = { appDatabase.itemDao().itemById(itemId)!! })
+
+
+    suspend fun updateTaxDataForItem(taxes: List<TaxData>, itemId: Int?) {
+        appDatabase.itemDao().updateItemTaxes(itemId!!, taxes)
+    }
 
     fun getItemByProductCode(productCode: String) =
         performGetOperationDatabase(databaseQuery = {
@@ -639,6 +653,10 @@ class PosRepository @Inject constructor(
 
     fun getCartList(orderType: String, employee_Id: Int): LiveData<List<CartModel>> {
         return appDatabase.cartDao().allItem(orderType, employee_Id)
+    }
+
+    fun getCartListFlow(orderType: String, employee_Id: Int): Flow<List<CartModel>> {
+        return appDatabase.cartDao().allItemFlow(orderType, employee_Id)
     }
 
     fun getCartDineInList(employee_Id: Int): LiveData<List<DineInCartModel>> {
@@ -1089,6 +1107,8 @@ class PosRepository @Inject constructor(
 
     }
 
-
+    suspend fun updateModifiersForItem(modifierSetIds: List<Int>, itemId: Int?) {
+        appDatabase.itemDao().updateItemModifiers(itemId!!, modifierSetIds)
+    }
 }
 

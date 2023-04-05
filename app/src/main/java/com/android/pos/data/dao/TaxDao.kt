@@ -15,7 +15,7 @@ interface TaxDao {
     suspend fun addTax(taxModel: TaxData): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun addAllTaxes(taxList: List<TaxData>)
+    suspend fun addAllTaxes(taxList: List<TaxData>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addAllTaxesSuspend(taxList: List<TaxData>)
@@ -30,7 +30,7 @@ interface TaxDao {
     fun allTaxList(): List<TaxData>
 
     @Query("SELECT * from TbTax where TbTax.id  = :id LIMIT 1")
-    fun taxById(id: Int?): TaxData
+    suspend fun taxById(id: Int?): TaxData
 
     @Query("DELETE FROM TbTax")
     suspend fun delete()

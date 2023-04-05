@@ -1,6 +1,8 @@
 package com.android.pos.ui.fragments.dashboard.bolddashboard
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -12,8 +14,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.android.pos.BuildConfig
 import com.android.pos.R
 import com.android.pos.data.entities.*
 import com.android.pos.data.model.DineInModel
@@ -116,6 +120,10 @@ class CartFragment(
     var isFromPayment: Boolean = false
     var isActiveOrder: Boolean = false
     var reorder: Boolean = false
+
+    private val DELAY_MILLIS = 100L
+
+    private var previousClickTimeMillis = 0L
 
     private var serviceChargesObserve: Observer<Resource<List<TbServiceCharge>>>? = null
     private lateinit var nameObserver: Observer<List<CartModel>>
@@ -226,7 +234,7 @@ class CartFragment(
 
     private fun checkOrderType() {
 
-
+        saveVisibility()
         if (prefProvider.getValue(ORDER_TYPE, "").isEmpty()) {
             binding.rlCartView.gone()
             binding.rvOrderType.visible()
@@ -237,7 +245,7 @@ class CartFragment(
             binding.rvOrderType.gone()
 
             binding.orderTypeDisplay.text =
-                getString(R.string.current_order) + " : " + prefProvider.getValue(ORDER_TYPE, "")
+                getString(R.string.current_order) + " : " + prefProvider.getValue(ORDER_TYPE_NAME, "")
         }
     }
 
@@ -457,7 +465,7 @@ class CartFragment(
 //            viewModel.redeemLoyaltyInfo.needToApplyLoyalty = p1
             prefProvider.setValueboolean(Constants.LOYALTY_ADDED, p1)
             prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED, p1)
-            addObserver()
+//            addObserver()
             if (this::presentation.isInitialized) {
                 presentation.show()
                 presentation.onDisplayChanged()
@@ -841,8 +849,17 @@ class CartFragment(
                     Log.e("totalDiscount", viewModel.totalDiscount.toString())
                     binding.txtDiscount.text = "-" +
                             MethodUtils.roundOffAmount(viewModel.totalDiscount)
-                    binding.txtNoncashAdj.text =
-                        "-" + MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
+                    if (prefProvider.getValue(
+                            OPTION_TYPE, "CashDiscount"
+                        ) == "CashDiscount"
+                    ) {
+                        binding.txtNoncashAdj.setTextColor(getColor(R.color.colorRed))
+                        binding.txtNoncashAdj.text =
+                            "-" + MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
+                    } else {
+                        binding.txtNoncashAdj.text =
+                            MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
+                    }
                     var data: TbCustomer? = prefProvider.getCustomerData()
                     if (data != null) {
                         if (viewModel.loyaltyPointCondition(data)) {
@@ -891,8 +908,17 @@ class CartFragment(
                     binding.txtSubTotal.text = MethodUtils.roundOffAmount(0.00)
                     binding.txtTax.text = MethodUtils.roundOffAmount(0.00)
                     binding.txtDiscount.text = "-" + MethodUtils.roundOffAmount(0.00)
-                    binding.txtNoncashAdj.text =
-                        "-" + MethodUtils.roundOffAmount(0.00)
+                    if (prefProvider.getValue(
+                            OPTION_TYPE, "CashDiscount"
+                        ) == "CashDiscount"
+                    ) {
+                        binding.txtNoncashAdj.setTextColor(getColor(R.color.colorRed))
+                        binding.txtNoncashAdj.text =
+                            "-" + MethodUtils.roundOffAmount(0.00)
+                    } else {
+                        binding.txtNoncashAdj.text =
+                            MethodUtils.roundOffAmount(0.00)
+                    }
                     binding.relativeOrderNotes?.visibility = View.GONE
                     binding.txtServiceCharge.text =
                         MethodUtils.roundOffAmount(0.00)
@@ -920,21 +946,33 @@ class CartFragment(
             if (view != null) {
 
 
-                viewModel.mAllWords(
+
+                viewModel.mAllWordsFlow(
                     prefProvider.getValue(ORDER_TYPE, TAKEOUT),
                     prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
-                ).observe(requireActivity()) {
+                ).asLiveData().observe(requireActivity()) {
 
-                    Log.e("All LOG : ORDER_TYPE", prefProvider.getValue(ORDER_TYPE, TAKEOUT))
-                    Log.e(
-                        "All LOG :EMPLOYEE_ID",
-                        prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0).toString()
-                    )
+
+                    Log.e("mAllWordsFlow", "asLiveData" + it.size)
+
+                    if (it.isEmpty()) {
+                        return@observe
+                    } else {
+                        val currentTimeMillis = System.currentTimeMillis()
+
+                        if (currentTimeMillis >= previousClickTimeMillis + DELAY_MILLIS) {
+                            previousClickTimeMillis = currentTimeMillis
+                        } else {
+                            Log.e("mAllWordsFlow", currentTimeMillis.toString())
+                            return@observe
+                        }
+                    }
 
                     if (this::presentation.isInitialized) {
-                        presentation.show()
+                        if (!presentation.isShowing)
+                            presentation.show()
                         if (it.isNotEmpty()) {
-                            presentation.onDisplayChanged()
+                            presentation.updateCustomerDisplay(it)
                         } else {
                             presentation.onLogOutOrClockOutWithApiService(apiService)
                         }
@@ -942,19 +980,11 @@ class CartFragment(
 
                     saveVisibility()
 
-                    LogUtil.logE("mAllWords :", "LIST SIZE :" + it.size.toString())
-                    LogUtil.logE(
-                        "mAllWords",
-                        "LIST EMPLOYEE :" + prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
-                            .toString()
-                    )
-
 
                     if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
                         binding.rvCartDineIn.visible()
                         binding.rvCartList.gone()
                         if (it.isNotEmpty()) {
-                            LogUtil.logE(TAG, "cartListDine:  ${Gson().toJson(it)}")
 
                             cartlist = it as ArrayList<CartModel>
                             if (isFromPayment) {
@@ -981,6 +1011,10 @@ class CartFragment(
                             }
                             if (it[0].dineInList?.isNotEmpty() == true) {
                                 var dineInList = it[0].dineInList
+                                if (dineInList?.get(0)?.selectedPosition != -1){
+                                    Log.e("checkDineInHeaderPos","dineInSelectedItemHeaderPos:  ${viewModel.dineInHeaderPosition}")
+                                    dineInList?.get(0)?.selectedPosition = viewModel.dineInHeaderPosition
+                                }
 
                                 dineInCartAdapter.setList(
                                     dineInList?.toCollection(arrayListOf()) ?: arrayListOf()
@@ -992,7 +1026,6 @@ class CartFragment(
                             LogUtil.logE(TAG, "isGuestPayment:  ${isGuestPayment}")
 
                             if (isFromPaymentDinein) {
-                                LogUtil.logE(TAG, "guestCalModel:  ${Gson().toJson(guestCalModel)}")
                                 viewModelPayment.dineInWholeDiscount =
                                     guestCalModel?.wholeOrderPassDiscount
                                 viewModelPayment.dineInWholeSC = guestCalModel?.wholeOrderPassSC
@@ -1023,7 +1056,6 @@ class CartFragment(
                                 binding.txtDineInProceed.setText("Update and Proceed")
 
                                 var getOldList = prefProvider.getValue(DINE_IN_UPDATE_LIST, "")
-                                LogUtil.logE(TAG, "getOldList  ${Gson().toJson(getOldList)}")
                                 if (getOldList.isEmpty()) {
                                     var listItemDine: ArrayList<GetOrderDetailsResponse.Data.OrderItem> =
                                         arrayListOf()
@@ -1141,8 +1173,17 @@ class CartFragment(
                                 MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
                             binding.txtDiscount.text =
                                 "-" + MethodUtils.roundOffAmount(viewModel.totalDiscount)
-                            binding.txtNoncashAdj.text =
-                                "-" + MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
+                            if (prefProvider.getValue(
+                                    OPTION_TYPE, "CashDiscount"
+                                ) == "CashDiscount"
+                            ) {
+                                binding.txtNoncashAdj.setTextColor(getColor(R.color.colorRed))
+                                binding.txtNoncashAdj.text =
+                                    "-" + MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
+                            } else {
+                                binding.txtNoncashAdj.text =
+                                    MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
+                            }
                             if (viewModel.order_note.isNotEmpty()) {
                                 binding.relativeOrderNotes?.visibility = View.VISIBLE
                                 binding.txtOrderNote?.text = viewModel.order_note
@@ -1205,12 +1246,9 @@ class CartFragment(
 
                     } else {
 
-
                         binding.rvCartDineIn.gone()
                         binding.rvCartList.visible()
-
                         checkOrderType()
-
 
                         if (it.isNotEmpty()) {
 
@@ -1247,7 +1285,7 @@ class CartFragment(
                             binding.rvCartList.removeAllViews()
                             binding.rvCartList.removeAllViewsInLayout()
 
-                            var filterItems = arrayListOf<TbItem>()
+                            val filterItems = arrayListOf<TbItem>()
                             it[0].items?.filter {
                                 !it.isDestroy
                             }.let {
@@ -1258,7 +1296,12 @@ class CartFragment(
                             Log.e("mAllWords", "filterItems  ${filterItems.size}")
                             cartAdapter.setList(filterItems)
                             if (filterItems.isNotEmpty()) {
-                                binding.rvCartList.smoothScrollToPosition(filterItems.size - 1)
+
+                                Handler(Looper.myLooper()!!).postDelayed(
+                                    { binding.rvCartList.smoothScrollToPosition(filterItems.size - 1) },
+                                    200
+                                )
+//                               binding.rvCartList.smoothScrollToPosition(filterItems.size - 1)
                             }
 
                             cartlist = it as ArrayList<CartModel>
@@ -1268,7 +1311,8 @@ class CartFragment(
                                 requireContext()
                             )
                             viewModel.setCartModel(it)
-                            setTaxBifurcationData(it[0].taxlistDynamic as ArrayList<TaxData>)
+                            it[0].taxlistDynamic?.toCollection(arrayListOf())
+                                ?.let { it1 -> setTaxBifurcationData(it1) }
                             if (viewModel.order_note.isNotEmpty()) {
                                 binding.relativeOrderNotes?.visibility = View.VISIBLE
                                 binding.txtOrderNote?.text = viewModel.order_note
@@ -1284,8 +1328,17 @@ class CartFragment(
                             Log.e("totalDiscount", viewModel.totalDiscount.toString())
                             binding.txtDiscount.text =
                                 "-" + MethodUtils.roundOffAmount(viewModel.totalDiscount)
-                            binding.txtNoncashAdj.text =
-                                "-" + MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
+                            if (prefProvider.getValue(
+                                    OPTION_TYPE, "CashDiscount"
+                                ) == "CashDiscount"
+                            ) {
+                                binding.txtNoncashAdj.setTextColor(getColor(R.color.colorRed))
+                                binding.txtNoncashAdj.text =
+                                    "-" + MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
+                            } else {
+                                binding.txtNoncashAdj.text =
+                                    MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
+                            }
                             var data: TbCustomer? = prefProvider.getCustomerData()
                             if (data != null) {
                                 if (viewModel.loyaltyPointCondition(data)) {
@@ -1379,8 +1432,17 @@ class CartFragment(
                             binding.txtSubTotal.text = MethodUtils.roundOffAmount(0.00)
                             binding.txtTax.text = MethodUtils.roundOffAmount(0.0)
                             binding.txtDiscount.text = "-" + MethodUtils.roundOffAmount(0.00)
-                            binding.txtNoncashAdj.text =
-                                "-" + MethodUtils.roundOffAmount(0.00)
+                            if (prefProvider.getValue(
+                                    OPTION_TYPE, "CashDiscount"
+                                ) == "CashDiscount"
+                            ) {
+                                binding.txtNoncashAdj.setTextColor(getColor(R.color.colorRed))
+                                binding.txtNoncashAdj.text =
+                                    "-" + MethodUtils.roundOffAmount(0.00)
+                            } else {
+                                binding.txtNoncashAdj.text =
+                                    MethodUtils.roundOffAmount(0.00)
+                            }
                             binding.txtServiceCharge.text =
                                 MethodUtils.roundOffAmount(0.00)
                             binding.tvPayNow.text = "Pay " + MethodUtils.roundOffAmount(0.00)
@@ -1424,8 +1486,6 @@ class CartFragment(
                     if (isFromPayment || isFromPaymentDinein) {
                         binding.rvOrderType.gone()
                         binding.rlCartView.visible()
-
-
                     }
 
                 }
@@ -1544,6 +1604,7 @@ class CartFragment(
 
     override fun onCustomerClicked(position: Int, isRemoved: Boolean) {
         LogUtil.logE(TAG, "onCustomerClicked  ${isRemoved}")
+        viewModel.dineInHeaderPosition = position
         if (isRemoved) {
             if (cartlist.get(0).dineInList?.size!! >= position) {
                 val dineIn = cartlist.get(0).dineInList
@@ -1553,7 +1614,15 @@ class CartFragment(
 
         } else {
 
-            val bundle = bundleOf("DINE_IN" to true, "position" to position, "cartList" to cartlist)
+            var listOfCustomersID:ArrayList<Int> = arrayListOf()
+            cartlist[0].dineInList?.forEach {
+                if(it.customer != null){
+                    listOfCustomersID.add(it.customer?.id ?: 0)
+
+                }
+
+            }
+            val bundle = bundleOf("DINE_IN" to true, "position" to position, "cartList" to cartlist, "listOfCustomersID" to listOfCustomersID)
             findNavController().navigate(
                 R.id.action_dashboardCategoryBoldPOS_to_assignCustomerOrderFragment, bundle
             )
@@ -1633,6 +1702,9 @@ class CartFragment(
 
 
     private fun setCartAdapter() {
+
+        binding.rvCartList.isNestedScrollingEnabled = false
+        binding.rvCartList.disableItemAnimator()
         cartAdapter = CartAdapter()
         cartAdapter.setCallback(this)
         binding.rvCartList.adapter = cartAdapter
@@ -1896,6 +1968,7 @@ class CartFragment(
             popupMenu.setOnMenuItemClickListener { menuItem ->
                 when (menuItem.itemId) {
                     R.id.menu_clear_cart -> {
+                        popupMenu.dismiss() //For resolving BIS-273
                         clearCart()
                     }
                     R.id.menu_remove_customer -> {
@@ -2001,116 +2074,120 @@ class CartFragment(
 
         }
         binding.tvSave.setOnClickListener {
-            prefProvider.setValueboolean(OPEN_ORDER_UPDATE_FOR_PRINT, false)
-            if (isOrderUpdate == false) {
-                prefProvider.setValue(
-                    Constants.OPEN_ORDER_ITEMS,
-                    ""
-                )
+            try {
+                prefProvider.setValueboolean(OPEN_ORDER_UPDATE_FOR_PRINT, false)
+                if (isOrderUpdate == false) {
+                    prefProvider.setValue(
+                        Constants.OPEN_ORDER_ITEMS,
+                        ""
+                    )
 
-            }
-            if (cartAdapter.cartList.isNotEmpty()) {
-                prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
+                }
+                if (cartAdapter.cartList.isNotEmpty()) {
+                    prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
 
-                prefProvider.setValue(ORDER_TYPE, prefProvider.getValue(ORDER_TYPE, ""))
-                prefProvider.setValue("PaidAmount", "")
-                prefProvider.setValue(WHOLE_AMOUNT, "")
-                prefProvider.setValueInt("cardCount", 0)
-                prefProvider.setValue(Constants.SUB_TOTAL, "")
-                prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
-                prefProvider.setValue(Constants.TOTAL_DISCOUNT, "")
-                prefProvider.setValue(Constants.TIP, "")
-                prefProvider.setValue(Constants.TAX_CHARGE, "")
-                prefProvider.setValue(Constants.SERVICE_CHARGE, "")
-                if (prefProvider.getValue(ORDER_TYPE, "") != Constants.DINE_IN) {
+                    prefProvider.setValue(ORDER_TYPE, prefProvider.getValue(ORDER_TYPE, ""))
+                    prefProvider.setValue("PaidAmount", "")
+                    prefProvider.setValue(WHOLE_AMOUNT, "")
+                    prefProvider.setValueInt("cardCount", 0)
+                    prefProvider.setValue(Constants.SUB_TOTAL, "")
+                    prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
+                    prefProvider.setValue(Constants.TOTAL_DISCOUNT, "")
+                    prefProvider.setValue(Constants.TIP, "")
+                    prefProvider.setValue(Constants.TAX_CHARGE, "")
+                    prefProvider.setValue(Constants.SERVICE_CHARGE, "")
+                    if (prefProvider.getValue(ORDER_TYPE, "") != Constants.DINE_IN) {
 
-                    var ordertype = ""
-                    var ordertypeId = 0
-                    viewModel.ordertypelist.forEach {
-                        if (it.orderType == OPEN_ORDER) {
-                            ordertype = it.orderType
-                            ordertypeId = it.id
-                        }
-                    }
-
-                    if (viewModel.restrictedAmount(binding.txtTotal)) {
-
-
-                        viewModelPayment.updateOrder(
-                            isOrderUpdate,
-                            orderId,
-                            paymentId,
-                            paymentOfflineId,
-                            orderOfflineId
-                        )
-
-                        val cartList = viewModel.generateCombinedItems(viewModel.cartModel!!)
-                        cartList.openOrderType = Constants.PICK_UP
-                        cartList.orderType = ordertype
-                        cartList.orderTypeId = ordertypeId
-
-                        val totalAmountTobeSave =
-                            if (viewModel.redeemLoyaltyInfo.isLoyaltyApplied == true) {
-                                (viewModel.redeemLoyaltyInfo.getAmountToBePaid() ?: 0.0)
-                            } else {
-                                viewModel.totalPrice
+                        var ordertype = ""
+                        var ordertypeId = 0
+                        viewModel.ordertypelist.forEach {
+                            if (it.orderType == OPEN_ORDER) {
+                                ordertype = it.orderType
+                                ordertypeId = it.id
                             }
+                        }
 
-                        cartList.openOrderType = Constants.PICK_UP
-                        if (!isOrderUpdate)
-                            cartList.customer = assignCustomer
-
-                        val formatterdate = SimpleDateFormat("yyyy-MM-dd")
-                        val formattertime = SimpleDateFormat("hh:mm a")
-                        val date = Date()
-                        future_delivery_date = formatterdate.format(date)
-                        future_delivery_time = formattertime.format(date)
-
-                        LogUtil.logE(TAG, "UpdateOrderItemsList  ${cartList.items?.size}")
-                        val request = viewModelPayment.createOpenOrderRequest(
-                            cartList,
-                            viewModel.subTotalPrice,
-                            totalAmountTobeSave,
-                            viewModel.totalServiceCharge,
-                            viewModel.totalTax,
-                            OPEN_ORDER,
-                            future_delivery_date,
-                            future_delivery_time,
-                            false,
-                            viewModel.totalDiscount,
-                            0.00,
-                            -1,
-                            viewModel.redeemLoyaltyInfo,
-                            MethodUtils.calculateCashDiscount(
-                                viewModel.totalPrice,
-                                prefProvider,
-                                requireContext()
-                            ),
-                            false,
-                            "Cash",
-                            cashDiscountType
-
-                        )
-                        isSaveOrder = true
-                        viewModelPayment.saveOrder(true)
-                        viewModelPayment.submit(request)
+                        if (viewModel.restrictedAmount(binding.txtTotal)) {
 
 
+                            viewModelPayment.updateOrder(
+                                isOrderUpdate,
+                                orderId,
+                                paymentId,
+                                paymentOfflineId,
+                                orderOfflineId
+                            )
 
-                        isOrderUpdate = false
-                        binding.tvSave.text = getString(R.string.save)
+                            val cartList = viewModel.generateCombinedItems(viewModel.cartModel!!)
+                            cartList.openOrderType = Constants.PICK_UP
+                            cartList.orderType = ordertype
+                            cartList.orderTypeId = ordertypeId
 
-                    } else {
-                        showMessage()
-                    }
+                            val totalAmountTobeSave =
+                                if (viewModel.redeemLoyaltyInfo.isLoyaltyApplied == true) {
+                                    (viewModel.redeemLoyaltyInfo.getAmountToBePaid() ?: 0.0)
+                                } else {
+                                    viewModel.totalPrice
+                                }
+
+                            cartList.openOrderType = Constants.PICK_UP
+                            if (!isOrderUpdate)
+                                cartList.customer = assignCustomer
+
+                            val formatterdate = SimpleDateFormat("yyyy-MM-dd")
+                            val formattertime = SimpleDateFormat("hh:mm a")
+                            val date = Date()
+                            future_delivery_date = formatterdate.format(date)
+                            future_delivery_time = formattertime.format(date)
+
+                            LogUtil.logE(TAG, "UpdateOrderItemsList  ${cartList.items?.size}")
+                            val request = viewModelPayment.createOpenOrderRequest(
+                                cartList,
+                                viewModel.subTotalPrice,
+                                totalAmountTobeSave,
+                                viewModel.totalServiceCharge,
+                                viewModel.totalTax,
+                                OPEN_ORDER,
+                                future_delivery_date,
+                                future_delivery_time,
+                                false,
+                                viewModel.totalDiscount,
+                                0.00,
+                                -1,
+                                viewModel.redeemLoyaltyInfo,
+                                MethodUtils.calculateCashDiscount(
+                                    viewModel.totalPrice,
+                                    prefProvider,
+                                    requireContext()
+                                ),
+                                false,
+                                "Cash",
+                                cashDiscountType
+
+                            )
+                            isSaveOrder = true
+                            viewModelPayment.saveOrder(true)
+                            viewModelPayment.submit(request)
+
+
+
+                            isOrderUpdate = false
+                            binding.tvSave.text = getString(R.string.save)
+
+                        } else {
+                            showMessage()
+                        }
 //                }
+                    }
+                } else {
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        requireContext(),
+                        resources.getString(R.string.please_add_Atleast_one_item_in_cart)
+                    ) { _, _ ->
+                    }
                 }
-            } else {
-                AlertUtils.showCustomAlertWithListenerWithOK(
-                    requireContext(),
-                    resources.getString(R.string.please_add_Atleast_one_item_in_cart)
-                ) { _, _ ->
-                }
+            } catch (e: Exception){
+                e.printStackTrace()
             }
         }
     }
@@ -2218,6 +2295,15 @@ class CartFragment(
             }
         }
         cartlist[0].openOrderType = Constants.PICK_UP
+        var finalDiscount = 0.0
+        if (BuildConfig.DEBUG == false){
+            finalDiscount = cartlist[0].discountPrice  + viewModel.totalDiscount
+        }
+        else{
+            finalDiscount = viewModel.totalDiscount
+        }
+        Log.e("checkDiscount","totalDiscount:  ${viewModel.totalDiscount}")
+        Log.e("checkDiscount","totalDiscountdiscountPrice:  ${cartlist[0].discountPrice}")
 
         val orderRequestModel = viewModel.createDineInOrderRequest(
             cartModel = cartlist[0],
@@ -2229,7 +2315,7 @@ class CartFragment(
             "",
             "",
             false,
-            totalDiscount = viewModel.totalDiscount,
+            totalDiscount =finalDiscount,
             0.0,
             floorPlanDetails = floorModel
         )

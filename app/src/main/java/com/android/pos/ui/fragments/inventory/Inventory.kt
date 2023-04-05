@@ -607,7 +607,9 @@ class Inventory : Fragment() {
                 object : InventoryAdapter.InventoryListner {
                     override fun onItemSelect(position: Int) {
                         LogUtil.logE(TAG, "position  $position")
-                        changePosition(position)
+                        if (!list[position].isSelected) {
+                            changePosition(position)
+                        }
                     }
 
                 })

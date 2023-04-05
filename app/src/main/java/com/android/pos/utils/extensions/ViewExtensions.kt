@@ -24,6 +24,8 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.SimpleItemAnimator
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.Event
 import com.android.pos.utils.OnSingleClickListener
@@ -160,6 +162,10 @@ fun View.setOnSingleClickListener(l: (View) -> Unit) {
     setOnClickListener(OnSingleClickListener(l))
 }
 
+fun RecyclerView.disableItemAnimator() {
+    (itemAnimator as? SimpleItemAnimator)?.supportsChangeAnimations = false
+}
+
 inline var TextView.strike: Boolean
     set(visible) {
         paintFlags = if (visible) paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
@@ -177,3 +183,6 @@ fun View.isClickable(flag: Boolean) {
     isClickable = flag
     isEnabled = flag
 }
+
+fun Fragment.addOnWindowFocusChangeListener(callback: (hasFocus: Boolean) -> Unit) =
+    view?.viewTreeObserver?.addOnWindowFocusChangeListener(callback)

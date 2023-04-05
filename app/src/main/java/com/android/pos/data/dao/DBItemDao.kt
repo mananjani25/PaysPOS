@@ -24,6 +24,8 @@ interface DBItemDao {
     @get:Query("select * from TbItem where TbItem.hide_status = 'UnHide' and TbItem.isDeleted = 0 and TbItem.name != 'Manual Item' GROUP by TbItem.itemId ORDER BY TbItem.sort DESC")
     val allItemFromPos: LiveData<List<TbItem?>>?
 
+    @get:Query("select * from TbItem where (TbItem.hide_status = 'UnHide' and TbItem.isDeleted = 0) GROUP by TbItem.itemId ORDER BY TbItem.sort DESC")
+    val allItemsWithManualFromPos: LiveData<List<TbItem?>>?
 
     @Query("select * from TbItem where TbItem.isDeleted = 0 and (TbItem.website_hide_status ='UnHideOnWebsite' or TbItem.hide_status ='UnHide') and TbItem.name != 'Manual Item' GROUP by TbItem.itemId ORDER BY TbItem.sort ASC")
     fun getPaginationList(): PagingSource<Int, TbItem>
@@ -58,9 +60,7 @@ interface DBItemDao {
     fun itemByProductCode(productCode: String): LiveData<TbItem>?
 
     @Query("SELECT * from TbItem  where TbItem.itemId = :id LIMIT 1")
-     fun itemOne(id: Int): TbItem?
-
-
+    fun itemOne(id: Int): TbItem?
 
 
     @Query("SELECT * from TbItem where TbItem.itemId  = :restId  and TbItem.isDeleted = 0 LIMIT 1")
@@ -88,6 +88,7 @@ interface DBItemDao {
     @Query("UPDATE TbItem SET categoryId = :catId,categoryName = :catName  WHERE  TbItem.itemId = :itemId")
     suspend fun updateItem(catId: Int, catName: String, itemId: Int?): Int
 
+
 //    @Transaction
 //    @Query("SELECT * FROM TbItem")
 //    fun cartWithModifierList(): LiveData<List<ItemWithModifier?>>?
@@ -102,7 +103,9 @@ interface DBItemDao {
     @Query("UPDATE TbItem SET itemQuantity = :qty WHERE  TbItem.itemId = :id")
     fun updateItemQty(id: Int?, qty: Int?)
 
-    @Query("UPDATE TbItem SET taxes  = :newItem WHERE  TbItem.itemId = :id")
-    suspend fun updateItemTaxes(id: Int, newItem: List<TaxData>)
+    @Query("UPDATE TbItem SET taxes = :taxes WHERE  TbItem.itemId = :id")
+    suspend fun updateItemTaxes(id: Int, taxes: List<TaxData>)
 
+    @Query("UPDATE TbItem SET modifier_set_ids = :modifierSetIds WHERE TbItem.itemId = :id")
+    suspend fun updateItemModifiers(id: Int, modifierSetIds: List<Int>)
 }

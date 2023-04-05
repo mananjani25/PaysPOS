@@ -482,7 +482,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 prefProvider.setValue(ORDER_TYPE_NAME, DINE_IN)
                 prefProvider.setValueInt(ORDER_TYPE_ID, prefProvider.getValueInt(ORDER_TYPE_ID, 0))
 
-                viewModel.cartLogic(cartList, null, ADD, false, dineInList = dineInList)
+                viewModel.newCartLogicModifier(cartList, null, ADD, false, dineInList = dineInList)
                 viewModel.orderItemDiscount = arguments?.getDouble("totalDiscount") ?: 0.0
 
             }
@@ -502,7 +502,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     override fun onPause() {
         super.onPause()
-        ProgressUtils.dismissProgressDialog()
+//        ProgressUtils.dismissProgressDialog()
 
         serviceChargesObserve?.let { viewModel.serviceCharges.removeObserver(it) }
 
@@ -646,14 +646,14 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         nameObserver = Observer {
 
-            bindData(it)
+           // bindData(it)
 
             removeObserver()
         }
 
 
-        if (isAdded)
-            addObserver()
+//        if (isAdded)
+//            addObserver()
     }
 
     private fun addObserver() {
@@ -738,7 +738,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                     }
 
-                    viewModel.cartLogic(cartList, null, ADD, false, dineInList = dineList)
+                    viewModel.newCartLogicModifier(cartList, null, ADD, false, dineInList = dineList)
 
                 }
 
@@ -1160,7 +1160,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     override fun onDestroy() {
         super.onDestroy()
-        ProgressUtils.dismissProgressDialog()
+     //   ProgressUtils.dismissProgressDialog()
     }
 
     private fun horizontalTabList() {
@@ -1430,7 +1430,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 Status.ERROR ->
                     ProgressUtils.dismissProgressDialog()
 
-                Status.LOADING -> ProgressUtils.showProgressDialog(requireActivity())
+                //Status.LOADING -> ProgressUtils.showProgressDialog(requireActivity())
 
             }
         }
@@ -1664,14 +1664,14 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         // yash simple dashboard add cart
                         val dineInList = dineInCartAdapter.getList()
                         dineInList.get(0).selectedPosition = dineInCartAdapter.getHeaderPosition()
-                        viewModel.cartLogic(cartList, item, ADD, false, dineInList = dineInList)
+                        viewModel.newCartLogicModifier(cartList, item, ADD, false, dineInList = dineInList)
 
 
                     } else {
                         //check is_edited flag
                         makeItemEdited(item)
 
-                        viewModel.cartLogic(cartList, item, ADD, false)
+                        viewModel.newCartLogicModifier(cartList, item, ADD, false)
                     }
                 } else {
                     item.itemQuantity = -1
@@ -1981,9 +1981,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         val dineInList = dineInCartAdapter.getList()
                         // dineInList.get(dineInCartAdapter.getHeaderPosition()).items.add(data)
                         dineInList.get(0).selectedPosition = dineInCartAdapter.getHeaderPosition()
-                        viewModel.cartLogic(cartList, data, ADD, false, dineInList = dineInList)
+                        viewModel.newCartLogicModifier(cartList, data, ADD, false, dineInList = dineInList)
                     } else {
-                        viewModel.cartLogic(cartList, data, ADD, false)
+                        viewModel.newCartLogicModifier(cartList, data, ADD, false)
                     }
                 } else {
                     if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN) {
@@ -1991,11 +1991,11 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         val dineInList = dineInCartAdapter.getList()
                         dineInList.get(0).selectedPosition = dineInCartAdapter.getHeaderPosition()
                         // dineInList.get(dineInCartAdapter.getHeaderPosition()).items.add(data)
-                        viewModel.cartLogic(cartList, data, UPDATE, false, dineInList = dineInList)
+                        viewModel.newCartLogicModifier(cartList, data, UPDATE, false, dineInList = dineInList)
 
                     } else {
 
-                        viewModel.cartLogic(cartList, data, UPDATE, false)
+                        viewModel.newCartLogicModifier(cartList, data, UPDATE, false)
                     }
                 }
             } else {
@@ -2061,7 +2061,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         btnRemove.setOnClickListener {
 
             makeItemEdited(data)
-            viewModel.cartLogic(cartList, data, DELETE, false)
+            viewModel.newCartLogicModifier(cartList, data, DELETE, false)
             dialog.dismiss()
         }
         btnAddDiscount.setOnClickListener {
@@ -2085,7 +2085,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                                 (totalPrice(data) - data.discountPrice)
                             )
 
-                            viewModel.cartLogic(cartList, data, UPDATE, false)
+                            viewModel.newCartLogicModifier(cartList, data, UPDATE, false)
 
                         }
                         result.discountType == "Amount" -> {
@@ -2096,7 +2096,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                             data.isManualSales = false
                             discountPrice = data.discountPrice / data.itemQuantity
 
-                            viewModel.cartLogic(cartList, data, UPDATE, false)
+                            viewModel.newCartLogicModifier(cartList, data, UPDATE, false)
                         }
                         else -> {
                             totalDiscountMannualAdded = data.discountPrice
@@ -2106,7 +2106,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                             data.isManualSales = false
                             discountPrice = data.discountPrice / data.itemQuantity
 
-                            viewModel.cartLogic(cartList, data, UPDATE, false)
+                            viewModel.newCartLogicModifier(cartList, data, UPDATE, false)
                         }
                     }
 
@@ -2276,7 +2276,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         viewModel.showProgress.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
-                    ProgressUtils.showProgressDialog(requireActivity())
+                   // ProgressUtils.showProgressDialog(requireActivity())
                 } else {
                     ProgressUtils.dismissProgressDialog()
                 }
@@ -2287,7 +2287,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             event.getContentIfNotHandled()?.let {
                 LogUtil.logE("observeShowProgress2", it.toString())
                 if (it) {
-                    ProgressUtils.showProgressDialog(requireActivity())
+                  //  ProgressUtils.showProgressDialog(requireActivity())
                 } else {
                     ProgressUtils.dismissProgressDialog()
                 }
@@ -2370,7 +2370,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             when (it.status) {
                 Status.SUCCESS -> {
                     ProgressUtils.dismissProgressDialog()
-                    ProgressUtils.showProgressDialog(requireActivity())
+                //    ProgressUtils.showProgressDialog(requireActivity())
 
                     if (it.data?.isNotEmpty() == true) {
 
@@ -2389,7 +2389,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                 }
                 Status.LOADING -> {
-                    ProgressUtils.showProgressDialog(requireActivity())
+                  //  ProgressUtils.showProgressDialog(requireActivity())
                 }
                 Status.ERROR -> {
                     ProgressUtils.dismissProgressDialog()
@@ -2940,7 +2940,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                             val item = cartAdapter.getItem(position)
                             //cartAdapter.removeItem(position)
                             makeItemEdited(item)
-                            viewModel.cartLogic(cartList, item, DELETE, false)
+                            viewModel.newCartLogicModifier(cartList, item, DELETE, false)
                         }
                         negativeButton(R.string.tv_cancel) {
                             // Do negative stuff here
@@ -2963,7 +2963,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         val note = bundle.getString("note")
 
                         singleItem!!.note = note.toString()
-                        singleItem?.let { viewModel.cartLogic(cartList, it, UPDATE, false) }
+                        singleItem?.let { viewModel.newCartLogicModifier(cartList, it, UPDATE, false) }
                     }
 
                     singleItem = cartAdapter.getItem(position)
@@ -3006,7 +3006,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                                     data.discountType = result.discountType
                                     data.isManualSales = false
 
-                                    viewModel.cartLogic(cartList, data, UPDATE, false)
+                                    viewModel.newCartLogicModifier(cartList, data, UPDATE, false)
 
 
                                 }
@@ -3018,7 +3018,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                                     data.isManualSales = false
                                     // discountPrice = data.discountPrice
 
-                                    viewModel.cartLogic(cartList, data, UPDATE, false)
+                                    viewModel.newCartLogicModifier(cartList, data, UPDATE, false)
 
                                 }
                                 else -> {
@@ -3029,7 +3029,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                                     data.isManualSales = false
                                     // discountPrice = data.discountPrice
 
-                                    viewModel.cartLogic(cartList, data, UPDATE, false)
+                                    viewModel.newCartLogicModifier(cartList, data, UPDATE, false)
 
                                 }
                             }
@@ -3039,7 +3039,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                             data.discountType = ""
                             data.isManualSales = false
                             data.discountId = 0
-                            viewModel.cartLogic(cartList, data, UPDATE, false)
+                            viewModel.newCartLogicModifier(cartList, data, UPDATE, false)
                         }
 
                     }
@@ -3120,7 +3120,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         }
 
         cartList.get(0).orderType = DINE_IN
-        viewModel.cartLogic(cartList, null, ADD, false, dineInList = dineInList)
+        viewModel.newCartLogicModifier(cartList, null, ADD, false, dineInList = dineInList)
 
     }
 
@@ -3302,9 +3302,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         dineInList.get(0).selectedPosition =
                             dineInCartAdapter.getHeaderPosition()
 
-                        viewModel.cartLogic(cartList, data, ADD, false, dineInList = dineInList)
+                        viewModel.newCartLogicModifier(cartList, data, ADD, false, dineInList = dineInList)
                     } else {
-                        viewModel.cartLogic(cartList, data, ADD, false)
+                        viewModel.newCartLogicModifier(cartList, data, ADD, false)
                     }
                 } else
                     if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN) {
@@ -3312,7 +3312,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         val dineInList = dineInCartAdapter.getList()
                         dineInList.get(0).selectedPosition = headerPosition
                         // dineInList.get(dineInCartAdapter.getHeaderPosition()).items.add(data)
-                        viewModel.cartLogic(cartList, data, UPDATE, false, dineInList = dineInList)
+                        viewModel.newCartLogicModifier(cartList, data, UPDATE, false, dineInList = dineInList)
 
                     } else {
 
@@ -3377,7 +3377,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         btnRemove.setOnClickListener {
 
             cartList[0].orderType = DINE_IN
-            viewModel.cartLogic(
+            viewModel.newCartLogicModifier(
                 cartList,
                 data,
                 DELETE, false,
@@ -3477,7 +3477,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 // Do positive stuff here
                 cartList.get(0).orderType = DINE_IN
 
-                viewModel.cartLogic(
+                viewModel.newCartLogicModifier(
                     cartList,
                     data,
                     DELETE, false,
@@ -4118,14 +4118,14 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                 val dineInList = dineInCartAdapter.getList()
                 dineInList.get(0).selectedPosition = dineInCartAdapter.getHeaderPosition()
-                viewModel.cartLogic(cartList, item, ADD, false, dineInList = dineInList)
+                viewModel.newCartLogicModifier(cartList, item, ADD, false, dineInList = dineInList)
 
 
             } else {
                 //check is_edited flag
                 //makeItemEdited(item)
 
-                viewModel.cartLogic(cartList, item, ADD, false)
+                viewModel.newCartLogicModifier(cartList, item, ADD, false)
             }
         } else {
             item?.itemQuantity = -1

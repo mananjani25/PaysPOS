@@ -111,23 +111,25 @@
         </androidx.appcompat.widget.LinearLayoutCompat>
 
         <androidx.appcompat.widget.LinearLayoutCompat
-            android:id="@+id/linearSecond"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_alignParentEnd="true"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_5sdp"
+            android:layout_toStartOf="@id/linearSecond"
+            android:layout_toEndOf="@id/linearFirst"
             android:gravity="center">
-
 
             <AutoCompleteTextView
                 android:id="@+id/edtSearch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:minWidth="@dimen/_100sdp"
                 android:layout_centerVertical="true"
                 android:layout_gravity="center"
                 android:layout_marginEnd="@dimen/_20sdp"
-                android:layout_toStartOf="@+id/linearSecond"
-                android:layout_toEndOf="@+id/linearFirst"
                 android:autoLink="all"
+                android:maxLength="60"
+                android:digits="@string/character_digits_String"
+                android:singleLine="true"
                 android:background="@android:color/transparent"
                 android:backgroundTint="@android:color/transparent"
                 android:drawableStart="@drawable/ic_dashboard_serach"
@@ -146,6 +148,16 @@
                 android:textColor="@color/txtColor"
                 android:textColorHint="@color/hint_color"
                 android:textSize="@dimen/_7mdpi" />
+
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/linearSecond"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true"
+            android:gravity="center">
 
             <ImageView
                 android:id="@+id/imgCashdDrawer"
@@ -183,7 +195,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginEnd="@dimen/_5sdp"
+                android:layout_marginEnd="@dimen/_10sdp"
                 android:background="?attr/selectableItemBackground"
                 android:gravity="center"
                 android:padding="@dimen/_5sdp"
@@ -210,7 +222,7 @@
 
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/_20sdp"
-                    android:layout_marginEnd="@dimen/_2sdp"
+                    android:layout_marginEnd="@dimen/_4sdp"
                     android:contentDescription="@string/clock"
                     android:paddingVertical="@dimen/_5sdp"
                     android:src="@drawable/swipe_user_clock"
@@ -221,23 +233,60 @@
                     style="@style/CustomFontMediumStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:maxWidth="@dimen/_100sdp"
+                    android:ellipsize="end"
+                    android:maxLines="1"
                     android:layout_gravity="center"
+                    android:textAllCaps="true"
                     android:textSize="@dimen/_6mdpi"
                     tools:text="ELEANOR RUSSELL" />
             </LinearLayout>
 
             <View
-                android:visibility="gone"
+                android:visibility="visible"
                 android:layout_width="0.5dp"
                 android:layout_height="match_parent"
                 android:layout_marginVertical="@dimen/_5sdp"
-                android:layout_marginStart="@dimen/_6sdp"
-                android:layout_marginEnd="@dimen/_6sdp"
+                android:layout_marginStart="@dimen/_2sdp"
+                android:layout_marginEnd="@dimen/_2sdp"
                 android:background="@color/txtColor" />
+
+            <LinearLayout
+
+                android:layout_marginEnd="@dimen/_5sdp"
+                android:id="@+id/ivLock"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/_20sdp"
+                android:gravity="end"
+                android:layout_alignParentEnd="true"
+                android:layout_gravity="center"
+                android:background="?attr/selectableItemBackground"
+                android:contentDescription="@string/clock"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/_20sdp"
+                    android:layout_gravity="center"
+                    android:layout_marginEnd="@dimen/_2sdp"
+                    android:contentDescription="@string/clock"
+                    android:paddingVertical="@dimen/_5sdp"
+                    android:src="@drawable/ic_clock_out"
+                    app:tint="@color/txtColor" />
+
+                <TextView
+                    style="@style/CustomFontBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textAllCaps="true"
+                    android:textSize="@dimen/_6mdpi"
+                    android:textColor="@color/btnColor"
+                    android:text="@string/tv_clock_out" />
+            </LinearLayout>
 
             <ImageView
                 android:visibility="gone"
-                android:id="@+id/ivLock"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"

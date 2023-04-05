@@ -62,7 +62,7 @@
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:id="@+id/linear_edit_email"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_20sdp"
+                android:layout_height="wrap_content"
                 android:background="@drawable/background_square_border_grey"
                 android:visibility="gone">
 
@@ -75,7 +75,7 @@
                     android:hint="@string/email_receipt"
                     android:imeOptions="actionDone"
                     android:inputType="textEmailAddress"
-                    android:padding="@dimen/_7sdp"
+                    android:padding="@dimen/_5sdp"
                     android:textColor="@color/txtColor"
                     android:textColorHint="@color/hintColor"
                     android:textSize="@dimen/_6mdpi"

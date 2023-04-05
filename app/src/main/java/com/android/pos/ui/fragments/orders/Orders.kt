@@ -103,6 +103,7 @@ class Orders : Fragment() {
         return binding.root
     }
 
+
     @Inject
     lateinit var apiService: ApiService
 
@@ -205,8 +206,11 @@ class Orders : Fragment() {
             findNavController().navigate(R.id.action_orders_to_menuposbold)
         }
         binding.commonToolbar.txtHome.setOnClickListener {
-            if (MethodUtils.isDoubleClick()) return@setOnClickListener
-            findNavController().navigate(R.id.action_orders_to_dashboardCategoryNew)
+            try {
+
+                findNavController().navigate(R.id.action_orders_to_dashboardCategoryNew)
+            }catch (e:java.lang.Exception){}
+
         }
 
         binding.commonToolbar.txtTitle.text = "Open Orders"

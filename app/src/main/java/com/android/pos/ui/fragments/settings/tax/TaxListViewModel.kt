@@ -1,11 +1,12 @@
 package com.android.pos.ui.fragments.settings.tax
 
-import android.util.Log
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.android.pos.data.entities.TaxData
 import com.android.pos.data.model.responseModel.CreateTaxResponse
 import com.android.pos.data.model.responseModel.GetTaxResponse
-import com.android.pos.data.repositories.PosRepository
 import com.android.pos.data.repositories.TaxServiceChargeRepository
 import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Status
@@ -30,6 +31,9 @@ class TaxListViewModel @Inject constructor(
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
+    private val _taxesData = MutableLiveData<Event<GetTaxResponse>>()
+    val taxesData: LiveData<Event<GetTaxResponse>> = _taxesData
+
     val getTaxList = taxServiceChargeRepository.getTaxList()
 
     val taxList = MutableLiveData<List<TaxData>>()
@@ -37,6 +41,36 @@ class TaxListViewModel @Inject constructor(
         taxList.value = getTaxList.value?.data!!
     }
 
+
+    fun getTextList() {
+        _showProgress.value = Event(true)
+        viewModelScope.launch {
+            val response =
+                taxServiceChargeRepository.getTaxesList()
+            when (response.status) {
+                Status.SUCCESS -> {
+                    _showProgress.value = Event(false)
+                    response.data.let {
+                        if (it?.status == 200) {
+                            _taxesData.value = Event(it)
+                            _showProgress.value = Event(false)
+                            taxServiceChargeRepository.addAllTaxListDatabase(it.data)
+                        } else {
+                            _snackbarText.value = Event(response.message)
+                            _showProgress.value = Event(false)
+                        }
+                    }
+                }
+                Status.ERROR -> {
+                    _snackbarText.value = Event(response.message)
+                    _showProgress.value = Event(false)
+                }
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+                }
+            }
+        }
+    }
 
     fun isTaxActive(taxDataItem: TaxData) {
 

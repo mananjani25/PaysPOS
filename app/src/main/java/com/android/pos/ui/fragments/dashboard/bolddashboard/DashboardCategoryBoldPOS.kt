@@ -9,12 +9,14 @@ import android.os.*
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.WindowManager
+import android.view.animation.AlphaAnimation
+import android.view.animation.Animation
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.*
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -77,6 +79,10 @@ import com.sunmi.externalprinterlibrary.api.SunmiPrinter
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import com.zebra.scannercontrol.FirmwareUpdateEvent
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
 
@@ -84,7 +90,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     ScannerAppEngine.IScannerAppEngineDevEventsDelegate, ICallback, DineInOrderCallBack {
-
+    private val mHandler = Handler(Looper.myLooper()!!)
     private lateinit var presentation: CustomDisplay
     private var dineInList: List<DineInModel>? = null
     private var woyouService: IWoyouService? = null
@@ -138,36 +144,34 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         if (count != null) {
             if (count > 0) {
                 binding.layoutHeader.txtBadgeCount?.visible()
+                binding.layoutHeader.txtBadgeCount.blink()
                 binding.layoutHeader.txtBadgeCount?.text = count.toString()
             } else {
+                binding.layoutHeader.txtBadgeCount.clearAnimation()
                 binding.layoutHeader.txtBadgeCount?.gone()
             }
         } else {
+            binding.layoutHeader.txtBadgeCount.clearAnimation()
             binding.layoutHeader.txtBadgeCount?.gone()
         }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
 
-
-        hideNavigation()
-
+    private fun View.blink(
+        times: Int = Animation.INFINITE,
+        duration: Long = 500L,
+        offset: Long = 20L,
+        minAlpha: Float = 0.45f,
+        maxAlpha: Float = 1.0f,
+        repeatMode: Int = Animation.REVERSE
+    ) {
+        startAnimation(AlphaAnimation(minAlpha, maxAlpha).also {
+            it.duration = duration
+            it.startOffset = offset
+            it.repeatMode = repeatMode
+            it.repeatCount = times
+        })
     }
-
-    private fun hideNavigation() {
-        requireActivity().window.setFlags(
-            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
-        )
-        requireActivity().window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                or View.SYSTEM_UI_FLAG_FULLSCREEN
-                or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
-    }
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -175,14 +179,12 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         savedInstanceState: Bundle?
     ): View? {
         checkCashDrawerObserver()
-        syncData()
         Binding()
 
 //        hideSystemUI()
 
-        view?.let { SystemBarsCompat.hideSystemBars(requireActivity().window, it) }
-//        requireActivity().window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
         binding = FragmentDashboardCategoryBoldPosBinding.inflate(inflater, container, false)
+        syncData()
         getCustomerDisplay(requireContext())?.let { display ->
             presentation = CustomDisplay(
                 display,
@@ -194,7 +196,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
             )
         }
-        prefProvider.setValueboolean(IS_PAYMENT_SCREEN,false)
+        prefProvider.setValueboolean(IS_PAYMENT_SCREEN, false)
         val callback: OnBackPressedCallback =
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
@@ -231,11 +233,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         binding.lifecycleOwner = this
 
 
-        binding.layoutBottom?.llClockOut?.setOnClickListener {
+        binding.layoutHeader.ivLock.setOnClickListener {
 
             alert(
                 getString(R.string.app_name),
-                "Are you sure, you want to clockout employee  " + prefProvider.employeeName() + " ?"
+                prefProvider.employeeName() + ", Are you sure, you want to clockout?"
             ) {
                 positiveButton(getString(android.R.string.ok)) {
                     viewModel.clockOut()
@@ -251,14 +253,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         return binding.root
     }
 
-    private fun hideSystemUI() {
-        requireActivity().window.decorView.systemUiVisibility = (
-                View.SYSTEM_UI_FLAG_IMMERSIVE
-                        or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                        or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                        or View.SYSTEM_UI_FLAG_FULLSCREEN
-                )
-    }
 
     private fun checkCashDrawerObserver() {
         viewModel.checkCashDrawerPer.observe(viewLifecycleOwner) {
@@ -529,6 +523,15 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         onClick()
 
+        viewModel.showClockOutProgress.observe(requireActivity()) { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it) {
+                    ProgressUtils.showProgressDialog(requireActivity())
+                } else {
+                    ProgressUtils.dismissProgressDialog()
+                }
+            }
+        }
         if (prefProvider.getValueboolean(ONLINE_ORDER_ENABLE, false)) {
             binding.layoutHeader.linearOnlineorder?.visible()
         } else {
@@ -635,16 +638,24 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         if (!sync) {
             ProgressUtils.showProgressDialog(requireActivity())
             viewModel.syncInventoryModule(false)
-
+            //binding.maskLayout?.visible()
+            //hideLoaderAfterDelay()
         } else {
             viewModel.getOnlineOrderCount()
+        }
+    }
+
+    private fun hideLoaderAfterDelay() {
+        GlobalScope.launch(Dispatchers.Main) {
+            delay(10000)
+            binding.maskLayout?.gone()
         }
     }
 
     override fun onResume() {
         super.onResume()
 
-        hideNavigation()
+//        hideNavigation()
 
         if (prefProvider.getValueboolean(Constants.IS_SYNC_MARKUP, false)) {
             viewModel.markupInventory()
@@ -728,6 +739,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             bundle.putBoolean("isDashboard", false)
             if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
                 prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
+                viewModel.deleteCart()
                 findNavController().navigate(
                     R.id.action_dashboardCategoryBoldPOS_to_passcode,
                     bundle
@@ -752,7 +764,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             viewModel.syncInventoryModule(false)
         }
         binding.layoutHeader.imgCashdDrawer.setOnClickListener {
-
+            Log.d(TAG, "CASH-DRAWER: STEP 1 ")
             getCustomerPrinters()
             /*try {
                 SunmiPrintHelper.getInstance().openCashBox()
@@ -805,8 +817,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
             when (it.status) {
                 Status.SUCCESS -> {
+                    Log.d(TAG, "CASH-DRAWER: STEP 2 ")
                     if (it.data?.isNotEmpty() == true) {
                         for (i in 0 until it.data.size) {
+                            Log.d(TAG, "CASH-DRAWER: PrinterName($i) = ${it.data[i].name}")
                             if (it.data[i].name.startsWith("CloudPrint", true) == true) {
                                 if (woyouService != null) {
                                     woyouService!!.sendRAWData(byteArrayOf(0x1B, 0x45, 0x01), this)
@@ -860,7 +874,47 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                 }
 
                             } else {
-                                var builder: Builder = Builder(
+                                Log.d(TAG, "CASH-DRAWER: STEP 3 in TM-m30 ")
+
+
+                                try {
+                                    var mPrinter =
+                                        Printer(
+                                            Printer.TM_M30,
+                                            Printer.MODEL_ANK,
+                                            (activity as MainActivity).applicationContext
+                                        )
+
+
+                                    var printerAdd =
+                                        if (it.data[i].printer_type == Constants.BLUETOOTH) "BT:" + it.data[i].macAddress else "TCP:" + it.data[i].ipAddress
+                                    mPrinter.connect(
+                                        printerAdd,
+                                        Printer.PARAM_DEFAULT
+                                    )
+
+                                    mPrinter.addPulse(
+                                        com.epson.epos2.printer.Printer.DRAWER_HIGH,
+                                        com.epson.epos2.printer.Printer.PULSE_100
+                                    )
+
+                                    try {
+
+                                        mPrinter.sendData(Printer.PARAM_DEFAULT)
+                                        mPrinter.disconnect()
+                                    } catch (e: java.lang.Exception) {
+                                        try {
+                                            mPrinter.disconnect()
+                                        } catch (e: java.lang.Exception) {
+                                            e.printStackTrace()
+                                        }
+                                        e.printStackTrace()
+                                    }
+                                } catch (e: Exception) {
+                                    e.printStackTrace()
+                                }
+
+                                /*var builder: Builder = Builder(
                                     if (it.data[i].name.substring(0, 6).toString()
                                             .lowercase() == "TM-m30".lowercase()
                                     ) {
@@ -870,7 +924,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                     }, PrinterClass.language, requireActivity()
                                 )
 
-
+                                Log.d(TAG, "CASH-DRAWER: STEP 4")
                                 builder.addPulse(
                                     com.epson.epos2.printer.Printer.DRAWER_HIGH,
                                     com.epson.epos2.printer.Printer.PULSE_100
@@ -879,13 +933,15 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                 val status = IntArray(1)
                                 val battery = IntArray(1)
                                 try {
+                                    Log.d(TAG, "CASH-DRAWER: STEP 5")
                                     PrinterClass.getPrinter()?.sendData(
                                         builder,
                                         PrinterClass.BLUETOOTH_TIMEOUT, status, battery
                                     )
                                 } catch (e: java.lang.Exception) {
+                                    Log.d(TAG, "CASH-DRAWER: STEP 5 with error = ${e.localizedMessage} ")
                                     e.printStackTrace()
-                                }
+                                }*/
 
 
                             }
@@ -928,18 +984,13 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
 
     override fun onItemSelected(item: TbItem) {
-        Log.e(TAG, "onItemSelectedItem:  ${Gson().toJson(item)}")
         item.timeStamp = randomOfflineId()
 
-        Log.e(
-            TAG,
-            "getCartList  ${Gson().toJson(cartList)} viewmodeCartList ${Gson().toJson(viewModel.cartModel)}"
-        )
+        Log.e("viewModel.cartModel",Gson().toJson(viewModel.cartModel))
 
         if (cartList.isEmpty() && viewModel.cartModel != null) {
             viewModel.cartModel?.let {
-
-                cartList.add(it)
+              cartList.add(it)
             }
         }
 
@@ -985,11 +1036,13 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         cartList[0].dineInList = dineInList
                     }
 
-                    LogUtil.logE(
-                        TAG,
-                        "dineInCartListData:  ${Gson().toJson(cartList[0].dineInList)}"
-                    )
+
                     if (cartList[0].dineInList?.isNotEmpty() == true) {
+                        Log.e(
+                            "checkDineHeaderPos",
+                            "dineInHeaderPosition:  ${viewModel.dineInHeaderPosition}"
+                        )
+
                         var dineInList = cartList[0].dineInList
                         dineInList!![0]?.selectedPosition = viewModel.dineInHeaderPosition
                         viewModel.newCartLogicModifier(
@@ -1027,24 +1080,23 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     }
 
     private fun addObserver() {
-
-
-        viewModel.showProgress.observe(viewLifecycleOwner) { event ->
+        viewModel.showProgress.observe(requireActivity()) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
-                    ProgressUtils.showProgressDialog(requireActivity())
+                    //ProgressUtils.showProgressDialog(requireActivity())
                 } else {
-                    ProgressUtils.dismissProgressDialog()
+                    // ProgressUtils.dismissProgressDialog()
                 }
             }
         }
         viewModel.clockOut.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
 
-                AlertUtils.showCustomAlert(requireContext(),it)
+                AlertUtils.showCustomAlert(requireContext(), it)
                 val bundle = Bundle()
                 bundle.putBoolean("isDashboard", false)
                 bundle.putBoolean("isSwap", false)
+                viewModel.deleteCart()
                 if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
                     findNavController().navigate(
                         R.id.action_dashboardCategoryBoldPOS_to_passcode,
@@ -1106,8 +1158,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             prefProvider.getValue(ORDER_TYPE, TAKEOUT),
             prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
         ).observe(requireActivity()) {
-            Log.e(TAG, "MAllWords:::  ${Gson().toJson(it)}")
-            Log.e(TAG, "OrderTypeCheck ${prefProvider.getValue(ORDER_TYPE, "")}")
 
             if (prefProvider.getValue(ORDER_TYPE, "").trim().isEmpty()) {
                 binding.layoutHeader.txtKeypad.gone()
@@ -1128,10 +1178,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 cartList.addAll(it.toCollection(arrayListOf()))
             }
 
-            if (this::presentation.isInitialized) {
-                presentation.show()
-                presentation.onDisplayChanged()
-            }
+//            if (this::presentation.isInitialized) {
+//                presentation.show()
+//                presentation.onDisplayChanged()
+//            }
 
             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
 
@@ -1578,14 +1628,30 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         TAG,
                         "PrinterEvent  ${Gson().toJson(printerStatusInfo)} other1 ${s}  other2 ${i}"
                     )
-                    if (printerStatusInfo.online == 1) {
+
                         try {
                             printer.disconnect()
+                            requireActivity().runOnUiThread {
+                                viewModel.downloadFinished(false)
+                                if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                                }
+                            }
 
                         } catch (e: java.lang.Exception) {
+                            try {
+                                requireActivity().runOnUiThread {
+                                    viewModel.downloadFinished(false)
+                                    if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                                        findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                                    }
+                                }
+                            }catch (e:Exception){
+
+                            }
                             e.printStackTrace()
                         }
-                    }
+
                 }
                 try {
                     Log.e(TAG, "printerDataType:  ${data.printer_type}")
@@ -1603,6 +1669,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 } catch (e: java.lang.Exception) {
                     e.printStackTrace()
                 }
+
+
 
             } else {
 
@@ -1999,10 +2067,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
             try {
                 builder.sendData(Printer.PARAM_DEFAULT)
-                viewModel.downloadFinished(false)
-                if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+               // viewModel.downloadFinished(false)
+               /* if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
                     findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
-                }
+                }*/
 
                 //PrinterClass.getPrinter()?.sendData(builder, 0, status, battery)
             } catch (e: Exception) {
@@ -3518,7 +3586,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         } else {
             Log.e(TAG, "DineinNewCh NoOrderType")
             if (rolePermission.hasTablePermission(binding.root)) {
-                prefProvider.setValue(ORDER_TYPE, DINE_IN)
+                // prefProvider.setValue(ORDER_TYPE, DINE_IN)
                 prefProvider.setValue(Constants.DINE_IN_UPDATE_LIST, "")
                 prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
                 findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragment)
@@ -3550,81 +3618,4 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         return salt.toString()
     }
 
-    object SystemBarsCompat {
-        private val api: Api =
-            when {
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> Api31()
-                Build.VERSION.SDK_INT == Build.VERSION_CODES.R -> Api30()
-                else -> Api()
-            }
-
-        fun hideSystemBars(window: Window, view: View, isImmersiveStickyMode: Boolean = false) =
-            api.hideSystemBars(window, view, isImmersiveStickyMode)
-
-        fun showSystemBars(window: Window, view: View) = api.showSystemBars(window, view)
-
-        fun areSystemBarsHidden(view: View): Boolean = api.areSystemBarsHidden(view)
-
-        @Suppress("DEPRECATION")
-        private open class Api {
-            open fun hideSystemBars(
-                window: Window,
-                view: View,
-                isImmersiveStickyMode: Boolean = false
-            ) {
-                val flags = View.SYSTEM_UI_FLAG_FULLSCREEN or
-                        View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
-                        View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-
-                view.systemUiVisibility = if (isImmersiveStickyMode) {
-                    flags or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                } else {
-                    flags or
-                            View.SYSTEM_UI_FLAG_IMMERSIVE or
-                            View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                }
-            }
-
-            open fun showSystemBars(window: Window, view: View) {
-                view.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-            }
-
-            open fun areSystemBarsHidden(view: View) =
-                view.systemUiVisibility and View.SYSTEM_UI_FLAG_HIDE_NAVIGATION != 0
-        }
-
-        @Suppress("DEPRECATION")
-        @RequiresApi(Build.VERSION_CODES.R)
-        private open class Api30 : Api() {
-
-            open val defaultSystemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_BARS_BY_SWIPE
-
-            override fun hideSystemBars(
-                window: Window,
-                view: View,
-                isImmersiveStickyMode: Boolean
-            ) {
-                window.setDecorFitsSystemWindows(false)
-                view.windowInsetsController?.let {
-                    it.systemBarsBehavior =
-                        if (isImmersiveStickyMode) WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-                        else defaultSystemBarsBehavior
-                    it.hide(WindowInsets.Type.systemBars())
-                }
-            }
-
-            override fun showSystemBars(window: Window, view: View) {
-                window.setDecorFitsSystemWindows(false)
-                view.windowInsetsController?.show(WindowInsets.Type.systemBars())
-            }
-
-            override fun areSystemBarsHidden(view: View) =
-                !view.rootWindowInsets.isVisible(WindowInsets.Type.navigationBars())
-        }
-
-        @RequiresApi(Build.VERSION_CODES.S)
-        private class Api31 : Api30() {
-            override val defaultSystemBarsBehavior = WindowInsetsController.BEHAVIOR_DEFAULT
-        }
-    }
 }

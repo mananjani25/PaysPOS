@@ -1220,6 +1220,11 @@
             android:id="@+id/action_dineInFragment_to_transferTableDialog"
             app:destination="@id/transferTableDialog"
             app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_dineInFragment_self"
+            app:destination="@id/dineInFragment"
+            app:popUpTo="@id/dineInFragment"
+            app:enterAnim="@anim/nav_default_enter_anim" />
     </fragment>
     <fragment
         android:id="@+id/dineInGuestFragment"
@@ -1478,6 +1483,10 @@
         <action
             android:id="@+id/action_menuFragment_to_reportEODFragment"
             app:destination="@id/reportEODFragment" />
+        <action
+            android:id="@+id/action_menuFragment_to_passcode"
+            app:popUpToInclusive="true"
+            app:destination="@id/passcode" />
     </dialog>
     <fragment
         android:id="@+id/dummyFragment"

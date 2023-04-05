@@ -46,7 +46,7 @@ class VariationListAdapter() :
 
         val itemBinding = holder.noteItemBinding
         itemBinding.txtVariation.text = variationList[position].name
-        itemBinding.txtPrice.text = variationList[position].price?.let {
+        itemBinding.txtPrice.text = variationList[position].priceWithMarkup?.let {
             MethodUtils.roundOffAmount(
                 it
             )
@@ -70,12 +70,14 @@ class VariationListAdapter() :
 
             noteItemBinding.linearParent.setOnClickListener {
 
-                mpos = absoluteAdapterPosition
+                if(variationList.isNotEmpty() && absoluteAdapterPosition >=0 && bindingAdapterPosition >= 0){
+                    mpos = absoluteAdapterPosition
 
-                mCallbackvariation?.onItemClickListener(it, mpos)
-                showVariationPriceClick?.invoke(variationList[bindingAdapterPosition])
-                Log.d("yash", "position: " + absoluteAdapterPosition)
-                notifyDataSetChanged()
+                    mCallbackvariation?.onItemClickListener(it, mpos)
+                    showVariationPriceClick?.invoke(variationList[bindingAdapterPosition])
+                    Log.d("yash", "position: " + absoluteAdapterPosition)
+                    notifyDataSetChanged()
+                }
 
 
             }

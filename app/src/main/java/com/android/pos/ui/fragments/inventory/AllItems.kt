@@ -5,7 +5,6 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.InsetDrawable
 import android.os.Bundle
@@ -122,7 +121,7 @@ class AllItems(val clickedPosition: Int, val totalItems: Int) : Fragment(), Item
 
             override fun afterTextChanged(s: Editable) {
 
-                if (s.isNotEmpty() && s.length > 2) {
+                if (s.isNotEmpty() && s.length > 2 && !s.toString().endsWith(" ")) {
                     getSearchItemsFromDB(s.toString().trim())
                 } else {
                     itemsObserver()
@@ -290,6 +289,7 @@ class AllItems(val clickedPosition: Int, val totalItems: Int) : Fragment(), Item
 
         adapterPage = ItemListPageAdapter()
         binding.rvAllItemList.adapter = adapterPage
+        binding.rvAllItemList.itemAnimator = null
         adapterPage.setCallback(this)
 
 
@@ -400,7 +400,7 @@ class AllItems(val clickedPosition: Int, val totalItems: Int) : Fragment(), Item
             .setView(dialogView)
             .show()
         customDialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
-        val back = ColorDrawable(ContextCompat.getColor(binding.root.context,R.color.bg_color))
+        val back = ColorDrawable(ContextCompat.getColor(binding.root.context, R.color.bg_color))
         val inset = InsetDrawable(back, 150, 200, 150, 200)
         customDialog?.window?.setBackgroundDrawable(inset);
         var txttitle = customDialog.findViewById<AppCompatTextView>(R.id.txtTitle)
