@@ -1709,7 +1709,7 @@ class ActiveOrderFragment(
 
 
 
-            if (receiptModel.cash_discount_or_surcharge != 0.0) {
+            if (receiptModel.cash_discount_or_surcharge != 0.0 && customerSettingModel.showCashDisSurCharg) {
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
                 builder.addTextFont(Builder.FONT_E)
@@ -2533,7 +2533,7 @@ class ActiveOrderFragment(
 
 
 
-            if (receiptModel.cash_discount_or_surcharge != 0.0) {
+            if (receiptModel.cash_discount_or_surcharge != 0.0 && customerSettingModel.showCashDisSurCharg) {
 
 
                 if (receiptModel.payments.isNotEmpty() && receiptModel.payments.get(receiptModel.payments.size - 1).paymentType.lowercase() == "Card".lowercase()) {
@@ -3053,7 +3053,7 @@ class ActiveOrderFragment(
 
 
 
-            if (receiptModel.cash_discount_or_surcharge != 0.0) {
+            if (receiptModel.cash_discount_or_surcharge != 0.0 && customerSettingModel.showCashDisSurCharg) {
 
 
                 if (receiptModel.payments.isNotEmpty() && receiptModel.payments.get(receiptModel.payments.size - 1).paymentType.lowercase() == "Card".lowercase()) {
@@ -3448,7 +3448,7 @@ class ActiveOrderFragment(
     }
 
     private fun startDatePickerObserver() {
-        viewModel.startDateSelection.observe(requireActivity(), { event ->
+        viewModel.startDateSelection.observe(requireActivity()) { event ->
             event.getContentIfNotHandled()?.let {
                 //currentPage = 1
                 val dialog = DatePickerDialog(
@@ -3465,7 +3465,7 @@ class ActiveOrderFragment(
                 dialog.show()
             }
 
-        })
+        }
     }
 
     private fun endDatePickerObserver() {

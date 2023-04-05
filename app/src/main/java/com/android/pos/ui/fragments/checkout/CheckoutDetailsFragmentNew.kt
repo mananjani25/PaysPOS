@@ -1926,6 +1926,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                     LogUtil.logE("TransactionResult", "TransactionResult called")
 
+                    println("TransactionResult : " + MTParser.getHexString(data.ByteArray()))
                     dismissDialog()
 
                     val jsonArray1 = magtekRequestUtils.processData(
@@ -2032,9 +2033,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             "",
             true,
             true,
-            0
+            0,
         )
 
+        val currencyCode = byteArrayOf(0x08, 0x40)
+        transaction.setCurrencyCode(currencyCode)
         mSessionManager.startTransaction(transaction, getSignature = false, fallback = false)
 
 
