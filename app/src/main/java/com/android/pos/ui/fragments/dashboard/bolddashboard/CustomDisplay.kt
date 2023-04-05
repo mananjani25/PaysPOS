@@ -1797,20 +1797,31 @@ class CustomDisplay(
                             callUpdateTip()
 
                         } else {
-                            AlertUtils.showCustomAlert(
+//                            AlertUtils.showCustomAlert(
+//                                context,
+//                                response.body()!![0].transactionOutput?.transactionMessage
+//                            )
+                            Toast.makeText(
                                 context,
-                                response.body()!![0].transactionOutput?.transactionMessage
-                            )
+                                "${response.body()!![0].transactionOutput?.transactionMessage}",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
 
 
                     } else {
                         if (response.body()!![0].mPPGv4WSFault != null)
-                            AlertUtils.showCustomAlert(
-                                context,
-                                response.body()!![0].mPPGv4WSFault?.faultCode + "\n" +
-                                        response.body()!![0].mPPGv4WSFault?.faultReason
-                            )
+//                            AlertUtils.showCustomAlert(
+//                                context,
+//                                response.body()!![0].mPPGv4WSFault?.faultCode + "\n" +
+//                                        response.body()!![0].mPPGv4WSFault?.faultReason
+//                            )
+                        Toast.makeText(
+                            context,
+                            "${response.body()!![0].mPPGv4WSFault?.faultCode + "\n" +
+                                    response.body()!![0].mPPGv4WSFault?.faultReason}",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
             }
