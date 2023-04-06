@@ -57,8 +57,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
     private var mContext: Context = context
     private var isPrinterRunning: Boolean = false
     private var printerBGRunning: Boolean = false
-    private var dynamicPrinterList: ArrayList<PrinterResponse.Data.KitchenReceiptPrinters> =
-        arrayListOf()
+
 
 
     override suspend fun doWork(): Result {
@@ -489,7 +488,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                             float = 0.0,
                             id = 0,
                             isPaid = false,
-                            isPrinted = false,
+                            isPrinted = it.asJsonObject.get("is_printed").asBoolean,
                             itemId = it.asJsonObject.get("item_id").asInt,
                             itemName = it.asJsonObject.get("item_name").asString,
                             note = it.asJsonObject.get("note").asString,
@@ -1854,7 +1853,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
             var deleteUrl = baseUrl + Constants.CREATE_QUEUE_PRINTER + "/" + printerQueueModel.id
             LogUtil.logE(TAG, "DeleteUrl ${deleteUrl}")
             params.addProperty("url", deleteUrl)
-           // subscription?.perform("delete_order", params)
+            subscription?.perform("delete_order", params)
 
         }
 
