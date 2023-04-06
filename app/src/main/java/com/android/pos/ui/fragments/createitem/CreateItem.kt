@@ -637,7 +637,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback, It
             binding.etItemPrice.setText(
                 activity?.getString(R.string.symbole) + " " + String.format(
                     activity?.getString(R.string.format)!!,
-                    itemObject?.price_without_markup
+                    itemObject?.price
                 )
             )
 

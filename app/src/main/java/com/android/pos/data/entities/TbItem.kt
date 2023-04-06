@@ -76,8 +76,8 @@ class TbItem : Parcelable {
     var manualSaleId: String = UUID.randomUUID().toString()
     var isDeleted: Boolean = false
     var headerPositionDinein = 0
-    @SerializedName("price_without_markup")
-    var price_without_markup = 0.0
+//    @SerializedName("price_without_markup")
+//    var price_without_markup = 0.0
     fun convertToItem(item: Item, category: Category?): TbItem {
 
         itemId = item.id
@@ -102,7 +102,6 @@ class TbItem : Parcelable {
         variationsAttributes = item.variations
         shortDescription = item.desc ?: ""
         isDeleted = item.isDeleted
-        price_without_markup = item.price_without_markup
         return this
     }
 
@@ -366,7 +365,7 @@ class TbItem : Parcelable {
 
         modeTb.shortDescription = item.shortDescription ?: ""
         modeTb.isDeleted = item.isDeleted
-        modeTb.price_without_markup = item.price_without_markup
+      //  modeTb.price_without_markup = item.price_without_markup
         return modeTb
     }
 

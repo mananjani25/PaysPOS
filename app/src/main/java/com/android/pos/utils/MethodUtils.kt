@@ -272,7 +272,7 @@ class MethodUtils {
             createItemRequestMap["location_id"] =
                 data.locationId.toString().toMultiPartRequestBody()
             createItemRequestMap["name"] = data.name.toString().toMultiPartRequestBody()
-            createItemRequestMap["price_without_markup"] =
+            createItemRequestMap["price"] =
                 data.price.toString().toMultiPartRequestBody()
             createItemRequestMap["priceType"] = data.priceType.toString().toMultiPartRequestBody()
             createItemRequestMap["product_code"] =

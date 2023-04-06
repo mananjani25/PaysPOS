@@ -66,7 +66,7 @@
                     android:layout_marginStart="@dimen/_5sdp"
                     android:layout_marginEnd="@dimen/_10sdp"
                     android:alpha="0.5"
-                    android:text="@{@string/symbole +``+String.format(@string/format,model.price_without_markup)}"
+                    android:visibility="gone"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi" />
 
