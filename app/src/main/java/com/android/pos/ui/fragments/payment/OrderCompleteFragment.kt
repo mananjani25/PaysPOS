@@ -275,7 +275,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 paymentType == "Card",
                 paymentViewModel = paymentViewModel,
                 magRequestUtils = magtekRequestUtils,
-                apiModule1 = apiModule1
+                apiModule1 = apiModule1,
+                true
             )
             /*presentation.showThankYou(
                 binding.txtPaymentAmount.text.toString().replace(" payment successful", "")

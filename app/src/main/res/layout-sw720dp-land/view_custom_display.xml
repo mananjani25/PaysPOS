@@ -987,4 +987,34 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <LinearLayout
+        android:id="@+id/progressLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#1D1D1F"
+        android:gravity="center"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:layout_width="@dimen/_10sdp"
+            android:layout_height="@dimen/_10sdp"
+            android:layout_gravity="center"
+            android:layout_marginStart="@dimen/_10sdp" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            style="@style/CustomFontSemiBold"
+            android:id="@+id/txtMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:paddingStart="@dimen/_10sdp"
+            android:textColor="@color/white"
+            android:paddingTop="@dimen/_5sdp"
+            android:paddingEnd="@dimen/_30sdp"
+            android:paddingBottom="@dimen/_5sdp"
+            android:text="@string/loading"
+            android:textSize="@dimen/_7mdpi" />
+
+    </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.Presentation
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
@@ -66,6 +67,7 @@ class CustomDisplay(
 ) : Presentation(context, display), MyCallback, DineInAdapter.DineInCallback,
     ActiveTipsListAdapter.DiscountInterface {
 
+    private var mWholeTotalPrice: Double = 0.0
     private var signatureInBase64: String = ""
     private var mIsSignatureRequired: Boolean = false
     private lateinit var apiModule1: ApiModule1
@@ -76,6 +78,8 @@ class CustomDisplay(
     private var mOrderID: Int = 0
     private var mIsCardPayment: Boolean = false
     lateinit var mTransactionViewModel: TransactionViewModel
+    lateinit var mTipListViewModel: TipListViewModel
+    lateinit var mPaymentViewModel: PaymentViewModel
 
     private var dineInPaymentDetails: GuestPaymentCalculationModel? = null
     private var isGuestPay: Boolean = false
@@ -417,8 +421,21 @@ class CustomDisplay(
             splashLayout.gone()
             askForTipLayout.gone()
             addTipKeypadLayout.gone()
+            progressLayout.gone()
 
             thankYouLayout.visible()
+        }
+    }
+
+    fun showProgress() {
+        binding.apply {
+            mainCartLayout.gone()
+            splashLayout.gone()
+            askForTipLayout.gone()
+            addTipKeypadLayout.gone()
+            thankYouLayout.gone()
+
+            progressLayout.visible()
         }
     }
 
@@ -1218,7 +1235,13 @@ class CustomDisplay(
                 tippedAmount = edtAmount.text.toString().replace("$", "").trim().toDouble()
 
                 if (mIsCardPayment) {
-                    magtekCall(wholeTotalPrice)
+                    if(mIsSignatureRequired){
+                        showWouldYouLikeToAddTipScreen(
+                            tipsListViewModel,mTransactionViewModel,mWholeTotalPrice,mOrderID,mIsCardPayment, mPaymentViewModel,magtekRequestUtils,apiModule1,true
+                        )
+                    }else{
+                        magtekCall(wholeTotalPrice)
+                    }
                 } else {
                     callUpdateTip()
                 }
@@ -1397,30 +1420,42 @@ class CustomDisplay(
         wholeTotalPrice: Double,
         orderId: Int,
         isCardPayment: Boolean,
-        isSignatureRequired: Boolean = true,
         paymentViewModel: PaymentViewModel,
         magRequestUtils: MagtekRequestUtils,
-        apiModule1: ApiModule1
+        apiModule1: ApiModule1,
+        fromKeypad: Boolean = false
     ) {
-
+        mTipListViewModel = tipListViewModel
         mOrderID = orderId
         mIsCardPayment = isCardPayment
         mIsSignatureRequired = prefProvider.getValueboolean(CUSTOMER_SIGN_REQUIRED_ON_CD, false)
         mTransactionViewModel = transactionViewModel
-
-        magensaResponse = paymentViewModel.magensaResponse ?: ""
+        mPaymentViewModel = paymentViewModel
+        magensaResponse = mPaymentViewModel.magensaResponse ?: ""
         magtekRequestUtils = magRequestUtils
         this.apiModule1 = apiModule1
+        mWholeTotalPrice = wholeTotalPrice
 
         binding.apply {
             askForTipLayout.visible()
-            setupActiveTipsList(tipListViewModel)
+            setupActiveTipsList(mTipListViewModel)
             observeActiveTipsList(wholeTotalPrice)
 
             mainCartLayout.gone()
             splashLayout.gone()
             thankYouLayout.gone()
             addTipKeypadLayout.gone()
+
+            if(fromKeypad && tippedAmount > 0.0){
+                binding.otherRootLayout.setBackgroundColor(Color.parseColor("#ED5950"))
+                binding.txtOtherLabel?.setTextColor(Color.parseColor("#FFFFFF"))
+                binding.txtOtherLabel?.text = "Other ($tippedAmount)"
+
+            }else{
+                binding.otherRootLayout.setBackgroundColor(Color.parseColor("#363636"))
+                binding.txtOtherLabel?.setTextColor(Color.parseColor("#ED5950"))
+                binding.txtOtherLabel?.text = "Other"
+            }
 
             if (mIsSignatureRequired && mIsCardPayment) {
                 signRootLayout.visible()
@@ -1432,16 +1467,15 @@ class CustomDisplay(
                 signLinearLayout.gravity = Gravity.CENTER_VERTICAL
             }
 
-            binding.clearSignLayout?.setOnSingleClickListener {
+            binding.clearSignLayout.setOnSingleClickListener {
                 binding.signaturePad.clear()
             }
 
-            binding.otherRootLayout?.setOnSingleClickListener {
-                //TO-DO - Do we have to take signature and then show keypad screen??
+            binding.otherRootLayout.setOnSingleClickListener {
                 showTipKeypad(wholeTotalPrice)
             }
 
-            binding.noTipRootLayout?.setOnSingleClickListener {
+            binding.noTipRootLayout.setOnSingleClickListener {
                 showThankYou()
             }
 
@@ -1467,16 +1501,16 @@ class CustomDisplay(
 
                 override fun onStartSigning() {
                     yourSignatureLabel.invisible()
-                    clearSignLayout?.visible()
+                    clearSignLayout.visible()
                 }
 
                 override fun onSigned() {
-                    clearSignLayout?.visible()
+                    clearSignLayout.visible()
                 }
 
                 override fun onClear() {
                     yourSignatureLabel.visible()
-                    clearSignLayout?.invisible()
+                    clearSignLayout.invisible()
                 }
 
             })
@@ -1499,24 +1533,15 @@ class CustomDisplay(
 
     private fun callUpdateTip() {
         lifecycleOwner.lifecycleScope.launch {
-            delay(500)
+            showProgress()
+            //delay(500)
             Log.d("callUpdateTip", "callUpdateTip: mOrderID = $mOrderID")
             Log.d("callUpdateTip", "callUpdateTip: signatureInBase64 = $signatureInBase64")
             Log.d("callUpdateTip", "callUpdateTip: tippedAmount = $tippedAmount")
             mTransactionViewModel.updateTipWithSignature(mOrderID, signatureInBase64, tippedAmount)
-            mTransactionViewModel.showProgress.observe(lifecycleOwner) { event ->
-                event.getContentIfNotHandled()?.let {
-                        if (it) {
-                            Log.d("callUpdateTip", "SHOW PROGRESS")
-                        } else {
-                            Log.d("callUpdateTip", "HIDE PROGRESS")
-                        }
-
-                }
-            }
             mTransactionViewModel.updateTipData.observe(lifecycleOwner) { event ->
                 event.getContentIfNotHandled()?.let {
-                    Log.d("callUpdateTip", "UPDATE TIP RESPONSE: ${it.toString()}")
+                    Log.d("callUpdateTip", "UPDATE TIP RESPONSE: $it")
                     showThankYou()
                 }
             }
@@ -1536,6 +1561,7 @@ class CustomDisplay(
         wholeTotalPrice: Double
     ) {
         Log.d("MERA", "magtekCall: CALLED")
+        showProgress()
         if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == "OnlineWebOrder") {
             val model = Gson().fromJson(
                 magensaResponse,
