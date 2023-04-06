@@ -23,7 +23,7 @@ data class CreateItemRequestModel(
     var modifierSetIds: List<Int>? = null,
     @SerializedName("name")
     var name: String = "",
-    @SerializedName("price_without_markup")
+    @SerializedName("price")
     var price: Double? = null,
     @SerializedName("image")
     var image: String? = "",

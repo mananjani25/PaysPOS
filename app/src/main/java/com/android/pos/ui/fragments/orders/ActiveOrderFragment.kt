@@ -33,6 +33,7 @@ import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.BUSINESS_ADDRESS
 import com.android.pos.data.remote.Constants.OPEN_ORDER
+import com.android.pos.data.remote.Constants.OPEN_ORDER_
 import com.android.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
 import com.android.pos.data.remote.Constants.PRINT_PAID
 import com.android.pos.data.remote.Constants.PRINT_UNPAID
@@ -467,7 +468,7 @@ class ActiveOrderFragment(
 
                 dashboardViewModel.deleteCart()
                 prefProvider.setValue(Constants.ORDER_TYPE, OPEN_ORDER)
-                prefProvider.setValue(Constants.ORDER_TYPE_NAME, OPEN_ORDER)
+                prefProvider.setValue(Constants.ORDER_TYPE_NAME, OPEN_ORDER_)
 
                 var itemDiscountTotal: Double = 0.0
                 var itemPassDis: Double = 0.0
