@@ -44,15 +44,14 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
     private val TAG = UploadWorker::class.java.name
     private var isConnectedU220: Boolean = false
     val printerQueueModel: PrinterQueueModel = PrinterQueueModel()
+    private var printerObjList: HashMap<String, Printer> = hashMapOf()
 
-    val printer = Printer(Printer.TM_U220, Printer.MODEL_ANK, context)
     var printerBreak: Boolean = false
 
     private var subscription: Subscription? = null
     private var consumer: Consumer? = null
     private var locationId: Int = 0
     private var baseUrl = ""
-    private var printerQueuelist: ArrayList<PrinterQueueModel> = arrayListOf()
     private var kitchenPrinterList: List<PrinterResponse.Data.KitchenReceiptPrinters> = listOf()
     private var kitchenSettingModel = GetKitchenReceiptSettingsResponse.Data()
     private var mContext: Context = context
@@ -69,16 +68,16 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
             withContext(Dispatchers.IO) {
 
+                printerObjList.clear()
+
                 locationId = inputData.getInt("location_id", 0)
                 baseUrl = inputData.getString("base_url").toString()
-
-
 
 
                 var serializeObjKitchenPrinters = mContext.getSharedPreferences(
                     mContext.resources.getString(R.string.app_name),
                     Context.MODE_PRIVATE
-                ).getString(Constants.KITCHEN_PRINTER_LIST_PREF,"")
+                ).getString(Constants.KITCHEN_PRINTER_LIST_PREF, "")
                 if (serializeObjKitchenPrinters?.isNotEmpty() == true) {
                     val gson = Gson()
                     val type =
@@ -93,8 +92,43 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
                 }
 
+                for (i in 0 until kitchenPrinterList.size) {
+                    var printer1: Printer = Printer(Printer.TM_U220, Printer.MODEL_ANK, mContext)
+                    printer1.setReceiveEventListener(object : ReceiveListener {
+                        override fun onPtrReceive(
+                            p0: Printer?,
+                            p1: Int,
+                            p2: PrinterStatusInfo?,
+                            p3: String?
+                        ) {
+                            Log.e(
+                                TAG,
+                                "checkConnectionPhase2  getAdmin${Gson().toJson(p0?.admin)}  location: ${
+                                    Gson().toJson(p0?.location)
+                                } checkStatus:${
+                                    com.google.gson.Gson().toJson(p0?.status)
+                                }"
+                            )
+                        }
 
-                Log.e(TAG,"kitchenPrinterList: ${Gson().toJson(kitchenPrinterList)}")
+                    })
+
+                    try {
+                        printer1.connect(
+                            "TCP:" + kitchenPrinterList.get(i).ipAddress,
+                            Printer.PARAM_DEFAULT
+                        )
+
+                    } catch (e: java.lang.Exception) {
+                        e.printStackTrace()
+                    }
+
+                    printerObjList.set(kitchenPrinterList.get(i).ipAddress ?: "", printer1)
+
+
+                }
+
+
 
 
                 LogUtil.logE(TAG, "onActionCableStarts")
@@ -144,17 +178,6 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                 }
             }?.onReceived {
                 LogUtil.logE(TAG, "onActiononReceived  " + Gson().toJson(it))
-
-
-
-                Log.e(
-                    TAG, "isMAsterTerminal:  ${
-                        mContext.getSharedPreferences(
-                            mContext.resources.getString(R.string.app_name),
-                            Context.MODE_PRIVATE
-                        ).getBoolean(IS_MASTER_TERMINAL, false)
-                    }"
-                )
 
                 if (mContext.getSharedPreferences(
                         mContext.resources.getString(R.string.app_name),
@@ -264,8 +287,6 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
     }
 
     private suspend fun getActionCableData(model: JsonElement) {
-        printerQueuelist.clear()
-        printerQueuelist = arrayListOf()
         if (model.asJsonObject.has("data")) {
             var dataList: JsonArray = model.asJsonObject.get("data").asJsonArray
 
@@ -396,18 +417,9 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                     }*/
 
 
-                    printerQueuelist.add(printerQueueModel)
                 }
 
 
-            }
-
-            if (printerQueuelist.isNotEmpty()) {
-
-                configurePrinter(
-                    printerQueuelist[printerQueuelist.size - 1],
-                    printerQueuelist.size - 1
-                )
             }
 
 
@@ -424,9 +436,6 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
             var dataList: JsonArray = model.asJsonObject.get("data").asJsonArray
             if (dataList?.asJsonArray?.size() != 0) {
 
-
-                printerQueuelist.clear()
-                printerQueuelist = arrayListOf()
 
                 /*dataList.forEachIndexed { index, it ->*/
 
@@ -557,11 +566,22 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                 }*/
 
 
-                    printerQueuelist.add(printerQueueModel)
                 }
 
 
-                callPrinter(printer, printerQueueModel)
+
+
+                for (m in 0 until kitchenPrinterList.size) {
+
+
+                    printerObjList.get(kitchenPrinterList.get(m).ipAddress)
+                        ?.let {
+                            Log.e(TAG, "checkPrinterObjNullCheck:  ")
+                            callPrinter(it, printerQueueModel, kitchenPrinterList.get(m))
+                        }
+
+                }
+
 
             } else {
                 runBlocking {
@@ -637,13 +657,17 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 */
     }
 
-    suspend fun callPrinter(printer: Printer, printerQueueModel: PrinterQueueModel) {
+    suspend fun callPrinter(
+        printer: Printer,
+        printerQueueModel: PrinterQueueModel,
+        kitchenPrinter: PrinterResponse.Data.KitchenReceiptPrinters
+    ) {
         try {
-            var obj = printerQueuelist[printerQueuelist.size - 1]
+            var obj = printerQueueModel
 
 
             var printerAdd =
-                "TCP:" + kitchenPrinterList.get(0).ipAddress
+                "TCP:" + kitchenPrinter.ipAddress
 
 
             printer.setStatusChangeEventListener(this)
@@ -651,86 +675,6 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
             Log.e(TAG, "connection: ${printer.status.connection}")
 
-
-            /*printer.setReceiveEventListener(object : ReceiveListener{
-                override fun onPtrReceive(
-                    p0: Printer?,
-                    p1: Int,
-                    printerStatusInfo: PrinterStatusInfo?,
-                    p3: String?
-                ) {
-
-                    Log.e(
-                        TAG,
-                        "PrinterEvent  ${Gson().toJson(printerStatusInfo)} other1 ${p1}  other2 ${p3}"
-                    )
-
-
-                    if (printerStatusInfo?.errorStatus == 0) {
-                        printer.endTransaction()
-                        //  printer.clearCommandBuffer()
-
-                        // printer.disconnect()
-                        Log.e(TAG, "checkQueueSize  ${printerQueuelist.size}")
-                        printerQueueModel.id?.let {
-                            val params = JsonObject()
-                            var deleteUrl =
-                                baseUrl + Constants.CREATE_QUEUE_PRINTER + "/" + it
-                            LogUtil.logE(TAG, "DeleteUrl ${deleteUrl}")
-                            params.addProperty("url", deleteUrl)
-                            subscription?.perform("delete_order", params)
-                        }
-
-
-
-
-
-
-                        runBlocking {
-                            delay(5000)
-                            *//*val printer1 = Printer(Printer.TM_U220, Printer.MODEL_ANK, mContext)
-                            resumePrinterQueue(printer1)*//*
-
-                            val params = JsonObject()
-                            params.addProperty("id", locationId)
-                            params.addProperty("url", baseUrl + Constants.CREATE_QUEUE_PRINTER)
-                            subscription?.perform("received", params)
-
-
-                        }
-
-
-                    } else {
-                        runBlocking {
-
-                            delay(5000)
-
-                            val params = JsonObject()
-                            params.addProperty("id", locationId)
-                            params.addProperty("url", baseUrl + Constants.CREATE_QUEUE_PRINTER)
-                            subscription?.perform("received", params)
-
-                        }
-
-
-                    }
-
-                }
-
-            })*/
-
-            /*  printer.setReceiveEventListener { printer, i, printerStatusInfo, s ->
-
-
-                  *//*if (printerStatusInfo.online == 1) {
-                try {
-                    printer.disconnect()
-
-                } catch (e: java.lang.Exception) {
-                    e.printStackTrace()
-                }
-            }*//*
-            }*/
             try {
                 if (printer.status.connection == 0) {
                     printer.connect(
@@ -763,22 +707,14 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
             }
 
+            Log.e(TAG, "checkprinterBreak: ${printerBreak}")
             if (printerBreak) {
 
                 try {
 
                     printer.disconnect()
-                    delay(2000)
-                    val params = JsonObject()
-                    params.addProperty("id", locationId)
-                    params.addProperty("url", baseUrl + Constants.CREATE_QUEUE_PRINTER)
-                    subscription?.perform("received", params)
+
                 } catch (e: java.lang.Exception) {
-                    delay(2000)
-                    val params = JsonObject()
-                    params.addProperty("id", locationId)
-                    params.addProperty("url", baseUrl + Constants.CREATE_QUEUE_PRINTER)
-                    subscription?.perform("received", params)
                     e.printStackTrace()
                 }
 
@@ -791,20 +727,6 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                 printer.addFeedUnit(30)
                 printer.addFeedLine(2)
 
@@ -850,7 +772,10 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                 // printer.beginTransaction()
 
 
-                printer.sendData(Printer.PARAM_DEFAULT)
+                if (printer.status.connection == 1) {
+                    printer.sendData(Printer.PARAM_DEFAULT)
+                }
+
             }
 
 
@@ -860,46 +785,6 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
     }
 
-    suspend fun resumePrinterQueue(printer: Printer?) {
-        if (printerQueuelist.isNotEmpty()) {
-            //  printer?.let { callPrinter(it, printerQueueModel) }
-        } else if (printerQueuelist.isEmpty()) {
-            val params = JsonObject()
-            params.addProperty("id", locationId)
-            params.addProperty("url", baseUrl + Constants.CREATE_QUEUE_PRINTER)
-            subscription?.perform("received", params)
-        }
-
-
-    }
-
-    private fun getQueueLocalData() {
-        val serializedObject: String = ""
-        if (serializedObject.isNotEmpty()) {
-            printerBGRunning = true
-            val gson = Gson()
-            val type = object :
-                TypeToken<List<PrinterQueueModel?>?>() {}.type
-            var arrayItems: ArrayList<PrinterQueueModel> =
-                gson.fromJson<Any>(
-                    serializedObject,
-                    type
-                ) as ArrayList<PrinterQueueModel>
-
-
-
-            LogUtil.logE(TAG, "DataNotEmpty")
-
-
-
-            newKitchenPrinterInit(arrayItems[arrayItems.size - 1], arrayItems.size - 1, arrayItems)
-
-
-        } else {
-            printerBGRunning = false
-        }
-
-    }
 
     private fun newKitchenPrinterInit(
         printerQueueModel: PrinterQueueModel,
@@ -1887,28 +1772,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
                 //  globalPrinterQueue = null
 
-                /* printerQueueModel.id?.let {
-                     val params = JsonObject()
-                     var deleteUrl = baseUrl + Constants.CREATE_QUEUE_PRINTER + "/" + it
-                     LogUtil.logE(TAG, "DeleteUrl ${deleteUrl}")
-                     params.addProperty("url", deleteUrl)
-                     subscription?.perform("delete_order", params)
 
-                     *//* viewModel.deleteQueuePrinter(
-                         it,
-                         printerQueueModel.position
-                     )*//*
-
-
-                    isPrinterRunning = false
-                    val params2 = JsonObject()
-                    params2.addProperty("id", locationId)
-                    params2.addProperty(
-                        "url",
-                        baseUrl + Constants.CREATE_QUEUE_PRINTER
-                    )
-                    subscription?.perform("received", params2)
-                }*/
 
                 /*  var requestURL =
                       baseUrl + Constants.CREATE_QUEUE_PRINTER
@@ -1975,7 +1839,12 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
     }
 
     override fun onPtrReceive(p0: Printer?, p1: Int, p2: PrinterStatusInfo?, p3: String?) {
-        Log.e(TAG, "onPrinterSucces str: ${p3}  intCode ${p1} getStatusInfo ${Gson().toJson(p2)}")
+        Log.e(
+            TAG,
+            "onPrinterSucces str: ${p3}  intCode ${p1} getStatusInfo ${Gson().toJson(p2)}  getAdminData: ${
+                Gson().toJson(p0?.admin)
+            }  getPrntStatus: ${Gson().toJson(p0?.status)} getLocation: ${p0?.location}"
+        )
 
 
         if (p1 >= 0) {
@@ -1985,17 +1854,19 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
             var deleteUrl = baseUrl + Constants.CREATE_QUEUE_PRINTER + "/" + printerQueueModel.id
             LogUtil.logE(TAG, "DeleteUrl ${deleteUrl}")
             params.addProperty("url", deleteUrl)
-            subscription?.perform("delete_order", params)
+           // subscription?.perform("delete_order", params)
 
         }
 
         runBlocking {
-            delay(5000)
+            if (p0 == printerObjList.get(kitchenPrinterList.get(kitchenPrinterList.size - 1).ipAddress)) {
+                delay(5000)
 
-            val params = JsonObject()
-            params.addProperty("id", locationId)
-            params.addProperty("url", baseUrl + Constants.CREATE_QUEUE_PRINTER)
-            subscription?.perform("received", params)
+                val params = JsonObject()
+                params.addProperty("id", locationId)
+                params.addProperty("url", baseUrl + Constants.CREATE_QUEUE_PRINTER)
+                subscription?.perform("received", params)
+            }
         }
     }
 
