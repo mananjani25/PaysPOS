@@ -861,8 +861,8 @@
                     android:id="@+id/signature_pad"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@android:color/transparent"
-                    app:penColor="@color/white" />
+                    android:background="#535354"
+                    app:penColor="@color/purple_500" />
 
                 <LinearLayout
                     android:id="@+id/clearSignLayout"

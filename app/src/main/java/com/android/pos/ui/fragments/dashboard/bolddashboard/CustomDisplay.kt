@@ -66,6 +66,7 @@ class CustomDisplay(
 ) : Presentation(context, display), MyCallback, DineInAdapter.DineInCallback,
     ActiveTipsListAdapter.DiscountInterface {
 
+    private var signatureInBase64: String = ""
     private var mIsSignatureRequired: Boolean = false
     private lateinit var apiModule1: ApiModule1
     private lateinit var magtekRequestUtils: MagtekRequestUtils
@@ -1212,6 +1213,8 @@ class CustomDisplay(
 
             txtContinue.setOnClickListener {
 
+                //If isCardPay && signReqd - then open signature screen again and take sign and then call tip api
+
                 tippedAmount = edtAmount.text.toString().replace("$", "").trim().toDouble()
 
                 if (mIsCardPayment) {
@@ -1445,8 +1448,8 @@ class CustomDisplay(
             binding.tvContinue.setOnSingleClickListener {
 
                 if (!signaturePad.isEmpty) {
-                    val signBase64 = bitmapToBase64(signaturePad.signatureBitmap)
-                    Log.d(TAG, "showWouldYouLikeToAddTipScreen: SIGN BASE-64 = $signBase64")
+                    signatureInBase64 = bitmapToBase64(signaturePad.signatureBitmap)
+                    Log.d(TAG, "showWouldYouLikeToAddTipScreen: SIGN BASE-64 = $signatureInBase64")
 
                     magtekCall(wholeTotalPrice)
 
@@ -1491,14 +1494,33 @@ class CustomDisplay(
         val byteArrayOutputStream = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
         val byteArray = byteArrayOutputStream.toByteArray()
-        return Base64.encodeToString(byteArray, Base64.DEFAULT)
+        return Base64.encodeToString(byteArray, Base64.DEFAULT).replace("\n","")
     }
 
     private fun callUpdateTip() {
         lifecycleOwner.lifecycleScope.launch {
             delay(500)
-            mTransactionViewModel.orderUpdateTip(mOrderID, tippedAmount, mIsCardPayment)
-            showThankYou()
+            Log.d("callUpdateTip", "callUpdateTip: mOrderID = $mOrderID")
+            Log.d("callUpdateTip", "callUpdateTip: signatureInBase64 = $signatureInBase64")
+            Log.d("callUpdateTip", "callUpdateTip: tippedAmount = $tippedAmount")
+            mTransactionViewModel.updateTipWithSignature(mOrderID, signatureInBase64, tippedAmount)
+            mTransactionViewModel.showProgress.observe(lifecycleOwner) { event ->
+                event.getContentIfNotHandled()?.let {
+                        if (it) {
+                            Log.d("callUpdateTip", "SHOW PROGRESS")
+                        } else {
+                            Log.d("callUpdateTip", "HIDE PROGRESS")
+                        }
+
+                }
+            }
+            mTransactionViewModel.updateTipData.observe(lifecycleOwner) { event ->
+                event.getContentIfNotHandled()?.let {
+                    Log.d("callUpdateTip", "UPDATE TIP RESPONSE: ${it.toString()}")
+                    showThankYou()
+                }
+            }
+
         }
     }
 

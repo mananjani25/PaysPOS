@@ -309,6 +309,7 @@ object Constants {
 
 
     const val UPDATE_TIP = "orders/{id}/update_tip"
+    const val UPDATE_TIP_WITH_SIGNATURE="payments/update_tip_and_signature"
     const val FIRE_ITEM_TO_KITCHEN = "orders/{id}/update_fire_status_of_items"
     const val PAY_BY_GUEST = "payments/pay_by_guest"
 
