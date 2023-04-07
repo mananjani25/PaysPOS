@@ -645,7 +645,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#1D1D1F"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <androidx.appcompat.widget.AppCompatImageView
             android:layout_width="190dp"
@@ -764,11 +764,10 @@
             android:layout_marginTop="@dimen/_5sdp"
             android:gravity="center"
             android:padding="@dimen/_5sdp"
-            android:text="Some Error Occurred !!!"
+            android:text="Some Error Occured"
             android:textColor="@color/white"
             android:textSize="@dimen/_10mdpi"
             android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -869,7 +868,6 @@
                     android:layout_width="0dp"
                     android:layout_height="@dimen/_16sdp"
                     android:layout_marginVertical="@dimen/_2sdp"
-                    android:layout_marginEnd="@dimen/_5sdp"
                     android:layout_weight="1"
                     android:background="#363636">
 
@@ -913,7 +911,7 @@
                     android:id="@+id/signature_pad"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="#363636"
+                    android:background="#77363636"
                     app:penColor="@color/purple_500" />
 
                 <LinearLayout
@@ -921,7 +919,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end|top"
-                    android:layout_margin="@dimen/_10sdp"
+                    android:layout_marginVertical="@dimen/_5sdp"
+                    android:layout_marginHorizontal="@dimen/_10sdp"
                     android:gravity="center_vertical"
                     android:visibility="gone">
 
@@ -946,7 +945,7 @@
 
             </FrameLayout>
 
-            <androidx.appcompat.widget.AppCompatTextView
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/tvContinue"
                 style="@style/CustomFontBold"
                 android:layout_width="match_parent"
@@ -956,6 +955,7 @@
                 android:gravity="center"
                 android:padding="@dimen/_5sdp"
                 android:text="CONFIRM"
+                android:enabled="false"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_7mdpi"
                 android:visibility="gone"

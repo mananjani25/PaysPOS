@@ -452,11 +452,10 @@ class CustomDisplay(
     private fun callTimeApi(apiService: ApiService) {
         lifecycleOwner.lifecycleScope.launch {
             val response = apiService.getTimeDetails()
-            Log.d("TAG", "onLogOutOrClockOutWithApiService: ${response.data.time}")
 
             binding.currentTime.text = response.data.time
             binding.currentDate.text = response.removeWhiteSpaces()
-        }.runCatching { Log.d("TAG", "onLogOutOrClockOutWithApiService: Some Exzception") }
+        }.runCatching { Log.d("CustomDisplay", "onLogOutOrClockOutWithApiService: Some Exception") }
     }
 
     fun onLogOutOrClockOut() {
@@ -896,12 +895,6 @@ class CustomDisplay(
                                 baseResponse.guestAttributes.size - 1
                             )
                         ) {
-                            Log.d(
-                                TAG,
-                                "calculateDineInServiceCharge: DashBoard " + it.min_guest_count + "....." + it.max_guest_count + " in between " + baseResponse.guestAttributes.size.minus(
-                                    1
-                                )
-                            )
                             isApplied = true
                             totalServiceChargeAmount += (totalSubTotal * it.percentage) / 100
                             return@forEach
@@ -994,9 +987,6 @@ class CustomDisplay(
                 }
 
                 //subTotalDInin -= baseResponse.totalDiscount
-
-
-                Log.d("TODO", "suTotalPaidGuest: " + subTotalDInin)
 
                 var tempServicecharge = 0.0
                 if (paidGuestCount > 0) {
@@ -1228,8 +1218,6 @@ class CustomDisplay(
 
             txtContinue.setOnClickListener {
 
-                //If isCardPay && signReqd - then open signature screen again and take sign and then call tip api
-
                 tippedAmount = edtAmount.text.toString().replace("$", "").trim().toDouble()
 
                 if (mIsCardPayment) {
@@ -1252,31 +1240,6 @@ class CustomDisplay(
                     callUpdateTip()
                 }
             }
-
-//            lifecycleOwner.lifecycleScope.launch {
-//                delay(1500)
-//                incKeypad.tvThree.performClick()
-//                delay(1500)
-//                incKeypad.tvFive.performClick()
-//                delay(1500)
-//                incKeypad.tvSix.performClick()
-//
-//                delay(1500)
-//                incKeypad.txtClearLast.performClick()
-//
-//                delay(1500)
-//                incKeypad.txtClearAll.performClick()
-//
-//                delay(1500)
-//                incKeypad.tvEight.performClick()
-//                delay(1500)
-//                incKeypad.tvOne.performClick()
-//                delay(1500)
-//                incKeypad.tvFour.performClick()
-//
-//                delay(2000)
-//                txtContinue.performClick()
-//            }
 
         }
     }
@@ -1400,18 +1363,6 @@ class CustomDisplay(
         binding.splashLayout.visibility = View.GONE
         dineInPaymentDetails = model
 
-/*
-        getDineInOrderDetails(
-            getOrderDetailsResponse,
-            totalTax = totalTax,
-            totalAmount = TotalAmt,
-            totalDis = discount,
-            cashOrSurCharge = CashOrSurcharge,
-            subTotal = subtotal,
-            TotalServiceCharge = serviceCharge
-        )*/
-
-
     }
 
     fun setCustomerList(list: List<TbCustomer>) {
@@ -1454,18 +1405,19 @@ class CustomDisplay(
 
             if (fromKeypad && tippedAmount > 0.0) {
                 binding.otherRootLayout.setBackgroundColor(Color.parseColor("#ED5950"))
-                binding.txtOtherLabel?.setTextColor(Color.parseColor("#FFFFFF"))
-                binding.txtOtherLabel?.text = "Other ($tippedAmount)"
+                binding.txtOtherLabel.setTextColor(Color.parseColor("#FFFFFF"))
+                binding.txtOtherLabel.text = "Other ($tippedAmount)"
 
             } else {
                 binding.otherRootLayout.setBackgroundColor(Color.parseColor("#363636"))
-                binding.txtOtherLabel?.setTextColor(Color.parseColor("#ED5950"))
-                binding.txtOtherLabel?.text = "Other"
+                binding.txtOtherLabel.setTextColor(Color.parseColor("#ED5950"))
+                binding.txtOtherLabel.text = "Other"
             }
 
             if (mIsSignatureRequired && mIsCardPayment) {
                 signRootLayout.visible()
                 tvContinue.visible()
+                disableConfirmButton()
                 signLinearLayout.gravity = Gravity.TOP
             } else {
                 signRootLayout.gone()
@@ -1487,19 +1439,9 @@ class CustomDisplay(
 
             binding.tvContinue.setOnSingleClickListener {
 
-                if (!signaturePad.isEmpty) {
-                    signatureInBase64 = bitmapToBase64(signaturePad.signatureBitmap)
-                    Log.d(TAG, "showWouldYouLikeToAddTipScreen: SIGN BASE-64 = $signatureInBase64")
+                signatureInBase64 = bitmapToBase64(signaturePad.signatureBitmap)
 
-                    magtekCall(wholeTotalPrice)
-
-                } else {
-                    Toast.makeText(
-                        context,
-                        "Looks like you forgot to sign the form. Please do so to proceed.",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
+                magtekCall(wholeTotalPrice)
 
             }
 
@@ -1508,29 +1450,30 @@ class CustomDisplay(
                 override fun onStartSigning() {
                     yourSignatureLabel.invisible()
                     clearSignLayout.visible()
+                    if (tippedAmount > 0.0) {
+                        enableConfirmButton()
+                    }
                 }
 
                 override fun onSigned() {
                     clearSignLayout.visible()
+                    if (tippedAmount > 0.0) {
+                        enableConfirmButton()
+                    }
                 }
 
                 override fun onClear() {
+                    disableConfirmButton()
                     yourSignatureLabel.visible()
                     clearSignLayout.invisible()
                 }
 
             })
 
-            lifecycleOwner.lifecycleScope.launch {
-                //delay(3000)
-                //otherRootLayout?.performClick()
-                //noTipRootLayout?.performClick()
-            }
-
         }
     }
 
-    fun bitmapToBase64(bitmap: Bitmap): String {
+    private fun bitmapToBase64(bitmap: Bitmap): String {
         val byteArrayOutputStream = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
         val byteArray = byteArrayOutputStream.toByteArray()
@@ -1566,7 +1509,7 @@ class CustomDisplay(
             errorLayout.visible()
             txtErrorMessage.text = message
 
-            tvTryAgain?.setOnClickListener {
+            tvTryAgain.setOnClickListener {
                 errorLayout.gone()
                 askForTipLayout.visible()
             }
@@ -1579,12 +1522,24 @@ class CustomDisplay(
         if ((mIsCardPayment && !mIsSignatureRequired) || (!mIsCardPayment)) {
             callUpdateTip()
         }
+        if (!binding.signaturePad.isEmpty) {
+            enableConfirmButton()
+        }
+    }
+
+    private fun enableConfirmButton() {
+        binding.tvContinue.isEnabled = true
+        binding.tvContinue.setBackgroundColor(Color.parseColor("#ED5950"))
+    }
+
+    private fun disableConfirmButton() {
+        binding.tvContinue.isEnabled = false
+        binding.tvContinue.setBackgroundColor(Color.GRAY)
     }
 
     private fun magtekCall(
         wholeTotalPrice: Double
     ) {
-        Log.d("MERA", "magtekCall: CALLED")
         showProgress()
         if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == "OnlineWebOrder") {
             val model = Gson().fromJson(
@@ -1844,7 +1799,6 @@ class CustomDisplay(
     }
 
     private fun networkCall(jsonArray1: JsonArray?, i: Int, apiModule1: ApiModule1) {
-        Log.d("MERA", "networkCall: CALLED")
         //ProgressUtils.showProgressDialog(context as Activity)
 
         val call = if (i == 1) {
