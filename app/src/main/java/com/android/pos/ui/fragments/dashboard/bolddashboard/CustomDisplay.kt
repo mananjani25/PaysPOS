@@ -1552,7 +1552,7 @@ class CustomDisplay(
     override fun selectedItem(model: GetTipReponse.Data, pos: Int, wholeTotalPrice: Double) {
         tipRate = model.rate
         tippedAmount = MethodUtils.percentageCalculation(wholeTotalPrice, model.rate)
-        if (!mIsCardPayment) {
+        if ((mIsCardPayment && !mIsSignatureRequired) || (!mIsCardPayment)) {
             callUpdateTip()
         }
     }

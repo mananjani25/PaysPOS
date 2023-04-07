@@ -854,14 +854,14 @@
                     android:layout_height="match_parent"
                     android:gravity="center"
                     android:text="Signature"
-                    android:textColor="#535354"
+                    android:textColor="#20FFFFFF"
                     android:textSize="@dimen/_10ssp" />
 
                 <com.github.gcacace.signaturepad.views.SignaturePad
                     android:id="@+id/signature_pad"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="#535354"
+                    android:background="#363636"
                     app:penColor="@color/purple_500" />
 
                 <LinearLayout
@@ -871,7 +871,7 @@
                     android:layout_gravity="end|top"
                     android:layout_margin="@dimen/_10sdp"
                     android:gravity="center_vertical"
-                    android:visibility="visible">
+                    android:visibility="gone">
 
                     <ImageView
                         android:layout_width="@dimen/_9sdp"
@@ -999,6 +999,7 @@
             android:layout_width="@dimen/_10sdp"
             android:layout_height="@dimen/_10sdp"
             android:layout_gravity="center"
+            android:indeterminateTint="@color/purple_500"
             android:layout_marginStart="@dimen/_10sdp" />
 
         <androidx.appcompat.widget.AppCompatTextView
