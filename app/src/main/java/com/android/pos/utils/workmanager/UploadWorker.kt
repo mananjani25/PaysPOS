@@ -12,6 +12,7 @@ import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.model.responseModel.GetKitchenReceiptSettingsResponse
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.CREATE_QUEUE_PRINTER
 import com.android.pos.data.remote.Constants.IS_MASTER_TERMINAL
 import com.android.pos.utils.*
 import com.android.pos.utils.printer.PrinterClass
@@ -57,7 +58,6 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
     private var mContext: Context = context
     private var isPrinterRunning: Boolean = false
     private var printerBGRunning: Boolean = false
-
 
 
     override suspend fun doWork(): Result {
@@ -517,7 +517,9 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                         "" + dataList.get(0).asJsonObject.get("orderid").asInt
                     //obj.asJsonObject.get("terminal_name")?.asString ?: ""
                     printerQueueModel.position = 0
-
+                    var str = obj.getAsJsonArray("printer_list")
+                    printerQueueModel.printSuccessData = Gson().toJson(str).toString()
+                    Log.e(TAG,"checkPrinterListSucees  ${Gson().toJson(printerQueueModel.printSuccessData)}")
                     /*if (it.asJsonObject.has("customer_data")) {
                     if (it.asJsonObject.get("customer_data").asJsonObject.has("first_name") && it.asJsonObject.get(
                             "customer_data"
@@ -572,12 +574,15 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
                 for (m in 0 until kitchenPrinterList.size) {
 
+                    if (checkPrinterHasCatOrNot(kitchenPrinterList[m], printerQueueModel)) {
 
-                    printerObjList.get(kitchenPrinterList.get(m).ipAddress)
-                        ?.let {
-                            Log.e(TAG, "checkPrinterObjNullCheck:  ")
-                            callPrinter(it, printerQueueModel, kitchenPrinterList.get(m))
-                        }
+
+                        printerObjList.get(kitchenPrinterList.get(m).ipAddress)
+                            ?.let {
+                                Log.e(TAG, "checkPrinterObjNullCheck:  ")
+                                callPrinter(it, printerQueueModel, kitchenPrinterList.get(m))
+                            }
+                    }
 
                 }
 
@@ -654,6 +659,39 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
              isPrinterRunning = false*//*
         }
 */
+    }
+
+    private fun checkPrinterHasCatOrNot(
+        kitchenReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
+        printerQueueModel: PrinterQueueModel
+    ): Boolean {
+
+        var itemCategoriesId: ArrayList<Int> = arrayListOf()
+        var printCategoriesId: ArrayList<Int> = arrayListOf()
+
+        printerQueueModel.orderItems.forEach {
+            itemCategoriesId.add(it.categoryId)
+        }
+
+        var filterList =
+            kitchenReceiptPrinters.printerCategories.filter { it.printerEnable == true }
+
+        filterList.forEach {
+            printCategoriesId.add(it.id)
+        }
+
+
+        var fList = printCategoriesId.distinctBy { itemCategoriesId }
+        Log.e(TAG, "fListSize:   ${fList.size}")
+
+        if (printCategoriesId.containsAll(itemCategoriesId)) {
+            Log.e(TAG, "categoryCheckYES")
+            return true
+        } else {
+            Log.e(TAG, "categoryCheckNO")
+            return false
+        }
+
     }
 
     suspend fun callPrinter(
@@ -841,8 +879,8 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                         }
 
                         val intent = Intent()
-                        printerQueueModel.printSuccessData.toCollection(arrayListOf())
-                            .add(kitchenPrinterList[i].id)
+                        /* printerQueueModel.printSuccessData.toCollection(arrayListOf())
+                             .add(kitchenPrinterList[i].id)*/
                         intent.putExtra(Constants.DATA, Gson().toJson(printerQueueModel))
 
                         intent.action = Constants.PRITNER_QUEUE_DATA_DELETE
@@ -862,11 +900,11 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
                 var containsFlag: Boolean = true
                 if (printerQueueModel.printSuccessData.isNotEmpty()) {
-                    if (printerQueueModel.printSuccessData.contains(kitchenPrinterList[i].id)) {
+                    /*if (printerQueueModel.printSuccessData.contains(kitchenPrinterList[i].id)) {
                         containsFlag = true
                     } else {
                         containsFlag = false
-                    }
+                    }*/
                 } else {
                     containsFlag = false
                 }
@@ -1772,7 +1810,6 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                 //  globalPrinterQueue = null
 
 
-
                 /*  var requestURL =
                       baseUrl + Constants.CREATE_QUEUE_PRINTER
                   LogUtil.logE(TAG, "requestURL:  ${requestURL}")
@@ -1846,14 +1883,32 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
         )
 
 
+
+
         if (p1 >= 0) {
             p0?.clearCommandBuffer()
             //p0?.endTransaction()
-            val params = JsonObject()
-            var deleteUrl = baseUrl + Constants.CREATE_QUEUE_PRINTER + "/" + printerQueueModel.id
-            LogUtil.logE(TAG, "DeleteUrl ${deleteUrl}")
-            params.addProperty("url", deleteUrl)
-            subscription?.perform("delete_order", params)
+
+
+            for (i in 0 until kitchenPrinterList.size) {
+                printerObjList.get(kitchenPrinterList.get(i).ipAddress)
+                    ?.let {
+                        Log.e(TAG, "checkPrinterObjOnPrntReceive:  ")
+
+
+                        val params = JsonObject()
+                        var deleteUrl =
+                            baseUrl+CREATE_QUEUE_PRINTER+"/"+ printerQueueModel.id+"/" + Constants.UPDATE_PRITNER_QUEUE_TRACK
+                        LogUtil.logE(TAG, "DeleteUrl ${deleteUrl}")
+                        params.addProperty("url", deleteUrl)
+                        params.addProperty("printed_mac_add", kitchenPrinterList.get(i).macAddress)
+                        subscription?.perform("updated_order_item_status", params)
+
+                    }
+            }
+
+
+            // subscription?.perform("delete_order", params)
 
         }
 

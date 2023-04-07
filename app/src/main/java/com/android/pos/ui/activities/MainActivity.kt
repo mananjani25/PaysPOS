@@ -364,7 +364,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 )
                 LogUtil.logE(TAG, "PrinterID ${kitchenPrinterList[i].id}")
                 if (printerQueueModel.printSuccessData.isNotEmpty()) {
-                    for (k in 0 until printerQueueModel.printSuccessData.size) {
+                /*    for (k in 0 until printerQueueModel.printSuccessData.size) {
 
                         if (printerQueueModel.printSuccessData[k].toInt() == kitchenPrinterList[i].id) {
                             containsFlag = true
@@ -373,7 +373,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                             containsFlag = false
                         }
 
-                    }
+                    }*/
 
                     /* if (printerQueueModel.printSuccessData.contains(kitchenPrinterList[i].id)) {
                          containsFlag = true
@@ -1588,9 +1588,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             LogUtil.logE(TAG, "UpdateGetloag ${flag}")
             if (flag == false) {
                 var listIds: ArrayList<Int> =
-                    printerQueueModelGlobal!!.printSuccessData.toCollection(
-                        arrayListOf()
-                    )
+                    arrayListOf()
                 listIds.add(kitchenPrinterList[currentIndex].id)
 
                 LogUtil.logE(TAG, "listIds  ${Gson().toJson(listIds)}")
