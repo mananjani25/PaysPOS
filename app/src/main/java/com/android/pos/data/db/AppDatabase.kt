@@ -135,6 +135,20 @@ abstract class AppDatabase : RoomDatabase() {
 
         }
 
+        val MIGRATION_4_5: Migration = object : Migration(3, 4) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                try {
+
+                    database.execSQL("ALTER TABLE TbItem ADD COLUMN price_without_markup DOUBLE DEFAULT 0.0 NOT NULL")
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+
+
+            }
+
+        }
+
         private fun buildDatabase(appContext: Context) =
             Room.databaseBuilder(appContext, AppDatabase::class.java, DATABASE_NAME)
                 .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)

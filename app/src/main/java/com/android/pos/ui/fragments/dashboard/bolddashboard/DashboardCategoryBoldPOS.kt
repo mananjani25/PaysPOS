@@ -1,5 +1,6 @@
 package com.android.pos.ui.fragments.dashboard.bolddashboard
 
+import android.app.Activity
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -19,6 +20,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.*
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.android.pos.MainApplication
 import com.android.pos.R
@@ -523,10 +525,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         onClick()
 
-        viewModel.showClockOutProgress.observe(requireActivity()) { event ->
+        viewModel.showClockOutProgress.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
-                    ProgressUtils.showProgressDialog(requireActivity())
+                    ProgressUtils.showProgressDialog(requireActivity() as MainActivity)
                 } else {
                     ProgressUtils.dismissProgressDialog()
                 }

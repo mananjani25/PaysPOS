@@ -234,7 +234,7 @@ class CartFragment(
 
     private fun checkOrderType() {
 
-        saveVisibility()
+//        saveVisibility()
         if (prefProvider.getValue(ORDER_TYPE, "").isEmpty()) {
             binding.rlCartView.gone()
             binding.rvOrderType.visible()
@@ -1541,13 +1541,13 @@ class CartFragment(
 
     private fun saveVisibility() {
         if (prefProvider.getValue(ORDER_TYPE, "") == TAKEOUT) {
-            binding.tvSave.gone()
-            val param: LinearLayout.LayoutParams = LinearLayout.LayoutParams(
-                0,
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                2.0f
-            )
-            binding.tvPayNow.layoutParams = param
+            binding.tvSave.visible()
+//            val param: LinearLayout.LayoutParams = LinearLayout.LayoutParams(
+//                0,
+//                LinearLayout.LayoutParams.WRAP_CONTENT,
+//                2.0f
+//            )
+//            binding.tvPayNow.layoutParams = param
         } else {
             binding.tvSave.visible()
         }

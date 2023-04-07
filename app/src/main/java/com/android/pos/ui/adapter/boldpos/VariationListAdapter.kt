@@ -46,7 +46,7 @@ class VariationListAdapter() :
 
         val itemBinding = holder.noteItemBinding
         itemBinding.txtVariation.text = variationList[position].name
-        itemBinding.txtPrice.text = variationList[position].priceWithMarkup?.let {
+        itemBinding.txtPrice.text = variationList[position].price?.let {
             MethodUtils.roundOffAmount(
                 it
             )

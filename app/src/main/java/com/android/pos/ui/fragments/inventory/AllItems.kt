@@ -94,7 +94,7 @@ class AllItems(val clickedPosition: Int, val totalItems: Int) : Fragment(), Item
         onClick()
         itemsObserver()
         deleteObserver()
-        setupHelper()
+       // setupHelper()
         searchFilter()
         observeShowProgress()
 
