@@ -1,6 +1,5 @@
 package com.android.pos.ui.fragments.dashboard.bolddashboard
 
-import android.app.Activity
 import android.app.Presentation
 import android.content.Context
 import android.graphics.Bitmap
@@ -50,7 +49,6 @@ import com.android.pos.utils.statusUtils.Status
 import com.github.gcacace.signaturepad.views.SignaturePad.OnSignedListener
 import com.google.gson.Gson
 import com.google.gson.JsonArray
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
@@ -1235,11 +1233,19 @@ class CustomDisplay(
                 tippedAmount = edtAmount.text.toString().replace("$", "").trim().toDouble()
 
                 if (mIsCardPayment) {
-                    if(mIsSignatureRequired){
+                    if (mIsSignatureRequired) {
                         showWouldYouLikeToAddTipScreen(
-                            tipsListViewModel,mTransactionViewModel,mWholeTotalPrice,mOrderID,mIsCardPayment, mPaymentViewModel,magtekRequestUtils,apiModule1,true
+                            tipsListViewModel,
+                            mTransactionViewModel,
+                            mWholeTotalPrice,
+                            mOrderID,
+                            mIsCardPayment,
+                            mPaymentViewModel,
+                            magtekRequestUtils,
+                            apiModule1,
+                            true
                         )
-                    }else{
+                    } else {
                         magtekCall(wholeTotalPrice)
                     }
                 } else {
@@ -1446,12 +1452,12 @@ class CustomDisplay(
             thankYouLayout.gone()
             addTipKeypadLayout.gone()
 
-            if(fromKeypad && tippedAmount > 0.0){
+            if (fromKeypad && tippedAmount > 0.0) {
                 binding.otherRootLayout.setBackgroundColor(Color.parseColor("#ED5950"))
                 binding.txtOtherLabel?.setTextColor(Color.parseColor("#FFFFFF"))
                 binding.txtOtherLabel?.text = "Other ($tippedAmount)"
 
-            }else{
+            } else {
                 binding.otherRootLayout.setBackgroundColor(Color.parseColor("#363636"))
                 binding.txtOtherLabel?.setTextColor(Color.parseColor("#ED5950"))
                 binding.txtOtherLabel?.text = "Other"
@@ -1528,24 +1534,42 @@ class CustomDisplay(
         val byteArrayOutputStream = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
         val byteArray = byteArrayOutputStream.toByteArray()
-        return Base64.encodeToString(byteArray, Base64.DEFAULT).replace("\n","")
+        return Base64.encodeToString(byteArray, Base64.DEFAULT).replace("\n", "")
     }
 
     private fun callUpdateTip() {
         lifecycleOwner.lifecycleScope.launch {
             showProgress()
-            //delay(500)
-            Log.d("callUpdateTip", "callUpdateTip: mOrderID = $mOrderID")
-            Log.d("callUpdateTip", "callUpdateTip: signatureInBase64 = $signatureInBase64")
-            Log.d("callUpdateTip", "callUpdateTip: tippedAmount = $tippedAmount")
             mTransactionViewModel.updateTipWithSignature(mOrderID, signatureInBase64, tippedAmount)
             mTransactionViewModel.updateTipData.observe(lifecycleOwner) { event ->
                 event.getContentIfNotHandled()?.let {
-                    Log.d("callUpdateTip", "UPDATE TIP RESPONSE: $it")
-                    showThankYou()
+                    if (it.status == 200) {
+                        showThankYou()
+                    } else {
+                        showErrorLayout(it.message)
+                    }
                 }
             }
 
+        }
+    }
+
+    private fun showErrorLayout(message: String) {
+        binding.apply {
+            mainCartLayout.gone()
+            splashLayout.gone()
+            askForTipLayout.gone()
+            addTipKeypadLayout.gone()
+            progressLayout.gone()
+            thankYouLayout.gone()
+
+            errorLayout.visible()
+            txtErrorMessage.text = message
+
+            tvTryAgain?.setOnClickListener {
+                errorLayout.gone()
+                askForTipLayout.visible()
+            }
         }
     }
 
@@ -1864,12 +1888,14 @@ class CustomDisplay(
 //                                response.body()!![0].mPPGv4WSFault?.faultCode + "\n" +
 //                                        response.body()!![0].mPPGv4WSFault?.faultReason
 //                            )
-                        Toast.makeText(
-                            context,
-                            "${response.body()!![0].mPPGv4WSFault?.faultCode + "\n" +
-                                    response.body()!![0].mPPGv4WSFault?.faultReason}",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                            Toast.makeText(
+                                context,
+                                "${
+                                    response.body()!![0].mPPGv4WSFault?.faultCode + "\n" +
+                                            response.body()!![0].mPPGv4WSFault?.faultReason
+                                }",
+                                Toast.LENGTH_SHORT
+                            ).show()
                     }
                 }
             }

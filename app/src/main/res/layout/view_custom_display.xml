@@ -740,6 +740,42 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/errorLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#1D1D1F"
+        android:visibility="gone">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/imageViewError"
+            style="@style/CustomFontMediumStyle"
+            android:layout_width="@dimen/_45sdp"
+            android:layout_height="@dimen/_45sdp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_info" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/txtErrorMessage"
+            style="@style/CustomFontMediumStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:gravity="center"
+            android:padding="@dimen/_5sdp"
+            android:text="Some Error Occured"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_10mdpi"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/imageViewError" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/askForTipLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -797,7 +833,6 @@
                     android:layout_weight="1"
                     android:background="#363636">
 
-                        android:id="@+id/txtOtherLabel"
                     <androidx.appcompat.widget.AppCompatTextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

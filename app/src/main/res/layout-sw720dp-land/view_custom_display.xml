@@ -740,6 +740,58 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/errorLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#1D1D1F"
+        android:visibility="gone">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/imageViewError"
+            style="@style/CustomFontMediumStyle"
+            android:layout_width="@dimen/_45sdp"
+            android:layout_height="@dimen/_45sdp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/txtErrorMessage"
+            app:srcCompat="@drawable/ic_info" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/txtErrorMessage"
+            style="@style/CustomFontMediumStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:gravity="center"
+            android:padding="@dimen/_5sdp"
+            android:text="Some Error Occurred !!!"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_10mdpi"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvTryAgain"
+            style="@style/CustomFontBold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:background="@color/btnColorDark"
+            android:gravity="center"
+            android:padding="@dimen/_5sdp"
+            android:text="TRY AGAIN"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_7mdpi"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/txtErrorMessage" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/askForTipLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
