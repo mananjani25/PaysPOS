@@ -22,6 +22,7 @@ class TaxesDialog : DialogFragment(), View.OnClickListener {
     private lateinit var adapter: TaxesAdapter
     private lateinit var binding: DialogTaxesBinding
     private val viewModel by viewModels<CategoriesViewModel>()
+    private var isFromEdit: Boolean? = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -57,6 +58,7 @@ class TaxesDialog : DialogFragment(), View.OnClickListener {
 
         binding.txtTitle.text = getString(R.string.taxes)
         selectedIds = arguments?.getStringArrayList("selectedId")
+        isFromEdit = arguments?.getBoolean("isEdit", false)
 
         adapter = TaxesAdapter(true)
         binding.rvTaxes.adapter = adapter
@@ -111,10 +113,16 @@ class TaxesDialog : DialogFragment(), View.OnClickListener {
                             binding.txtNodata.visibility = View.GONE
 
                             it.data.let { it1 ->
-                                if (selectedIds?.isNotEmpty() == true) {
+                                if (!isFromEdit!!) {
                                     it1.forEach { taxData ->
-                                        taxData.isChecked =
-                                            (selectedIds?.contains(taxData.id.toString()) == true)
+                                        taxData.isChecked = true
+                                    }
+                                } else {
+                                    if (selectedIds?.isNotEmpty() == true) {
+                                        it1.forEach { taxData ->
+                                            taxData.isChecked =
+                                                (selectedIds?.contains(taxData.id.toString()) == true)
+                                        }
                                     }
                                 }
                                 adapter.addList(it1)

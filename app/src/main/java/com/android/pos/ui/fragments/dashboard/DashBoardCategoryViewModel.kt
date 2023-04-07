@@ -79,14 +79,12 @@ import com.squareup.okhttp.OkHttpClient
 import com.squareup.okhttp.Request
 import com.squareup.okhttp.Response
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.InputStream
+import java.lang.Runnable
 import java.net.HttpURLConnection
 import java.net.URL
 import java.text.NumberFormat
@@ -389,7 +387,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     fun deleteCart() {
         prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
         cartModel = null
-        viewModelScope.launch {
+        GlobalScope.launch {
             posRepository.deleteCart(prefProvider.getValueInt(EMPLOYEE_ID, 0))
             destroyedList.clear()
         }
@@ -3038,6 +3036,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 totalTax = 0.0
                 totalServiceCharge = 0.0
                 amountToBePaid = 0.0
+                MethodUtils.setPriceTextView(txtTotalAmount, totalPrice)
             }
         }
         //totalAmmount = totalPrice-cartList[0].discountPrice
@@ -3634,7 +3633,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun clearTable() {
 
-        viewModelScope.launch {
+        GlobalScope.launch {
             posRepository.deleteCart(prefProvider.getValueInt(EMPLOYEE_ID, 0))
             posRepository.clearTable()
         }
@@ -4747,7 +4746,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                             val mData = response.data
                             val mCategory = mData.categories
                             val categoryModelList = ArrayList<TbCategory>()
-                            var inventoryModelList = ArrayList<TbItem>()
+                            val inventoryModelList = ArrayList<TbItem>()
 
                             val modifierSetList = ArrayList<ModifierSet>()
                             val itemModifierSetList = ArrayList<ItemModifierSets>()
@@ -4768,10 +4767,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 }
                                 categoryModelList.add(model)
 
-
-
-
                                 category.items.forEach {
+
                                     it.modifierSets.forEach { modifierset ->
                                         val itemModifierSets = ItemModifierSets().apply {
                                             itemId = it.id
@@ -4791,23 +4788,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                             }
 
 
-//                            mData.modifierSets.forEach { modifierSets ->
-//
-//                                val itemModifierSets = ItemModifierSets().apply {
-//                                    itemId = this.modifierSetId
-//                                    modifierSetId = modifierSets.id!!
-//                                    minRequired = modifierSets.min_required
-//                                    maxAllowed = modifierSets.max_allowed
-//                                    isDeleted = modifierSets.isDeleted
-//                                }
-//
-//                                itemModifierSetList.add(itemModifierSets)
-//                            }
                             modifierSetList.addAll(mData.modifierSets)
-
-
-
-
 
                             delay(1000)
 
@@ -4932,14 +4913,12 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     _checkCashDrawerPermission.value = true
                                 } else {
 
-                                    ThreadPoolManager.instance.executeTask(Runnable {
+                                    ThreadPoolManager.instance.executeTask {
 
                                         rolePermission.findCurrentUserRoleAndSave(
                                             appDatabase.teamRoleDao().allRoleList()
                                         )
-
-
-                                    })
+                                    }
 
 
                                 }

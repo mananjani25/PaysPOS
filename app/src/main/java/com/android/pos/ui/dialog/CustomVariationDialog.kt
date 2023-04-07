@@ -152,14 +152,14 @@ class CustomVariationDialog : DialogFragment(), View.OnClickListener,
                     variationAttribute.name = binding.etVariationsName.text.toString()
 
                     if (TextUtils.isEmpty(binding.tvVariationsPrice.text.toString())) {
-                        variationAttribute?.priceWithMarkup = 0.0
+                        variationAttribute?.price = 0.0
                         //   variationAttribute?.price = null
                         variationAttribute?.priceType = "Variable"
                     } else {
                         variationAttribute.price =
                             binding.tvVariationsPrice.text.toString().replace("$", "").toDouble()
 
-                        variationAttribute?.priceWithMarkup = 0.0
+//                        variationAttribute?.price = 0.0
                         variationAttribute?.priceType = "Fixed"
                     }
 

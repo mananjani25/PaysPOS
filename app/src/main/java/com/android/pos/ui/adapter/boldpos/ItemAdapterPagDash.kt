@@ -84,12 +84,27 @@ class ItemAdapterPagDash(
                         )
                         binding.txtCategoryName.text = itename_price
                     } else {
-                        itename_price.append(
-                            model.name.substring(
-                                0,
-                                40
-                            ) + "..."
-                        )
+//                        itename_price.append(
+//                            model.name.substring(
+//                                0,
+//                                40
+//                            ) + "..."
+//                        )
+                        if(model.name.length >= 40){
+                            itename_price.append(
+                                model.name.substring(
+                                    0,
+                                    40
+                                ) + "..."
+                            )
+                        }else{
+                            itename_price.append(
+                                model.name.substring(
+                                    0,
+                                    model.name.length
+                                ) + "..."
+                            )
+                        }
                         binding.txtCategoryName.text = itename_price
                     }
                 } else {

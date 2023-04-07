@@ -1,5 +1,6 @@
 package com.android.pos.ui.fragments.dashboard.bolddashboard
 
+import android.app.Activity
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -19,6 +20,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.*
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.android.pos.MainApplication
 import com.android.pos.R
@@ -523,10 +525,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         onClick()
 
-        viewModel.showClockOutProgress.observe(requireActivity()) { event ->
+        viewModel.showClockOutProgress.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
-                    ProgressUtils.showProgressDialog(requireActivity())
+                    ProgressUtils.showProgressDialog(requireActivity() as MainActivity)
                 } else {
                     ProgressUtils.dismissProgressDialog()
                 }
@@ -986,9 +988,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     override fun onItemSelected(item: TbItem) {
         item.timeStamp = randomOfflineId()
 
+        Log.e("viewModel.cartModel",Gson().toJson(viewModel.cartModel))
+
         if (cartList.isEmpty() && viewModel.cartModel != null) {
             viewModel.cartModel?.let {
-                cartList.add(it)
+              cartList.add(it)
             }
         }
 
@@ -1809,7 +1813,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     )
                     builder.addTextAlign(Builder.ALIGN_CENTER)
 
-                    addBuilderTextForU220(builder, receiptModel?.order?.orderType.toString())
+                    addBuilderTextForU220(builder, receiptModel?.order?.orderTypeName)
                 }
 
                 /* if (receiptModel?.order?.orderType.trim().lowercase() == "OpenOrder".trim()
@@ -2372,7 +2376,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     )
                     builder.addTextAlign(Builder.ALIGN_CENTER)
 
-                    addBuilderText(builder, receiptModel?.order?.orderType.toString())
+                    addBuilderText(builder, receiptModel?.order?.orderTypeName?.toString())
                 }
 
                 /* if (receiptModel?.order?.orderType.trim().lowercase() == "OpenOrder".trim()
@@ -3066,7 +3070,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             SunmiPrinterApi.getInstance().lineWrap(1)
 
             if (kitchenSettingModel.showOrderType) {
-                PrintSunmiUtils.printOrderType(receiptModel?.order?.orderType.toString())
+                PrintSunmiUtils.printOrderType(receiptModel?.order?.orderTypeName?.toString())
             }
             //    PrintSunmiUtils.printOrderType(receiptModel?.order?.deliveryType.toString())
 
@@ -3222,7 +3226,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
             if (kitchenSettingModel.showOrderType) {
 
-                PrintSunmiUtils.headerText(receiptModel?.order?.orderType.toString())
+                PrintSunmiUtils.headerText(receiptModel?.order?.orderTypeName)
             }
             //   PrintSunmiUtils.headerText(receiptModel?.order?.deliveryType.toString())
 

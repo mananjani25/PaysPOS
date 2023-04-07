@@ -33,6 +33,7 @@ import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.BUSINESS_ADDRESS
 import com.android.pos.data.remote.Constants.OPEN_ORDER
+import com.android.pos.data.remote.Constants.OPEN_ORDER_
 import com.android.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
 import com.android.pos.data.remote.Constants.PRINT_PAID
 import com.android.pos.data.remote.Constants.PRINT_UNPAID
@@ -467,7 +468,7 @@ class ActiveOrderFragment(
 
                 dashboardViewModel.deleteCart()
                 prefProvider.setValue(Constants.ORDER_TYPE, OPEN_ORDER)
-                prefProvider.setValue(Constants.ORDER_TYPE_NAME, OPEN_ORDER)
+                prefProvider.setValue(Constants.ORDER_TYPE_NAME, OPEN_ORDER_)
 
                 var itemDiscountTotal: Double = 0.0
                 var itemPassDis: Double = 0.0
@@ -1243,60 +1244,86 @@ class ActiveOrderFragment(
             builder.addTextAlign(Builder.ALIGN_CENTER)
 
             addBuilderText(builder, prefProvider.getValue(Constants.BUSINESS_NAME, "").toString())
-            builder.addFeedLine(1)
-            builder.addTextFont(Builder.FONT_E)
-            builder.addTextAlign(Builder.ALIGN_CENTER)
-            builder.addTextLang(Builder.LANG_EN)
-            addCustomerTextSize(builder, customerSettingModel.fonts)
 
-            builder.addTextStyle(
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.COLOR_1
-            )
+           if(customerSettingModel.showVenueAddress) {
+               builder.addFeedLine(1)
+               builder.addTextFont(Builder.FONT_E)
+               builder.addTextAlign(Builder.ALIGN_CENTER)
+               builder.addTextLang(Builder.LANG_EN)
+               addCustomerTextSize(builder, customerSettingModel.fonts)
 
-            addBuilderText(
-                builder,
-                prefProvider.getValue(
-                    Constants.BUSINESS_ADDRESS, prefProvider.getValue(
-                        BUSINESS_ADDRESS, ""
-                    )
-                ).toString()
-            )
-            builder.addFeedLine(1)
+               builder.addTextStyle(
+                   Builder.FALSE,
+                   Builder.FALSE,
+                   Builder.FALSE,
+                   Builder.COLOR_1
+               )
 
-            builder.addTextFont(Builder.FONT_E)
-            builder.addTextAlign(Builder.ALIGN_CENTER)
-            builder.addTextLang(Builder.LANG_EN)
-            addCustomerTextSize(builder, customerSettingModel.fonts)
-            builder.addTextStyle(
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.COLOR_1
-            )
-            addBuilderText(
-                builder,
-                MethodUtils.getUSFormatNumber(
-                    prefProvider.getValue(Constants.BUSINESS_PHONE_NO, "").toString()
+               addBuilderText(
+                   builder,
+                   prefProvider.getValue(
+                       Constants.BUSINESS_ADDRESS, prefProvider.getValue(
+                           BUSINESS_ADDRESS, ""
+                       )
+                   ).toString()
+               )
+           }
+            if(customerSettingModel.showVenuePhone) {
+                builder.addFeedLine(1)
+
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, customerSettingModel.fonts)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
                 )
-            )
+                addBuilderText(
+                    builder,
+                    MethodUtils.getUSFormatNumber(
+                        prefProvider.getValue(Constants.BUSINESS_PHONE_NO, "").toString()
+                    )
+                )
+            }
 
-            builder.addFeedLine(1)
+            if(customerSettingModel.showWebsiteAddress) {
+                builder.addFeedLine(1)
 
-            builder.addTextFont(Builder.FONT_E)
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, customerSettingModel.fonts)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+                addBuilderText(
+                    builder,
+                    prefProvider.getValue(Constants.BUSINESS_WEBSITE, "")
+                )
+            }
 
-            builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(2, 2)
-            builder.addTextStyle(
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.COLOR_1
-            )
-            builder.addTextAlign(Builder.ALIGN_CENTER)
-            builder.addText(receiptModel?.orderType + "\n")
+            if(customerSettingModel.showOrderType) {
+                builder.addFeedLine(1)
+
+                builder.addTextFont(Builder.FONT_E)
+
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(2, 2)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+                builder.addText(receiptModel?.orderTypeName + "\n")
+            }
 
             /*if (receiptModel?.orderType?.lowercase() == Constants.OPEN_ORDER.lowercase()
                 || receiptModel?.orderType?.lowercase() == Constants.OPEN_ORDER.lowercase()
@@ -1709,7 +1736,7 @@ class ActiveOrderFragment(
 
 
 
-            if (receiptModel.cash_discount_or_surcharge != 0.0) {
+            if (receiptModel.cash_discount_or_surcharge != 0.0 && customerSettingModel.showCashDisSurCharg) {
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
                 builder.addTextFont(Builder.FONT_E)
@@ -2283,11 +2310,23 @@ class ActiveOrderFragment(
 
             PrintSunmiUtils.printBusinessDetails(
                 prefProvider.getValue(Constants.BUSINESS_NAME, ""),
-                prefProvider.getValue(BUSINESS_ADDRESS, ""),
-                prefProvider.getValue(Constants.BUSINESS_PHONE_NO, "")
+                if (customerSettingModel.showVenueAddress) prefProvider.getValue(
+                    BUSINESS_ADDRESS,
+                    ""
+                ) else "",
+                if (customerSettingModel.showVenuePhone) prefProvider.getValue(
+                    Constants.BUSINESS_PHONE_NO,
+                    ""
+                ) else ""
             )
 
-            PrintSunmiUtils.printOrderType(receiptModel?.orderType.trim())
+            if (customerSettingModel.showWebsiteAddress) {
+                PrintSunmiUtils.venueWebsite(prefProvider.getValue(Constants.BUSINESS_WEBSITE, ""))
+            }
+
+            if(customerSettingModel.showOrderType) {
+                PrintSunmiUtils.printOrderType(receiptModel?.orderTypeName?.trim())
+            }
 
 
             if (receiptModel?.orderType?.lowercase() == Constants.OPEN_ORDER.lowercase()
@@ -2533,7 +2572,7 @@ class ActiveOrderFragment(
 
 
 
-            if (receiptModel.cash_discount_or_surcharge != 0.0) {
+            if (receiptModel.cash_discount_or_surcharge != 0.0 && customerSettingModel.showCashDisSurCharg) {
 
 
                 if (receiptModel.payments.isNotEmpty() && receiptModel.payments.get(receiptModel.payments.size - 1).paymentType.lowercase() == "Card".lowercase()) {
@@ -2822,11 +2861,23 @@ class ActiveOrderFragment(
 
             PrintSunmiUtils.printBusinessDetailsInner(
                 prefProvider.getValue(Constants.BUSINESS_NAME, ""),
-                prefProvider.getValue(BUSINESS_ADDRESS, ""),
-                prefProvider.getValue(Constants.BUSINESS_PHONE_NO, "")
+                if (customerSettingModel.showVenueAddress) prefProvider.getValue(
+                    BUSINESS_ADDRESS,
+                    ""
+                ) else "",
+                if (customerSettingModel.showVenuePhone) prefProvider.getValue(
+                    Constants.BUSINESS_PHONE_NO,
+                    ""
+                ) else ""
             )
-            SunmiPrintHelper.getInstance().lineWrap(1)
-            PrintSunmiUtils.headerText(receiptModel?.orderType.trim())
+            if (customerSettingModel.showWebsiteAddress) {
+                PrintSunmiUtils.venueWebsiteInner(prefProvider.getValue(Constants.BUSINESS_WEBSITE, ""))
+            }else {
+                SunmiPrintHelper.getInstance().lineWrap(1)
+            }
+            if(customerSettingModel.showOrderType) {
+                PrintSunmiUtils.headerText(receiptModel?.orderTypeName?.trim())
+            }
 
 
             if (receiptModel?.orderType?.lowercase() == Constants.OPEN_ORDER.lowercase()
@@ -3053,7 +3104,7 @@ class ActiveOrderFragment(
 
 
 
-            if (receiptModel.cash_discount_or_surcharge != 0.0) {
+            if (receiptModel.cash_discount_or_surcharge != 0.0 && customerSettingModel.showCashDisSurCharg) {
 
 
                 if (receiptModel.payments.isNotEmpty() && receiptModel.payments.get(receiptModel.payments.size - 1).paymentType.lowercase() == "Card".lowercase()) {
@@ -3448,7 +3499,7 @@ class ActiveOrderFragment(
     }
 
     private fun startDatePickerObserver() {
-        viewModel.startDateSelection.observe(requireActivity(), { event ->
+        viewModel.startDateSelection.observe(requireActivity()) { event ->
             event.getContentIfNotHandled()?.let {
                 //currentPage = 1
                 val dialog = DatePickerDialog(
@@ -3465,7 +3516,7 @@ class ActiveOrderFragment(
                 dialog.show()
             }
 
-        })
+        }
     }
 
     private fun endDatePickerObserver() {

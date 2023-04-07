@@ -1,6 +1,7 @@
 package com.android.pos.di
 
 import android.content.Context
+import com.android.pos.BuildConfig
 import com.android.pos.MainApplication
 import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants.AUTH_TOKEN
@@ -77,12 +78,12 @@ object ApiModule {
 
                         }.build())
                     }.also { client ->
-//                        if (BuildConfig.DEBUG) {
+                        if (BuildConfig.DEBUG) {
                             val logging = HttpLoggingInterceptor()
                             logging.setLevel(HttpLoggingInterceptor.Level.BODY)
                             client.addInterceptor(logging)
                             client.addInterceptor(networkConnectionInterceptor)
-//                        }
+                        }
                     }.build()
             )
             .addConverterFactory(GsonConverterFactory.create())

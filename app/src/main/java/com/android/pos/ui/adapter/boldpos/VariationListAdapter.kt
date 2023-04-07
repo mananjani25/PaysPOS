@@ -45,8 +45,8 @@ class VariationListAdapter() :
     override fun onBindViewHolder(holder: VariationListAdapter.MyViewHolder, position: Int) {
 
         val itemBinding = holder.noteItemBinding
-        itemBinding.txtVariation.text = variationList[position].name + "hjghjg"
-        itemBinding.txtPrice.text = variationList[position].priceWithMarkup?.let {
+        itemBinding.txtVariation.text = variationList[position].name
+        itemBinding.txtPrice.text = variationList[position].price?.let {
             MethodUtils.roundOffAmount(
                 it
             )
@@ -70,12 +70,14 @@ class VariationListAdapter() :
 
             noteItemBinding.linearParent.setOnClickListener {
 
-                mpos = absoluteAdapterPosition
+                if(variationList.isNotEmpty() && absoluteAdapterPosition >=0 && bindingAdapterPosition >= 0){
+                    mpos = absoluteAdapterPosition
 
-                mCallbackvariation?.onItemClickListener(it, mpos)
-                showVariationPriceClick?.invoke(variationList[bindingAdapterPosition])
-                Log.d("yash", "position: " + absoluteAdapterPosition)
-                notifyDataSetChanged()
+                    mCallbackvariation?.onItemClickListener(it, mpos)
+                    showVariationPriceClick?.invoke(variationList[bindingAdapterPosition])
+                    Log.d("yash", "position: " + absoluteAdapterPosition)
+                    notifyDataSetChanged()
+                }
 
 
             }

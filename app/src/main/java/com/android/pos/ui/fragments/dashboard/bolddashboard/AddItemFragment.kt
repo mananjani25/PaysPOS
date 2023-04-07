@@ -102,6 +102,8 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
         isUpdateItem = requireArguments().getBoolean(Constants.IS_UPDATE_ITEM)
         Log.e("GetDataAdd","isUpdateItem:    ${isUpdateItem}")
 
+        binding.txtDone.isEnabled = isUpdateItem
+
         return binding.root
     }
 
@@ -149,13 +151,13 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
             override fun afterTextChanged(s: Editable?) {
                 if (s.toString().isNotEmpty()) {
                     qty = s.toString().toInt()
-                    if (!item.isManualSales &&  qty > MAX_ITEM_QUANTITY) {
+                    if (/*!item.isManualSales &&  */qty > MAX_ITEM_QUANTITY) {
                         qty = MAX_ITEM_QUANTITY
                         binding.edttxtQuantity.setText(MAX_ITEM_QUANTITY.toString())
-                    } else if(item.isManualSales &&  qty > MAX_ITEM_QUANTITY_FOR_MANUAL_SALES){
+                    }/* else if(item.isManualSales &&  qty > MAX_ITEM_QUANTITY_FOR_MANUAL_SALES){
                         qty = MAX_ITEM_QUANTITY_FOR_MANUAL_SALES
                         binding.edttxtQuantity.setText(MAX_ITEM_QUANTITY_FOR_MANUAL_SALES.toString())
-                    } else if (qty == 0) {
+                    }*/ else if (qty == 0) {
                         binding.edttxtQuantity.setText("1")
                     }
                     binding.edttxtQuantity.setSelection(binding.edttxtQuantity.text!!.length)

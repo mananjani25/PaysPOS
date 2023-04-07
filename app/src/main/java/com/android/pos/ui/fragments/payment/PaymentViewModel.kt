@@ -503,7 +503,7 @@ open class PaymentViewModel @Inject constructor(
         orderAttributeRequestModel.openOrderType =
             prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT)
 
-        orderAttributeRequestModel.orderTypeId = order_type_id
+        orderAttributeRequestModel.orderTypeId = cartModel.orderTypeId
         orderAttributeRequestModel.date = TimeFormatUtils.getCurrentDate()
         if (future_delivery_date.isNotEmpty())
             orderAttributeRequestModel.futureDeliveryDate = future_delivery_date

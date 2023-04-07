@@ -57,5 +57,7 @@ data class Item(
     @SerializedName("is_deleted")
     val isDeleted: Boolean,
     @SerializedName("item_modifier_sets_sort")
-    val itemModifierSetsSort: List<Int>
+    val itemModifierSetsSort: List<Int>,
+    @SerializedName("price_without_markup")
+    val price_without_markup: Double =0.0,
 )
