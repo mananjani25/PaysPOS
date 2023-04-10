@@ -173,6 +173,7 @@ class CreateTax : Fragment() {
 
         val resultDialogKey = getNavigationResultLiveData<ArrayList<TbItem>>(DIALOG_KEY)
         resultDialogKey?.observe(viewLifecycleOwner) {
+
             itemIds.clear()
             if (it.size > 0) {
                 binding.itemsCount.text = "" + it.size + " Items"
@@ -184,7 +185,7 @@ class CreateTax : Fragment() {
                 itemIds.add(it.itemId)
             }
 
-            // viewModel.setItemIds(itemIds)
+             viewModel.setItemIds(itemIds)
         }
 
         val resultDialogKeyTax = getNavigationResultLiveData<String>(DIALOG_KEY_TAX)

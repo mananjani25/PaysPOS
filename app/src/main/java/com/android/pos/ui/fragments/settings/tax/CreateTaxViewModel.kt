@@ -202,6 +202,7 @@ class CreateTaxViewModel @Inject constructor(
                                     updateTaxDataInItem(tax, taxData.itemIds as ArrayList<Int>)
                                     taxServiceChargeRepository.createTaxDatabase(tax)
 
+                                    itemIdsViewModel = ArrayList()
                                     _data.value = Event(createTaxResponse)
 
                                 }
