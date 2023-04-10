@@ -11,10 +11,12 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.model.InventoryItemModel
+import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants.ACTIVE_ORDER
 import com.android.pos.data.remote.Constants.CANCELED_ORDER
 import com.android.pos.data.remote.Constants.COMPLETED_ORDER
@@ -22,11 +24,16 @@ import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.databinding.FragmentInventoryBinding
 import com.android.pos.di.RolePermission
 import com.android.pos.ui.adapter.InventoryAdapter
+import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.android.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
+import com.android.pos.ui.fragments.dinein.DineInOrderTableViewModel
+import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.setOnSingleClickListener
 import com.android.pos.utils.extensions.visible
+import com.android.pos.utils.getCustomerDisplay
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -43,11 +50,15 @@ class Orders : Fragment() {
     private lateinit var binding: FragmentInventoryBinding
     var startDate: String? = null
     var endDate: String? = null
+    private val dineInViewModel by viewModels<DineInOrderTableViewModel>()
 
     @Inject
     lateinit var rolePermission: RolePermission
 
     private val viewModel by viewModels<ActiveOrderViewModel>()
+    private lateinit var presentation: CustomDisplay
+    private val passcodeViewModel by activityViewModels<PasscodeViewModel>()
+    private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -56,6 +67,17 @@ class Orders : Fragment() {
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_inventory, container, false)
         binding.lifecycleOwner = this
+
+        getCustomerDisplay(requireContext())?.let { display ->
+            presentation = CustomDisplay(
+                display,
+                requireContext(),
+                viewLifecycleOwner,
+                dashboardViewModel,
+                passcodeViewModel,
+                dineInViewModel
+            )
+        }
 
         configureToolbar()
         setupClickEvent()
@@ -107,6 +129,17 @@ class Orders : Fragment() {
 
     }
 
+
+    @Inject
+    lateinit var apiService: ApiService
+
+    override fun onResume() {
+        super.onResume()
+        if (this::presentation.isInitialized) {
+            presentation.show()
+            presentation.onLogOutOrClockOutWithApiService(apiService)
+        }
+    }
 
     var broadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -202,8 +235,11 @@ class Orders : Fragment() {
             findNavController().navigate(R.id.action_orders_to_menuposbold)
         }
         binding.commonToolbar.txtHome.setOnClickListener {
-            if (MethodUtils.isDoubleClick()) return@setOnClickListener
-            findNavController().navigate(R.id.action_orders_to_dashboardCategoryNew)
+            try {
+
+                findNavController().navigate(R.id.action_orders_to_dashboardCategoryNew)
+            }catch (e:java.lang.Exception){}
+
         }
 
         binding.commonToolbar.txtTitle.text = "Open Orders"

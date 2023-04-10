@@ -18,6 +18,8 @@ import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DELETE
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
+import com.android.pos.data.remote.Constants.MAX_ITEM_QUANTITY
+import com.android.pos.data.remote.Constants.MAX_ITEM_QUANTITY_FOR_MANUAL_SALES
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.SERVICECHARGE_TAKEOUT_OPENORDER
 import com.android.pos.data.remote.Constants.TAKEOUT
@@ -58,7 +60,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
     private lateinit var modifiersAdapter: ModifiersAdapter
     private var isUpdateItem: Boolean = false
 
-    private var adapter: ItemModifierSetAdapter? = null
+    private var itemModifiersAdapter: ItemModifierSetAdapter? = null
     private var intArray: IntArray? = null
     private var mainModifiersId: ArrayList<Int> = arrayListOf()
     private var mainVariationId: ArrayList<Int> = arrayListOf()
@@ -98,6 +100,9 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
         binding.rvVariationList.adapter = variationAdapter
         variationAdapter.setCallback(this)
         isUpdateItem = requireArguments().getBoolean(Constants.IS_UPDATE_ITEM)
+        Log.e("GetDataAdd","isUpdateItem:    ${isUpdateItem}")
+
+        binding.txtDone.isEnabled = isUpdateItem
 
         return binding.root
     }
@@ -109,8 +114,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
         getCartList()
         findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<VariationsAttribute>(
             Constants.DIALOG_KEY_VARIATION_DETAILS
-        )
-            ?.observe(viewLifecycleOwner) { it ->
+        )?.observe(viewLifecycleOwner) { it ->
                 if (variationAdapter.variationList.size > 0) {
                     variationAdapter.updateVariation(it)
                     var variation: VariationsAttribute? = null
@@ -147,9 +151,12 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
             override fun afterTextChanged(s: Editable?) {
                 if (s.toString().isNotEmpty()) {
                     qty = s.toString().toInt()
-                    if (qty > 15) {
-                        qty = 15
-                        binding.edttxtQuantity.setText("15")
+                    if (!item.isManualSales &&  qty > MAX_ITEM_QUANTITY) {
+                        qty = MAX_ITEM_QUANTITY
+                        binding.edttxtQuantity.setText(MAX_ITEM_QUANTITY.toString())
+                    } else if(item.isManualSales &&  qty > MAX_ITEM_QUANTITY_FOR_MANUAL_SALES){
+                        qty = MAX_ITEM_QUANTITY_FOR_MANUAL_SALES
+                        binding.edttxtQuantity.setText(MAX_ITEM_QUANTITY_FOR_MANUAL_SALES.toString())
                     } else if (qty == 0) {
                         binding.edttxtQuantity.setText("1")
                     }
@@ -259,17 +266,16 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 
 
 
+            if (item.modifier_set_ids.isNotEmpty() && itemModifiersAdapter != null) {
+                if (minMaxValidationCheck(itemModifiersAdapter)) {
 
-            if (item.modifier_set_ids.isNotEmpty() && adapter != null) {
-                if (minMaxValidationCheck(adapter)) {
-
-                    val modifiers = adapter?.getSelectedModifiers()
+                    val modifiers = itemModifiersAdapter?.getSelectedModifiers()
 
                     if (modifiers?.isNotEmpty() == true) {
                         modifiers.forEach {
                             item.modifiers.forEach { it1 ->
                                 if (it.id == it1.id) {
-                                    it1.itemQuantity = it.itemQuantity
+                                    // it1.itemQuantity = it.itemQuantity
                                     it.orderModifierId = it1.orderModifierId
 
                                 }
@@ -294,21 +300,26 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 
             val variationList = ArrayList<VariationsAttribute>()
             if (item.variationsAttributes.isNotEmpty()) {
-                val variation = variationAdapter.getItem()
-                variationList.add(variation)
-                item.name = item.name.substringBefore(" (") + " (" + variation.name + ")"
-                item.price = variation.price ?: 0.0
-                if (item.price == 0.0 && variation.priceType == "Variable") {
-                    AlertUtils.showCustomAlertWithListenerWithOK(
-                        requireContext(), "Please enter amount"
-                    ) { _, _ ->
+                if (variationAdapter.variationList.isNotEmpty()) {
+                    val variation = variationAdapter.getItem()
+                    variationList.add(variation)
+                    item.name = item.name.substringBefore(" (") + " (" + variation.name + ")"
+                    item.price = variation.price ?: 0.0
+                    if (item.price == 0.0 && variation.priceType == "Variable") {
+                        AlertUtils.showCustomAlertWithListenerWithOK(
+                            requireContext(), "Please enter amount"
+                        ) { _, _ ->
 
+                        }
+                        return@setOnClickListener
                     }
+                    item.variationsAttributes = variationList
+                } else {
                     return@setOnClickListener
                 }
-                item.variationsAttributes = variationList
 
             }
+
 
             if (isUpdateItem) {
                 if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
@@ -325,7 +336,9 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                             }
                         }
                     }
-                    viewModel.cartLogic(
+
+                    Log.e(TAG, "dineInListWhenUpdate:  ${Gson().toJson(cartList)}")
+                    viewModel.newCartLogicModifier(
                         cartList,
                         item,
                         Constants.UPDATE,
@@ -343,15 +356,16 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                     }
 
 
-                    if (checkVar() && checkMod()) {
-                        LogUtil.logE("NewItem", "ItemSame")
-                        viewModel.cartLogic(cartList, item, Constants.UPDATE, false)
+                    if (checkVar()) {
+
+                        LogUtil.logE("NewItem", "ItemSame ${Gson().toJson(item)}")
+                        viewModel.newCartLogicModifier(cartList, item, Constants.UPDATE, false)
 
                     } else {
 
                         LogUtil.logE("NewItem", "ItemSameNot")
                         item.orderItemId = null
-                        viewModel.cartLogic(cartList, item, Constants.ADD, false)
+                        viewModel.newCartLogicModifier(cartList, item, Constants.UPDATE, false)
                     }
 
 
@@ -359,14 +373,21 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
             } else {
                 if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
                     val dineInList = cartList[0].dineInList
+                    Log.e(TAG, "checkCartIsEmpty  ${cartList.size}")
                     LogUtil.logE(TAG, "dineInList:  ${Gson().toJson(dineInList)}")
                     if (dineInList?.isNotEmpty() == true && dineInList != null) {
                         dineInList[0].selectedPosition = viewModel.dineInHeaderPosition
-                        viewModel.cartLogic(cartList, item, Constants.ADD, false, dineInList)
+                        viewModel.newCartLogicModifier(
+                            cartList,
+                            item,
+                            Constants.ADD,
+                            false,
+                            dineInList
+                        )
                     }
                 } else {
 
-                    viewModel.cartLogic(cartList, item, Constants.ADD, false)
+                    viewModel.newCartLogicModifier(cartList, item, Constants.ADD, false)
                 }
             }
 
@@ -450,13 +471,13 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
                 LogUtil.logE(TAG, "isEditedisEdited  ${item.isEdited}")
                 cartList[0].dineInList?.let { it1 ->
-                    viewModel.cartLogic(
+                    viewModel.newCartLogicModifier(
                         cartList, item, DELETE, false,
                         it1
                     )
                 }
             } else {
-                viewModel.cartLogic(cartList, item, DELETE, item.isManualSales)
+                viewModel.newCartLogicModifier(cartList, item, DELETE, item.isManualSales)
             }
             requireActivity().supportFragmentManager.popBackStackImmediate(
                 AddItemFragment.javaClass.getName(),
@@ -500,6 +521,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 
     private fun getData() {
         item = requireArguments().getParcelable<TbItem>("item") ?: TbItem()
+        Log.e(TAG, "getMainItemAdd  ${Gson().toJson(item)}")
         if (item.modifiers.isNotEmpty()) {
             item.modifiers.forEach {
                 mainModifiersId.add(it.id ?: 0)
@@ -520,12 +542,16 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
         binding.txtItem.text = "" + item?.name
         binding.txtPrice.text = MethodUtils.roundOffAmount(item.price)
         if (view != null) {
+            Log.e(TAG,"checkItemID:  ${item.itemId}")
             viewModel.getItemsbyId(item.itemId).observe(viewLifecycleOwner) {
 
                 it?.let { resource ->
                     when (resource.status) {
                         Status.SUCCESS -> {
                             it.data?.let {
+                                Log.e(TAG,"getItemForMos  ${Gson().toJson(it)}")
+
+
                                 binding.rvVariationList.visibility = View.VISIBLE
 
                                 intArray = IntArray(it.modifier_set_ids.size) { i ->
@@ -535,7 +561,10 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 
                                 variationAdapter.addVariations(it.variationsAttributes.filter { !it.isDeleted })
                                 val variationList = ArrayList<VariationsAttribute>()
-                                Log.e(TAG,"variationsAttributesInData   ${Gson().toJson(item.variationsAttributes)}")
+                                Log.e(
+                                    TAG,
+                                    "variationsAttributesInData   ${Gson().toJson(item.variationsAttributes)}"
+                                )
                                 if (item.variationsAttributes.isNotEmpty()) {
                                     binding.dividerLine.root.visibility = View.VISIBLE
                                     val variation = item.variationsAttributes[0]
@@ -561,7 +590,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 
                                     variationAdapter.showVariationPriceClick =
                                         { it1: VariationsAttribute ->
-                                            Log.e(TAG,"VariationClicked")
+                                            Log.e(TAG, "VariationClicked")
                                             if (!MethodUtils.isDoubleClick()) {
                                                 LogUtil.logE(TAG, "getpriceType:  ${it1.priceType}")
                                                 if (it1.priceType == "Variable") {
@@ -595,36 +624,9 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                                     }
                                                 }
 
-//                                    if (item.variationsAttributes.isNotEmpty()) {
-//                                        val resultVariationDetails =
-//                                            getNavigationResultLiveData<VariationsAttribute>(
-//                                                Constants.DIALOG_KEY_VARIATION_DETAILS
-//                                            )
-//                                        resultVariationDetails?.observe(viewLifecycleOwner) {
-//                                            variationAdapter?.updateVariation(it)
-//                                            var variation: VariationsAttribute? = null
-//                                            if (variationAdapter != null) {
-//                                                variation = variationAdapter.getItem()
-//                                            } else if (it != null) {
-//                                                variation = it
-//                                            }
-//
-//
-//
-//
-//                                            if (variation != null) {
-//                                                variation?.price?.let {
-//                                                    item.price = it
-//                                                }
-//
-//                                            } else {
-//                                                item.price = item.price
-//                                            }
-//                                        }
-//                                    }
                                             }
                                         }
-
+                                    binding.txtDone.isEnabled = true
                                 }
 
 
@@ -632,7 +634,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                 } else binding.dividerLine.root.visibility = View.GONE
 
                                 if (intArray!!.isNotEmpty()) {
-                                    if (adapter == null) {
+                                    if (itemModifiersAdapter == null) {
                                         binding.dividerLine2.root.visibility = View.GONE
                                     } else {
                                         binding.dividerLine2.root.visibility = View.VISIBLE
@@ -641,13 +643,13 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                     Log.e(TAG, "intArrayList   ${Gson().toJson(intArray)}")
                                     viewModel.modifierSet(intArray!!).observe(requireActivity()) {
                                         if (it.data != null && it.data.isNotEmpty() && view != null) {
-                                            adapter = ItemModifierSetAdapter(
+                                            itemModifiersAdapter = ItemModifierSetAdapter(
                                                 viewModel,
                                                 item.itemId,
                                                 viewLifecycleOwner
                                             )
-                                            adapter?.setLongCallback(this)
-                                            binding.rvModifiersList.adapter = adapter
+                                            itemModifiersAdapter?.setLongCallback(this)
+                                            binding.rvModifiersList.adapter = itemModifiersAdapter
                                             binding.rvModifiersList.visibility = View.VISIBLE
 
                                             if (isUpdateItem) {
@@ -658,9 +660,34 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                                                 modifier.isChecked = true
                                                                 modifier.itemQuantity =
                                                                     oldmodifier.itemQuantity
+                                                                modifier.modifier_quantity =
+                                                                    oldmodifier.modifier_quantity
                                                             }
                                                         }
                                                     }
+
+                                                }
+
+                                                if (prefProvider.getValue(ORDER_TYPE,"") == DINE_IN){
+                                                    it.data.forEach { modifierSet ->
+                                                        modifierSet.modifiers.forEach { modifier ->
+                                                            item.modifiers.forEach { oldmodifier ->
+
+                                                                if (oldmodifier.name.lowercase() == modifier.name.lowercase()){
+                                                                    modifier.isChecked = true
+                                                                    modifier.itemQuantity =
+                                                                        oldmodifier.itemQuantity
+                                                                    modifier.modifier_quantity =
+                                                                        oldmodifier.modifier_quantity
+                                                                }
+                                                               /* if (oldmodifier.id == modifier.id) {
+
+                                                                }*/
+                                                            }
+                                                        }
+
+                                                    }
+
 
                                                 }
                                             }
@@ -676,14 +703,15 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                                 "getdataModSets:  ${Gson().toJson(dataMod)}"
                                             )
 
-                                            adapter?.add(dataMod)
+                                            itemModifiersAdapter?.add(dataMod)
+                                            binding.txtDone.isEnabled = true
 
                                         } else {
                                             binding.rvModifiersList.visibility = View.GONE
                                             binding.dividerLine2.root.visibility = View.GONE
+                                            binding.txtDone.isEnabled = true
                                         }
                                     }
-
 
 
                                 }
@@ -1095,13 +1123,15 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
         binding.linearDonemodifier.setOnClickListener {
             MethodUtils.hideKeyboard(requireActivity())
             counter = binding.edtQntModifir.text.toString().toInt()
-            if (adapter?.filterList?.isNotEmpty() == true) {
-                adapter?.filterList?.forEachIndexed { indexset, modifierset ->
+            if (itemModifiersAdapter?.filterList?.isNotEmpty() == true) {
+                itemModifiersAdapter?.filterList?.forEachIndexed { indexset, modifierset ->
                     modifierset.modifiers.forEachIndexed { index, modifier ->
                         if (modifier.id == modifier_id) {
-                            adapter?.filterList!![indexset].modifiers[index].isChecked = true
-                            adapter?.filterList!![indexset].modifiers[index].itemQuantity = counter
-                            adapter?.notifyDataSetChanged()
+                            itemModifiersAdapter?.filterList!![indexset].modifiers[index].isChecked = true
+                            itemModifiersAdapter?.filterList!![indexset].modifiers[index].modifier_quantity =
+                                counter
+                            itemModifiersAdapter?.filterList!![indexset].modifiers[index].itemQuantity = counter
+                            itemModifiersAdapter?.notifyDataSetChanged()
                         }
                     }
 
@@ -1111,6 +1141,11 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
             binding.relativeModifierqntUpdatte.gone()
             binding.relativeAddItem.visible()
 
+        }
+        binding.linearCancelmodifier.setOnClickListener {
+            MethodUtils.hideKeyboard(requireActivity())
+            binding.relativeModifierqntUpdatte.gone()
+            binding.relativeAddItem.visible()
         }
 
     }

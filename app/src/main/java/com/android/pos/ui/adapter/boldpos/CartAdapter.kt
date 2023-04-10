@@ -31,7 +31,7 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
         fun bind(item: TbItem, pos: Int) {
             LogUtil.logE(TAG, "itemprice:  ${item.price}")
             binding.txtName.text = item.name
-            binding.txtQuantity.text = "x" + item.itemQuantity
+            binding.txtQuantity.text = item.itemQuantity.toString()
             binding.txtEachQntPrice.text = MethodUtils.roundOffAmount((item.price))
             MethodUtils.setPriceTextView(binding.txtEachQntPrice, totalEachPrice(item))
 
@@ -103,6 +103,10 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
     override fun onBindViewHolder(holder: CartAdapter.MyViewHolder, position: Int) {
         holder.bind(cartList[position], position)
 
+    }
+
+    override fun getItemId(position: Int): Long {
+        return super.getItemId(position)
     }
 
     fun setList(list: ArrayList<TbItem>) {

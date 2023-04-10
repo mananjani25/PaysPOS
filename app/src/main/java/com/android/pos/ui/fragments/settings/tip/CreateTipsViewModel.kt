@@ -72,14 +72,14 @@ class CreateTipsViewModel @Inject constructor(
             if (isEdit) {
                 tipData = CreateTipRequestModel().apply {
                     id = tipId
-                    name = value!!.name
+                    name = value!!.name.trim().replace("\\s+".toRegex(), " ")
                     rate = rate_double
                     isActive = _isActive
                     locationId = prefProvider.getValueInt(LOCATION_ID, -1)
                 }
             } else {
                 tipData = CreateTipRequestModel().apply {
-                    name = value!!.name
+                    name = value!!.name.trim().replace("\\s+".toRegex(), " ")
                     rate = rate_double
                     isActive = true
                     locationId = prefProvider.getValueInt(LOCATION_ID, -1)

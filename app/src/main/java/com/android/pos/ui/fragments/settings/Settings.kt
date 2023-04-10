@@ -72,6 +72,7 @@ class Settings : Fragment() {
     }
 
     fun init() {
+        binding.commonToolbar.llEmailPrint?.visibility = View.GONE
         binding.txtBusiness.styleBold()
         binding.txtBusiness.setBackgroundColor(resources.getColor(R.color.btnColor))
         binding.txtHardware.styleNormal()
@@ -235,7 +236,9 @@ class Settings : Fragment() {
             binding.txtEmployee.styleNormal()
             binding.txtReports.styleNormal()
 
-            setAdapter(0)
+            if(binding.rvBusiness.visibility == View.GONE) {
+                setAdapter(0)
+            }
 
         }
         binding.txtHardware.setOnClickListener {
@@ -337,7 +340,7 @@ class Settings : Fragment() {
         list.add(BusinessSettingModel(0, "Service Charges", false))
         list.add(BusinessSettingModel(0, "Sales Taxes", false))
         list.add(BusinessSettingModel(0, "Discounts", false))
-        list.add(BusinessSettingModel(0, "Dynamic Notes", false))
+        list.add(BusinessSettingModel(0, "Order Notes", false))
         list.add(BusinessSettingModel(0, "Loyalty Program", false))
         list.add(BusinessSettingModel(0, "Receipt Settings", false))
         for (i in 0 until list.size) {
@@ -351,7 +354,9 @@ class Settings : Fragment() {
         binding.rvBusiness.adapter = BusinessSettingAdapter(requireContext(), list, object :
             BusinessSettingAdapter.BusinessListInterface {
             override fun onClick(pos: Int) {
-                setupView(pos)
+                if (!list[pos].isSelected) {
+                    setupView(pos)
+                }
 
             }
 
@@ -394,7 +399,7 @@ class Settings : Fragment() {
 
             }
             5 -> {
-                binding.commonToolbar.txtSubTitle.text = "Dynamic Notes"
+                binding.commonToolbar.txtSubTitle.text = "Order Notes"
                 val notes: Fragment = Notes()
                 loadFragment(notes)
 
@@ -417,7 +422,7 @@ class Settings : Fragment() {
 
     private fun loadFragment(frag: Fragment) {
         val fm: FragmentManager = requireActivity().supportFragmentManager
-        fm.beginTransaction().replace(binding.frameLayout.id, frag).commit()
+            fm.beginTransaction().replace(binding.frameLayout.id, frag).commit()
 
     }
 

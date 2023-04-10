@@ -248,8 +248,9 @@ class HideCategoryListing(val clickedPosition: Int) : Fragment() ,ItemCallback{
 
         binding.edtSearch.addTextChangedListener(object : TextWatcher {
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                // TODO Auto-generated method stub
-
+                if (s.toString() == " ") {
+                    binding.edtSearch.setText("")
+                }
             }
 
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {

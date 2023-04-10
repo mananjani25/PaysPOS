@@ -225,6 +225,9 @@ class Options(val clickedPosition: Int) : Fragment(), TextWatcher, ItemCallback 
     }
 
     override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+        if (s.toString() == " ") {
+            binding.edtSearch.setText("")
+        }
     }
 
     override fun afterTextChanged(s: Editable?) {

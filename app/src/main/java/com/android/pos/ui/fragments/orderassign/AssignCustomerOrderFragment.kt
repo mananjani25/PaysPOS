@@ -17,6 +17,8 @@ import com.android.pos.R
 import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.TbCustomer
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.DINE_IN
+import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.databinding.FragmentAssignCustomerOrderBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.AssignCustomerToOrderAdapter
@@ -25,6 +27,7 @@ import com.android.pos.utils.LogUtil
 import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.callback.PaginationScrollListener
 import com.android.pos.utils.statusUtils.Status
+import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -42,6 +45,7 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
     private var isFromDineIn: Boolean? = false
     private var dineInPosition: Int? = null
     private var isFromCompletePayment: Boolean = false
+    private var customerListIDs: ArrayList<Int> = arrayListOf()
 
 
     @Inject
@@ -53,7 +57,7 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
     private var isLastPage = false
     private var firstDetailLoad = false
     private var selectedDate: String? = null
-    private var cartList:ArrayList<CartModel> = arrayListOf()
+    private var cartList: ArrayList<CartModel> = arrayListOf()
     val data = LinkedHashMap<String, String>()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -73,13 +77,21 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
         setupUI()
 
         loadCustomerLocalList(currentpage)
-        if(arguments!=null){
+        if (arguments != null) {
             isFromDineIn = arguments?.getBoolean("DINE_IN", false)
             isFromCompletePayment = arguments?.getBoolean("fromPayment") ?: false
             dineInPosition = arguments?.getInt("position")
             selectedDate = arguments?.getString("SELECTED_DATE")
-            if (arguments?.getParcelableArrayList<CartModel>("cartList")!=null){
-                cartList = (arguments?.getParcelableArrayList<CartModel>("cartList") ?: emptyList<CartModel>()) as ArrayList<CartModel>
+            if (arguments?.getParcelableArrayList<CartModel>("cartList") != null) {
+                cartList = (arguments?.getParcelableArrayList<CartModel>("cartList")
+                    ?: emptyList<CartModel>()) as ArrayList<CartModel>
+            }
+
+            if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN) {
+                customerListIDs =
+                    arguments?.getIntegerArrayList("listOfCustomersID") ?: arrayListOf()
+                Log.e("CheckSelectedID", "customerListIDs  ${Gson().toJson(customerListIDs)}")
+
             }
         }
 
@@ -144,7 +156,7 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
             val navController = findNavController()
             var bundle = Bundle()
             bundle.putString("SELECTED_DATE", selectedDate)
-            bundle.putBundle("updateBundle",arguments)
+            bundle.putBundle("updateBundle", arguments)
             bundle.putString(Constants.KEY, "FROM_CUSTOMER")
             navController.previousBackStackEntry?.savedStateHandle?.set(
                 "data", bundle
@@ -157,16 +169,19 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
             findNavController().navigate(R.id.action_assignCustomerOrderFragment_to_addEditCustomer)
         }
         binding.txtHome.setOnClickListener {
-            if(arguments!=null){
+            if (arguments != null) {
 
-                val bundle = Bundle()
-                bundle.putBoolean("update",arguments?.getBoolean("update")?:false)
-                bundle.putInt("orderId",arguments?.getInt("orderId")!!)
-                bundle.putInt("paymentId",arguments?.getInt("paymentId")!!)
-                bundle.putString("paymentOfflineId",arguments?.getString("paymentOfflineId"))
-                bundle.putString("orderOfflineId",arguments?.getString("orderOfflineId"))
-                findNavController().navigate(R.id.action_assignCustomerOrderFragment_to_dashboard_category_new,bundle)
-            }else{
+                var bundle: Bundle = Bundle()
+                bundle.putBoolean("update", arguments?.getBoolean("update") ?: false)
+                bundle.putInt("orderId", arguments?.getInt("orderId")!!)
+                bundle.putInt("paymentId", arguments?.getInt("paymentId")!!)
+                bundle.putString("paymentOfflineId", arguments?.getString("paymentOfflineId"))
+                bundle.putString("orderOfflineId", arguments?.getString("orderOfflineId"))
+                findNavController().navigate(
+                    R.id.action_assignCustomerOrderFragment_to_dashboard_category_new,
+                    bundle
+                )
+            } else {
                 findNavController().navigate(R.id.action_assignCustomerOrderFragment_to_dashboard_category_new)
             }
 
@@ -187,6 +202,10 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
 
                             val data =
                                 resource.data as ArrayList<TbCustomer>
+
+                            if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN) {
+                                data.removeAll { customerListIDs.contains(it.id) }
+                            }
                             adapter.add(data)
                         }
                         binding.rvCustomerList.visibility = View.VISIBLE
@@ -230,8 +249,8 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
             putBoolean("OPEN_ORDER", false)
             putString("SELECTED_DATE", selectedDate)
             putBoolean("isEdit", true)
-            putBundle("updateBundle",arguments)
-            putParcelableArrayList("cartList",cartList)
+            putBundle("updateBundle", arguments)
+            putParcelableArrayList("cartList", cartList)
             putString(Constants.KEY, "FROM_CUSTOMER")
 
             isFromDineIn?.let { putBoolean("DINE_IN", it) }

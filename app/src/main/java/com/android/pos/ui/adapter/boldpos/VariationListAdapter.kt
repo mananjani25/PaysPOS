@@ -70,12 +70,14 @@ class VariationListAdapter() :
 
             noteItemBinding.linearParent.setOnClickListener {
 
-                mpos = absoluteAdapterPosition
+                if(variationList.isNotEmpty() && absoluteAdapterPosition >=0 && bindingAdapterPosition >= 0){
+                    mpos = absoluteAdapterPosition
 
-                mCallbackvariation?.onItemClickListener(it, mpos)
-                showVariationPriceClick?.invoke(variationList[bindingAdapterPosition])
-                Log.d("yash", "position: " + absoluteAdapterPosition)
-                notifyDataSetChanged()
+                    mCallbackvariation?.onItemClickListener(it, mpos)
+                    showVariationPriceClick?.invoke(variationList[bindingAdapterPosition])
+                    Log.d("yash", "position: " + absoluteAdapterPosition)
+                    notifyDataSetChanged()
+                }
 
 
             }

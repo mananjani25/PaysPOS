@@ -3,7 +3,9 @@ package com.android.pos.ui.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.android.pos.R
 import com.android.pos.data.entities.TbOrderType
+import com.android.pos.data.remote.Constants.DEFAULT_ORDER
 import com.android.pos.databinding.ViewOrderTypeBinding
 import com.android.pos.utils.callback.ItemCallback
 
@@ -22,6 +24,11 @@ class OrderTypeAdapter :
         fun bind(item: TbOrderType) {
             binding.model = item
             binding.executePendingBindings()
+            if(item.name == DEFAULT_ORDER){
+                binding.root.setBackgroundResource(R.drawable.border_orange)
+            }else{
+                binding.root.setBackgroundResource(R.drawable.background_square_border_grey)
+            }
         }
 
         init {

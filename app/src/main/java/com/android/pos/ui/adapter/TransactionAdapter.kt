@@ -1,6 +1,7 @@
 package com.android.pos.ui.adapter
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Build
 import android.util.Log
 import android.view.LayoutInflater
@@ -20,6 +21,7 @@ import com.android.pos.utils.LogUtil
 import com.android.pos.utils.TimeFormatUtils.convertCurrentDate
 import com.android.pos.utils.TimeFormatUtils.convertCurrentTime
 import com.android.pos.utils.callback.ItemCallback
+import java.util.*
 
 class TransactionAdapter(val viewModel: TransactionViewModel, val prefProvider: PrefProvider) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>(), Filterable {
@@ -28,6 +30,7 @@ class TransactionAdapter(val viewModel: TransactionViewModel, val prefProvider: 
     private var filterList = ArrayList<GetTransactionListResponse.Data.Payment>()
     private val TYPE_FOOTER = 1
     private val TYPE_ITEM = 2
+    lateinit var context: Context
 
 
     private var mCallback: ItemCallback? = null
@@ -61,7 +64,7 @@ class TransactionAdapter(val viewModel: TransactionViewModel, val prefProvider: 
             val itemBinding = holder.discountItemBinding
             itemBinding.itemSheetModel = filterList[position]
             itemBinding.viewModel = viewModel
-            val context = itemBinding.root.context
+             context = itemBinding.root.context
 
             val model = filterList[position]
 
@@ -80,6 +83,12 @@ class TransactionAdapter(val viewModel: TransactionViewModel, val prefProvider: 
                 itemBinding.tvPaymentType.setTextColor(itemBinding.root.resources.getColor(R.color.btnColor))
             } else {
                 itemBinding.tvPaymentType.setTextColor(itemBinding.root.resources.getColor(R.color.txtColor))
+            }
+
+            if (model.orderDetails.orderTypeName != null) {
+                itemBinding.tvOrderType?.text = model.orderDetails.orderTypeName.toString()
+            } else {
+                itemBinding.tvOrderType?.text = "-"
             }
 
             itemBinding.txtCustomerName.text = (model.customer?.firstName
@@ -147,7 +156,7 @@ class TransactionAdapter(val viewModel: TransactionViewModel, val prefProvider: 
 
         LogUtil.logE("teamTimesheetList", employeeTimeSheets.size.toString())
         employeeTimeSheet.addAll(employeeTimeSheets)
-        filterList.addAll(employeeTimeSheets)
+        filterList = employeeTimeSheet
         notifyDataSetChanged()
     }
 
@@ -171,10 +180,28 @@ class TransactionAdapter(val viewModel: TransactionViewModel, val prefProvider: 
                 } else {
                     val fList = ArrayList<GetTransactionListResponse.Data.Payment>()
 
-                    /* employeeTimeSheet.filter {
-                         it.teamName.lowercase(Locale.getDefault()).contains(charSequence)
-
-                     }.forEach { fList.add(it) }*/
+                    for (it in employeeTimeSheet) {
+                        if ((if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false))
+                                it.custom_order_id.toString().lowercase(Locale.getDefault()) else
+                                it.orderId.toString().lowercase(Locale.getDefault()))
+                                .contains(charString.lowercase(Locale.getDefault())) ||
+                            (it.customer.firstName != null && it.customer.firstName.lowercase(Locale.getDefault())
+                                .contains(charString.lowercase(Locale.getDefault()))) ||
+                            (it.customer.lastName != null && it.customer.lastName.lowercase(Locale.getDefault())
+                                .contains(charString.lowercase(Locale.getDefault()))) ||
+                            (it.customer.firstName != null && it.customer.lastName != null && (it.customer.firstName.lowercase(
+                                Locale.getDefault()) + " " + it.customer.lastName.lowercase(Locale.getDefault()))
+                                .contains(charString.lowercase(Locale.getDefault()))) ||
+                            it.employeeName.lowercase(Locale.getDefault())
+                                .contains(charString.lowercase(Locale.getDefault())) ||
+                            (it.orderDetails.receiptId != null && it.orderDetails.receiptId.lowercase(Locale.getDefault())
+                                .contains(charString.lowercase(Locale.getDefault()))) ||
+                            String.format(context.getString(R.string.format), it.totalAmount)
+                                .contains(charString.lowercase(Locale.getDefault()))
+                        ) {
+                            fList.add(it)
+                        }
+                    }
 
                     fList
                 }

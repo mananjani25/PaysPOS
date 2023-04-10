@@ -151,6 +151,9 @@ class LoyaltyPointViewModel @Inject constructor(
                 _snackbarText.value = Event(R.string.error_loyalty_name_blank)
             }
             loyaltyAmount == 0.0 -> {
+                _snackbarText.value = Event(R.string.error_loyalty_point_amount)
+            }
+            loyaltyTarget == 0 -> {
                 _snackbarText.value = Event(R.string.error_loyalty_point_blank)
             }
             loyaltyAmount == null && loyaltyTarget == 0 -> {
@@ -161,7 +164,7 @@ class LoyaltyPointViewModel @Inject constructor(
                     amount = loyaltyAmount,
                     id = if (isEdit) loyaltyId else null,
                     isEnable = isEnableLp,
-                    name = loyaltyName,
+                    name = loyaltyName?.trim()?.replace("\\s+".toRegex(), " "),
                     rewardPoint = loyaltyTarget,
                     rewardType = loyaltyPointType,
                     locationId = prefProvider.getValueInt(Constants.LOCATION_ID, -1)
@@ -205,8 +208,8 @@ class LoyaltyPointViewModel @Inject constructor(
     fun setLoyaltyData(loyaltyProgramsModel: LoyaltyProgramsModel?) {
         isEdit = true
         loyaltyName = loyaltyProgramsModel?.name ?: ""
-        loyaltyAmount = loyaltyProgramsModel?.amount ?: 0.0
-        loyaltyTarget = loyaltyProgramsModel?.rewardPoint ?: 0
+        loyaltyAmount = loyaltyProgramsModel?.amount
+        loyaltyTarget = loyaltyProgramsModel?.rewardPoint
         loyaltyId = loyaltyProgramsModel?.id
 
         isEnableLp = loyaltyProgramsModel?.isEnable

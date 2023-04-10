@@ -64,8 +64,20 @@
                 android:layout_marginEnd="@dimen/_8sdp"
                 android:layout_toStartOf="@+id/imgPrintAll"
                 android:padding="@dimen/_2sdp"
-                android:src="@drawable/merge"
+                android:visibility="gone"
+                android:src="@drawable/ic_trans_table"
                 app:tint="@color/white" />
+
+           <!-- <ImageView
+                android:id="@+id/imgTransferTable"
+                android:layout_width="@dimen/_17sdp"
+                android:layout_height="@dimen/_15sdp"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="@dimen/_8sdp"
+                android:layout_toStartOf="@+id/imgMergeTable"
+                android:padding="@dimen/_2sdp"
+                android:src="@drawable/merge"
+                app:tint="@color/white" />-->
 
 
             <androidx.appcompat.widget.AppCompatTextView

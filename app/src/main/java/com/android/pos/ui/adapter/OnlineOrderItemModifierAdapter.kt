@@ -27,6 +27,15 @@ class OnlineOrderItemModifierAdapter :
 
             binding.model = item
             binding.executePendingBindings()
+            if (item.modifier_quantity > 1) {
+                if (item.modifier_quantity>9){
+                    binding.txtItemName.text = "${item.modifier_quantity}x ${item.name}"
+                }else{
+                    binding.txtItemName.text = "${item.modifier_quantity}x   ${item.name}"
+                }
+            }else{
+                binding.txtItemName.text = "       ${item.name}"
+            }
 
         }
 

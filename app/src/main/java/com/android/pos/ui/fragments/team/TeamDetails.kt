@@ -2,13 +2,14 @@ package com.android.pos.ui.fragments.team
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.Employee
 import com.android.pos.data.remote.Constants
@@ -91,5 +92,9 @@ class TeamDetails : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.txtEdit?.setOnClickListener {
+            val bundle = bundleOf("data" to model)
+            findNavController().navigate(R.id.action_global_createTeamMember, bundle)
+        }
     }
 }

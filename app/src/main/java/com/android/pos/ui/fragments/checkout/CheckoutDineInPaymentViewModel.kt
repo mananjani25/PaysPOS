@@ -1719,6 +1719,7 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
                 val orderItemsAttribute = OrderItemsAttribute()
 
                 orderItemsAttribute.category_id = item.categoryId
+                orderItemsAttribute.custom_item_id = item.id
 
                 orderItemsAttribute.id = item.orderItemId
 
@@ -1874,6 +1875,7 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
                 it.modifierSetId?.let { modifier_set_id = it }
                 quantity = it.itemQuantity
                 order_item_taxes_attributes = orderModifierTaxesAttributes(item, it, terminalId)
+                modifier_quantity = it.modifier_quantity!!
             }
             orderItemModifierAttributeList.add(orderItemModifierAttribute)
         }
@@ -1964,7 +1966,7 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
             item.variationsAttributes.forEach {
 
                 val orderItemVariationAttribute = OrderItemVariationAttribute()
-                orderItemVariationAttribute.name = it.name
+                orderItemVariationAttribute.name = it.name.toString()
                 orderItemVariationAttribute.price = it.price ?: 0.0
                 orderItemVariationAttribute.totalPrice = (it.price ?: 0.0) * item.itemQuantity
                 orderItemVariationAttribute.variationId = it.id ?: 0

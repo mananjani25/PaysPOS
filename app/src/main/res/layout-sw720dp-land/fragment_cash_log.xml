@@ -194,7 +194,6 @@
                         android:layout_gravity="center"
                         android:layout_marginEnd="@dimen/_5sdp"
                         app:srcCompat="@drawable/ic_calendar"
-                        app:tint="@color/color65"
                         tools:ignore="ContentDescription" />
 
                     <androidx.appcompat.widget.AppCompatTextView
@@ -254,6 +253,7 @@
                         android:overlapAnchor="false"
                         android:spinnerMode="dropdown"
                         android:textSize="@dimen/_5mdpi"
+                        android:paddingEnd="@dimen/_10sdp"
                         tools:ignore="NestedWeights" />
 
                     <androidx.appcompat.widget.AppCompatImageView

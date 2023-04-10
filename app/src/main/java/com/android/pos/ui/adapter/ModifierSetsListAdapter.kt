@@ -210,6 +210,13 @@ class ModifierSetsListAdapter(val isCreateItem: Boolean) :
         return false
     }
 */
+
+
+    fun removeItem(pos:Int){
+        filterList.removeAt(pos)
+        notifyDataSetChanged()
+
+    }
     fun getAll(): ArrayList<ModifierSet> {
         return filterList
     }

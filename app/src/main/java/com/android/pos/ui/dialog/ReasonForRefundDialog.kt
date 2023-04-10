@@ -7,7 +7,6 @@ import android.content.ServiceConnection
 import android.graphics.Point
 import android.os.Bundle
 import android.os.IBinder
-import android.util.Log
 import android.view.*
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
@@ -24,6 +23,7 @@ import com.android.pos.data.remote.Constants.REFUND1
 import com.android.pos.databinding.DialogRefundReasonBinding
 import com.android.pos.di.ApiModule1
 import com.android.pos.di.PrefProvider
+import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.fragments.magtek.MagtekRequestUtils
 import com.android.pos.ui.fragments.magtek.PaymentResponse
 import com.android.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
@@ -33,10 +33,8 @@ import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
-import com.android.pos.utils.printer.PrinterClass
 import com.android.pos.utils.statusUtils.Status
-import com.epson.eposprint.Builder
-import com.epson.eposprint.Print
+import com.epson.epos2.printer.Printer
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.google.gson.JsonArray
@@ -442,34 +440,71 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                                     }
 
                                 } else {
-                                    var builder: Builder = Builder(
-                                        if (data[i].name.substring(0, 6).toString()
-                                                .lowercase() == "TM-m30".lowercase()
-                                        ) {
-                                            "TM-m30"
-                                        } else {
-                                            data[i].name
-                                        }, PrinterClass.language, requireActivity()
+                                    var mPrinter =
+                                        Printer(
+                                            Printer.TM_M30,
+                                            Printer.MODEL_ANK,
+                                            (activity as MainActivity).applicationContext
+                                        )
+
+
+                                    var printerAdd =
+                                        if (data[i].printer_type == Constants.BLUETOOTH) "BT:" + data[i].macAddress else "TCP:" + data[i].ipAddress
+                                    mPrinter.connect(
+                                        printerAdd,
+                                        Printer.PARAM_DEFAULT
                                     )
 
-
-                                    builder.addPulse(
+                                    mPrinter.addPulse(
                                         com.epson.epos2.printer.Printer.DRAWER_HIGH,
                                         com.epson.epos2.printer.Printer.PULSE_100
                                     )
 
-                                    val status = IntArray(1)
-                                    val battery = IntArray(1)
                                     try {
+
+                                        mPrinter.sendData(Printer.PARAM_DEFAULT)
+                                        mPrinter.disconnect()
                                         sendToTransaction()
-                                        PrinterClass.getPrinter()?.sendData(
-                                            builder,
-                                            PrinterClass.BLUETOOTH_TIMEOUT, status, battery
-                                        )
                                     } catch (e: java.lang.Exception) {
                                         e.printStackTrace()
+                                        try{
+                                        mPrinter.disconnect()}
+                                        catch (e:Exception){
+
+                                        }
                                         sendToTransaction()
                                     }
+
+
+                                    /* var builder: Builder = Builder(
+                                         if (data[i].name.substring(0, 6).toString()
+                                                 .lowercase() == "TM-m30".lowercase()
+                                         ) {
+                                             "TM-m30"
+                                         } else {
+                                             data[i].name
+                                         }, PrinterClass.language, requireActivity()
+                                     )
+
+
+                                     builder.addPulse(
+                                         com.epson.epos2.printer.Printer.DRAWER_HIGH,
+                                         com.epson.epos2.printer.Printer.PULSE_100
+                                     )
+
+                                     val status = IntArray(1)
+                                     val battery = IntArray(1)
+                                     try {
+
+                                         PrinterClass.getPrinter()?.sendData(
+                                             builder,
+                                             PrinterClass.BLUETOOTH_TIMEOUT, status, battery
+                                         )
+                                         sendToTransaction()
+                                     } catch (e: java.lang.Exception) {
+                                         e.printStackTrace()
+                                         sendToTransaction()
+                                     }*/
 
 
                                 }

@@ -3,7 +3,6 @@ package com.android.pos.ui.adapter.boldpos
 import android.annotation.SuppressLint
 import android.graphics.Color
 import android.graphics.Typeface
-import android.graphics.fonts.FontStyle
 import android.text.Spannable
 import android.text.style.ForegroundColorSpan
 import android.text.style.StrikethroughSpan
@@ -11,13 +10,13 @@ import android.text.style.StyleSpan
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.android.pos.R
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.DEFAULT_ORDER
+import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.databinding.ViewCategoryItemBoldBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.AlertUtils
@@ -25,9 +24,8 @@ import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.callback.ItemListner
 import com.android.pos.utils.extensions.gone
-import com.android.pos.utils.extensions.strike
 import com.android.pos.utils.extensions.visible
-import com.testfairy.modules.capture.t
+import org.greenrobot.eventbus.EventBus
 
 
 class ItemAdapterPagDash(
@@ -86,12 +84,27 @@ class ItemAdapterPagDash(
                         )
                         binding.txtCategoryName.text = itename_price
                     } else {
-                        itename_price.append(
-                            model.name.substring(
-                                0,
-                                40
-                            ) + "..."
-                        )
+//                        itename_price.append(
+//                            model.name.substring(
+//                                0,
+//                                40
+//                            ) + "..."
+//                        )
+                        if(model.name.length >= 40){
+                            itename_price.append(
+                                model.name.substring(
+                                    0,
+                                    40
+                                ) + "..."
+                            )
+                        }else{
+                            itename_price.append(
+                                model.name.substring(
+                                    0,
+                                    model.name.length
+                                ) + "..."
+                            )
+                        }
                         binding.txtCategoryName.text = itename_price
                     }
                 } else {
@@ -108,7 +121,7 @@ class ItemAdapterPagDash(
 
 
 
-            if (model.modifier_set_ids.isNotEmpty()) {
+            if (model.modifier_set_ids.isNotEmpty() || model.variationsAttributes.isNotEmpty()) {
                 binding.viewLineFormodifier.visible()
             } else {
                 binding.viewLineFormodifier.gone()
@@ -129,13 +142,14 @@ class ItemAdapterPagDash(
 
             binding.root.setOnClickListener {
 
-                if (prefProvider?.getValue(Constants.ORDER_TYPE, "").equals("")) {
-                    AlertUtils.showCustomAlert(
-                        binding.root.context,
-                        "Please select order type to add item"
-                    )
-                    return@setOnClickListener
-                } else if (model?.hide_status == "HideForToday" || model?.hide_status == "HideForIndefinitely") {
+                /*  if (prefProvider?.getValue(Constants.ORDER_TYPE, "").equals("")) {
+                      AlertUtils.showCustomAlert(
+                          binding.root.context,
+                          "Please select order type to add item"
+                      )
+                      return@setOnClickListener
+                  } else*/
+                if (model?.hide_status == "HideForToday" || model?.hide_status == "HideForIndefinitely") {
                     AlertUtils.showCustomAlert(binding.root.context, model.name + " is sold out.")
                     return@setOnClickListener
                 } else {
@@ -143,9 +157,16 @@ class ItemAdapterPagDash(
                         getItem(position)?.let {
                             LogUtil.logE(
                                 "ITemAdapter",
-                                "onClickposition  ${position}  itemname ${it.name}"
+                                "onClickposition  ${position}  itemname ${it.name} itemQty = ${it.itemQuantity}"
                             )
+                            if (prefProvider?.getValue(Constants.ORDER_TYPE, "").equals("")) {
+                                prefProvider?.setValue(Constants.ORDER_TYPE, TAKEOUT)
+                                prefProvider?.setValue(Constants.ORDER_TYPE_NAME, DEFAULT_ORDER)
+                                EventBus.getDefault().post("EventBus")
+                            }
                             listener.onItemSelected(it)
+
+
                         }
                     } catch (e: Exception) {
                         e.printStackTrace()
@@ -155,7 +176,6 @@ class ItemAdapterPagDash(
                     }
                     lastChecked = checkedTextView
                 }
-
 
 
             }

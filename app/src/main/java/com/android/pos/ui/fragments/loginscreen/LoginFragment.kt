@@ -13,31 +13,45 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.android.pos.BuildConfig
 import com.android.pos.R
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.AUTH_TOKEN
 import com.android.pos.data.remote.Constants.IS_CLOCKOUT
+import com.android.pos.data.remote.Constants.LOGIN_EMAIL
+import com.android.pos.data.remote.Constants.LOGIN_PASSWORD
+import com.android.pos.data.remote.Constants.LOGIN_REMEMBER
 import com.android.pos.data.remote.Constants.ORDER_COMPLETED
 import com.android.pos.databinding.FragmentLoginBinding
 import com.android.pos.di.ApiModule.BASE_URL
 import com.android.pos.di.HostSelectionInterceptor
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.activities.MainActivity
+import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.android.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
+import com.android.pos.ui.fragments.dinein.DineInOrderTableViewModel
+import com.android.pos.utils.AdvertisingInfo
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
+import com.android.pos.utils.getCustomerDisplay
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
 @AndroidEntryPoint
 class LoginFragment : Fragment() {
 
+    private lateinit var presentation: CustomDisplay
+    private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
+    private val passcodeViewModel by activityViewModels<PasscodeViewModel>()
 
     private lateinit var binding: FragmentLoginBinding
 
@@ -45,9 +59,12 @@ class LoginFragment : Fragment() {
 
     var device_token: String = ""
 
+    var isRemember = false
+
     @set:Inject
     internal var prefProvider: PrefProvider? = null
 
+    private val dineInViewModel by viewModels<DineInOrderTableViewModel>()
     @set:Inject
     var hostSelectionInterceptor: HostSelectionInterceptor? = null
 
@@ -57,6 +74,7 @@ class LoginFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
+//       determineAdvertisingInfo()
 
         if (prefProvider?.getValue(AUTH_TOKEN, "").toString().isNotEmpty()) {
             if (!prefProvider?.getValueboolean(IS_CLOCKOUT, false)!!) {
@@ -81,23 +99,51 @@ class LoginFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.loginViewModel = viewModel
 
+        getCustomerDisplay(requireContext())?.let { display ->
+            presentation = CustomDisplay(
+                display,
+                requireContext(),
+                viewLifecycleOwner,
+                dashboardViewModel,
+                passcodeViewModel,
+                dineInViewModel
+
+            )
+        }
+
         versionDisplay()
         setupSnackbar()
         observeShowProgress()
         navigate()
+        if (prefProvider?.getValueForLogin(LOGIN_REMEMBER, "") == LOGIN_REMEMBER) {
+            var old_email = prefProvider?.getValueForLogin(LOGIN_EMAIL, "")
+            var old_password = prefProvider?.getValueForLogin(LOGIN_PASSWORD, "")
+            Log.d("yash", "onCreateView: "+old_email)
+            Log.d("yash", "onCreateView: "+old_password)
+            viewModel.loginDetails.value?.emailAddress = old_email
+            viewModel.loginDetails.value?.password = old_password
+//            binding.edtEmail.setText(old_email.toString())
+//            binding.edtPassword.setText(old_password.toString())
+
+        }
 
         binding.txtForgotPass.setOnClickListener {
             findNavController().navigate(R.id.action_login_to_forgotPasswordFragment)
         }
 
-        binding.txtTerminalTitle.setOnClickListener {
 
-            copy()
-        }
         binding.terminalId.setOnClickListener {
             copy()
         }
 
+        binding.imgCheckBox.setOnClickListener {
+            isRemember = !isRemember
+            if (isRemember) {
+                binding.imgCheckBox.setImageResource(R.drawable.ic_check_box)
+            } else {
+                binding.imgCheckBox.setImageResource(R.drawable.ic_check_box_unchecked)
+            }
+        }
         prefProvider?.setUniqueId((requireActivity() as MainActivity).getDeviceId())
         binding.terminalId.text = prefProvider?.getUniqueId()
         binding.edtEmail.addTextChangedListener(object : TextWatcher {
@@ -120,6 +166,14 @@ class LoginFragment : Fragment() {
 
         });
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if(this::presentation.isInitialized){
+            presentation.show()
+            presentation.onLogOutOrClockOut()
+        }
     }
 
     private fun versionDisplay() {
@@ -192,6 +246,21 @@ class LoginFragment : Fragment() {
                     val bundle = Bundle().apply {
                         putBoolean("isLogin", true)
                     }
+                    if (isRemember) {
+                        prefProvider?.setValueForLogin(LOGIN_EMAIL, binding.edtEmail.text.toString())
+                        prefProvider?.setValueForLogin(
+                            LOGIN_PASSWORD,
+                            binding.edtPassword.text.toString()
+                        )
+                        prefProvider?.setValueForLogin(LOGIN_REMEMBER, LOGIN_REMEMBER)
+                    }else{
+                        prefProvider?.setValueForLogin(LOGIN_EMAIL, "")
+                        prefProvider?.setValueForLogin(
+                            LOGIN_PASSWORD,
+                            ""
+                        )
+                        prefProvider?.setValueForLogin(LOGIN_REMEMBER, "")
+                    }
                     // hostSelectionInterceptor?.setHostBaseUrl()
                     findNavController().navigate(R.id.action_login_to_passcode, bundle)
                 } else {
@@ -209,4 +278,14 @@ class LoginFragment : Fragment() {
     }
 
 
+    private fun determineAdvertisingInfo() {
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            prefProvider?.setUniqueId(AdvertisingInfo(requireContext()).getAdvertisingId().toString())
+            binding.terminalId.text = AdvertisingInfo(requireContext()).getAdvertisingId().toString()
+            Log.e("onSuccess", AdvertisingInfo(requireContext()).getAdvertisingId().toString())
+
+        }
+
+    }
 }

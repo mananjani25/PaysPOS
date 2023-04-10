@@ -60,6 +60,7 @@ class SendReceiptFragment : DialogFragment() {
         isEod = requireArguments().getBoolean("EOD", false)
         isFromTimeSheet = requireArguments().getBoolean("isFromTimeSheet", false)
         if (isEod) {
+            binding.txtAmount.text = "Email end of the day report"
             emailAddress = requireArguments().getString("email")
             if (emailAddress != null)
                 binding.edtEmail.setText(emailAddress)
@@ -130,7 +131,16 @@ class SendReceiptFragment : DialogFragment() {
                         setFragmentResult("request_key_eod", result)
                         findNavController().navigateUp()
                         dismiss()
+
+                        viewModelOrder.submit(
+                            if (type == 1) "Message" else "Email",
+                            binding.edtEmail.text.toString().trim(),
+                            binding.edtPhoneNo.text.toString().trim(),
+                            orderId
+                        )
                     }
+
+
 
                 } else {
 

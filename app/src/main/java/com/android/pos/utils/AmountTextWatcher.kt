@@ -3,12 +3,9 @@ package com.android.pos.utils
 import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
-import android.util.Log
 import androidx.appcompat.widget.AppCompatEditText
-import java.lang.String.format
 import java.text.NumberFormat
 import java.util.*
-import java.util.regex.Pattern
 
 class AmountTextWatcher(private val editText: AppCompatEditText, private val isManual: Boolean) :
     TextWatcher {
@@ -16,7 +13,7 @@ class AmountTextWatcher(private val editText: AppCompatEditText, private val isM
     val TAG = "AmountTextWatcher"
     override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
         editText.setInputType(InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL)
-        if (s.toString() != current && s.length<12) {
+        if (s.toString() != current && s.length<9) {
             editText.removeTextChangedListener(this)
 
 
@@ -34,7 +31,13 @@ class AmountTextWatcher(private val editText: AppCompatEditText, private val isM
 
             current = formatted
             editText.setText(formatted.replace("""[,]""".toRegex(), ""))
-            editText.setSelection(formatted.replace("""[,]""".toRegex(), "").length)
+
+            // To prevent setting cursor at the end of the string even if user manually changes the cursor position
+            if ((start > 0 && start < editText.text.toString().length - 1)) {
+                editText.setSelection(start + 1)
+            } else {
+                editText.setSelection(formatted.replace("""[,]""".toRegex(), "").length)
+            }
 
             editText.addTextChangedListener(this)
         }

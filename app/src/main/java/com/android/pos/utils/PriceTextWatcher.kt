@@ -11,7 +11,7 @@ class PriceTextWatcher(private val editText: AppCompatEditText, private val data
     TextWatcher {
     var current = ""
     override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-        if (s.toString() != current) {
+        if (s.toString() != current && s.length < 9) {
             editText.removeTextChangedListener(this)
 
             val cleanString: String = s.replace("""[$,.]""".toRegex(), "")

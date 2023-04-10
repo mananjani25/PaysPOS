@@ -25,11 +25,11 @@
             layout="@layout/view_header_toolbar" />
 
 
-        <androidx.core.widget.NestedScrollView
+        <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/bg_color"
-            android:orientation="vertical">
+            android:fillViewport="true">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -129,8 +129,10 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:background="@null"
-                                android:digits="@string/disable_emoji_string"
+                                android:digits="@string/character_digits_String"
+                                android:maxLength="60"
                                 android:hint="@string/tv_service_charge_"
+                                android:maxLines="1"
                                 android:imeOptions="actionNext"
                                 android:inputType="textVisiblePassword"
                                 android:padding="@dimen/_9sdp"
@@ -174,7 +176,7 @@
                                 android:layout_gravity="center_vertical"
                                 android:layout_marginLeft="@dimen/_32sdp"
                                 android:fontFamily="@font/sf_pro_display_bold"
-                                android:text="@string/percentage_symbol"
+                                android:text="@string/percentage_symbol_"
                                 android:textColor="@color/dark_gray"
                                 android:textSize="@dimen/_7sdp"
                                 android:textStyle="bold" />
@@ -205,6 +207,7 @@
                             android:imeOptions="actionNext"
                             android:inputType="number"
                             android:maxLength="3"
+                            android:singleLine="true"
                             android:paddingVertical="@dimen/_9sdp"
                             android:paddingLeft="@dimen/_9sdp"
                             android:textColor="@color/txtColor"
@@ -220,8 +223,9 @@
                             android:layout_weight="5"
                             android:background="@drawable/background_square_border_grey"
                             android:digits="0123456789"
+                            android:singleLine="true"
                             android:hint="@string/max_guest"
-                            android:imeOptions="actionNext"
+                            android:imeOptions="actionDone"
                             android:inputType="number"
                             android:maxLength="3"
                             android:paddingVertical="@dimen/_9sdp"
@@ -236,7 +240,7 @@
             </LinearLayout>
 
 
-        </androidx.core.widget.NestedScrollView>
+        </ScrollView>
     </androidx.appcompat.widget.LinearLayoutCompat>
 
 

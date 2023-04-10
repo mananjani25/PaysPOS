@@ -112,7 +112,9 @@ class TeamMemberTimeSheetFragment : Fragment(), AdapterView.OnItemSelectedListen
 
         binding.includeView.edtSearch.addTextChangedListener(object : TextWatcher {
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-
+                if (s.toString() == " ") {
+                    binding.includeView.edtSearch.setText("")
+                }
             }
 
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
@@ -134,8 +136,8 @@ class TeamMemberTimeSheetFragment : Fragment(), AdapterView.OnItemSelectedListen
                 requireActivity(),
                 android.R.style.Theme_Material_Light_Dialog,
                 startTime,
-                myCalendar2.get(Calendar.HOUR),
-                myCalendar2.get(Calendar.MINUTE),
+                myCalendar2.get(2),
+                myCalendar2.get(2),
                 false
             ).show()
 
@@ -277,7 +279,7 @@ class TeamMemberTimeSheetFragment : Fragment(), AdapterView.OnItemSelectedListen
         viewModel.startDateSelection.observe(requireActivity()) { event ->
             event.getContentIfNotHandled()?.let {
 
-                DatePickerDialog(
+                val dialog = DatePickerDialog(
                     requireActivity(),
                     android.R.style.Theme_Material_Light_Dialog,
                     startDate,
@@ -285,8 +287,9 @@ class TeamMemberTimeSheetFragment : Fragment(), AdapterView.OnItemSelectedListen
                         .get(Calendar.YEAR),
                     myCalendar.get(Calendar.MONTH),
                     myCalendar.get(Calendar.DAY_OF_MONTH)
-
-                ).show()
+                )
+                dialog.datePicker.maxDate = Date().time
+                dialog.show()
             }
 
         }
@@ -296,7 +299,7 @@ class TeamMemberTimeSheetFragment : Fragment(), AdapterView.OnItemSelectedListen
         viewModel.endDateSelection.observe(requireActivity()) { event ->
             event.getContentIfNotHandled()?.let {
 
-                DatePickerDialog(
+                val dialog = DatePickerDialog(
                     requireActivity(),
                     android.R.style.Theme_Material_Light_Dialog,
                     endDate,
@@ -305,7 +308,9 @@ class TeamMemberTimeSheetFragment : Fragment(), AdapterView.OnItemSelectedListen
                     myCalendar1.get(Calendar.MONTH),
                     myCalendar1.get(Calendar.DAY_OF_MONTH)
 
-                ).show()
+                )
+                dialog.datePicker.maxDate = Date().time
+                dialog.show()
             }
         }
     }

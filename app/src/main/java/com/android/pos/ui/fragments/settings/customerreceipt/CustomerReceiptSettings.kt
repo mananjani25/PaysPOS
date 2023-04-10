@@ -4,7 +4,6 @@ import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,6 +22,8 @@ import com.android.pos.databinding.FragmentCustomerReceiptSettingsBinding
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.Event
 import com.android.pos.utils.LogUtil
+import com.android.pos.utils.extensions.gone
+import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -137,6 +138,7 @@ class CustomerReceiptSettings : Fragment() {
             model.showQrCode = binding.customerReciptPart2.swtQrCode.isChecked
             model.showCustomNote = binding.customerReciptPart2.swtCustomNote.isChecked
             model.showTeam = binding.swtEmployee.isChecked
+            model.showCdAndScCustomerReceipt = binding.customerReciptPart2.swtSurCash.isChecked
 
 
             viewModel.updateCustomer(model)
@@ -192,6 +194,16 @@ class CustomerReceiptSettings : Fragment() {
             } else {
                 binding.layoutCustomerReceipt.imgQrCode.visibility = View.GONE
             }
+        }
+
+        binding.customerReciptPart2.swtSurCash.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked){
+                binding.layoutCustomerReceipt.linearCashDisSurCharge?.visibility = View.VISIBLE
+            }
+            else{
+                binding.layoutCustomerReceipt.linearCashDisSurCharge?.visibility = View.GONE
+            }
+
         }
 
         binding.swtEmployee.setOnCheckedChangeListener { buttonView, isChecked ->
@@ -254,9 +266,9 @@ class CustomerReceiptSettings : Fragment() {
 
         binding.customerReciptPart2.swtTipCash.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
-                binding.layoutCustomerReceipt.linearTips.visibility = View.VISIBLE
+                binding.layoutCustomerReceipt.linearTips?.visibility = View.VISIBLE
             } else {
-                binding.layoutCustomerReceipt.linearTips.visibility = View.GONE
+                binding.layoutCustomerReceipt.linearTips?.visibility = View.GONE
             }
 
         }
@@ -398,8 +410,10 @@ class CustomerReceiptSettings : Fragment() {
                 binding.customerReciptPart2.swtTipSuggestion.isChecked = model.showTipSuggestion
                 binding.customerReciptPart2.swtTipCash.isChecked = model.showTipLineForCash
                 binding.customerReciptPart2.swtQrCode.isChecked = model.showQrCode
+                binding.customerReciptPart2.swtSurCash.isChecked = model.showCashDisSurCharg
                 binding.customerReciptPart2.swtCustomNote.isChecked = model.showCustomNote
                 binding.swtEmployee.isChecked = model.showTeam
+
 
 
                 /*if (model.emp){
@@ -409,6 +423,12 @@ class CustomerReceiptSettings : Fragment() {
                     binding.layoutCustomerReceipt.txtEmployee.visibility = View.GONE
                 }*/
 
+                if (model.showCashDisSurCharg){
+                    binding.layoutCustomerReceipt.linearCashDisSurCharge?.visible()
+                }
+                else{
+                    binding.layoutCustomerReceipt.linearCashDisSurCharge?.gone()
+                }
 
                 if (model.showTipSuggestion) {
                     binding.layoutCustomerReceipt.txtAdditionalTip.visibility = View.VISIBLE
@@ -482,11 +502,25 @@ class CustomerReceiptSettings : Fragment() {
                 } else {
                     binding.layoutCustomerReceipt.txtAddress.visibility = View.GONE
                 }
-                if (model.showVenuePhone) {
+                if (model.showCustomerPhone) {
                     binding.layoutCustomerReceipt.txtCustomerPhone.visibility = View.VISIBLE
 
                 } else {
                     binding.layoutCustomerReceipt.txtCustomerPhone.visibility = View.GONE
+                }
+
+                if (model.showCustomerAddress) {
+                    binding.layoutCustomerReceipt.txtCusAddress.visibility = View.VISIBLE
+
+                } else {
+                    binding.layoutCustomerReceipt.txtCusAddress.visibility = View.GONE
+                }
+
+                if (model.showCustomerName){
+                    binding.layoutCustomerReceipt.txtCustomerName.visibility = View.VISIBLE
+                }
+                else{
+                    binding.layoutCustomerReceipt.txtCustomerName.visibility = View.GONE
                 }
                 /*if (model.showCustomNote) {
                     binding.layoutCustomerReceipt.txtSugarLabel.visibility = View.VISIBLE
@@ -494,9 +528,9 @@ class CustomerReceiptSettings : Fragment() {
                     binding.layoutCustomerReceipt.txtSugarLabel.visibility = View.GONE
                 }*/
                 if (model.showTipLineForCash) {
-                    binding.layoutCustomerReceipt.linearTips.visibility = View.VISIBLE
+                    binding.layoutCustomerReceipt.linearTips?.visibility = View.VISIBLE
                 } else {
-                    binding.layoutCustomerReceipt.linearTips.visibility = View.GONE
+                    binding.layoutCustomerReceipt.linearTips?.visibility = View.GONE
                 }
 
                 if (model.showRefundAmount) {

@@ -31,18 +31,77 @@
             android:orientation="horizontal"
             android:weightSum="1">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvEmployeeList"
+            <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="0.28"
+                android:orientation="vertical"
+                android:layout_weight="0.28">
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/linearSearchView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/linearCustomerDialog"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/_7sdp">
+
+                    <ImageView
+                        android:id="@+id/imgSearch"
+                        android:layout_width="@dimen/_10sdp"
+                        android:layout_height="@dimen/_10sdp"
+                        android:layout_centerVertical="true"
+                        android:layout_marginEnd="@dimen/_10sdp"
+                        android:layout_toStartOf="@+id/autoSearch"
+                        android:contentDescription="@string/search"
+                        android:src="@drawable/ic_search" />
+
+                    <EditText
+                        android:id="@+id/autoSearch"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_centerVertical="true"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginEnd="@dimen/_5sdp"
+                        android:layout_toStartOf="@+id/imgOptionMenu"
+                        android:background="@null"
+                        android:fontFamily="@font/sf_pro_display_regular"
+                        android:hint="@string/name_phone_email"
+                        android:imeOptions="actionDone"
+                        android:maxLength="60"
+                        android:digits="@string/character_digits_String"
+                        android:inputType="textVisiblePassword"
+                        android:singleLine="true"
+                        android:textColor="@color/txtColor"
+                        android:textColorHint="@color/hint_color"
+                        android:textSize="@dimen/_5mdpi"
+                        tools:ignore="Autofill" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <TextView
+                    android:id="@+id/noEmployeeData"
+                    style="@style/CustomFontMediumStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:padding="@dimen/_7sdp"
+                    android:text="@string/no_employees_found"
+                    android:visibility="gone"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_5mdpi" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvEmployeeList"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:nestedScrollingEnabled="false"
                 android:orientation="vertical"
                 android:background="@color/bg_color"
 
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:listitem="@layout/view_team_item" />
-
+            </androidx.appcompat.widget.LinearLayoutCompat>
             <View
                 android:id="@+id/view"
                 android:layout_width="0.5dp"

@@ -14,260 +14,262 @@
         <RelativeLayout
             android:id="@+id/relative_Add_item"
             android:layout_width="match_parent"
-            android:orientation="vertical"
-            android:clickable="true"
-            android:visibility="visible"
+            android:layout_height="match_parent"
             android:background="@color/bg_color"
-            android:layout_height="match_parent">
-        <RelativeLayout
-            android:id="@+id/relative_topbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="@dimen/_5sdp">
+            android:clickable="true"
+            android:orientation="vertical"
+            android:visibility="visible">
 
-            <androidx.appcompat.widget.LinearLayoutCompat
+            <RelativeLayout
+                android:id="@+id/relative_topbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="@dimen/_10sdp"
-                android:layout_toLeftOf="@id/linear_quanty"
-                android:orientation="vertical">
+                android:orientation="horizontal"
+                android:padding="@dimen/_5sdp">
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="@dimen/_10sdp"
+                    android:layout_toLeftOf="@id/linear_quanty"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/txtItem"
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="sandwich"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_7mdpi" />
+
+                    <TextView
+                        android:id="@+id/txtPrice"
+                        style="@style/CustomFontMediumStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:text="@string/_0_00"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_6mdpi" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
 
                 <TextView
-                    android:id="@+id/txtItem"
-                    style="@style/CustomFontSemiBold"
+                    android:id="@+id/txtDone"
+                    style="@style/CustomFontBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="sandwich"
-                    android:textColor="@color/txtColor"
+                    android:layout_alignParentEnd="true"
+                    android:background="@color/btnColorDark"
+                    android:gravity="center"
+                    android:enabled="false"
+                    android:paddingHorizontal="@dimen/_15sdp"
+                    android:paddingTop="@dimen/_7sdp"
+                    android:paddingBottom="@dimen/_7sdp"
+                    android:text="Done"
+                    android:textColor="@color/white"
                     android:textSize="@dimen/_7mdpi" />
 
                 <TextView
-                    android:id="@+id/txtPrice"
-                    style="@style/CustomFontMediumStyle"
+                    android:id="@+id/txtCancel"
+                    style="@style/CustomFontBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_5sdp"
-                    android:text="@string/_0_00"
-                    android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_6mdpi" />
-
-            </androidx.appcompat.widget.LinearLayoutCompat>
-
-            <TextView
-                android:id="@+id/txtDone"
-                style="@style/CustomFontBold"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:background="@color/btnColorDark"
-                android:gravity="center"
-                android:paddingHorizontal="@dimen/_15sdp"
-                android:paddingTop="@dimen/_7sdp"
-                android:paddingBottom="@dimen/_7sdp"
-                android:text="Done"
-                android:textColor="@color/white"
-                android:textSize="@dimen/_7mdpi" />
-
-            <TextView
-                android:id="@+id/txtCancel"
-                style="@style/CustomFontBold"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/_5sdp"
-                android:layout_toStartOf="@+id/txtDone"
-                android:background="@color/switchTrackColor"
-                android:gravity="center"
-                android:paddingHorizontal="@dimen/_15sdp"
-                android:paddingTop="@dimen/_7sdp"
-                android:paddingBottom="@dimen/_7sdp"
-                android:text="Cancel"
-                android:textColor="@color/white"
-                android:textSize="@dimen/_7mdpi" />
-
-            <LinearLayout
-                android:id="@+id/linear_quanty"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/_5sdp"
-                android:layout_toStartOf="@+id/txtCancel"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:id="@+id/imgMinus"
-                    android:layout_width="@dimen/_22sdp"
-                    android:layout_height="@dimen/_24sdp"
+                    android:layout_marginEnd="@dimen/_5sdp"
+                    android:layout_toStartOf="@+id/txtDone"
                     android:background="@color/switchTrackColor"
-                    android:paddingStart="@dimen/_7sdp"
+                    android:gravity="center"
+                    android:paddingHorizontal="@dimen/_15sdp"
                     android:paddingTop="@dimen/_7sdp"
-                    android:paddingEnd="@dimen/_7sdp"
                     android:paddingBottom="@dimen/_7sdp"
-                    android:src="@drawable/ic_minus"
-                    app:tint="@color/white" />
-
-                <RelativeLayout
-
-                    android:layout_width="@dimen/_40sdp"
-                    android:layout_height="@dimen/_24sdp"
-                    android:background="@drawable/background_light_edit_printer">
-
-                    <androidx.appcompat.widget.AppCompatEditText
-                        android:id="@+id/edttxtQuantity"
-                        style="@style/CustomFontBold"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_centerInParent="true"
-                        android:background="@android:color/transparent"
-                        android:digits="1234567890"
-                        android:gravity="center"
-                        android:inputType="phone"
-                        android:maxLength="3"
-                        android:paddingTop="@dimen/_7sdp"
-                        android:paddingBottom="@dimen/_7sdp"
-                        android:text="1"
-                        android:textColor="@color/white"
-                        android:textSize="@dimen/_7mdpi" />
-
-
-                </RelativeLayout>
-
-                <ImageView
-                    android:id="@+id/imgPlus"
-                    android:layout_width="@dimen/_22sdp"
-                    android:layout_height="@dimen/_24sdp"
-                    android:background="@color/switchTrackColor"
-                    android:paddingStart="@dimen/_7sdp"
-                    android:paddingTop="@dimen/_7sdp"
-                    android:paddingEnd="@dimen/_7sdp"
-                    android:paddingBottom="@dimen/_7sdp"
-                    android:src="@drawable/ic_add"
-                    app:tint="@color/white" />
-
-
-            </LinearLayout>
-
-
-        </RelativeLayout>
-
-        <include
-            android:id="@+id/dividerabove"
-            layout="@layout/divider"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_below="@id/relative_topbar" />
-
-        <androidx.core.widget.NestedScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@id/dividerabove">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/bg_color"
-                android:orientation="vertical">
-
+                    android:text="Cancel"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_7mdpi" />
 
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:id="@+id/linear_quanty"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/_2sdp"
-                    android:layout_marginTop="@dimen/_5sdp"
-                    android:layout_marginEnd="@dimen/_2sdp"
-                    android:layout_marginBottom="@dimen/_5sdp"
+                    android:layout_marginEnd="@dimen/_5sdp"
+                    android:layout_toStartOf="@+id/txtCancel"
                     android:orientation="horizontal">
 
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/txtAddDiscount"
-                        style="@style/CustomFontBold"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/_2sdp"
-                        android:layout_marginEnd="@dimen/_4sdp"
-                        android:layout_weight="1"
-                        android:background="@color/btnColorDark"
-                        android:gravity="center"
-                        android:padding="@dimen/_5sdp"
-                        android:text="@string/add_discount"
-                        android:textColor="@color/white"
-                        android:textSize="@dimen/_7mdpi" />
+                    <ImageView
+                        android:id="@+id/imgMinus"
+                        android:layout_width="@dimen/_22sdp"
+                        android:layout_height="@dimen/_24sdp"
+                        android:background="@color/switchTrackColor"
+                        android:paddingStart="@dimen/_7sdp"
+                        android:paddingTop="@dimen/_7sdp"
+                        android:paddingEnd="@dimen/_7sdp"
+                        android:paddingBottom="@dimen/_7sdp"
+                        android:src="@drawable/ic_minus"
+                        app:tint="@color/white" />
 
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/txtAddNote"
-                        style="@style/CustomFontBold"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/_2sdp"
-                        android:layout_marginEnd="@dimen/_4sdp"
-                        android:layout_weight="1"
-                        android:background="@color/btnColorDark"
-                        android:gravity="center"
-                        android:padding="@dimen/_5sdp"
-                        android:text="@string/add_note"
-                        android:textColor="@color/white"
-                        android:textSize="@dimen/_7mdpi" />
+                    <RelativeLayout
 
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/txtRemoveItem"
-                        style="@style/CustomFontBold"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/_2sdp"
-                        android:layout_marginEnd="@dimen/_4sdp"
-                        android:layout_weight="1"
-                        android:background="@color/colorRed"
-                        android:gravity="center"
-                        android:padding="@dimen/_5sdp"
-                        android:text="@string/remove_item"
-                        android:textColor="@color/white"
-                        android:textSize="@dimen/_7mdpi" />
+                        android:layout_width="@dimen/_40sdp"
+                        android:layout_height="@dimen/_24sdp"
+                        android:background="@drawable/background_light_edit_printer">
+
+                        <androidx.appcompat.widget.AppCompatEditText
+                            android:id="@+id/edttxtQuantity"
+                            style="@style/CustomFontBold"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:background="@android:color/transparent"
+                            android:digits="1234567890"
+                            android:gravity="center"
+                            android:inputType="phone"
+                            android:maxLength="5"
+                            android:paddingTop="@dimen/_7sdp"
+                            android:paddingBottom="@dimen/_7sdp"
+                            android:text="1"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/_7mdpi" />
+
+
+                    </RelativeLayout>
+
+                    <ImageView
+                        android:id="@+id/imgPlus"
+                        android:layout_width="@dimen/_22sdp"
+                        android:layout_height="@dimen/_24sdp"
+                        android:background="@color/switchTrackColor"
+                        android:paddingStart="@dimen/_7sdp"
+                        android:paddingTop="@dimen/_7sdp"
+                        android:paddingEnd="@dimen/_7sdp"
+                        android:paddingBottom="@dimen/_7sdp"
+                        android:src="@drawable/ic_add"
+                        app:tint="@color/white" />
 
 
                 </LinearLayout>
 
-                <include
-                    android:id="@+id/dividerUpdate"
-                    layout="@layout/divider"
+
+            </RelativeLayout>
+
+            <include
+                android:id="@+id/dividerabove"
+                layout="@layout/divider"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@id/relative_topbar" />
+
+            <androidx.core.widget.NestedScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@id/dividerabove">
+
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="1dp" />
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvVariationList"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-                    app:spanCount="4" />
-
-                <include
-                    android:id="@+id/dividerLine"
-                    layout="@layout/divider"
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="@dimen/_5sdp"
-                    android:layout_marginBottom="@dimen/_5sdp"
-                    android:visibility="gone" />
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvModifiersList"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/_4sdp"
-                    android:layout_marginEnd="@dimen/_4sdp"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    app:spanCount="4" />
-
-                <include
-                    android:id="@+id/dividerLine2"
-                    layout="@layout/divider"
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="@dimen/_5sdp"
-                    android:layout_marginBottom="@dimen/_5sdp"
-                    android:visibility="gone" />
+                    android:layout_height="match_parent"
+                    android:background="@color/bg_color"
+                    android:orientation="vertical">
 
 
-            </LinearLayout>
-        </androidx.core.widget.NestedScrollView>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/_2sdp"
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:layout_marginEnd="@dimen/_2sdp"
+                        android:layout_marginBottom="@dimen/_5sdp"
+                        android:orientation="horizontal">
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/txtAddDiscount"
+                            style="@style/CustomFontBold"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/_2sdp"
+                            android:layout_marginEnd="@dimen/_4sdp"
+                            android:layout_weight="1"
+                            android:background="@color/btnColorDark"
+                            android:gravity="center"
+                            android:padding="@dimen/_5sdp"
+                            android:text="@string/add_discount"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/_7mdpi" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/txtAddNote"
+                            style="@style/CustomFontBold"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/_2sdp"
+                            android:layout_marginEnd="@dimen/_4sdp"
+                            android:layout_weight="1"
+                            android:background="@color/btnColorDark"
+                            android:gravity="center"
+                            android:padding="@dimen/_5sdp"
+                            android:text="@string/add_note"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/_7mdpi" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/txtRemoveItem"
+                            style="@style/CustomFontBold"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/_2sdp"
+                            android:layout_marginEnd="@dimen/_4sdp"
+                            android:layout_weight="1"
+                            android:background="@color/colorRed"
+                            android:gravity="center"
+                            android:padding="@dimen/_5sdp"
+                            android:text="@string/remove_item"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/_7mdpi" />
+
+
+                    </LinearLayout>
+
+                    <include
+                        android:id="@+id/dividerUpdate"
+                        layout="@layout/divider"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvVariationList"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                        app:spanCount="4" />
+
+                    <include
+                        android:id="@+id/dividerLine"
+                        layout="@layout/divider"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:layout_marginBottom="@dimen/_5sdp"
+                        android:visibility="gone" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvModifiersList"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/_4sdp"
+                        android:layout_marginEnd="@dimen/_4sdp"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                        app:spanCount="4" />
+
+                    <include
+                        android:id="@+id/dividerLine2"
+                        layout="@layout/divider"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:layout_marginBottom="@dimen/_5sdp"
+                        android:visibility="gone" />
+
+
+                </LinearLayout>
+            </androidx.core.widget.NestedScrollView>
         </RelativeLayout>
 
 
@@ -290,8 +292,8 @@
                 <ImageView
                     android:id="@+id/linear_minus_qty"
                     android:layout_width="0dp"
-                    android:layout_weight="3"
                     android:layout_height="@dimen/_30sdp"
+                    android:layout_weight="3"
                     android:background="@color/switchTrackColor"
                     android:paddingStart="@dimen/_7sdp"
                     android:paddingTop="@dimen/_7sdp"
@@ -303,8 +305,8 @@
                 <RelativeLayout
 
                     android:layout_width="0dp"
-                    android:layout_weight="4"
                     android:layout_height="@dimen/_30sdp"
+                    android:layout_weight="4"
                     android:background="@drawable/background_light_edit_printer">
 
                     <androidx.appcompat.widget.AppCompatEditText
@@ -330,8 +332,8 @@
                 <ImageView
                     android:id="@+id/linear_plus_qty"
                     android:layout_width="0dp"
-                    android:layout_weight="3"
                     android:layout_height="@dimen/_30sdp"
+                    android:layout_weight="3"
                     android:background="@color/switchTrackColor"
                     android:paddingStart="@dimen/_7sdp"
                     android:paddingTop="@dimen/_7sdp"
@@ -345,23 +347,52 @@
 
 
             <androidx.appcompat.widget.LinearLayoutCompat
-                android:id="@+id/linear_donemodifier"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_30sdp"
+                android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
-                android:background="@drawable/btn_background_selector"
-                android:gravity="center">
+                android:orientation="horizontal">
 
-                <androidx.appcompat.widget.AppCompatTextView
-                    style="@style/CustomFontBold"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:text="@string/tv_done"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/_10ssp"
-                    android:visibility="visible" />
+
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/linear_cancelmodifier"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/_30sdp"
+                    android:layout_weight="5"
+                    android:background="@color/switchTrackColor"
+                    android:gravity="center">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/CustomFontBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:text="@string/cancel"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_10ssp"
+                        android:visibility="visible" />
+                </androidx.appcompat.widget.LinearLayoutCompat>
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/linear_donemodifier"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/_30sdp"
+                    android:layout_marginHorizontal="@dimen/_10sdp"
+                    android:layout_weight="5"
+                    android:background="@drawable/btn_background_selector"
+                    android:gravity="center">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/CustomFontBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:text="@string/tv_done"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_10ssp"
+                        android:visibility="visible" />
+                </androidx.appcompat.widget.LinearLayoutCompat>
             </androidx.appcompat.widget.LinearLayoutCompat>
         </RelativeLayout>
     </RelativeLayout>

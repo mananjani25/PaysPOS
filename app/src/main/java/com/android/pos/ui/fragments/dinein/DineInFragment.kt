@@ -97,17 +97,20 @@ class DineInFragment : Fragment() {
         binding.layoutHeader.txtDineinordere.setTextColor(resources.getColor(R.color.btnColor))*/
 
 
-
         val onBackPressedCallback: OnBackPressedCallback =
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
 
                     prefProvider.setValue(Constants.ORDER_TYPE, "")
+                    prefProvider.setValue(Constants.ORDER_TYPE_NAME, "")
                     findNavController().popBackStack()
                 }
 
             }
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, onBackPressedCallback)
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            onBackPressedCallback
+        )
 
 
         dineInFloorNameListAdapter.showFloorPlan = {
@@ -130,11 +133,18 @@ class DineInFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         onClick()
+        binding.layoutHeader.imgTransferTable?.visible()
         binding.layoutHeader.txtUserName.text = prefProvider.getValue(Constants.EMPLOYEE_NAME, "")
 
     }
 
     private fun onClick() {
+        binding.layoutHeader.imgTransferTable?.setOnClickListener {
+            loadTransferTableDetails()
+
+
+        }
+
         binding.layoutHeader.txtTransaction.setOnClickListener {
             if (rolePermission.hasTransactionPermission(binding.root)) {
                 findNavController().navigate(R.id.action_dineInFragment_to_transactionFragment)
@@ -160,6 +170,7 @@ class DineInFragment : Fragment() {
         binding.layoutHeader.txthome.setOnClickListener {
 
             prefProvider.setValue(Constants.ORDER_TYPE, "")
+            prefProvider.setValue(Constants.ORDER_TYPE_NAME, "")
             findNavController().popBackStack()
         }
         binding.layoutHeader.imgDrawer.setOnClickListener {
@@ -235,6 +246,47 @@ class DineInFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun loadTransferTableDetails() {
+        viewModel.getAvailableTransferTableList().observe(viewLifecycleOwner) {
+            it?.let {
+                when (it.status) {
+                    Status.SUCCESS -> {
+                        ProgressUtils.dismissProgressDialog()
+                        val bundle = Bundle()
+                        if (it.data?.status == 200) {
+                            bundle.putParcelable("floorList", it.data)
+                            if (findNavController().currentDestination?.id == R.id.dineInFragment) {
+                                findNavController().navigate(
+                                    R.id.action_dineInFragment_to_transferTableDialog,
+                                    bundle
+                                )
+                            }
+
+                        } else {
+                            AlertUtils.showCustomAlertWithListenerWithOK(
+                                requireContext(), it.message.toString()
+                            ) { _, _ ->
+                                val navController = findNavController()
+                                navController.popBackStack()
+                            }
+
+                        }
+
+                    }
+                    Status.ERROR -> {
+                        ProgressUtils.dismissProgressDialog()
+                        binding.root.showAlert(it.message)
+
+                    }
+                    Status.LOADING -> {
+                        ProgressUtils.showProgressDialog(requireActivity())
+                    }
+                }
+            }
+        }
+
     }
 
     private fun loadFloorPlanDetails() {
@@ -570,6 +622,8 @@ class DineInFragment : Fragment() {
         return View.OnClickListener { v ->
             val dineInFloorTableModel = v.tag as GetFloorPlanResponse.Data.FloorPlanTable
             LogUtil.logE(TAG, "dineInFloorTableModel:  ${Gson().toJson(dineInFloorTableModel)}")
+            LogUtil.logE(TAG, "dineInFloorTableModelEmployeeId:  ${prefProvider.getValueInt(
+                EMPLOYEE_ID,0)}")
             if (dineInFloorTableModel.status == OCCUPIED) {
                 if (dineInFloorTableModel.lock_by_id == prefProvider.getValueInt(
                         EMPLOYEE_ID,

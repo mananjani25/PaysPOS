@@ -58,8 +58,8 @@ class CreateOptionViewModel @Inject constructor(
 
             val optionSets = CreateOptionRequestModel().apply {
 
-                name = data!!.name
-                displayName = data.displayName
+                name = data!!.name.trim().replace("\\s+".toRegex(), " ")
+                displayName = data.displayName.trim().replace("\\s+".toRegex(), " ")
                 locationId = prefProvider.getValueInt(Constants.LOCATION_ID, -1)
                 optionsAttributes = if (isEdit) {
                     list.addAll(deleteList)

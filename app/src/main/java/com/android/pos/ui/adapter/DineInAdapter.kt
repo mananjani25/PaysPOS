@@ -2,7 +2,6 @@ package com.android.pos.ui.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -117,50 +116,43 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>() {
                     binding.llCustomerDialog.visibility = View.GONE
 
                 } else {
+                    list.get(0).selectedPosition = bindingAdapterPosition
                     listner.onCustomerClicked(layoutPosition, false)
                 }
 
             }
 
+            val popupMenu = PopupMenu(itemView.context, binding.imgOrderMenu)
+            popupMenu.menuInflater.inflate(R.menu.assign_customer_menu, popupMenu.menu)
+
+            popupMenu.setOnMenuItemClickListener { menuItem ->
+                when (menuItem.itemId) {
+                    R.id.assign_customer -> {
+
+                        if (list.get(layoutPosition).customer != null) {
+                            //list.get(layoutPosition).customer = null
+                            listner.onCustomerClicked(layoutPosition, true)
+                            binding.llCustomerDialog.visibility = View.GONE
+
+                        } else {
+                            listner.onCustomerClicked(layoutPosition, false)
+                        }
+
+                    }
+                }
+                true
+            }
+
             binding.imgOrderMenu.setOnClickListener {
-                val popupMenu = PopupMenu(itemView.context, it)
-                popupMenu.menuInflater.inflate(R.menu.assign_customer_menu, popupMenu.menu)
+
                 if (list[layoutPosition].customer == null) {
                     popupMenu.menu.get(0).setTitle("Assign Customer")
                 } else {
                     popupMenu.menu.get(0).setTitle("Remove Customer")
                 }
 
-
-
-
-
-                popupMenu.setOnMenuItemClickListener { menuItem ->
-                    when (menuItem.itemId) {
-                        R.id.assign_customer -> {
-                            if (list.get(layoutPosition).customer != null) {
-                                //list.get(layoutPosition).customer = null
-                                listner.onCustomerClicked(layoutPosition, true)
-                                binding.llCustomerDialog.visibility = View.GONE
-
-                            } else {
-                                listner.onCustomerClicked(layoutPosition, false)
-                            }
-
-                        }
-                    }
-                    true
-                }
                 popupMenu.show()
 
-
-/*
-                if (binding.llCustomerDialog.visibility == View.VISIBLE) {
-                    binding.llCustomerDialog.visibility = View.GONE
-                } else {
-                    binding.llCustomerDialog.visibility = View.VISIBLE
-                }
-*/
             }
 
             binding.constraintHeader.setOnClickListener {
@@ -293,5 +285,10 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>() {
     fun isFromPayment(fromPayment: Boolean) {
         isFromPay = fromPayment
 
+    }
+
+    fun setLayoutPos(dineInHeaderPosition: Int) {
+        list.get(0).selectedPosition = dineInHeaderPosition
+        notifyDataSetChanged()
     }
 }

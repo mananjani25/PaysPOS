@@ -47,6 +47,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
     lateinit var listOfTbItem: List<TbItem>
     lateinit var listOfItemsId: ArrayList<Int>
     lateinit var listOfServiceCharge: ArrayList<TbServiceCharge>
+    var isFromSearch: Boolean = false
 
     private val orderHistoryAdapter by lazy {
         OrderHistoryAdapter { view, order ->
@@ -62,9 +63,10 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
 
     companion object {
         private val CUSTOMER_MODEL = "customer_model"
-        fun newInstance(model: TbCustomer): CustomerDetails {
+        fun newInstance(model: TbCustomer,  isFromSearch: Boolean): CustomerDetails {
             val args = Bundle()
             args.putParcelable(CUSTOMER_MODEL, model)
+            args.putBoolean("isFromSearch", isFromSearch)
             val fragment = CustomerDetails()
             fragment.arguments = args
             return fragment
@@ -89,7 +91,9 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
         initObservers()
 
         //call initial api
-        viewModel.getReportSummary()
+        viewModel.getReportSummary(
+            isFromSearch
+        )
     }
 
     private fun observerServiceCharge() {
@@ -125,6 +129,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
             requireArguments().getParcelable<TbCustomer>(
                 CUSTOMER_MODEL
             )!!
+        isFromSearch = requireArguments().getBoolean("isFromSearch")
 
         if (customerModel.birth_date?.isNotEmpty() == true) {
             val inputFormat = SimpleDateFormat("MM/dd/yyyy")
@@ -436,7 +441,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
                 String.format("%.2f", 0.00)
                     .toDouble()
             } else {
-                String.format("%.2f", orderItemTaxe.rate * item.quantity)
+                String.format("%.2f", orderItemTaxe.rate * item.itemQuantity)
                     .toDouble()
             }
         }
@@ -520,6 +525,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
             if (listOfItemsId.contains(it.itemId)) {
                 val items = TbItem().apply {
                     orderItemId = it.id
+                    id = it.custom_item_id
                     itemId = it.itemId
                     name = it.itemName
                     cost = it.price
@@ -615,6 +621,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
                 price = it.price
                 itemQuantity = it.quantity
                 orderModifierId = it.id
+                modifier_quantity = it.modifier_quantity!!
 
             }
             modifierList.add(modifier)

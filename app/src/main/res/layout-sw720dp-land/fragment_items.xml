@@ -30,11 +30,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/_25sdp"
                     android:background="@null"
+                    android:digits="@string/character_digits_String"
                     android:drawableStart="@drawable/ic_search"
                     android:drawablePadding="@dimen/_10sdp"
                     android:imeOptions="actionDone"
                     android:inputType="textVisiblePassword"
+                    android:maxLength="60"
                     android:padding="@dimen/_4sdp"
+                    android:singleLine="true"
                     android:textColor="@color/txtColor"
                     android:textColorHint="@color/hintColor"
                     android:textSize="@dimen/_5mdpi" />
@@ -76,6 +79,55 @@
                     android:layout_gravity="center"
                     android:layout_weight="1"
                     android:visibility="gone" />
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:visibility="gone"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center|center_vertical"
+                        android:layout_weight="1"
+                        android:gravity="start|center_vertical"
+                        android:padding="@dimen/_5sdp"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_7mdpi"
+                        android:text="Item Name" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginStart="@dimen/_5sdp"
+                        android:layout_marginEnd="@dimen/_10sdp"
+                        android:text="Price Without Markup"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_7mdpi" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginStart="@dimen/_5sdp"
+                        android:layout_marginEnd="@dimen/_10sdp"
+                        android:text="Price"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_7mdpi" />
+
+
+                    <include
+                        android:visibility="invisible"
+                        android:id="@+id/layout_menu"
+                        layout="@layout/img_menu" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvAllItemList"

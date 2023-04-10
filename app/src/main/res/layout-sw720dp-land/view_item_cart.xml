@@ -31,7 +31,7 @@
                     style="@style/CustomFontSemiBold"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/txtColor"
+                    android:textColor="@color/white"
                     android:textSize="@dimen/_6mdpi"
                     tools:text="Item Name" />
 
@@ -62,7 +62,7 @@
                 android:layout_weight="0.5"
                 android:gravity="center"
                 android:text="Qty"
-                android:textColor="@color/txtColor"
+                android:textColor="@color/white"
                 android:textSize="@dimen/_6mdpi" />
 
             <TextView
@@ -74,7 +74,7 @@
                 android:layout_weight="1"
                 android:gravity="end"
                 android:text="Each"
-                android:textColor="@color/txtColor"
+                android:textColor="@color/white"
                 android:textSize="@dimen/_6mdpi" />
 
             <LinearLayout
@@ -91,7 +91,7 @@
                     android:layout_gravity="end"
                     android:gravity="end"
                     android:text="Total"
-                    android:textColor="@color/txtColor"
+                    android:textColor="@color/white"
                     android:textSize="@dimen/_6mdpi" />
 
 

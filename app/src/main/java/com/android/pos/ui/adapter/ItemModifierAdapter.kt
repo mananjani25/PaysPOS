@@ -27,15 +27,15 @@ class ItemModifierAdapter(
         fun bind(item: Modifier) {
             binding.model = item
             binding.executePendingBindings()
-            if (list[position].itemQuantity==0){
+            if (list[position].itemQuantity == 0) {
                 binding.txtModifierQnt.gone()
-            }else{
+            } else {
                 binding.txtModifierQnt.visible()
             }
             if (list[position].isChecked) {
-                if (list[position].itemQuantity==0){
+                if (list[position].itemQuantity == 0) {
                     binding.txtModifierQnt.gone()
-                }else{
+                } else {
                     binding.txtModifierQnt.visible()
                 }
                 binding.llMain.setBackgroundResource(R.drawable.bg_squre_modifier_choose)
@@ -56,7 +56,7 @@ class ItemModifierAdapter(
                     mLongClickcallback?.onLongClickListener(
                         list[position].id,
                         bindingAdapterPosition,
-                        list[position].itemQuantity
+                        list[position].modifier_quantity
                     )
                     return true
                 }
@@ -66,36 +66,40 @@ class ItemModifierAdapter(
                 mLongClickcallback?.onLongClickListener(
                     list[position].id,
                     bindingAdapterPosition,
-                    list[position].itemQuantity
+                    list[position].modifier_quantity
                 )
             }
             binding.llMain.setOnClickListener {
 
-                list[bindingAdapterPosition].isChecked = !list[bindingAdapterPosition].isChecked
-                list[bindingAdapterPosition].itemQuantity = 1
-
-                if (maxLogic(
-                        maxAllowed,
-                        list
-                    )
-                ) {
-                    LogUtil.logE("minRequired", "ture")
-                } else {
-                    LogUtil.logE("minRequired", "false")
-
-                    AlertUtils.showCustomAlert(
-                        binding.root.context,
-                        binding.root.context.getString(R.string.you_can_not_add_more_then) + maxAllowed + binding.root.context.getString(
-                            R.string.items
-                        )
-                    )
-
+                if (list.isNotEmpty() && bindingAdapterPosition >= 0) {
 
                     list[bindingAdapterPosition].isChecked = !list[bindingAdapterPosition].isChecked
+                    list[bindingAdapterPosition].itemQuantity = 1
+
+                    if (maxLogic(
+                            maxAllowed,
+                            list
+                        )
+                    ) {
+                        LogUtil.logE("minRequired", "ture")
+                    } else {
+                        LogUtil.logE("minRequired", "false")
+
+                        AlertUtils.showCustomAlert(
+                            binding.root.context,
+                            binding.root.context.getString(R.string.you_can_not_add_more_then) + maxAllowed + binding.root.context.getString(
+                                R.string.items
+                            )
+                        )
+
+
+                        list[bindingAdapterPosition].isChecked =
+                            !list[bindingAdapterPosition].isChecked
+                    }
+
+
+                    notifyDataSetChanged()
                 }
-
-
-                notifyDataSetChanged()
             }
         }
 

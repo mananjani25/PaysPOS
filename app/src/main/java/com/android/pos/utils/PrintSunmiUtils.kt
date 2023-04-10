@@ -3,7 +3,6 @@ package com.android.pos.utils
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Base64
-import android.util.Log
 import com.android.pos.data.model.responseModel.GetTipReponse
 import com.android.pos.data.remote.Constants.LARGE
 import com.android.pos.data.remote.Constants.MEDIUM
@@ -44,31 +43,40 @@ class PrintSunmiUtils {
 
         fun printBusinessDetails(value: String, value1: String, value2: String) {
 
-            SunmiPrinterApi.getInstance().setAlignMode(1)
-            SunmiPrinterApi.getInstance().enableBold(true)
-            SunmiPrinterApi.getInstance().setFontZoom(2, 2)
-            SunmiPrinterApi.getInstance().printText(value)
-            SunmiPrinterApi.getInstance().lineWrap(1)
+            if (value.isNotEmpty()) {
+                SunmiPrinterApi.getInstance().setAlignMode(1)
+                SunmiPrinterApi.getInstance().enableBold(true)
+                SunmiPrinterApi.getInstance().setFontZoom(2, 2)
+                SunmiPrinterApi.getInstance().printText(value)
+                SunmiPrinterApi.getInstance().lineWrap(1)
+            }
 
-            SunmiPrinterApi.getInstance().setAlignMode(1)
-            SunmiPrinterApi.getInstance().enableBold(false)
-            setFontSize()
-            SunmiPrinterApi.getInstance().printText(value1)
-            SunmiPrinterApi.getInstance().lineWrap(1)
+            if (value1.isNotEmpty()) {
+                SunmiPrinterApi.getInstance().setAlignMode(1)
+                SunmiPrinterApi.getInstance().enableBold(false)
+                setFontSize()
+                SunmiPrinterApi.getInstance().printText(value1)
+                SunmiPrinterApi.getInstance().lineWrap(1)
+            }
 
-            SunmiPrinterApi.getInstance().setAlignMode(1)
-            SunmiPrinterApi.getInstance().enableBold(false)
-            setFontSize()
-            SunmiPrinterApi.getInstance().printText(MethodUtils.getUSFormatNumber(value2))
-            SunmiPrinterApi.getInstance().lineWrap(1)
+
+            if (value2.isNotEmpty()) {
+                SunmiPrinterApi.getInstance().setAlignMode(1)
+                SunmiPrinterApi.getInstance().enableBold(false)
+                setFontSize()
+                SunmiPrinterApi.getInstance().printText(MethodUtils.getUSFormatNumber(value2))
+                SunmiPrinterApi.getInstance().lineWrap(1)
+            }
 
 
         }
 
         fun printBusinessDetailsInner(value: String, value1: String, value2: String) {
 
-            headerText(value)
-            normalTextCenter(value1)
+            if (value.isNotEmpty())
+                headerText(value)
+            if (value1.isNotEmpty())
+                normalTextCenter(value1)
             if (value2.isNotEmpty())
                 normalTextCenter(MethodUtils.getUSFormatNumber(value2))
 
@@ -311,6 +319,7 @@ class PrintSunmiUtils {
             SunmiPrinterApi.getInstance().lineWrap(1)
 
         }
+
         fun customerSignature(value: String) {
 
             SunmiPrinterApi.getInstance().enableBold(true)

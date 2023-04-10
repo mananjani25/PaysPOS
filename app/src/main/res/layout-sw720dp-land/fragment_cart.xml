@@ -567,45 +567,43 @@
 
                     </LinearLayout>
 
-                    <LinearLayout
-                        android:id="@+id/linear_button_view"
-                        android:layout_width="match_parent"
+                <LinearLayout
+                    android:id="@+id/linear_button_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="visible"
+                    android:orientation="horizontal"
+                    android:weightSum="2">
+
+                    <TextView
+                        android:id="@+id/tvSave"
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:visibility="visible"
-                        android:layout_gravity="center"
+                        android:layout_marginStart="@dimen/_4sdp"
+                        android:layout_marginEnd="@dimen/_2sdp"
+                        android:layout_weight="1"
+                        android:background="@color/backgroundColor"
                         android:gravity="center"
-                        android:weightSum="2">
+                        android:padding="@dimen/_5sdp"
+                        android:text="@string/save"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_7mdpi" />
 
-                        <TextView
-                            android:id="@+id/tvSave"
-                            style="@style/CustomFontSemiBold"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/_4sdp"
-                            android:layout_marginEnd="@dimen/_2sdp"
-                            android:layout_weight="1"
-                            android:background="@color/backgroundColor"
-                            android:gravity="center"
-                            android:padding="@dimen/_5sdp"
-                            android:text="@string/save"
-                            android:visibility="gone"
-                            android:textColor="@color/white"
-                            android:textSize="@dimen/_7mdpi" />
-
-                        <androidx.appcompat.widget.AppCompatTextView
-                            android:id="@+id/tvPayNow"
-                            style="@style/CustomFontBold"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/_2sdp"
-                            android:layout_marginEnd="@dimen/_4sdp"
-                            android:layout_weight="1"
-                            android:background="@color/btnColorDark"
-                            android:gravity="center"
-                            android:padding="@dimen/_5sdp"
-                            android:text="Pay $0.00"
-                            android:textColor="@color/white"
-                            android:textSize="@dimen/_7mdpi" />
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvPayNow"
+                        style="@style/CustomFontBold"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/_2sdp"
+                        android:layout_marginEnd="@dimen/_4sdp"
+                        android:layout_weight="1"
+                        android:background="@color/btnColorDark"
+                        android:gravity="center"
+                        android:padding="@dimen/_5sdp"
+                        android:text="Pay $0.00"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_7mdpi" />
 
 
                     </LinearLayout>

@@ -63,6 +63,21 @@
                     android:layout_height="1dp"
                     android:background="@color/dividerColor" />
 
+                <TextView
+                    android:id="@+id/txtEodReport"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/sf_pro_display_semibold"
+                    android:padding="@dimen/_7sdp"
+                    android:text="@string/end_of_day_Report"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_6sdp" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/dividerColor" />
+
 
                 <TextView
                     android:id="@+id/txtShiftReport"

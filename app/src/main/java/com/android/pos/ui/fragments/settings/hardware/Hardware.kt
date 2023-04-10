@@ -39,7 +39,7 @@ class Hardware : Fragment() {
 
     private fun setUpHeader() {
         binding.header.txtSave.text = getString(R.string.tv_home)
-        binding.header.txtTitle.text = getString(R.string.hardware)
+        binding.header.txtTitle.text = getString(R.string.hardware_setup)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

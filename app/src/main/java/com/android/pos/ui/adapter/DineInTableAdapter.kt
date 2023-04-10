@@ -136,8 +136,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                                             itemTaxPrice
                                         } else {
 
-                                            String.format("%.2f", tax.rate * it.itemQuantity)
-                                                .toDouble()
+                                            tax.rate * it.itemQuantity
                                         }
                                     }
                                     guestAmt += tax.rate
@@ -251,12 +250,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                             isApplied = true
                             totalServiceCharge += (guestSubTotal * it.percentage) / 100
                             return@forEach
-                            Log.d(
-                                TAG,
-                                "calculateDineInServiceCharge: Dinein " + it.min_guest_count + "....." + it.max_guest_count + " in between " + list.get(
-                                    0
-                                ).totalGuestCount
-                            )
+
                         }
                     }
 
@@ -275,7 +269,9 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
 
             var finalAmt =
-                guestSubTotal + totalServiceCharge + totalTaxAmt + (list.get(0).guestDividedAmt)
+                guestSubTotal + totalServiceCharge + totalTaxAmt + list.get(0).guestDividedAmt
+
+            finalAmt = String.format("%.2f", finalAmt).toDouble()
             LogUtil.logE("TODAY", "guestSubTotal  ${guestSubTotal}")
             LogUtil.logE("TODAY", "totalTaxAmt  ${totalTaxAmt}")
             LogUtil.logE("TODAY", "guestDividedAmt  ${(list.get(0).guestDividedAmt)}")
@@ -284,7 +280,6 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             LogUtil.logE("TODAY", "orderfinalAmt:  ${finalAmt}")
 
             var guestOrderDisShare = 0.0
-            LogUtil.logE(TAG, "")
             if (list.get(0).orderDiscount > 0) {
                 guestOrderDisShare =
                     MethodUtils.roundOffAmountDouble(list[0].orderDiscount / (list[0].totalGuestCount))
@@ -342,7 +337,8 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                     var guestName = ""
                     if (listItem.isNotEmpty()) {
                         if (list[bindingAdapterPosition].customer != null) {
-                            guestName = list[bindingAdapterPosition].customer?.first_name.toString()
+                            guestName =
+                                list[bindingAdapterPosition].customer?.first_name.toString() + " " + list[bindingAdapterPosition].customer?.last_name.toString()
                         } else {
                             guestName = list[bindingAdapterPosition].title.toString()
                         }
@@ -392,7 +388,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 var guestName = ""
                 if (listItem.isNotEmpty()) {
                     if (list[bindingAdapterPosition].customer != null) {
-                        guestName = list[bindingAdapterPosition].customer?.first_name.toString()
+                        guestName = list[bindingAdapterPosition].customer?.first_name.toString() + " " + list[bindingAdapterPosition].customer?.last_name.toString()
                     } else {
                         guestName = list[bindingAdapterPosition].title.toString()
                     }

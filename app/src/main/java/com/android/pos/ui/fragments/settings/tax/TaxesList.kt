@@ -46,9 +46,11 @@ class TaxesList : Fragment(), ItemCallback {
         binding.lifecycleOwner = this
 
         setUpRecyclerView()
-        getTaxListObserver()
-        setupSnackbar()
         observeShowProgress()
+        observeData()
+        viewModel.getTextList()
+//        getTaxListObserver()
+        setupSnackbar()
         deleteTax()
         notifyAdapter()
         return binding.root
@@ -69,6 +71,16 @@ class TaxesList : Fragment(), ItemCallback {
         binding.rvTaxList.adapter = taxListadapter
     }
 
+    private fun observeData() {
+        viewModel.taxesData.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it.data.isNotEmpty()) {
+
+                    setTaxData(it.data)
+                }
+            }
+        }
+    }
 
     private fun getTaxListObserver() {
         viewModel.getTaxList.observe(viewLifecycleOwner) {
@@ -123,9 +135,11 @@ class TaxesList : Fragment(), ItemCallback {
     }
 
     private fun setTaxData(taxList: List<TaxData>) {
+         var taxListRecyclerview =taxList.filter { it.isDeleted == false }
         taxListUpdateDelete = taxList as ArrayList<TaxData>
+        taxListadapter.taxList.clear()
         taxListadapter.apply {
-            addTaxes(taxList)
+            addTaxes(taxListRecyclerview)
             notifyDataSetChanged()
         }
     }
@@ -143,10 +157,11 @@ class TaxesList : Fragment(), ItemCallback {
 
 
                 AlertUtils.showCustomAlert(requireActivity(), it.message)
-                /* taxListUpdateDelete.remove(taxObject)
-                 taxListadapter.addTaxes(taxListUpdateDelete)
+                 taxListUpdateDelete.remove(taxObject)
+                var taxNewList =   taxListUpdateDelete.filter { it.isDeleted == false }
+                 taxListadapter.addTaxes(taxNewList)
                  taxListadapter.notifyItemRemoved(position)
-                 taxListadapter.notifyItemRangeChanged(position, taxListUpdateDelete.size)*/
+                 taxListadapter.notifyItemRangeChanged(position, taxNewList.size)
 
             }
         }

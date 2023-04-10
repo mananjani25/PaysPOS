@@ -258,6 +258,9 @@ class OrderItemsAttribute {
     @SerializedName("category_id")
     var category_id: Int = -1
 
+    @SerializedName("custom_item_id")
+    var custom_item_id: Int = 0
+
     @SerializedName("discount_amount")
     var discountAmount: Double = 0.0
 
@@ -442,6 +445,9 @@ class OrderItemModifierAttribute {
 
     @SerializedName("price")
     var price: Double = 0.0
+
+    @SerializedName("modifier_quantity")
+    var modifier_quantity: Int = 1
 
     @SerializedName("total_price")
     var totalPrice: Double = 0.0

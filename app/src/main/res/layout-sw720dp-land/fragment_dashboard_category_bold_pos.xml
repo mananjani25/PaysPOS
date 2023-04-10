@@ -3,61 +3,87 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MissingDefaultResource">
 
-    <androidx.appcompat.widget.LinearLayoutCompat
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/bg_color"
-        android:orientation="vertical">
-
-        <include
-            android:id="@+id/layout_header"
-            layout="@layout/layout_header_bold_pos" />
-
-        <include
-            android:id="@+id/layout_header_checkout"
-            layout="@layout/layout_header_checkout_details" />
-
-        <include layout="@layout/divider" />
+        android:layout_height="match_parent">
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:weightSum="1">
+            android:layout_height="wrap_content"
+            android:background="@color/bg_color"
+            android:orientation="vertical">
 
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="0.4">
+            <include
+                android:id="@+id/layout_header"
+                layout="@layout/layout_header_bold_pos" />
 
-                <FrameLayout
-                    android:id="@+id/frameLayoutCart"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
+            <include
+                android:id="@+id/layout_header_checkout"
+                layout="@layout/layout_header_checkout_details" />
 
-            </LinearLayout>
+            <include layout="@layout/divider" />
 
-            <View
-                android:layout_width="1dp"
-                android:layout_height="match_parent"
-                android:background="@color/view" />
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_weight="1"
+                android:layout_height="0dp"
+                android:orientation="horizontal">
 
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="0.6">
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.4">
+
+                    <FrameLayout
+                        android:id="@+id/frameLayoutCart"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/view" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.6">
 
 
-                <FrameLayout
-                    android:id="@+id/frameLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
+                    <FrameLayout
+                        android:id="@+id/frameLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
 
-            </LinearLayout>
+                </LinearLayout>
+
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <include layout="@layout/divider" />
+            <include
+                android:id="@+id/layout_bottom"
+                layout="@layout/layout_bottom_header" />
 
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
+        <LinearLayout
+            android:id="@+id/maskLayout"
+            android:layout_width="match_parent"
+            android:background="#88000000"
+            android:clickable="true"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:gravity="center"
+            android:visibility="gone"
+            android:layout_height="match_parent">
 
-    </androidx.appcompat.widget.LinearLayoutCompat>
+            <include layout="@layout/view_loading"/>
+
+        </LinearLayout>
+
+    </FrameLayout>
 </layout>

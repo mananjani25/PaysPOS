@@ -37,7 +37,7 @@ class OrderDetailsItemListAdapter :
 
         val context = itemBinding.root.context
         itemBinding.tvItemName.text = taxList[position].itemName
-        itemBinding.tvQuantity.text = "x " + taxList[position].quantity
+        itemBinding.tvQuantity.text =taxList[position].quantity.toString()
 
 
         var totalPrice = taxList[position].price * taxList[position].quantity

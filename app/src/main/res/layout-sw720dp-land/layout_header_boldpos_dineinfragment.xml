@@ -8,8 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/bg_color"
-        android:orientation="horizontal"
-        >
+        android:orientation="horizontal">
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/linearFirst"
@@ -55,6 +54,18 @@
             android:layout_toLeftOf="@+id/txthome"
             android:paddingVertical="@dimen/_2sdp">
 
+            <ImageView
+                android:id="@+id/imgTransferTable"
+                android:layout_width="@dimen/_22sdp"
+                android:layout_height="@dimen/_18sdp"
+                android:layout_gravity="center"
+                android:visibility="gone"
+                android:background="?attr/selectableItemBackground"
+                android:padding="@dimen/_2sdp"
+                android:src="@drawable/transfer_table_icon"
+                android:tint="@color/txtColor"
+                tools:ignore="UseAppTint" />
+
             <TextView
                 android:id="@+id/txt_Dineinordere"
                 style="@style/CustomFontSemiBold"
@@ -64,11 +75,11 @@
                 android:layout_marginLeft="@dimen/_10sdp"
                 android:background="?attr/selectableItemBackground"
                 android:padding="@dimen/_5sdp"
-                android:visibility="gone"
                 android:text="dine in orders"
                 android:textAllCaps="true"
                 android:textColor="@color/btnColor"
-                android:textSize="@dimen/_6mdpi" />
+                android:textSize="@dimen/_6mdpi"
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/txt_merge"
@@ -83,6 +94,7 @@
                 android:textAllCaps="true"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi" />
+
 
             <LinearLayout
                 android:id="@+id/linear_switchUser"
@@ -107,6 +119,9 @@
                     style="@style/CustomFontMediumStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:maxWidth="@dimen/_100sdp"
+                    android:ellipsize="end"
+                    android:maxLines="1"
                     android:layout_gravity="center"
                     android:text="ELEANOR RUSSELL"
                     android:textSize="@dimen/_6mdpi" />
@@ -145,21 +160,21 @@
                 android:textColor="@color/white"
                 android:textSize="@dimen/_7mdpi" />-->
         </androidx.appcompat.widget.LinearLayoutCompat>
+
         <TextView
             android:id="@+id/txthome"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/_23sdp"
+            android:layout_alignParentEnd="true"
             android:layout_marginStart="@dimen/_5sdp"
-            android:background="@drawable/button_action_hover"
+            android:background="@color/btnColor"
             android:fontFamily="@font/sf_pro_display_semibold"
             android:gravity="center"
             android:paddingHorizontal="@dimen/padding_home_button"
             android:text="@string/tv_home"
             android:textAllCaps="true"
-            android:layout_alignParentEnd="true"
             android:textColor="@color/white"
-            android:textSize="@dimen/_7mdpi"
-            />
+            android:textSize="@dimen/_7mdpi" />
 
 
     </RelativeLayout>

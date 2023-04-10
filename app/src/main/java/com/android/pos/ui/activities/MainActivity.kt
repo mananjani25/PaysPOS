@@ -26,12 +26,9 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
-import androidx.work.Data
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.PeriodicWorkRequest
-import androidx.work.WorkManager
 import com.android.pos.R
 import com.android.pos.data.model.PrinterQueueModel
 import com.android.pos.data.model.responseModel.GetKitchenReceiptSettingsResponse
@@ -45,14 +42,16 @@ import com.android.pos.di.HostSelectionInterceptor
 import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.android.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
 import com.android.pos.ui.fragments.dashboard.bolddashboard.DashboardCategoryBoldPOS
+import com.android.pos.ui.fragments.dinein.DineInOrderTableViewModel
+import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.ui.fragments.payment.OrderCompleteViewModel
 import com.android.pos.ui.fragments.settings.hardware.Hardware
 import com.android.pos.utils.*
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.statusUtils.Status
 import com.android.pos.utils.workmanager.ThreadPoolManager
-import com.android.pos.utils.workmanager.UploadWorker
 import com.epson.epos2.ConnectionListener
 import com.epson.epos2.printer.Printer
 import com.epson.epos2.printer.PrinterStatusInfo
@@ -75,14 +74,14 @@ import java.io.IOException
 import java.net.URI
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 
 @AndroidEntryPoint
 class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     StatusChangeListener {
-
+    private val dashboardViewModel: DashBoardCategoryViewModel by viewModels()
+    private val passcodeViewModel: PasscodeViewModel by viewModels()
     private var printerQueueModelGlobal: PrinterQueueModel? = null
     private var isPrinterQueueRun: Boolean = false
     private var kitchenPrinterList: List<PrinterResponse.Data.KitchenReceiptPrinters> =
@@ -90,6 +89,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     private var cameraUri: Uri? = null
     private var selectedFilePath: String? = ""
     private var builder: Dialog? = null
+    private val dineInViewModel by viewModels<DineInOrderTableViewModel>()
     private lateinit var binding: ParentActivityBinding
     private var navController: NavController? = null
     private lateinit var listner: NavController.OnDestinationChangedListener
@@ -175,16 +175,40 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         }
 
     }
+    private var syncFloorPlan = object : BroadcastReceiver() {
+        override fun onReceive(p0: Context?, p1: Intent?) {
+            Log.e("SyncFloorPlan", "onReceiveSync")
+            if (findNavController(R.id.navHostFrag).currentDestination?.id == R.id.dineInFragment){
+
+                navController?.popBackStack(R.id.dineInFragment,true)
+                navController?.navigate(R.id.dineInFragment)
+
+            }
+        }
+
+    }
+
     private var syncSettingReceiver = object : BroadcastReceiver() {
         override fun onReceive(p0: Context?, p1: Intent?) {
 
             LogUtil.logEN("onReceive", "" + p1?.action)
             dashBoardCategoryViewModel.syncSettingModule()
 
+        }
+
+    }
+
+    private var syncMarkupReceiver = object : BroadcastReceiver() {
+        override fun onReceive(p0: Context?, p1: Intent?) {
+
+            LogUtil.logEN("syncMarkupReceiver", "" + p1?.action)
+            dashBoardCategoryViewModel.markupInventory()
 
         }
 
     }
+
+
 
     var broadCastReceiverPrinterQueueDataGet = object : BroadcastReceiver() {
         override fun onReceive(p0: Context?, p1: Intent?) {
@@ -725,11 +749,26 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         unregisterReceiver(broadcastReceiveronlineOrder)
     }
 
+    private lateinit var presentation: CustomDisplay
+
+    private fun initCustomerDisplay() {
+        getCustomerDisplay(this)?.let { display ->
+            presentation = CustomDisplay(
+                display,
+                this,
+                this,
+                dashboardViewModel,
+                passcodeViewModel,
+                dineInViewModel
+            )
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN)
 
-       // connectionActionCable()
+        // connectionActionCable()
         val intentFilter = IntentFilter("PrinterQueue")
         registerReceiver(wifiStateReceiver, intentFilter)
         getCustomerReceiptSettings()
@@ -767,14 +806,25 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             IntentFilter(Constants.SYNC_NOTIFICATION)
         )
         registerReceiver(
+            syncFloorPlan,
+            IntentFilter(Constants.SYNC_FLOORPLAN)
+        )
+
+        registerReceiver(
             syncSettingReceiver,
             IntentFilter(Constants.SYNC_SETTING_NOTIFICATION)
+        )
+
+        registerReceiver(
+            syncMarkupReceiver,
+            IntentFilter(Constants.SYNC_MARKUP)
         )
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
             window.statusBarColor = getColor(R.color.txtColorGray)
         }
         binding = DataBindingUtil.setContentView(this, R.layout.parent_activity)
+        initCustomerDisplay()
         supportActionBar?.hide()
         binding.lifecycleOwner = this
 
@@ -897,25 +947,25 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
         if (subscription != null) {
             subscription?.onConnected {
-                ToastUtil.showNormalToast(this,"Connected")
+                ToastUtil.showNormalToast(this, "Connected")
                 Log.e(TAG, "onActionConnected")
 
 
             }?.onRejected {
-                ToastUtil.showNormalToast(this,"Connected")
+                ToastUtil.showNormalToast(this, "Connected")
                 Log.e(TAG, "onActiononRejected")
 
             }?.onReceived {
-                ToastUtil.showNormalToast(this,"Connected")
+                ToastUtil.showNormalToast(this, "Connected")
                 Log.e(TAG, "onActiononReceived  " + Gson().toJson(it))
 
 
             }?.onDisconnected {
-                ToastUtil.showNormalToast(this,"Connected")
+                ToastUtil.showNormalToast(this, "Connected")
                 Log.e(TAG, "onActiononDisconnected")
 
             }?.onFailed {
-                ToastUtil.showNormalToast(this,"Connected")
+                ToastUtil.showNormalToast(this, "Connected")
                 Log.e(TAG, "onActiononFailed")
                 //subscription = consumer?.subscriptions?.create(appearanceChannel)
                 try {
@@ -967,7 +1017,8 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         @SuppressLint("RestrictedApi")
         override fun onReceive(context: Context, intent: Intent) {
 //            LogUtil.logE(TAG,"customerPrinterList  ${Gson().toJson(customerPrinterList)}")
-            kitchenPrinterList.forEach {
+
+            /*kitchenPrinterList.forEach {
                 println("customerPrinterList " + it.name)
             }
 
@@ -997,6 +1048,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 LogUtil.logE(TAG, "printerQueueLog  ${e.message.toString()}")
                 e.printStackTrace()
             }
+        */
         }
     }
 
@@ -1008,6 +1060,10 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
     override fun onResume() {
         super.onResume()
+        if (this::presentation.isInitialized) {
+            presentation.show()
+            presentation.onDisplayChanged()
+        }
         prefProvider?.setValue(UNIQUE_ID, getDeviceId())
 
         navController?.addOnDestinationChangedListener(listner)
@@ -1015,6 +1071,10 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
     override fun onPause() {
         super.onPause()
+        if (this::presentation.isInitialized) {
+            presentation.hide()
+            presentation.onDisplayChanged()
+        }
         navController?.removeOnDestinationChangedListener(listner)
     }
 

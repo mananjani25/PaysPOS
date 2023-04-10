@@ -54,7 +54,12 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
         getResult { apiService.updatePrinter(id, model) }
 
     suspend fun updatePrinterStatus(id: Int, terminal_id: Int, status: Boolean) =
-        getResult { apiService.updatePrinterStatus(id, terminal_id, status) }
+            getResult { apiService.updatePrinterStatus(id, terminal_id, status) }
+
+ /*   suspend fun updatePrinterStatusKitchen(id: Int, terminal_id: Int, status: Boolean) =
+        getResult { apiService.updatePrinterStatusKitchen(id, terminal_id, status) }
+    suspend fun updatePrinterStatusCustomer(id: Int, terminal_id: Int, status: Boolean) =
+        getResult { apiService.updatePrinterStatusCustomer(id, terminal_id, status) }*/
 
     suspend fun updateServiceChargeEnable(id: Int, enable_service_charge: Boolean) =
         getResult { apiService.updateServiceChargeTakeoutEnable(id, enable_service_charge) }
@@ -226,6 +231,12 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
 
     suspend fun deleteItem(itemId: Int) =
         getResult { apiService.deleteItem(itemId) }
+
+  suspend fun increaseOnGoingOrderCounter() =
+        getResult { apiService.increaseOnGoingOrderCounter() }
+
+  suspend fun decreaseOnGoingOrderCounter() =
+        getResult { apiService.decreaseOnGoingOrderCounter() }
 
     suspend fun hideItem(itemId: Int, hide_status: String) =
         getResult { apiService.hideItem(itemId, hide_status) }
@@ -579,6 +590,9 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
             )
         }
 
+    suspend fun transferTable(orderId: Int, floorId: Int, tableId: Int,oldFloorPlanTableId:Int) =
+        getResult { apiService.transferTable(orderId, floorId, tableId,oldFloorPlanTableId) }
+
     suspend fun unMergeTable(id: Int) = getResult { apiService.unMergeTable(id) }
 
     suspend fun orderCancel(id: Int, data: OrderCancelRequest) =
@@ -588,6 +602,9 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
         getResult { apiService.getFloorPlan(locationId) }
 
     suspend fun getFloorPlanTableDetails() = getResult { apiService.getFloorPlanTableDetails() }
+
+    suspend fun getAvailableTransferTableList(empId:Int) =
+        getResult { apiService.getAvailableTransferTableList(empId) }
 
     suspend fun payByGuest(id: Int, payAll: Boolean, model: GuestPaymentRequest) = getResult {
         apiService.payByGuest(id, payAll, model)

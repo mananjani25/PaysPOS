@@ -51,11 +51,10 @@
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1"
                 android:gravity="center_vertical"
-                android:text="@{@string/cross+``+model.quantity}"
+                android:text="@{``+model.quantity}"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_6mdpi"
-
-                tools:text="X 1" />
+                />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtPrice"
@@ -111,11 +110,7 @@
 
 
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0.5dp"
-            android:background="@color/view"
-            android:visibility="visible" />
+
 
         <!-- <include layout="@layout/divider" />-->
             />
@@ -127,7 +122,11 @@
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:itemCount="2"
             tools:listitem="@layout/view_open_order_items" />
-
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/view"
+            android:visibility="visible" />
 
     </LinearLayout>
 

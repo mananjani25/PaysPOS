@@ -11,9 +11,12 @@ import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.android.pos.R
+import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.ONLINE_ORDER_GET_NOTIFICATION
 import com.android.pos.data.remote.Constants.SEND_CLOCKOUT_NOTIFICATION
+import com.android.pos.data.remote.Constants.SYNC_FLOORPLAN
+import com.android.pos.data.remote.Constants.SYNC_MARKUP
 import com.android.pos.data.remote.Constants.SYNC_NOTIFICATION
 import com.android.pos.data.remote.Constants.SYNC_SETTING_NOTIFICATION
 import com.android.pos.di.PrefProvider
@@ -38,20 +41,20 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             Log.e(TAG, "onMessageReceived: type : $type")
             if (prefProvider.getValueInt(EMPLOYEE_ID, -1) != -1) {
                 if (type == "Clock Out") {
-                    var intent = Intent()
+                    val intent = Intent()
                     intent.putExtra("isAuto", false)
                     intent.action = SEND_CLOCKOUT_NOTIFICATION
                     prefProvider.setValueboolean("clockOutFromNoti", true)
                     sendBroadcast(intent)
                 } else if (type == "Auto Clockout") {
-                    var intent = Intent()
+                    val intent = Intent()
                     intent.putExtra("isAuto", true)
                     intent.putExtra("message", remoteMessage.data["message"].toString())
                     intent.action = SEND_CLOCKOUT_NOTIFICATION
                     prefProvider.setValueboolean("clockOutFromNoti", true)
                     sendBroadcast(intent)
                 } else if (type == "onlineorder") {
-                    var intent = Intent()
+                    val intent = Intent()
                     intent.putExtra("message", remoteMessage.data["message"].toString())
                     intent.putExtra("count", remoteMessage.data["count"])
                     intent.action = ONLINE_ORDER_GET_NOTIFICATION
@@ -65,8 +68,19 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                     val intent = Intent()
                     intent.action = SYNC_SETTING_NOTIFICATION
                     sendBroadcast(intent)
+                } else if (type == "MarkupSync") {
+
+                    prefProvider.setValueboolean(Constants.IS_SYNC_MARKUP, true)
+                    val intent = Intent()
+                    intent.action = SYNC_MARKUP
+                    sendBroadcast(intent)
+                } else if (type == "DineIn") {
+                    val intent = Intent()
+                    intent.action = SYNC_FLOORPLAN
+                    sendBroadcast(intent)
+
                 } else {
-                    var intent = Intent()
+                    val intent = Intent()
                     intent.putExtra("printer_queue", "rem")
                     intent.action = "PrinterQueue"
                     sendBroadcast(intent)

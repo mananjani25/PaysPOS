@@ -705,6 +705,7 @@
                     android:hint="@string/_1234_5678_xxxx_1121"
                     android:inputType="number"
                     android:maxLength="23"
+                    android:importantForAutofill="no"
                     android:textColor="@color/btnColor"
                     android:textColorHint="@color/hint_color"
                     android:textSize="@dimen/_7mdpi"

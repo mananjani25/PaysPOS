@@ -20,10 +20,7 @@ import com.android.pos.data.entities.TbItem
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.CreateModifierSetBinding
 import com.android.pos.ui.adapter.ModifierAdapter
-import com.android.pos.utils.AlertUtils
-import com.android.pos.utils.AmountTextWatcher
-import com.android.pos.utils.LogUtil
-import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.*
 import com.android.pos.utils.extensions.getNavigationResultLiveData
 import com.android.pos.utils.extensions.liveSnackBar
 import com.google.android.material.snackbar.Snackbar
@@ -202,6 +199,7 @@ class CreateModifierSet : Fragment(), TextWatcher {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.header.imgBack.setOnClickListener {
+            MethodUtils.hideKeyboard(requireActivity())
             val navControll = findNavController()
             navControll.previousBackStackEntry?.savedStateHandle?.set(
                 Constants.KEY,
@@ -290,7 +288,7 @@ class CreateModifierSet : Fragment(), TextWatcher {
 
         }
 
-        viewModel.setModifiers(adapter.getAll())
+//        viewModel.setModifiers(adapter.getAll())
 
     }
 

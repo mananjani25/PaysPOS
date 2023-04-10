@@ -1,13 +1,13 @@
 package com.android.pos.ui.dialog
 
+import android.R.attr.maxLength
 import android.graphics.Point
 import android.os.Bundle
 import android.text.Editable
+import android.text.InputFilter
 import android.text.TextWatcher
-import android.util.Log
 import android.view.*
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.remote.Constants
@@ -18,6 +18,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import java.text.NumberFormat
 import java.util.*
 import javax.inject.Inject
+
 
 @AndroidEntryPoint
 class SplitAmountFragment : DialogFragment(), View.OnClickListener, TextWatcher {
@@ -44,8 +45,35 @@ class SplitAmountFragment : DialogFragment(), View.OnClickListener, TextWatcher 
         binding.lifecycleOwner = this
         dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         setupData()
-
+        setupInputFilter()
         return binding.root
+    }
+
+    private fun setupInputFilter() {
+
+        binding.edtSplitNo.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                p0?.let {
+                    if (it.toString().isNotEmpty()) {
+                        if (it.toString().toInt() > 20) {
+                            binding.edtSplitNo.setText("20")
+                            binding.edtSplitNo.setSelection(2)
+                        } else if (it.toString().toInt() == 0) {
+                            binding.edtSplitNo.setText("")
+                            binding.edtSplitNo.setSelection(0)
+                        }
+                    }
+                }
+            }
+
+            override fun afterTextChanged(p0: Editable?) {
+
+            }
+        })
     }
 
     private fun setupData() {
@@ -172,7 +200,8 @@ class SplitAmountFragment : DialogFragment(), View.OnClickListener, TextWatcher 
                 binding.edtAmount.setText(formatted.replace("""[,]""".toRegex(), ""))
                 binding.edtAmount.setSelection(formatted.replace("""[,]""".toRegex(), "").length)
 
-                val enterPrice = binding.edtAmount.text!!.replace("""[$]""".toRegex(), "").toDouble()
+                val enterPrice =
+                    binding.edtAmount.text!!.replace("""[$]""".toRegex(), "").toDouble()
 
                 var remainAmount = 0.0
 
@@ -191,7 +220,8 @@ class SplitAmountFragment : DialogFragment(), View.OnClickListener, TextWatcher 
 
                 val remainAmountFormat =
                     getString(R.string.symbole) + String.format("%.2f", remainAmount)
-                val totalAmountFormat = getString(R.string.symbole) + String.format("%.2f", totalPrice)
+                val totalAmountFormat =
+                    getString(R.string.symbole) + String.format("%.2f", totalPrice)
 
                 binding.txtValue.text =
                     "$remainAmountFormat of $totalAmountFormat will remain after this payment."

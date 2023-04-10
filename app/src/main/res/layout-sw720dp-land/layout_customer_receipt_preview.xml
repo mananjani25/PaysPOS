@@ -324,6 +324,36 @@
                 tools:itemCount="1"
                 tools:listitem="@layout/view_receipt_item_name" />
 
+            <!--Total Discount-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/_3sdp"
+                android:orientation="horizontal"
+                android:padding="@dimen/_3sdp">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtDiscountLable"
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/tv_total_discount"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_6mdpi" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtDiscountAmount"
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:gravity="end"
+                    android:text="$9.99"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_6mdpi" />
+            </LinearLayout>
+
+            <!--Sub Total-->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -411,6 +441,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/linearCashDisSurCharge"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/_3sdp"
@@ -418,16 +449,16 @@
                 android:padding="@dimen/_3sdp">
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/txtDiscountLable"
+                    android:id="@+id/txtTip"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/tv_total_discount"
+                    android:text="@string/tv_tips"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/txtDiscountAmount"
+                    android:id="@+id/txtTipAmt"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -456,34 +487,6 @@
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtCashDiscountAmt"
-                    style="@style/CustomFontSemiBold"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:gravity="end"
-                    android:text="$9.99"
-                    android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_6mdpi" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/_3sdp"
-                android:orientation="horizontal"
-                android:padding="@dimen/_3sdp">
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/txtTotlPriceLabel"
-                    style="@style/CustomFontSemiBold"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/tv_total_price"
-                    android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_6mdpi" />
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/txtTotalPriceAmt"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -604,37 +607,6 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/linearTips"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/_3sdp"
-                android:orientation="horizontal"
-                android:padding="@dimen/_3sdp">
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/txtTip"
-                    style="@style/CustomFontSemiBold"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/_3sdp"
-                    android:text="@string/tv_tips"
-                    android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_6mdpi" />
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/txtTipAmt"
-                    style="@style/CustomFontSemiBold"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:layout_marginLeft="@dimen/_3sdp"
-                    android:gravity="end"
-                    android:text="$9.99"
-                    android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_6mdpi" />
-            </LinearLayout>
-
-            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/_3sdp"
@@ -658,6 +630,35 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
                     android:layout_marginLeft="@dimen/_3sdp"
+                    android:gravity="end"
+                    android:text="$9.99"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_6mdpi" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/_3sdp"
+                android:orientation="horizontal"
+                android:padding="@dimen/_3sdp">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtTotlPriceLabel"
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/_3sdp"
+                    android:text="@string/tv_total_price"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_6mdpi" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtTotalPriceAmt"
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
                     android:gravity="end"
                     android:text="$9.99"
                     android:textColor="@color/txtColor"

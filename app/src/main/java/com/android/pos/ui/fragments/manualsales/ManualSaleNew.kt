@@ -1,6 +1,6 @@
 package com.android.pos.ui.fragments.manualsales
 
-import  android.annotation.SuppressLint
+import android.annotation.SuppressLint
 import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
@@ -281,6 +281,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             val bundle = Bundle()
             bundle.putBoolean("isSwap", true)
             bundle.putBoolean("isDashboard", false)
+            viewModel.deleteCart()
             findNavController().navigate(
                 R.id.action_manualSalesNew_to_passcode,
                 bundle
@@ -289,12 +290,15 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         binding.layoutHeader.txtUserName.text =
             prefProvider.getValue(Constants.EMPLOYEE_NAME, "")
         binding.layoutHeader.ivLock.setOnClickListener {
+            prefProvider.setValue(Constants.REDIRECT_FROM, "")
             findNavController().navigate(R.id.action_manualSalesNew_to_reportEODFragment)
         }
         binding.layoutHeader.txtDineIn.setOnClickListener {
+            prefProvider.setValue(Constants.REDIRECT_FROM, "")
             findNavController().navigate(R.id.action_manualSalesNew_to_dineInFragment)
         }
         binding.layoutHeader.txtHome.setOnClickListener {
+            prefProvider.setValue(Constants.REDIRECT_FROM, "")
             findNavController().navigateUp()
         }
 
@@ -336,6 +340,16 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             ).observe(requireActivity()) {
                 cartList = it
                 LogUtil.logE(TAG, "cartListBeforeTax  ${Gson().toJson(cartList)}")
+               /* if (prefProvider.getValue(ORDER_TYPE,"") == OPEN_ORDER){
+                    binding.btnPay.gone()
+                    binding.txtSave.visible()
+
+                }
+                else{
+                    binding.btnPay.visible()
+                    binding.txtSave.visible()
+                }*/
+
                 if (cartList?.isNotEmpty()!!) {
 
                     cartList?.get(0)?.items?.forEach {
@@ -594,6 +608,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
                     } else {
 
+                        prefProvider.setValue(Constants.REDIRECT_FROM, "")
                         val navControll = findNavController()
                         val bundle = Bundle()
                         bundle.putString("manualSale", MANUALSALE)
@@ -636,6 +651,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                     )
 
                 } else {
+                    prefProvider.setValue(Constants.REDIRECT_FROM, "")
                     val navControll = findNavController()
                     navControll.previousBackStackEntry?.savedStateHandle?.set(
                         Constants.KEY,
@@ -662,37 +678,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
         binding.btnPay.setOnClickListener {
             if (cartList?.isNotEmpty() == true) {
-/*
-                if (cartList?.isNotEmpty() == true) {
-                    dashboardViewModel.mAllWords(
-                        prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT).toString(),
-                        prefProvider.getValueInt(
-                            Constants.EMPLOYEE_ID, 0
-                        )
-                    ).observe(
-                        viewLifecycleOwner, nameObserver
-                    )
-                }
-*/
-
-                val bundle = Bundle()
-                bundle.putString(Constants.REDIRECT_FROM, Constants.MANUAL_SALE)
-                /*  bundle.putString(Constants.REDIRECT_FROM,Constants.MANUAL_SALE)
-                  bundle.putDouble(
-                      "totalPrice",
-                      viewModel.redeemLoyaltyInfo.getAmountToBePaid() ?: 0.0
-                  )
-                  bundle.putDouble("subTotalPrice", viewModel.subTotalPrice)
-                  bundle.putDouble("totalTax", viewModel.totalTax)
-                  bundle.putDouble("totalDiscount", viewModel.totalDiscount)
-                  bundle.putDouble("totalServiceCharge", viewModel.totalServiceCharge)
-                  cartList?.get(0)?.customer = assignCustomer
-                  bundle.putParcelable("cartList", cartList?.get(0))
-                  bundle.putString(
-                      "redeemLoyalty",
-                      Gson().toJson(viewModel.redeemLoyaltyInfo)
-                  )*/
-
+                prefProvider.setValue(Constants.REDIRECT_FROM, Constants.MANUAL_SALE)
                 prefProvider.setValue(
                     Constants.ORDER_TYPE,
                     prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT)
@@ -707,8 +693,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 prefProvider.setValue(Constants.TAX_CHARGE, "")
                 prefProvider.setValue(Constants.SERVICE_CHARGE, "")
                 findNavController().navigate(
-                    R.id.action_manualSaleCart_to_paymentBoldPosFragment,
-                    bundle
+                    R.id.action_manualSaleCart_to_paymentBoldPosFragment
                 )
             } else {
 
@@ -850,6 +835,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                     getString(R.string.delete_items_message)
                 ) {
                     positiveButton(getString(R.string.tv_delete)) {
+                        prefProvider.setValue(Constants.REDIRECT_FROM, "")
                         viewModel.deleteCart()
                         prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
                         binding.txtTotalAmount.text = "$0.00"
@@ -886,21 +872,25 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
 
         binding.footer.linearMore.setOnClickListener {
+            prefProvider.setValue(Constants.REDIRECT_FROM, "")
             findNavController().navigate(R.id.action_manualSaleNew_to_menuFragment)
             //dialogPOSMenu()
         }
 
         binding.footer.linearTransaction.setOnClickListener {
+
             if (rolePermission.hasTransactionPermission(binding.root)) {
+                prefProvider.setValue(Constants.REDIRECT_FROM, "")
                 findNavController().navigate(R.id.action_manualSaleNew_to_transactionFragment)
             }
         }
         binding.footer.linearOpenOrders.setOnClickListener {
+            prefProvider.setValue(Constants.REDIRECT_FROM, "")
             findNavController().navigate(R.id.action_manualSaleNew_to_orders)
         }
-        binding.llInfo.setOnClickListener {
+        /*binding.llInfo.setOnClickListener {
             showPopupWindow(it)
-        }
+        }*/
 
         binding.txtCrtNewCustomer.setOnClickListener {
             if (prefProvider.getValue(CUSTOMER_NAME, "").toString().isNotEmpty()) {
@@ -1137,8 +1127,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             count++
             tabItemMOdel.customItemCount = count
             tabItemMOdel.name = "Custom Item ${count}"
-            if (binding.llKeypad.edtItemName.text?.isNotEmpty() == true) {
-                tabItemMOdel.name = binding.llKeypad.edtItemName.text.toString()
+            if (binding.llKeypad.edtItemName.text?.trim()?.isNotEmpty() == true) {
+                tabItemMOdel.name = binding.llKeypad.edtItemName.text!!.toString().trim().replace("\\s+".toRegex(), " ")
                 count--
                 tabItemMOdel.customItemCount = count
             }
@@ -1433,8 +1423,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                     } else {
                         txtQty.setText("")
                     }
-                } else if (s.toString().trim().isNotEmpty() && s.toString().toInt() > 10000) {
-                    txtQty.setText("10000")
+                } else if (s.toString().trim().isNotEmpty() && s.toString().toInt() > 15) {
+                    txtQty.setText("15")
                 }
 
             }
@@ -1456,10 +1446,10 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 ((model.price * model.itemQuantity) - (model.discountPrice* model.itemQuantity))
             )
         } else {
-            txtTitle.text = model.name + "  $" + String.format(
+            txtTitle.text = model.name /*+ "  $" + String.format(
                 "%.2f",
                 (model.price * model.itemQuantity)
-            )
+            )*/
         }
 
         imgClose.setOnClickListener {
@@ -1486,7 +1476,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 model.itemQuantity = 1
             }
 
-            cartList?.get(0)?.items?.get(position)?.name = edtItemName.text.toString()
+            cartList?.get(0)?.items?.get(position)?.name = edtItemName.text.toString().trim().replace("\\s+".toRegex(), " ")
             Log.d(TAG, "onItemClicked: name  " + edtItemName.text.toString())
 
             model.price = String.format("%.2f", (itemCost)).toDouble()
