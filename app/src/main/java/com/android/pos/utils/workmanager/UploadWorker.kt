@@ -519,7 +519,10 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                     printerQueueModel.position = 0
                     var str = obj.getAsJsonArray("printer_list")
                     printerQueueModel.printSuccessData = Gson().toJson(str).toString()
-                    Log.e(TAG,"checkPrinterListSucees  ${Gson().toJson(printerQueueModel.printSuccessData)}")
+                    Log.e(
+                        TAG,
+                        "checkPrinterListSucees  ${Gson().toJson(printerQueueModel.printSuccessData)}"
+                    )
                     /*if (it.asJsonObject.has("customer_data")) {
                     if (it.asJsonObject.get("customer_data").asJsonObject.has("first_name") && it.asJsonObject.get(
                             "customer_data"
@@ -1893,16 +1896,23 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
             for (i in 0 until kitchenPrinterList.size) {
                 printerObjList.get(kitchenPrinterList.get(i).ipAddress)
                     ?.let {
-                        Log.e(TAG, "checkPrinterObjOnPrntReceive:  ")
+                        if (printerObjList.get(kitchenPrinterList.get(i).ipAddress) == p0) {
+                            Log.e(TAG, "checkPrinterObjOnPrntReceive:  ")
 
 
-                        val params = JsonObject()
-                        var deleteUrl =
-                            baseUrl+CREATE_QUEUE_PRINTER+"/"+ printerQueueModel.id+"/" + Constants.UPDATE_PRITNER_QUEUE_TRACK
-                        LogUtil.logE(TAG, "DeleteUrl ${deleteUrl}")
-                        params.addProperty("url", deleteUrl)
-                        params.addProperty("printed_mac_add", kitchenPrinterList.get(i).macAddress)
-                        subscription?.perform("updated_order_item_status", params)
+                            val params = JsonObject()
+                            var deleteUrl =
+                                baseUrl + CREATE_QUEUE_PRINTER + "/" + printerQueueModel.id + "/" + Constants.UPDATE_PRITNER_QUEUE_TRACK
+                            LogUtil.logE(TAG, "DeleteUrl ${deleteUrl}")
+                            params.addProperty("url", deleteUrl)
+                            params.addProperty(
+                                "printed_mac_add",
+                                kitchenPrinterList.get(i).macAddress
+                            )
+
+                            params.addProperty("order_to_be_delete", true)
+                            subscription?.perform("updated_order_item_status", params)
+                        }
 
                     }
             }
