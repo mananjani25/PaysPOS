@@ -770,6 +770,7 @@
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.appcompat.widget.AppCompatTextView
@@ -868,7 +869,6 @@
                     android:layout_width="0dp"
                     android:layout_height="@dimen/_16sdp"
                     android:layout_marginVertical="@dimen/_2sdp"
-                    android:layout_marginEnd="@dimen/_5sdp"
                     android:layout_weight="1"
                     android:background="#363636">
 
@@ -912,7 +912,7 @@
                     android:id="@+id/signature_pad"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="#363636"
+                    android:background="#77363636"
                     app:penColor="@color/purple_500" />
 
                 <LinearLayout
@@ -920,9 +920,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end|top"
-                    android:layout_margin="@dimen/_10sdp"
+                    android:layout_marginVertical="@dimen/_5sdp"
+                    android:layout_marginHorizontal="@dimen/_10sdp"
                     android:gravity="center_vertical"
-                    android:visibility="visible">
+                    android:visibility="gone">
 
                     <ImageView
                         android:layout_width="@dimen/_9sdp"

@@ -1825,9 +1825,10 @@ class CustomDisplay(
                         }
 
                     } else {
-                        if (response.body()!![0].mPPGv4WSFault != null)
-                        showErrorLayout(response.body()!![0].mPPGv4WSFault?.faultCode + "\n" +
-                                response.body()!![0].mPPGv4WSFault?.faultReason.toString())
+                        if (response.body()!![0].mPPGv4WSFault != null){
+                            showErrorLayout(response.body()!![0].mPPGv4WSFault?.faultCode + "\n" +
+                                    response.body()!![0].mPPGv4WSFault?.faultReason.toString())
+                        }
                     }
                 }
             }
