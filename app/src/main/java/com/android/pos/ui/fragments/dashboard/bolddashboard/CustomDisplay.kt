@@ -1487,6 +1487,7 @@ class CustomDisplay(
             mTransactionViewModel.updateTipData.observe(lifecycleOwner) { event ->
                 event.getContentIfNotHandled()?.let {
                     if (it.status == 200) {
+                        prefProvider.setValueboolean(Constants.TIP_ADDED, false)
                         showThankYou()
                     } else {
                         showErrorLayout(it.message)
@@ -1813,50 +1814,26 @@ class CustomDisplay(
                 call: Call<PaymentResponse>,
                 response: Response<PaymentResponse>
             ) {
-                //ProgressUtils.dismissProgressDialog()
                 if (response.isSuccessful) {
                     LogUtil.logE("onResponse", Gson().toJson(response.body()))
                     if (response.body() != null && response.body()!![0].transactionOutput != null) {
 
                         if (response.body()!![0].transactionOutput?.isTransactionApproved == true) {
-
                             callUpdateTip()
-
                         } else {
-//                            AlertUtils.showCustomAlert(
-//                                context,
-//                                response.body()!![0].transactionOutput?.transactionMessage
-//                            )
-                            Toast.makeText(
-                                context,
-                                "${response.body()!![0].transactionOutput?.transactionMessage}",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            showErrorLayout(response.body()!![0].transactionOutput?.transactionMessage.toString())
                         }
-
 
                     } else {
                         if (response.body()!![0].mPPGv4WSFault != null)
-//                            AlertUtils.showCustomAlert(
-//                                context,
-//                                response.body()!![0].mPPGv4WSFault?.faultCode + "\n" +
-//                                        response.body()!![0].mPPGv4WSFault?.faultReason
-//                            )
-                            Toast.makeText(
-                                context,
-                                "${
-                                    response.body()!![0].mPPGv4WSFault?.faultCode + "\n" +
-                                            response.body()!![0].mPPGv4WSFault?.faultReason
-                                }",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                        showErrorLayout(response.body()!![0].mPPGv4WSFault?.faultCode + "\n" +
+                                response.body()!![0].mPPGv4WSFault?.faultReason.toString())
                     }
                 }
             }
 
             override fun onFailure(call: Call<PaymentResponse>, t: Throwable) {
-
-                //ProgressUtils.dismissProgressDialog()
+                t.localizedMessage?.let { showErrorLayout(it) }
             }
         })
     }
