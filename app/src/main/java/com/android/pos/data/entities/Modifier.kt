@@ -18,7 +18,7 @@ class Modifier : Parcelable {
     @SerializedName("name")
     var name: String = ""
 
-    @SerializedName("price_without_markup")
+    @SerializedName("price")
     var price: Double = 0.00
 
     @SerializedName("sort")
