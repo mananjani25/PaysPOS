@@ -108,10 +108,10 @@ class AddEditCustomer : Fragment(), AddressTextChangeListner {
                 if (Build.VERSION.SDK_INT < 23) {
                     (parent?.getChildAt(0) as TextView).setTextAppearance(
                         view?.context,
-                        com.android.pos.R.style.SpinnerTheme
+                        com.android.pos.R.style.SpinnerTheme1
                     )
                 } else {
-                    (parent?.getChildAt(0) as TextView).setTextAppearance(com.android.pos.R.style.SpinnerTheme); }
+                    (parent?.getChildAt(0) as TextView).setTextAppearance(com.android.pos.R.style.SpinnerTheme1); }
 
 
             }

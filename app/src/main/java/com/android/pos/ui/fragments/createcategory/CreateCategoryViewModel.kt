@@ -60,19 +60,55 @@ class CreateCategoryViewModel @Inject constructor(
     private fun removeIdsFromOldCategories(
         ids: ArrayList<Int>,
         tbItemsList: ArrayList<TbItem>,
+        defaultCatData: TbCategory?
     ) {
         viewModelScope.launch {
             val oldIds = posRepository.getItemsByCategory(catId)
+
+            // If Item removed form current category
+            oldIds?.forEach {
+                if (!ids.contains(it)) {
+                    if (defaultCatData != null) {
+                        // assigned removed ids to Default Category
+                        posRepository.updateItemCategory(
+                            defaultCatData.id,
+                            defaultCatData.name ?: "",
+                            it
+                        )
+                        // Updated items ids list of default category
+                        val itemIds: ArrayList<Int?>? =
+                            posRepository.getItemsByCategory(defaultCatData.id) as ArrayList<Int?>?
+                        itemIds?.add(it)
+                        posRepository.updateCategoryItems(defaultCatData.id, itemIds as List<Int>)
+
+                        // Updated items ids list of Current category
+                        val currentCatItemIds: ArrayList<Int?>? =
+                            posRepository.getItemsByCategory(catId) as ArrayList<Int?>?
+                        currentCatItemIds?.remove(it)
+                        posRepository.updateCategoryItems(catId, currentCatItemIds as List<Int>)
+                    }
+                }
+            }
+
+            // If Item added to current category
             ids.forEach { id ->
                 tbItemsList.filter { item ->
                     item.itemId == id && !oldIds?.contains(id)!!
                 }.forEach {
+                    // Updated items ids list of old category
                     val itemIds: ArrayList<Int?>? =
                         posRepository.getItemsByCategory(it.categoryId) as ArrayList<Int?>?
                     if (itemIds != null && itemIds.size > 0) {
                         itemIds.remove(id)
                         posRepository.updateCategoryItems(it.categoryId, itemIds as List<Int>)
                     }
+
+                    // Updated items ids list of current category
+                    val currentCatItemIds: ArrayList<Int?>? =
+                        posRepository.getItemsByCategory(catId) as ArrayList<Int?>?
+                    if (!currentCatItemIds?.contains(id)!!)
+                        currentCatItemIds.add(id)
+                    posRepository.updateCategoryItems(catId, currentCatItemIds as List<Int>)
                 }
             }
         }
@@ -81,8 +117,8 @@ class CreateCategoryViewModel @Inject constructor(
     fun submit(
         ids: ArrayList<Int>,
         imagePath: String?,
-        nameFromUpdate: String,
-        tbItemsList: ArrayList<TbItem>
+        tbItemsList: ArrayList<TbItem>,
+        defaultCatData: TbCategory?
     ) {
 
 //        if (isEdit) {
@@ -132,7 +168,7 @@ class CreateCategoryViewModel @Inject constructor(
                         resource.data.let { categoryResponse ->
                             if (categoryResponse?.status == 200) {
                                 resource.data?.let {
-                                    removeIdsFromOldCategories(ids, tbItemsList)
+                                    removeIdsFromOldCategories(ids, tbItemsList, defaultCatData)
                                     val category = TbCategory().apply {
                                         name = it.data.name.trim()
                                         id = it.data.id
@@ -147,7 +183,7 @@ class CreateCategoryViewModel @Inject constructor(
                                     }
                                     posRepository.createCategory(category)
 
-                                    if (isEdit) {
+                                   /* if (isEdit) {
                                         val oldIds = posRepository.getItemsByCategory(category.id)
                                         oldIds?.forEach { old ->
                                             posRepository.updateItemCategory(
@@ -156,7 +192,7 @@ class CreateCategoryViewModel @Inject constructor(
                                                 null
                                             )
                                         }
-                                    }
+                                    }*/
 
                                     ids.forEach { itemId ->
                                         posRepository.updateItemCategory(

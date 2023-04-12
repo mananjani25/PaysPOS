@@ -93,7 +93,7 @@ class PrintSunmiUtils {
 
         fun venueWebsiteInner(value: String) {
             SunmiPrintHelper.getInstance().setAlign(1)
-            SunmiPrintHelper.getInstance().printText(value)
+            SunmiPrintHelper.getInstance().printText(value, setFontSizeInner(), false, false, fontName)
             SunmiPrintHelper.getInstance().lineWrap(1)
 
         }

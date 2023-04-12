@@ -285,7 +285,7 @@ class UserAccessPermissionViewModel @Inject constructor(
 
             createTeamRoleRequestModel = CreateTeamRoleRequestModel().apply {
                 if (isEdit) id = roleId
-                name = value!!.name
+                name = value!!.name.trim().replace("\\s+".toRegex(), " ")
                 val idList = ArrayList<Int>()
                 selectedEmployeeListToFeed.forEach {
                     idList.add(it.id)

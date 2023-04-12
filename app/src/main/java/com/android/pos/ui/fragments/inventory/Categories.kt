@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.ItemTouchHelper.UP
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
+import com.android.pos.data.entities.TbCategory
 import com.android.pos.databinding.FragmentCategoriesBinding
 import com.android.pos.ui.adapter.CategoriesListAdapter
 import com.android.pos.utils.AlertUtils
@@ -251,7 +252,7 @@ class Categories(val clickedPosition: Int) : Fragment(),ItemCallback {
             isreOrder = true
             LogUtil.logE(TAG, "positionnewPos  ${newPos}")
             LogUtil.logE(TAG, "positionoldPos  ${oldPos}")
-            viewModel.reOrderCategory(categoryIdOld, newPos, oldPos)
+            viewModel.reOrderCategory(categoryIdOld, oldPos, newPos)
         }
 
     }
@@ -265,6 +266,12 @@ class Categories(val clickedPosition: Int) : Fragment(),ItemCallback {
                     val bundle = Bundle()
                     bundle.putBoolean("isEdit", true)
                     bundle.putParcelable("categoryObject", adapter.getItem(pos))
+                    try {
+                        val defaultCategoryObject: TbCategory? = adapter.categoryList.find { it.name == "Default Category"}
+                        bundle.putParcelable("DefaultCategoryObject", defaultCategoryObject)
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
                     findNavController().navigate(
                         R.id.action_inventory_to_createCategory,
                         bundle
