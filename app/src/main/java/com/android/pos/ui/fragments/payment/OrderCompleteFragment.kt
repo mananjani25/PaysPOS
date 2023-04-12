@@ -60,6 +60,7 @@ import com.android.pos.data.remote.Constants.ORDER_COMPLETED
 import com.android.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.PAYMENT_ID
+import com.android.pos.data.remote.Constants.PAYMENT_ID_FOR_CUSTOMER_DISPLAY
 import com.android.pos.data.remote.Constants.PRINT_DATA_DINE_IN
 import com.android.pos.data.remote.Constants.SAVE_SPLIT_BUNDLE
 import com.android.pos.data.remote.Constants.SERVICECHARGE_DINEIN_ORDER
@@ -77,14 +78,18 @@ import com.android.pos.data.remote.Constants.WHOLE_AMOUNT
 import com.android.pos.data.remote.Constants.getCurrentTimeFromTimeZone
 import com.android.pos.data.remote.Constants.getReceiptFormatDateFromUTCServer
 import com.android.pos.databinding.FragmentOrderCompletBinding
+import com.android.pos.di.ApiModule1
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.SplitListAdapter
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
 import com.android.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
+import com.android.pos.ui.fragments.magtek.MagtekRequestUtils
 import com.android.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
 import com.android.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
+import com.android.pos.ui.fragments.settings.tip.TipListViewModel
+import com.android.pos.ui.fragments.transactions.TransactionViewModel
 import com.android.pos.utils.*
 import com.android.pos.utils.MethodUtils.Companion.toPrecision
 import com.android.pos.utils.extensions.gone
@@ -119,6 +124,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEventListener,
     BatteryStatusChangeEventListener, ICallback {
+    private val paymentViewModel by activityViewModels<PaymentViewModel>()
     private lateinit var presentation: CustomDisplay
     private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
     private val passcodeViewModel by activityViewModels<PasscodeViewModel>()
@@ -208,7 +214,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         printerDialog = PrinterDialog()
         progressDialog()
 
-        prefProvider.setValueboolean(Constants.TIP_ADDED, false)
+
 
         if (requireArguments().getBoolean("isSpilt")) {
             observeSplitList()
@@ -242,19 +248,41 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         return binding.root
     }
 
+    private val tipListViewModel by activityViewModels<TipListViewModel>()
+    private val transactionViewModel by viewModels<TransactionViewModel>()
+
+    @Inject
+    lateinit var magtekRequestUtils: MagtekRequestUtils
+
+    @Inject
+    lateinit var apiModule1: ApiModule1
+
     override fun onResume() {
         super.onResume()
         if (this::presentation.isInitialized) {
             presentation.show()
             presentation.onDisplayChanged()
-            presentation.showThankYou(
-                binding.txtPaymentAmount.text.toString().replace(" payment successful", "")
-            )
-
-            //binding.txtPaymentAmount.text.toString(
-            //                    " payment successful",
-            //                    ""
-            //                )
+            if (prefProvider.getValueboolean(Constants.TIP_ADDED, false)) {
+                prefProvider.setValueboolean(Constants.TIP_ADDED, false)
+                presentation.showThankYou()
+            } else {
+                val finalPaidAmount =
+                    binding.txtPaymentAmount.text.toString().replace(" payment successful", "")
+                        .replace("$", "").toDouble()
+                val paymentIdForCustomerDisplay = prefProvider.getValueInt(
+                    PAYMENT_ID_FOR_CUSTOMER_DISPLAY, 0
+                )
+                presentation.showWouldYouLikeToAddTipScreen(
+                    tipListViewModel,
+                    transactionViewModel,
+                    finalPaidAmount, paymentIdForCustomerDisplay,
+                    paymentType == "Card",
+                    paymentViewModel = paymentViewModel,
+                    magRequestUtils = magtekRequestUtils,
+                    apiModule1 = apiModule1,
+                    true
+                )
+            }
         }
     }
 

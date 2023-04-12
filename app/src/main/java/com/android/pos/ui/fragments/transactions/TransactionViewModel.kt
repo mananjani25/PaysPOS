@@ -294,5 +294,52 @@ class TransactionViewModel @Inject constructor(
             }
         }
     }
+
+    private val _updateTipData = MutableLiveData<Event<BaseResponse?>>()
+    val updateTipData: LiveData<Event<BaseResponse?>> = _updateTipData
+
+    fun updateTipWithSignature(orderId: Int, signatureInBase64: String, tip: Double) {
+
+        viewModelScope.launch {
+            _showProgress.value = Event(true)
+            val option = HashMap<String, Any>()
+            option["id"] = orderId
+            option["signature"] = signatureInBase64
+            option["tips"] = tip
+
+            val resource = posRepository.updateTipWithSignatureFM(option)
+
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    _showProgress.value = Event(false)
+                    resource.data.let { baseResponse ->
+                        if (baseResponse?.status == 200) {
+
+                            resource.data?.let { response ->
+
+                                Log.d("TAG", "updateTipWithSignature: $response")
+                                _updateTipData.value = Event(response)
+
+                            }
+                        } else {
+                            _snackbarText.value = Event(resource.message)
+                        }
+                    }
+                }
+
+                Status.ERROR -> {
+                    Log.d("TAG", "updateTipWithSignature: ${resource.message}")
+                    _snackbarText.value = Event(resource.message)
+                    _showProgress.value = Event(false)
+                }
+
+                Status.LOADING -> {
+                    Log.d("TAG", "updateTipWithSignature: LOADING...")
+                    _showProgress.value = Event(true)
+
+                }
+            }
+        }
+    }
 }
 

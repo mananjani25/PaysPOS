@@ -2342,7 +2342,7 @@ class CartFragment(
 
         if (this::presentation.isInitialized) {
             presentation.show()
-            presentation.onDisplayChanged()
+            presentation.onLogOutOrClockOutWithApiService(apiService)
         }
 
         val model = orderTypeAdapter?.getItem(pos)

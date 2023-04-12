@@ -935,6 +935,12 @@ class PosRepository @Inject constructor(
     ) =
         apiHelperNew.orderUpdateTip(orderId, customerId, is_captured, data)
 
+    suspend fun updateTipWithSignature(orderId: Int, signatureInBase64: String, tip: Double)=
+        apiHelperNew.updateTipWithSignature(orderId, signatureInBase64, tip)
+
+    suspend fun updateTipWithSignatureFM(option: HashMap<String, Any>)=
+        apiHelperNew.updateTipWithSignatureFM(option)
+
     suspend fun updateKitchenFireStatus(
         id: Int,
         isFired: Boolean,
