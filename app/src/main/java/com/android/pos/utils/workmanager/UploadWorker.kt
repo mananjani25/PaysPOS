@@ -1,9 +1,13 @@
 package com.android.pos.utils.workmanager
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
+import android.media.RingtoneManager
 import android.os.Build
 import android.util.Log
+import androidx.core.app.NotificationCompat
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.android.pos.R
@@ -16,6 +20,8 @@ import com.android.pos.data.remote.Constants.CREATE_QUEUE_PRINTER
 import com.android.pos.data.remote.Constants.IS_MASTER_TERMINAL
 import com.android.pos.utils.*
 import com.android.pos.utils.printer.PrinterClass
+import com.epson.epos2.ConnectionListener
+import com.epson.epos2.Epos2Exception
 import com.epson.epos2.printer.Printer
 import com.epson.epos2.printer.PrinterStatusInfo
 import com.epson.epos2.printer.ReceiveListener
@@ -39,7 +45,7 @@ import java.time.format.DateTimeFormatter
 
 
 class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters) :
-    CoroutineWorker(context, params), StatusChangeListener, ReceiveListener {
+    CoroutineWorker(context, params), StatusChangeListener, ReceiveListener, ConnectionListener {
     private var printerQueueData: Boolean = false
     private var globalPrinterQueue: JsonElement? = null
     private val TAG = UploadWorker::class.java.name
@@ -48,6 +54,8 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
     private var printerObjList: HashMap<String, Printer> = hashMapOf()
 
     var printerBreak: Boolean = false
+
+    val mgr = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
     private var subscription: Subscription? = null
     private var consumer: Consumer? = null
@@ -93,6 +101,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
                 for (i in 0 until kitchenPrinterList.size) {
                     var printer1: Printer = Printer(Printer.TM_U220, Printer.MODEL_ANK, mContext)
+                    printer1.setConnectionEventListener(this@UploadWorker)
                     printer1.setReceiveEventListener(object : ReceiveListener {
                         override fun onPtrReceive(
                             p0: Printer?,
@@ -118,7 +127,11 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                             Printer.PARAM_DEFAULT
                         )
 
-                    } catch (e: java.lang.Exception) {
+                    } catch (e: Epos2Exception) {
+                        var errorCode = e.errorStatus
+
+                        Log.e(TAG, "errorCode:  ${errorCode}")
+                        sendNotification("TM-U220 is Offline.Please check ${errorCode}")
                         e.printStackTrace()
                     }
 
@@ -517,7 +530,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                         "" + dataList.get(0).asJsonObject.get("orderid").asInt
                     //obj.asJsonObject.get("terminal_name")?.asString ?: ""
                     printerQueueModel.position = 0
-                    var str = obj.getAsJsonArray("printer_list")
+                    var str = dataList.get(0).asJsonObject.getAsJsonArray("printer_list")
                     printerQueueModel.printSuccessData = Gson().toJson(str).toString()
                     Log.e(
                         TAG,
@@ -572,20 +585,40 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
                 }
 
+                val gson = Gson()
+                val itemType = object : TypeToken<List<String>>() {}.type
+                var printMACAddress =
+                    gson.fromJson<List<String>>(printerQueueModel.printSuccessData, itemType)
 
 
+                Log.e(TAG, "printMACAddress:  ${Gson().toJson(printMACAddress)}")
+                var oneTimeInside: Boolean = false
 
                 for (m in 0 until kitchenPrinterList.size) {
 
-                    if (checkPrinterHasCatOrNot(kitchenPrinterList[m], printerQueueModel)) {
+                    if (checkPrinterHasCatOrNot(
+                            kitchenPrinterList[m],
+                            printerQueueModel
+                        ) && !(printMACAddress.contains(kitchenPrinterList[m].macAddress))
+                    ) {
 
 
                         printerObjList.get(kitchenPrinterList.get(m).ipAddress)
                             ?.let {
+                                oneTimeInside = true
                                 Log.e(TAG, "checkPrinterObjNullCheck:  ")
                                 callPrinter(it, printerQueueModel, kitchenPrinterList.get(m))
                             }
                     }
+
+                    /* if (m == kitchenPrinterList.size - 1 && oneTimeInside == false) {
+                         delay(2000)
+                         val params = JsonObject()
+                         params.addProperty("id", locationId)
+                         params.addProperty("url", baseUrl + Constants.CREATE_QUEUE_PRINTER)
+                         subscription?.perform("received", params)
+
+                     }*/
 
                 }
 
@@ -706,6 +739,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
             var obj = printerQueueModel
 
 
+            printerBreak = false
             var printerAdd =
                 "TCP:" + kitchenPrinter.ipAddress
 
@@ -1911,8 +1945,36 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                                 kitchenPrinterList.get(i).macAddress
                             )
 
-                            params.addProperty("order_to_be_delete", true)
+                            val gson = Gson()
+                            val itemType = object : TypeToken<List<String>>() {}.type
+                            var printMACAddress =
+                                gson.fromJson<List<String>>(
+                                    printerQueueModel.printSuccessData,
+                                    itemType
+                                )
+
+
+                            Log.e(
+                                TAG,
+                                "printMACAddressonResponse:  ${Gson().toJson(printMACAddress)}"
+                            )
+
+
+                            printMACAddress.toCollection(arrayListOf())
+                                .add(kitchenPrinterList[i].macAddress)
+                            Log.e(TAG, "checkPrinterDeleteSize  ${printMACAddress.size}")
+                            Log.e(TAG, "checkPrinterDeleteSizekitc  ${kitchenPrinterList.size}")
+                            if (kitchenPrinterList.size == printMACAddress.size) {
+                                Log.e(TAG, "orderDeleted")
+
+                                params.addProperty("order_to_be_delete", true)
+                            } else {
+                                Log.e(TAG, "orderDeletedNot")
+                                params.addProperty("order_to_be_delete", true)
+                            }
                             subscription?.perform("updated_order_item_status", params)
+
+
                         }
 
                     }
@@ -1920,6 +1982,8 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
 
             // subscription?.perform("delete_order", params)
+
+        } else {
 
         }
 
@@ -1935,6 +1999,70 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
         }
     }
 
+    override fun onConnection(p0: Any?, p1: Int) {
+        Log.e(TAG, "checkConnectionListner  p0: ${p0}  p1: ${p1}")
+
+        when (p1) {
+            Printer.EVENT_DISCONNECT -> {
+
+            }
+
+            Printer.EVENT_RECONNECT -> {
+
+            }
+
+            Printer.EVENT_RECONNECTING -> {
+
+            }
+
+            Printer.EVENT_OFFLINE -> {
+                val mBuilder = NotificationCompat.Builder(mContext).setSmallIcon(
+                    R.drawable.ic_launcher_foreground
+                ).setContentTitle("Printer Queue is Running in background.")
+                    .setContentText("TM-U220 is offline.").setAutoCancel(true)
+                mgr.notify(101, mBuilder.build())
+
+
+            }
+
+            Printer.EVENT_ONLINE -> {
+
+
+            }
+
+
+        }
+
+    }
+
+
+    private fun sendNotification(messageBody: String) {
+
+
+        val channelId = mContext.getString(R.string.default_notification_channel_id)
+        val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+        val notificationBuilder = NotificationCompat.Builder(mContext, channelId)
+            .setSmallIcon(R.drawable.ic_baseline_notifications_24)
+            .setContentTitle(mContext.getString(R.string.app_name))
+            .setContentText(messageBody)
+            .setAutoCancel(true)
+            .setSound(defaultSoundUri)
+
+        val notificationManager =
+            mContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        // Since android Oreo notification channel is needed.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                channelId,
+                "Channel human readable title",
+                NotificationManager.IMPORTANCE_DEFAULT
+            )
+            notificationManager.createNotificationChannel(channel)
+        }
+
+        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build())
+    }
 
 }
 
