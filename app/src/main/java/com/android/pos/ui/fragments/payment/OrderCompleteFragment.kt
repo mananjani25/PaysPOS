@@ -262,13 +262,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         if (this::presentation.isInitialized) {
             presentation.show()
             presentation.onDisplayChanged()
+            val finalPaidAmount =
+                binding.txtPaymentAmount.text.toString().replace(" payment successful", "")
+                    .replace("$", "").toDouble()
             if (prefProvider.getValueboolean(Constants.TIP_ADDED, false)) {
                 prefProvider.setValueboolean(Constants.TIP_ADDED, false)
-                presentation.showThankYou()
+                presentation.showThankYou(finalPaidAmount)
             } else {
-                val finalPaidAmount =
-                    binding.txtPaymentAmount.text.toString().replace(" payment successful", "")
-                        .replace("$", "").toDouble()
                 val paymentIdForCustomerDisplay = prefProvider.getValueInt(
                     PAYMENT_ID_FOR_CUSTOMER_DISPLAY, 0
                 )
