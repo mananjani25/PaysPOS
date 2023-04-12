@@ -24,7 +24,9 @@ import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.CUSTOMER_SIGN_REQUIRED_ON_CD
 import com.android.pos.data.remote.Constants.DINE_IN
+import com.android.pos.data.remote.Constants.MANUAL_SALE
 import com.android.pos.data.remote.Constants.ORDER_TYPE
+import com.android.pos.data.remote.Constants.REDIRECT_FROM
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.databinding.ViewCustomDisplayBinding
 import com.android.pos.di.ApiModule1
@@ -142,14 +144,26 @@ class CustomDisplay(
     override fun onDisplayChanged() {
         super.onDisplayChanged()
 
-        dashBoardCategoryViewModel.mAllWords(
-            prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT),
-            prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
-        ).observe(lifecycleOwner) {
-            it?.let {
-                updateCustomerDisplay(it)
+        if (prefProvider.getValue(REDIRECT_FROM, "") == MANUAL_SALE) {
+            dashBoardCategoryViewModel.manualSaleItems(
+                prefProvider.getValue(ORDER_TYPE, TAKEOUT),
+                prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+            ).observe(lifecycleOwner) {
+                it?.let {
+                    updateCustomerDisplay(it)
+                }
+            }
+        }else{
+            dashBoardCategoryViewModel.mAllWords(
+                prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT),
+                prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+            ).observe(lifecycleOwner) {
+                it?.let {
+                    updateCustomerDisplay(it)
+                }
             }
         }
+
     }
 
     private fun observeServiceCharge() {
