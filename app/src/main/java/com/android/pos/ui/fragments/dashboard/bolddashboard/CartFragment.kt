@@ -1296,11 +1296,11 @@ class CartFragment(
                             Log.e("mAllWords", "filterItems  ${filterItems.size}")
                             cartAdapter.setList(filterItems)
                             if (filterItems.isNotEmpty()) {
-
-                                Handler(Looper.myLooper()!!).postDelayed(
-                                    { binding.rvCartList.smoothScrollToPosition(filterItems.size - 1) },
-                                    200
-                                )
+                                binding.rvCartList.smoothScrollToPosition(filterItems.size - 1)
+//                                Handler(Looper.myLooper()!!).postDelayed(
+//                                    { binding.rvCartList.smoothScrollToPosition(filterItems.size - 1) },
+//                                    200
+//                                )
 //                               binding.rvCartList.smoothScrollToPosition(filterItems.size - 1)
                             }
 
