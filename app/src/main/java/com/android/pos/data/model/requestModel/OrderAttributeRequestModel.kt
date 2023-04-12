@@ -336,6 +336,9 @@ class OrderItemsAttribute {
 
     @SerializedName("is_fired")
     var isFired: Boolean = false
+
+    @SerializedName("sort")
+    var sort: Int? = null
 }
 
 class OrderItemTaxesAttribute {

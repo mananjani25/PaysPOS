@@ -536,6 +536,8 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
             }
 
+            list[bindingAdapterPosition].item?.dineInSort = bindingAdapterPosition
+            list[bindingAdapterPosition].item?.sort = bindingAdapterPosition
             if (list[bindingAdapterPosition].empName == "null" || list[bindingAdapterPosition].empName == null) {
                 binding.txtEmpName.text = ""
             } else {
@@ -760,22 +762,24 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 if (fromPosition < toPosition) {
                     for (i in fromPosition until toPosition) {
                         Collections.swap(list, i, i + 1)
-
-
-                        val order1: Int = list[i].sort
-                        val order2: Int = list[i + 1].sort
-                        list[i].sort = order2
-                        list[i + 1].sort = order1
+                        val order1: Int = list[i].item?.dineInSort?:toPosition
+                        val order2: Int = list[i + 1].item?.dineInSort?:toPosition
+                        list[i].item?.sort = order2
+                        list[i].item?.dineInSort = order2
+                        list[i + 1].item?.sort = order1
+                        list[i + 1].item?.dineInSort = order1
                     }
                 } else {
                     for (i in fromPosition downTo toPosition + 1) {
                         Collections.swap(list, i, i - 1)
 
-                        val order1: Int = list[i].sort
-                        val order2: Int = list[i - 1].sort
-                        list[i].sort = (order2)
-                        list[i - 1].sort = (order1)
-                    }
+                        val order1: Int = list[i].item?.dineInSort?:toPosition
+                        val order2: Int = list[i - 1].item?.dineInSort?:toPosition
+                        list[i].item?.sort = order2
+                        list[i].item?.dineInSort = order2
+                        list[i - 1].item?.sort = order1
+                        list[i - 1].item?.dineInSort = order1
+                       }
                 }
                 notifyItemMoved(fromPosition, toPosition)
                 return true
