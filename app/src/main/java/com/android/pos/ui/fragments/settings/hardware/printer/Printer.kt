@@ -1414,7 +1414,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             }
 
             var list: ArrayList<CreatePrinterRequestModel.PrinterSettingsAttributes> = arrayListOf()
-            if (printerListModel.printerName == "TM-U220" || printerListModel.printerName == "TM-U220B") {
+            if (printerListModel.printerName == "TM-U220" || printerListModel.printerName == "TM-U220B" && prefProvider.getValueboolean(
+                    IS_MASTER_TERMINAL,false) == true) {
                 ifKitchenPrinterSelected(list, printerListModel, layoutPosition)
             } else {
                 findNavController().navigate(R.id.action_printer_to_printerTypeSelection)
