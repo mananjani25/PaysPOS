@@ -2061,7 +2061,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
             notificationManager.createNotificationChannel(channel)
         }
 
-        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build())
+        notificationManager.notify(102 /* ID of notification */, notificationBuilder.build())
     }
 
 }
