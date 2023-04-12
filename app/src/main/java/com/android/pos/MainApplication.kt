@@ -25,7 +25,7 @@ class MainApplication : Application() {
         super.onCreate()
         FirebaseApp.initializeApp(this)
         //dharmesh.basapati@bacancy.com = Bacancy65basapati@
-        //TestFairy.begin(this, "SDK-dKW2D0Ff"); // vishal.j.patel+103@bacancy.com/Pos@2022
+      //  TestFairy.begin(this, "SDK-dKW2D0Ff"); // vishal.j.patel+103@bacancy.com/Pos@2022
         instance = this
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
 

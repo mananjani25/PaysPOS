@@ -10,6 +10,7 @@ import com.android.pos.data.model.responseModel.item.Item
 import com.android.pos.data.typeconvert.TypeConvertersIds
 import com.android.pos.data.typeconvert.TypeConvertersTax
 import com.google.gson.Gson
+import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 import java.util.*
 
@@ -75,6 +76,8 @@ class TbItem : Parcelable {
     var manualSaleId: String = UUID.randomUUID().toString()
     var isDeleted: Boolean = false
     var headerPositionDinein = 0
+//    @SerializedName("price_without_markup")
+//    var price_without_markup = 0.0
     fun convertToItem(item: Item, category: Category?): TbItem {
 
         itemId = item.id
@@ -122,7 +125,7 @@ class TbItem : Parcelable {
         }
         val removeItems: ArrayList<TaxData> = arrayListOf()
 
-        var itemListIds: ArrayList<Int> = arrayListOf()
+        val itemListIds: ArrayList<Int> = arrayListOf()
 
         for (m in 0 until itemList.size) {
 
@@ -183,6 +186,12 @@ class TbItem : Parcelable {
         modeTb.thumbImageUrl = item.thumbImageUrl
         modeTb.categoryId = item.categoryId
         modeTb.categoryName = item.categoryName
+
+
+        if (item.name.trim().equals("Veg slice",true)) {
+            Log.e("price_without_markup_1", Gson().toJson(modeTb.modifier_set_ids))
+            Log.e("price_without_markup_2", Gson().toJson(item.modifier_set_ids))
+        }
         /*  if (item.itemModifierSetsSort?.isNotEmpty() == true) {
               modeTb.itemModifierSetsSort = item.itemModifierSetsSort
           } else {
@@ -190,7 +199,7 @@ class TbItem : Parcelable {
           }*/
         if (item.modifier_set_ids.isEmpty() && model.modifier_set_ids.isEmpty()) {
 
-            var listMod: ArrayList<Int> = arrayListOf()
+            val listMod: ArrayList<Int> = arrayListOf()
             listMod.addAll(item.modifier_set_ids)
             listMod.addAll(modeTb.modifier_set_ids)
 
@@ -200,15 +209,16 @@ class TbItem : Parcelable {
             modeTb.modifier_set_ids = item.modifier_set_ids
 
         } else {
-            modeTb.modifier_set_ids = model.modifier_set_ids
+
+            modeTb.modifier_set_ids = item.modifier_set_ids
 
         }
 
         if (item.variationsAttributes.isNotEmpty() && model.variationsAttributes.isNotEmpty()) {
-            var variationList: ArrayList<VariationsAttribute> = arrayListOf()
+            val variationList: ArrayList<VariationsAttribute> = arrayListOf()
             variationList.addAll(model.variationsAttributes)
-            var removeVar: ArrayList<VariationsAttribute> = arrayListOf()
-            var listIdsVariation: ArrayList<Int> = arrayListOf()
+            val removeVar: ArrayList<VariationsAttribute> = arrayListOf()
+            val listIdsVariation: ArrayList<Int> = arrayListOf()
             model.variationsAttributes.forEach {
                 it.id?.let { it1 -> listIdsVariation.add(it1) }
             }
@@ -355,6 +365,7 @@ class TbItem : Parcelable {
 
         modeTb.shortDescription = item.shortDescription ?: ""
         modeTb.isDeleted = item.isDeleted
+      //  modeTb.price_without_markup = item.price_without_markup
         return modeTb
     }
 

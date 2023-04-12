@@ -16,12 +16,11 @@ android {
         applicationId "com.internetsoft.pos_1"
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 35
-        versionName "3.14"
+        versionCode 32
+        versionName "3.11"
 
 
-        sourceSets { main { jniLibs.srcDirs = ['src/m' +
-                                                       'ain/jniLibs/'] } }
+        sourceSets { main { jniLibs.srcDirs = ['src/main/jniLibs/'] } }
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         ndk {

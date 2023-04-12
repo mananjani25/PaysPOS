@@ -66,6 +66,18 @@
                     android:layout_marginStart="@dimen/_5sdp"
                     android:layout_marginEnd="@dimen/_10sdp"
                     android:alpha="0.5"
+                    android:visibility="gone"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_6mdpi" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:layout_marginEnd="@dimen/_10sdp"
+                    android:alpha="0.5"
                     android:text="@{@string/symbole +``+String.format(@string/format,model.price)}"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi" />

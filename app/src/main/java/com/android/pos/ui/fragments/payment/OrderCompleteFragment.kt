@@ -1878,7 +1878,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     )
                 }
 
-                if (noCashAdjGlobal != 0.0) {
+                if (noCashAdjGlobal != 0.0  && customerSettingModel.showCashDisSurCharg) {
                     builder.addTextLineSpace(30)
                     builder.addFeedUnit(30)
                     builder.addTextFont(Builder.FONT_E)
@@ -2718,7 +2718,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 PrintSunmiUtils.tips(str8)
             }
 
-            if (noCashAdjGlobal != 0.0) {
+            if (noCashAdjGlobal != 0.0 && customerSettingModel.showCashDisSurCharg) {
 
                 if (prefProvider.getValue(OPTION_TYPE, "")
                         .lowercase() == "CashDiscount".lowercase() && payTypeGlb == "Cash"
@@ -3137,7 +3137,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 PrintSunmiUtils.normalText(str8)
             }
 
-            if (noCashAdjGlobal != 0.0) {
+            if (noCashAdjGlobal != 0.0 && customerSettingModel.showCashDisSurCharg) {
 
                 if (prefProvider.getValue(OPTION_TYPE, "")
                         .lowercase() == "CashDiscount".lowercase() && payTypeGlb == "Cash"
@@ -4038,7 +4038,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 if (noCashAdjGlobal != 0.0 && payTypeGlb == "Cash" && prefProvider.getValue(
                         OPTION_TYPE,
                         ""
-                    ).lowercase() == "CashDiscount".lowercase()
+                    ).lowercase() == "CashDiscount".lowercase() && customerSettingModel.showCashDisSurCharg
                 ) {
                     builder.addTextLineSpace(30)
                     builder.addFeedUnit(30)
@@ -4068,7 +4068,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             }
                         )
                     )
-                } else if (payTypeGlb.lowercase() == "Card".lowercase()) {
+                } else if (payTypeGlb.lowercase() == "Card".lowercase() && customerSettingModel.showCashDisSurCharg) {
 
                     builder.addTextLineSpace(30)
                     builder.addFeedUnit(30)
@@ -4857,7 +4857,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             if (noCashAdjGlobal != 0.0 && payTypeGlb == "Cash" && prefProvider.getValue(
                     OPTION_TYPE,
                     ""
-                ).lowercase() == "CashDiscount".lowercase()
+                ).lowercase() == "CashDiscount".lowercase() && customerSettingModel.showCashDisSurCharg
             ) {
 
 
@@ -4878,7 +4878,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 PrintSunmiUtils.cashDiscount(str8)
 
 
-            } else if (payTypeGlb.lowercase() == "Card".lowercase()) {
+            } else if (payTypeGlb.lowercase() == "Card".lowercase() && customerSettingModel.showCashDisSurCharg) {
 
 
                 val str8 = padLine(
@@ -5371,7 +5371,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             if (noCashAdjGlobal != 0.0 && payTypeGlb == "Cash" && prefProvider.getValue(
                     OPTION_TYPE,
                     ""
-                ).lowercase() == "CashDiscount".lowercase()
+                ).lowercase() == "CashDiscount".lowercase() && customerSettingModel.showCashDisSurCharg
             ) {
 
 
@@ -5392,7 +5392,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 PrintSunmiUtils.normalText(str8)
 
 
-            } else if (payTypeGlb.lowercase() == "Card".lowercase()) {
+            } else if (payTypeGlb.lowercase() == "Card".lowercase() && customerSettingModel.showCashDisSurCharg) {
 
 
                 val str8 = padLine(
@@ -7709,7 +7709,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }
             }
 
-        } else if (data.name.startsWith(SUNMI_INNER_PRINTER, true)) {
+        }
+        else if (data.name.startsWith(SUNMI_INNER_PRINTER, true)) {
 
             SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
             viewLifecycleOwner.lifecycleScope.launch {

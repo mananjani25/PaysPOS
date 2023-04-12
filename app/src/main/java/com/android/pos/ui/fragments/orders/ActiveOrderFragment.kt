@@ -33,6 +33,7 @@ import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.BUSINESS_ADDRESS
 import com.android.pos.data.remote.Constants.OPEN_ORDER
+import com.android.pos.data.remote.Constants.OPEN_ORDER_
 import com.android.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
 import com.android.pos.data.remote.Constants.PRINT_PAID
 import com.android.pos.data.remote.Constants.PRINT_UNPAID
@@ -467,7 +468,7 @@ class ActiveOrderFragment(
 
                 dashboardViewModel.deleteCart()
                 prefProvider.setValue(Constants.ORDER_TYPE, OPEN_ORDER)
-                prefProvider.setValue(Constants.ORDER_TYPE_NAME, OPEN_ORDER)
+                prefProvider.setValue(Constants.ORDER_TYPE_NAME, OPEN_ORDER_)
 
                 var itemDiscountTotal: Double = 0.0
                 var itemPassDis: Double = 0.0
@@ -1709,7 +1710,7 @@ class ActiveOrderFragment(
 
 
 
-            if (receiptModel.cash_discount_or_surcharge != 0.0) {
+            if (receiptModel.cash_discount_or_surcharge != 0.0 && customerSettingModel.showCashDisSurCharg) {
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
                 builder.addTextFont(Builder.FONT_E)
@@ -2533,7 +2534,7 @@ class ActiveOrderFragment(
 
 
 
-            if (receiptModel.cash_discount_or_surcharge != 0.0) {
+            if (receiptModel.cash_discount_or_surcharge != 0.0 && customerSettingModel.showCashDisSurCharg) {
 
 
                 if (receiptModel.payments.isNotEmpty() && receiptModel.payments.get(receiptModel.payments.size - 1).paymentType.lowercase() == "Card".lowercase()) {
@@ -3053,7 +3054,7 @@ class ActiveOrderFragment(
 
 
 
-            if (receiptModel.cash_discount_or_surcharge != 0.0) {
+            if (receiptModel.cash_discount_or_surcharge != 0.0 && customerSettingModel.showCashDisSurCharg) {
 
 
                 if (receiptModel.payments.isNotEmpty() && receiptModel.payments.get(receiptModel.payments.size - 1).paymentType.lowercase() == "Card".lowercase()) {
@@ -3448,7 +3449,7 @@ class ActiveOrderFragment(
     }
 
     private fun startDatePickerObserver() {
-        viewModel.startDateSelection.observe(requireActivity(), { event ->
+        viewModel.startDateSelection.observe(requireActivity()) { event ->
             event.getContentIfNotHandled()?.let {
                 //currentPage = 1
                 val dialog = DatePickerDialog(
@@ -3465,7 +3466,7 @@ class ActiveOrderFragment(
                 dialog.show()
             }
 
-        })
+        }
     }
 
     private fun endDatePickerObserver() {

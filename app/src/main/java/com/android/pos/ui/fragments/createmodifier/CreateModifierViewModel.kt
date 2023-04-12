@@ -163,9 +163,9 @@ class CreateModifierViewModel @Inject constructor(
             var tempModifierSetIds: ArrayList<Int> = arrayListOf()
             val oldModifierSet: com.android.pos.data.entities.ModifierSet? =
                 modifierSet.id?.let { posRepository.getSingleModifier(it) }
-            val oldItemIds: ArrayList<Int> = oldModifierSet?.itemIds as ArrayList<Int>
+            val oldItemIds: List<Int>? = oldModifierSet?.itemIds
             // Remove modifier set ids from Items
-            oldItemIds.forEach {
+            oldItemIds?.forEach {
                 if (!modifierSet.itemIds.contains(it)) {
                     val item: TbItem? = posRepository.getSingleItem(it)
                     tempModifierSetIds = item?.modifier_set_ids as ArrayList<Int>
@@ -176,12 +176,14 @@ class CreateModifierViewModel @Inject constructor(
 
             // Add modifier set id to Items
             modifierSet.itemIds.forEach {
-                if (!oldItemIds.contains(it)) {
-                    val item: TbItem? = posRepository.getSingleItem(it)
-                    tempModifierSetIds = (item?.modifier_set_ids as ArrayList<Int>?)!!
-                    if (!tempModifierSetIds.contains(element = modifierSet.id)) {
-                        tempModifierSetIds.add(modifierSet.id!!)
-                        posRepository.updateModifiersForItem(tempModifierSetIds, it)
+                if (oldItemIds != null) {
+                    if (!oldItemIds.contains(it)) {
+                        val item: TbItem? = posRepository.getSingleItem(it)
+                        tempModifierSetIds = (item?.modifier_set_ids as ArrayList<Int>?)!!
+                        if (!tempModifierSetIds.contains(element = modifierSet.id)) {
+                            tempModifierSetIds.add(modifierSet.id!!)
+                            posRepository.updateModifiersForItem(tempModifierSetIds, it)
+                        }
                     }
                 }
             }
