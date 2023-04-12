@@ -1984,6 +1984,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
             // subscription?.perform("delete_order", params)
 
         } else {
+            sendNotification("Please check.TM-U220 is Offline.")
 
         }
 
