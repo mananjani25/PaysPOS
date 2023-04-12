@@ -14,6 +14,7 @@ import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.android.pos.data.remote.Constants.PAYMENT_ID
+import com.android.pos.data.remote.Constants.PAYMENT_ID_FOR_CUSTOMER_DISPLAY
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
@@ -108,7 +109,7 @@ open class PaymentViewModel @Inject constructor(
     public var actual_CashDiscountSurCharge: Double = 0.0
     public var actual_CardAmount: Double = 0.0
 
-    private var magensaResponse: String? = null
+    public var magensaResponse: String? = null
 
     fun cardReaderList() = posRepository.cardReaderActiveList()
 
@@ -153,6 +154,11 @@ open class PaymentViewModel @Inject constructor(
                                 if (createOrderResponse.data.order.payments.isNotEmpty()) {
                                     prefProvider.setValueInt(
                                         PAYMENT_ID,
+                                        createOrderResponse.data.order.payments[createOrderResponse.data.order.payments.size - 1].id
+                                    )
+
+                                    prefProvider.setValueInt(
+                                        PAYMENT_ID_FOR_CUSTOMER_DISPLAY,
                                         createOrderResponse.data.order.payments[createOrderResponse.data.order.payments.size - 1].id
                                     )
                                 }
@@ -359,6 +365,10 @@ open class PaymentViewModel @Inject constructor(
             null
         )
 
+        prefProvider.setValueInt(
+            PAYMENT_ID_FOR_CUSTOMER_DISPLAY,
+            order.payments[order.payments.size - 1].id
+        )
 
         val resource = posRepository.cashInOut(cashLogRequest)
 

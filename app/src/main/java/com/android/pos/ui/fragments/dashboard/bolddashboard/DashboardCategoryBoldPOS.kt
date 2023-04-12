@@ -1180,10 +1180,15 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 cartList.addAll(it.toCollection(arrayListOf()))
             }
 
-//            if (this::presentation.isInitialized) {
-//                presentation.show()
-//                presentation.onDisplayChanged()
-//            }
+            if (this::presentation.isInitialized) {
+                if (!presentation.isShowing)
+                    presentation.show()
+                if (cartList.isNotEmpty()) {
+                    presentation.updateCustomerDisplay(it)
+                } else {
+                    presentation.onLogOutOrClockOutWithApiService(apiService)
+                }
+            }
 
             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
 

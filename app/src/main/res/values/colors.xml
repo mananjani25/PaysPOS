@@ -7,6 +7,7 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>
+    <color name="white60">#60FFFFFF</color>
     <color name="white90">#E6FFFFFF</color>
     <color name="white_">#FBF6F6</color>
 
@@ -119,6 +120,7 @@
     <color name="backgroundColor">#2D2D2D</color>//Same in both mode
     <color name="bg_printer_label">#FFFFFF</color>
     <color name="switchTrackColor">#363636</color>
+    <color name="lightGrey">#363636</color>
     <color name="bgEditPrinter">#18181A</color>
     <color name="searchHintColor">#C4C4C4</color>
     <color name="light_gray">#A9A9A9</color>
