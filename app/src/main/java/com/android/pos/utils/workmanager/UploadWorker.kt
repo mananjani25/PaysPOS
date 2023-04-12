@@ -1923,7 +1923,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
 
 
-        if (p1 >= 0) {
+        if (p1 == 0) {
             p0?.clearCommandBuffer()
             //p0?.endTransaction()
 
