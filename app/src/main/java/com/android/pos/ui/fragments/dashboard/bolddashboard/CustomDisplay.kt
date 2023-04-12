@@ -8,7 +8,6 @@ import android.os.Bundle
 import android.util.Base64
 import android.util.Log
 import android.view.*
-import android.widget.Toast
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -427,7 +426,7 @@ class CustomDisplay(
 
     override fun onItemDelete(position: Int, itemPosition: Int, data: TbItem) {}
 
-    fun showThankYou() {
+    fun showThankYou(paidAmount: Double) {
         binding.apply {
             mainCartLayout.gone()
             splashLayout.gone()
@@ -436,6 +435,7 @@ class CustomDisplay(
             progressLayout.gone()
 
             thankYouLayout.visible()
+            txtPaidAmount.text = "Paid $paidAmount"
         }
     }
 
@@ -517,7 +517,7 @@ class CustomDisplay(
 
                 var listTableMerge: java.util.ArrayList<String> = arrayListOf()
                 listTableMerge.add(baseResponse.floorPlanTable.tableNumber.toString())
-                baseResponse.floorPlanTable?.merged_child_table_details.forEach {
+                baseResponse.floorPlanTable?.merged_child_table_details?.forEach {
                     listTableMerge.add(it.table_number.toString())
 
                 }
@@ -1448,7 +1448,7 @@ class CustomDisplay(
             }
 
             binding.noTipRootLayout.setOnSingleClickListener {
-                showThankYou()
+                showThankYou(mWholeTotalPrice)
             }
 
             binding.tvContinue.setOnSingleClickListener {
@@ -1502,7 +1502,7 @@ class CustomDisplay(
                 event.getContentIfNotHandled()?.let {
                     if (it.status == 200) {
                         prefProvider.setValueboolean(Constants.TIP_ADDED, false)
-                        showThankYou()
+                        showThankYou(mWholeTotalPrice + tippedAmount)
                     } else {
                         showErrorLayout(it.message)
                     }
