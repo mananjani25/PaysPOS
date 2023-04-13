@@ -44,6 +44,7 @@ import com.android.pos.ui.fragments.payment.PaymentViewModel
 import com.android.pos.ui.fragments.settings.tip.TipListViewModel
 import com.android.pos.ui.fragments.transactions.TransactionViewModel
 import com.android.pos.utils.*
+import com.android.pos.utils.MethodUtils.Companion.toPrecision
 import com.android.pos.utils.callback.MyCallback
 import com.android.pos.utils.extensions.*
 import com.android.pos.utils.statusUtils.Status
@@ -435,7 +436,7 @@ class CustomDisplay(
             progressLayout.gone()
 
             thankYouLayout.visible()
-            txtPaidAmount.text = "Paid $paidAmount"
+            txtPaidAmount.text = "Paid $${paidAmount.toPrecision(2)}"
         }
     }
 
