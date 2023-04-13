@@ -313,7 +313,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         binding.rvItemList.adapter = dineInTableAdapter
         dineInTableAdapter.setListner(this)
 
-
+        listOfMoveItemIds.clear()
 
         if (arguments?.getBoolean("isFromFloor") == true || arguments?.getBoolean("isGuestPaid") == true) {
             floorPlanModel = arguments?.getParcelable("floorPlan")
@@ -2746,8 +2746,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         model.employeeID = prefProvider.getValueInt(EMPLOYEE_ID, 0)
         model.locationId = prefProvider.getValueInt(LOCATION_ID, 0)
         model.terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
-        model.listOfItemRemoved = listOfMoveItemIds
-
 
         return model
     }
@@ -2972,8 +2970,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
     private fun updateOrderCall() {
         cartList = getCartModel(dineInTableAdapter.getList().toCollection(arrayListOf()))
+        cartList?.listOfItemRemoved = listOfMoveItemIds
         val orderRequestModel = dashboardViewModel.updateOrder(cartList!!)
         orderId?.let { viewModel.updateOrder(it, orderRequestModel, true) }
+        listOfMoveItemIds.clear()
     }
 
 
