@@ -244,6 +244,11 @@ class CartFragment(
             binding.rlCartView.visible()
             binding.rvOrderType.gone()
 
+            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
+                binding.txtAddCustomer.invisible()
+            } else {
+                binding.txtAddCustomer.visible()
+            }
             binding.orderTypeDisplay.text =
                 getString(R.string.current_order) + " : " + prefProvider.getValue(ORDER_TYPE_NAME, "")
         }
