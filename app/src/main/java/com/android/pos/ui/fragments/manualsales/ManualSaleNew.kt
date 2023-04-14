@@ -11,6 +11,7 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.*
 import android.widget.*
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.*
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.os.bundleOf
@@ -130,6 +131,15 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
         binding.footer.txtEmployeeName.text =
             prefProvider.getValue(Constants.EMPLOYEE_NAME, "").toString()
+
+        val callback: OnBackPressedCallback =
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    prefProvider.setValue(Constants.REDIRECT_FROM, "")
+                    findNavController().popBackStack()
+                }
+            }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
 
 
         getManualCategoryId()

@@ -1725,6 +1725,7 @@ class CartFragment(
                 taxBirfurcationAdapter.clearList()
                 viewModel.clearListTax()
                 prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
+                prefProvider.setValue(Constants.REDIRECT_FROM, "")
                 updateActiveOrderFlagClear()
                 itemListner?.onCancelItemSelected()
                 if (prefProvider.getValue(ORDER_TYPE, "").toString() == Constants.DINE_IN) {
@@ -1787,6 +1788,7 @@ class CartFragment(
                     prefProvider.setValue(ORDER_TYPE, "")
                     prefProvider.setValue(ORDER_TYPE_NAME, "")
                     prefProvider.setValueboolean(Constants.LOYALTY_ADDED, false)
+
                     itemClickListner?.onDineInOrderCleared()
                     uiSave()
                     getOrderTypes()

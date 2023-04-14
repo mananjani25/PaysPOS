@@ -13,7 +13,7 @@ android {
     buildToolsVersion "30.0.3"
 
     defaultConfig {
-        applicationId "com.internetsoft.pos_v"
+        applicationId "com.internetsoft.pos"
         minSdkVersion 21
         targetSdkVersion 30
         versionCode 33
@@ -61,11 +61,13 @@ android {
         dataBinding = true
         // for view binding:
         viewBinding = true
+        aidl true
     }
     lintOptions {
         checkReleaseBuilds false
         abortOnError false
     }
+    namespace 'com.android.pos'
 }
 
 dependencies {
