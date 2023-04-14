@@ -387,6 +387,8 @@ class ActiveOrderFragment(
                 LogUtil.logE(TAG, "OpenORderUpdateOrder:  ${Gson().toJson(order.orderItems)}")
 
                 prefProvider.setValue(Constants.ORDER_TYPE, OPEN_ORDER)
+                prefProvider.setValue(Constants.ORDER_TYPE_NAME, OPEN_ORDER)
+                prefProvider.setValueInt(Constants.ORDER_TYPE_ID, order.orderTypeId)
 
                 if (order.customer != null) {
                     prefProvider.setValue(

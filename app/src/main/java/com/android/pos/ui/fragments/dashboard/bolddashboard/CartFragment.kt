@@ -2108,6 +2108,7 @@ class CartFragment(
                                 ordertypeId = it.id
                             }
                         }
+                        Log.e("ordertypeId :: ", ordertypeId.toString())
 
                         if (viewModel.restrictedAmount(binding.txtTotal)) {
 
