@@ -3036,6 +3036,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 totalTax = 0.0
                 totalServiceCharge = 0.0
                 amountToBePaid = 0.0
+                MethodUtils.setPriceTextView(txtTotalAmount, totalPrice)
             }
         }
         //totalAmmount = totalPrice-cartList[0].discountPrice
