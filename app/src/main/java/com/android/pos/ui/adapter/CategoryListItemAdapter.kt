@@ -13,6 +13,7 @@ class CategoryListItemAdapter :
     RecyclerView.Adapter<CategoryListItemAdapter.MyViewHolder>() {
 
     var inventory = ArrayList<TbItem>()
+    var categoryName: String = ""
     var selectedIds = ArrayList<Int>()
 
     inner class MyViewHolder(private val binding: ViewAssignItemToCategoryBinding) :
@@ -34,14 +35,15 @@ class CategoryListItemAdapter :
 
 
             binding.imgCheck.setOnClickListener {
-                inventory[layoutPosition].isChecked = !inventory[layoutPosition].isChecked
-                if (inventory[layoutPosition].isChecked) {
-                    selectedIds.add(inventory[layoutPosition].itemId)
-                } else {
-                    selectedIds.remove(inventory.get(layoutPosition).itemId)
+                if (categoryName != "Default Category" || inventory[layoutPosition].categoryName != "Default Category") {
+                    inventory[layoutPosition].isChecked = !inventory[layoutPosition].isChecked
+                    if (inventory[layoutPosition].isChecked) {
+                        selectedIds.add(inventory[layoutPosition].itemId)
+                    } else {
+                        selectedIds.remove(inventory.get(layoutPosition).itemId)
+                    }
+                    notifyItemChanged(layoutPosition)
                 }
-                notifyItemChanged(layoutPosition)
-
             }
         }
     }
@@ -71,6 +73,10 @@ class CategoryListItemAdapter :
 
     fun add(inventory: List<TbItem?>) {
         this.inventory = inventory as ArrayList<TbItem>
+    }
+
+    fun categoryName(categoryName: String){
+        this.categoryName = categoryName
     }
 
     fun selectedItemFromEdit(itemIds: List<Int>) {
