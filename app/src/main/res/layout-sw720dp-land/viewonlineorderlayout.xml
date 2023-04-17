@@ -24,7 +24,8 @@
             android:orientation="horizontal"
             android:paddingVertical="@dimen/_7sdp"
             android:paddingStart="@dimen/_10sdp"
-            android:weightSum="6">
+            android:paddingEnd="@dimen/_10sdp"
+            >
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="0dp"
@@ -119,6 +120,19 @@
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi"
                 tools:text="John Smith" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtOrderType"
+                style="@style/CustomFontMediumStyle"
+                android:layout_width="0dp"
+                android:layout_gravity="center"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="left"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_6mdpi"
+                tools:text="John Smith" />
+            
 
             <LinearLayout
                 android:id="@+id/order_Inprogress_button"

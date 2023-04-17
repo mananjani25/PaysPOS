@@ -120,6 +120,18 @@
                 android:textSize="@dimen/_6mdpi"
                 tools:text="John Smith" />
 
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtOrderType"
+                style="@style/CustomFontMediumStyle"
+                android:layout_width="0dp"
+                android:layout_gravity="center"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="left"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_6mdpi"
+                tools:text="John Smith" />
+
             <LinearLayout
                 android:id="@+id/order_Inprogress_button"
                 android:layout_width="0dp"
