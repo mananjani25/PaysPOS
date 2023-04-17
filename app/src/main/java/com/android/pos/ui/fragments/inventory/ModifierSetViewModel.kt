@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.data.entities.ModifierSet
+import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.responseModel.BaseResponse
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.utils.Event
@@ -56,9 +57,10 @@ class ModifierSetViewModel @Inject constructor(
                     resource.data.let {
                         if (it?.status == 200) {
                             resource.data?.let { baseResponse ->
-                                _data.value = Event(baseResponse)
 
                                 posRepository.deleteModifierSet(id)
+                                removeModifierIdFromItemsList(id)
+                                _data.value = Event(baseResponse)
 
                             }
                         } else {
@@ -75,6 +77,22 @@ class ModifierSetViewModel @Inject constructor(
 
                 Status.LOADING -> {
                     _showProgress.value = Event(true)
+                }
+            }
+        }
+    }
+
+    // Remove modifier set id from Item's modifier_set_ids list
+    private suspend fun removeModifierIdFromItemsList(modifierId: Int) {
+        val allItemsInDb: List<TbItem?>? = posRepository.fetchAllItemsList()
+        if (allItemsInDb?.isNotEmpty() == true) {
+            allItemsInDb.forEach { item ->
+                if (item?.modifier_set_ids?.isNotEmpty() == true) {
+                    val modifiersList = item.modifier_set_ids as ArrayList<Int>
+                    if (modifiersList.contains(modifierId)) {
+                        modifiersList.remove(modifierId)
+                    }
+                    posRepository.updateModifiersForItem(modifiersList, item.itemId)
                 }
             }
         }

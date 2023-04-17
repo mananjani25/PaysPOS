@@ -108,4 +108,7 @@ interface DBItemDao {
 
     @Query("UPDATE TbItem SET modifier_set_ids = :modifierSetIds WHERE TbItem.itemId = :id")
     suspend fun updateItemModifiers(id: Int, modifierSetIds: List<Int>)
+
+    @Query("select * from TbItem where TbItem.isDeleted = 0 and TbItem.name != 'Manual Item'")
+    suspend fun allItemsList(): List<TbItem?>?
 }
