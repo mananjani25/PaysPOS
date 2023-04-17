@@ -38,6 +38,7 @@ import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
 import com.android.pos.data.remote.Constants.IS_PAYMENT_SCREEN
 import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.android.pos.data.remote.Constants.LARGE
+import com.android.pos.data.remote.Constants.MAX_ITEM_QUANTITY
 import com.android.pos.data.remote.Constants.MEDIUM
 import com.android.pos.data.remote.Constants.ONLINE_ORDER_ENABLE
 import com.android.pos.data.remote.Constants.OPEN_ORDER_ITEMS
@@ -1203,7 +1204,13 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
         }
 
-
+        viewModel.itemQuantityCheck.observe(viewLifecycleOwner){event->
+            event.getContentIfNotHandled()?.let {
+                if(it){
+                    AlertUtils.showCustomAlert(requireContext(), "${getString(R.string.item_quantity_cannot_exceed)} ${MAX_ITEM_QUANTITY}")
+                }
+            }
+        }
         /*  viewModelPayment.QueueCreateSaveOrder.observe(requireActivity()) {
               it.getContentIfNotHandled()?.let {
                   viewModel.deleteCart()

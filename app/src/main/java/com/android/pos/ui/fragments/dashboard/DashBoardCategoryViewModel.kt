@@ -49,6 +49,7 @@ import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.android.pos.data.remote.Constants.IS_SYNC_MARKUP
 import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER
 import com.android.pos.data.remote.Constants.LOCK_SCREEN_TRANSACTION
+import com.android.pos.data.remote.Constants.MAX_ITEM_QUANTITY
 import com.android.pos.data.remote.Constants.ONLINE_ORDER_ENABLE
 import com.android.pos.data.remote.Constants.ONLY_SHOW_PRICE_GREATER_THAN_ZERO
 import com.android.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
@@ -146,6 +147,8 @@ class DashBoardCategoryViewModel @Inject constructor(
     var tipTransactionAmount = 0.0
     private val _updateOrder = MutableLiveData<Event<Any?>>()
     val updateOrder: LiveData<Event<Any?>> = _updateOrder
+    private val _itemQuantityCheck = MutableLiveData<Event<Boolean?>>()
+    val itemQuantityCheck: LiveData<Event<Boolean?>> = _itemQuantityCheck
     var orderId: Int? = 0
 
     var openOrderUpdate: Boolean? = false
@@ -595,8 +598,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     } else {
                                         Log.e("AddedInElse", "GotMod")
 
-                                        if(list[i].itemId == item.itemId && list[i].itemQuantity == 1000){
+                                        if(list[i].itemId == item.itemId && list[i].itemQuantity > 1000){
                                             isDineInItem1000 = true
+                                            _itemQuantityCheck.value = Event(true)
                                             break
                                         }else{
                                             if (list[i].itemId == item.itemId && checkVariation(
@@ -1103,8 +1107,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 } else {
 
                                     Log.e("AddedInElse", "Item Qty = ${list[i].itemQuantity}")
-                                    if(list[i].itemId == item.itemId && list[i].itemQuantity == 1000){
+                                    if (list[i].itemId == item.itemId && list[i].itemQuantity > 1000) {
                                         isItem1000 = true
+                                        _itemQuantityCheck.value = Event(true)
                                         break
                                     }else{
                                         if (list[i].itemId == item.itemId && checkVariation(
@@ -2242,13 +2247,17 @@ class DashBoardCategoryViewModel @Inject constructor(
         Log.e(TAG, "newItemitemQuantityOld  ${list[index].itemQuantity}")
 //        if(list[index].itemQuantity < MAX_ITEM_QUANTITY){
 //        }
-        list[index].itemQuantity += item.itemQuantity
-        list[index].modifiers.forEach { listmod ->
-            item.modifiers.forEach { itemmod ->
-                if (itemmod.id == listmod.id) {
-                    listmod.itemQuantity = itemmod.modifier_quantity * list[index].itemQuantity
+        if ((list[index].itemQuantity + item.itemQuantity) <= MAX_ITEM_QUANTITY) {
+            list[index].itemQuantity += item.itemQuantity
+            list[index].modifiers.forEach { listmod ->
+                item.modifiers.forEach { itemmod ->
+                    if (itemmod.id == listmod.id) {
+                        listmod.itemQuantity = itemmod.modifier_quantity * list[index].itemQuantity
+                    }
                 }
             }
+        } else {
+            _itemQuantityCheck.value = Event(true)
         }
 
         Log.d(TAG, "combineItem: " + list[index].itemQuantity)

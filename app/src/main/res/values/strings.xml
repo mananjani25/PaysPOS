@@ -845,6 +845,7 @@
     <string name="search_by_order_id_employee_customer_name">Search by Order id, employee, customer name</string>
     <string name="search_by_customer_name_order_id_receipt_id_amount">Search by employee name/customer name/order id/receipt id/$ amount</string>
     <string name="serving_efficiency">Serving Efficiency</string>
+    <string name="item_quantity_cannot_exceed">Item quantity cannot exceed</string>
 
 </resources>
 
