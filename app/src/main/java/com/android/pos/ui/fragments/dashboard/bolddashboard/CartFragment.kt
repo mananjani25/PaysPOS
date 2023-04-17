@@ -2355,6 +2355,7 @@ class CartFragment(
 
         Log.e(TAG, "checkOrderType  ${model?.orderType}")
 
+        prefProvider.setValue(Constants.REDIRECT_FROM, "")
 
         if (model?.orderType == DINE_IN) {
             Log.e(TAG, "InsideDine inNew")

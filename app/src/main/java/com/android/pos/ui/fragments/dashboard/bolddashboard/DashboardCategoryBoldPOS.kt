@@ -990,6 +990,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
         Log.e("viewModel.cartModel",Gson().toJson(viewModel.cartModel))
 
+        prefProvider.setValue(Constants.REDIRECT_FROM, "")
+
         if (cartList.isEmpty() && viewModel.cartModel != null) {
             viewModel.cartModel?.let {
               cartList.add(it)
