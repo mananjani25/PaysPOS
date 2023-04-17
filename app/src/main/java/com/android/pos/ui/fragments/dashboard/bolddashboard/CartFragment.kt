@@ -89,6 +89,8 @@ class CartFragment(
     Fragment(), MyCallback,
     DineInAdapter.DineInCallback, ItemCallback {
 
+    private var oldItemSize: Int? = 0
+
     @Inject
     lateinit var apiService: ApiService
 
@@ -956,6 +958,7 @@ class CartFragment(
                     Log.e("mAllWordsFlow", "asLiveData" + it.size)
 
                     if (it.isEmpty()) {
+                        if (oldItemSize != null && oldItemSize != 1)
                         return@observe
                     } else {
                         val currentTimeMillis = System.currentTimeMillis()
@@ -1254,6 +1257,8 @@ class CartFragment(
 
                             binding.rlCartView.visible()
                             binding.rvOrderType.gone()
+
+                            oldItemSize = it[0].items?.size
 
                             Log.e("mAllWords", "listSize ITEM ${it.get(0).items?.size}")
                             viewModel.destroyedList.clear()
