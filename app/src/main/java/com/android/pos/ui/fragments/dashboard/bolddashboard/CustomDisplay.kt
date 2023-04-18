@@ -1441,15 +1441,15 @@ class CustomDisplay(
                 signLinearLayout.gravity = Gravity.CENTER_VERTICAL
             }
 
-            binding.clearSignLayout.setOnSingleClickListener {
+            binding.clearSignLayout.setOnClickListener {
                 binding.signaturePad.clear()
             }
 
-            binding.otherRootLayout.setOnSingleClickListener {
+            binding.otherRootLayout.setOnClickListener {
                 showTipKeypad(wholeTotalPrice)
             }
 
-            binding.noTipRootLayout.setOnSingleClickListener {
+            binding.noTipRootLayout.setOnClickListener {
                 showThankYou(mWholeTotalPrice)
             }
 
