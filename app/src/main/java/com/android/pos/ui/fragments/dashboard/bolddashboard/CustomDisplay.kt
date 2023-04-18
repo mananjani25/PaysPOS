@@ -10,6 +10,7 @@ import android.util.Log
 import android.view.*
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.pos.R
 import com.android.pos.data.entities.*
@@ -1180,6 +1181,7 @@ class CustomDisplay(
         activeTipsListAdapter = ActiveTipsListAdapter()
         binding.apply {
             rvActiveTipsList.apply {
+                layoutManager = GridLayoutManager(context,4)
                 adapter = activeTipsListAdapter
             }
         }
