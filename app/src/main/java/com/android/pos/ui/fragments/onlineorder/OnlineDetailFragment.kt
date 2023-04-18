@@ -38,10 +38,25 @@ import com.android.pos.di.RolePermission
 import com.android.pos.ui.adapter.OnlineOrderAdapter
 import com.android.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
 import com.android.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
-import com.android.pos.utils.*
+import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.LogUtil
+import com.android.pos.utils.MethodUtils
+import com.android.pos.utils.PrintSunmiUtils
+import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.addBuilderText
+import com.android.pos.utils.addBuilderTextForU220
+import com.android.pos.utils.addHorizontalKitchenLine
+import com.android.pos.utils.addHorizontalKitchenLineForU220
+import com.android.pos.utils.addHorizontalLine
+import com.android.pos.utils.addOrdersForKitchenOnlineOrder
+import com.android.pos.utils.addOrdersForKitchenOnlineOrderSunmi
+import com.android.pos.utils.addOrdersForKitchenOnlineOrderSunmiInner
+import com.android.pos.utils.addOrdersForKitchenOnlineOrderU220
 import com.android.pos.utils.callback.OrderCallBack
+import com.android.pos.utils.checkItemsforPrinterOnlineOrder
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.showAlert
+import com.android.pos.utils.padLine
 import com.android.pos.utils.printer.PrinterClass
 import com.android.pos.utils.statusUtils.Status
 import com.epson.epos2.printer.Printer
@@ -56,7 +71,10 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
+import java.util.Random
 import javax.inject.Inject
 import kotlin.math.abs
 
@@ -1617,6 +1635,22 @@ class OnlineDetailFragment(
                 LogUtil.logE(TAG, "LowerCAse ${tmps.trimmedLength()}")
 
 
+                builder.addFeedLine(0)
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(fontSizeH, fontSizeW)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+
+                addBuilderText(builder, orderData?.data.deliveryType)
+
+
+
                 if (kitchenSettingModel.showTeamMember) {
 
                     builder.addTextLineSpace(30)
@@ -1898,6 +1932,19 @@ class OnlineDetailFragment(
                 }
 
 
+                builder.addFeedLine(0)
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(fontSizeH, fontSizeW)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+
+                addBuilderText(builder, orderData?.data.deliveryType)
 
                 if (kitchenSettingModel.showTeamMember) {
 
@@ -2196,6 +2243,12 @@ class OnlineDetailFragment(
             if (kitchenSettingModel.showOrderType) {
                 PrintSunmiUtils.printOrderType("Online Order")
             }
+
+            if (kitchenSettingModel.showOrderType) {
+                SunmiPrinterApi.getInstance().lineWrap(1)
+                PrintSunmiUtils.printOrderType(orderData.data.deliveryType)
+            }
+
             SunmiPrinterApi.getInstance().lineWrap(1)
 
             if (kitchenSettingModel.showTeamMember) {
@@ -2351,7 +2404,7 @@ class OnlineDetailFragment(
             SunmiPrintHelper.getInstance().lineWrap(2)
             if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE,false)){
                 PrintSunmiUtils.headerText("OrderID:" + orderData?.data.custom_order_id)
-            }else{
+            } else {
                 PrintSunmiUtils.headerText("OrderID:" + orderData?.data.id)
             }
             SunmiPrintHelper.getInstance().lineWrap(1)
@@ -2359,6 +2412,11 @@ class OnlineDetailFragment(
 
             if (kitchenSettingModel.showOrderType) {
                 PrintSunmiUtils.headerText("Online Order")
+            }
+
+            if (kitchenSettingModel.showOrderType) {
+                SunmiPrintHelper.getInstance().lineWrap(1)
+                PrintSunmiUtils.headerText(orderData?.data.deliveryType)
             }
 
             if (kitchenSettingModel.showTeamMember) {
