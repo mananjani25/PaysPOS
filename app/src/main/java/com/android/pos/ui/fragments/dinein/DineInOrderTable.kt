@@ -98,6 +98,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
 class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
@@ -255,6 +256,85 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         }
     }
 
+    private fun checkVariation(tbItem: TbItem, item: TbItem): Boolean {
+
+        var isSame = true
+
+        var listOfDataMod: ArrayList<Int> = arrayListOf()
+        if (tbItem.variationsAttributes.isNotEmpty()) {
+            tbItem.variationsAttributes.forEach {
+                listOfDataMod.add(it.id ?: 0)
+            }
+        }
+
+        var listOfDataModSelecteItem: ArrayList<Int> = arrayListOf()
+        if (item.variationsAttributes.isNotEmpty()) {
+            item.variationsAttributes.forEach {
+                listOfDataModSelecteItem.add(it.id ?: 0)
+            }
+        }
+
+        if (tbItem.variationsAttributes.isEmpty() && item.variationsAttributes.isEmpty()) return true
+        if (listOfDataMod.containsAll(listOfDataModSelecteItem) && listOfDataMod.size == listOfDataModSelecteItem.size) {
+            if (tbItem.variationsAttributes.get(0).id == item.variationsAttributes.get(0).id) {
+                isSame = true
+            } else {
+                isSame = false
+            }
+        } else {
+            isSame = false
+        }
+
+
+        return isSame
+    }
+
+    fun checkModifierNewLogic(tbItem: TbItem, item: TbItem): Boolean {
+        var isSame = false
+        var listOfDataMod: ArrayList<Int> = arrayListOf()
+        var tbMod: HashMap<Int, Int> = hashMapOf()
+        var itemMod: HashMap<Int, Int> = hashMapOf()
+        if (tbItem.modifiers.isNotEmpty()) {
+            tbItem.modifiers.forEach {
+                tbMod.put(it.id ?: 0, it.modifier_quantity)
+                listOfDataMod.add(it.id ?: 0)
+            }
+        }
+
+        var listOfDataModSelected: ArrayList<Int> = arrayListOf()
+        if (item.modifiers.isNotEmpty()) {
+            item.modifiers.forEach {
+
+                itemMod.put(it.id ?: 0, it.itemQuantity)
+                listOfDataModSelected.add(it.id ?: 0)
+
+            }
+        }
+
+        if (tbItem.modifiers.isEmpty() && item.modifiers.isEmpty()) return true
+
+        if (listOfDataMod.size == listOfDataModSelected.size) {
+
+            isSame = true
+            var selectedList: ArrayList<Boolean> = arrayListOf()
+
+            tbMod.forEach {
+                if (itemMod.containsKey(it.key) && it.value == itemMod.get(it.key)) {
+                    selectedList.add(true)
+
+                } else {
+                    selectedList.add(false)
+                }
+            }
+
+            if (selectedList.contains(false)) {
+                isSame = false
+            }
+        } else {
+            isSame = false
+        }
+        return isSame
+    }
 
     private fun getCustomerList() {
         viewModel.customer().observe(viewLifecycleOwner) {
@@ -2737,7 +2817,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     }
 
     private fun updateAdapterData() {
-        var oldList = dineInTableAdapter.getList()
+        var oldList = dineInTableAdapter.getList() as ArrayList<DineInModel>
         var newList: ArrayList<DineInModel> = arrayListOf()
         var wholeTableAmt = 0.0
         var WTTax = 0.0
@@ -2750,6 +2830,41 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         if (dragTo != -1) {
             oldList.get(dragTo).item?.guestItemId?.let { listOfMoveItemIds.add(it) }
             oldList.get(dragTo).item?.guestItemId = null
+
+            // To Check if similar item exist below moved item in current guest list, if exist then merge item
+            for (k in dragTo + 1 until oldList.size) {
+                if(oldList[k].isHeader == 0){
+                    break
+                }
+                if (oldList[k].isHeader == 1) {
+                    if(oldList[dragTo].item?.itemId == oldList[k].item?.itemId) {
+                        if (checkVariation(oldList[dragTo].item!!, oldList[dragTo].item!!) &&
+                                checkModifierNewLogic(oldList[k].item!!, oldList[dragTo].item!!)) {
+                             oldList[dragTo].item?.itemQuantity = oldList[dragTo].item?.itemQuantity!! + oldList[k].item?.itemQuantity!!
+                            oldList.remove(oldList[k])
+                            break
+                        }
+                    }
+                }
+            }
+
+            // To Check if similar item exist above moved item in current guest list, if exist then merge item
+            for (l in dragTo-1 downTo 0) {
+                if(oldList[l].isHeader == 0){
+                    break
+                }
+                if (oldList[l].isHeader == 1) {
+                    if(oldList[dragTo].item?.itemId == oldList[l].item?.itemId) {
+                        if (checkVariation(oldList[l].item!!, oldList[dragTo].item!!) &&
+                            checkModifierNewLogic(oldList[l].item!!, oldList[dragTo].item!!)) {
+                            oldList[dragTo].item?.itemQuantity = oldList[dragTo].item?.itemQuantity!! + oldList[l].item?.itemQuantity!!
+                            oldList.remove(oldList[l])
+                            break
+                        }
+                    }
+                }
+            }
+
             dragFrom = -1
             dragTo = -1
 
