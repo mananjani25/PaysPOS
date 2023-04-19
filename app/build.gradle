@@ -61,10 +61,12 @@ android {
         dataBinding = true
         // for view binding:
         viewBinding = true
+        aidl true
     }
-    lintOptions {
-        checkReleaseBuilds false
+    namespace 'com.android.pos'
+    lint {
         abortOnError false
+        checkReleaseBuilds false
     }
 }
 
