@@ -901,7 +901,8 @@ class CartFragment(
                     setTaxBifurcationData(it[0].taxlistDynamic as ArrayList<TaxData>)
 
 
-                } else {
+                }
+                else {
                     cartlist = arrayListOf()
                     viewModel.clearListTax()
                     cartAdapter.clearList()
@@ -942,6 +943,8 @@ class CartFragment(
 
 
                 }
+
+                prefProvider.setValue(REDIRECT_FROM, "")
             }
 
         } else {

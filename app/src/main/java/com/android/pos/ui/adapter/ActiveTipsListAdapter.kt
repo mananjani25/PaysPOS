@@ -34,7 +34,7 @@ class ActiveTipsListAdapter() :
             } else {
                 binding.rootLayout.setBackgroundColor(Color.parseColor("#363636"))
                 binding.txtTipTitle.setTextColor(Color.parseColor("#ED5950"))
-                binding.txtTipValue.setTextColor(Color.parseColor("#60FFFFFF"))
+                binding.txtTipValue.setTextColor(Color.parseColor("#FFFFFF"))
             }
 
             binding.apply {
