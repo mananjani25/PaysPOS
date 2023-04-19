@@ -18,7 +18,7 @@
         android:gravity="center"
         android:text="Good"
         android:textColor="#ED5950"
-        android:textSize="@dimen/_8ssp"
+        android:textSize="@dimen/_11ssp"
         android:textStyle="bold" />
 
     <androidx.appcompat.widget.AppCompatTextView
@@ -28,8 +28,9 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="25%"
-        android:textColor="@color/white60"
-        android:textSize="@dimen/_5ssp" />
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_7ssp" />
 
 </LinearLayout>
 
