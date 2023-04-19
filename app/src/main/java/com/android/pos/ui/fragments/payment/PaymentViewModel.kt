@@ -176,10 +176,10 @@ open class PaymentViewModel @Inject constructor(
                                         )
                                     }"
                                 )
-                                if (prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)) {
+                             /*   if (prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)) {
                                     LogUtil.logE(TAG, "QueueStart")
                                     _queueStartSaveOrder.value = Event(createOrderResponse)
-                                }
+                                }*/
                                 if (onlySave) {
                                     LogUtil.logE("QueueCheck", "OnlySave")
 
