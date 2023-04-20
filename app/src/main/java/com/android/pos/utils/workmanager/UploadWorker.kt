@@ -529,14 +529,16 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
             currentOrderIndex = 0
             currentPrinterIndex = 0
 
-            sendDataToPrint(
-                listOfPrintersData,
-                0,
-                printerObjList.get(listOfPrintersData[0].macAddress),
-                listOfPrintersData.get(0).printerQueueModelList,
-                listOfPrintersData[0].macAddress,
-                0
-            )
+            if (orderSize != 0) {
+                sendDataToPrint(
+                    listOfPrintersData,
+                    0,
+                    printerObjList.get(listOfPrintersData[0].macAddress),
+                    listOfPrintersData.get(0).printerQueueModelList,
+                    listOfPrintersData[0].macAddress,
+                    0
+                )
+            }
 
 
             //
@@ -2045,7 +2047,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
             LogUtil.logE(TAG, "DeleteUrl ${deleteUrl}")
             params.addProperty("url", deleteUrl)
 
-            subscription?.perform("delete_order",params)
+            subscription?.perform("delete_order", params)
 
 
             //p0?.endTransaction()
@@ -2114,14 +2116,47 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
         }
 
         runBlocking {
-            if (p0 == printerObjList.get(kitchenPrinterList.get(kitchenPrinterList.size - 1).macAddress)) {
-                delay(5000)
+            if (listOfPrintersData.size - 1 == currentPrinterIndex) {
+                Log.e(
+                    TAG,
+                    "listOfPrinerData:   ${listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size}"
+                )
+                Log.e(TAG, "listOfcurrentOrderIndex:   ${currentOrderIndex}")
 
-                val params = JsonObject()
-                params.addProperty("id", locationId)
-                params.addProperty("url", baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3)
-                subscription?.perform("received", params)
+
+
+                if (listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size - 1 == currentOrderIndex) {
+                    delay(5000)
+
+                    val params = JsonObject()
+                    params.addProperty("id", locationId)
+                    params.addProperty("url", baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3)
+                    subscription?.perform("received", params)
+
+                } else {
+
+                    sendDataToPrint(
+                        listOfPrintersData,
+                        currentPrinterIndex,
+                        printerObjList.get(listOfPrintersData.get(currentPrinterIndex).macAddress),
+                        listOfPrintersData.get(currentPrinterIndex).printerQueueModelList,
+                        listOfPrintersData.get(currentPrinterIndex).macAddress,
+                        currentOrderIndex++
+
+                    )
+                }
+
             }
+
+
+            /*   if (p0 == printerObjList.get(kitchenPrinterList.get(kitchenPrinterList.size - 1).macAddress)) {
+                   delay(5000)
+
+                   val params = JsonObject()
+                   params.addProperty("id", locationId)
+                   params.addProperty("url", baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3)
+                   subscription?.perform("received", params)
+               }*/
         }
     }
 
