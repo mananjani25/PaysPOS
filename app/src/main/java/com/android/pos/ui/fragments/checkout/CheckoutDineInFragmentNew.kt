@@ -44,6 +44,7 @@ import com.android.pos.ui.fragments.magtekPro.MTParser
 import com.android.pos.ui.fragments.magtekPro.SessionManager
 import com.android.pos.ui.fragments.payment.PaymentBoldPosFragment
 import com.android.pos.ui.fragments.payment.PaymentViewModel
+import com.android.pos.ui.fragments.settings.tip.TipListViewModel
 import com.android.pos.utils.*
 import com.android.pos.utils.callback.DeleteOptionCallback
 import com.android.pos.utils.callback.magtekCallback
@@ -189,10 +190,16 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 passcodeViewModel,
                 dineInViewModel
             )
+//            {
+//                tipAmount = it
+//                tipAmountCalculation()
+//            }
         }
 
         return binding.root
     }
+
+    private val tipListViewModel by activityViewModels<TipListViewModel>()
 
     override fun onResume() {
         super.onResume()
@@ -200,6 +207,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             presentation.show()
             presentation.onDisplayChanged()
             presentation.showSurcharge(true)
+            //presentation.showWouldYouLikeToAddTipScreen(tipListViewModel,WholetotalPrice)
         }
     }
 

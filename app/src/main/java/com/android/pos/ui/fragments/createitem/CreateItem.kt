@@ -34,6 +34,7 @@ import com.android.pos.data.remote.Constants.DIALOG_KEY_VARIATION_DETAILS_REMOVE
 import com.android.pos.databinding.CreateItemBinding
 import com.android.pos.ui.adapter.ModifierSetsListAdapter
 import com.android.pos.ui.adapter.VariationListAdapter
+import com.android.pos.ui.fragments.inventory.CategoriesViewModel
 import com.android.pos.utils.*
 import com.android.pos.utils.MethodUtils.Companion.isDoubleClick
 import com.android.pos.utils.callback.ItemCallback
@@ -41,6 +42,7 @@ import com.android.pos.utils.callback.UpdateVariationCallback
 import com.android.pos.utils.extensions.getNavigationResultLiveData
 import com.android.pos.utils.extensions.liveSnackBar
 import com.android.pos.utils.extensions.runOnUiThread
+import com.android.pos.utils.statusUtils.Status
 import com.bumptech.glide.Glide
 import com.bumptech.glide.Priority
 import com.bumptech.glide.load.DataSource
@@ -78,6 +80,8 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback, It
     var spinnerList: ArrayList<ModifierSet> = arrayListOf()
     var dragFrom = -1
     var dragTo = -1
+    private val categoriesViewModel by viewModels<CategoriesViewModel>()
+
 
     // private lateinit var passedVariationList: ArrayList<List<VariationsAttribute>>
 
@@ -650,6 +654,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback, It
 
         } else {
             viewModel.itemDetails.value?.productCode = productCode ?: ""
+            getAllTaxesList()
         }
 
         binding.etItemPrice.addTextChangedListener(
@@ -756,6 +761,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback, It
     private fun openTaxDialog() {
         val bundle = Bundle().apply {
             putStringArrayList("selectedId", viewModel.getSelectedTaxList())
+            putBoolean("isEdit", isEdit)
         }
         if (findNavController().currentDestination?.id == R.id.createItem) {
             findNavController().navigate(R.id.action_createItem_to_taxesDialog, bundle)
@@ -1045,5 +1051,25 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback, It
     bundle
     )*/
 
-
+    private fun getAllTaxesList() {
+        var nameToDisplay = ""
+        categoriesViewModel.enableTaxes.observe(viewLifecycleOwner) {
+            it?.let { resource ->
+                when (resource.status) {
+                    Status.SUCCESS -> {
+                        if (it.data?.isNotEmpty() == true) {
+                            for (i in 0 until it.data.size) {
+                                nameToDisplay += "${it.data[i].name}, "
+                                if (i > 4) break
+                            }
+                            if (nameToDisplay.isNotEmpty()) {
+                                viewModel.taxNameToDisplay = nameToDisplay.dropLast(2)
+                                binding.txtTaxName.text = viewModel.taxNameToDisplay
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

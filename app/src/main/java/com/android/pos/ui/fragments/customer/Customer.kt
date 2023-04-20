@@ -370,15 +370,19 @@ class Customer : Fragment(), ItemCallback {
         binding.layoutTool.txtHome.setOnClickListener {
             findNavController().navigate(R.id.action_customer_to_dashboardCategoryNew)
         }
+        binding.layoutTool.imgOptionMenu.setImageResource(R.drawable.ic_add)
 
         binding.layoutTool.imgOptionMenu.setOnClickListener {
 
+            val bundle: Bundle = bundleOf("isEdit" to false)
+            findNavController().navigate(R.id.action_customer_to_addEditCustomer, bundle)
+
             // showDialog()
-            if (binding.linearCustomerDialog.visibility == View.VISIBLE) {
-                binding.linearCustomerDialog.visibility = View.GONE
-            } else {
-                binding.linearCustomerDialog.visibility = View.VISIBLE
-            }
+//            if (binding.linearCustomerDialog.visibility == View.VISIBLE) {
+//                binding.linearCustomerDialog.visibility = View.GONE
+//            } else {
+//                binding.linearCustomerDialog.visibility = View.VISIBLE
+//            }
             /* if (binding.linearCustomerDialog.visibility == View.VISIBLE){
 
              }

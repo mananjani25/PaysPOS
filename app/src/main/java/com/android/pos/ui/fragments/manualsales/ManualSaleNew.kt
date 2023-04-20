@@ -11,6 +11,7 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.*
 import android.widget.*
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.*
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.os.bundleOf
@@ -130,6 +131,15 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
         binding.footer.txtEmployeeName.text =
             prefProvider.getValue(Constants.EMPLOYEE_NAME, "").toString()
+
+        val callback: OnBackPressedCallback =
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    prefProvider.setValue(Constants.REDIRECT_FROM, "")
+                    findNavController().popBackStack()
+                }
+            }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
 
 
         getManualCategoryId()
@@ -584,7 +594,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                     val mergeItems = merge(mainItems!!, manualItems!!)
                     mainCartList[0].items = mergeItems
                     if (cartList!![0].discountPrice != 0.00)
-                        mainCartList[0].discountPrice += cartList!![0].discountPrice
+                        mainCartList[0].discountPrice = cartList!![0].discountPrice
 
                     if (cartList!![0].note.isNotEmpty())
                         mainCartList[0].note = cartList!![0].note
@@ -1415,18 +1425,22 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 s: CharSequence, start: Int, before: Int,
                 count: Int
             ) {
-                val enteredString = s.toString()
-                if (enteredString.startsWith("0")) {
+                if(s.toString().isNotEmpty()) {
+                    val enteredString = s.toString()
+                    totalquantity = s.toString().toInt()
+                    if (enteredString.startsWith("0")) {
 
-                    if (enteredString.length > 0) {
-                        txtQty.setText(enteredString.substring(1))
-                    } else {
-                        txtQty.setText("")
+                        if (enteredString.length > 0) {
+                            txtQty.setText(enteredString.substring(1))
+                        } else {
+                            txtQty.setText("")
+                        }
+                    } else if (s.toString().trim().isNotEmpty() && s.toString().toInt() > 1000) {
+                        txtQty.setText("1000")
+                        totalquantity = txtQty.text.toString().toInt()
                     }
-                } else if (s.toString().trim().isNotEmpty() && s.toString().toInt() > 15) {
-                    txtQty.setText("15")
+                    txtQty.setSelection(txtQty.text!!.length)
                 }
-
             }
 
             override fun beforeTextChanged(
@@ -1497,17 +1511,15 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         }
 
         llPlus.setOnClickListener {
-            qty += 1
-            totalquantity = qty
-            txtQty.setText(qty.toString())
+            totalquantity += 1
+            txtQty.setText(totalquantity.toString())
         }
         llMinus.setOnClickListener {
 
-            if (qty > 1) {
-                qty -= 1
+            if (totalquantity > 1) {
+                totalquantity -= 1
             }
-            totalquantity = qty
-            txtQty.setText(qty.toString())
+            txtQty.setText(totalquantity.toString())
         }
 
         btnRemove.setOnClickListener {

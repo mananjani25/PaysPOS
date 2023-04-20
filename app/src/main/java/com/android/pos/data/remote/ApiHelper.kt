@@ -554,6 +554,12 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     ) =
         getResult { apiService.orderUpdateTip(orderId, customerId, is_captured, data) }
 
+    suspend fun updateTipWithSignature(orderId: Int, signatureInBase64: String, tip: Double) =
+        getResult { apiService.updateTipWithSignature(orderId, signatureInBase64, tip) }
+
+    suspend fun updateTipWithSignatureFM(option: HashMap<String, Any>) =
+        getResult { apiService.updateTipWithSignatureFM(option) }
+
     suspend fun updateKitchenFireStatus(id: Int, isFired: Boolean, items: String) =
         getResult {
             apiService.updateKitchenFireStatus(id, isFired, items)

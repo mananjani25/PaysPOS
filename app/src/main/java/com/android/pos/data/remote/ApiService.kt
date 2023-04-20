@@ -115,6 +115,7 @@ import com.android.pos.data.remote.Constants.UPDATE_ONLINE_ORDER
 import com.android.pos.data.remote.Constants.UPDATE_PRINTER_STATUS
 import com.android.pos.data.remote.Constants.UPDATE_SERVICECHARGE
 import com.android.pos.data.remote.Constants.UPDATE_TIP
+import com.android.pos.data.remote.Constants.UPDATE_TIP_WITH_SIGNATURE
 import com.android.pos.data.remote.Constants.USERS_LOG_IN
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -788,6 +789,13 @@ interface ApiService {
         @Body data: CashInOutModel,
     ): BaseResponse
 
+    @FormUrlEncoded
+    @PUT(UPDATE_TIP_WITH_SIGNATURE)
+    suspend fun updateTipWithSignatureFM(@FieldMap option: HashMap<String, Any>): BaseResponse
+
+    @FormUrlEncoded
+    @PUT(UPDATE_TIP_WITH_SIGNATURE)
+    suspend fun updateTipWithSignature(@Field("id") id: Int, @Field("signature") signature: String, @Field("tips") tip: Double): BaseResponse
 
     @PUT(FIRE_ITEM_TO_KITCHEN)
     suspend fun updateKitchenFireStatus(

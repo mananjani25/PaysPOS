@@ -146,16 +146,29 @@
                     android:orientation="vertical"
                     android:visibility="visible">
 
-                    <Spinner
-                        android:id="@+id/edtCountry"
+                    <RelativeLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@null"
-                        android:enabled="false"
-                        android:padding="@dimen/_9sdp"
-                        android:textColor="@color/txt_color_blue"
-                        android:textSize="@dimen/_5mdpi"
-                        android:theme="@style/SpinnerTheme" />
+                        android:layout_height="wrap_content">
+
+                        <Spinner
+                            android:id="@+id/edtCountry"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/border_spiner"
+                            android:enabled="false"
+                            android:padding="@dimen/_9sdp"
+                            android:textColor="@color/txt_color_blue"
+                            android:textSize="@dimen/_5mdpi"
+                            android:theme="@style/SpinnerTheme1" />
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:paddingEnd="@dimen/_3sdp"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:src="@drawable/ic_arrow_drop_down" />
+                    </RelativeLayout>
 
                     <View
                         android:layout_width="match_parent"
