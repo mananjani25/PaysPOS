@@ -22,8 +22,8 @@ class OnlineOrderItemModifierAdapter :
         fun bind(item: OnlineOrderResponseModel.Data.OrderItem.OrderItemModifier) {
             LogUtil.logE(TAG,"ModifierItem:  ${Gson().toJson(item)}")
 
-            binding.txtPrice.text = MethodUtils.roundOffAmount(item.price/item.quantity)
-            binding.txtCustomerName.text = MethodUtils.roundOffAmount(item.price/* * item.quantity*/)
+            binding.txtPrice.text = MethodUtils.roundOffAmount(item.price)
+            binding.txtCustomerName.text = MethodUtils.roundOffAmount(item.price * item.quantity)
 
             binding.model = item
             binding.executePendingBindings()
