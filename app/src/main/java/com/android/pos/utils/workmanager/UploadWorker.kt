@@ -17,6 +17,7 @@ import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.model.responseModel.GetKitchenReceiptSettingsResponse
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.DELETE_QUEUE_ORDER_PHASE3
 import com.android.pos.data.remote.Constants.IS_MASTER_TERMINAL
 import com.android.pos.utils.*
 import com.android.pos.utils.printer.PrinterClass
@@ -52,10 +53,13 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
     private var isConnectedU220: Boolean = false
     val printerQueueModel: PrinterQueueModel = PrinterQueueModel()
     private var printerObjList: HashMap<String, Printer> = hashMapOf()
+    var listOfPrintersData: ArrayList<PrinterJSONElementData> = arrayListOf()
 
     var printerBreak: Boolean = false
-    var printerIndex: Int = 0
-    var orderIndex: Int = 0
+    var printerSize: Int = 0
+    var orderSize: Int = 0
+    var currentPrinterIndex = 0
+    var currentOrderIndex = 0
     val mgr = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
     private var subscription: Subscription? = null
@@ -446,10 +450,11 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
             isPrinterRunning = true
 
 
-            var listOfPrintersData: ArrayList<PrinterJSONElementData> = arrayListOf()
             var dataList: JsonArray = model.asJsonObject.get("data").asJsonArray
 
 
+            listOfPrintersData.clear()
+            listOfPrintersData = arrayListOf()
             var listofPrinterOrders: ArrayList<PrinterQueueModel> = arrayListOf()
             dataList.forEach {
 
@@ -518,22 +523,20 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
             }
 
+            printerSize = listOfPrintersData.size
+            orderSize = listOfPrintersData.get(0).printerQueueModelList.size
 
+            currentOrderIndex = 0
+            currentPrinterIndex = 0
 
-
-            listOfPrintersData.forEach {
-                var printObj = printerObjList.get(it.macAddress)
-
-
-
-                for (m in 0 until it.printerQueueModelList.size) {
-
-                }
-                /*it.printerQueueModelList.forEach {it1->
-                    printObj?.let { it2 -> callPrinter(it2,it1 ,it.macAddress) }
-                }*/
-
-            }
+            sendDataToPrint(
+                listOfPrintersData,
+                0,
+                printerObjList.get(listOfPrintersData[0].macAddress),
+                listOfPrintersData.get(0).printerQueueModelList,
+                listOfPrintersData[0].macAddress,
+                0
+            )
 
 
             //
@@ -791,6 +794,18 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
              isPrinterRunning = false*//*
         }
 */
+    }
+
+    private suspend fun sendDataToPrint(
+        listOfPrintersData: ArrayList<PrinterJSONElementData>,
+        currentPrinterIndex: Int,
+        printerObj: Printer?,
+        printerQueueModelList: ArrayList<PrinterQueueModel>,
+        macAddress: String,
+        orderIndex: Int
+    ) {
+        printerObj?.let { callPrinter(it, printerQueueModelList.get(orderIndex), macAddress) }
+
     }
 
     private fun checkPrinterHasCatOrNot(
@@ -2021,6 +2036,18 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
         if (p1 == 0) {
             p0?.clearCommandBuffer()
+
+            val params = JsonObject()
+            var deleteUrl =
+                baseUrl + DELETE_QUEUE_ORDER_PHASE3 + listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.get(
+                    currentOrderIndex
+                ).id
+            LogUtil.logE(TAG, "DeleteUrl ${deleteUrl}")
+            params.addProperty("url", deleteUrl)
+
+            subscription?.perform("delete_order",params)
+
+
             //p0?.endTransaction()
 
 
