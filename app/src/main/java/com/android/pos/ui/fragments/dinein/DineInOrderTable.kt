@@ -69,15 +69,11 @@ import com.android.pos.ui.adapter.DineInTableAdapter
 import com.android.pos.ui.fragments.checkout.CheckoutDineInPaymentViewModel
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
-import com.android.pos.ui.fragments.dashboard.bolddashboard.DashboardCategoryBoldPOS
 import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
 import com.android.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.android.pos.utils.*
-import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.liveSnackBar
-import com.android.pos.utils.extensions.runOnUiThread
-import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.printer.PrinterClass
 import com.android.pos.utils.statusUtils.Status
 import com.epson.epos2.printer.Printer
@@ -90,15 +86,12 @@ import com.sunmi.externalprinterlibrary.api.ConnectCallback
 import com.sunmi.externalprinterlibrary.api.SunmiPrinter
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
 class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
@@ -2130,24 +2123,27 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     private fun reorderedItemObserver() {
         viewModel.reorderItemsSuccess.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { baseResponse ->
+                var newList = dineInTableAdapter.getList()
                 if (baseResponse != null) {
                     listOfMoveItemIds.clear()
+                    prefProvider.setValueboolean(DINE_IN_UPDATE, false)
+                    // Assign guest item id to existing item
                     for (i in 0 until baseResponse.order.guestAttributes.size) {
                         var guestItemsList =
                             baseResponse.order.guestAttributes[i].guestItemAttributes
                         if (guestItemsList.isNotEmpty()) {
                             guestItemsList.forEach {
-                                dineInTableAdapter.getList().forEach { dineInItem ->
+                                newList.forEach { dineInItem ->
                                     if (dineInItem.isHeader == 1) {
-                                        if (it.itemId == dineInItem.item?.itemId) {
+                                        if (it.itemId == dineInItem.item?.itemId && it.orderItemId == dineInItem.item?.orderItemId) {
                                             dineInItem.item?.guestItemId = it.id
                                         }
                                     }
-
                                 }
                             }
                         }
                     }
+                    dineInTableAdapter.setList(newList as ArrayList<DineInModel>)
                 }
             }
         }
@@ -2866,14 +2862,19 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             // To Check if similar item exist below moved item in current guest list, if exist then merge item
             for (k in dragTo + 1 until oldList.size) {
-                if(oldList[k].isHeader == 0){
+                if (oldList[k].isHeader == 0) {
                     break
                 }
                 if (oldList[k].isHeader == 1) {
-                    if(oldList[dragTo].item?.itemId == oldList[k].item?.itemId) {
+                    if (oldList[dragTo].item?.itemId == oldList[k].item?.itemId) {
                         if (checkVariation(oldList[dragTo].item!!, oldList[dragTo].item!!) &&
-                                checkModifierNewLogic(oldList[k].item!!, oldList[dragTo].item!!)) {
-                             oldList[dragTo].item?.itemQuantity = oldList[dragTo].item?.itemQuantity!! + oldList[k].item?.itemQuantity!!
+                            checkModifierNewLogic(oldList[k].item!!, oldList[dragTo].item!!)
+                        ) {
+                            var updatedQuantity: Int =
+                                oldList[dragTo].item?.itemQuantity!! + oldList[k].item?.itemQuantity!!
+                            oldList[dragTo].item = oldList[k].item
+                            oldList[dragTo].item?.itemQuantity = updatedQuantity
+                            oldList[dragTo].item?.sort = dragTo
                             oldList.remove(oldList[k])
                             break
                         }
@@ -2882,15 +2883,20 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             }
 
             // To Check if similar item exist above moved item in current guest list, if exist then merge item
-            for (l in dragTo-1 downTo 0) {
-                if(oldList[l].isHeader == 0){
+            for (l in dragTo - 1 downTo 0) {
+                if (oldList[l].isHeader == 0) {
                     break
                 }
                 if (oldList[l].isHeader == 1) {
-                    if(oldList[dragTo].item?.itemId == oldList[l].item?.itemId) {
+                    if (oldList[dragTo].item?.itemId == oldList[l].item?.itemId) {
                         if (checkVariation(oldList[l].item!!, oldList[dragTo].item!!) &&
-                            checkModifierNewLogic(oldList[l].item!!, oldList[dragTo].item!!)) {
-                            oldList[dragTo].item?.itemQuantity = oldList[dragTo].item?.itemQuantity!! + oldList[l].item?.itemQuantity!!
+                            checkModifierNewLogic(oldList[l].item!!, oldList[dragTo].item!!)
+                        ) {
+                            var updatedQuantity: Int =
+                                oldList[dragTo].item?.itemQuantity!! + oldList[l].item?.itemQuantity!!
+                            oldList[dragTo].item = oldList[l].item
+                            oldList[dragTo].item?.itemQuantity = updatedQuantity
+                            oldList[dragTo].item?.sort = dragTo
                             oldList.remove(oldList[l])
                             break
                         }
@@ -3085,6 +3091,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     private fun updateOrderCall() {
         cartList = getCartModel(dineInTableAdapter.getList().toCollection(arrayListOf()))
         cartList?.listOfItemRemoved = listOfMoveItemIds
+        prefProvider.setValueboolean(DINE_IN_UPDATE, true)
         val orderRequestModel = dashboardViewModel.updateOrder(cartList!!)
         orderId?.let { viewModel.updateOrder(it, orderRequestModel, true) }
         listOfMoveItemIds.clear()
