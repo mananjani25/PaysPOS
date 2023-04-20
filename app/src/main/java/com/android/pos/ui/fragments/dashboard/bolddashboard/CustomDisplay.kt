@@ -10,6 +10,7 @@ import android.util.Log
 import android.view.*
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.pos.R
 import com.android.pos.data.entities.*
@@ -1180,6 +1181,7 @@ class CustomDisplay(
         activeTipsListAdapter = ActiveTipsListAdapter()
         binding.apply {
             rvActiveTipsList.apply {
+                layoutManager = GridLayoutManager(context,4)
                 adapter = activeTipsListAdapter
             }
         }
@@ -1198,6 +1200,7 @@ class CustomDisplay(
                 it.data.forEach { data ->
                     data.isChecked = false
                 }
+                binding.rvActiveTipsList.layoutManager = GridLayoutManager(context,it.data.size)
                 activeTipsListAdapter.setList(it.data, wholeTotalPrice)
                 activeTipsListAdapter.setListner(this)
                 lifecycleOwner.lifecycleScope.launch {
@@ -1441,15 +1444,15 @@ class CustomDisplay(
                 signLinearLayout.gravity = Gravity.CENTER_VERTICAL
             }
 
-            binding.clearSignLayout.setOnSingleClickListener {
+            binding.clearSignLayout.setOnClickListener {
                 binding.signaturePad.clear()
             }
 
-            binding.otherRootLayout.setOnSingleClickListener {
+            binding.otherRootLayout.setOnClickListener {
                 showTipKeypad(wholeTotalPrice)
             }
 
-            binding.noTipRootLayout.setOnSingleClickListener {
+            binding.noTipRootLayout.setOnClickListener {
                 showThankYou(mWholeTotalPrice)
             }
 
