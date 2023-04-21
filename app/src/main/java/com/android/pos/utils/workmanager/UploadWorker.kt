@@ -484,6 +484,36 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                             if (it.asJsonObject.has("order_items")) {
                                 var orderItemsArray = it.asJsonObject.get("order_items").asJsonArray
                                 orderItemsArray.forEach { it1 ->
+                                    var listOfMod: ArrayList<CreateOrderResponse.Data.Order.OrderItem.OrderItemModifiers> =
+                                        arrayListOf()
+                                    if (it1.asJsonObject.has("modifiers")) {
+                                        var modList = it1.asJsonObject.get("modifiers").asJsonArray
+                                        if (modList.size() != 0) {
+                                            modList.forEach {
+                                                listOfMod.add(
+                                                    CreateOrderResponse.Data.Order.OrderItem.OrderItemModifiers(
+                                                        id = it.asJsonObject.get("id").asInt,
+                                                        orderItemId = it.asJsonObject.get("order_item_id").asInt,
+                                                        name = it.asJsonObject.get("name").asString,
+                                                        quantity = it.asJsonObject.get("quantity").asInt,
+                                                        modifierSetId = 0,
+                                                        isModifier = true,
+                                                        modifierQuantity = it.asJsonObject.get("modifier_quantity").asInt,
+                                                        createdAt = "",
+                                                        updatedAt = "",
+                                                        totalPrice = 0.0,
+                                                        orderId = 0,
+                                                        price = 0.0
+                                                    )
+                                                )
+
+                                            }
+
+                                        }
+
+
+                                    }
+
                                     orderItems.add(
                                         CreateOrderResponse.Data.Order.OrderItem(
                                             categoryId = it1.asJsonObject.get("category_id").asInt,
@@ -503,7 +533,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                                             timestamp = "",
                                             quantity = 1,
                                             price = 0.0,
-                                            orderItemModifiers = listOf(),
+                                            orderItemModifiers = listOfMod,
                                             note = it1.asJsonObject.get("item_note").asString
 
 
