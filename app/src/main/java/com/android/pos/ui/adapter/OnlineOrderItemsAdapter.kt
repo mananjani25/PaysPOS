@@ -20,15 +20,15 @@ class OnlineOrderItemsAdapter :
         fun bind(item: OnlineOrderResponseModel.Data.OrderItem) {
             var totalPri = item.totalPrice
             var price = item.price
-            if (item.orderItemModifiers.isNotEmpty()) {
-
-                item.orderItemModifiers.forEach {
-                    totalPri += (it.price * it.quantity)
-                    price += it.price
-                }
-
-
-            }
+//            if (item.orderItemModifiers.isNotEmpty()) {
+//
+//                item.orderItemModifiers.forEach {
+//                    totalPri += (it.price * it.quantity)
+//                    price += it.price
+//                }
+//
+//
+//            }
             binding.txtPrice.text = MethodUtils.roundOffAmount(price)
             binding.CustomFontRegularStyle.text = MethodUtils.roundOffAmount(totalPri)
 

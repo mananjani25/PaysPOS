@@ -637,36 +637,44 @@ class DineInFragment : Fragment() {
                     Log.d(TAG, "clickInInflatedLayout: dynamic " + dineInFloorTableModel.lock_by_id)
                     Log.d(TAG, "clickInInflatedLayout: isadmin " + prefProvider.isAdmin())
                     if (dineInFloorTableModel.currentOrderDetails != null) {
-                        val bundle = Bundle()
-                        bundle.putBoolean("isFromFloor", true)
-                        bundle.putBoolean("isMerged", false)
-                        bundle.putParcelable("floorPlan", dineInFloorTableModel)
+                       try {
+                           val bundle = Bundle()
+                           bundle.putBoolean("isFromFloor", true)
+                           bundle.putBoolean("isMerged", false)
+                           bundle.putParcelable("floorPlan", dineInFloorTableModel)
 
 
-                        findNavController().navigate(
-                            R.id.action_dineInFragment_to_dineInOrderTable,
-                            bundle
-                        )
+                           findNavController().navigate(
+                               R.id.action_dineInFragment_to_dineInOrderTable,
+                               bundle
+                           )
+                       } catch (e: Exception) {
+                           e.printStackTrace()
+                       }
                     } else if (dineInFloorTableModel.lock_by_id == prefProvider.getValueInt(
                             EMPLOYEE_ID, 0
                         )
                     ) {
                         prefProvider.setValue(Constants.ORDER_TYPE, Constants.DINE_IN)
                         prefProvider.setValue(Constants.ORDER_TYPE_NAME, Constants.DINE_IN)
-                        val bundle = bundleOf(
-                            "isFromDineIn" to true,
-                            "numberOfGuest" to dineInFloorTableModel.chairCount,
-                            "floorplan" to dineInFloorTableModel
-                        )
-                        prefProvider.setValueInt(
-                            Constants.DINE_IN_TABLE_ID,
-                            dineInFloorTableModel.id
-                        )
-                        prefProvider.setValueboolean(Constants.DINE_IN_STATUS, true)
-                        findNavController().navigate(
-                            R.id.action_dineInFragment_to_dashboardCategoryBoldPOS,
-                            bundle
-                        )
+                        try {
+                            val bundle = bundleOf(
+                                "isFromDineIn" to true,
+                                "numberOfGuest" to dineInFloorTableModel.chairCount,
+                                "floorplan" to dineInFloorTableModel
+                            )
+                            prefProvider.setValueInt(
+                                Constants.DINE_IN_TABLE_ID,
+                                dineInFloorTableModel.id
+                            )
+                            prefProvider.setValueboolean(Constants.DINE_IN_STATUS, true)
+                            findNavController().navigate(
+                                R.id.action_dineInFragment_to_dashboardCategoryBoldPOS,
+                                bundle
+                            )
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
                     } else {
                         var status = ""
                         if (dineInFloorTableModel.lock_by_name != null) {
@@ -730,25 +738,30 @@ class DineInFragment : Fragment() {
                 }
 
             } else if (dineInFloorTableModel.status == AVAILABLE) {
-
-                val bundle = Bundle()
-                bundle.putBoolean("isMerged", false)
-                bundle.putParcelable("dineInFloorTableObject", dineInFloorTableModel)
-                findNavController().navigate(
-                    R.id.action_dineInFragment_to_dineInGuestFragment,
-                    bundle
-                )
-
+                try {
+                    val bundle = Bundle()
+                    bundle.putBoolean("isMerged", false)
+                    bundle.putParcelable("dineInFloorTableObject", dineInFloorTableModel)
+                    findNavController().navigate(
+                        R.id.action_dineInFragment_to_dineInGuestFragment,
+                        bundle
+                    )
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
             } else if (dineInFloorTableModel.status == MERGED) {
                 LogUtil.logE(TAG, "dineInFloorTableModel:  ${Gson().toJson(dineInFloorTableModel)}")
-
-                val bundle = Bundle()
-                bundle.putBoolean("isMerged", true)
-                bundle.putParcelable("dineInFloorTableObject", dineInFloorTableModel)
-                findNavController().navigate(
-                    R.id.action_dineInFragment_to_dineInGuestFragment,
-                    bundle
-                )
+                try {
+                    val bundle = Bundle()
+                    bundle.putBoolean("isMerged", true)
+                    bundle.putParcelable("dineInFloorTableObject", dineInFloorTableModel)
+                    findNavController().navigate(
+                        R.id.action_dineInFragment_to_dineInGuestFragment,
+                        bundle
+                    )
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
 
 
             } else if (dineInFloorTableModel.status == MERGEDANDOCCUPIED) {
@@ -762,16 +775,20 @@ class DineInFragment : Fragment() {
                         TAG,
                         "dineInFloorTableModelMErged:  ${Gson().toJson(dineInFloorTableModel)}"
                     )
-                    val bundle = Bundle()
-                    bundle.putBoolean("isFromFloor", true)
-                    bundle.putBoolean("isMerged", false)
-                    bundle.putParcelable("floorPlan", dineInFloorTableModel)
+                    try {
+                        val bundle = Bundle()
+                        bundle.putBoolean("isFromFloor", true)
+                        bundle.putBoolean("isMerged", false)
+                        bundle.putParcelable("floorPlan", dineInFloorTableModel)
 
 
-                    findNavController().navigate(
-                        R.id.action_dineInFragment_to_dineInOrderTable,
-                        bundle
-                    )
+                        findNavController().navigate(
+                            R.id.action_dineInFragment_to_dineInOrderTable,
+                            bundle
+                        )
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
                 } else {
                     var status = ""
                     if (dineInFloorTableModel.lock_by_name != null) {

@@ -4868,24 +4868,26 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 )
             }
 
-            if (cashDiscountGlobal > 0) {
-                val cashDis =
-                    cashDiscountGlobal / (getOrderDetailsResponse?.guestAttributes?.size?.minus(
-                        1
-                    ) ?: 1)
+            if (!paymentType.equals("Unpaid", true)) {
+                if (cashDiscountGlobal > 0) {
+                    val cashDis =
+                        cashDiscountGlobal / (getOrderDetailsResponse?.guestAttributes?.size?.minus(
+                            1
+                        ) ?: 1)
 
-                PrintSunmiUtils.cashDiscount(
-                    padLine(
-                        "Cash Discount",
+                    PrintSunmiUtils.cashDiscount(
+                        padLine(
+                            "Cash Discount",
 
-                        "-$" + MethodUtils.roundOffAmountString(cashDis),
-                        if (customerSettingModel.fonts == Constants.LARGE) {
-                            23
-                        } else {
-                            48
-                        }
-                    ).toString()
-                )
+                            "-$" + MethodUtils.roundOffAmountString(cashDis),
+                            if (customerSettingModel.fonts == Constants.LARGE) {
+                                23
+                            } else {
+                                48
+                            }
+                        ).toString()
+                    )
+                }
             }
 
 
@@ -5373,24 +5375,26 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 )
             }
 
-            if (cashDiscountGlobal > 0) {
-                val cashDis =
-                    cashDiscountGlobal / (getOrderDetailsResponse?.guestAttributes?.size?.minus(
-                        1
-                    ) ?: 1)
+            if (!paymentType.equals("Unpaid", true)) {
+                if (cashDiscountGlobal > 0) {
+                    val cashDis =
+                        cashDiscountGlobal / (getOrderDetailsResponse?.guestAttributes?.size?.minus(
+                            1
+                        ) ?: 1)
 
-                PrintSunmiUtils.normalText(
-                    padLine(
-                        "Cash Discount",
+                    PrintSunmiUtils.normalText(
+                        padLine(
+                            "Cash Discount",
 
-                        "-$" + MethodUtils.roundOffAmountString(cashDis),
-                        if (customerSettingModel.fonts == Constants.LARGE) {
-                            23
-                        } else {
-                            48
-                        }
-                    ).toString()
-                )
+                            "-$" + MethodUtils.roundOffAmountString(cashDis),
+                            if (customerSettingModel.fonts == Constants.LARGE) {
+                                23
+                            } else {
+                                48
+                            }
+                        ).toString()
+                    )
+                }
             }
 
 
