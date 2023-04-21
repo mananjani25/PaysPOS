@@ -63,11 +63,11 @@ android {
         viewBinding = true
         aidl true
     }
-    lintOptions {
-        checkReleaseBuilds false
-        abortOnError false
-    }
     namespace 'com.android.pos'
+    lint {
+        abortOnError false
+        checkReleaseBuilds false
+    }
 }
 
 dependencies {
