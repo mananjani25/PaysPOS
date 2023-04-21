@@ -192,12 +192,15 @@ open class PaymentViewModel @Inject constructor(
                                     _queueStart.value = Event(createOrderResponse)
 
                                 } else {
-                                    if (createOrderResponse.data.order.orderType != "Dine In" && response.data.order.payments[response.data.order.payments.size - 1].paymentType != "Card") {
-                                        cashLogApi(createOrderResponse, "in")
-                                        LogUtil.logE("QueueCheck", "CashLogAPI")
-                                    } else {
-                                        _data.value = Event(createOrderResponse)
-                                        LogUtil.logE("QueueCheck", "CreateOrderData")
+                                    //Added by Dharmesh Basapati to avoid crash due to empty payments array
+                                    if( response.data.order.payments.isNotEmpty()){
+                                        if (createOrderResponse.data.order.orderType != "Dine In" && response.data.order.payments[response.data.order.payments.size - 1].paymentType != "Card") {
+                                            cashLogApi(createOrderResponse, "in")
+                                            LogUtil.logE("QueueCheck", "CashLogAPI")
+                                        } else {
+                                            _data.value = Event(createOrderResponse)
+                                            LogUtil.logE("QueueCheck", "CreateOrderData")
+                                        }
                                     }
 
                                     if (createOrderResponse.data.order.orderType != "Dine In") {

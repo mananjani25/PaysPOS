@@ -79,6 +79,7 @@
                         android:padding="@dimen/_5sdp"
                         android:text="@string/tv_select_font_size"
                         android:textColor="@color/txtColor"
+                        android:visibility="gone"
                         android:textSize="@dimen/_6mdpi" />
 
 
@@ -88,7 +89,7 @@
 
                         android:orientation="vertical"
                         android:padding="@dimen/_5sdp"
-                        android:visibility="visible">
+                        android:visibility="gone">
 
                         <RadioGroup
                             android:id="@+id/rdGroup"
@@ -168,7 +169,6 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:layout_marginTop="@dimen/_5sdp"
                             android:layout_weight="1"
                             android:fontFamily="@font/sf_pro_display_semibold"
                             android:gravity="start"

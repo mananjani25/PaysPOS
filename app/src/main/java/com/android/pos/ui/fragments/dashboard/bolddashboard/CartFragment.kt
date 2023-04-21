@@ -807,7 +807,7 @@ class CartFragment(
                             ) {
                                 binding.labelCashSurcharge?.text = "Cash Discount"
                             } else {
-                                binding.labelCashSurcharge?.text = "SurCharge"
+                                showSurchargeWithPercentage()
                             }
                         } else {
                             binding.linearCashDiscount.gone()
@@ -1004,7 +1004,7 @@ class CartFragment(
                                     ) {
                                         binding.labelCashSurcharge?.text = "Cash Discount"
                                     } else {
-                                        binding.labelCashSurcharge?.text = "SurCharge"
+                                        showSurchargeWithPercentage()
                                     }
                                 } else {
                                     binding.linearCashDiscount.gone()
@@ -1212,7 +1212,7 @@ class CartFragment(
                                     ) {
                                         binding.labelCashSurcharge?.text = "Cash Discount"
                                     } else {
-                                        binding.labelCashSurcharge?.text = "SurCharge"
+                                        showSurchargeWithPercentage()
                                     }
                                 } else {
                                     binding.linearCashDiscount.gone()
@@ -1279,7 +1279,7 @@ class CartFragment(
                                     ) {
                                         binding.labelCashSurcharge?.text = "Cash Discount"
                                     } else {
-                                        binding.labelCashSurcharge?.text = "SurCharge"
+                                        showSurchargeWithPercentage()
                                     }
                                 } else {
                                     binding.linearCashDiscount.gone()
@@ -1544,6 +1544,16 @@ class CartFragment(
                     }
                 }
             }
+        }
+    }
+
+    private fun showSurchargeWithPercentage() {
+        val amountType = prefProvider.getValue(Constants.AMOUNT_TYPE, "")
+        val rateOrAmount = prefProvider.getValue(Constants.RATE_OR_AMOUNT, "0")
+        if(amountType=="Percentage"){
+            binding.labelCashSurcharge.text = "SurCharge (${rateOrAmount}%)"
+        }else{
+            binding.labelCashSurcharge.text = "SurCharge"
         }
     }
 

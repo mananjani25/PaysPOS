@@ -3978,7 +3978,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         "Total Discount",
 
                         if (divideDiscount == 0.0) {
-                            "$" + MethodUtils.roundOffAmountString(0.00)
+                            "-$" + MethodUtils.roundOffAmountString(0.00)
                         } else {
 
                             "-$" + MethodUtils.roundOffAmountString(divideDiscount)
@@ -4804,7 +4804,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         "Total Discount",
 
                         if (guestDiscount == 0.0) {
-                            "$" + MethodUtils.roundOffAmountString(0.00)
+                            "-$" + MethodUtils.roundOffAmountString(0.00)
                         } else {
 
                             "-$" + MethodUtils.roundOffAmountString(guestDiscount)
@@ -5311,7 +5311,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     padLine(
                         "Total Discount",
                         if (guestDiscount == 0.0) {
-                            "$" + MethodUtils.roundOffAmountString(0.00)
+                            "-$" + MethodUtils.roundOffAmountString(0.00)
                         } else {
                             "-$" + MethodUtils.roundOffAmountString(guestDiscount)
                         },
@@ -6031,7 +6031,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         "Total Discount",
 
                         if (getOrderDetailsResponse?.totalDiscount == 0.0) {
-                            "$" + MethodUtils.roundOffAmountString(0.00)
+                            "-$" + MethodUtils.roundOffAmountString(0.00)
                         } else {
                             getOrderDetailsResponse?.totalDiscount?.let {
                                 "-$" + MethodUtils.roundOffAmountString(it)
@@ -6807,7 +6807,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         "Total Discount",
 
                         if (getOrderDetailsResponse?.totalDiscount == 0.0) {
-                            "$" + MethodUtils.roundOffAmountString(0.00)
+                            "-$" + MethodUtils.roundOffAmountString(0.00)
                         } else {
                             getOrderDetailsResponse?.totalDiscount?.let {
                                 "-$" + MethodUtils.roundOffAmountString(it)
@@ -7246,7 +7246,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         "Total Discount",
 
                         if (getOrderDetailsResponse?.totalDiscount == 0.0) {
-                            "$" + MethodUtils.roundOffAmountString(0.00)
+                            "-$" + MethodUtils.roundOffAmountString(0.00)
                         } else {
                             getOrderDetailsResponse?.totalDiscount?.let {
                                 "-$" + MethodUtils.roundOffAmountString(it)
