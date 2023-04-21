@@ -4087,6 +4087,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 orderItemsAttribute.quantity = item.itemQuantity
                 orderItemsAttribute.terminalId = cartModel.terminalId
                 orderItemsAttribute.isFired = cartModel.isFired
+                orderItemsAttribute.sort = item.dineInSort
 
 
                 orderItemsAttribute.timestamp = item.timeStamp.toString()

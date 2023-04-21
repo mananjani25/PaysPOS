@@ -69,15 +69,11 @@ import com.android.pos.ui.adapter.DineInTableAdapter
 import com.android.pos.ui.fragments.checkout.CheckoutDineInPaymentViewModel
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
-import com.android.pos.ui.fragments.dashboard.bolddashboard.DashboardCategoryBoldPOS
 import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
 import com.android.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.android.pos.utils.*
-import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.liveSnackBar
-import com.android.pos.utils.extensions.runOnUiThread
-import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.printer.PrinterClass
 import com.android.pos.utils.statusUtils.Status
 import com.epson.epos2.printer.Printer
@@ -90,8 +86,6 @@ import com.sunmi.externalprinterlibrary.api.ConnectCallback
 import com.sunmi.externalprinterlibrary.api.SunmiPrinter
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
@@ -212,6 +206,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
         navigateDineInOrderNew()
+        reorderedItemObserver()
         observeUnMergeTable()
         requireActivity().supportFragmentManager.setFragmentResultListener(
             "request_for_guestcount",
@@ -255,6 +250,85 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         }
     }
 
+    private fun checkVariation(tbItem: TbItem, item: TbItem): Boolean {
+
+        var isSame = true
+
+        var listOfDataMod: ArrayList<Int> = arrayListOf()
+        if (tbItem.variationsAttributes.isNotEmpty()) {
+            tbItem.variationsAttributes.forEach {
+                listOfDataMod.add(it.id ?: 0)
+            }
+        }
+
+        var listOfDataModSelecteItem: ArrayList<Int> = arrayListOf()
+        if (item.variationsAttributes.isNotEmpty()) {
+            item.variationsAttributes.forEach {
+                listOfDataModSelecteItem.add(it.id ?: 0)
+            }
+        }
+
+        if (tbItem.variationsAttributes.isEmpty() && item.variationsAttributes.isEmpty()) return true
+        if (listOfDataMod.containsAll(listOfDataModSelecteItem) && listOfDataMod.size == listOfDataModSelecteItem.size) {
+            if (tbItem.variationsAttributes.get(0).id == item.variationsAttributes.get(0).id) {
+                isSame = true
+            } else {
+                isSame = false
+            }
+        } else {
+            isSame = false
+        }
+
+
+        return isSame
+    }
+
+    fun checkModifierNewLogic(tbItem: TbItem, item: TbItem): Boolean {
+        var isSame = false
+        var listOfDataMod: ArrayList<Int> = arrayListOf()
+        var tbMod: HashMap<Int, Int> = hashMapOf()
+        var itemMod: HashMap<Int, Int> = hashMapOf()
+        if (tbItem.modifiers.isNotEmpty()) {
+            tbItem.modifiers.forEach {
+                tbMod.put(it.id ?: 0, it.modifier_quantity)
+                listOfDataMod.add(it.id ?: 0)
+            }
+        }
+
+        var listOfDataModSelected: ArrayList<Int> = arrayListOf()
+        if (item.modifiers.isNotEmpty()) {
+            item.modifiers.forEach {
+
+                itemMod.put(it.id ?: 0, it.itemQuantity)
+                listOfDataModSelected.add(it.id ?: 0)
+
+            }
+        }
+
+        if (tbItem.modifiers.isEmpty() && item.modifiers.isEmpty()) return true
+
+        if (listOfDataMod.size == listOfDataModSelected.size) {
+
+            isSame = true
+            var selectedList: ArrayList<Boolean> = arrayListOf()
+
+            tbMod.forEach {
+                if (itemMod.containsKey(it.key) && it.value == itemMod.get(it.key)) {
+                    selectedList.add(true)
+
+                } else {
+                    selectedList.add(false)
+                }
+            }
+
+            if (selectedList.contains(false)) {
+                isSame = false
+            }
+        } else {
+            isSame = false
+        }
+        return isSame
+    }
 
     private fun getCustomerList() {
         viewModel.customer().observe(viewLifecycleOwner) {
@@ -311,7 +385,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         binding.rvItemList.adapter = dineInTableAdapter
         dineInTableAdapter.setListner(this)
 
-
+        listOfMoveItemIds.clear()
 
         if (arguments?.getBoolean("isFromFloor") == true || arguments?.getBoolean("isGuestPaid") == true) {
             floorPlanModel = arguments?.getParcelable("floorPlan")
@@ -2045,6 +2119,36 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         return salt.toString()
     }
 
+    // To set guestItemId to all Items after performing reordering
+    private fun reorderedItemObserver() {
+        viewModel.reorderItemsSuccess.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let { baseResponse ->
+                var newList = dineInTableAdapter.getList()
+                if (baseResponse != null) {
+                    listOfMoveItemIds.clear()
+                    prefProvider.setValueboolean(DINE_IN_UPDATE, false)
+                    // Assign guest item id to existing item
+                    for (i in 0 until baseResponse.order.guestAttributes.size) {
+                        var guestItemsList =
+                            baseResponse.order.guestAttributes[i].guestItemAttributes
+                        if (guestItemsList.isNotEmpty()) {
+                            guestItemsList.forEach {
+                                newList.forEach { dineInItem ->
+                                    if (dineInItem.isHeader == 1) {
+                                        if (it.itemId == dineInItem.item?.itemId && it.orderItemId == dineInItem.item?.orderItemId) {
+                                            dineInItem.item?.guestItemId = it.id
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    dineInTableAdapter.setList(newList as ArrayList<DineInModel>)
+                }
+            }
+        }
+    }
+
     private fun navigateDineInOrderNew() {
 
         viewModel.Basedata.observe(viewLifecycleOwner) { event ->
@@ -2135,7 +2239,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                             }
 
                         }
-
+                        // Applied sort value to headers
+                        model.sort = dineInList.size
                         dineInList.add(model)
 
                         var guestSubTotal: Double = 0.0
@@ -2226,6 +2331,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                             item.orderItemId = it.id
                                             item.note = it.note
                                             item.isFired = guestItem.get(j).is_fired
+                                            // Applied sort to dineInItem
+                                            item.dineInSort = it.sort
+                                            item.sort = if(it.sort == 0 ) {dineInList.size} else {it.sort}
                                             item.timeStamp = it.timestamp
                                             if (it.orderItemModifiers.isNotEmpty()) {
                                                 item.modifier_set_ids =
@@ -2237,6 +2345,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                             }
                                             itemDineIn.isHeader = 1
                                             itemDineIn.item = item
+                                            itemDineIn.sort = if(it.sort == 0 ) {dineInList.size} else {it.sort}
                                             itemDineIn.empName =
                                                 baseResponse.floorPlanTable.lockByName.toString()
 
@@ -2616,7 +2725,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                     }
 
-
+                    // Sorted list after adding all items
+                    dineInList.sortBy { it.sort }
                     if (dineInList.isNotEmpty()) {
                         Log.d("###17MAR23", "dineInList.isNotEmpty(): Called - Start")
                         dineInTableAdapter.setList(dineInList)
@@ -2712,7 +2822,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         model.locationId = prefProvider.getValueInt(LOCATION_ID, 0)
         model.terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
 
-
         return model
     }
 
@@ -2737,7 +2846,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     }
 
     private fun updateAdapterData() {
-        var oldList = dineInTableAdapter.getList()
+        var oldList = dineInTableAdapter.getList() as ArrayList<DineInModel>
         var newList: ArrayList<DineInModel> = arrayListOf()
         var wholeTableAmt = 0.0
         var WTTax = 0.0
@@ -2750,6 +2859,51 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         if (dragTo != -1) {
             oldList.get(dragTo).item?.guestItemId?.let { listOfMoveItemIds.add(it) }
             oldList.get(dragTo).item?.guestItemId = null
+
+            // To Check if similar item exist below moved item in current guest list, if exist then merge item
+            for (k in dragTo + 1 until oldList.size) {
+                if (oldList[k].isHeader == 0) {
+                    break
+                }
+                if (oldList[k].isHeader == 1) {
+                    if (oldList[dragTo].item?.itemId == oldList[k].item?.itemId) {
+                        if (checkVariation(oldList[dragTo].item!!, oldList[dragTo].item!!) &&
+                            checkModifierNewLogic(oldList[k].item!!, oldList[dragTo].item!!)
+                        ) {
+                            var updatedQuantity: Int =
+                                oldList[dragTo].item?.itemQuantity!! + oldList[k].item?.itemQuantity!!
+                            oldList[dragTo].item = oldList[k].item
+                            oldList[dragTo].item?.itemQuantity = updatedQuantity
+                            oldList[dragTo].item?.sort = dragTo
+                            oldList.remove(oldList[k])
+                            break
+                        }
+                    }
+                }
+            }
+
+            // To Check if similar item exist above moved item in current guest list, if exist then merge item
+            for (l in dragTo - 1 downTo 0) {
+                if (oldList[l].isHeader == 0) {
+                    break
+                }
+                if (oldList[l].isHeader == 1) {
+                    if (oldList[dragTo].item?.itemId == oldList[l].item?.itemId) {
+                        if (checkVariation(oldList[l].item!!, oldList[dragTo].item!!) &&
+                            checkModifierNewLogic(oldList[l].item!!, oldList[dragTo].item!!)
+                        ) {
+                            var updatedQuantity: Int =
+                                oldList[dragTo].item?.itemQuantity!! + oldList[l].item?.itemQuantity!!
+                            oldList[dragTo].item = oldList[l].item
+                            oldList[dragTo].item?.itemQuantity = updatedQuantity
+                            oldList[dragTo].item?.sort = dragTo
+                            oldList.remove(oldList[l])
+                            break
+                        }
+                    }
+                }
+            }
+
             dragFrom = -1
             dragTo = -1
 
@@ -2925,6 +3079,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             newList.get(0).orderTotalAmount = subTotalDInin
             totalGuestCount = guestCount - 1
 
+            newList[0].listOfItemsMoved.addAll(listOfMoveItemIds.toCollection(arrayListOf()))
 
             dineInTableAdapter.setList(newList)
 
@@ -2934,116 +3089,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     }
 
     private fun updateOrderCall() {
-        val list = dineInTableAdapter.getList()
-
-        val orderModel = OrderAttributeRequestModel()
-
-        orderModel.apply {
-            id = orderId
-            date = TimeFormatUtils.getCurrentDate()
-            deliveryType = "DineIn"
-            employeeId = prefProvider.getValueInt(EMPLOYEE_ID, 0)
-            locationId = prefProvider.getValueInt(LOCATION_ID, 1)
-            terminalId = prefProvider.getValueInt(TERMINAL_ID, 1)
-            offlineId = getOrderDetailsResponse?.offlineId.toString()
-            openOrderType = "DineIn"
-            orderTypeId = 2
-            paymentStatus = 0
-            getOrderDetailsResponse?.subTotal?.let {
-                subTotal = it
-            }
-            getOrderDetailsResponse?.totalAmount?.let {
-                totalAmount = it
-            }
-            getOrderDetailsResponse?.totalServiceCharges?.let {
-                totalServiceCharges = it
-            }
-
-            val listOrderAttribute: ArrayList<OrderItemsAttribute> = arrayListOf()
-
-            /* getOrderDetailsResponse?.orderItems?.let {
-                 for (i in 0 until it.size) {
-                     val model = OrderItemsAttribute()
-                     model.category_id = it.get(i).categoryId
-                     model.discountAmount = it.get(i).discountAmount
-                     model.discountType = it.get(i).discountType
-                     model.editTimestamp = it.get(i).timestamp
-                     model.employeeId = it.get(i).employeeId
-                     model.id = it.get(i).id
-                     model.isEdited = true
-                     model.itemId = it.get(i).itemId
-                     model.orderId = it.get(i).orderId
-                     model.price = it.get(i).price
-                     model.quantity = it.get(i).quantity
-                     model.terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
-                     model.timestamp = System.currentTimeMillis().toString()
-                     model.totalPrice = it.get(i).totalPrice
-                     if (it.get(i).orderItemModifiers.isNotEmpty()) {
-                         var listModifiers: ArrayList<OrderItemModifierAttribute> =
-                             arrayListOf()
-                         it.get(i).orderItemModifiers.forEach {
-                             val model = OrderItemModifierAttribute()
-                             model.id = it.id
-                             model.order_item_id = it.orderItemId
-                             model.name = it.name
-                             model.orderId = it.orderId
-                             model.price = it.price
-                             model.totalPrice = it.price
-                             model.quantity = it.quantity
-                             it.modifierId?.let {
-                                 model.modifier_set_id = it.toInt()
-                             }
-                             var listTaxAttributes: ArrayList<OrderModifierTaxesAttribute> =
-                                 arrayListOf()
-
-                             if (it.orderItemTaxes.isNotEmpty()) {
-
-                                 it.orderItemTaxes.forEach {
-                                     val model = OrderModifierTaxesAttribute()
-                                     model.id = it.id
-                                     model.amount = it.amount
-                                     model.isDefault = it.isDefault
-                                     model.name = it.name
-
-                                     listTaxAttributes.add(model)
-                                 }
-
-
-                             }
-                             model.order_item_taxes_attributes = listTaxAttributes
-
-                             listModifiers.add(model)
-
-                         }
-                         model.orderItemModifiersAttributes = listModifiers
-                     }
-
-
-                     listOrderAttribute.add(
-                         model
-                     )
-
-
-                 }
-             }*/
-
-            val guestAttributes: ArrayList<GuestsAttributes> = arrayListOf()
-            for (i in 0 until list.size) {
-
-                val model = GuestsAttributes()
-                if (list.get(i).isHeader == 1) {
-
-                } else {
-
-                }
-
-
-            }
-
-
-        }
-
-
+        cartList = getCartModel(dineInTableAdapter.getList().toCollection(arrayListOf()))
+        cartList?.listOfItemRemoved = listOfMoveItemIds
+        prefProvider.setValueboolean(DINE_IN_UPDATE, true)
+        val orderRequestModel = dashboardViewModel.updateOrder(cartList!!)
+        orderId?.let { viewModel.updateOrder(it, orderRequestModel, true) }
+        listOfMoveItemIds.clear()
     }
 
 
@@ -3099,17 +3150,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                          adapter.getItem(dragTo).sort,
                          adapter.getItem(viewHolder.layoutPosition).id
                      )*/
-
-
+                    updateAdapterData()
                 }
-
-
-
-
-                updateAdapterData()
-
             }
-
         })
 
     private fun getCustomerReceiptSettings() {

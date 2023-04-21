@@ -64,6 +64,8 @@ class DineInOrderTableViewModel @Inject constructor(
     private val _queueCreateSuccess = MutableLiveData<Event<Boolean>>()
     val queueCreateSuccess: LiveData<Event<Boolean>> = _queueCreateSuccess
 
+    private val _reorderItemsSuccess = MutableLiveData<Event<CreateOrderResponse.Data?>>()
+    val reorderItemsSuccess: LiveData<Event<CreateOrderResponse.Data?>> = _reorderItemsSuccess
 
     val _guestPayment = MutableLiveData<Event<String>>()
     val onPayment: LiveData<Event<String>> = _guestPayment
@@ -250,7 +252,7 @@ class DineInOrderTableViewModel @Inject constructor(
         }
     }
 
-    fun updateOrder(orderId: Int, orderRequestModel: OrderRequestModel) {
+    fun updateOrder(orderId: Int, orderRequestModel: OrderRequestModel, fromReorder: Boolean = false) {
         _showProgress.value = Event(true)
 
         viewModelScope.launch {
@@ -259,7 +261,11 @@ class DineInOrderTableViewModel @Inject constructor(
             when (resource.status) {
                 Status.SUCCESS -> {
                     _showProgress.value = Event(false)
-                    _updateOrder.value = Event("Guest added successfully.")
+                    if(!fromReorder) {
+                        _updateOrder.value = Event("Guest added successfully.")
+                    }else {
+                        _reorderItemsSuccess.value = Event(resource.data?.data)
+                    }
 
                 }
                 Status.ERROR -> {
