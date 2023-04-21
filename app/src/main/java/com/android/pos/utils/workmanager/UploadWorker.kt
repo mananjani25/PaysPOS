@@ -10,15 +10,23 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.android.pos.R
 import com.android.pos.data.model.PrinterJSONElementData
 import com.android.pos.data.model.PrinterQueueModel
 import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.model.responseModel.GetKitchenReceiptSettingsResponse
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.CREATE_QUEUE_PRINTER_PHASE3
 import com.android.pos.data.remote.Constants.DELETE_QUEUE_ORDER_PHASE3
 import com.android.pos.data.remote.Constants.IS_MASTER_TERMINAL
-import com.android.pos.utils.*
+import com.android.pos.utils.LogUtil
+import com.android.pos.utils.addBuilderText
+import com.android.pos.utils.addHorizontalLine
+import com.android.pos.utils.addHorizontalLineNew
+import com.android.pos.utils.addOrdersForKitchenCustomer
+import com.android.pos.utils.addOrdersForKitchenCustomerNewPrinter
+import com.android.pos.utils.padLine
 import com.android.pos.utils.printer.PrinterClass
 import com.epson.epos2.ConnectionListener
 import com.epson.epos2.Epos2Exception
@@ -37,7 +45,12 @@ import com.hosopy.actioncable.ActionCable
 import com.hosopy.actioncable.Channel
 import com.hosopy.actioncable.Consumer
 import com.hosopy.actioncable.Subscription
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import org.jetbrains.annotations.NotNull
 import java.net.URI
 import java.time.LocalDateTime
@@ -451,92 +464,144 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
             var dataList: JsonArray = model.asJsonObject.get("data").asJsonArray
 
+            if (dataList.size() != 0) {
 
-            listOfPrintersData.clear()
-            listOfPrintersData = arrayListOf()
-            var listofPrinterOrders: ArrayList<PrinterQueueModel> = arrayListOf()
-            dataList.forEach {
+                listOfPrintersData.clear()
+                listOfPrintersData = arrayListOf()
+
+                dataList.forEach {
+
+                    var listofPrinterOrders: ArrayList<PrinterQueueModel> = arrayListOf()
+                    if (it.asJsonObject.has("orders")) {
+                        var ordersArray = it.asJsonObject.get("orders").asJsonArray
+
+                        ordersArray.forEach {
+                            var modelOrder = PrinterQueueModel()
+                            modelOrder.id = it.asJsonObject.get("id").asInt
+                            modelOrder.orderType = it.asJsonObject.get("order_type").asString
+                            var orderItems: ArrayList<CreateOrderResponse.Data.Order.OrderItem> =
+                                arrayListOf()
+                            if (it.asJsonObject.has("order_items")) {
+                                var orderItemsArray = it.asJsonObject.get("order_items").asJsonArray
+                                orderItemsArray.forEach { it1 ->
+                                    orderItems.add(
+                                        CreateOrderResponse.Data.Order.OrderItem(
+                                            categoryId = it1.asJsonObject.get("category_id").asInt,
+                                            completedInKitchen = false,
+                                            discountType = "",
+                                            discountAmount = 0.0,
+                                            discountId = 0,
+                                            employeeId = 0,
+                                            float = 0.0,
+                                            id = it1.asJsonObject.get("order_item_id").asInt,
+                                            isPrinted = false,
+                                            isPaid = false,
+                                            itemId = it1.asJsonObject.get("item_id").asInt,
+                                            orderId = it.asJsonObject.get("id").asInt,
+                                            itemName = it1.asJsonObject.get("name").asString,
+                                            totalPrice = 0.0,
+                                            timestamp = "",
+                                            quantity = 1,
+                                            price = 0.0,
+                                            orderItemModifiers = listOf(),
+                                            note = it1.asJsonObject.get("item_note").asString
 
 
-                if (it.asJsonObject.has("orders")) {
-                    var ordersArray = it.asJsonObject.get("orders").asJsonArray
-
-                    ordersArray.forEach {
-                        var modelOrder = PrinterQueueModel()
-                        modelOrder.id = it.asJsonObject.get("id").asInt
-                        modelOrder.orderType = it.asJsonObject.get("order_type").asString
-                        var orderItems: ArrayList<CreateOrderResponse.Data.Order.OrderItem> =
-                            arrayListOf()
-                        if (it.asJsonObject.has("order_items")) {
-                            var orderItemsArray = it.asJsonObject.get("order_items").asJsonArray
-                            orderItemsArray.forEach { it1 ->
-                                orderItems.add(
-                                    CreateOrderResponse.Data.Order.OrderItem(
-                                        categoryId = it1.asJsonObject.get("category_id").asInt,
-                                        completedInKitchen = false,
-                                        discountType = "",
-                                        discountAmount = 0.0,
-                                        discountId = 0,
-                                        employeeId = 0,
-                                        float = 0.0,
-                                        id = it1.asJsonObject.get("order_item_id").asInt,
-                                        isPrinted = false,
-                                        isPaid = false,
-                                        itemId = it1.asJsonObject.get("item_id").asInt,
-                                        orderId = 0,
-                                        itemName = it1.asJsonObject.get("name").asString,
-                                        totalPrice = 0.0,
-                                        timestamp = "",
-                                        quantity = 1,
-                                        price = 0.0,
-                                        orderItemModifiers = listOf(),
-                                        note = ""
-
-
+                                        )
                                     )
-                                )
+
+                                }
+
+                                modelOrder.orderItems = orderItems
+                                modelOrder.orderID = it.asJsonObject.get("id").asInt.toString()
+
 
                             }
 
-                            modelOrder.orderItems = orderItems
 
-
+                            listofPrinterOrders.add(modelOrder)
                         }
 
 
-                        listofPrinterOrders.add(modelOrder)
                     }
+                    var modelPrinterParser = PrinterJSONElementData(
+                        printerName = it.asJsonObject.get("printer_name").asString,
+                        macAddress = it.asJsonObject.get("mac_address").asString,
+                        ipAddress = it.asJsonObject.get("ip_address").asString,
+                        printerQueueModelList = listofPrinterOrders
+
+                    )
+
+                    listOfPrintersData.add(modelPrinterParser)
 
 
                 }
-                var modelPrinterParser = PrinterJSONElementData(
-                    printerName = it.asJsonObject.get("printer_name").asString,
-                    macAddress = it.asJsonObject.get("mac_address").asString,
-                    ipAddress = it.asJsonObject.get("ip_address").asString,
-                    printerQueueModelList = listofPrinterOrders
 
+                Log.e(
+                    TAG,
+                    "checkFirstIndexdataAraay  ${listOfPrintersData.get(0).printerQueueModelList.size}"
                 )
 
-                listOfPrintersData.add(modelPrinterParser)
+                printerSize = listOfPrintersData.size
+                orderSize = listOfPrintersData.get(0).printerQueueModelList.size
+
+                currentOrderIndex = 0
+                currentPrinterIndex = 0
+
+                if (orderSize != 0) {
+                    Log.e(TAG, "sendData1st:  ")
+                    sendDataToPrint(
+                        listOfPrintersData,
+                        currentPrinterIndex,
+                        printerObjList.get(listOfPrintersData[0].macAddress),
+                        listOfPrintersData.get(0).printerQueueModelList,
+                        listOfPrintersData[0].macAddress,
+                        currentOrderIndex
+                    )
+                } else if (listOfPrintersData.size - 1 > currentPrinterIndex) {
+                    Log.e(TAG, "sendData2nd:  ")
+                    var isBreak = false
+                    for (i in currentPrinterIndex++ until listOfPrintersData.size) {
+                        if (listOfPrintersData.get(i).printerQueueModelList.isNotEmpty()) {
+
+                            isBreak = true
+                            currentPrinterIndex = i
+                            currentOrderIndex = 0
+                            sendDataToPrint(
+                                listOfPrintersData,
+                                currentPrinterIndex,
+                                printerObjList.get(listOfPrintersData[0].macAddress),
+                                listOfPrintersData.get(0).printerQueueModelList,
+                                listOfPrintersData[0].macAddress,
+                                currentOrderIndex
+                            )
+                            break
+                        }
+                    }
+                    if (isBreak == false) {
+                        delay(5000)
+                        val params = JsonObject()
+                        params.addProperty("id", locationId)
+                        params.addProperty("url", baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3)
+                        subscription?.perform("received", params)
+                    }
 
 
-            }
+                } else {
 
-            printerSize = listOfPrintersData.size
-            orderSize = listOfPrintersData.get(0).printerQueueModelList.size
-
-            currentOrderIndex = 0
-            currentPrinterIndex = 0
-
-            if (orderSize != 0) {
-                sendDataToPrint(
-                    listOfPrintersData,
-                    0,
-                    printerObjList.get(listOfPrintersData[0].macAddress),
-                    listOfPrintersData.get(0).printerQueueModelList,
-                    listOfPrintersData[0].macAddress,
-                    0
-                )
+                    Log.e(TAG, "sendData3rd:  ")
+                    delay(5000)
+                    val params = JsonObject()
+                    params.addProperty("id", locationId)
+                    params.addProperty("url", baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3)
+                    subscription?.perform("received", params)
+                }
+            } else {
+                delay(5000)
+                val params = JsonObject()
+                params.addProperty("id", locationId)
+                params.addProperty("url", baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3)
+                subscription?.perform("received", params)
             }
 
 
@@ -805,6 +870,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
         macAddress: String,
         orderIndex: Int
     ) {
+        Log.e(TAG, "checkSendDataToPrint:  ")
         printerObj?.let { callPrinter(it, printerQueueModelList.get(orderIndex), macAddress) }
 
     }
@@ -1074,10 +1140,12 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                             fontSizeH = 1
                             fontSizeW = 1
                         }
+
                         Constants.MEDIUM -> {
                             fontSizeH = 1
                             fontSizeW = 2
                         }
+
                         Constants.LARGE -> {
                             fontSizeH = 2
                             fontSizeW = 2
@@ -1377,10 +1445,12 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                     fontSizeH = 1
                     fontSizeW = 1
                 }
+
                 Constants.MEDIUM -> {
                     fontSizeH = 1
                     fontSizeW = 2
                 }
+
                 Constants.LARGE -> {
                     fontSizeH = 2
                     fontSizeW = 2
@@ -2037,6 +2107,13 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
         if (p1 == 0) {
             p0?.clearCommandBuffer()
+            try {
+
+
+//                p0?.endTransaction()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
 
             val params = JsonObject()
             var deleteUrl =
@@ -2114,49 +2191,104 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
         }
 
-        runBlocking {
-            if (listOfPrintersData.size - 1 == currentPrinterIndex) {
-                Log.e(
-                    TAG,
-                    "listOfPrinerData:   ${listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size}"
-                )
-                Log.e(TAG, "listOfcurrentOrderIndex:   ${currentOrderIndex}")
+
+        if (listOfPrintersData.size - 1 == currentPrinterIndex) {
+            Log.e(
+                TAG,
+                "listOfPrinerData:   ${listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size}"
+            )
+            Log.e(TAG, "listOfcurrentOrderIndex:   ${currentOrderIndex}")
 
 
 
-                if (listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size - 1 == currentOrderIndex) {
+            if (listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size - 1 == currentOrderIndex) {
+                Log.e(TAG, "checkLastORderPRint  ")
+                runBlocking {
                     delay(5000)
 
                     val params = JsonObject()
                     params.addProperty("id", locationId)
                     params.addProperty("url", baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3)
                     subscription?.perform("received", params)
+                }
 
-                } else {
+            } else {
 
+                runBlocking {
+                    currentOrderIndex = currentOrderIndex + 1
                     sendDataToPrint(
                         listOfPrintersData,
                         currentPrinterIndex,
                         printerObjList.get(listOfPrintersData.get(currentPrinterIndex).macAddress),
                         listOfPrintersData.get(currentPrinterIndex).printerQueueModelList,
                         listOfPrintersData.get(currentPrinterIndex).macAddress,
-                        currentOrderIndex++
+                        currentOrderIndex
+
+                    )
+                }
+            }
+
+        } else if (listOfPrintersData.size - 1 != currentPrinterIndex) {
+            Log.e(
+                TAG,
+                "checkLog: ${currentPrinterIndex}  orderIndex: ${
+                    listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size - 1
+                }  currentOrderInd: ${currentOrderIndex}"
+            )
+            if (listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size - 1 == currentOrderIndex) {
+
+
+                currentOrderIndex = 0
+                currentPrinterIndex = currentPrinterIndex + 1
+                runBlocking {
+                    sendDataToPrint(
+                        listOfPrintersData,
+                        currentPrinterIndex,
+                        printerObjList.get(listOfPrintersData.get(currentPrinterIndex).macAddress),
+                        listOfPrintersData.get(currentPrinterIndex).printerQueueModelList,
+                        listOfPrintersData.get(currentPrinterIndex).macAddress,
+                        currentOrderIndex
+
+                    )
+                }
+
+            } else {
+
+                currentOrderIndex = currentOrderIndex + 1
+                runBlocking {
+                    sendDataToPrint(
+                        listOfPrintersData,
+                        currentPrinterIndex,
+                        printerObjList.get(listOfPrintersData.get(currentPrinterIndex).macAddress),
+                        listOfPrintersData.get(currentPrinterIndex).printerQueueModelList,
+                        listOfPrintersData.get(currentPrinterIndex).macAddress,
+                        currentOrderIndex
 
                     )
                 }
 
             }
 
+        } else {
+            runBlocking {
+                delay(5000)
+                val params = JsonObject()
+                params.addProperty("id", locationId)
+                params.addProperty("url", baseUrl + CREATE_QUEUE_PRINTER_PHASE3)
+                subscription?.perform("received", params)
+            }
 
-            /*   if (p0 == printerObjList.get(kitchenPrinterList.get(kitchenPrinterList.size - 1).macAddress)) {
-                   delay(5000)
-
-                   val params = JsonObject()
-                   params.addProperty("id", locationId)
-                   params.addProperty("url", baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3)
-                   subscription?.perform("received", params)
-               }*/
         }
+
+        /*   if (p0 == printerObjList.get(kitchenPrinterList.get(kitchenPrinterList.size - 1).macAddress)) {
+               delay(5000)
+
+               val params = JsonObject()
+               params.addProperty("id", locationId)
+               params.addProperty("url", baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3)
+               subscription?.perform("received", params)
+           }*/
+
     }
 
     override fun onConnection(p0: Any?, p1: Int) {
