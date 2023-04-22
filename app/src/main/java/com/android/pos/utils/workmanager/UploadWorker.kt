@@ -531,7 +531,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                                             itemName = it1.asJsonObject.get("name").asString,
                                             totalPrice = 0.0,
                                             timestamp = "",
-                                            quantity = 1,
+                                            quantity = it1.asJsonObject.get("quantity").asInt,
                                             price = 0.0,
                                             orderItemModifiers = listOfMod,
                                             note = it1.asJsonObject.get("item_note").asString
@@ -1000,6 +1000,43 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                     e.printStackTrace()
                 }
 
+                if (listOfPrintersData.size - 1 != currentPrinterIndex) {
+                    Log.e(
+                        TAG,
+                        "checkLog: ${currentPrinterIndex}  orderIndex: ${
+                            listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size - 1
+                        }  currentOrderInd: ${currentOrderIndex}"
+                    )
+
+
+
+                    currentOrderIndex = 0
+                    currentPrinterIndex = currentPrinterIndex + 1
+                    runBlocking {
+                        sendDataToPrint(
+                            listOfPrintersData,
+                            currentPrinterIndex,
+                            printerObjList.get(listOfPrintersData.get(currentPrinterIndex).macAddress),
+                            listOfPrintersData.get(currentPrinterIndex).printerQueueModelList,
+                            listOfPrintersData.get(currentPrinterIndex).macAddress,
+                            currentOrderIndex
+
+                        )
+                    }
+
+
+                } else {
+                    runBlocking {
+                        delay(2000)
+                        val params = JsonObject()
+                        params.addProperty("id", locationId)
+                        params.addProperty("url", baseUrl + CREATE_QUEUE_PRINTER_PHASE3)
+                        subscription?.perform("received", params)
+                    }
+
+                }
+
+
             } else {
                 try {
                     if (printer.status.connection == 0) {
@@ -1024,16 +1061,32 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                 )
 
                 printer.addText("OrderID:" + obj.orderID)
+
+
                 printer.addFeedLine(1)
+                printer.addTextFont(Builder.FONT_E)
+                printer.addTextAlign(Builder.ALIGN_CENTER)
+                printer.addTextLang(Builder.LANG_EN)
+                printer.addTextSize(2, 2)
+                printer.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+
+                printer.addText(obj.orderType)
+
                 printer.addFeedUnit(30)
                 printer.addFeedLine(1)
 
 
                 for (m in 0 until obj.orderItems.size) {
+                    printer.addFeedLine(1)
                     printer.addTextFont(Builder.FONT_E)
                     printer.addTextAlign(Builder.ALIGN_LEFT)
                     printer.addTextLang(Builder.LANG_EN)
-                    printer.addTextSize(2, 2)
+                    printer.addTextSize(1, 1)
                     printer.addTextStyle(
                         Builder.FALSE,
                         Builder.FALSE,
@@ -1042,9 +1095,36 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                     )
 
 
-                    printer.addText(obj.orderItems[m].itemName)
-                    printer.addFeedLine(1)
-                    printer.addFeedUnit(30)
+                    printer.addText("" + obj.orderItems[m].quantity + " " + obj.orderItems[m].itemName)
+                    if (obj.orderItems[m].orderItemModifiers.isNotEmpty()) {
+                        obj.orderItems[m].orderItemModifiers.forEach { mod ->
+
+                            printer.addFeedLine(1)
+                            printer.addTextFont(Builder.FONT_E)
+                            printer.addTextAlign(Builder.ALIGN_LEFT)
+                            printer.addTextLang(Builder.LANG_EN)
+                            printer.addTextSize(1, 1)
+                            printer.addTextStyle(
+                                Builder.FALSE,
+                                Builder.FALSE,
+                                Builder.TRUE,
+                                Builder.COLOR_1
+                            )
+
+                            printer.addText(
+                                "  " + if (mod.modifierQuantity == 1) {
+                                    "   "
+                                } else {
+                                    "" + mod.modifierQuantity + "x "
+                                } + mod.name
+                            )
+
+
+                        }
+
+
+                    }
+
                 }
                 printer.addFeedLine(1)
 
@@ -2234,7 +2314,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
             if (listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size - 1 == currentOrderIndex) {
                 Log.e(TAG, "checkLastORderPRint  ")
                 runBlocking {
-                    delay(5000)
+                    delay(2000)
 
                     val params = JsonObject()
                     params.addProperty("id", locationId)
@@ -2301,7 +2381,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
         } else {
             runBlocking {
-                delay(5000)
+                delay(2000)
                 val params = JsonObject()
                 params.addProperty("id", locationId)
                 params.addProperty("url", baseUrl + CREATE_QUEUE_PRINTER_PHASE3)
