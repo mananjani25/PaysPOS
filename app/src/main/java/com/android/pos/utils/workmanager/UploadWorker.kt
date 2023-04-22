@@ -24,6 +24,7 @@ import com.android.pos.utils.LogUtil
 import com.android.pos.utils.addBuilderText
 import com.android.pos.utils.addHorizontalLine
 import com.android.pos.utils.addHorizontalLineNew
+import com.android.pos.utils.addHorizontalLineNewU220
 import com.android.pos.utils.addOrdersForKitchenCustomer
 import com.android.pos.utils.addOrdersForKitchenCustomerNewPrinter
 import com.android.pos.utils.padLine
@@ -479,6 +480,8 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                             var modelOrder = PrinterQueueModel()
                             modelOrder.id = it.asJsonObject.get("id").asInt
                             modelOrder.orderType = it.asJsonObject.get("order_type").asString
+                            modelOrder.dateAndTime = it.asJsonObject.get("date_and_time").asString
+                            modelOrder.employeeName = it.asJsonObject.get("employee_name").asString
                             var orderItems: ArrayList<CreateOrderResponse.Data.Order.OrderItem> =
                                 arrayListOf()
                             if (it.asJsonObject.has("order_items")) {
@@ -963,7 +966,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                         printerAdd,
                         Printer.PARAM_DEFAULT
                     )
-                    printerBreak = false
+
                 }
 
             } catch (e: Exception) {
@@ -1012,6 +1015,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
                     currentOrderIndex = 0
                     currentPrinterIndex = currentPrinterIndex + 1
+
                     runBlocking {
                         sendDataToPrint(
                             listOfPrintersData,
@@ -1079,6 +1083,37 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
                 printer.addFeedUnit(30)
                 printer.addFeedLine(1)
+
+                printer.addTextFont(Builder.FONT_E)
+                printer.addTextAlign(Builder.ALIGN_LEFT)
+                printer.addTextLang(Builder.LANG_EN)
+                printer.addTextSize(1, 1)
+                printer.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+
+                printer.addText("Employee:" + obj.employeeName)
+
+                printer.addFeedLine(1)
+
+                printer.addTextFont(Builder.FONT_E)
+                printer.addTextAlign(Builder.ALIGN_LEFT)
+                printer.addTextLang(Builder.LANG_EN)
+                printer.addTextSize(1, 1)
+                printer.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+
+
+                printer.addText(obj.dateAndTime)
+                printer.addFeedLine(1)
+                addHorizontalLineNewU220(printer)
 
 
                 for (m in 0 until obj.orderItems.size) {
@@ -1351,7 +1386,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                         )
                     }
                     mPrinter.addFeedLine(1)
-                    addHorizontalLineNew(mPrinter)
+                    addHorizontalLineNewU220(mPrinter)
 
                     printerQueueModel.orderItems.let {
                         addOrdersForKitchenCustomerNewPrinter(
@@ -2232,6 +2267,10 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                 ).id
             LogUtil.logE(TAG, "DeleteUrl ${deleteUrl}")
             params.addProperty("url", deleteUrl)
+            params.addProperty(
+                "mac_address",
+                listOfPrintersData.get(currentPrinterIndex).macAddress
+            )
 
             subscription?.perform("delete_order", params)
 
@@ -2326,15 +2365,28 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
                 runBlocking {
                     currentOrderIndex = currentOrderIndex + 1
-                    sendDataToPrint(
-                        listOfPrintersData,
-                        currentPrinterIndex,
-                        printerObjList.get(listOfPrintersData.get(currentPrinterIndex).macAddress),
-                        listOfPrintersData.get(currentPrinterIndex).printerQueueModelList,
-                        listOfPrintersData.get(currentPrinterIndex).macAddress,
-                        currentOrderIndex
+                    if (listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.isNotEmpty()) {
 
-                    )
+                        sendDataToPrint(
+                            listOfPrintersData,
+                            currentPrinterIndex,
+                            printerObjList.get(listOfPrintersData.get(currentPrinterIndex).macAddress),
+                            listOfPrintersData.get(currentPrinterIndex).printerQueueModelList,
+                            listOfPrintersData.get(currentPrinterIndex).macAddress,
+                            currentOrderIndex
+
+                        )
+                    } else {
+                        runBlocking {
+                            delay(2000)
+                            val params = JsonObject()
+                            params.addProperty("id", locationId)
+                            params.addProperty("url", baseUrl + CREATE_QUEUE_PRINTER_PHASE3)
+                            subscription?.perform("received", params)
+                        }
+
+
+                    }
                 }
             }
 
@@ -2350,16 +2402,26 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
                 currentOrderIndex = 0
                 currentPrinterIndex = currentPrinterIndex + 1
-                runBlocking {
-                    sendDataToPrint(
-                        listOfPrintersData,
-                        currentPrinterIndex,
-                        printerObjList.get(listOfPrintersData.get(currentPrinterIndex).macAddress),
-                        listOfPrintersData.get(currentPrinterIndex).printerQueueModelList,
-                        listOfPrintersData.get(currentPrinterIndex).macAddress,
-                        currentOrderIndex
+                if (listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.isNotEmpty()) {
+                    runBlocking {
+                        sendDataToPrint(
+                            listOfPrintersData,
+                            currentPrinterIndex,
+                            printerObjList.get(listOfPrintersData.get(currentPrinterIndex).macAddress),
+                            listOfPrintersData.get(currentPrinterIndex).printerQueueModelList,
+                            listOfPrintersData.get(currentPrinterIndex).macAddress,
+                            currentOrderIndex
 
-                    )
+                        )
+                    }
+                } else {
+                    runBlocking {
+                        delay(2000)
+                        val params = JsonObject()
+                        params.addProperty("id", locationId)
+                        params.addProperty("url", baseUrl + CREATE_QUEUE_PRINTER_PHASE3)
+                        subscription?.perform("received", params)
+                    }
                 }
 
             } else {

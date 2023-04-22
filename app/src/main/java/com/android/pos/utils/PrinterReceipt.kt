@@ -11,7 +11,13 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.entities.TbServiceCharge
-import com.android.pos.data.model.responseModel.*
+import com.android.pos.data.model.responseModel.CreateOrderResponse
+import com.android.pos.data.model.responseModel.EodReportResponse
+import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
+import com.android.pos.data.model.responseModel.GetTipReponse
+import com.android.pos.data.model.responseModel.OnlineOrderResponseModel
+import com.android.pos.data.model.responseModel.OpenOrderResponse
+import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.model.responseModel.report.KeyValue
 import com.android.pos.data.remote.Constants
 import com.android.pos.di.PrefProvider
@@ -879,6 +885,18 @@ fun addHorizontalLine(builder: Builder): Builder {
 fun addHorizontalLineNew(printer: Printer): Printer {
     var str: String = ""
     for (i in 0 until 48) {
+        str += "-"
+    }
+    LogUtil.logE("strLine", "strLine  $str")
+    printer.addText(str)
+
+    return printer
+}
+
+
+fun addHorizontalLineNewU220(printer: Printer): Printer {
+    var str: String = ""
+    for (i in 0 until 30) {
         str += "-"
     }
     LogUtil.logE("strLine", "strLine  $str")
