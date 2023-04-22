@@ -148,7 +148,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                     } catch (e: Epos2Exception) {
                         var errorCode = e.errorStatus
 
-                        Log.e(TAG, "errorCode:  ${errorCode}")
+                       // Log.e(TAG, "errorCode:  ${errorCode}")
                         sendNotification("TM-U220 is Offline.Please check ${errorCode}")
                         e.printStackTrace()
                     }
@@ -570,10 +570,10 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
                 }
 
-                Log.e(
+                /*Log.e(
                     TAG,
                     "checkFirstIndexdataAraay  ${listOfPrintersData.get(0).printerQueueModelList.size}"
-                )
+                )*/
 
                 printerSize = listOfPrintersData.size
                 orderSize = listOfPrintersData.get(0).printerQueueModelList.size
@@ -582,7 +582,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                 currentPrinterIndex = 0
 
                 if (orderSize != 0) {
-                    Log.e(TAG, "sendData1st:  ")
+                  //  Log.e(TAG, "sendData1st:  ")
                     sendDataToPrint(
                         listOfPrintersData,
                         currentPrinterIndex,
@@ -592,7 +592,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                         currentOrderIndex
                     )
                 } else if (listOfPrintersData.size - 1 > currentPrinterIndex) {
-                    Log.e(TAG, "sendData2nd:  ")
+                   // Log.e(TAG, "sendData2nd:  ")
                     var isBreak = false
                     for (i in currentPrinterIndex++ until listOfPrintersData.size) {
                         if (listOfPrintersData.get(i).printerQueueModelList.isNotEmpty()) {
@@ -622,7 +622,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
                 } else {
 
-                    Log.e(TAG, "sendData3rd:  ")
+                   // Log.e(TAG, "sendData3rd:  ")
                     delay(5000)
                     val params = JsonObject()
                     params.addProperty("id", locationId)
@@ -903,7 +903,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
         macAddress: String,
         orderIndex: Int
     ) {
-        Log.e(TAG, "checkSendDataToPrint:  ")
+
         printerObj?.let { callPrinter(it, printerQueueModelList.get(orderIndex), macAddress) }
 
     }
@@ -958,7 +958,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
             printer.setStatusChangeEventListener(this)
             printer.setReceiveEventListener(this)
 
-            Log.e(TAG, "connection: ${printer.status.connection}")
+            //Log.e(TAG, "connection: ${printer.status.connection}")
 
             try {
                 if (printer.status.connection == 0) {
@@ -972,6 +972,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
             } catch (e: Exception) {
 
                 printerBreak = true
+                sendNotification("Please check.TM-U220 is Offline.")
 
                 /* try {
                      // printer?.disconnect()
@@ -992,7 +993,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
             }
 
-            Log.e(TAG, "checkprinterBreak: ${printerBreak}")
+          //  Log.e(TAG, "checkprinterBreak: ${printerBreak}")
             if (printerBreak) {
 
                 try {
@@ -1004,29 +1005,58 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                 }
 
                 if (listOfPrintersData.size - 1 != currentPrinterIndex) {
-                    Log.e(
+                   /* Log.e(
                         TAG,
                         "checkLog: ${currentPrinterIndex}  orderIndex: ${
                             listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size - 1
                         }  currentOrderInd: ${currentOrderIndex}"
-                    )
-
-
+                    )*/
 
                     currentOrderIndex = 0
                     currentPrinterIndex = currentPrinterIndex + 1
 
-                    runBlocking {
-                        sendDataToPrint(
-                            listOfPrintersData,
-                            currentPrinterIndex,
-                            printerObjList.get(listOfPrintersData.get(currentPrinterIndex).macAddress),
-                            listOfPrintersData.get(currentPrinterIndex).printerQueueModelList,
-                            listOfPrintersData.get(currentPrinterIndex).macAddress,
-                            currentOrderIndex
+                    var isBreakDown = false
 
-                        )
+                    for (k in currentPrinterIndex until listOfPrintersData.size) {
+                        if (listOfPrintersData[k].printerQueueModelList.isNotEmpty()) {
+
+                            currentPrinterIndex = k
+                            currentOrderIndex = 0
+                            isBreakDown = true
+
+                          //  Log.e(TAG,"checkInsideBreak: printerIndex: ${currentPrinterIndex}  orderIndex: ${currentOrderIndex}")
+
+                            sendDataToPrint(
+                                listOfPrintersData,
+                                currentPrinterIndex,
+                                printerObjList.get(listOfPrintersData.get(currentPrinterIndex).macAddress),
+                                listOfPrintersData.get(currentPrinterIndex).printerQueueModelList,
+                                listOfPrintersData.get(currentPrinterIndex).macAddress,
+                                currentOrderIndex
+
+                            )
+
+                            break
+
+                        }
+
+
                     }
+
+                    if (isBreakDown == false){
+                        runBlocking {
+                            delay(2000)
+                            val params = JsonObject()
+                            params.addProperty("id", locationId)
+                            params.addProperty("url", baseUrl + CREATE_QUEUE_PRINTER_PHASE3)
+                            subscription?.perform("received", params)
+                        }
+
+                    }
+
+
+
+
 
 
                 } else {
@@ -2239,12 +2269,12 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
     }
 
     override fun onPtrReceive(p0: Printer?, p1: Int, p2: PrinterStatusInfo?, p3: String?) {
-        Log.e(
+       /* Log.e(
             TAG,
             "onPrinterSucces str: ${p3}  intCode ${p1} getStatusInfo ${Gson().toJson(p2)}  getAdminData: ${
                 Gson().toJson(p0?.admin)
             }  getPrntStatus: ${Gson().toJson(p0?.status)} getLocation: ${p0?.location}"
-        )
+        )*/
 
 
 
@@ -2342,16 +2372,16 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
 
         if (listOfPrintersData.size - 1 == currentPrinterIndex) {
-            Log.e(
+          /*  Log.e(
                 TAG,
                 "listOfPrinerData:   ${listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size}"
             )
             Log.e(TAG, "listOfcurrentOrderIndex:   ${currentOrderIndex}")
-
+*/
 
 
             if (listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size - 1 == currentOrderIndex) {
-                Log.e(TAG, "checkLastORderPRint  ")
+               // Log.e(TAG, "checkLastORderPRint  ")
                 runBlocking {
                     delay(2000)
 
@@ -2391,12 +2421,12 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
             }
 
         } else if (listOfPrintersData.size - 1 != currentPrinterIndex) {
-            Log.e(
+           /* Log.e(
                 TAG,
                 "checkLog: ${currentPrinterIndex}  orderIndex: ${
                     listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size - 1
                 }  currentOrderInd: ${currentOrderIndex}"
-            )
+            )*/
             if (listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size - 1 == currentOrderIndex) {
 
 
