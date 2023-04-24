@@ -393,7 +393,7 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
         getResult { apiService.getCategories() }
 
     suspend fun reOrderCategoryCall(id: Int, oldPos: Int, newPos: Int) =
-        getResult { apiService.reOrderCategory(id, newPos, oldPos) }
+        getResult { apiService.reOrderCategory(id, oldPos, newPos) }
 
     suspend fun getItemsCall() =
         getResult { apiService.getItems() }
@@ -559,6 +559,12 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
         data: CashInOutModel
     ) =
         getResult { apiService.orderUpdateTip(orderId, customerId, is_captured, data) }
+
+    suspend fun updateTipWithSignature(orderId: Int, signatureInBase64: String, tip: Double) =
+        getResult { apiService.updateTipWithSignature(orderId, signatureInBase64, tip) }
+
+    suspend fun updateTipWithSignatureFM(option: HashMap<String, Any>) =
+        getResult { apiService.updateTipWithSignatureFM(option) }
 
     suspend fun updateKitchenFireStatus(id: Int, isFired: Boolean, items: String) =
         getResult {

@@ -127,7 +127,8 @@ class GetPaymentOrderDetailsResponse(
             @SerializedName("venue_website") val venue_website: String,
             @SerializedName("refund_detail") val refund_detail: Refund_detail,
             @SerializedName("digital_receipt_url") val digital_receipt_url: String,
-            @SerializedName("total_amount") val total_amount: Double
+            @SerializedName("total_amount") val total_amount: Double,
+            @SerializedName("order_type_name") val order_type_name: String,
         ) : Parcelable {
             @Parcelize
             data class Order_items(

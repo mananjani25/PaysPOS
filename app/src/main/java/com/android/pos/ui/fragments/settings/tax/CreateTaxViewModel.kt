@@ -75,19 +75,17 @@ class CreateTaxViewModel @Inject constructor(
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
-    fun updateTaxDataInItem(tax: TaxData, itemIds: ArrayList<Int>) {
+    fun updateTaxDataInItem(tax: TaxData, itemIds: ArrayList<Int>, oldItemIds: ArrayList<Int>) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 var tempTaxData: ArrayList<TaxData> = arrayListOf()
-                val taxDataFromDb: TaxData = taxServiceChargeRepository.getItemsListOfTax(tax.id)
-                val oldItemIds: ArrayList<Int> = taxDataFromDb.itemIds as ArrayList<Int>
 
                 // Remove Tax from Items
                 oldItemIds.forEach {
                     if (!itemIds.contains(it)) {
                         val item: TbItem? = posRepository.getSingleItem(it)
                         tempTaxData = item?.taxes as ArrayList<TaxData>
-                        tempTaxData.removeIf { it.id == tax.id }
+                        tempTaxData.removeIf { t-> t.id == tax.id }
                         posRepository.updateTaxDataForItem(tempTaxData, it)
                     }
                 }
@@ -97,7 +95,10 @@ class CreateTaxViewModel @Inject constructor(
                     if (!oldItemIds.contains(it)) {
                         val item: TbItem? = posRepository.getSingleItem(it)
                         tempTaxData = (item?.taxes as ArrayList<TaxData>?)!!
-                        if (!tempTaxData.contains(element = tax)) {
+                        if (tempTaxData.isNotEmpty() && !tempTaxData.contains(element = tax)) {
+                            tempTaxData.add(tax)
+                            posRepository.updateTaxDataForItem(tempTaxData, it)
+                        } else {
                             tempTaxData.add(tax)
                             posRepository.updateTaxDataForItem(tempTaxData, it)
                         }
@@ -170,6 +171,8 @@ class CreateTaxViewModel @Inject constructor(
 
 
             viewModelScope.launch {
+                val taxDataFromDb: TaxData = taxServiceChargeRepository.getItemsListOfTax(taxId)
+                val oldItemIds: ArrayList<Int> = taxDataFromDb.itemIds as ArrayList<Int>
                 if (isEdit) {
                     resource = taxServiceChargeRepository.updateTax(taxId, taxData)
                 } else {
@@ -199,7 +202,7 @@ class CreateTaxViewModel @Inject constructor(
                                          updatedAt = createTaxResponse.data.updatedAt
                                      )*/
 
-                                    updateTaxDataInItem(tax, taxData.itemIds as ArrayList<Int>)
+                                    updateTaxDataInItem(tax, taxData.itemIds as ArrayList<Int>, oldItemIds)
                                     taxServiceChargeRepository.createTaxDatabase(tax)
 
                                     _data.value = Event(createTaxResponse)

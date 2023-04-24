@@ -37,6 +37,7 @@ import com.android.pos.data.remote.Constants.BUSINESS_PHONE_NO
 import com.android.pos.data.remote.Constants.BUSINESS_WEBSITE
 import com.android.pos.data.remote.Constants.CASH_DISCOUNT_SURCHARGE_AMOUNT_TYPE
 import com.android.pos.data.remote.Constants.CASH_DISCOUNT_SURCHARGE_RATE
+import com.android.pos.data.remote.Constants.CUSTOMER_SIGN_REQUIRED_ON_CD
 import com.android.pos.data.remote.Constants.DEFAULT_ORDER
 import com.android.pos.data.remote.Constants.DELETE
 import com.android.pos.data.remote.Constants.DINEIN_FLOORPLAN_SHOW_TABLENAME
@@ -3036,6 +3037,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 totalTax = 0.0
                 totalServiceCharge = 0.0
                 amountToBePaid = 0.0
+                MethodUtils.setPriceTextView(txtTotalAmount, totalPrice)
             }
         }
         //totalAmmount = totalPrice-cartList[0].discountPrice
@@ -4985,6 +4987,10 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 prefProvider.setValueboolean(
                                     IS_PRINTER_QUEUE_ENABLE,
                                     it.settingData.data.isPrinterQueueEnable
+                                )
+                                prefProvider.setValueboolean(
+                                    CUSTOMER_SIGN_REQUIRED_ON_CD,
+                                    it.settingData.data.customer_sign_required_on_cd
                                 )
 
                                 prefProvider.setValue(

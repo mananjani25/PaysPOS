@@ -441,7 +441,7 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/linearCashDisSurCharge"
+                android:id="@+id/linearTips"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/_3sdp"
@@ -470,6 +470,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/linearCashDisSurCharge"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/_3sdp"

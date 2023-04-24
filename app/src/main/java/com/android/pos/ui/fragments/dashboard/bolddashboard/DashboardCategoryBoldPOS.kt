@@ -990,6 +990,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
         Log.e("viewModel.cartModel",Gson().toJson(viewModel.cartModel))
 
+        prefProvider.setValue(Constants.REDIRECT_FROM, "")
+
         if (cartList.isEmpty() && viewModel.cartModel != null) {
             viewModel.cartModel?.let {
               cartList.add(it)
@@ -1180,10 +1182,15 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 cartList.addAll(it.toCollection(arrayListOf()))
             }
 
-//            if (this::presentation.isInitialized) {
-//                presentation.show()
-//                presentation.onDisplayChanged()
-//            }
+            if (this::presentation.isInitialized) {
+                if (!presentation.isShowing)
+                    presentation.show()
+                if (cartList.isNotEmpty()) {
+                    presentation.updateCustomerDisplay(it)
+                } else {
+                    presentation.onLogOutOrClockOutWithApiService(apiService)
+                }
+            }
 
             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
 
@@ -1813,7 +1820,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     )
                     builder.addTextAlign(Builder.ALIGN_CENTER)
 
-                    addBuilderTextForU220(builder, receiptModel?.order?.orderType.toString())
+                    addBuilderTextForU220(builder, receiptModel?.order?.orderTypeName)
                 }
 
                 /* if (receiptModel?.order?.orderType.trim().lowercase() == "OpenOrder".trim()
@@ -2376,7 +2383,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     )
                     builder.addTextAlign(Builder.ALIGN_CENTER)
 
-                    addBuilderText(builder, receiptModel?.order?.orderType.toString())
+                    addBuilderText(builder, receiptModel?.order?.orderTypeName?.toString())
                 }
 
                 /* if (receiptModel?.order?.orderType.trim().lowercase() == "OpenOrder".trim()
@@ -3070,7 +3077,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             SunmiPrinterApi.getInstance().lineWrap(1)
 
             if (kitchenSettingModel.showOrderType) {
-                PrintSunmiUtils.printOrderType(receiptModel?.order?.orderType.toString())
+                PrintSunmiUtils.printOrderType(receiptModel?.order?.orderTypeName?.toString())
             }
             //    PrintSunmiUtils.printOrderType(receiptModel?.order?.deliveryType.toString())
 
@@ -3226,7 +3233,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
             if (kitchenSettingModel.showOrderType) {
 
-                PrintSunmiUtils.headerText(receiptModel?.order?.orderType.toString())
+                PrintSunmiUtils.headerText(receiptModel?.order?.orderTypeName)
             }
             //   PrintSunmiUtils.headerText(receiptModel?.order?.deliveryType.toString())
 

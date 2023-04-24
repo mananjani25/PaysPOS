@@ -88,6 +88,8 @@ class CartFragment(
     Fragment(), MyCallback,
     DineInAdapter.DineInCallback, ItemCallback {
 
+    private var oldItemSize: Int? = 0
+
     @Inject
     lateinit var apiService: ApiService
 
@@ -886,7 +888,8 @@ class CartFragment(
                     setTaxBifurcationData(it[0].taxlistDynamic as ArrayList<TaxData>)
 
 
-                } else {
+                }
+                else {
                     cartlist = arrayListOf()
                     viewModel.clearListTax()
                     cartAdapter.clearList()
@@ -927,6 +930,8 @@ class CartFragment(
 
 
                 }
+
+                prefProvider.setValue(REDIRECT_FROM, "")
             }
 
         } else {
@@ -943,6 +948,7 @@ class CartFragment(
                     Log.e("mAllWordsFlow", "asLiveData" + it.size)
 
                     if (it.isEmpty()) {
+                        if (oldItemSize != null && oldItemSize != 1)
                         return@observe
                     } else {
                         val currentTimeMillis = System.currentTimeMillis()
@@ -1242,6 +1248,8 @@ class CartFragment(
                             binding.rlCartView.visible()
                             binding.rvOrderType.gone()
 
+                            oldItemSize = it[0].items?.size
+
                             Log.e("mAllWords", "listSize ITEM ${it.get(0).items?.size}")
                             viewModel.destroyedList.clear()
                             it[0].items?.filter { item -> item.isDestroy }?.let {
@@ -1283,11 +1291,11 @@ class CartFragment(
                             Log.e("mAllWords", "filterItems  ${filterItems.size}")
                             cartAdapter.setList(filterItems)
                             if (filterItems.isNotEmpty()) {
-
-                                Handler(Looper.myLooper()!!).postDelayed(
-                                    { binding.rvCartList.smoothScrollToPosition(filterItems.size - 1) },
-                                    200
-                                )
+                                binding.rvCartList.smoothScrollToPosition(filterItems.size - 1)
+//                                Handler(Looper.myLooper()!!).postDelayed(
+//                                    { binding.rvCartList.smoothScrollToPosition(filterItems.size - 1) },
+//                                    200
+//                                )
 //                               binding.rvCartList.smoothScrollToPosition(filterItems.size - 1)
                             }
 
@@ -1712,6 +1720,7 @@ class CartFragment(
                 taxBirfurcationAdapter.clearList()
                 viewModel.clearListTax()
                 prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
+                prefProvider.setValue(Constants.REDIRECT_FROM, "")
                 updateActiveOrderFlagClear()
                 itemListner?.onCancelItemSelected()
                 if (prefProvider.getValue(ORDER_TYPE, "").toString() == Constants.DINE_IN) {
@@ -1774,6 +1783,7 @@ class CartFragment(
                     prefProvider.setValue(ORDER_TYPE, "")
                     prefProvider.setValue(ORDER_TYPE_NAME, "")
                     prefProvider.setValueboolean(Constants.LOYALTY_ADDED, false)
+
                     itemClickListner?.onDineInOrderCleared()
                     uiSave()
                     getOrderTypes()
@@ -2093,6 +2103,7 @@ class CartFragment(
                                 ordertypeId = it.id
                             }
                         }
+                        Log.e("ordertypeId :: ", ordertypeId.toString())
 
                         if (viewModel.restrictedAmount(binding.txtTotal)) {
 
@@ -2329,7 +2340,7 @@ class CartFragment(
 
         if (this::presentation.isInitialized) {
             presentation.show()
-            presentation.onDisplayChanged()
+            presentation.onLogOutOrClockOutWithApiService(apiService)
         }
 
         val model = orderTypeAdapter?.getItem(pos)
@@ -2339,6 +2350,7 @@ class CartFragment(
 
         Log.e(TAG, "checkOrderType  ${model?.orderType}")
 
+        prefProvider.setValue(Constants.REDIRECT_FROM, "")
 
         if (model?.orderType == DINE_IN) {
             Log.e(TAG, "InsideDine inNew")

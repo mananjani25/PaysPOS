@@ -1083,7 +1083,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                 Constants.EPX_GATEWAY == magtekRequestUtils.gatewayName() -> {
 
                     jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
-                        singleTransaction?.amount?.times(100)?.let {
+                            singleTransaction?.amount?.times(100)?.let {
                             magtekRequestUtils.processReferenceIDEPXForce(
                                 it,
                                 model.customerTransactionID ?: "", it1, Constants.CAPTURE,

@@ -2411,7 +2411,7 @@ fun addWholeTbItemToGuest(
 
     var subTotal = (obj.price * obj.itemQuantity).toDouble()
 
-    if (obj.modifiers.isNotEmpty()) {
+    if (obj.modifiers.isNotEmpty() && showModifiers) {
         obj.modifiers.forEach {
             subTotal += it.price * it.itemQuantity
         }
@@ -2515,7 +2515,7 @@ fun addWholeTbItemToGuest(
 
     var subTotal = (obj.price * obj.itemQuantity).toDouble()
 
-    if (obj.modifiers.isNotEmpty()) {
+    if (obj.modifiers.isNotEmpty() && showModifiers) {
         obj.modifiers.forEach {
             subTotal += it.price * it.itemQuantity
         }
@@ -2596,7 +2596,7 @@ fun addWholeTbItemToGuestInner(
 
     var subTotal = (obj.price * obj.itemQuantity).toDouble()
 
-    if (obj.modifiers.isNotEmpty()) {
+    if (obj.modifiers.isNotEmpty() && showModifiers) {
         obj.modifiers.forEach {
             subTotal += it.price * it.itemQuantity
         }
@@ -3017,7 +3017,7 @@ fun addOrderItems(
 
 
 
-        if (obj.orderItemModifiers.isNotEmpty()) {
+        if (obj.orderItemModifiers.isNotEmpty() && showModifiers) {
             for (j in 0 until obj.orderItemModifiers.size) {
                 val modifierObj = obj.orderItemModifiers.get(j)
 
@@ -3072,7 +3072,7 @@ fun addOrderItemsInner(
 
 
 
-        if (obj.orderItemModifiers.isNotEmpty()) {
+        if (obj.orderItemModifiers.isNotEmpty() && showModifiers) {
             for (j in 0 until obj.orderItemModifiers.size) {
                 val modifierObj = obj.orderItemModifiers.get(j)
 

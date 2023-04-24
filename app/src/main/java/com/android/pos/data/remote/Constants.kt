@@ -313,6 +313,7 @@ object Constants {
 
 
     const val UPDATE_TIP = "orders/{id}/update_tip"
+    const val UPDATE_TIP_WITH_SIGNATURE="payments/update_tip_and_signature"
     const val FIRE_ITEM_TO_KITCHEN = "orders/{id}/update_fire_status_of_items"
     const val PAY_BY_GUEST = "payments/pay_by_guest"
 
@@ -354,6 +355,8 @@ object Constants {
 
 
     const val TIME_DETAILS = "time_details"
+
+    const val CUSTOMER_SIGN_REQUIRED_ON_CD = "customer_sign_required_on_cd"
 
 
     fun createRequestModelForUpdatePritnerType(
@@ -674,6 +677,7 @@ object Constants {
 
     const val IS_UPDATE_ORDER = "is_update_order"
     const val IS_UPDATE_ORDER_ID = "is_update_order_id"
+    const val PAYMENT_ID_FOR_CUSTOMER_DISPLAY = "payment_id_for_customer_display"
     const val IS_UPDATE_ORDER_PAYMENT_ID = "is_update_order_payment_id"
     const val IS_UPDATE_ORDER_PAY_OFFLINE_ID = "is_update_order_pay_offline_id"
     const val IS_UPDATE_ORDER_OFFLINE_ID = "is_update_order_offline_id"

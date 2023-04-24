@@ -2,26 +2,36 @@ package com.android.pos.ui.fragments.dashboard.bolddashboard
 
 import android.app.Presentation
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Color
 import android.os.Bundle
+import android.util.Base64
 import android.util.Log
-import android.view.Display
-import android.view.View
-import android.view.Window
+import android.view.*
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.pos.R
 import com.android.pos.data.entities.*
 import com.android.pos.data.model.DineInModel
 import com.android.pos.data.model.GuestPaymentCalculationModel
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
+import com.android.pos.data.model.responseModel.GetTipReponse
+import com.android.pos.data.model.responseModel.MagtekOnlineOrderRefundResponse
 import com.android.pos.data.model.responseModel.TimeDetailsResponse
 import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.CUSTOMER_SIGN_REQUIRED_ON_CD
 import com.android.pos.data.remote.Constants.DINE_IN
+import com.android.pos.data.remote.Constants.MANUAL_SALE
 import com.android.pos.data.remote.Constants.ORDER_TYPE
+import com.android.pos.data.remote.Constants.REDIRECT_FROM
+import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.databinding.ViewCustomDisplayBinding
+import com.android.pos.di.ApiModule1
 import com.android.pos.di.PrefProvider
+import com.android.pos.ui.adapter.ActiveTipsListAdapter
 import com.android.pos.ui.adapter.DineInAdapter
 import com.android.pos.ui.adapter.DineInTableAdapterCD
 import com.android.pos.ui.adapter.boldpos.CartAdapter
@@ -29,25 +39,49 @@ import com.android.pos.ui.adapter.boldpos.TaxBirfurcationAdapter
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
-import com.android.pos.utils.LogUtil
-import com.android.pos.utils.MethodUtils
+import com.android.pos.ui.fragments.magtek.MagtekRequestUtils
+import com.android.pos.ui.fragments.magtek.PaymentResponse
+import com.android.pos.ui.fragments.payment.PaymentViewModel
+import com.android.pos.ui.fragments.settings.tip.TipListViewModel
+import com.android.pos.ui.fragments.transactions.TransactionViewModel
+import com.android.pos.utils.*
+import com.android.pos.utils.MethodUtils.Companion.toPrecision
 import com.android.pos.utils.callback.MyCallback
-import com.android.pos.utils.extensions.gone
-import com.android.pos.utils.extensions.invisible
-import com.android.pos.utils.extensions.isVisible
-import com.android.pos.utils.extensions.visible
+import com.android.pos.utils.extensions.*
 import com.android.pos.utils.statusUtils.Status
+import com.github.gcacace.signaturepad.views.SignaturePad.OnSignedListener
 import com.google.gson.Gson
+import com.google.gson.JsonArray
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import java.io.ByteArrayOutputStream
 
 class CustomDisplay(
     display: Display,
     context: Context,
     val lifecycleOwner: LifecycleOwner,
-    val dashBoardCategoryViewModel: DashBoardCategoryViewModel,
+    private val dashBoardCategoryViewModel: DashBoardCategoryViewModel,
     val passcodeViewModel: PasscodeViewModel,
     val dineInViewModel: DineInOrderTableViewModel
-) : Presentation(context, display), MyCallback, DineInAdapter.DineInCallback {
+) : Presentation(context, display), MyCallback, DineInAdapter.DineInCallback,
+    ActiveTipsListAdapter.DiscountInterface {
+
+    private var mWholeTotalPrice: Double = 0.0
+    private var signatureInBase64: String = ""
+    private var mIsSignatureRequired: Boolean = false
+    private lateinit var apiModule1: ApiModule1
+    private lateinit var magtekRequestUtils: MagtekRequestUtils
+    private lateinit var magensaResponse: String
+    private var tippedAmount: Double = 0.0
+    private var tipRate: Double = 0.0
+    private var mOrderID: Int = 0
+    private var mIsCardPayment: Boolean = false
+    lateinit var mTransactionViewModel: TransactionViewModel
+    lateinit var mTipListViewModel: TipListViewModel
+    lateinit var mPaymentViewModel: PaymentViewModel
 
     private var dineInPaymentDetails: GuestPaymentCalculationModel? = null
     private var isGuestPay: Boolean = false
@@ -72,6 +106,9 @@ class CustomDisplay(
 
     var notPayAnyAmount: Boolean = false
 
+    lateinit var tipsListViewModel: TipListViewModel
+    lateinit var activeTipsListAdapter: ActiveTipsListAdapter
+
     private val TAG = "CustomDisplay"
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -80,13 +117,14 @@ class CustomDisplay(
         binding = ViewCustomDisplayBinding.inflate(layoutInflater)
         setContentView(binding.root)
         prefProvider = PrefProvider(context)
-        setupList()
+        setupCartList()
         getCustomerList()
         observeServiceCharge()
         setupTaxAdapter()
     }
 
-    private fun setupList() {
+
+    private fun setupCartList() {
 
         cartAdapter = CartAdapter()
         cartAdapter.setCallback(this)
@@ -108,17 +146,26 @@ class CustomDisplay(
     override fun onDisplayChanged() {
         super.onDisplayChanged()
 
-        dashBoardCategoryViewModel.mAllWords(
-            prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT),
-            prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
-        ).observe(lifecycleOwner) {
-            it?.let {
-
-
-                updateCustomerDisplay(it)
-
+        if (prefProvider.getValue(REDIRECT_FROM, "") == MANUAL_SALE) {
+            dashBoardCategoryViewModel.manualSaleItems(
+                prefProvider.getValue(ORDER_TYPE, TAKEOUT),
+                prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+            ).observe(lifecycleOwner) {
+                it?.let {
+                    updateCustomerDisplay(it)
+                }
+            }
+        }else{
+            dashBoardCategoryViewModel.mAllWords(
+                prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT),
+                prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+            ).observe(lifecycleOwner) {
+                it?.let {
+                    updateCustomerDisplay(it)
+                }
             }
         }
+
     }
 
     private fun observeServiceCharge() {
@@ -382,13 +429,28 @@ class CustomDisplay(
 
     override fun onItemDelete(position: Int, itemPosition: Int, data: TbItem) {}
 
-    fun showThankYou(paidAmount: String) {
+    fun showThankYou(paidAmount: Double) {
         binding.apply {
             mainCartLayout.gone()
             splashLayout.gone()
+            askForTipLayout.gone()
+            addTipKeypadLayout.gone()
+            progressLayout.gone()
 
             thankYouLayout.visible()
-            txtPaidAmount.text = "Paid $paidAmount"
+            txtPaidAmount.text = "Paid $${paidAmount.toPrecision(2)}"
+        }
+    }
+
+    fun showProgress() {
+        binding.apply {
+            mainCartLayout.gone()
+            splashLayout.gone()
+            askForTipLayout.gone()
+            addTipKeypadLayout.gone()
+            thankYouLayout.gone()
+
+            progressLayout.visible()
         }
     }
 
@@ -407,11 +469,10 @@ class CustomDisplay(
     private fun callTimeApi(apiService: ApiService) {
         lifecycleOwner.lifecycleScope.launch {
             val response = apiService.getTimeDetails()
-            Log.d("TAG", "onLogOutOrClockOutWithApiService: ${response.data.time}")
 
             binding.currentTime.text = response.data.time
             binding.currentDate.text = response.removeWhiteSpaces()
-        }.runCatching { Log.d("TAG", "onLogOutOrClockOutWithApiService: Some Exzception") }
+        }.runCatching { Log.d("CustomDisplay", "onLogOutOrClockOutWithApiService: Some Exception") }
     }
 
     fun onLogOutOrClockOut() {
@@ -459,7 +520,7 @@ class CustomDisplay(
 
                 var listTableMerge: java.util.ArrayList<String> = arrayListOf()
                 listTableMerge.add(baseResponse.floorPlanTable.tableNumber.toString())
-                baseResponse.floorPlanTable?.merged_child_table_details.forEach {
+                baseResponse.floorPlanTable?.merged_child_table_details?.forEach {
                     listTableMerge.add(it.table_number.toString())
 
                 }
@@ -851,12 +912,6 @@ class CustomDisplay(
                                 baseResponse.guestAttributes.size - 1
                             )
                         ) {
-                            Log.d(
-                                TAG,
-                                "calculateDineInServiceCharge: DashBoard " + it.min_guest_count + "....." + it.max_guest_count + " in between " + baseResponse.guestAttributes.size.minus(
-                                    1
-                                )
-                            )
                             isApplied = true
                             totalServiceChargeAmount += (totalSubTotal * it.percentage) / 100
                             return@forEach
@@ -949,9 +1004,6 @@ class CustomDisplay(
                 }
 
                 //subTotalDInin -= baseResponse.totalDiscount
-
-
-                Log.d("TODO", "suTotalPaidGuest: " + subTotalDInin)
 
                 var tempServicecharge = 0.0
                 if (paidGuestCount > 0) {
@@ -1098,6 +1150,8 @@ class CustomDisplay(
         if (tipAmount == 0.00) {
             binding.tipLayout.gone()
         } else {
+            binding.askForTipLayout.gone()
+            binding.addTipKeypadLayout.gone()
             binding.tipLayout.visible()
             val percentageTip = String.format(
                 "%.0f", MethodUtils.calculatePercentageFromAmount(
@@ -1111,6 +1165,165 @@ class CustomDisplay(
 
         }
 
+    }
+
+    private fun showTipsAddedVer2(tipRate: Double, tipAmount: Double) {
+        if (tipAmount == 0.00) {
+            binding.tipLayout.gone()
+        } else {
+            binding.tipLayout.visible()
+            binding.tipPercentLabel.text = "Tip (${String.format("%.0f", tipRate)}%)"
+            binding.txtTipGiven.text = "" + MethodUtils.roundOffAmount(tipAmount)
+        }
+    }
+
+    private fun setupActiveTipsList(tipListViewModel: TipListViewModel) {
+        activeTipsListAdapter = ActiveTipsListAdapter()
+        binding.apply {
+            rvActiveTipsList.apply {
+                layoutManager = GridLayoutManager(context,4)
+                adapter = activeTipsListAdapter
+            }
+        }
+        tipsListViewModel = tipListViewModel
+    }
+
+    private fun observeActiveTipsList(wholeTotalPrice: Double) {
+        tipsListViewModel.getTipActiveList.observe(lifecycleOwner) {
+
+            LogUtil.logE(TAG, "ActiveTipsList ${Gson().toJson(it)}")
+
+            if (it.data?.isNotEmpty() == true) {
+
+                activeTipsListAdapter.clearAll()
+
+                it.data.forEach { data ->
+                    data.isChecked = false
+                }
+                binding.rvActiveTipsList.layoutManager = GridLayoutManager(context,it.data.size)
+                activeTipsListAdapter.setList(it.data, wholeTotalPrice)
+                activeTipsListAdapter.setListner(this)
+                lifecycleOwner.lifecycleScope.launch {
+                    //delay(5000)
+                    //binding.rvActiveTipsList.smoothScrollToPosition(tipsList.size - 1)
+                }
+            }
+        }
+    }
+
+    private fun showMainCart() {
+        binding.apply {
+            binding.mainCartLayout.visible()
+            addTipKeypadLayout.gone()
+            askForTipLayout.gone()
+            binding.splashLayout.gone()
+            binding.thankYouLayout.gone()
+        }
+    }
+
+    private fun showTipKeypad(wholeTotalPrice: Double) {
+        binding.apply {
+
+            askForTipLayout.gone()
+            splashLayout.gone()
+            mainCartLayout.gone()
+            thankYouLayout.gone()
+
+            addTipKeypadLayout.visible()
+            binding.edtAmount.addTextChangedListener(AmountTextWatcher(binding.edtAmount, true))
+            setKeyPad()
+
+            edtAmount.setText(MethodUtils.roundOffAmountString(0.00))
+
+            txtContinue.setOnClickListener {
+
+                tippedAmount = edtAmount.text.toString().replace("$", "").trim().toDouble()
+
+                if (mIsCardPayment) {
+                    if (mIsSignatureRequired) {
+                        showWouldYouLikeToAddTipScreen(
+                            tipsListViewModel,
+                            mTransactionViewModel,
+                            mWholeTotalPrice,
+                            mOrderID,
+                            mIsCardPayment,
+                            mPaymentViewModel,
+                            magtekRequestUtils,
+                            apiModule1,
+                            true
+                        )
+                    } else {
+                        magtekCall(wholeTotalPrice)
+                    }
+                } else {
+                    callUpdateTip()
+                }
+            }
+
+        }
+    }
+
+    private fun setKeyPad() {
+        binding.incKeypad.tvOne.setOnSingleClickListener {
+            calculateValue("1", false)
+        }
+
+        binding.incKeypad.tvTwo.setOnSingleClickListener {
+            calculateValue("2", false)
+        }
+
+        binding.incKeypad.tvThree.setOnSingleClickListener {
+            calculateValue("3", false)
+        }
+
+        binding.incKeypad.tvFour.setOnSingleClickListener {
+            calculateValue("4", false)
+        }
+
+        binding.incKeypad.tvFive.setOnSingleClickListener {
+            calculateValue("5", false)
+        }
+
+        binding.incKeypad.tvSix.setOnSingleClickListener {
+            calculateValue("6", false)
+        }
+
+        binding.incKeypad.tvSeven.setOnSingleClickListener {
+            calculateValue("7", false)
+        }
+
+        binding.incKeypad.tvEight.setOnSingleClickListener {
+            calculateValue("8", false)
+        }
+
+        binding.incKeypad.tvNine.setOnSingleClickListener {
+            calculateValue("9", false)
+        }
+
+        binding.incKeypad.tvZero.setOnSingleClickListener {
+            calculateValue("0", false)
+        }
+
+        binding.incKeypad.txtClearAll.setOnSingleClickListener {
+            binding.edtAmount.setText("0.00")
+        }
+
+        binding.incKeypad.txtClearLast.setOnSingleClickListener {
+            calculateValue("", true)
+        }
+
+    }
+
+    private fun calculateValue(number: String, delete: Boolean) {
+        if (binding.edtAmount.text?.length!! > 1 && delete) {
+            binding.edtAmount.setText(removeLastCharacter(binding.edtAmount.text.toString()))
+        } else {
+            binding.edtAmount.append(number)
+        }
+    }
+
+    private fun removeLastCharacter(str: String): String {
+        return str.substring(0, str.length - 1)
     }
 
     private fun modifiersIds(orderItemModifiers: List<GetOrderDetailsResponse.Data.OrderItem.OrderItemModifier>): List<Int> {
@@ -1169,18 +1382,6 @@ class CustomDisplay(
         binding.splashLayout.visibility = View.GONE
         dineInPaymentDetails = model
 
-/*
-        getDineInOrderDetails(
-            getOrderDetailsResponse,
-            totalTax = totalTax,
-            totalAmount = TotalAmt,
-            totalDis = discount,
-            cashOrSurCharge = CashOrSurcharge,
-            subTotal = subtotal,
-            TotalServiceCharge = serviceCharge
-        )*/
-
-
     }
 
     fun setCustomerList(list: List<TbCustomer>) {
@@ -1188,4 +1389,472 @@ class CustomDisplay(
         allCustomerList.addAll(list)
     }
 
+
+    fun showWouldYouLikeToAddTipScreen(
+        tipListViewModel: TipListViewModel,
+        transactionViewModel: TransactionViewModel,
+        wholeTotalPrice: Double,
+        orderId: Int,
+        isCardPayment: Boolean,
+        paymentViewModel: PaymentViewModel,
+        magRequestUtils: MagtekRequestUtils,
+        apiModule1: ApiModule1,
+        fromKeypad: Boolean = false
+    ) {
+        mTipListViewModel = tipListViewModel
+        mOrderID = orderId
+        mIsCardPayment = isCardPayment
+        mIsSignatureRequired = prefProvider.getValueboolean(CUSTOMER_SIGN_REQUIRED_ON_CD, false)
+        mTransactionViewModel = transactionViewModel
+        mPaymentViewModel = paymentViewModel
+        magensaResponse = mPaymentViewModel.magensaResponse ?: ""
+        magtekRequestUtils = magRequestUtils
+        this.apiModule1 = apiModule1
+        mWholeTotalPrice = wholeTotalPrice
+
+        binding.apply {
+            askForTipLayout.visible()
+            setupActiveTipsList(mTipListViewModel)
+            observeActiveTipsList(wholeTotalPrice)
+
+            mainCartLayout.gone()
+            splashLayout.gone()
+            thankYouLayout.gone()
+            addTipKeypadLayout.gone()
+
+            if (fromKeypad && tippedAmount > 0.0) {
+                binding.otherRootLayout.setBackgroundColor(Color.parseColor("#ED5950"))
+                binding.txtOtherLabel.setTextColor(Color.parseColor("#FFFFFF"))
+                binding.txtOtherLabel.text = "Other ($tippedAmount)"
+
+            } else {
+                binding.otherRootLayout.setBackgroundColor(Color.parseColor("#363636"))
+                binding.txtOtherLabel.setTextColor(Color.parseColor("#ED5950"))
+                binding.txtOtherLabel.text = "Other"
+            }
+
+            if (mIsSignatureRequired && mIsCardPayment) {
+                signRootLayout.visible()
+                tvContinue.visible()
+                disableConfirmButton()
+                signLinearLayout.gravity = Gravity.TOP
+            } else {
+                signRootLayout.gone()
+                tvContinue.gone()
+                signLinearLayout.gravity = Gravity.CENTER_VERTICAL
+            }
+
+            binding.clearSignLayout.setOnClickListener {
+                binding.signaturePad.clear()
+            }
+
+            binding.otherRootLayout.setOnClickListener {
+                showTipKeypad(wholeTotalPrice)
+            }
+
+            binding.noTipRootLayout.setOnClickListener {
+                showThankYou(mWholeTotalPrice)
+            }
+
+            binding.tvContinue.setOnSingleClickListener {
+
+                signatureInBase64 = bitmapToBase64(signaturePad.signatureBitmap)
+
+                magtekCall(wholeTotalPrice)
+
+            }
+
+            signaturePad.setOnSignedListener(object : OnSignedListener {
+
+                override fun onStartSigning() {
+                    yourSignatureLabel.invisible()
+                    clearSignLayout.visible()
+                    if (tippedAmount > 0.0) {
+                        enableConfirmButton()
+                    }
+                }
+
+                override fun onSigned() {
+                    clearSignLayout.visible()
+                    if (tippedAmount > 0.0) {
+                        enableConfirmButton()
+                    }
+                }
+
+                override fun onClear() {
+                    disableConfirmButton()
+                    yourSignatureLabel.visible()
+                    clearSignLayout.invisible()
+                }
+
+            })
+
+        }
+    }
+
+    private fun bitmapToBase64(bitmap: Bitmap): String {
+        val byteArrayOutputStream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
+        val byteArray = byteArrayOutputStream.toByteArray()
+        return Base64.encodeToString(byteArray, Base64.DEFAULT).replace("\n", "")
+    }
+
+    private fun callUpdateTip() {
+        lifecycleOwner.lifecycleScope.launch {
+            showProgress()
+            mTransactionViewModel.updateTipWithSignature(mOrderID, signatureInBase64, tippedAmount)
+            mTransactionViewModel.updateTipData.observe(lifecycleOwner) { event ->
+                event.getContentIfNotHandled()?.let {
+                    if (it.status == 200) {
+                        prefProvider.setValueboolean(Constants.TIP_ADDED, false)
+                        showThankYou(mWholeTotalPrice + tippedAmount)
+                    } else {
+                        showErrorLayout(it.message)
+                    }
+                }
+            }
+
+        }
+    }
+
+    private fun showErrorLayout(message: String) {
+        binding.apply {
+            mainCartLayout.gone()
+            splashLayout.gone()
+            askForTipLayout.gone()
+            addTipKeypadLayout.gone()
+            progressLayout.gone()
+            thankYouLayout.gone()
+
+            errorLayout.visible()
+            txtErrorMessage.text = message
+
+            tvTryAgain.setOnClickListener {
+                errorLayout.gone()
+                askForTipLayout.visible()
+            }
+        }
+    }
+
+    override fun selectedItem(model: GetTipReponse.Data, pos: Int, wholeTotalPrice: Double) {
+        tipRate = model.rate
+        tippedAmount = MethodUtils.percentageCalculation(wholeTotalPrice, model.rate)
+        if ((mIsCardPayment && !mIsSignatureRequired) || (!mIsCardPayment)) {
+            callUpdateTip()
+        }
+        if (!binding.signaturePad.isEmpty) {
+            enableConfirmButton()
+        }
+    }
+
+    private fun enableConfirmButton() {
+        binding.tvContinue.isEnabled = true
+        binding.tvContinue.setBackgroundColor(Color.parseColor("#ED5950"))
+    }
+
+    private fun disableConfirmButton() {
+        binding.tvContinue.isEnabled = false
+        binding.tvContinue.setBackgroundColor(Color.GRAY)
+    }
+
+    private fun magtekCall(
+        wholeTotalPrice: Double
+    ) {
+        showProgress()
+        if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == "OnlineWebOrder") {
+            val model = Gson().fromJson(
+                magensaResponse,
+                MagtekOnlineOrderRefundResponse::class.java
+            )
+            val jsonArray: JsonArray?
+
+            when {
+
+                Constants.FIRST_DATA_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                    if (model != null) {
+                        jsonArray =
+                            model.transactionOutput.token.let { it1 ->
+                                tippedAmount.times(100).let {
+                                    magtekRequestUtils.processTokenFirstData(
+                                        it,
+                                        it1,
+                                        model.customerTransactionID ?: "",
+                                        model.transactionOutput.transactionOutputDetails[0].value,
+                                        Constants.CAPTURE
+                                    )
+                                }
+                            }
+
+                        networkCall(jsonArray, 0, apiModule1)
+                    }
+                }
+
+                // not support CAPTURE
+                Constants.ELAVON_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                    jsonArray =
+                        model.transactionOutput.token.let { it1 ->
+                            magtekRequestUtils.processTokenElavon(
+                                (tippedAmount * 100),
+                                it1,
+                                model.customerTransactionID ?: "",
+                                model.transactionOutput.transactionOutputDetails[0].value
+
+                            )
+                        }
+
+                    networkCall(jsonArray, 0, apiModule1)
+                }
+
+                Constants.EPX_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                    jsonArray = model.transactionOutput.transactionID.let { it1 ->
+                        wholeTotalPrice.times(100).let {
+                            magtekRequestUtils.processReferenceIDEPXForce(
+                                it,
+                                model.customerTransactionID ?: "", it1, Constants.CAPTURE,
+                                (tippedAmount * 100).toString()
+                            )
+                        }
+                    }
+                    networkCall(jsonArray, 1, apiModule1)
+                }
+
+                Constants.VANIT_EXORESS_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                    jsonArray = model.transactionOutput.transactionID.let { it1 ->
+                        magtekRequestUtils.processReferenceIDCapture(
+                            (tippedAmount * 100),
+                            model.customerTransactionID ?: "", it1,
+                            model.transactionOutput.authCode,
+                            ""
+                        )
+                    }
+                    networkCall(jsonArray, 1, apiModule1)
+                }
+
+                Constants.CHASE_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                    val amount = wholeTotalPrice.plus(tippedAmount)
+
+                    jsonArray = amount.times(100).let {
+                        magtekRequestUtils.processTokenChase(
+                            it,
+                            model.transactionOutput?.token ?: "",
+                            model.customerTransactionID ?: "",
+                            model.transactionOutput?.authCode ?: "",
+                            Constants.CAPTURE
+                        )
+                    }
+
+                    networkCall(jsonArray, 0, apiModule1)
+                }
+                Constants.HEARTLAND_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                    val amount = wholeTotalPrice.plus(tippedAmount)
+
+                    jsonArray = model.transactionOutput.transactionID.let { it1 ->
+                        amount.times(100).let {
+                            magtekRequestUtils.processReferenceIdHeartlandCapture(
+                                it,
+                                model.customerTransactionID ?: "",
+                                it1,
+                                model.transactionOutput.authCode,
+                                (tippedAmount * 100).toString()
+                            )
+                        }
+                    }
+                    networkCall(jsonArray, 1, apiModule1)
+                }
+                Constants.TSYS_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                    jsonArray = model.transactionOutput.transactionID.let { it1 ->
+                        wholeTotalPrice.let {
+                            it.let { it2 ->
+                                magtekRequestUtils.processReferenceIDTSYSCapture(
+                                    it2,
+                                    model.customerTransactionID ?: "",
+                                    it1,
+                                    (tippedAmount)
+                                )
+                            }
+                        }
+                    }
+                    networkCall(jsonArray, 1, apiModule1)
+                }
+
+
+            }
+        } else {
+            val model = Gson().fromJson(
+                magensaResponse,
+                PaymentResponse.PaymentResponseItem::class.java
+            )
+
+
+            val jsonArray: JsonArray?
+
+            when {
+
+                Constants.FIRST_DATA_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                    if (model != null) {
+                        jsonArray =
+                            model.transactionOutput?.token?.let { it1 ->
+                                tippedAmount.times(100).let {
+                                    magtekRequestUtils.processTokenFirstData(
+                                        it,
+                                        it1,
+                                        model.customerTransactionID ?: "",
+                                        model.transactionOutput.transactionOutputDetails[0].value,
+                                        Constants.CAPTURE
+                                    )
+                                }
+                            }
+
+                        networkCall(jsonArray, 0, apiModule1)
+                    }
+                }
+
+                // not support CAPTURE
+                Constants.ELAVON_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                    jsonArray =
+                        model.transactionOutput?.token?.let { it1 ->
+                            magtekRequestUtils.processTokenElavon(
+                                (tippedAmount * 100),
+                                it1,
+                                model.customerTransactionID ?: "",
+                                model.transactionOutput.transactionOutputDetails[0].value
+
+                            )
+                        }
+
+                    networkCall(jsonArray, 0, apiModule1)
+                }
+
+                Constants.EPX_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                    jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
+                        wholeTotalPrice.times(100).let {
+                            magtekRequestUtils.processReferenceIDEPXForce(
+                                it,
+                                model.customerTransactionID ?: "", it1, Constants.CAPTURE,
+                                (tippedAmount * 100).toString()
+                            )
+                        }
+                    }
+                    networkCall(jsonArray, 1, apiModule1)
+                }
+
+                Constants.VANIT_EXORESS_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                    jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
+                        magtekRequestUtils.processReferenceIDCapture(
+                            (tippedAmount * 100),
+                            model.customerTransactionID ?: "", it1,
+                            model.transactionOutput.authCode,
+                            ""
+                        )
+                    }
+                    networkCall(jsonArray, 1, apiModule1)
+                }
+
+                Constants.CHASE_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                    val amt = wholeTotalPrice.plus(tippedAmount)
+
+                    jsonArray = amt.times(100).let {
+                        magtekRequestUtils.processTokenChase(
+                            it,
+                            model.transactionOutput?.token ?: "",
+                            model.customerTransactionID ?: "",
+                            model.transactionOutput?.authCode ?: "",
+                            Constants.CAPTURE
+                        )
+                    }
+
+                    networkCall(jsonArray, 0, apiModule1)
+                }
+                Constants.HEARTLAND_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                    val amt = wholeTotalPrice.plus(tippedAmount)
+
+                    jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
+                        amt.times(100).let {
+                            magtekRequestUtils.processReferenceIdHeartlandCapture(
+                                it,
+                                model.customerTransactionID ?: "",
+                                it1,
+                                model.transactionOutput.authCode,
+                                (tippedAmount * 100).toString()
+                            )
+                        }
+                    }
+                    networkCall(jsonArray, 1, apiModule1)
+                }
+                Constants.TSYS_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+
+                    jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
+                        wholeTotalPrice.let {
+                            it.let { it2 ->
+                                magtekRequestUtils.processReferenceIDTSYSCapture(
+                                    it2,
+                                    model.customerTransactionID ?: "",
+                                    it1,
+                                    (tippedAmount)
+                                )
+                            }
+                        }
+                    }
+                    networkCall(jsonArray, 1, apiModule1)
+                }
+
+
+            }
+        }
+
+    }
+
+    private fun networkCall(jsonArray1: JsonArray?, i: Int, apiModule1: ApiModule1) {
+        //ProgressUtils.showProgressDialog(context as Activity)
+
+        val call = if (i == 1) {
+            jsonArray1?.let { apiModule1.getRetrofit1().processReferenceID(it) }
+        } else {
+            jsonArray1?.let { apiModule1.getRetrofit1().processToken(it) }
+        }
+
+        call!!.enqueue(object : Callback<PaymentResponse> {
+
+            override fun onResponse(
+                call: Call<PaymentResponse>,
+                response: Response<PaymentResponse>
+            ) {
+                if (response.isSuccessful) {
+                    LogUtil.logE("onResponse", Gson().toJson(response.body()))
+                    if (response.body() != null && response.body()!![0].transactionOutput != null) {
+
+                        if (response.body()!![0].transactionOutput?.isTransactionApproved == true) {
+                            callUpdateTip()
+                        } else {
+                            showErrorLayout(response.body()!![0].transactionOutput?.transactionMessage.toString())
+                        }
+
+                    } else {
+                        if (response.body()!![0].mPPGv4WSFault != null){
+                            showErrorLayout(response.body()!![0].mPPGv4WSFault?.faultCode + "\n" +
+                                    response.body()!![0].mPPGv4WSFault?.faultReason.toString())
+                        }
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<PaymentResponse>, t: Throwable) {
+                t.localizedMessage?.let { showErrorLayout(it) }
+            }
+        })
+    }
 }
