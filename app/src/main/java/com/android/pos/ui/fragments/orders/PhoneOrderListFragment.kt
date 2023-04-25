@@ -34,6 +34,7 @@ import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.BUSINESS_ADDRESS
 import com.android.pos.data.remote.Constants.OPEN_ORDER
 import com.android.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
+import com.android.pos.data.remote.Constants.PHONE_ORDER
 import com.android.pos.data.remote.Constants.PRINT_PAID
 import com.android.pos.data.remote.Constants.PRINT_UNPAID
 import com.android.pos.data.remote.Constants.SHIPPING_ADDRESS
@@ -445,7 +446,10 @@ class PhoneOrderListFragment(
                 prefProvider.setValue(Constants.SERVICE_CHARGE, "")
 
                 dashboardViewModel.deleteCart()
-                prefProvider.setValue(Constants.ORDER_TYPE, OPEN_ORDER)
+                prefProvider.setValue(Constants.ORDER_TYPE, PHONE_ORDER)
+                prefProvider.setValue(Constants.ORDER_TYPE_NAME, PHONE_ORDER)
+                prefProvider.setValueInt(Constants.ORDER_TYPE_ID, order.orderTypeId)
+
 
                 var itemDiscountTotal: Double = 0.0
                 var itemPassDis: Double = 0.0
