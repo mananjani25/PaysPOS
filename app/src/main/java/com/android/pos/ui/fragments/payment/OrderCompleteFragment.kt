@@ -1027,7 +1027,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         customerPrinterDineIn?.forEach { cpd ->
             if (cpd.status) {
 
-                if (shouldCheckForAutoPrinting) {
+                if (shouldCheckForAutoPrinting && !isGuest) {
                     cpd.orderTypes.forEach {
                         if (it.orderTypeId == receiptModel?.order?.orderTypeId) {
                             it.printerSettings.forEach {
