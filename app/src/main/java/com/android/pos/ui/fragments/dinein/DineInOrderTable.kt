@@ -194,11 +194,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         setupSnackbar()
         getCustomerList()
         observeServiceCharge()
-        singleItemFireObserver()
+        //singleItemFireObserver()
         getCustomerPrinterList()
         getCustomerReceiptSettings()
         getKitchenReceiptSettings()
-        observeFireAll()
+        //observeFireAll()
         observeQueueCreated()
 
         observeTipsList()

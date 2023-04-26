@@ -1228,7 +1228,7 @@ open class PaymentViewModel @Inject constructor(
                 orderItemsAttribute.isCount = 0
                 orderItemsAttribute.isEdited = item.isEdited
                 orderItemsAttribute.isPaid = false
-                orderItemsAttribute.isPrinted = true
+                orderItemsAttribute.isPrinted = false
                 orderItemsAttribute.isTaxRemoved = false
                 orderItemsAttribute.itemId = if (item.isManualSales) 30 else item.itemId
                 orderItemsAttribute.is_manual_sales = item.isManualSales
@@ -1294,7 +1294,7 @@ open class PaymentViewModel @Inject constructor(
             orderItemsAttribute.isEdited = item.isEdited
             orderItemsAttribute.isDestroy = item.isDestroy
             orderItemsAttribute.isPaid = false
-            orderItemsAttribute.isPrinted = true
+            orderItemsAttribute.isPrinted = false
             orderItemsAttribute.isTaxRemoved = false
             orderItemsAttribute.itemId = item.itemId
             orderItemsAttribute.is_manual_sales = item.isManualSales

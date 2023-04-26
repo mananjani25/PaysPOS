@@ -149,7 +149,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                         var errorCode = e.errorStatus
 
                        // Log.e(TAG, "errorCode:  ${errorCode}")
-                        sendNotification("TM-U220 is Offline.Please check ${errorCode}")
+                       // sendNotification("TM-U220 is Offline.Please check ${errorCode}")
                         e.printStackTrace()
                     }
 
