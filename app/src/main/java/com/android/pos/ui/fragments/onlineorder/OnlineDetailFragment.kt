@@ -2452,6 +2452,7 @@ class OnlineDetailFragment(
                 orderData.data.orderItems
             )
 
+            SunmiPrintHelper.getInstance().lineWrap(1)
 
             if (orderData?.data?.note.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
 
