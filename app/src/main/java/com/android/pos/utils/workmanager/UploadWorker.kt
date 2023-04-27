@@ -230,7 +230,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                             runBlocking {
 
 
-                                delay(5000)
+                                delay(2000)
 
                                 val params = JsonObject()
                                 params.addProperty("id", locationId)
@@ -612,7 +612,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                         }
                     }
                     if (isBreak == false) {
-                        delay(5000)
+                        delay(2000)
                         val params = JsonObject()
                         params.addProperty("id", locationId)
                         params.addProperty("url", baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3)
@@ -623,14 +623,14 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                 } else {
 
                    // Log.e(TAG, "sendData3rd:  ")
-                    delay(5000)
+                    delay(2000)
                     val params = JsonObject()
                     params.addProperty("id", locationId)
                     params.addProperty("url", baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3)
                     subscription?.perform("received", params)
                 }
             } else {
-                delay(5000)
+                delay(2000)
                 val params = JsonObject()
                 params.addProperty("id", locationId)
                 params.addProperty("url", baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3)
