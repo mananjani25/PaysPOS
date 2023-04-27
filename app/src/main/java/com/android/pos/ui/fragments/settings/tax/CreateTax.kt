@@ -71,7 +71,7 @@ class CreateTax : Fragment() {
             binding.header.txtTitle.text = getString(R.string.tv_update_tax)
             viewModel.setTaxData(taxData)
 
-            binding.itemsCount.text = "" + taxData.itemIds.size + " Items"
+            binding.itemsCount.text = "" + taxData.itemIds?.size + " Items"
             binding.tvItemPricing.text = taxData.itemPricing
             binding.edtAmount.setText(String.format("%.2f", viewModel.createTaxDetails.value?.rate))
             binding.swtEnableTax.isChecked = taxData.isActive

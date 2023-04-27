@@ -178,7 +178,7 @@ class TaxesList : Fragment(), ItemCallback {
             when (menuItem.itemId) {
                 R.id.menu_edit -> {
                     taxObject = taxListadapter.getItem(pos)
-                    Log.e(TAG,"itemIdsSize:  ${taxObject.itemIds.size}")
+                    Log.e(TAG,"itemIdsSize:  ${taxObject.itemIds?.size}")
                     val bundle = Bundle()
                     bundle.putBoolean("isEdit", true)
                     bundle.putParcelable("taxObject", taxObject)
