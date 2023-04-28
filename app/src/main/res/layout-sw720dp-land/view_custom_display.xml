@@ -68,7 +68,7 @@
                 style="@style/CustomFontSemiBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1.5"
+                android:layout_weight="1"
                 android:text="Item Name"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_6mdpi" />
@@ -89,23 +89,50 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
-                android:layout_weight="1"
+                android:layout_weight="0.5"
                 android:gravity="end"
                 android:text="Each"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_6mdpi" />
 
             <TextView
+                android:id="@+id/txtTotalLabel"
                 style="@style/CustomFontSemiBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
-                android:layout_weight="0.7"
+                android:layout_weight="1"
                 android:gravity="end"
+                android:visibility="visible"
                 android:text="Total"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_6mdpi" />
 
+            <TextView
+                android:id="@+id/txtCashLabel"
+                style="@style/CustomFontSemiBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_weight="0.5"
+                android:gravity="end"
+                android:visibility="gone"
+                android:text="Cash"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_6mdpi" />
+
+            <TextView
+                android:id="@+id/txtCardLabel"
+                style="@style/CustomFontSemiBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_weight="0.5"
+                android:visibility="gone"
+                android:gravity="end"
+                android:text="Card"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_6mdpi" />
 
         </LinearLayout>
 
@@ -127,7 +154,7 @@
             app:layout_constraintBottom_toTopOf="@id/linearBottom"
             app:layout_constraintTop_toBottomOf="@id/dividerView"
             tools:itemCount="5"
-            tools:listitem="@layout/view_item_cart" />
+            tools:listitem="@layout/view_item_cart_customer_display" />
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/linearBottom"

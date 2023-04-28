@@ -35,6 +35,7 @@ import com.android.pos.ui.adapter.ActiveTipsListAdapter
 import com.android.pos.ui.adapter.DineInAdapter
 import com.android.pos.ui.adapter.DineInTableAdapterCD
 import com.android.pos.ui.adapter.boldpos.CartAdapter
+import com.android.pos.ui.adapter.boldpos.CartAdapterCustomerDisplay
 import com.android.pos.ui.adapter.boldpos.TaxBirfurcationAdapter
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.dinein.DineInOrderTableViewModel
@@ -89,7 +90,7 @@ class CustomDisplay(
     private lateinit var dineInCartAdapter: DineInAdapter
     private lateinit var taxBirfurcationAdapter: TaxBirfurcationAdapter
     private lateinit var dineInTableAdapter: DineInTableAdapterCD
-    private lateinit var cartAdapter: CartAdapter
+    private lateinit var cartAdapter: CartAdapterCustomerDisplay
     private var wholeTableDiscount: Double = 0.0
     private var cashDiscountGlobal: Double = 0.0
     private var subTotalDInin = 0.0
@@ -126,7 +127,7 @@ class CustomDisplay(
 
     private fun setupCartList() {
 
-        cartAdapter = CartAdapter()
+        cartAdapter = CartAdapterCustomerDisplay()
         cartAdapter.setCallback(this)
 
         dineInCartAdapter = DineInAdapter()
@@ -214,6 +215,16 @@ class CustomDisplay(
                         )
                     }
                 } else {
+                    if (MethodUtils.isEnableCashDiscount(context)) {
+                        binding.txtTotalLabel.gone()
+                        binding.txtCashLabel.visible()
+                        binding.txtCardLabel.visible()
+                    } else {
+                        binding.txtTotalLabel.visible()
+                        binding.txtCashLabel.gone()
+                        binding.txtCardLabel.gone()
+
+                    }
                     cartList[0].items?.toCollection(arrayListOf())?.let { it1 ->
                         cartAdapter.setList(it1)
                     }
@@ -225,7 +236,7 @@ class CustomDisplay(
                     ) == DINE_IN && prefProvider.getValueboolean(
                         Constants.IS_PAYMENT_SCREEN,
                         false
-                    ) == true
+                    )
                 ) {
                     var string_gson = prefProvider.getValue(Constants.SPLIT_DINEIN_MODEL, "")
                     var temp_model =
