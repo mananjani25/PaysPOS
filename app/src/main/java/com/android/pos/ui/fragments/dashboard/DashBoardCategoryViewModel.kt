@@ -86,7 +86,6 @@ import kotlinx.coroutines.flow.Flow
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.InputStream
-import java.lang.Runnable
 import java.net.HttpURLConnection
 import java.net.URL
 import java.text.NumberFormat
@@ -4935,10 +4934,12 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                                 }
 
-                                if (it.settingData.data.isMasterTeminal) {
+                                if (it.settingData.data.isMasterTeminal && prefProvider.getValueboolean(Constants.IS_PRINTER_QUEUE_STARTS,false) == false) {
+                                    prefProvider.setValueboolean(Constants.IS_PRINTER_QUEUE_STARTS,true)
                                     prefProvider.setValueboolean(Constants.IS_MASTER_TERMINAL, true)
                                 }
                                 else{
+                                    prefProvider.setValueboolean(Constants.IS_PRINTER_QUEUE_STARTS,false)
                                     prefProvider.setValueboolean(Constants.IS_MASTER_TERMINAL, false)
                                 }
 

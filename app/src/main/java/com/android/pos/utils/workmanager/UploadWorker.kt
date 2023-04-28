@@ -148,8 +148,8 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                     } catch (e: Epos2Exception) {
                         var errorCode = e.errorStatus
 
-                       // Log.e(TAG, "errorCode:  ${errorCode}")
-                       // sendNotification("TM-U220 is Offline.Please check ${errorCode}")
+                        // Log.e(TAG, "errorCode:  ${errorCode}")
+                        // sendNotification("TM-U220 is Offline.Please check ${errorCode}")
                         e.printStackTrace()
                     }
 
@@ -466,152 +466,221 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
             var dataList: JsonArray = model.asJsonObject.get("data").asJsonArray
 
             if (dataList.size() != 0) {
+                if (printerObjList.size != dataList.size()) {
+                    printerObjList.clear()
+                    for (i in 0 until dataList.size()) {
+                        if (printerObjList.get(dataList.get(i).asJsonObject.get("mac_address").asString) == null) {
 
-                listOfPrintersData.clear()
-                listOfPrintersData = arrayListOf()
+                            var printer1: Printer =
+                                Printer(Printer.TM_U220, Printer.MODEL_ANK, mContext)
+                            printer1.setConnectionEventListener(this@UploadWorker)
+                            printer1.setReceiveEventListener(object : ReceiveListener {
+                                override fun onPtrReceive(
+                                    p0: Printer?,
+                                    p1: Int,
+                                    p2: PrinterStatusInfo?,
+                                    p3: String?
+                                ) {
+                                    Log.e(
+                                        TAG,
+                                        "checkConnectionPhase2  getAdmin${Gson().toJson(p0?.admin)}  location: ${
+                                            Gson().toJson(p0?.location)
+                                        } checkStatus:${
+                                            com.google.gson.Gson().toJson(p0?.status)
+                                        }"
+                                    )
+                                }
 
-                dataList.forEach {
+                            })
 
-                    var listofPrinterOrders: ArrayList<PrinterQueueModel> = arrayListOf()
-                    if (it.asJsonObject.has("orders")) {
-                        var ordersArray = it.asJsonObject.get("orders").asJsonArray
+                            try {
+                                printer1.connect(
+                                    "TCP:" + dataList.get(i).asJsonObject.get("mac_address").asString,
+                                    Printer.PARAM_DEFAULT
+                                )
 
-                        ordersArray.forEach {
-                            var modelOrder = PrinterQueueModel()
-                            modelOrder.id = it.asJsonObject.get("id").asInt
-                            modelOrder.orderType = it.asJsonObject.get("order_type").asString
-                            modelOrder.dateAndTime = it.asJsonObject.get("date_and_time").asString
-                            modelOrder.employeeName = it.asJsonObject.get("employee_name").asString
-                            var orderItems: ArrayList<CreateOrderResponse.Data.Order.OrderItem> =
-                                arrayListOf()
-                            if (it.asJsonObject.has("order_items")) {
-                                var orderItemsArray = it.asJsonObject.get("order_items").asJsonArray
-                                orderItemsArray.forEach { it1 ->
-                                    var listOfMod: ArrayList<CreateOrderResponse.Data.Order.OrderItem.OrderItemModifiers> =
-                                        arrayListOf()
-                                    if (it1.asJsonObject.has("modifiers")) {
-                                        var modList = it1.asJsonObject.get("modifiers").asJsonArray
-                                        if (modList.size() != 0) {
-                                            modList.forEach {
-                                                listOfMod.add(
-                                                    CreateOrderResponse.Data.Order.OrderItem.OrderItemModifiers(
-                                                        id = it.asJsonObject.get("id").asInt,
-                                                        orderItemId = it.asJsonObject.get("order_item_id").asInt,
-                                                        name = it.asJsonObject.get("name").asString,
-                                                        quantity = it.asJsonObject.get("quantity").asInt,
-                                                        modifierSetId = 0,
-                                                        isModifier = true,
-                                                        modifierQuantity = it.asJsonObject.get("modifier_quantity").asInt,
-                                                        createdAt = "",
-                                                        updatedAt = "",
-                                                        totalPrice = 0.0,
-                                                        orderId = 0,
-                                                        price = 0.0
+                            } catch (e: Epos2Exception) {
+                                var errorCode = e.errorStatus
+
+                                // Log.e(TAG, "errorCode:  ${errorCode}")
+                                // sendNotification("TM-U220 is Offline.Please check ${errorCode}")
+                                e.printStackTrace()
+                            }
+
+                            printerObjList.set(
+                                dataList.get(i).asJsonObject.get("mac_address").asString ?: "",
+                                printer1
+                            )
+
+
+                        }
+                    }
+
+
+                    delay(2000)
+                    listOfPrintersData.clear()
+                    listOfPrintersData = arrayListOf()
+
+                    dataList.forEach {
+
+                        var listofPrinterOrders: ArrayList<PrinterQueueModel> = arrayListOf()
+                        if (it.asJsonObject.has("orders")) {
+                            var ordersArray = it.asJsonObject.get("orders").asJsonArray
+
+                            ordersArray.forEach {
+                                var modelOrder = PrinterQueueModel()
+                                modelOrder.id = it.asJsonObject.get("id").asInt
+                                modelOrder.orderType = it.asJsonObject.get("order_type").asString
+                                modelOrder.dateAndTime =
+                                    it.asJsonObject.get("date_and_time").asString
+                                modelOrder.employeeName =
+                                    it.asJsonObject.get("employee_name").asString
+                                var orderItems: ArrayList<CreateOrderResponse.Data.Order.OrderItem> =
+                                    arrayListOf()
+                                if (it.asJsonObject.has("order_items")) {
+                                    var orderItemsArray =
+                                        it.asJsonObject.get("order_items").asJsonArray
+                                    orderItemsArray.forEach { it1 ->
+                                        var listOfMod: ArrayList<CreateOrderResponse.Data.Order.OrderItem.OrderItemModifiers> =
+                                            arrayListOf()
+                                        if (it1.asJsonObject.has("modifiers")) {
+                                            var modList =
+                                                it1.asJsonObject.get("modifiers").asJsonArray
+                                            if (modList.size() != 0) {
+                                                modList.forEach {
+                                                    listOfMod.add(
+                                                        CreateOrderResponse.Data.Order.OrderItem.OrderItemModifiers(
+                                                            id = it.asJsonObject.get("id").asInt,
+                                                            orderItemId = it.asJsonObject.get("order_item_id").asInt,
+                                                            name = it.asJsonObject.get("name").asString,
+                                                            quantity = it.asJsonObject.get("quantity").asInt,
+                                                            modifierSetId = 0,
+                                                            isModifier = true,
+                                                            modifierQuantity = it.asJsonObject.get("modifier_quantity").asInt,
+                                                            createdAt = "",
+                                                            updatedAt = "",
+                                                            totalPrice = 0.0,
+                                                            orderId = 0,
+                                                            price = 0.0
+                                                        )
                                                     )
-                                                )
+
+                                                }
 
                                             }
 
+
                                         }
 
+                                        orderItems.add(
+                                            CreateOrderResponse.Data.Order.OrderItem(
+                                                categoryId = it1.asJsonObject.get("category_id").asInt,
+                                                completedInKitchen = false,
+                                                discountType = "",
+                                                discountAmount = 0.0,
+                                                discountId = 0,
+                                                employeeId = 0,
+                                                float = 0.0,
+                                                id = it1.asJsonObject.get("order_item_id").asInt,
+                                                isPrinted = false,
+                                                isPaid = false,
+                                                itemId = it1.asJsonObject.get("item_id").asInt,
+                                                orderId = it.asJsonObject.get("id").asInt,
+                                                itemName = it1.asJsonObject.get("name").asString,
+                                                totalPrice = 0.0,
+                                                timestamp = "",
+                                                quantity = it1.asJsonObject.get("quantity").asInt,
+                                                price = 0.0,
+                                                orderItemModifiers = listOfMod,
+                                                note = it1.asJsonObject.get("item_note").asString
+
+
+                                            )
+                                        )
 
                                     }
 
-                                    orderItems.add(
-                                        CreateOrderResponse.Data.Order.OrderItem(
-                                            categoryId = it1.asJsonObject.get("category_id").asInt,
-                                            completedInKitchen = false,
-                                            discountType = "",
-                                            discountAmount = 0.0,
-                                            discountId = 0,
-                                            employeeId = 0,
-                                            float = 0.0,
-                                            id = it1.asJsonObject.get("order_item_id").asInt,
-                                            isPrinted = false,
-                                            isPaid = false,
-                                            itemId = it1.asJsonObject.get("item_id").asInt,
-                                            orderId = it.asJsonObject.get("id").asInt,
-                                            itemName = it1.asJsonObject.get("name").asString,
-                                            totalPrice = 0.0,
-                                            timestamp = "",
-                                            quantity = it1.asJsonObject.get("quantity").asInt,
-                                            price = 0.0,
-                                            orderItemModifiers = listOfMod,
-                                            note = it1.asJsonObject.get("item_note").asString
+                                    modelOrder.orderItems = orderItems
+                                    modelOrder.orderID = it.asJsonObject.get("id").asInt.toString()
 
-
-                                        )
-                                    )
 
                                 }
 
-                                modelOrder.orderItems = orderItems
-                                modelOrder.orderID = it.asJsonObject.get("id").asInt.toString()
 
-
+                                listofPrinterOrders.add(modelOrder)
                             }
 
 
-                            listofPrinterOrders.add(modelOrder)
                         }
+                        var modelPrinterParser = PrinterJSONElementData(
+                            printerName = it.asJsonObject.get("printer_name").asString,
+                            macAddress = it.asJsonObject.get("mac_address").asString,
+                            ipAddress = it.asJsonObject.get("ip_address").asString,
+                            printerQueueModelList = listofPrinterOrders
+
+                        )
+
+                        listOfPrintersData.add(modelPrinterParser)
 
 
                     }
-                    var modelPrinterParser = PrinterJSONElementData(
-                        printerName = it.asJsonObject.get("printer_name").asString,
-                        macAddress = it.asJsonObject.get("mac_address").asString,
-                        ipAddress = it.asJsonObject.get("ip_address").asString,
-                        printerQueueModelList = listofPrinterOrders
 
-                    )
-
-                    listOfPrintersData.add(modelPrinterParser)
-
-
-                }
-
-                /*Log.e(
+                    /*Log.e(
                     TAG,
                     "checkFirstIndexdataAraay  ${listOfPrintersData.get(0).printerQueueModelList.size}"
                 )*/
 
-                printerSize = listOfPrintersData.size
-                orderSize = listOfPrintersData.get(0).printerQueueModelList.size
+                    printerSize = listOfPrintersData.size
+                    orderSize = listOfPrintersData.get(0).printerQueueModelList.size
 
-                currentOrderIndex = 0
-                currentPrinterIndex = 0
+                    currentOrderIndex = 0
+                    currentPrinterIndex = 0
 
-                if (orderSize != 0) {
-                  //  Log.e(TAG, "sendData1st:  ")
-                    sendDataToPrint(
-                        listOfPrintersData,
-                        currentPrinterIndex,
-                        printerObjList.get(listOfPrintersData[0].macAddress),
-                        listOfPrintersData.get(0).printerQueueModelList,
-                        listOfPrintersData[0].macAddress,
-                        currentOrderIndex
-                    )
-                } else if (listOfPrintersData.size - 1 > currentPrinterIndex) {
-                   // Log.e(TAG, "sendData2nd:  ")
-                    var isBreak = false
-                    for (i in currentPrinterIndex++ until listOfPrintersData.size) {
-                        if (listOfPrintersData.get(i).printerQueueModelList.isNotEmpty()) {
+                    if (orderSize != 0) {
+                        //  Log.e(TAG, "sendData1st:  ")
+                        sendDataToPrint(
+                            listOfPrintersData,
+                            currentPrinterIndex,
+                            printerObjList.get(listOfPrintersData[0].macAddress),
+                            listOfPrintersData.get(0).printerQueueModelList,
+                            listOfPrintersData[0].macAddress,
+                            currentOrderIndex
+                        )
+                    } else if (listOfPrintersData.size - 1 > currentPrinterIndex) {
+                        // Log.e(TAG, "sendData2nd:  ")
+                        var isBreak = false
+                        for (i in currentPrinterIndex++ until listOfPrintersData.size) {
+                            if (listOfPrintersData.get(i).printerQueueModelList.isNotEmpty()) {
 
-                            isBreak = true
-                            currentPrinterIndex = i
-                            currentOrderIndex = 0
-                            sendDataToPrint(
-                                listOfPrintersData,
-                                currentPrinterIndex,
-                                printerObjList.get(listOfPrintersData[0].macAddress),
-                                listOfPrintersData.get(0).printerQueueModelList,
-                                listOfPrintersData[0].macAddress,
-                                currentOrderIndex
-                            )
-                            break
+                                isBreak = true
+                                currentPrinterIndex = i
+                                currentOrderIndex = 0
+                                sendDataToPrint(
+                                    listOfPrintersData,
+                                    currentPrinterIndex,
+                                    printerObjList.get(listOfPrintersData[0].macAddress),
+                                    listOfPrintersData.get(0).printerQueueModelList,
+                                    listOfPrintersData[0].macAddress,
+                                    currentOrderIndex
+                                )
+                                break
+                            }
                         }
-                    }
-                    if (isBreak == false) {
+                        if (isBreak == false) {
+                            delay(2000)
+                            val params = JsonObject()
+                            params.addProperty("id", locationId)
+                            params.addProperty(
+                                "url",
+                                baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3
+                            )
+                            subscription?.perform("received", params)
+                        }
+
+
+                    } else {
+
+                        // Log.e(TAG, "sendData3rd:  ")
                         delay(2000)
                         val params = JsonObject()
                         params.addProperty("id", locationId)
@@ -622,12 +691,176 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
                 } else {
 
-                   // Log.e(TAG, "sendData3rd:  ")
-                    delay(2000)
-                    val params = JsonObject()
-                    params.addProperty("id", locationId)
-                    params.addProperty("url", baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3)
-                    subscription?.perform("received", params)
+
+                    listOfPrintersData.clear()
+                    listOfPrintersData = arrayListOf()
+
+                    dataList.forEach {
+
+                        var listofPrinterOrders: ArrayList<PrinterQueueModel> = arrayListOf()
+                        if (it.asJsonObject.has("orders")) {
+                            var ordersArray = it.asJsonObject.get("orders").asJsonArray
+
+                            ordersArray.forEach {
+                                var modelOrder = PrinterQueueModel()
+                                modelOrder.id = it.asJsonObject.get("id").asInt
+                                modelOrder.orderType = it.asJsonObject.get("order_type").asString
+                                modelOrder.dateAndTime =
+                                    it.asJsonObject.get("date_and_time").asString
+                                modelOrder.employeeName =
+                                    it.asJsonObject.get("employee_name").asString
+                                var orderItems: ArrayList<CreateOrderResponse.Data.Order.OrderItem> =
+                                    arrayListOf()
+                                if (it.asJsonObject.has("order_items")) {
+                                    var orderItemsArray =
+                                        it.asJsonObject.get("order_items").asJsonArray
+                                    orderItemsArray.forEach { it1 ->
+                                        var listOfMod: ArrayList<CreateOrderResponse.Data.Order.OrderItem.OrderItemModifiers> =
+                                            arrayListOf()
+                                        if (it1.asJsonObject.has("modifiers")) {
+                                            var modList =
+                                                it1.asJsonObject.get("modifiers").asJsonArray
+                                            if (modList.size() != 0) {
+                                                modList.forEach {
+                                                    listOfMod.add(
+                                                        CreateOrderResponse.Data.Order.OrderItem.OrderItemModifiers(
+                                                            id = it.asJsonObject.get("id").asInt,
+                                                            orderItemId = it.asJsonObject.get("order_item_id").asInt,
+                                                            name = it.asJsonObject.get("name").asString,
+                                                            quantity = it.asJsonObject.get("quantity").asInt,
+                                                            modifierSetId = 0,
+                                                            isModifier = true,
+                                                            modifierQuantity = it.asJsonObject.get("modifier_quantity").asInt,
+                                                            createdAt = "",
+                                                            updatedAt = "",
+                                                            totalPrice = 0.0,
+                                                            orderId = 0,
+                                                            price = 0.0
+                                                        )
+                                                    )
+
+                                                }
+
+                                            }
+
+
+                                        }
+
+                                        orderItems.add(
+                                            CreateOrderResponse.Data.Order.OrderItem(
+                                                categoryId = it1.asJsonObject.get("category_id").asInt,
+                                                completedInKitchen = false,
+                                                discountType = "",
+                                                discountAmount = 0.0,
+                                                discountId = 0,
+                                                employeeId = 0,
+                                                float = 0.0,
+                                                id = it1.asJsonObject.get("order_item_id").asInt,
+                                                isPrinted = false,
+                                                isPaid = false,
+                                                itemId = it1.asJsonObject.get("item_id").asInt,
+                                                orderId = it.asJsonObject.get("id").asInt,
+                                                itemName = it1.asJsonObject.get("name").asString,
+                                                totalPrice = 0.0,
+                                                timestamp = "",
+                                                quantity = it1.asJsonObject.get("quantity").asInt,
+                                                price = 0.0,
+                                                orderItemModifiers = listOfMod,
+                                                note = it1.asJsonObject.get("item_note").asString
+
+
+                                            )
+                                        )
+
+                                    }
+
+                                    modelOrder.orderItems = orderItems
+                                    modelOrder.orderID = it.asJsonObject.get("id").asInt.toString()
+
+
+                                }
+
+
+                                listofPrinterOrders.add(modelOrder)
+                            }
+
+
+                        }
+                        var modelPrinterParser = PrinterJSONElementData(
+                            printerName = it.asJsonObject.get("printer_name").asString,
+                            macAddress = it.asJsonObject.get("mac_address").asString,
+                            ipAddress = it.asJsonObject.get("ip_address").asString,
+                            printerQueueModelList = listofPrinterOrders
+
+                        )
+
+                        listOfPrintersData.add(modelPrinterParser)
+
+
+                    }
+
+                    /*Log.e(
+                    TAG,
+                    "checkFirstIndexdataAraay  ${listOfPrintersData.get(0).printerQueueModelList.size}"
+                )*/
+
+                    printerSize = listOfPrintersData.size
+                    orderSize = listOfPrintersData.get(0).printerQueueModelList.size
+
+                    currentOrderIndex = 0
+                    currentPrinterIndex = 0
+
+                    if (orderSize != 0) {
+                        //  Log.e(TAG, "sendData1st:  ")
+                        sendDataToPrint(
+                            listOfPrintersData,
+                            currentPrinterIndex,
+                            printerObjList.get(listOfPrintersData[0].macAddress),
+                            listOfPrintersData.get(0).printerQueueModelList,
+                            listOfPrintersData[0].macAddress,
+                            currentOrderIndex
+                        )
+                    } else if (listOfPrintersData.size - 1 > currentPrinterIndex) {
+                        // Log.e(TAG, "sendData2nd:  ")
+                        var isBreak = false
+                        for (i in currentPrinterIndex++ until listOfPrintersData.size) {
+                            if (listOfPrintersData.get(i).printerQueueModelList.isNotEmpty()) {
+
+                                isBreak = true
+                                currentPrinterIndex = i
+                                currentOrderIndex = 0
+                                sendDataToPrint(
+                                    listOfPrintersData,
+                                    currentPrinterIndex,
+                                    printerObjList.get(listOfPrintersData[0].macAddress),
+                                    listOfPrintersData.get(0).printerQueueModelList,
+                                    listOfPrintersData[0].macAddress,
+                                    currentOrderIndex
+                                )
+                                break
+                            }
+                        }
+                        if (isBreak == false) {
+                            delay(2000)
+                            val params = JsonObject()
+                            params.addProperty("id", locationId)
+                            params.addProperty(
+                                "url",
+                                baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3
+                            )
+                            subscription?.perform("received", params)
+                        }
+
+
+                    } else {
+
+                        // Log.e(TAG, "sendData3rd:  ")
+                        delay(2000)
+                        val params = JsonObject()
+                        params.addProperty("id", locationId)
+                        params.addProperty("url", baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3)
+                        subscription?.perform("received", params)
+                    }
                 }
             } else {
                 delay(2000)
@@ -993,7 +1226,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
             }
 
-          //  Log.e(TAG, "checkprinterBreak: ${printerBreak}")
+            //  Log.e(TAG, "checkprinterBreak: ${printerBreak}")
             if (printerBreak) {
 
                 try {
@@ -1005,12 +1238,12 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                 }
 
                 if (listOfPrintersData.size - 1 != currentPrinterIndex) {
-                   /* Log.e(
-                        TAG,
-                        "checkLog: ${currentPrinterIndex}  orderIndex: ${
-                            listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size - 1
-                        }  currentOrderInd: ${currentOrderIndex}"
-                    )*/
+                    /* Log.e(
+                         TAG,
+                         "checkLog: ${currentPrinterIndex}  orderIndex: ${
+                             listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size - 1
+                         }  currentOrderInd: ${currentOrderIndex}"
+                     )*/
 
                     currentOrderIndex = 0
                     currentPrinterIndex = currentPrinterIndex + 1
@@ -1024,7 +1257,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                             currentOrderIndex = 0
                             isBreakDown = true
 
-                          //  Log.e(TAG,"checkInsideBreak: printerIndex: ${currentPrinterIndex}  orderIndex: ${currentOrderIndex}")
+                            //  Log.e(TAG,"checkInsideBreak: printerIndex: ${currentPrinterIndex}  orderIndex: ${currentOrderIndex}")
 
                             sendDataToPrint(
                                 listOfPrintersData,
@@ -1043,7 +1276,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
                     }
 
-                    if (isBreakDown == false){
+                    if (isBreakDown == false) {
                         runBlocking {
                             delay(2000)
                             val params = JsonObject()
@@ -1053,10 +1286,6 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                         }
 
                     }
-
-
-
-
 
 
                 } else {
@@ -2269,12 +2498,12 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
     }
 
     override fun onPtrReceive(p0: Printer?, p1: Int, p2: PrinterStatusInfo?, p3: String?) {
-       /* Log.e(
-            TAG,
-            "onPrinterSucces str: ${p3}  intCode ${p1} getStatusInfo ${Gson().toJson(p2)}  getAdminData: ${
-                Gson().toJson(p0?.admin)
-            }  getPrntStatus: ${Gson().toJson(p0?.status)} getLocation: ${p0?.location}"
-        )*/
+        /* Log.e(
+             TAG,
+             "onPrinterSucces str: ${p3}  intCode ${p1} getStatusInfo ${Gson().toJson(p2)}  getAdminData: ${
+                 Gson().toJson(p0?.admin)
+             }  getPrntStatus: ${Gson().toJson(p0?.status)} getLocation: ${p0?.location}"
+         )*/
 
 
 
@@ -2372,16 +2601,16 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
 
         if (listOfPrintersData.size - 1 == currentPrinterIndex) {
-          /*  Log.e(
-                TAG,
-                "listOfPrinerData:   ${listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size}"
-            )
-            Log.e(TAG, "listOfcurrentOrderIndex:   ${currentOrderIndex}")
-*/
+            /*  Log.e(
+                  TAG,
+                  "listOfPrinerData:   ${listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size}"
+              )
+              Log.e(TAG, "listOfcurrentOrderIndex:   ${currentOrderIndex}")
+  */
 
 
             if (listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size - 1 == currentOrderIndex) {
-               // Log.e(TAG, "checkLastORderPRint  ")
+                // Log.e(TAG, "checkLastORderPRint  ")
                 runBlocking {
                     delay(2000)
 
@@ -2421,12 +2650,12 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
             }
 
         } else if (listOfPrintersData.size - 1 != currentPrinterIndex) {
-           /* Log.e(
-                TAG,
-                "checkLog: ${currentPrinterIndex}  orderIndex: ${
-                    listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size - 1
-                }  currentOrderInd: ${currentOrderIndex}"
-            )*/
+            /* Log.e(
+                 TAG,
+                 "checkLog: ${currentPrinterIndex}  orderIndex: ${
+                     listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size - 1
+                 }  currentOrderInd: ${currentOrderIndex}"
+             )*/
             if (listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size - 1 == currentOrderIndex) {
 
 
