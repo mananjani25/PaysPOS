@@ -493,6 +493,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
     private fun setUpCustomer(result: TbCustomer, bundle: Bundle) {
         if (cartList.isNotEmpty()) {
+            cartList[0].deliveryType = bundle.getString("TYPE").toString()
             cartList[0].customer = result
             viewModel.addCart(cartList[0])
             viewModel.setcheckedLoyaltyApply(false)

@@ -55,6 +55,7 @@ import javax.inject.Inject
 class PhoneOrderFragment : Fragment() {
 
 
+    private var orderType: String = PICK_UP
     private var isDelivey = false
     private var customerID: Int? = null
     private var isPickUp = true
@@ -145,6 +146,7 @@ class PhoneOrderFragment : Fragment() {
 
         binding.txtPickup.setOnSingleClickListener {
 
+            orderType = PICK_UP
             isPickUp = true
             isDelivey = false
             binding.txtPickup.setBackgroundResource(R.drawable.button_action_hover)
@@ -152,6 +154,7 @@ class PhoneOrderFragment : Fragment() {
 
         }
         binding.txtDelivery.setOnSingleClickListener {
+            orderType = DELIVERY
             isDelivey = true
             isPickUp = false
             binding.txtPickup.setBackgroundResource(R.drawable.background_square_border_grey)
@@ -236,8 +239,10 @@ class PhoneOrderFragment : Fragment() {
                 val result = Bundle().apply {
                     putParcelable("data", customer)
                     putBoolean("OPEN_ORDER", true)
+                    putString("TYPE", orderType)
                 }
                 prefProvider?.setValue(Constants.ORDER_TYPE, Constants.PHONE_ORDER)
+                prefProvider?.setValue(Constants.DELIVERY_TYPE, orderType)
                 setFragmentResult("request_key_customer", result)
 
                 findNavController().navigateUp()

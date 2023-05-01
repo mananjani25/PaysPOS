@@ -28,6 +28,8 @@ import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.CUSTOMER_ID
+import com.android.pos.data.remote.Constants.DELIVERY
+import com.android.pos.data.remote.Constants.DELIVERY_TYPE
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.DINE_IN_LIST_EDIT
 import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
@@ -1782,6 +1784,7 @@ class CartFragment(
                     isOrderUpdate = false
                     prefProvider.setValue(ORDER_TYPE, "")
                     prefProvider.setValue(ORDER_TYPE_NAME, "")
+                    prefProvider.setValue(DELIVERY_TYPE, "")
                     prefProvider.setValueboolean(Constants.LOYALTY_ADDED, false)
 
                     itemClickListner?.onDineInOrderCleared()
@@ -2350,6 +2353,8 @@ class CartFragment(
 
         Log.e(TAG, "checkOrderType  ${model?.orderType}")
 
+        prefProvider.setValue(DELIVERY_TYPE, "")
+
         prefProvider.setValue(Constants.REDIRECT_FROM, "")
 
         if (model?.orderType == DINE_IN) {
@@ -2393,6 +2398,7 @@ class CartFragment(
         if (event != null) {
             Log.e("onMessageEvent", event)
         }
+        prefProvider.setValue(DELIVERY_TYPE, "")
         checkOrderType()
 
         addObserver()

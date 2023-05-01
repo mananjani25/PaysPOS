@@ -16,6 +16,7 @@ import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.android.pos.data.remote.Constants.PAYMENT_ID
 import com.android.pos.data.remote.Constants.PHONE_ORDER
 import com.android.pos.data.remote.Constants.PAYMENT_ID_FOR_CUSTOMER_DISPLAY
+import com.android.pos.data.remote.Constants.PICK_UP
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
@@ -539,10 +540,15 @@ open class PaymentViewModel @Inject constructor(
         if (future_delivery_time.isNotEmpty())
             orderAttributeRequestModel.futureDeliveryTime = future_delivery_time
 
+
         if (cartModel.openOrderType.isNotEmpty() && cartModel.openOrderType != null) {
             orderAttributeRequestModel.deliveryType = cartModel.openOrderType
         } else {
             orderAttributeRequestModel.deliveryType = cartModel.deliveryType
+        }
+
+        if (cartModel.orderType == PHONE_ORDER){
+            orderAttributeRequestModel.deliveryType = prefProvider.getValue(Constants.DELIVERY_TYPE, PICK_UP)
         }
         orderAttributeRequestModel.employeeId = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
         orderAttributeRequestModel.locationId = prefProvider.getValueInt(Constants.LOCATION_ID, 1)
