@@ -4934,8 +4934,8 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                                 }
 
-                                if (it.settingData.data.isMasterTeminal && prefProvider.getValueboolean(Constants.IS_PRINTER_QUEUE_STARTS,false) == false) {
-                                    prefProvider.setValueboolean(Constants.IS_PRINTER_QUEUE_STARTS,true)
+                                if (it.settingData.data.isMasterTeminal ) {
+
                                     prefProvider.setValueboolean(Constants.IS_MASTER_TERMINAL, true)
                                 }
                                 else{

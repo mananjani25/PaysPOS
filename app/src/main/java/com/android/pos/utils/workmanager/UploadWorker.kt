@@ -467,8 +467,17 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
             if (dataList.size() != 0) {
                 if (printerObjList.size != dataList.size()) {
-                    printerObjList.clear()
+                    //printerObjList.clear()
                     for (i in 0 until dataList.size()) {
+                        Log.e(
+                            TAG,
+                            "getMAcAddressPrintOB:   ${
+                                printerObjList.get(
+                                    dataList.get(i).asJsonObject.get("mac_address").asString
+                                )
+                            }"
+                        )
+
                         if (printerObjList.get(dataList.get(i).asJsonObject.get("mac_address").asString) == null) {
 
                             var printer1: Printer =
@@ -636,8 +645,8 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                     currentOrderIndex = 0
                     currentPrinterIndex = 0
 
-                    if (orderSize != 0) {
-                        //  Log.e(TAG, "sendData1st:  ")
+                    if (listOfPrintersData.get(0).printerQueueModelList.size != 0) {
+                          Log.e(TAG, "sendData1st:  ")
                         sendDataToPrint(
                             listOfPrintersData,
                             currentPrinterIndex,
@@ -647,7 +656,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                             currentOrderIndex
                         )
                     } else if (listOfPrintersData.size - 1 > currentPrinterIndex) {
-                        // Log.e(TAG, "sendData2nd:  ")
+                         Log.e(TAG, "sendData2nd:  ")
                         var isBreak = false
                         for (i in currentPrinterIndex++ until listOfPrintersData.size) {
                             if (listOfPrintersData.get(i).printerQueueModelList.isNotEmpty()) {
@@ -657,10 +666,10 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                                 currentOrderIndex = 0
                                 sendDataToPrint(
                                     listOfPrintersData,
-                                    currentPrinterIndex,
-                                    printerObjList.get(listOfPrintersData[0].macAddress),
-                                    listOfPrintersData.get(0).printerQueueModelList,
-                                    listOfPrintersData[0].macAddress,
+                                    i,
+                                    printerObjList.get(listOfPrintersData[i].macAddress),
+                                    listOfPrintersData.get(i).printerQueueModelList,
+                                    listOfPrintersData[i].macAddress,
                                     currentOrderIndex
                                 )
                                 break
@@ -1136,6 +1145,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
         macAddress: String,
         orderIndex: Int
     ) {
+        Log.e(TAG,"checkPrinterQueue  ${printerQueueModelList.size}")
 
         printerObj?.let { callPrinter(it, printerQueueModelList.get(orderIndex), macAddress) }
 
@@ -2519,20 +2529,23 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                 e.printStackTrace()
             }
 
-            val params = JsonObject()
-            var deleteUrl =
-                baseUrl + DELETE_QUEUE_ORDER_PHASE3 + listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.get(
-                    currentOrderIndex
-                ).id
-            LogUtil.logE(TAG, "DeleteUrl ${deleteUrl}")
-            params.addProperty("url", deleteUrl)
-            params.addProperty(
-                "mac_address",
-                listOfPrintersData.get(currentPrinterIndex).macAddress
-            )
+            if (listOfPrintersData.size - 1 >= currentPrinterIndex) {
 
-            subscription?.perform("delete_order", params)
+                val params = JsonObject()
+                var deleteUrl =
+                    baseUrl + DELETE_QUEUE_ORDER_PHASE3 + listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.get(
+                        currentOrderIndex
+                    ).id
+                LogUtil.logE(TAG, "DeleteUrl ${deleteUrl}")
+                params.addProperty("url", deleteUrl)
+                params.addProperty(
+                    "mac_address",
+                    listOfPrintersData.get(currentPrinterIndex).macAddress
+                )
 
+                subscription?.perform("delete_order", params)
+
+            }
 
             //p0?.endTransaction()
 

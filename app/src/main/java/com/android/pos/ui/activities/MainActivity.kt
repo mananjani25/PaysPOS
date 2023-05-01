@@ -197,10 +197,11 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 "checkMAsterTeminal",
                 "check  ${prefProvider?.getValueboolean(IS_MASTER_TERMINAL, false)}"
             )
-            if (prefProvider?.getValueboolean(IS_MASTER_TERMINAL, false) == true) {
+            if (prefProvider?.getValueboolean(IS_MASTER_TERMINAL, false) == true && prefProvider?.getValueboolean(Constants.IS_PRINTER_QUEUE_STARTS,false) == false) {
+                prefProvider?.setValueboolean(Constants.IS_PRINTER_QUEUE_STARTS,true)
                 getKitOne()
 
-            } else {
+            } else if (prefProvider?.getValueboolean(IS_MASTER_TERMINAL, false) == false){
                 WorkManager.getInstance(this@MainActivity).cancelAllWork()
             }
         }
