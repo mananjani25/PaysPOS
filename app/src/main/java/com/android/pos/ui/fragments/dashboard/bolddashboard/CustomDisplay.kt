@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.util.Base64
 import android.util.Log
 import android.view.*
+import android.widget.LinearLayout
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
@@ -213,8 +214,12 @@ class CustomDisplay(
                         dineInCartAdapter.setList(
                             dineInList?.toCollection(arrayListOf()) ?: arrayListOf()
                         )
+                        binding.rowHeaderLayoutDineIn?.visible()
+                        binding.rowHeaderLayout.gone()
                     }
                 } else {
+                    binding.rowHeaderLayoutDineIn?.gone()
+                    binding.rowHeaderLayout.visible()
                     if (MethodUtils.isEnableCashDiscount(context)) {
                         binding.txtTotalLabel.gone()
                         binding.txtCashLabel.visible()

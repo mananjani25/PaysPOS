@@ -6,10 +6,11 @@
     android:layout_height="match_parent"
     android:background="@color/backgroundColor">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:id="@+id/mainCartLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:orientation="vertical"
         android:background="@color/backgroundColor"
         android:visibility="gone">
 
@@ -61,6 +62,7 @@
             android:layout_height="wrap_content"
             android:background="@color/backgroundColor"
             android:orientation="horizontal"
+            android:visibility="gone"
             android:padding="@dimen/_5sdp"
             app:layout_constraintTop_toBottomOf="@id/topLayout">
 
@@ -136,6 +138,61 @@
 
         </LinearLayout>
 
+        <LinearLayout
+            android:id="@+id/rowHeaderLayoutDineIn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/backgroundColor"
+            android:orientation="horizontal"
+            android:padding="@dimen/_5sdp"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/topLayout">
+
+            <TextView
+                style="@style/CustomFontSemiBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.5"
+                android:text="Item Name"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_6mdpi" />
+
+            <TextView
+                style="@style/CustomFontSemiBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:layout_weight="0.5"
+                android:gravity="center"
+                android:text="Qty"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_6mdpi" />
+
+            <TextView
+                style="@style/CustomFontSemiBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_weight="1"
+                android:gravity="end"
+                android:text="Each"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_6mdpi" />
+
+            <TextView
+                style="@style/CustomFontSemiBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_weight="0.7"
+                android:gravity="end"
+                android:text="Total"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_6mdpi" />
+
+
+        </LinearLayout>
+
         <include
             android:id="@+id/dividerView"
             layout="@layout/divider"
@@ -148,6 +205,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginBottom="@dimen/_5sdp"
+            android:layout_weight="1"
             android:nestedScrollingEnabled="true"
             android:orientation="vertical"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
@@ -665,7 +723,7 @@
             </LinearLayout>
 
         </androidx.appcompat.widget.LinearLayoutCompat>
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/splashLayout"
