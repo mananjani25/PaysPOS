@@ -243,10 +243,37 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
         })
         viewModel.orderResponse.observe(viewLifecycleOwner, EventObserver { order ->
             //reorder
-            prefProvider.setValue(Constants.ORDER_TYPE, Constants.TAKEOUT)
-            LogUtil.logE("!_@_", "customer details ${order.orderType}")
-            if (order.orderItems.size == 1) {
-                if (listOfItemsId.contains(order.orderItems[0].itemId)) {
+            try {
+                prefProvider.setValue(Constants.ORDER_TYPE, Constants.TAKEOUT)
+                LogUtil.logE("!_@_", "customer details ${order.orderType}")
+                if (order.orderItems.size == 1) {
+                    if (listOfItemsId.contains(order.orderItems[0].itemId)) {
+                        if (order.customer != null) {
+                            prefProvider.setValue(
+                                Constants.CUSTOMER_NAME,
+                                order.customer.firstName + " " + order.customer.lastName
+                            )
+                            prefProvider.setValueInt(Constants.CUSTOMER_ID, order.customer.id)
+                            prefProvider.saveCustomerData(TbCustomer.customerMapping(order.customer))
+                        }
+                        Log.e(TAG, "getOrderReOrder  ${Gson().toJson(order)}")
+                        dashboardViewModel.addCart(
+                            cartModel(order)
+                        )
+                        val bundle = Bundle()
+                        bundle.putBoolean("update", false)
+                        bundle.putBoolean("reorder", true)
+                        findNavController().navigate(
+                            R.id.action_customer_to_dashboardCategoryNew, bundle
+                        )
+                    } else {
+                        AlertUtils.showCustomAlertWithListenerWithOK(
+                            requireActivity(), "Not Available Item in a Restaurant."
+                        ) { _, _ ->
+
+                        }
+                    }
+                } else {
                     if (order.customer != null) {
                         prefProvider.setValue(
                             Constants.CUSTOMER_NAME,
@@ -255,7 +282,8 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
                         prefProvider.setValueInt(Constants.CUSTOMER_ID, order.customer.id)
                         prefProvider.saveCustomerData(TbCustomer.customerMapping(order.customer))
                     }
-                    Log.e(TAG, "getOrderReOrder  ${Gson().toJson(order)}")
+
+                    Log.e(TAG, "getOrderReOrder7  ${Gson().toJson(order)}")
                     dashboardViewModel.addCart(
                         cartModel(order)
                     )
@@ -265,35 +293,10 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
                     findNavController().navigate(
                         R.id.action_customer_to_dashboardCategoryNew, bundle
                     )
-                } else {
-                    AlertUtils.showCustomAlertWithListenerWithOK(
-                        requireActivity(), "Not Available Item in a Restaurant."
-                    ) { _, _ ->
-
-                    }
                 }
-            } else {
-                if (order.customer != null) {
-                    prefProvider.setValue(
-                        Constants.CUSTOMER_NAME,
-                        order.customer.firstName + " " + order.customer.lastName
-                    )
-                    prefProvider.setValueInt(Constants.CUSTOMER_ID, order.customer.id)
-                    prefProvider.saveCustomerData(TbCustomer.customerMapping(order.customer))
-                }
-
-                Log.e(TAG, "getOrderReOrder7  ${Gson().toJson(order)}")
-                dashboardViewModel.addCart(
-                    cartModel(order)
-                )
-                val bundle = Bundle()
-                bundle.putBoolean("update", false)
-                bundle.putBoolean("reorder", true)
-                findNavController().navigate(
-                    R.id.action_customer_to_dashboardCategoryNew, bundle
-                )
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
-
 
         })
     }
@@ -311,7 +314,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
             serviceCharge = listOfServiceCharge
             customer = assignCustomer(order)
             items = inventoryList(order)
-            note = order.note
+            note = order.note ?: ""
             reorder = true
             var itemDiscount = 0.0
             items?.forEach {
@@ -642,10 +645,13 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
     }
 
     override fun onclickedReorder(order: Orders) {
-        order.id?.let {
-            viewModel.deleteCart()
-            viewModel.apiCallOrderDetails(orderId = order.id)
-        } ?: viewModel.showError(getString(R.string.error_order_id_not_available))
-
+        try {
+            order.id?.let {
+                viewModel.deleteCart()
+                viewModel.apiCallOrderDetails(orderId = order.id)
+            } ?: viewModel.showError(getString(R.string.error_order_id_not_available))
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 }
