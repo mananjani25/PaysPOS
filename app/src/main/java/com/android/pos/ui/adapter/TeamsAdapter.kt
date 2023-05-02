@@ -13,6 +13,7 @@ import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.callback.CustomCallback
 import com.android.pos.utils.callback.OperationCallback
 import com.android.pos.utils.extensions.getColorCompat
+import com.android.pos.utils.extensions.setOnSingleClickListener
 import com.android.pos.utils.sticky_recycler.SectioningAdapter
 import java.util.*
 
@@ -234,7 +235,7 @@ class TeamsAdapter : SectioningAdapter(), Filterable {
 
 
         }
-        ivh.menuOption.setOnClickListener {
+        ivh.menuOption.setOnSingleClickListener {
             mCallback.onOptionClickListener(it, ivh)
         }
 

@@ -8,6 +8,7 @@ import com.android.pos.data.model.responseModel.NoteResponse
 import com.android.pos.databinding.ViewTipItemBinding
 import com.android.pos.ui.fragments.settings.tip.TipListViewModel
 import com.android.pos.utils.callback.ItemCallback
+import com.android.pos.utils.extensions.setOnSingleClickListener
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -88,7 +89,7 @@ class TipsListAdapter(val viewModel: TipListViewModel) : RecyclerView.Adapter<Ti
         RecyclerView.ViewHolder(tipItemBinding.root){
 
         init {
-            tipItemBinding.layoutMenu.imgOrderMenu.setOnClickListener {
+            tipItemBinding.layoutMenu.imgOrderMenu.setOnSingleClickListener {
                 mCallback?.onItemClickListener(it, position)
             }
         }
