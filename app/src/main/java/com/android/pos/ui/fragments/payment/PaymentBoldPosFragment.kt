@@ -157,9 +157,11 @@ class PaymentBoldPosFragment : Fragment() {
                     )
                     guestRequestModel = requireArguments().getParcelable("model")
                     viewModel.setGuestPay(true)
-                    presentation.show()
-                    presentation.onDisplayChanged()
-                    presentation.setGuestPay(true, model)
+                    if(this::presentation.isInitialized) {
+                        presentation.show()
+                        presentation.onDisplayChanged()
+                        presentation.setGuestPay(true, model)
+                    }
 
                     prefProvider.setValue(SPLIT_DINEIN_MODEL, Gson().toJson(model))
                     loadCartFragment(CartFragment(null, null, true, model, true))
