@@ -50,6 +50,8 @@ import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.android.pos.data.remote.Constants.IS_SYNC_MARKUP
 import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER
 import com.android.pos.data.remote.Constants.LOCK_SCREEN_TRANSACTION
+import com.android.pos.data.remote.Constants.MANUAL_SALE_CATEGORY_ID
+import com.android.pos.data.remote.Constants.MANUAL_SALE_ITEM_ID
 import com.android.pos.data.remote.Constants.ONLINE_ORDER_ENABLE
 import com.android.pos.data.remote.Constants.ONLY_SHOW_PRICE_GREATER_THAN_ZERO
 import com.android.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
@@ -3593,6 +3595,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                         _onlineOrderCount.value = Event(it.data)
                     }
                 }
+
                 Status.ERROR -> {
                     _snackbarText.value = Event(resource.message)
                     _showProgress.value = Event(false)
@@ -3624,6 +3627,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 }
             }
+
             Status.ERROR -> {
                 _snackbarText.value = Event(resource.message)
                 _showProgress.value = Event(false)
@@ -4647,10 +4651,12 @@ class DashBoardCategoryViewModel @Inject constructor(
                     _updateOrder.value = Event(resource.data?.message)
 
                 }
+
                 Status.ERROR -> {
                     _snackbarText.value = Event(resource.message)
                     _showProgress.value = Event(false)
                 }
+
                 Status.LOADING -> {
                     _showProgress.value = Event(true)
 
@@ -4686,6 +4692,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 _showProgress.value = Event(false)
                 _increaseCounter.value = Event(false)
             }
+
             Status.ERROR -> {
                 _snackbarText.value = Event(resource.message)
                 _showProgress.value = Event(false)
@@ -4711,6 +4718,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 }
 
             }
+
             Status.ERROR -> {
                 _snackbarText.value = Event(resource.message)
                 _showProgress.value = Event(false)
@@ -4763,6 +4771,10 @@ class DashBoardCategoryViewModel @Inject constructor(
                             val itemModifierSetList = ArrayList<ItemModifierSets>()
 
                             mCategory.forEach { category ->
+
+                                if (category.name.lowercase() == "Manual Sales".lowercase()) {
+                                    prefProvider.setValueInt(MANUAL_SALE_CATEGORY_ID, category.id)
+                                }
                                 val model = TbCategory().apply {
                                     createdAt = ""
                                     id = category.id
@@ -4779,6 +4791,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 categoryModelList.add(model)
 
                                 category.items.forEach {
+                                    if (it.name?.lowercase() == "Manual Sales".lowercase()) {
+                                        prefProvider.setValueInt(MANUAL_SALE_ITEM_ID, it.id)
+                                    }
 
                                     it.modifierSets.forEach { modifierset ->
                                         val itemModifierSets = ItemModifierSets().apply {
@@ -4934,13 +4949,18 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                                 }
 
-                                if (it.settingData.data.isMasterTeminal ) {
+                                if (it.settingData.data.isMasterTeminal) {
 
                                     prefProvider.setValueboolean(Constants.IS_MASTER_TERMINAL, true)
-                                }
-                                else{
-                                    prefProvider.setValueboolean(Constants.IS_PRINTER_QUEUE_STARTS,false)
-                                    prefProvider.setValueboolean(Constants.IS_MASTER_TERMINAL, false)
+                                } else {
+                                    prefProvider.setValueboolean(
+                                        Constants.IS_PRINTER_QUEUE_STARTS,
+                                        false
+                                    )
+                                    prefProvider.setValueboolean(
+                                        Constants.IS_MASTER_TERMINAL,
+                                        false
+                                    )
                                 }
 
                                 val intent = Intent()

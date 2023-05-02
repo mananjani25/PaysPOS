@@ -21,6 +21,9 @@ class OrderAttributeRequestModel {
     @SerializedName("employee_id")
     var employeeId: Int = 0
 
+    @SerializedName("mac_address")
+    var macAddress: String = ""
+
 
     @SerializedName("future_delivery_date")
     var futureDeliveryDate: String = ""

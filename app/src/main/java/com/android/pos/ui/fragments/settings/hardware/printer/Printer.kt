@@ -92,7 +92,6 @@ import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 
 
 //Original New
@@ -1077,8 +1076,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
                 var listItems:ArrayList<OrderItemsAttribute> = arrayListOf()
                var orderItem =  OrderItemsAttribute()
-                orderItem.itemId = prefProvider.getValueInt(MANUAL_SALE_ITEM_ID,0)
-                orderItem.category_id = prefProvider.getValueInt(MANUAL_SALE_CATEGORY_ID,0)
+                orderItem.itemId = prefProvider.getValueInt(MANUAL_SALE_ITEM_ID,1)
+                orderItem.category_id = prefProvider.getValueInt(MANUAL_SALE_CATEGORY_ID,1)
                 orderItem.itemName = "Test Print"
                 listItems.add(orderItem)
                 var orderAttr = OrderAttributeRequestModel()
@@ -1088,6 +1087,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                 orderAttr.offlineId = randomOfflineId()
                 orderAttr.paymentStatus = 1
                 orderAttr.orderItemsAttributes = listItems
+                orderAttr.macAddress = printerListModel.deviceModel?.macAddress.toString()
 
 
 
