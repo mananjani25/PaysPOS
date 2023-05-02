@@ -32,15 +32,23 @@ import com.android.pos.aidl.IWoyouService
 import com.android.pos.data.entities.TbOrderType
 import com.android.pos.data.model.PrinterListModel
 import com.android.pos.data.model.requestModel.CreatePrinterRequestModel
+import com.android.pos.data.model.requestModel.OrderAttributeRequestModel
+import com.android.pos.data.model.requestModel.OrderItemsAttribute
+import com.android.pos.data.model.requestModel.OrderRequestModel
+import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.AVAILABLE
 import com.android.pos.data.remote.Constants.BLUETOOTH
 import com.android.pos.data.remote.Constants.CUSTOMER
 import com.android.pos.data.remote.Constants.DISCOVERY_INTERVAL
+import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.IS_MASTER_TERMINAL
 import com.android.pos.data.remote.Constants.KITCHEN
 import com.android.pos.data.remote.Constants.KITCHENANDCUSTOMER
 import com.android.pos.data.remote.Constants.LOCATION_ID
+import com.android.pos.data.remote.Constants.MANUAL_SALE_CATEGORY_ID
+import com.android.pos.data.remote.Constants.MANUAL_SALE_ITEM_ID
 import com.android.pos.data.remote.Constants.PRINTER
+import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.data.remote.Constants.WIFI
 import com.android.pos.data.remote.Constants.getCurrentTimeFromTimeZone
@@ -49,6 +57,7 @@ import com.android.pos.di.PrefProvider
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.PrinterListAdapter
 import com.android.pos.utils.*
+import com.android.pos.utils.MethodUtils.Companion.getSaltString
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.runOnUiThread
 import com.android.pos.utils.extensions.visible
@@ -83,6 +92,7 @@ import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 
 //Original New
@@ -160,9 +170,11 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             Status.LOADING -> {
                 ProgressUtils.showProgressDialog(requireActivity())
             }
+
             Status.ERROR -> {
                 ProgressUtils.dismissProgressDialog()
             }
+
             Status.SUCCESS -> {
                 ProgressUtils.dismissProgressDialog()
                 if (it.data != null) {
@@ -493,6 +505,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
                     }
                 }
+
                 Status.ERROR -> {
                     LogUtil.logE(TAG, "PrinterError ")
                     ProgressUtils.dismissProgressDialog()
@@ -500,6 +513,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                     searchBluetooth()
                     startFinder()
                 }
+
                 Status.LOADING -> {
                     ProgressUtils.showProgressDialog(requireActivity())
                 }
@@ -615,6 +629,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
 
                 }
+
                 Status.ERROR -> {
                     LogUtil.logE(TAG, "PrinterError ")
                     ProgressUtils.dismissProgressDialog()
@@ -622,6 +637,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                     searchBluetooth()
                     startFinder()
                 }
+
                 Status.LOADING -> {
                     ProgressUtils.showProgressDialog(requireActivity())
                 }
@@ -1047,7 +1063,43 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             sunmiInnerPrinter(printerListModel.deviceModel?.ipAddress)
 
         } else {
-            onInitPrinter(printerListModel)
+            Log.e(TAG,"printerListModel  ${Gson().toJson(printerListModel)}")
+            if (prefProvider?.getValueboolean(IS_MASTER_TERMINAL, false) && printerListModel.currentPrinterType == KITCHEN) {
+
+
+
+                var orderTypeID : Int = 0
+                orderTypeList.forEach {
+                    if (it.orderType == TAKEOUT){
+                        orderTypeID = it.id
+                    }
+                }
+
+                var listItems:ArrayList<OrderItemsAttribute> = arrayListOf()
+               var orderItem =  OrderItemsAttribute()
+                orderItem.itemId = prefProvider.getValueInt(MANUAL_SALE_ITEM_ID,0)
+                orderItem.category_id = prefProvider.getValueInt(MANUAL_SALE_CATEGORY_ID,0)
+                orderItem.itemName = "Test Print"
+                listItems.add(orderItem)
+                var orderAttr = OrderAttributeRequestModel()
+                orderAttr.orderTypeId = orderTypeID
+                orderAttr.employeeId = prefProvider.getValueInt(EMPLOYEE_ID,0)
+                orderAttr.locationId = prefProvider.getValueInt(LOCATION_ID,0)
+                orderAttr.offlineId = randomOfflineId()
+                orderAttr.paymentStatus = 1
+                orderAttr.orderItemsAttributes = listItems
+
+
+
+                var order = OrderRequestModel(order = orderAttr, completed_all_payments = true)
+
+
+                viewModel.createPrinterQueueTestOrder(order)
+
+            } else {
+
+                onInitPrinter(printerListModel)
+            }
         }
     }
 
@@ -1335,6 +1387,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                     KITCHEN -> {
                         ifKitchenPrinterSelected(list, printerListModel, layoutPosition)
                     }
+
                     CUSTOMER -> {
                         for (i in 0 until orderTypeList.size) {
                             list.add(
@@ -1368,6 +1421,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
 
                     }
+
                     KITCHENANDCUSTOMER -> {
                         for (i in 0 until orderTypeList.size) {
                             list.add(
@@ -1415,7 +1469,9 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
             var list: ArrayList<CreatePrinterRequestModel.PrinterSettingsAttributes> = arrayListOf()
             if (printerListModel.printerName == "TM-U220" || printerListModel.printerName == "TM-U220B" && prefProvider.getValueboolean(
-                    IS_MASTER_TERMINAL,false) == true) {
+                    IS_MASTER_TERMINAL, false
+                ) == true
+            ) {
                 ifKitchenPrinterSelected(list, printerListModel, layoutPosition)
             } else {
                 findNavController().navigate(R.id.action_printer_to_printerTypeSelection)
@@ -1659,7 +1715,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             ) // Initialize the printer
 
 
-/*Add a listener to your printer*/
+            /*Add a listener to your printer*/
 
             /* mPrinter.setReceiveEventListener { printer, i, printerStatusInfo, s ->
 
@@ -2459,5 +2515,18 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
     override fun onRunResult(isSuccess: Boolean, code: Int, msg: String?) {
 
+    }
+
+    fun randomOfflineId(): String {
+
+        val locationId = prefProvider.getValueInt(Constants.LOCATION_ID, -1).toString()
+        val timestamp = System.currentTimeMillis().toString()
+        val ss = locationId + timestamp.takeLast(4)
+        val reqLent = 12 - ss.length
+        val Alphabet = getSaltString(reqLent)
+        val timeStampFinal = Alphabet + ss
+        LogUtil.logE("timeStampFinal", timeStampFinal)
+
+        return timeStampFinal
     }
 }

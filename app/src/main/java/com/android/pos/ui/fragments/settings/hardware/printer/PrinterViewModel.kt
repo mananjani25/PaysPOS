@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.model.requestModel.CreatePrinterRequestModel
+import com.android.pos.data.model.requestModel.OrderRequestModel
+import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.model.responseModel.DeletePrinterResponseModel
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
@@ -51,6 +53,34 @@ class PrinterViewModel @Inject constructor(
         return posRepository.getKitchenPrinters()
     }
 
+
+    fun createPrinterQueueTestOrder(orderRequest: OrderRequestModel){
+
+        _showProgress.value = Event(true)
+        viewModelScope.launch {
+
+            val resource: com.android.pos.utils.statusUtils.Resource<CreateOrderResponse> =
+                posRepository.createOrder(orderRequest)
+
+            when (resource.status) {
+                Status.LOADING -> {
+
+                    _showProgress.value = Event(true)
+                }
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message)
+                    _showProgress.value = Event(false)
+
+                }
+                Status.SUCCESS -> {
+
+                    _showProgress.value = Event(false)
+                }
+            }
+
+        }
+
+    }
 
     fun updatePrinterStatus(type: String, id: Int, terminal_id: Int, status: Boolean) {
         _showProgress.value = Event(true)
