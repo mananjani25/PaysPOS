@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.databinding.FragmentOrderReceiptSettingsBinding
+import java.lang.Exception
 
 
 class OrderReceipt : Fragment() {
@@ -29,11 +30,19 @@ class OrderReceipt : Fragment() {
         binding.lifecycleOwner = this
 
         binding.llCustomerReceiptSettings.setOnClickListener {
-            findNavController().navigate(R.id.action_settings_to_customerReceiptSettings)
+            try {
+                findNavController().navigate(R.id.action_settings_to_customerReceiptSettings)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
 
         binding.llKitchenReceiptSettings.setOnClickListener {
-            findNavController().navigate(R.id.action_settings_to_kitchenReceiptSettings)
+            try {
+                findNavController().navigate(R.id.action_settings_to_kitchenReceiptSettings)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
 
         return binding.root
