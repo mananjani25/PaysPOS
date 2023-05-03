@@ -2217,6 +2217,17 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         model.isHeader = 0
                         model.id = baseResponse.guestAttributes[i].id
                         model.isPaid = baseResponse.guestAttributes.get(i).isPaid
+
+                        // guest item sorting
+                        for (p in 0 until baseResponse.guestAttributes[i].guestItemAttributes.size) {
+                            baseResponse.orderItems.forEach { orderItem ->
+                                if (orderItem.itemId == baseResponse.guestAttributes[i].guestItemAttributes[p].itemId) {
+                                    baseResponse.guestAttributes[i].guestItemAttributes[p].sort = orderItem.sort
+                                }
+                            }
+                        }
+                        guestItem = baseResponse.guestAttributes[i].guestItemAttributes.sortedBy { it.sort }
+
                         if (baseResponse.guestAttributes.get(i).guestItemAttributes.isNotEmpty()) {
                             if (baseResponse.guestAttributes.get(i).name.trim()
                                     .lowercase() != "Whole Table".trim().lowercase()
@@ -2248,9 +2259,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         var guestServiceCharge: Double = 0.0
 
 
-                        for (j in 0 until baseResponse.guestAttributes.get(i).guestItemAttributes.size) {
+                        for (j in guestItem.indices) {
                             if (baseResponse.orderItems.isNotEmpty()) {
-                                baseResponse.orderItems.forEach {
+                                var sortedItems = baseResponse.orderItems.sortedBy { it.sort }
+                                sortedItems.forEach {
                                     if (guestItem[j].timestamp != null) {
                                         if (it.timestamp.trim()
                                                 .lowercase() == guestItem[j].timestamp.trim()
@@ -2332,8 +2344,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                             item.note = it.note
                                             item.isFired = guestItem.get(j).is_fired
                                             // Applied sort to dineInItem
-                                            item.dineInSort = it.sort
-                                            item.sort = if(it.sort == 0 ) {dineInList.size} else {it.sort}
+                                            item.sort = if(item.dineInSort == 0 ) {dineInList.size} else {it.sort}
+                                            item.dineInSort = item.sort
                                             item.timeStamp = it.timestamp
                                             if (it.orderItemModifiers.isNotEmpty()) {
                                                 item.modifier_set_ids =
@@ -2345,7 +2357,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                             }
                                             itemDineIn.isHeader = 1
                                             itemDineIn.item = item
-                                            itemDineIn.sort = if(it.sort == 0 ) {dineInList.size} else {it.sort}
+                                            itemDineIn.sort = item.sort
                                             itemDineIn.empName =
                                                 baseResponse.floorPlanTable.lockByName.toString()
 
