@@ -59,6 +59,7 @@ import com.android.pos.ui.adapter.PrinterListAdapter
 import com.android.pos.utils.*
 import com.android.pos.utils.MethodUtils.Companion.getSaltString
 import com.android.pos.utils.extensions.alert
+import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.runOnUiThread
 import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.printer.PrinterClass
@@ -153,8 +154,20 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
         setUpHeader()
 
+        checkMasterTerminal()
+
 
         return binding.root
+    }
+
+    private fun checkMasterTerminal() {
+        if (prefProvider.getValueboolean(IS_MASTER_TERMINAL, false) == false) {
+            binding.txtLabel2.gone()
+            binding.linearKitchenPrntData?.gone()
+            binding.rvKitchenPrinter.gone()
+
+
+        }
     }
 
     private fun setUpHeader() {
@@ -875,11 +888,15 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             LogUtil.logE(TAG, "deviceList  ${Gson().toJson(deviceList)}")
 
             if (deviceList != null) {
+                var tempAvailableList:ArrayList<PrinterListModel> = arrayListOf()
                 for (i in 0 until deviceList!!.size) {
 
                     var isAdded: Boolean = false
                     for (j in 0 until allPrinterlist.size) {
-                        if (allPrinterlist.get(j).deviceModel?.macAddress?.lowercase() == deviceList!!.get(i).macAddress.lowercase()) {
+                        if (allPrinterlist.get(j).deviceModel?.macAddress?.lowercase() == deviceList!!.get(
+                                i
+                            ).macAddress.lowercase()
+                        ) {
                             isAdded = true
                             break
                         } else {
@@ -891,8 +908,49 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
                     }
                     if (!isAdded) {
-                        availableNetworkAdapter.addItem(
-                            PrinterListModel(
+                        Log.e(TAG,"checkIsNotAdded ${deviceList!!.get(i).printerName.lowercase()}")
+                        if ( deviceList!!.get(i).printerName.lowercase() == "TM-U220".lowercase()
+                        ) {
+                            Log.e(TAG,"checkInside 1")
+                            if (prefProvider.getValueboolean(IS_MASTER_TERMINAL,false) == true) {
+
+                                Log.e(TAG,"checkInside 2")
+
+                                tempAvailableList.add(PrinterListModel(
+                                    printerName = deviceList!!.get(i).printerName,
+                                    connectionType = WIFI,
+                                    deviceModel = DeviceInfo(
+                                        DevType.TCP,
+                                        deviceList!!.get(i).printerName,
+                                        deviceList!!.get(i).deviceName,
+                                        deviceList!!.get(i).ipAddress,
+                                        deviceList!!.get(i).macAddress
+                                    ),
+                                    type = AVAILABLE,
+
+
+                                    ))
+
+                               /* availableNetworkAdapter.addItem(
+                                    PrinterListModel(
+                                        printerName = deviceList!!.get(i).printerName,
+                                        connectionType = WIFI,
+                                        deviceModel = DeviceInfo(
+                                            DevType.TCP,
+                                            deviceList!!.get(i).printerName,
+                                            deviceList!!.get(i).deviceName,
+                                            deviceList!!.get(i).ipAddress,
+                                            deviceList!!.get(i).macAddress
+                                        ),
+                                        type = AVAILABLE,
+
+
+                                        )
+                                )*/
+                            }
+                        }
+                        else{
+                            tempAvailableList.add(  PrinterListModel(
                                 printerName = deviceList!!.get(i).printerName,
                                 connectionType = WIFI,
                                 deviceModel = DeviceInfo(
@@ -905,12 +963,31 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                                 type = AVAILABLE,
 
 
-                                )
-                        )
+                                ))
+
+                            /*availableNetworkAdapter.addItem(
+                                PrinterListModel(
+                                    printerName = deviceList!!.get(i).printerName,
+                                    connectionType = WIFI,
+                                    deviceModel = DeviceInfo(
+                                        DevType.TCP,
+                                        deviceList!!.get(i).printerName,
+                                        deviceList!!.get(i).deviceName,
+                                        deviceList!!.get(i).ipAddress,
+                                        deviceList!!.get(i).macAddress
+                                    ),
+                                    type = AVAILABLE,
+
+
+                                    )
+                            )*/
+                        }
                     }
 
 
                 }
+
+                availableNetworkAdapter.addAll(tempAvailableList)
 
             }
 
@@ -1062,33 +1139,35 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             sunmiInnerPrinter(printerListModel.deviceModel?.ipAddress)
 
         } else {
-            Log.e(TAG,"printerListModel  ${Gson().toJson(printerListModel)}")
-            if (prefProvider?.getValueboolean(IS_MASTER_TERMINAL, false) && printerListModel.currentPrinterType == KITCHEN) {
+            Log.e(TAG, "printerListModel  ${Gson().toJson(printerListModel)}")
+            if (prefProvider?.getValueboolean(
+                    IS_MASTER_TERMINAL,
+                    false
+                ) && printerListModel.currentPrinterType == KITCHEN
+            ) {
 
 
-
-                var orderTypeID : Int = 0
+                var orderTypeID: Int = 0
                 orderTypeList.forEach {
-                    if (it.orderType == TAKEOUT){
+                    if (it.orderType == TAKEOUT) {
                         orderTypeID = it.id
                     }
                 }
 
-                var listItems:ArrayList<OrderItemsAttribute> = arrayListOf()
-               var orderItem =  OrderItemsAttribute()
-                orderItem.itemId = prefProvider.getValueInt(MANUAL_SALE_ITEM_ID,1)
-                orderItem.category_id = prefProvider.getValueInt(MANUAL_SALE_CATEGORY_ID,1)
+                var listItems: ArrayList<OrderItemsAttribute> = arrayListOf()
+                var orderItem = OrderItemsAttribute()
+                orderItem.itemId = prefProvider.getValueInt(MANUAL_SALE_ITEM_ID, 1)
+                orderItem.category_id = prefProvider.getValueInt(MANUAL_SALE_CATEGORY_ID, 1)
                 orderItem.itemName = "Test Print"
                 listItems.add(orderItem)
                 var orderAttr = OrderAttributeRequestModel()
                 orderAttr.orderTypeId = orderTypeID
-                orderAttr.employeeId = prefProvider.getValueInt(EMPLOYEE_ID,0)
-                orderAttr.locationId = prefProvider.getValueInt(LOCATION_ID,0)
+                orderAttr.employeeId = prefProvider.getValueInt(EMPLOYEE_ID, 0)
+                orderAttr.locationId = prefProvider.getValueInt(LOCATION_ID, 0)
                 orderAttr.offlineId = randomOfflineId()
                 orderAttr.paymentStatus = 1
                 orderAttr.orderItemsAttributes = listItems
                 orderAttr.macAddress = printerListModel.deviceModel?.macAddress.toString()
-
 
 
                 var order = OrderRequestModel(order = orderAttr, completed_all_payments = true)

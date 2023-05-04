@@ -157,4 +157,9 @@ class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>
         list.removeAt(pos)
         notifyItemRangeRemoved(pos, list.size)
     }
+
+    fun addAll(tempAvailableList: java.util.ArrayList<PrinterListModel>) {
+        list.addAll(tempAvailableList)
+        notifyDataSetChanged()
+    }
 }

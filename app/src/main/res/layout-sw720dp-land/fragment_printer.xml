@@ -199,6 +199,7 @@
                     android:textSize="@dimen/_6mdpi" />
 
                 <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/linearKitchenPrntData"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/_50sdp"
