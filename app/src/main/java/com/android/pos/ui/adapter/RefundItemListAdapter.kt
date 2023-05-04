@@ -251,7 +251,7 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
             val nf1: NumberFormat = NumberFormat.getNumberInstance()
             nf1.maximumFractionDigits = 2
             val rounded: String = nf1.format(tip_divided)
-            tip_divided = rounded.toDouble()
+            tip_divided = rounded.replace(",","").toDouble()
             if (paymentType == "Card") {
                     if (totalItemPrice >= tip_divided) {
                         totalItemPrice += tip_divided
