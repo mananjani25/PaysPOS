@@ -723,15 +723,23 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
         }
         binding.layoutHeader.txtOpenOrder.setOnClickListener {
-            if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
-                prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
-                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
-            }
+           try {
+               if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                   prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
+                   findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+               }
+           } catch (e: Exception) {
+               e.printStackTrace()
+           }
         }
         binding.layoutHeader.txtOnlineOrder?.setOnClickListener {
-            if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
-                prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
-                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_onlineOrderFragment)
+            try {
+                if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                    prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
+                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_onlineOrderFragment)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
 
@@ -789,25 +797,29 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
          )
      }*/
         binding.layoutHeader.txtKeypad.setOnClickListener {
-            if (rolePermission.hasManualSalesPermission(binding.root)) {
-                prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
-                viewModel.deleteManualSaleCart()
-                binding.layoutHeader.txtKeypad.setTextColor(resources.getColor(R.color.btnColor))
-                binding.layoutHeader.txtKeypad.setTypeface(
-                    binding.layoutHeader.txtKeypad.typeface,
-                    Typeface.BOLD
-                )
-                binding.layoutHeader.txtOpenOrder.setTextColor(resources.getColor(R.color.txtColor))
-                binding.layoutHeader.txtOpenOrder.setTypeface(
-                    binding.layoutHeader.txtOpenOrder.typeface,
-                    Typeface.NORMAL
-                )
-                var bundle: Bundle = Bundle()
-                bundle.putParcelableArrayList("carttlist", cartList)
-                findNavController().navigate(
-                    R.id.action_dashboardCategoryBoldPOS_to_manualSalesNew,
-                    bundle
-                )
+            try {
+                if (rolePermission.hasManualSalesPermission(binding.root)) {
+                    prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
+                    viewModel.deleteManualSaleCart()
+                    binding.layoutHeader.txtKeypad.setTextColor(resources.getColor(R.color.btnColor))
+                    binding.layoutHeader.txtKeypad.setTypeface(
+                        binding.layoutHeader.txtKeypad.typeface,
+                        Typeface.BOLD
+                    )
+                    binding.layoutHeader.txtOpenOrder.setTextColor(resources.getColor(R.color.txtColor))
+                    binding.layoutHeader.txtOpenOrder.setTypeface(
+                        binding.layoutHeader.txtOpenOrder.typeface,
+                        Typeface.NORMAL
+                    )
+                    var bundle: Bundle = Bundle()
+                    bundle.putParcelableArrayList("carttlist", cartList)
+                    findNavController().navigate(
+                        R.id.action_dashboardCategoryBoldPOS_to_manualSalesNew,
+                        bundle
+                    )
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
 

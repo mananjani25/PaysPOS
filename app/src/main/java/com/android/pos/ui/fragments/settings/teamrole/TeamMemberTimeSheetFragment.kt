@@ -76,10 +76,13 @@ class TeamMemberTimeSheetFragment : Fragment(), AdapterView.OnItemSelectedListen
         }
 
         binding.includeView.txtHome.setOnClickListener {
-
-            findNavController().navigate(
-                R.id.action_teamMemberTimeSheetFragment_to_dashboardCategoryNew
-            )
+            try {
+                findNavController().navigate(
+                    R.id.action_teamMemberTimeSheetFragment_to_dashboardCategoryNew
+                )
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
 
 
@@ -93,15 +96,19 @@ class TeamMemberTimeSheetFragment : Fragment(), AdapterView.OnItemSelectedListen
         navigate()
 
         binding.includeView.txtEmail.setOnClickListener {
-            if (MethodUtils.isDoubleClick()) return@setOnClickListener
-            val bundle = Bundle()
-            bundle.putBoolean("isFromTimeSheet", true)
-            bundle.putString("email", "")
-            bundle.putInt("type", 2)
-            findNavController().navigate(
-                R.id.action_teamMemberTimeSheetFragment_to_sendReceiptFragment,
-                bundle
-            )
+            try {
+                if (MethodUtils.isDoubleClick()) return@setOnClickListener
+                val bundle = Bundle()
+                bundle.putBoolean("isFromTimeSheet", true)
+                bundle.putString("email", "")
+                bundle.putInt("type", 2)
+                findNavController().navigate(
+                    R.id.action_teamMemberTimeSheetFragment_to_sendReceiptFragment,
+                    bundle
+                )
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
         setFragmentResultListener("request_key_timesheet") { _: String, bundle: Bundle ->
             viewModel.sendEmailTimeSheet( bundle.getString("email").toString(),"")

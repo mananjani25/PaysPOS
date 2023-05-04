@@ -284,7 +284,11 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
         }
         binding.layoutHeader.txtOpenOrder.setOnClickListener {
-            findNavController().navigate(R.id.action_manualSalesNew_to_orders)
+            try {
+                findNavController().navigate(R.id.action_manualSalesNew_to_orders)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
 
         binding.layoutHeader.linearSwitchUser.setOnClickListener {
@@ -304,12 +308,20 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             findNavController().navigate(R.id.action_manualSalesNew_to_reportEODFragment)
         }
         binding.layoutHeader.txtDineIn.setOnClickListener {
-            prefProvider.setValue(Constants.REDIRECT_FROM, "")
-            findNavController().navigate(R.id.action_manualSalesNew_to_dineInFragment)
+            try {
+                prefProvider.setValue(Constants.REDIRECT_FROM, "")
+                findNavController().navigate(R.id.action_manualSalesNew_to_dineInFragment)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
         binding.layoutHeader.txtHome.setOnClickListener {
-            prefProvider.setValue(Constants.REDIRECT_FROM, "")
-            findNavController().navigateUp()
+            try {
+                prefProvider.setValue(Constants.REDIRECT_FROM, "")
+                findNavController().navigateUp()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
 
     }
