@@ -148,6 +148,7 @@ class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>
     fun clearList() {
         val size = list.size
         this.list.clear()
+        list = arrayListOf()
         notifyItemRangeRemoved(0, size)
         notifyDataSetChanged()
     }

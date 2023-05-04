@@ -879,7 +879,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
                     var isAdded: Boolean = false
                     for (j in 0 until allPrinterlist.size) {
-                        if (allPrinterlist.get(j).deviceModel?.macAddress == deviceList!!.get(i).macAddress) {
+                        if (allPrinterlist.get(j).deviceModel?.macAddress?.lowercase() == deviceList!!.get(i).macAddress.lowercase()) {
                             isAdded = true
                             break
                         } else {
