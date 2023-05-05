@@ -10,9 +10,11 @@ import android.util.Log
 import android.view.*
 import android.widget.LinearLayout
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.android.pos.MainApplication
 import com.android.pos.R
 import com.android.pos.data.entities.*
 import com.android.pos.data.model.DineInModel
@@ -148,7 +150,11 @@ class CustomDisplay(
     override fun onDisplayChanged() {
         super.onDisplayChanged()
 
-        if (prefProvider.getValue(REDIRECT_FROM, "") == MANUAL_SALE) {
+        if (this::prefProvider.isInitialized && prefProvider.getValue(
+                REDIRECT_FROM,
+                ""
+            ) == MANUAL_SALE
+        ) {
             dashBoardCategoryViewModel.manualSaleItems(
                 prefProvider.getValue(ORDER_TYPE, TAKEOUT),
                 prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
@@ -157,7 +163,7 @@ class CustomDisplay(
                     updateCustomerDisplay(it)
                 }
             }
-        }else{
+        } else {
             dashBoardCategoryViewModel.mAllWords(
                 prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT),
                 prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
@@ -260,7 +266,7 @@ class CustomDisplay(
                         MethodUtils.roundOffAmount(temp_model?.subTotal ?: 0.0)
 
                 } else {
-                    setupTotals(cartList)
+                    setupTotalsNew(cartList)
                 }
             }
         }
@@ -283,6 +289,119 @@ class CustomDisplay(
                 binding.linearCashDiscount.gone()
             }
         }
+    }
+
+    private fun setupTotalsNew(cartList: List<CartModel>) {
+
+        dashBoardCategoryViewModel.apply {
+
+            if (MethodUtils.isEnableCashDiscount(context)) {
+                binding.txtSubTotalCash?.visible()
+                binding.txtSubTotalCard?.visible()
+                binding.txtTaxCash?.visible()
+                binding.txtTaxCard?.visible()
+                binding.txtServiceChargeCash?.visible()
+                binding.txtServiceChargeCard?.visible()
+                binding.txtDiscountCash?.visible()
+                binding.txtDiscountCard?.visible()
+
+                binding.lnrLayoutCashTotal?.visible()
+                binding.lnrLayoutCardTotal?.visible()
+
+                if (prefProvider.getValue(
+                        Constants.OPTION_TYPE,
+                        "CashDiscount"
+                    ) == "CashDiscount"
+                ) {
+                    binding.txtSubTotalCash?.text =
+                        MethodUtils.roundOffAmount(subTotalPrice - cashdiscountAmount)
+                    binding.txtSubTotalCard?.text = MethodUtils.roundOffAmount(subTotalPrice)
+
+                    binding.txtTaxCash?.text =
+                        MethodUtils.roundOffAmount(totalTax - cashdiscountAmount)
+                    binding.txtTaxCard?.text = MethodUtils.roundOffAmount(totalTax)
+
+                    binding.txtServiceChargeCash?.text =
+                        MethodUtils.roundOffAmount(totalServiceCharge - cashdiscountAmount)
+                    binding.txtServiceChargeCard?.text =
+                        MethodUtils.roundOffAmount(totalServiceCharge)
+
+                    if (!prefProvider.getValueboolean(
+                            Constants.IS_PAYMENT_SCREEN,
+                            false
+                        )
+                    ) {
+                        updateTotals((totalPrice - cashdiscountAmount).toString(),totalPrice.toString())
+                        updateTotals(MainApplication.getInstance()!!.getText(R.string.symbole)
+                            .toString() + String.format(
+                            "%.2f", (totalPrice - cashdiscountAmount)
+                        ),MainApplication.getInstance()!!.getText(R.string.symbole)
+                            .toString() + String.format(
+                            "%.2f", (totalPrice)
+                        ))
+
+                    }
+
+                } else {
+                    binding.txtSubTotalCash?.text = MethodUtils.roundOffAmount(subTotalPrice)
+                    binding.txtSubTotalCard?.text =
+                        MethodUtils.roundOffAmount(subTotalPrice + cashdiscountAmount)
+
+                    binding.txtTaxCash?.text = MethodUtils.roundOffAmount(totalTax)
+                    binding.txtTaxCard?.text =
+                        MethodUtils.roundOffAmount(totalTax + cashdiscountAmount)
+
+                    binding.txtServiceChargeCash?.text =
+                        MethodUtils.roundOffAmount(totalServiceCharge)
+                    binding.txtServiceChargeCard?.text =
+                        MethodUtils.roundOffAmount(totalServiceCharge + cashdiscountAmount)
+                    if (!prefProvider.getValueboolean(
+                            Constants.IS_PAYMENT_SCREEN,
+                            false
+                        )
+                    ) {
+                        updateTotals(MainApplication.getInstance()!!.getText(R.string.symbole)
+                            .toString() + String.format(
+                            "%.2f", (totalPrice)
+                        ),MainApplication.getInstance()!!.getText(R.string.symbole)
+                            .toString() + String.format(
+                            "%.2f", (totalPrice + cashdiscountAmount)
+                        ))
+                    }
+                }
+
+                binding.txtDiscountCash?.text = "-${MethodUtils.roundOffAmount(totalDiscount)}"
+                binding.txtDiscountCard?.text = "-${MethodUtils.roundOffAmount(totalDiscount)}"
+
+
+
+            } else {
+                binding.txtSubTotalCash?.gone()
+                binding.txtSubTotalCard?.text = MethodUtils.roundOffAmount(subTotalPrice)
+
+                binding.txtTaxCash?.gone()
+                binding.txtTaxCard?.text = MethodUtils.roundOffAmount(totalTax)
+
+                binding.txtServiceChargeCash?.gone()
+                binding.txtServiceChargeCard?.text = MethodUtils.roundOffAmount(totalServiceCharge)
+
+                binding.txtDiscountCash?.gone()
+                binding.txtDiscountCard?.text = "-${MethodUtils.roundOffAmount(totalDiscount)}"
+
+                binding.lnrLayoutCashTotal?.gone()
+                binding.txtTotalCardLabel?.text = ""
+                if (!prefProvider.getValueboolean(
+                        Constants.IS_PAYMENT_SCREEN,
+                        false
+                    )
+                ) {
+                    itemCalculation(cartList, binding.txtTotalCard!!, context)
+                }
+
+            }
+
+        }
+
     }
 
     private fun setupTotals(cartList: List<CartModel>) {
@@ -1162,7 +1281,7 @@ class CustomDisplay(
 
     }
 
-    fun showTipsAdded(tipAmount: Double, WholetotalPrice: Double) {
+    fun showTipsAddedOld(tipAmount: Double, WholetotalPrice: Double) {
         if (tipAmount == 0.00) {
             binding.tipLayout.gone()
         } else {
@@ -1183,6 +1302,35 @@ class CustomDisplay(
 
     }
 
+    fun showTipsAdded(tipAmount: Double, WholetotalPrice: Double) {
+        if (tipAmount == 0.00) {
+            binding.lnrLayoutTip?.gone()
+        } else {
+            binding.lnrLayoutTip?.visible()
+            val percentageTip = String.format(
+                "%.0f", MethodUtils.calculatePercentageFromAmount(
+                    tipAmount,
+                    WholetotalPrice
+                )
+            )
+
+            binding.txtTipLabel?.text = "Tip ($percentageTip%)"
+            if (MethodUtils.isEnableCashDiscount(context)) {
+                binding.txtTipCash?.visible()
+                binding.txtTipCard?.visible()
+                binding.txtTipCash?.text = "" + MethodUtils.roundOffAmount(tipAmount)
+                binding.txtTipCard?.text = "" + MethodUtils.roundOffAmount(tipAmount)
+            } else {
+                binding.txtTipCash?.gone()
+                binding.txtTipCard?.visible()
+                binding.txtTipCard?.text = "" + MethodUtils.roundOffAmount(tipAmount)
+            }
+
+
+        }
+
+    }
+
     private fun showTipsAddedVer2(tipRate: Double, tipAmount: Double) {
         if (tipAmount == 0.00) {
             binding.tipLayout.gone()
@@ -1197,7 +1345,7 @@ class CustomDisplay(
         activeTipsListAdapter = ActiveTipsListAdapter()
         binding.apply {
             rvActiveTipsList.apply {
-                layoutManager = GridLayoutManager(context,4)
+                layoutManager = GridLayoutManager(context, 4)
                 adapter = activeTipsListAdapter
             }
         }
@@ -1216,7 +1364,7 @@ class CustomDisplay(
                 it.data.forEach { data ->
                     data.isChecked = false
                 }
-                binding.rvActiveTipsList.layoutManager = GridLayoutManager(context,it.data.size)
+                binding.rvActiveTipsList.layoutManager = GridLayoutManager(context, it.data.size)
                 activeTipsListAdapter.setList(it.data, wholeTotalPrice)
                 activeTipsListAdapter.setListner(this)
                 lifecycleOwner.lifecycleScope.launch {
@@ -1666,6 +1814,7 @@ class CustomDisplay(
 
                     networkCall(jsonArray, 0, apiModule1)
                 }
+
                 Constants.HEARTLAND_GATEWAY == magtekRequestUtils.gatewayName() -> {
 
                     val amount = wholeTotalPrice.plus(tippedAmount)
@@ -1683,6 +1832,7 @@ class CustomDisplay(
                     }
                     networkCall(jsonArray, 1, apiModule1)
                 }
+
                 Constants.TSYS_GATEWAY == magtekRequestUtils.gatewayName() -> {
 
                     jsonArray = model.transactionOutput.transactionID.let { it1 ->
@@ -1793,6 +1943,7 @@ class CustomDisplay(
 
                     networkCall(jsonArray, 0, apiModule1)
                 }
+
                 Constants.HEARTLAND_GATEWAY == magtekRequestUtils.gatewayName() -> {
 
                     val amt = wholeTotalPrice.plus(tippedAmount)
@@ -1810,6 +1961,7 @@ class CustomDisplay(
                     }
                     networkCall(jsonArray, 1, apiModule1)
                 }
+
                 Constants.TSYS_GATEWAY == magtekRequestUtils.gatewayName() -> {
 
 
@@ -1860,9 +2012,11 @@ class CustomDisplay(
                         }
 
                     } else {
-                        if (response.body()!![0].mPPGv4WSFault != null){
-                            showErrorLayout(response.body()!![0].mPPGv4WSFault?.faultCode + "\n" +
-                                    response.body()!![0].mPPGv4WSFault?.faultReason.toString())
+                        if (response.body()!![0].mPPGv4WSFault != null) {
+                            showErrorLayout(
+                                response.body()!![0].mPPGv4WSFault?.faultCode + "\n" +
+                                        response.body()!![0].mPPGv4WSFault?.faultReason.toString()
+                            )
                         }
                     }
                 }
@@ -1872,5 +2026,10 @@ class CustomDisplay(
                 t.localizedMessage?.let { showErrorLayout(it) }
             }
         })
+    }
+
+    fun updateTotals(cashTotal: String, cardTotal: String) {
+        binding.txtTotalCash?.text = cashTotal
+        binding.txtTotalCard?.text = cardTotal
     }
 }

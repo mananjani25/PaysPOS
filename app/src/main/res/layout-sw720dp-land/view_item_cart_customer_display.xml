@@ -91,7 +91,7 @@
                     android:layout_gravity="end"
                     android:gravity="end"
                     android:text="Total"
-                    android:visibility="visible"
+                    android:visibility="gone"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_6mdpi" />
 
@@ -104,7 +104,7 @@
                     android:layout_gravity="end"
                     android:gravity="end"
                     android:text="Cash"
-                    android:visibility="gone"
+                    android:visibility="visible"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_6mdpi" />
 
@@ -112,7 +112,7 @@
                     android:id="@+id/txtCardAmount"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="0dp"
-                    android:visibility="gone"
+                    android:visibility="visible"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
