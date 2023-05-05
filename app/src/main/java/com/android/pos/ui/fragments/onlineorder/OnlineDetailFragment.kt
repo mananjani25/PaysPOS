@@ -307,7 +307,16 @@ class OnlineDetailFragment(
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.setCurrentDate(Calendar.getInstance(), "", "", param1)
+        if (param1 == "4" || (endDateTime != null && SimpleDateFormat(
+                "MM/dd/yyyy", Locale.getDefault()
+            ).parse(endDateTime).after(Calendar.getInstance().time))
+        ) {
+            viewModel.setCurrentDate(Calendar.getInstance(), "", "", param1)
+        } else {
+            viewModel.setCurrentDate(
+                Calendar.getInstance(), startDateTime, endDateTime, param1
+            )
+        }
     }
 
     override fun onCreateView(
@@ -500,8 +509,8 @@ class OnlineDetailFragment(
         viewModel.startDateSelection.observe(requireActivity()) { event ->
             event.getContentIfNotHandled()?.let {
                 //currentPage = 1
-                myCalendar = Calendar.getInstance()
-                myCalendar.add(Calendar.DATE, 0)
+//                myCalendar = Calendar.getInstance()
+//                myCalendar.add(Calendar.DATE, 0)
                 Log.d(TAG, "startDatePickerObserver: " + myCalendar.get(Calendar.DAY_OF_MONTH))
                 Log.d(TAG, "startDatePickerObserver: " + myCalendar.get(Calendar.MONTH))
                 Log.d(
