@@ -2105,7 +2105,23 @@ class CartFragment(
                                 ordertype = it.orderType
                                 ordertypeId = it.id
                             }
+
+
                         }
+
+                        if (prefProvider.getValue(ORDER_TYPE, "").toString().trim() == PHONE_ORDER.toString().trim()){
+
+                            viewModel.ordertypelist.forEach {
+                                if (it.orderType == PHONE_ORDER) {
+                                    ordertype = it.orderType
+                                    ordertypeId = it.id
+                                }
+
+
+                            }
+                        }
+
+
                         Log.e("ordertypeId :: ", ordertypeId.toString())
 
                         if (viewModel.restrictedAmount(binding.txtTotal)) {

@@ -41,9 +41,11 @@ import com.android.pos.data.remote.Constants.SHIPPING_ADDRESS
 import com.android.pos.data.remote.Constants.SUNMI_INNER_PRINTER
 import com.android.pos.data.remote.Constants.SUNMI_PRINTER
 import com.android.pos.databinding.FragmentActiveOrdersBinding
+import com.android.pos.databinding.FragmentPhoneOrdersBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
 import com.android.pos.ui.adapter.OpenOrderAdapter
+import com.android.pos.ui.adapter.PhoneOrderAdapter
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
 import com.android.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
@@ -78,10 +80,10 @@ class PhoneOrderListFragment(
     private var paramEndDate: String = ""
 
     private var itemPos: Int = 0
-    private lateinit var binding: FragmentActiveOrdersBinding
+    private lateinit var binding: FragmentPhoneOrdersBinding
     private val viewModel by viewModels<ActiveOrderViewModel>()
     private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
-    private lateinit var adapter: OpenOrderAdapter
+    private lateinit var adapter: PhoneOrderAdapter
     private var customerSettingModel = GetCustomerReceiptSettingsResponse.Data()
     private val TAG = "ActiveOrderFragment"
     private var tipsList: List<GetTipReponse.Data> = listOf()
@@ -115,7 +117,7 @@ class PhoneOrderListFragment(
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentActiveOrdersBinding.inflate(inflater, container, false)
+        binding = FragmentPhoneOrdersBinding.inflate(inflater, container, false)
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
 
@@ -259,7 +261,7 @@ class PhoneOrderListFragment(
             )
         )
 
-        adapter = OpenOrderAdapter(requireContext(),prefProvider)
+        adapter = PhoneOrderAdapter(requireContext(),prefProvider)
         adapter.setCallback(this)
         binding.rvOpenOrder.adapter = adapter
     }

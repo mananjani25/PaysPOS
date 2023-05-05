@@ -803,6 +803,11 @@ open class PaymentViewModel @Inject constructor(
         } else {
             orderAttributeRequestModel.deliveryType = cartModel.deliveryType
         }
+
+        if (cartModel.orderType == PHONE_ORDER){
+            orderAttributeRequestModel.deliveryType = prefProvider.getValue(Constants.DELIVERY_TYPE, PICK_UP)
+        }
+
         orderAttributeRequestModel.employeeId = cartModel.employeeID
         orderAttributeRequestModel.locationId = cartModel.locationId
         orderAttributeRequestModel.terminalId = cartModel.terminalId
@@ -822,6 +827,8 @@ open class PaymentViewModel @Inject constructor(
             MethodUtils.roundOffAmountDouble(totalPrice) - MethodUtils.roundOffAmountDouble(
                 tipAmount
             )
+
+
         if (cartModel.discountId != null && cartModel.discountId != -1)
             orderAttributeRequestModel.discount_id = cartModel.discountId
         orderAttributeRequestModel.totalDiscount = totalDiscount

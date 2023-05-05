@@ -16,6 +16,7 @@ import com.android.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
 import com.android.pos.data.remote.Constants.PRINT_PAID
 import com.android.pos.data.remote.Constants.PRINT_UNPAID
 import com.android.pos.databinding.ViewOpenOrderItemBinding
+import com.android.pos.databinding.ViewPhoneOrderItemBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
@@ -26,9 +27,9 @@ import com.android.pos.utils.extensions.visible
 import com.google.gson.Gson
 import java.util.*
 
-class OpenOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
+class PhoneOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
 
-    RecyclerView.Adapter<OpenOrderAdapter.MyViewHolder>(), Filterable {
+    RecyclerView.Adapter<PhoneOrderAdapter.MyViewHolder>(), Filterable {
 
     var orderList = ArrayList<OpenOrderResponse.Data.Order>()
     var filterList = ArrayList<OpenOrderResponse.Data.Order>()
@@ -40,7 +41,7 @@ class OpenOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
     }
 
 
-    inner class MyViewHolder(private val binding: ViewOpenOrderItemBinding) :
+    inner class MyViewHolder(private val binding: ViewPhoneOrderItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         private var adapter: OpenOrderItemsAdapter? = null
@@ -97,6 +98,7 @@ class OpenOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
                 binding.rvOpenOrder.gone()
             }
 
+            binding.tvDeliveryType.text = item.deliveryType
 
             if (item.paymentStatus == "Cancelled" || item.paymentStatus == "Paid") {
 
@@ -246,13 +248,13 @@ class OpenOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): OpenOrderAdapter.MyViewHolder {
+    ): PhoneOrderAdapter.MyViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val binding = ViewOpenOrderItemBinding.inflate(inflater, parent, false)
+        val binding = ViewPhoneOrderItemBinding.inflate(inflater, parent, false)
         return MyViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: OpenOrderAdapter.MyViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: PhoneOrderAdapter.MyViewHolder, position: Int) {
         holder.bind(filterList.get(position))
     }
 
