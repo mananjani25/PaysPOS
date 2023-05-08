@@ -974,16 +974,6 @@ class CartFragment(
                         }
                     }
 
-                    if (this::presentation.isInitialized) {
-                        if (!presentation.isShowing)
-                            presentation.show()
-                        if (it.isNotEmpty()) {
-                            presentation.updateCustomerDisplay(it)
-                        } else {
-                            presentation.onLogOutOrClockOutWithApiService(apiService)
-                        }
-                    }
-
                     saveVisibility()
 
 
@@ -1483,6 +1473,16 @@ class CartFragment(
 
                         }
 
+                    }
+
+                    if (this::presentation.isInitialized) {
+                        if (!presentation.isShowing)
+                            presentation.show()
+                        if (it.isNotEmpty()) {
+                            presentation.updateCustomerDisplay(it)
+                        } else {
+                            presentation.onLogOutOrClockOutWithApiService(apiService)
+                        }
                     }
 
                     if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {

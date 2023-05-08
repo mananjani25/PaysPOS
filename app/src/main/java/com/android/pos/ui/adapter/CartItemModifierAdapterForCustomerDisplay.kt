@@ -4,18 +4,22 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.entities.Modifier
+import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.ViewCartModifierCustomerDisplayBinding
+import com.android.pos.di.PrefProvider
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.visible
 
 class CartItemModifierAdapterForCustomerDisplay :
     RecyclerView.Adapter<CartItemModifierAdapterForCustomerDisplay.MyViewHolder>() {
+    private lateinit var prefProvider: PrefProvider
     var list = ArrayList<Modifier>()
 
     inner class MyViewHolder(private val binding: ViewCartModifierCustomerDisplayBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(item: Modifier) {
+            prefProvider = PrefProvider(itemView.context)
             binding.model = item
             binding.executePendingBindings()
             if (item.modifier_quantity > 1) {
@@ -33,16 +37,44 @@ class CartItemModifierAdapterForCustomerDisplay :
                     tvRate.gone()
                     tvRateCash.visible()
                     tvRateCard.visible()
+
+                    val cashOrSurchargeAmount = MethodUtils.calculateCashDiscount(
+                        totalPrice(item),
+                        prefProvider,
+                        itemView.context
+                    )
+                    if (prefProvider.getValue(
+                            Constants.OPTION_TYPE,
+                            "CashDiscount"
+                        ) == "CashDiscount"
+                    ) {
+                        MethodUtils.setPriceTextView(
+                            binding.tvRateCash,
+                            totalPrice(item) - cashOrSurchargeAmount
+                        )
+                        MethodUtils.setPriceTextView(binding.tvRateCard, totalPrice(item))
+                    } else {
+                        MethodUtils.setPriceTextView(binding.tvRateCash, totalPrice(item))
+                        MethodUtils.setPriceTextView(
+                            binding.tvRateCard,
+                            totalPrice(item) + cashOrSurchargeAmount
+                        )
+                    }
                 }
             }else{
                 binding.apply {
                     tvRate.visible()
+                    MethodUtils.setPriceTextView(binding.tvRate, totalPrice(item))
                     tvRateCash.gone()
                     tvRateCard.gone()
                 }
             }
         }
 
+    }
+
+    private fun totalPrice(model: Modifier): Double {
+        return model.price * model.itemQuantity
     }
 
     override fun onCreateViewHolder(

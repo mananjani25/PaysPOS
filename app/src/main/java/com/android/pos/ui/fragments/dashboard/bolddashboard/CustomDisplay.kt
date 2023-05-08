@@ -8,13 +8,10 @@ import android.os.Bundle
 import android.util.Base64
 import android.util.Log
 import android.view.*
-import android.widget.LinearLayout
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.android.pos.MainApplication
 import com.android.pos.R
 import com.android.pos.data.entities.*
 import com.android.pos.data.model.DineInModel
@@ -37,7 +34,6 @@ import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.ActiveTipsListAdapter
 import com.android.pos.ui.adapter.DineInAdapter
 import com.android.pos.ui.adapter.DineInTableAdapterCD
-import com.android.pos.ui.adapter.boldpos.CartAdapter
 import com.android.pos.ui.adapter.boldpos.CartAdapterCustomerDisplay
 import com.android.pos.ui.adapter.boldpos.TaxBirfurcationAdapter
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
@@ -56,7 +52,6 @@ import com.android.pos.utils.statusUtils.Status
 import com.github.gcacace.signaturepad.views.SignaturePad.OnSignedListener
 import com.google.gson.Gson
 import com.google.gson.JsonArray
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
@@ -146,10 +141,17 @@ class CustomDisplay(
 
     }
 
-
     override fun onDisplayChanged() {
         super.onDisplayChanged()
-
+        //prefProvider = PrefProvider(context)
+        Log.d(
+            TAG, "onDisplayChanged: ${
+                prefProvider.getValue(
+                    REDIRECT_FROM,
+                    ""
+                )
+            }"
+        )
         if (this::prefProvider.isInitialized && prefProvider.getValue(
                 REDIRECT_FROM,
                 ""
@@ -203,17 +205,19 @@ class CustomDisplay(
     }
 
     fun updateCustomerDisplay(cartList: List<CartModel>) {
+        Log.d(TAG, "updateCustomerDisplay: OUTSIDE")
         if (this::binding.isInitialized) {
-
+            Log.d(TAG, "updateCustomerDisplay: INSIDE")
             if (cartList.isNotEmpty()) {
 
                 binding.mainCartLayout.visibility = View.VISIBLE
                 binding.splashLayout.visibility = View.GONE
 
-                if (prefProvider.getValue(
-                        Constants.ORDER_TYPE, Constants.TAKEOUT
-                    ) == Constants.DINE_IN
-                ) {
+                val isDineIn = prefProvider.getValue(
+                    Constants.ORDER_TYPE, Constants.TAKEOUT
+                ) == Constants.DINE_IN
+
+                if (isDineIn) {
                     if (cartList[0].dineInList?.isNotEmpty() == true) {
                         val dineInList = cartList[0].dineInList
 
@@ -266,7 +270,7 @@ class CustomDisplay(
                         MethodUtils.roundOffAmount(temp_model?.subTotal ?: 0.0)
 
                 } else {
-                    setupTotalsNew(cartList)
+                    setupTotalsNew(isDineIn)
                 }
             }
         }
@@ -291,11 +295,10 @@ class CustomDisplay(
         }
     }
 
-    private fun setupTotalsNew(cartList: List<CartModel>) {
+    private fun setupTotalsNew(isDineIn: Boolean) {
 
         dashBoardCategoryViewModel.apply {
-
-            if (MethodUtils.isEnableCashDiscount(context)) {
+            if (MethodUtils.isEnableCashDiscount(context) && !isDineIn) {
                 binding.txtSubTotalCash?.visible()
                 binding.txtSubTotalCard?.visible()
                 binding.txtTaxCash?.visible()
@@ -307,73 +310,44 @@ class CustomDisplay(
 
                 binding.lnrLayoutCashTotal?.visible()
                 binding.lnrLayoutCardTotal?.visible()
+                binding.txtOrderTotal?.gone()
 
                 if (prefProvider.getValue(
                         Constants.OPTION_TYPE,
                         "CashDiscount"
                     ) == "CashDiscount"
                 ) {
-                    binding.txtSubTotalCash?.text =
-                        MethodUtils.roundOffAmount(subTotalPrice - cashdiscountAmount)
+
+                    binding.txtSubTotalCash?.text = getCashDiscountedPrice(subTotalPrice)
                     binding.txtSubTotalCard?.text = MethodUtils.roundOffAmount(subTotalPrice)
 
-                    binding.txtTaxCash?.text =
-                        MethodUtils.roundOffAmount(totalTax - cashdiscountAmount)
+                    binding.txtTaxCash?.text = getCashDiscountedPrice(totalTax)
                     binding.txtTaxCard?.text = MethodUtils.roundOffAmount(totalTax)
 
-                    binding.txtServiceChargeCash?.text =
-                        MethodUtils.roundOffAmount(totalServiceCharge - cashdiscountAmount)
-                    binding.txtServiceChargeCard?.text =
-                        MethodUtils.roundOffAmount(totalServiceCharge)
+                    binding.txtServiceChargeCash?.text = getCashDiscountedPrice(totalServiceCharge)
+                    binding.txtServiceChargeCard?.text = MethodUtils.roundOffAmount(totalServiceCharge)
 
-                    if (!prefProvider.getValueboolean(
-                            Constants.IS_PAYMENT_SCREEN,
-                            false
-                        )
-                    ) {
-                        updateTotals((totalPrice - cashdiscountAmount).toString(),totalPrice.toString())
-                        updateTotals(MainApplication.getInstance()!!.getText(R.string.symbole)
-                            .toString() + String.format(
-                            "%.2f", (totalPrice - cashdiscountAmount)
-                        ),MainApplication.getInstance()!!.getText(R.string.symbole)
-                            .toString() + String.format(
-                            "%.2f", (totalPrice)
-                        ))
-
-                    }
+                    binding.txtTotalCash?.text = getCashDiscountedPrice(totalPrice)
+                    binding.txtTotalCard?.text = MethodUtils.roundOffAmount(totalPrice)
 
                 } else {
                     binding.txtSubTotalCash?.text = MethodUtils.roundOffAmount(subTotalPrice)
-                    binding.txtSubTotalCard?.text =
-                        MethodUtils.roundOffAmount(subTotalPrice + cashdiscountAmount)
+                    binding.txtSubTotalCard?.text = getSurchargedPrice(subTotalPrice)
 
                     binding.txtTaxCash?.text = MethodUtils.roundOffAmount(totalTax)
-                    binding.txtTaxCard?.text =
-                        MethodUtils.roundOffAmount(totalTax + cashdiscountAmount)
+                    binding.txtTaxCard?.text = getSurchargedPrice(totalTax)
 
                     binding.txtServiceChargeCash?.text =
                         MethodUtils.roundOffAmount(totalServiceCharge)
-                    binding.txtServiceChargeCard?.text =
-                        MethodUtils.roundOffAmount(totalServiceCharge + cashdiscountAmount)
-                    if (!prefProvider.getValueboolean(
-                            Constants.IS_PAYMENT_SCREEN,
-                            false
-                        )
-                    ) {
-                        updateTotals(MainApplication.getInstance()!!.getText(R.string.symbole)
-                            .toString() + String.format(
-                            "%.2f", (totalPrice)
-                        ),MainApplication.getInstance()!!.getText(R.string.symbole)
-                            .toString() + String.format(
-                            "%.2f", (totalPrice + cashdiscountAmount)
-                        ))
-                    }
+                    binding.txtServiceChargeCard?.text = getSurchargedPrice(totalServiceCharge)
+
+                    binding.txtTotalCash?.text = MethodUtils.roundOffAmount(totalPrice)
+                    binding.txtTotalCard?.text = getSurchargedPrice(totalPrice)
+
                 }
 
                 binding.txtDiscountCash?.text = "-${MethodUtils.roundOffAmount(totalDiscount)}"
                 binding.txtDiscountCard?.text = "-${MethodUtils.roundOffAmount(totalDiscount)}"
-
-
 
             } else {
                 binding.txtSubTotalCash?.gone()
@@ -389,19 +363,35 @@ class CustomDisplay(
                 binding.txtDiscountCard?.text = "-${MethodUtils.roundOffAmount(totalDiscount)}"
 
                 binding.lnrLayoutCashTotal?.gone()
-                binding.txtTotalCardLabel?.text = ""
-                if (!prefProvider.getValueboolean(
-                        Constants.IS_PAYMENT_SCREEN,
-                        false
-                    )
-                ) {
-                    itemCalculation(cartList, binding.txtTotalCard!!, context)
-                }
+                binding.lnrLayoutCardTotal?.gone()
+                binding.txtOrderTotal?.visible()
+
+                binding.txtOrderTotal?.text = MethodUtils.roundOffAmount(totalPrice)
 
             }
 
         }
 
+    }
+
+    private fun getCashDiscountedPrice(amount: Double): String {
+        return MethodUtils.roundOffAmount(
+            amount - MethodUtils.calculateCashDiscount(
+                amount,
+                prefProvider,
+                context
+            )
+        )
+    }
+
+    private fun getSurchargedPrice(amount: Double): String {
+        return MethodUtils.roundOffAmount(
+            amount + MethodUtils.calculateCashDiscount(
+                amount,
+                prefProvider,
+                context
+            )
+        )
     }
 
     private fun setupTotals(cartList: List<CartModel>) {

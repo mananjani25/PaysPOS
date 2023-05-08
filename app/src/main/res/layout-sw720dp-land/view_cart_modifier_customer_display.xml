@@ -71,7 +71,6 @@
             android:layout_weight="1"
             android:gravity="end"
             android:visibility="visible"
-            android:text="@{@string/symbole +``+String.format(@string/format,(model.price * model.itemQuantity))}"
             android:textColor="@color/color88"
             android:textSize="@dimen/_6mdpi" />
         <TextView
@@ -83,7 +82,6 @@
             android:layout_weight="0.5"
             android:visibility="gone"
             android:gravity="end"
-            android:text="@{@string/symbole +``+String.format(@string/format,(model.price * model.itemQuantity))}"
             android:textColor="@color/color88"
             android:textSize="@dimen/_6mdpi" />
 
@@ -96,7 +94,6 @@
             android:layout_weight="0.5"
             android:visibility="gone"
             android:gravity="end"
-            android:text="@{@string/symbole +``+String.format(@string/format,(model.price * model.itemQuantity))}"
             android:textColor="@color/color88"
             android:textSize="@dimen/_6mdpi" />
     </LinearLayout>

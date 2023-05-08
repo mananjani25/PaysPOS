@@ -472,6 +472,7 @@
                     android:layout_weight="0.5"
                     android:layout_height="wrap_content"
                     android:gravity="end"
+                    android:visibility="gone"
                     android:orientation="vertical">
 
                     <androidx.appcompat.widget.AppCompatTextView
@@ -500,6 +501,7 @@
                     android:layout_weight="0.5"
                     android:layout_height="wrap_content"
                     android:gravity="end"
+                    android:visibility="gone"
                     android:orientation="vertical">
 
                     <androidx.appcompat.widget.AppCompatTextView
@@ -522,6 +524,20 @@
                         android:textColor="@color/white"
                         android:textSize="@dimen/text_size_medium" />
                 </LinearLayout>
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtOrderTotal"
+                    style="@style/CustomFontMediumStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_3sdp"
+                    android:layout_weight="2.2"
+                    android:text="$13.20"
+                    android:gravity="end"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_8mdpi"
+                    android:textStyle="bold"
+                    tools:ignore="RelativeOverlap" />
 
 
             </LinearLayout>
