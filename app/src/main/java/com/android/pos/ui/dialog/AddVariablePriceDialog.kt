@@ -93,9 +93,9 @@ class AddVariablePriceDialog : DialogFragment() {
 
         }
 
-        binding.llKeypad.txt10.text = "10$"
-        binding.llKeypad.txt20.text = "20$"
-        binding.llKeypad.txt30.text = "30$"
+        binding.llKeypad.txt10.text = "$10"
+        binding.llKeypad.txt20.text = "$20"
+        binding.llKeypad.txt30.text = "$30"
 
         binding.llKeypad.txt10.setOnClickListener {
             val price = binding.llKeypad.txt10.text.toString().trim()
