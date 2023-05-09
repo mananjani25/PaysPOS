@@ -793,6 +793,10 @@
         android:name="com.android.pos.ui.dialog.AddNoteDialog"
         android:label="AddNoteDialog" />
     <dialog
+        android:id="@+id/changeOrderTypeDialog"
+        android:name="com.android.pos.ui.dialog.ChangeOrderTypeDialog"
+        android:label="ChangeOrderTypeDialog" />
+    <dialog
         android:id="@+id/addDiscountDialog"
         android:name="com.android.pos.ui.dialog.AddDiscountDialog"
         android:label="AddDiscountDialog">
@@ -1563,6 +1567,9 @@
         <action
             android:id="@+id/action_dashboardCategoryBoldPOS_to_addNoteDialog"
             app:destination="@id/addNoteDialog" />
+        <action
+            android:id="@+id/action_dashboardCategoryBoldPOS_to_changeOrderTypeDialog"
+            app:destination="@id/changeOrderTypeDialog" />
         <action
             android:id="@+id/action_dashboardCategoryBoldPOS_to_dineInOrderTable"
             app:destination="@id/dineInOrderTable"
