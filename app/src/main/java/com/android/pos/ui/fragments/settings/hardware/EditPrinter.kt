@@ -62,7 +62,7 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
         arrayAdapter =
             ArrayAdapter(binding.root.context, android.R.layout.simple_spinner_item, list)
         arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        makeEditAableFalse()
+        //makeEditAableFalse()
         observeShowProgress()
         updateDate()
         getOrderTypes()
