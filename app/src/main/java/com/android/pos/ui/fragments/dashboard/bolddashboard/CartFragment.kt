@@ -944,7 +944,7 @@ class CartFragment(
 
                 }
 
-                prefProvider.setValue(REDIRECT_FROM, "")
+                //prefProvider.setValue(REDIRECT_FROM, "")
             }
 
         } else {
