@@ -126,7 +126,7 @@ class KitchenReceiptSettings : Fragment(), CompoundButton.OnCheckedChangeListene
             }
 
             setTextSize(it.fonts)
-            binding.swtShowCategory.isChecked = it.showCategory
+            //binding.swtShowCategory.isChecked = it.showCategory
             binding.swtSameGrpItem.isChecked = it.showItemsInGroup
             binding.swtTeamMember.isChecked = it.showTeamMember
             binding.swtOrderNote.isChecked = it.showOrderNote
@@ -135,11 +135,11 @@ class KitchenReceiptSettings : Fragment(), CompoundButton.OnCheckedChangeListene
             binding.swtPhone.isChecked = it.showCustomerPhone
             binding.swtAddress.isChecked = it.showCustomerAddress
 
-            if (it.showCategory) {
+            /*if (it.showCategory) {
                 binding.txtSoup.visibility = View.VISIBLE
             } else {
                 binding.txtSoup.visibility = View.GONE
-            }
+            }*/
             if (it.showCustomerName) {
                 binding.txtName.visibility = View.VISIBLE
             } else {
@@ -203,13 +203,13 @@ class KitchenReceiptSettings : Fragment(), CompoundButton.OnCheckedChangeListene
 
     private fun onChecked() {
 
-        binding.swtShowCategory.setOnCheckedChangeListener { buttonView, isChecked ->
+        /*binding.swtShowCategory.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
                 binding.txtSoup.visibility = View.VISIBLE
             } else {
                 binding.txtSoup.visibility = View.GONE
             }
-        }
+        }*/
 
         binding.swtOrderNote.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
@@ -279,7 +279,7 @@ class KitchenReceiptSettings : Fragment(), CompoundButton.OnCheckedChangeListene
                     model.font = LARGE
                 }
             }
-            model.show_category = binding.swtShowCategory.isChecked
+            //model.show_category = binding.swtShowCategory.isChecked
             model.show_items_in_group = binding.swtSameGrpItem.isChecked
             model.show_team_member = binding.swtTeamMember.isChecked
             model.show_order_note = binding.swtOrderNote.isChecked
