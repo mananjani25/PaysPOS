@@ -1,5 +1,6 @@
 package com.android.pos.ui.fragments.settings.hardware.printer
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -33,11 +34,17 @@ class PrinterViewModel @Inject constructor(
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
 
+    private val _printerQueueDelete = MutableLiveData<Event<String>>()
+    val printerQueueDeleteScenario:LiveData<Event<String>> = _printerQueueDelete
+
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
     private var _delete = MutableLiveData<Event<String>>()
     val deletePrinter: LiveData<Event<String>> = _delete
+
+    private var _printerCreated = MutableLiveData<Event<PrinterResponse.Data>>()
+    val printerCreatedSucces:LiveData<Event<PrinterResponse.Data>> = _printerCreated
 
     private var _update = MutableLiveData<Event<String>>()
     val updatePrinter: LiveData<Event<String>> = _update
@@ -175,6 +182,8 @@ class PrinterViewModel @Inject constructor(
                 }
                 Status.ERROR -> {
                     _snackbarText.value = Event(resource.message)
+                    Log.e("checkPrinterQueueDelete","messageResource   ${resource.message.toString()}")
+                    _printerQueueDelete.value = Event(resource.message.toString())
                     _showProgress.value = Event(false)
 
                 }
@@ -210,6 +219,9 @@ class PrinterViewModel @Inject constructor(
                 }
                 Status.SUCCESS -> {
                     _showProgress.value = Event(false)
+                    resource.data?.data?.let {
+                        _printerCreated.value = Event(it)
+                    }
                     printerList()
 
                 }

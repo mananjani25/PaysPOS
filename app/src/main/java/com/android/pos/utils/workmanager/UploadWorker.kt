@@ -162,7 +162,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
 
                 LogUtil.logE(TAG, "onActionCableStarts")
-                connectActionCable()
+               connectActionCable()
 
             }
             return Result.success()
@@ -514,6 +514,20 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                                 )
 
                             } catch (e: Epos2Exception) {
+                                try {
+                                    printer1.disconnect()
+                                    printer1.connect("TCP:" + dataList.get(i).asJsonObject.get("mac_address").asString,
+                                        Printer.PARAM_DEFAULT)
+                                }catch (e:Exception){
+                                    try{
+                                        printer1.connect("TCP:" + dataList.get(i).asJsonObject.get("mac_address").asString,
+                                            Printer.PARAM_DEFAULT)
+                                    }
+                                    catch (e:java.lang.Exception){
+                                        e.printStackTrace()
+                                    }
+                                    e.printStackTrace()
+                                }
                                 var errorCode = e.errorStatus
 
                                 // Log.e(TAG, "errorCode:  ${errorCode}")
@@ -2559,7 +2573,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
 
 
-        if (p1 >= 0 && p0?.status?.online == 1) {
+        if (p1 >= 0 ) {
             p0?.clearCommandBuffer()
             try {
 

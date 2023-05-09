@@ -34,7 +34,8 @@
             android:textColor="@color/txtColor"
             android:textSize="@dimen/text_size_large" />
 
-        <ImageView
+
+        <TextView
             android:id="@+id/imgSync"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -43,10 +44,26 @@
             android:layout_toStartOf="@+id/txtSave"
             android:background="?attr/selectableItemBackground"
             android:padding="@dimen/_6sdp"
-            android:src="@drawable/ic_baseline_sync_24"
+            android:textColor="@color/btnColorDark"
+            android:textSize="@dimen/_7mdpi"
+            android:fontFamily="@font/sf_pro_display_semibold"
             android:visibility="gone"
-            app:tint="@color/txt_color_blue" />
+            android:text="FIND PRINTERS"/>
 
+
+        <!-- <ImageView
+             android:id="@+id/imgSync"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:layout_centerVertical="true"
+             android:layout_marginEnd="@dimen/_20sdp"
+             android:layout_toStartOf="@+id/txtSave"
+             android:background="?attr/selectableItemBackground"
+             android:padding="@dimen/_6sdp"
+             android:src="@drawable/ic_baseline_sync_24"
+             android:visibility="gone"
+             app:tint="@color/txt_color_blue" />
+ -->
         <TextView
             android:id="@+id/txtLogout"
             android:layout_width="wrap_content"

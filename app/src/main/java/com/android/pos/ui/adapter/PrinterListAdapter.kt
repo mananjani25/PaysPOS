@@ -121,12 +121,18 @@ class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>
     }
 
 
+    fun getList():List<PrinterListModel>{
+        return list
+    }
+
 
 
 
     @SuppressLint("NotifyDataSetChanged")
     fun addItem(model: PrinterListModel) {
         list.add(model)
+         notifyItemRangeInserted(0,list.size)
+
         notifyDataSetChanged()
 
     }
