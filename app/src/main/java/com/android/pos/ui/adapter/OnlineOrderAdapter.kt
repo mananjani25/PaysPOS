@@ -182,7 +182,7 @@ class OnlineOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
             }
             binding.root.setOnClickListener {
 
-                val item = filterList[bindingAdapterPosition]
+                val item = filterList[position]
 
                 if (item.isCheck) {
                     item.isCheck = false
