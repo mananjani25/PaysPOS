@@ -2867,7 +2867,7 @@ fun addOrderItemForDineInInner(
             val modifierObj = obj.modifiers.get(j)
 
 
-            PrintSunmiUtils.normalTextTest(
+            PrintSunmiUtils.normalText(
                 padLineCustomerItem(
                     if (modifierObj.modifier_quantity == 1){"     " + getItemNameToShow(modifierObj.name)}else{"  "+modifierObj.modifier_quantity+"x " + getItemNameToShow(modifierObj.name)},
                     getModifierItemPriceToShow(modifierObj.price, modifierObj.itemQuantity),
