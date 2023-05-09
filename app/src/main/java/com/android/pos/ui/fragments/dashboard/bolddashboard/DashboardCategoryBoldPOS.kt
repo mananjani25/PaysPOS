@@ -3643,68 +3643,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.FoundSunmiPrinter) {
 
             LogUtil.logE("SunmiPrintHelper", "FoundSunmiPrinter")
-
-            if (!BluetoothUtil.isBlueToothPrinter) {
-
-                LogUtil.logE("SunmiPrintHelper", "isBlueToothPrinter")
-                SunmiPrintHelper.getInstance().initPrinter()
-                SunmiPrintHelper.getInstance().setAlign(1)
-                SunmiPrintHelper.getInstance().lineWrap(2)
-                SunmiPrintHelper.getInstance()
-                    .printText("Test Print", 30F, true, false, "test1.ttf")
-                SunmiPrintHelper.getInstance().lineWrap(1)
-
-
-
-                SunmiPrintHelper.getInstance().setAlign(1)
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    SunmiPrintHelper.getInstance().printText(
-                        Constants.getCurrentTimeFromTimeZone(
-                            requireContext(),
-                            MethodUtils.formatted()
-                        ),
-                        30F,
-                        true,
-                        false,
-                        "test1.ttf"
-                    )
-                }
-                SunmiPrintHelper.getInstance().lineWrap(2)
-                LogUtil.logE(TAG, "Here Drawer Code")
-                PrintSunmiUtils.cutPaperInner()
-                if (woyouService != null) {
-                    //   woyouService!!.sendRAWData(byteArrayOf(0x1B, 0x45, 0x01), this)
-                } else {
-                    val aa = ByteArray(5)
-
-                    aa[0] = 0x10
-                    aa[1] = 0x14
-                    aa[2] = 0x00
-                    aa[3] = 0x00
-                    aa[4] = 0x00
-
-
-                    try {
-                        SunmiPrinterApi.getInstance().sendRawData(aa)
-                    } catch (e: java.lang.Exception) {
-                        e.printStackTrace()
-                    }
-                    /*  try {
-                          SunmiPrintHelper.getInstance().openCashBox()
-                      } catch (e: java.lang.Exception) {
-                          e.printStackTrace()
-                      }*/
-
-                }
-
-
-            } else {
-
-                LogUtil.logE("SunmiPrintHelper", "isBlueToothPrinter")
-
-
-                printByBluTooth("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
-            }
+            //CALL UPDATE PRINTER STATUS API
 
         } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.CheckSunmiPrinter) {
             handler.postDelayed({ setService() }, 2000)
