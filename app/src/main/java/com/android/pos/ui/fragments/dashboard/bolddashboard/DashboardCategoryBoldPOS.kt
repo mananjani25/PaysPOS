@@ -58,6 +58,7 @@ import com.android.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.ui.fragments.payment.PaymentViewModel
 import com.android.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
+import com.android.pos.ui.fragments.settings.hardware.printer.ESCUtil
 import com.android.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.android.pos.ui.fragments.settings.servicecharge.ServiceChargeListViewModel
 import com.android.pos.utils.*
@@ -85,6 +86,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.io.IOException
 import java.util.*
 import javax.inject.Inject
 
@@ -118,6 +120,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     lateinit var cashDiscountModel: CashDiscountModel
     private var orderFloorDetails: GetOrderDetailsResponse.Data.FloorPlanTable =
         GetOrderDetailsResponse.Data.FloorPlanTable()
+    var handler = Handler()
 
     @Inject
     lateinit var rolePermission: RolePermission
@@ -3625,6 +3628,113 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             salt.append(SALTCHARS[index])
         }
         return salt.toString()
+    }
+
+    private fun autoConnectToInnerPrinter() {
+        sunmiInnerPrinter()
+    }
+
+    private fun sunmiInnerPrinter() {
+        SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
+        setService()
+    }
+
+    private fun setService() {
+        if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.FoundSunmiPrinter) {
+
+            LogUtil.logE("SunmiPrintHelper", "FoundSunmiPrinter")
+
+            if (!BluetoothUtil.isBlueToothPrinter) {
+
+                LogUtil.logE("SunmiPrintHelper", "isBlueToothPrinter")
+                SunmiPrintHelper.getInstance().initPrinter()
+                SunmiPrintHelper.getInstance().setAlign(1)
+                SunmiPrintHelper.getInstance().lineWrap(2)
+                SunmiPrintHelper.getInstance()
+                    .printText("Test Print", 30F, true, false, "test1.ttf")
+                SunmiPrintHelper.getInstance().lineWrap(1)
+
+
+
+                SunmiPrintHelper.getInstance().setAlign(1)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    SunmiPrintHelper.getInstance().printText(
+                        Constants.getCurrentTimeFromTimeZone(
+                            requireContext(),
+                            MethodUtils.formatted()
+                        ),
+                        30F,
+                        true,
+                        false,
+                        "test1.ttf"
+                    )
+                }
+                SunmiPrintHelper.getInstance().lineWrap(2)
+                LogUtil.logE(TAG, "Here Drawer Code")
+                PrintSunmiUtils.cutPaperInner()
+                if (woyouService != null) {
+                    //   woyouService!!.sendRAWData(byteArrayOf(0x1B, 0x45, 0x01), this)
+                } else {
+                    val aa = ByteArray(5)
+
+                    aa[0] = 0x10
+                    aa[1] = 0x14
+                    aa[2] = 0x00
+                    aa[3] = 0x00
+                    aa[4] = 0x00
+
+
+                    try {
+                        SunmiPrinterApi.getInstance().sendRawData(aa)
+                    } catch (e: java.lang.Exception) {
+                        e.printStackTrace()
+                    }
+                    /*  try {
+                          SunmiPrintHelper.getInstance().openCashBox()
+                      } catch (e: java.lang.Exception) {
+                          e.printStackTrace()
+                      }*/
+
+                }
+
+
+            } else {
+
+                LogUtil.logE("SunmiPrintHelper", "isBlueToothPrinter")
+
+
+                printByBluTooth("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+            }
+
+        } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.CheckSunmiPrinter) {
+            handler.postDelayed({ setService() }, 2000)
+            LogUtil.logE("SunmiPrintHelper", "CheckSunmiPrinter")
+        } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.LostSunmiPrinter) {
+
+            LogUtil.logE("SunmiPrintHelper", "LostSunmiPrinter")
+        } else {
+            LogUtil.logE("SunmiPrintHelper", "ELSE")
+        }
+    }
+
+    private fun printByBluTooth(content: String) {
+        try {
+            if (true) {
+                BluetoothUtil.sendData(ESCUtil.boldOn())
+            } else {
+                BluetoothUtil.sendData(ESCUtil.boldOff())
+            }
+            if (true) {
+                BluetoothUtil.sendData(ESCUtil.underlineWithOneDotWidthOn())
+            } else {
+                BluetoothUtil.sendData(ESCUtil.underlineOff())
+            }
+
+            BluetoothUtil.sendData(content.toByteArray(charset("GB18030")))
+            BluetoothUtil.sendData(ESCUtil.nextLine(3))
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
     }
 
 }
