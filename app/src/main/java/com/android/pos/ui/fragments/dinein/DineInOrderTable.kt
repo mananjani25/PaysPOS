@@ -18,6 +18,7 @@ import android.util.Log
 import android.view.*
 import android.widget.CheckBox
 import android.widget.PopupWindow
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.constraintlayout.widget.Group
@@ -217,6 +218,19 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         }
 
         //showStaticLoader()
+
+        val callback: OnBackPressedCallback =
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    prefProvider.setValue(ORDER_TYPE, "")
+                    prefProvider.setValue(ORDER_TYPE_NAME, "")
+                    dashboardViewModel.cartModel = null
+                    findNavController().navigate(R.id.action_dineInOrderTable_to_dashboardCategoryNew)
+                }
+
+            }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+
 
         return binding.root
     }
@@ -853,11 +867,13 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         binding.txtHome.setOnClickListener {
             prefProvider.setValue(ORDER_TYPE, "")
             prefProvider.setValue(ORDER_TYPE_NAME, "")
+            dashboardViewModel.cartModel = null
             findNavController().navigate(R.id.action_dineInOrderTable_to_dashboardCategoryNew)
         }
         binding.txtHomeBottom.setOnClickListener {
             prefProvider.setValue(ORDER_TYPE, "")
             prefProvider.setValue(ORDER_TYPE_NAME, "")
+            dashboardViewModel.cartModel = null
             findNavController().navigate(R.id.action_dineInOrderTable_to_dashboardCategoryNew)
         }
 
