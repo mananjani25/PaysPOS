@@ -187,7 +187,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         if (this::presentation.isInitialized) {
             presentation.show()
             presentation.onDisplayChanged()
-            presentation.showSurcharge(true)
+            //presentation.showSurcharge(true)
             //presentation.showWouldYouLikeToAddTipScreen(tipListViewModel,WholetotalPrice)
         }
     }
@@ -1264,12 +1264,16 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             binding.tvCash0,
             getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount
         )
-        binding.tvCash.text = "Cash (" + binding.tvCash.text + ")"
         Log.e(TAG, "WholetotalPrice:   ${WholetotalPrice}")
         MethodUtils.setPriceTextView(
             binding.tvCard,
             getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectCount
         )
+        if (this::presentation.isInitialized) {
+            presentation.show()
+            presentation.updateTotals(binding.tvCash.text.toString(),binding.tvCard.text.toString())
+        }
+        binding.tvCash.text = "Cash (" + binding.tvCash.text + ")"
         binding.tvCard.text = "Card (" + binding.tvCard.text + ")"
     }
 
@@ -1290,6 +1294,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 binding.tvCard,
                 getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectedCount
             )
+            if (this::presentation.isInitialized) {
+                presentation.show()
+                presentation.updateTotals(binding.tvCash.text.toString(),binding.tvCard.text.toString())
+            }
             binding.tvCash.text = "Cash (" + binding.tvCash.text + ")"
             binding.tvCard.text = "Card (" + binding.tvCard.text + ")"
             MethodUtils.setPriceTextViewDown(
@@ -1316,6 +1324,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 binding.tvCard,
                 (getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectedCount) + tipAmount
             )
+            if (this::presentation.isInitialized) {
+                presentation.show()
+                presentation.updateTotals(binding.tvCash.text.toString(),binding.tvCard.text.toString())
+            }
             binding.tvCash.text =
                 "Cash (" + binding.tvCash.text + ")"
             binding.tvtipcash?.visible()

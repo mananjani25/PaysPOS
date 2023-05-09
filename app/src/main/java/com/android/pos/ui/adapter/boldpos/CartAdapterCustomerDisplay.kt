@@ -9,6 +9,7 @@ import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.ViewItemCartCustomerDisplayBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.CartItemModifierAdapter
+import com.android.pos.ui.adapter.CartItemModifierAdapterForCustomerDisplay
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.callback.MyCallback
@@ -105,7 +106,7 @@ class CartAdapterCustomerDisplay : RecyclerView.Adapter<CartAdapterCustomerDispl
 
             if (item.modifiers.isNotEmpty()) {
                 binding.rvModifiers.visibility = View.VISIBLE
-                val adapter = CartItemModifierAdapter()
+                val adapter = CartItemModifierAdapterForCustomerDisplay()
                 binding.rvModifiers.adapter = adapter
                 LogUtil.logE(TAG, "dineinMod  ${Gson().toJson(item.modifiers)}")
                 adapter.addAll(item.modifiers)

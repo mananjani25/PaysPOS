@@ -949,7 +949,7 @@ class CartFragment(
 
                 }
 
-                prefProvider.setValue(REDIRECT_FROM, "")
+                //prefProvider.setValue(REDIRECT_FROM, "")
             }
 
         } else {
@@ -976,16 +976,6 @@ class CartFragment(
                         } else {
                             Log.e("mAllWordsFlow", currentTimeMillis.toString())
                             return@observe
-                        }
-                    }
-
-                    if (this::presentation.isInitialized) {
-                        if (!presentation.isShowing)
-                            presentation.show()
-                        if (it.isNotEmpty()) {
-                            presentation.updateCustomerDisplay(it)
-                        } else {
-                            presentation.onLogOutOrClockOutWithApiService(apiService)
                         }
                     }
 
@@ -1488,6 +1478,16 @@ class CartFragment(
 
                         }
 
+                    }
+
+                    if (this::presentation.isInitialized) {
+                        if (!presentation.isShowing)
+                            presentation.show()
+                        if (it.isNotEmpty()) {
+                            presentation.updateCustomerDisplay(it)
+                        } else {
+                            presentation.onLogOutOrClockOutWithApiService(apiService)
+                        }
                     }
 
                     if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
