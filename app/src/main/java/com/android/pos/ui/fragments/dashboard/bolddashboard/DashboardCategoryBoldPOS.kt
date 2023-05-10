@@ -28,6 +28,7 @@ import com.android.pos.aidl.ICallback
 import com.android.pos.aidl.IWoyouService
 import com.android.pos.data.entities.*
 import com.android.pos.data.model.DineInModel
+import com.android.pos.data.model.requestModel.CreatePrinterRequestModel
 import com.android.pos.data.model.requestModel.CreateQueuePrinterRequestModel
 import com.android.pos.data.model.requestModel.OrderAttributeRequestModel
 import com.android.pos.data.model.responseModel.*
@@ -59,6 +60,7 @@ import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.ui.fragments.payment.PaymentViewModel
 import com.android.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
 import com.android.pos.ui.fragments.settings.hardware.printer.ESCUtil
+import com.android.pos.ui.fragments.settings.hardware.printer.PrinterViewModel
 import com.android.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.android.pos.ui.fragments.settings.servicecharge.ServiceChargeListViewModel
 import com.android.pos.utils.*
@@ -103,6 +105,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
     private val viewModelPayment by activityViewModels<PaymentViewModel>()
     private val passcodeViewModel by activityViewModels<PasscodeViewModel>()
+    private val printerViewModel by viewModels<PrinterViewModel>()
     private var serviceChargesList: ArrayList<TbServiceCharge>? = null
     private var serviceChargesObserve: Observer<Resource<List<TbServiceCharge>>>? = null
     private var orderTypeObserver: Observer<Resource<List<TbOrderType>>>? = null
@@ -229,6 +232,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
         checkDineInEditOrder()
         printerProgress()
+        observeShowProgress()
         getwebOrderingCountObserver()
         getDineInData()
         checkSearch()
@@ -643,6 +647,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         if (!sync) {
             ProgressUtils.showProgressDialog(requireActivity())
             viewModel.syncInventoryModule(false)
+            autoConnectToInnerPrinter()
             //binding.maskLayout?.visible()
             //hideLoaderAfterDelay()
         } else {
@@ -3380,6 +3385,19 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         }
     }
 
+    private fun observeShowProgress() {
+
+        printerViewModel.showProgress.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it) {
+                    ProgressUtils.showProgressDialog(requireActivity())
+                } else {
+                    ProgressUtils.dismissProgressDialog()
+                }
+            }
+        }
+    }
+
     private fun observeQueueCreate() {
         viewModelPayment.queueStartSaveOrder.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
@@ -3631,29 +3649,63 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     }
 
     private fun autoConnectToInnerPrinter() {
+        Log.d("BIS-626", "autoConnectToInnerPrinter: CALLED")
         sunmiInnerPrinter()
     }
 
     private fun sunmiInnerPrinter() {
+        Log.d("BIS-626", "sunmiInnerPrinter: CALLED")
         SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
         setService()
     }
 
     private fun setService() {
+        Log.d("BIS-626", "setService: CALLED")
         if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.FoundSunmiPrinter) {
 
-            LogUtil.logE("SunmiPrintHelper", "FoundSunmiPrinter")
-            //CALL UPDATE PRINTER STATUS API
+            Log.d("BIS-626", "FoundSunmiPrinter: CALLED")
+            setupInnerPrinterAttributes()
 
         } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.CheckSunmiPrinter) {
             handler.postDelayed({ setService() }, 2000)
-            LogUtil.logE("SunmiPrintHelper", "CheckSunmiPrinter")
+            Log.d("BIS-626", "CheckSunmiPrinter: CALLED")
         } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.LostSunmiPrinter) {
 
-            LogUtil.logE("SunmiPrintHelper", "LostSunmiPrinter")
+            Log.d("BIS-626", "LostSunmiPrinter: CALLED")
         } else {
-            LogUtil.logE("SunmiPrintHelper", "ELSE")
+            Log.d("BIS-626", "ELSE SunmiPrinter: CALLED")
         }
+    }
+
+    private fun setupInnerPrinterAttributes() {
+        Log.d("BIS-626", "setupInnerPrinterAttributes: CALLED")
+        val list: ArrayList<CreatePrinterRequestModel.PrinterSettingsAttributes> = arrayListOf()
+        for (i in 0 until ordertypelist.size) {
+            list.add(
+                CreatePrinterRequestModel.PrinterSettingsAttributes(
+                    printType = Constants.CUSTOMER,
+                    orderTypeId = ordertypelist.get(i).id
+                )
+            )
+
+        }
+
+        val createPrinter = CreatePrinterRequestModel(
+            name = "printerListModel.printerName",
+            terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, 0),
+            macAddress = "printerListModel.deviceModel?.macAddress",
+            modalName = "printerListModel.deviceModel?.printerName",
+            terminalIds = listOf(prefProvider.getValueInt(Constants.TERMINAL_ID, 1)),
+            status = true,
+            locationId = prefProvider.getValueInt(Constants.LOCATION_ID, 1),
+            receiptPrintType = Constants.CUSTOMER,
+            printer_type = "printerListModel.connectionType",
+            ip_address = "printerListModel.deviceModel?.ipAddress",
+            printerSettingsAttributes = list
+
+        )
+
+        //printerViewModel.createPrinter(createPrinter)
     }
 
     private fun printByBluTooth(content: String) {
