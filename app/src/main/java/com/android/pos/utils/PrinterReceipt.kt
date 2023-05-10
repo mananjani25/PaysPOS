@@ -2754,7 +2754,7 @@ fun addOrderItemForDineIn(
                 Builder.FALSE,
                 Builder.COLOR_1
             )
-            builder.addTextPosition(4)
+            //builder.addTextPosition(4)
             builder.addText(
                 padLineCustomerItem(
                     "   " + getItemNameToShow(modifierObj.name),
@@ -3168,7 +3168,7 @@ fun addOrderItemsTransaction(
                     Builder.FALSE,
                     Builder.COLOR_1
                 )
-                builder.addTextPosition(4)
+                //builder.addTextPosition(4)
                 builder.addText(
                     padLineCustomerItem(
                         "   " + getItemNameToShow(modifierObj.name),
