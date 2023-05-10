@@ -1,6 +1,8 @@
 package com.android.pos.ui.fragments.dashboard.bolddashboard
 
-import android.app.Activity
+import android.annotation.SuppressLint
+import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothDevice
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -20,7 +22,6 @@ import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.*
 import androidx.lifecycle.Observer
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.android.pos.MainApplication
 import com.android.pos.R
@@ -28,12 +29,14 @@ import com.android.pos.aidl.ICallback
 import com.android.pos.aidl.IWoyouService
 import com.android.pos.data.entities.*
 import com.android.pos.data.model.DineInModel
+import com.android.pos.data.model.PrinterListModel
 import com.android.pos.data.model.requestModel.CreatePrinterRequestModel
 import com.android.pos.data.model.requestModel.CreateQueuePrinterRequestModel
 import com.android.pos.data.model.requestModel.OrderAttributeRequestModel
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.CUSTOMER
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
 import com.android.pos.data.remote.Constants.IS_PAYMENT_SCREEN
@@ -77,6 +80,8 @@ import com.android.pos.utils.statusUtils.Status
 import com.epson.epos2.printer.Printer
 import com.epson.eposprint.Builder
 import com.epson.eposprint.Print
+import com.epson.epsonio.DevType
+import com.epson.epsonio.DeviceInfo
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.sunmi.externalprinterlibrary.api.ConnectCallback
@@ -96,6 +101,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     ScannerAppEngine.IScannerAppEngineDevEventsDelegate, ICallback, DineInOrderCallBack {
+    private var mBluetoothAdapter: BluetoothAdapter? = null
     private val mHandler = Handler(Looper.myLooper()!!)
     private lateinit var presentation: CustomDisplay
     private var dineInList: List<DineInModel>? = null
@@ -647,7 +653,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         if (!sync) {
             ProgressUtils.showProgressDialog(requireActivity())
             viewModel.syncInventoryModule(false)
-            autoConnectToInnerPrinter()
+            getConnectedPrinters()
             //binding.maskLayout?.visible()
             //hideLoaderAfterDelay()
         } else {
@@ -3648,37 +3654,83 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         return salt.toString()
     }
 
-    private fun autoConnectToInnerPrinter() {
-        Log.d("BIS-626", "autoConnectToInnerPrinter: CALLED")
-        sunmiInnerPrinter()
-    }
+    private fun getConnectedPrinters() {
 
-    private fun sunmiInnerPrinter() {
-        Log.d("BIS-626", "sunmiInnerPrinter: CALLED")
-        SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
-        setService()
-    }
+        printerViewModel.printerList().observe(viewLifecycleOwner) {
+            when (it.status) {
 
-    private fun setService() {
-        Log.d("BIS-626", "setService: CALLED")
-        if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.FoundSunmiPrinter) {
+                Status.SUCCESS -> {
+                    ProgressUtils.dismissProgressDialog()
 
-            Log.d("BIS-626", "FoundSunmiPrinter: CALLED")
-            setupInnerPrinterAttributes()
+                    val data = it.data
+                    LogUtil.logE(TAG, "getConnectedPrinters:  ${Gson().toJson(data)}")
 
-        } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.CheckSunmiPrinter) {
-            handler.postDelayed({ setService() }, 2000)
-            Log.d("BIS-626", "CheckSunmiPrinter: CALLED")
-        } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.LostSunmiPrinter) {
+                    if (data?.isNotEmpty() == true) {
+                        var isInnerPrinterConnected = false
+                        for (i in data.indices) {
+                            if (data[i].name.startsWith("InnerPrinter", true) && data[i].receiptPrintType.equals(
+                                    CUSTOMER)) {
+                                isInnerPrinterConnected = true
+                            }
+                        }
+                        if (!isInnerPrinterConnected) {
+                            searchBluetooth()
+                        }
 
-            Log.d("BIS-626", "LostSunmiPrinter: CALLED")
-        } else {
-            Log.d("BIS-626", "ELSE SunmiPrinter: CALLED")
+                    } else {
+                        searchBluetooth()
+                    }
+
+                }
+
+                Status.ERROR -> {
+                    LogUtil.logE(TAG, "getConnectedPrinters - ${it.message}")
+                    ProgressUtils.dismissProgressDialog()
+
+                }
+
+                Status.LOADING -> {
+                    ProgressUtils.showProgressDialog(requireActivity())
+                }
+            }
+
         }
     }
 
-    private fun setupInnerPrinterAttributes() {
-        Log.d("BIS-626", "setupInnerPrinterAttributes: CALLED")
+    @SuppressLint("MissingPermission")
+    private fun searchBluetooth() {
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
+        if (mBluetoothAdapter?.isEnabled == true) {
+
+            val availableDevices: Set<BluetoothDevice> = mBluetoothAdapter!!.bondedDevices
+            var innerPrinterModel = PrinterListModel()
+            for (i in availableDevices) {
+
+                if(i.name.startsWith("InnerPrinter",true)){
+                    innerPrinterModel = PrinterListModel(
+                        printerName = i.name,
+                        connectionType = Constants.BLUETOOTH,
+                        deviceModel = DeviceInfo(
+                            DevType.BLUETOOTH,
+                            i.address,
+                            i.name,
+                            i.address,
+                            i.address
+                        ),
+                        type = Constants.AVAILABLE,
+                        uuid = UUID.randomUUID()
+                    )
+                }
+
+            }
+
+            setupInnerPrinterAttributes(innerPrinterModel)
+
+
+        }
+    }
+
+    private fun setupInnerPrinterAttributes(innerPrinterModel: PrinterListModel) {
         val list: ArrayList<CreatePrinterRequestModel.PrinterSettingsAttributes> = arrayListOf()
         for (i in 0 until ordertypelist.size) {
             list.add(
@@ -3691,21 +3743,20 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         }
 
         val createPrinter = CreatePrinterRequestModel(
-            name = "printerListModel.printerName",
+            name = innerPrinterModel.printerName,
             terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, 0),
-            macAddress = "printerListModel.deviceModel?.macAddress",
-            modalName = "printerListModel.deviceModel?.printerName",
+            macAddress = innerPrinterModel.deviceModel?.macAddress,
+            modalName = innerPrinterModel.deviceModel?.printerName,
             terminalIds = listOf(prefProvider.getValueInt(Constants.TERMINAL_ID, 1)),
             status = true,
             locationId = prefProvider.getValueInt(Constants.LOCATION_ID, 1),
             receiptPrintType = Constants.CUSTOMER,
-            printer_type = "printerListModel.connectionType",
-            ip_address = "printerListModel.deviceModel?.ipAddress",
+            printer_type = innerPrinterModel.connectionType,
+            ip_address = innerPrinterModel.deviceModel?.ipAddress,
             printerSettingsAttributes = list
 
         )
-
-        //printerViewModel.createPrinter(createPrinter)
+        printerViewModel.createPrinter(createPrinter)
     }
 
     private fun printByBluTooth(content: String) {
