@@ -477,6 +477,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                                         PrinterListModel(
                                             id = customerData[i].id,
                                             printerName = customerData[i].name,
+                                            modelName = customerData[i].modalName,
                                             connectionType = if (customerData[i].printer_type == BLUETOOTH) {
                                                 BLUETOOTH
                                             } else {
@@ -484,7 +485,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                                             },
                                             isActive = customerData[i].status,
                                             type = customerData[i].receiptPrintType,
-                                            DeviceInfo(
+                                            deviceModel = DeviceInfo(
                                                 if (customerData[i].printer_type == BLUETOOTH) {
                                                     DevType.BLUETOOTH
                                                 } else {
@@ -507,6 +508,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                                         PrinterListModel(
                                             id = customerData[i].id,
                                             printerName = customerData[i].name,
+                                            modelName = customerData[i].modalName,
                                             connectionType = if (customerData[i].printer_type == BLUETOOTH) {
                                                 BLUETOOTH
                                             } else {
@@ -514,7 +516,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                                             },
                                             isActive = customerData[i].status,
                                             type = customerData[i].receiptPrintType,
-                                            DeviceInfo(
+                                            deviceModel = DeviceInfo(
                                                 if (customerData[i].printer_type == BLUETOOTH) {
                                                     DevType.BLUETOOTH
                                                 } else {
@@ -608,6 +610,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                                         PrinterListModel(
                                             id = kitchenData[i].id,
                                             printerName = kitchenData[i].name,
+                                            modelName = kitchenData[i].modalName,
                                             connectionType = if (kitchenData[i].printer_type == BLUETOOTH) {
                                                 BLUETOOTH
                                             } else {
@@ -615,7 +618,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                                             },
                                             isActive = kitchenData[i].status,
                                             type = kitchenData[i].receiptPrintType,
-                                            DeviceInfo(
+                                            deviceModel = DeviceInfo(
                                                 if (kitchenData[i].printer_type == BLUETOOTH) {
                                                     DevType.BLUETOOTH
                                                 } else {
@@ -639,6 +642,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
                                             id = kitchenData[i].id,
                                             printerName = kitchenData[i].name,
+                                            modelName = kitchenData[i].modalName,
                                             connectionType = if (kitchenData[i].printer_type == BLUETOOTH) {
                                                 BLUETOOTH
                                             } else {
@@ -646,7 +650,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                                             },
                                             isActive = kitchenData[i].status,
                                             type = kitchenData[i].receiptPrintType,
-                                            DeviceInfo(
+                                            deviceModel = DeviceInfo(
                                                 if (kitchenData[i].printer_type == BLUETOOTH) {
                                                     DevType.BLUETOOTH
                                                 } else {

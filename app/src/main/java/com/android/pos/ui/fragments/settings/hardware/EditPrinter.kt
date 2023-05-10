@@ -280,7 +280,7 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
     }
 
     private fun setPrinterData() {
-        binding.txtPrinterName.setText(printerModel?.printerName)
+        binding.txtPrinterName.setText(printerModel?.modelName)
         binding.txtMacAddress.setText(printerModel?.deviceModel?.macAddress)
         binding.txtPrntType.setText(printerModel?.type)
         binding.txtPrntModel.setText(printerModel?.deviceModel?.deviceName)

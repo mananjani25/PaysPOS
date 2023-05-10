@@ -5,13 +5,14 @@ import android.os.Parcelable
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants.CUSTOMER
 import com.epson.epsonio.DeviceInfo
-import java.util.*
+import java.util.UUID
 
 
 data class PrinterListModel(
     val id: Int? = null,
     var printerName: String? = null,
     var connectionType: String? = null,
+    var modelName:String?= null,
     var isActive: Boolean = false,
     var type: String = CUSTOMER,
     var deviceModel: DeviceInfo? = null,
@@ -22,6 +23,7 @@ data class PrinterListModel(
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readValue(Int::class.java.classLoader) as? Int,
+        parcel.readString(),
         parcel.readString(),
         parcel.readString(),
         parcel.readByte() != 0.toByte(),
