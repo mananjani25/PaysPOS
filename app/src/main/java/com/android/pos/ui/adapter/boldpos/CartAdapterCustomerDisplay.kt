@@ -14,6 +14,7 @@ import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.callback.MyCallback
 import com.android.pos.utils.extensions.gone
+import com.android.pos.utils.extensions.strike
 import com.android.pos.utils.extensions.visible
 import com.google.gson.Gson
 
@@ -77,8 +78,14 @@ class CartAdapterCustomerDisplay : RecyclerView.Adapter<CartAdapterCustomerDispl
             }
 
             if (item.discountPrice != 0.0) {
-                binding.tvDiscountRate.visibility = View.VISIBLE
-                //binding.txtTotalPrice.strike = true
+                binding.lnrDiscountRates?.visibility = View.VISIBLE
+                if (MethodUtils.isEnableCashDiscount(itemView.context)) {
+                    binding.txtCashAmount.strike = true
+                    binding.txtCardAmount.strike = true
+                }else{
+                    binding.txtTotalPrice.strike = true
+                }
+
                 var dPrice = 0.0
                 var total_price_fordiscount = 0.0
                 total_price_fordiscount += item.price * item.itemQuantity
@@ -91,9 +98,7 @@ class CartAdapterCustomerDisplay : RecyclerView.Adapter<CartAdapterCustomerDispl
 
                 MethodUtils.setPriceTextView(binding.tvDiscountRate, dPrice)
             } else {
-                //binding.txtTotalPrice.strike = false
-                binding.tvDiscountRate.text = ""
-                binding.tvDiscountRate.visibility = View.GONE
+                binding.lnrDiscountRates?.visibility = View.GONE
 
             }
 
