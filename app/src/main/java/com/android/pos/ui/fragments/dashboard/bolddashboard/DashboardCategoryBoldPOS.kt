@@ -198,6 +198,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 //        hideSystemUI()
 
         binding = FragmentDashboardCategoryBoldPosBinding.inflate(inflater, container, false)
+        binding.lifecycleOwner = this
         syncData()
         getCustomerDisplay(requireContext())?.let { display ->
             presentation = CustomDisplay(
@@ -245,7 +246,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         observeServiceChargeUpdate()
         observerSyncItemPriceChange()
         prefProvider.setValueboolean(Constants.ORDER_COMPLETED, false)
-        binding.lifecycleOwner = this
+
 
 
         binding.layoutHeader.ivLock.setOnClickListener {
@@ -653,18 +654,19 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         if (!sync) {
             ProgressUtils.showProgressDialog(requireActivity())
             viewModel.syncInventoryModule(false)
-            getConnectedPrinters()
-            //binding.maskLayout?.visible()
-            //hideLoaderAfterDelay()
+            viewModel.syncDone.observe(viewLifecycleOwner) { event ->
+                event.getContentIfNotHandled()?.let {
+                    Log.d(TAG, "syncDataDone: $it")
+                    if (it) {
+                        binding.maskLayout?.gone()
+                        getConnectedPrinters()
+                    } else {
+                        binding.maskLayout?.visible()
+                    }
+                }
+            }
         } else {
             viewModel.getOnlineOrderCount()
-        }
-    }
-
-    private fun hideLoaderAfterDelay() {
-        GlobalScope.launch(Dispatchers.Main) {
-            delay(10000)
-            binding.maskLayout?.gone()
         }
     }
 
@@ -3695,6 +3697,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             }
 
         }
+
     }
 
     @SuppressLint("MissingPermission")
@@ -3735,8 +3738,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         for (i in 0 until ordertypelist.size) {
             list.add(
                 CreatePrinterRequestModel.PrinterSettingsAttributes(
-                    printType = Constants.CUSTOMER,
-                    orderTypeId = ordertypelist.get(i).id
+                    printType = CUSTOMER,
+                    orderTypeId = ordertypelist[i].id,
+                    autoPrinting = true
                 )
             )
 
@@ -3750,7 +3754,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             terminalIds = listOf(prefProvider.getValueInt(Constants.TERMINAL_ID, 1)),
             status = true,
             locationId = prefProvider.getValueInt(Constants.LOCATION_ID, 1),
-            receiptPrintType = Constants.CUSTOMER,
+            receiptPrintType = CUSTOMER,
             printer_type = innerPrinterModel.connectionType,
             ip_address = innerPrinterModel.deviceModel?.ipAddress,
             printerSettingsAttributes = list
