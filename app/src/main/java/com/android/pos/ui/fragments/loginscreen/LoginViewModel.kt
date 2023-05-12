@@ -61,11 +61,9 @@ class LoginViewModel @Inject constructor(
         } else {
             _showProgress.value = Event(true)
 
-            println("terminal id: ${prefProvider.getUniqueId()}")
             val data = HashMap<String, String>()
             data["email"] = loginDetails.value?.emailAddress.toString().trim()
             data["password"] = loginDetails.value?.password.toString().trim()
-            data["terminal_id"] = prefProvider.getUniqueId()
 
 
             viewModelScope.launch {
