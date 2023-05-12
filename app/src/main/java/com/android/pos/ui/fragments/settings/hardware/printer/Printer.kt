@@ -757,7 +757,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                                     i.address
                                 ),
                                 type = AVAILABLE,
-                                uuid = UUID.randomUUID()
+                                uuid = UUID.randomUUID(),
+                                modelName = i.name
 
                             )
                         )
@@ -1001,6 +1002,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                                             deviceList!!.get(i).macAddress
                                         ),
                                         type = AVAILABLE,
+                                        modelName = deviceList!!.get(i).printerName
 
 
                                         )
@@ -1034,6 +1036,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                                         deviceList!!.get(i).macAddress
                                     ),
                                     type = AVAILABLE,
+                                    modelName = deviceList!!.get(i).printerName
 
 
                                     )

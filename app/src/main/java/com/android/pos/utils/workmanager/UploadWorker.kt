@@ -648,6 +648,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                             printerName = it.asJsonObject.get("printer_name").asString,
                             macAddress = it.asJsonObject.get("mac_address").asString,
                             ipAddress = it.asJsonObject.get("ip_address").asString,
+                            modelName = it.asJsonObject.get("modal_name").asString,
                             printerQueueModelList = listofPrinterOrders
 
                         )
@@ -839,6 +840,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                             printerName = it.asJsonObject.get("printer_name").asString,
                             macAddress = it.asJsonObject.get("mac_address").asString,
                             ipAddress = it.asJsonObject.get("ip_address").asString,
+                            modelName = it.asJsonObject.get("modal_name").asString,
                             printerQueueModelList = listofPrinterOrders
 
                         )
