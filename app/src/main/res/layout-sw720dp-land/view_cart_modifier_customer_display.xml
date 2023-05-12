@@ -50,7 +50,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="end"
             android:layout_weight="0.5"
-            android:visibility="invisible"
+            android:visibility="visible"
             android:gravity="end"
             android:text="@{@string/symbole +``+String.format(@string/format,model.price)}"
             android:textColor="@color/color88"
