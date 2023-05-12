@@ -323,6 +323,16 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
             findNavController().popBackStack()
         }
         binding.header.txtSave.setOnClickListener {
+
+            if (binding.txtPrinterName.text.trim().isEmpty()){
+                AlertUtils.showCustomAlertWithListenerWithOK(
+                    requireContext(), "Printer Name can't be empty."
+                ) { _, _ ->
+
+                }
+
+                return@setOnClickListener
+            }
             val listCategories = categoryAdapter.getList()
             var listIds = ArrayList<Int>()
             listCategories.forEach {
@@ -353,9 +363,10 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
                 model.receiptPrintType = type
                 model.locationId = prefProvider.getValueInt(LOCATION_ID, 1)
                 model.terminalIds = listOf(prefProvider.getValueInt(TERMINAL_ID, 0))
-                model.name = binding.txtPrinterName.text.toString()
+                model.modalName = binding.txtPrinterName.text.toString()
                 model.categoryIds = listIds
                 model.terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
+                model.ip_address = printerModel?.deviceModel?.ipAddress
 
                 viewModel.updatePrinter(
                     printerModel?.id!!, model
@@ -371,9 +382,10 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
                 model.receiptPrintType = type
                 model.locationId = prefProvider.getValueInt(LOCATION_ID, 1)
                 model.terminalIds = listOf(prefProvider.getValueInt(TERMINAL_ID, 0))
-                model.name = binding.txtPrinterName.text.toString()
+                model.modalName = binding.txtPrinterName.text.toString()
                 model.categoryIds = listIds
                 model.terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
+                model.ip_address = printerModel?.deviceModel?.ipAddress
 
                 viewModel.updatePrinter(
                     printerModel?.id!!, model
