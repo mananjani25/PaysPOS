@@ -14,6 +14,7 @@ import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.callback.MyCallback
 import com.android.pos.utils.extensions.gone
+import com.android.pos.utils.extensions.strike
 import com.android.pos.utils.extensions.visible
 import com.google.gson.Gson
 
@@ -77,8 +78,7 @@ class CartAdapterCustomerDisplay : RecyclerView.Adapter<CartAdapterCustomerDispl
             }
 
             if (item.discountPrice != 0.0) {
-                binding.tvDiscountRate.visibility = View.VISIBLE
-                //binding.txtTotalPrice.strike = true
+
                 var dPrice = 0.0
                 var total_price_fordiscount = 0.0
                 total_price_fordiscount += item.price * item.itemQuantity
@@ -89,11 +89,49 @@ class CartAdapterCustomerDisplay : RecyclerView.Adapter<CartAdapterCustomerDispl
                 }
                 dPrice = total_price_fordiscount - (item.discountPrice * item.itemQuantity)
 
-                MethodUtils.setPriceTextView(binding.tvDiscountRate, dPrice)
+                binding.lnrDiscountRates?.visibility = View.VISIBLE
+                if (MethodUtils.isEnableCashDiscount(itemView.context)) {
+                    binding.txtCashAmount.strike = true
+                    binding.tvCashDiscountRate?.visible()
+                    binding.txtCardAmount.strike = true
+                    binding.tvCardDiscountRate?.visible()
+
+                    binding.tvDiscountRate.gone()
+
+                    val cashOrSurchargeAmount = MethodUtils.calculateCashDiscount(
+                        dPrice,
+                        prefProvider,
+                        itemView.context
+                    )
+
+                    if (prefProvider.getValue(
+                            Constants.OPTION_TYPE,
+                            "CashDiscount"
+                        ) == "CashDiscount"
+                    ) {
+                        MethodUtils.setPriceTextView(binding.tvCashDiscountRate!!, dPrice - cashOrSurchargeAmount)
+                        MethodUtils.setPriceTextView(binding.tvCardDiscountRate!!, dPrice)
+                    }else{
+                        MethodUtils.setPriceTextView(binding.tvCashDiscountRate!!, dPrice)
+                        MethodUtils.setPriceTextView(binding.tvCardDiscountRate!!, dPrice + cashOrSurchargeAmount)
+                    }
+
+                }else{
+                    binding.txtTotalPrice.strike = true
+                    binding.tvDiscountRate.visible()
+
+                    binding.tvCashDiscountRate?.gone()
+                    binding.tvCardDiscountRate?.gone()
+
+                    MethodUtils.setPriceTextView(binding.tvDiscountRate, dPrice)
+                }
+
+
+
+
+
             } else {
-                //binding.txtTotalPrice.strike = false
-                binding.tvDiscountRate.text = ""
-                binding.tvDiscountRate.visibility = View.GONE
+                binding.lnrDiscountRates?.visibility = View.GONE
 
             }
 
