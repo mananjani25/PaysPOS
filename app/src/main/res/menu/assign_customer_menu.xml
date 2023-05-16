@@ -7,5 +7,9 @@
         android:id="@+id/assign_customer"
         android:title="@string/assign_customer" />
 
+    <item
+        android:id="@+id/remove_guest"
+        android:title="@string/remove_guest" />
+
 
 </menu>

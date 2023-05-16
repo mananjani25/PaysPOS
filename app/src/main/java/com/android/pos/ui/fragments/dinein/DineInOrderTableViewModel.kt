@@ -67,6 +67,9 @@ class DineInOrderTableViewModel @Inject constructor(
     private val _reorderItemsSuccess = MutableLiveData<Event<CreateOrderResponse.Data?>>()
     val reorderItemsSuccess: LiveData<Event<CreateOrderResponse.Data?>> = _reorderItemsSuccess
 
+    val _removeGuestSuccess = MutableLiveData<Event<String>>()
+    var removeGuestSuccess: LiveData<Event<String>> = _removeGuestSuccess
+
     val _guestPayment = MutableLiveData<Event<String>>()
     val onPayment: LiveData<Event<String>> = _guestPayment
 
@@ -252,7 +255,7 @@ class DineInOrderTableViewModel @Inject constructor(
         }
     }
 
-    fun updateOrder(orderId: Int, orderRequestModel: OrderRequestModel, fromReorder: Boolean = false) {
+    fun updateOrder(orderId: Int, orderRequestModel: OrderRequestModel, fromReorder: Boolean = false, message: String = "added") {
         _showProgress.value = Event(true)
 
         viewModelScope.launch {
@@ -261,9 +264,9 @@ class DineInOrderTableViewModel @Inject constructor(
             when (resource.status) {
                 Status.SUCCESS -> {
                     _showProgress.value = Event(false)
-                    if(!fromReorder) {
-                        _updateOrder.value = Event("Guest added successfully.")
-                    }else {
+                    if (!fromReorder) {
+                        _updateOrder.value = Event("Guest $message successfully.")
+                    } else {
                         _reorderItemsSuccess.value = Event(resource.data?.data)
                     }
 
@@ -282,6 +285,10 @@ class DineInOrderTableViewModel @Inject constructor(
 
         }
 
+    }
+
+    fun unableToRemoveGuest(message: String = "") {
+        _removeGuestSuccess.value = Event(message)
     }
 
     public fun discountCalculation(item: TbItem) {

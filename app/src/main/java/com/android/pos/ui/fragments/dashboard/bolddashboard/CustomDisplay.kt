@@ -428,6 +428,7 @@ class CustomDisplay(
     override fun onCustomerClicked(position: Int, isRemoved: Boolean) {}
 
     override fun onItemDelete(position: Int, itemPosition: Int, data: TbItem) {}
+    override fun onRemoveGuest(position: Int) {}
 
     fun showThankYou(paidAmount: Double) {
         binding.apply {

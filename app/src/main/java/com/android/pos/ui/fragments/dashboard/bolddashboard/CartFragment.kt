@@ -75,6 +75,7 @@ import org.greenrobot.eventbus.ThreadMode
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 
 @AndroidEntryPoint
@@ -789,7 +790,7 @@ class CartFragment(
 
     private fun addObserver() {
 
-
+        removeGuestObserver()
         LogUtil.logE("CreateCartEmpIdRecd", "" + prefProvider.getValueInt(EMPLOYEE_ID, 0))
 
         if (prefProvider.getValue(REDIRECT_FROM, "") == MANUAL_SALE) {
@@ -1658,29 +1659,58 @@ class CartFragment(
         return listOf(*lists).flatten()
     }
 
-    fun addGuestToOrder(count: Int) {
+    private fun  addGuestToOrder(count: Int) {
         Log.d(TAG, "addGuestToOrder: " + Gson().toJson(cartlist[0].dineInList))
-        var existing_count = cartlist[0].dineInList!!.size - 1
+        var existing_count = dineInCartAdapter.getList().size - 1
         var total_count = existing_count + count
         if (total_count <= 15) {
             var existinglist: ArrayList<DineInModel> = arrayListOf()
-            existinglist.addAll(cartlist[0].dineInList!!.toMutableList())
-            Log.d(TAG, "addGuestToOrder size: " + existinglist.size)
+            cartlist[0].dineInList?.forEach {
+                if (!it.isDestroy) {
+                    existinglist.add(it)
+                }
+            }
+
             val dineInList: java.util.ArrayList<DineInModel> = arrayListOf()
             if (existinglist.isNotEmpty()) {
-                for (i in 1..count) {
-                    dineInList.add(
-                        DineInModel(
-                            0,
-                            false,
-                            0,
-                            "Guest ${existing_count.plus(i)}",
-                            floorPlanTable = cartlist[0].dineInList!![0].floorPlanTable
-
-                        )
-                    )
+                // List of available counts from list to add new guest
+                var availableName: ArrayList<Int> = arrayListOf()
+                for (i in 1 until 16) {
+                    var filteredList: List<DineInModel> = arrayListOf()
+                    filteredList = dineInCartAdapter.getList()
+                        .filter { item -> item.title?.substringAfter("Guest ") == i.toString() }
+                        ?: arrayListOf()
+                    if (filteredList.isEmpty()) {
+                        availableName.add(i)
+                    }
+                    if (availableName.size >= count) {
+                        break
+                    }
                 }
 
+                for (i in 1..count) {
+
+                    // Check if cartList already contains destroyed guest, if contains change the flag else add new guest
+                    try {
+                        var commonDineInModel =
+                            cartlist[0].dineInList?.single { item -> item.title == "Guest ${availableName[i - 1]}" }
+                        if (commonDineInModel != null) {
+                            commonDineInModel.isDestroy = false
+                            dineInList.add(commonDineInModel)
+                        }
+                    } catch (e: Exception) {
+                        dineInList.add(
+                            DineInModel(
+                                0,
+                                false,
+                                0,
+                                "Guest ${availableName[i - 1]}",
+                                floorPlanTable = cartlist[0].dineInList!![0].floorPlanTable
+
+                            )
+                        )
+                    }
+                }
             }
             existinglist.addAll(dineInList)
             cartlist[0].dineInList = existinglist.toList()
@@ -1718,6 +1748,41 @@ class CartFragment(
         }
     }
 
+    override fun onRemoveGuest(position: Int) {
+        if (dineInCartAdapter.getList().isNotEmpty() && dineInCartAdapter.getList().size > 2) {
+            if ((dineInCartAdapter.getList()[position].items.size) > 0) {
+                viewModel.unableToRemoveGuest(getString(R.string.guests_having_order_items_cannot_be_removed))
+            } else {
+                if (prefProvider.getValueboolean(DINE_IN_UPDATE, false)) {
+                    cartlist.get(0).dineInList?.forEach {
+                        if (it.title == dineInCartAdapter.getList()[position].title) {
+                            it.apply {
+                                this.isDestroy = true
+                            }
+                        }
+                    }
+                } else {
+                    val dineIn = cartlist[0].dineInList as ArrayList<DineInModel>
+                    val destroyedGuestsList: ArrayList<DineInModel> = ArrayList()
+                    dineIn.filter { (it.title == dineInCartAdapter.getList()[position].title) }
+                        .forEach { destroyedGuestsList.add(it) }
+                    dineIn.removeAll(destroyedGuestsList.toSet())
+                    cartlist[0].dineInList = dineIn
+                }
+                viewModel.addCart(cartlist[0])
+            }
+        } else {
+            viewModel.unableToRemoveGuest(getString(R.string.minimum_one_guest_is_required))
+        }
+    }
+
+    private fun removeGuestObserver() {
+        viewModel.removeGuestSuccess.observe(viewLifecycleOwner) { event ->
+            AlertUtils.showCustomAlertWithListenerWithOK(
+                requireContext(), event.getContentIfNotHandled().toString()
+            ) { _, _ -> }
+        }
+    }
 
     private fun showMessage() {
         AlertUtils.showCustomAlert(requireContext(), "Order should be less than 1 million usd.")
