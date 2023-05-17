@@ -864,7 +864,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                     }
                                 }
 
-                            } else if (it.data[i].name.startsWith("InnerPrinter", true) == true) {
+                            } else if (it.data[i].name.startsWith(SUNMI_INNER_PRINTER, true) == true) {
 
                                 if (woyouService != null) {
                                     woyouService!!.sendRAWData(byteArrayOf(0x1B, 0x45, 0x01), this)
@@ -1100,15 +1100,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     }
 
     private fun addObserver() {
-        viewModel.showProgress.observe(requireActivity()) { event ->
-            event.getContentIfNotHandled()?.let {
-                if (it) {
-                    //ProgressUtils.showProgressDialog(requireActivity())
-                } else {
-                    // ProgressUtils.dismissProgressDialog()
-                }
-            }
-        }
         viewModel.clockOut.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
 
@@ -3401,6 +3392,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     ProgressUtils.showProgressDialog(requireActivity())
                 } else {
                     ProgressUtils.dismissProgressDialog()
+                    getConnectedPrinters()
                 }
             }
         }
@@ -3670,7 +3662,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     if (data?.isNotEmpty() == true) {
                         var isInnerPrinterConnected = false
                         for (i in data.indices) {
-                            if (data[i].name.startsWith("InnerPrinter", true) && data[i].receiptPrintType.equals(
+                            if (data[i].name.startsWith(SUNMI_INNER_PRINTER, true) && data[i].receiptPrintType.equals(
                                     CUSTOMER)) {
                                 isInnerPrinterConnected = true
                             }
@@ -3709,7 +3701,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             var innerPrinterModel = PrinterListModel()
             for (i in availableDevices) {
 
-                if(i.name.startsWith("InnerPrinter",true)){
+                if(i.name.startsWith(SUNMI_INNER_PRINTER,true)){
                     innerPrinterModel = PrinterListModel(
                         printerName = i.name,
                         connectionType = Constants.BLUETOOTH,
@@ -3729,7 +3721,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
             setupInnerPrinterAttributes(innerPrinterModel)
 
-
         }
     }
 
@@ -3740,10 +3731,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 CreatePrinterRequestModel.PrinterSettingsAttributes(
                     printType = CUSTOMER,
                     orderTypeId = ordertypelist[i].id,
-                    autoPrinting = true
                 )
             )
-
         }
 
         val createPrinter = CreatePrinterRequestModel(
