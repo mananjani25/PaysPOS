@@ -1,0 +1,79 @@
+package com.android.pos.ui.fragments.allorders
+
+import android.os.Bundle
+import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.navigation.fragment.findNavController
+import com.android.pos.R
+import com.android.pos.databinding.FragmentAllOrdersBinding
+import com.android.pos.ui.adapter.AllOrdersTabsAdapter
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
+import dagger.hilt.android.AndroidEntryPoint
+
+@AndroidEntryPoint
+class AllOrdersFragment : Fragment() {
+
+    private lateinit var binding: FragmentAllOrdersBinding
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = FragmentAllOrdersBinding.inflate(layoutInflater)
+        configureToolbar()
+        setupTabs()
+        return binding.root
+    }
+
+    private fun setupTabs() {
+        val adapter = AllOrdersTabsAdapter(requireActivity().supportFragmentManager, lifecycle)
+        binding.viewPager.adapter = adapter
+        binding.commonToolbar.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabReselected(tab: TabLayout.Tab?) {
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab?) {
+            }
+
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                tab?.position?.let { binding.viewPager.setCurrentItem(it, false) }
+            }
+
+        })
+        TabLayoutMediator(binding.commonToolbar.tabLayout, binding.viewPager) { tab, position ->
+            when (position) {
+                0 -> {
+                    tab.text = "All Orders"
+                }
+                1 -> {
+                    tab.text = "Open"
+                }
+                2 -> {
+                    tab.text = "Phone"
+                }
+                3 -> {
+                    tab.text = "Online"
+                }
+                4 -> {
+                    tab.text = "3rd Party"
+                }
+                else -> {
+                    tab.text = "All Orders"
+                }
+            }
+        }.attach()
+    }
+
+    private fun configureToolbar() {
+        binding.commonToolbar.imgDrawer.setOnClickListener {
+            findNavController().navigate(R.id.action_allOrder_to_menuposbold)
+        }
+        binding.commonToolbar.txtHome.setOnClickListener {
+            findNavController().navigate(R.id.action_allOrder_to_dashboarCategorynew)
+        }
+    }
+
+}

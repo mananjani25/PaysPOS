@@ -88,7 +88,7 @@
                     android:background="?attr/selectableItemBackground"
                     android:gravity="end"
                     android:paddingVertical="@dimen/_5sdp"
-                    android:text="@string/online_orders"
+                    android:text="@string/all_orders"
                     android:textAllCaps="true"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi" />

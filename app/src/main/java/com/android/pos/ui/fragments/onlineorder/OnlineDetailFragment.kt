@@ -35,7 +35,7 @@ import com.android.pos.data.remote.Constants.SUNMI_PRINTER
 import com.android.pos.databinding.OnlineDetailFragmentBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
-import com.android.pos.ui.adapter.OnlineOrderAdapter
+import com.android.pos.ui.adapter.AllOrderAdapter
 import com.android.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
 import com.android.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.android.pos.utils.*
@@ -64,7 +64,8 @@ import kotlin.math.abs
 class OnlineDetailFragment(
     var param1: String,
     var startDateTime: String?,
-    var endDateTime: String?
+    var endDateTime: String?,
+    var orderTab: String
 ) : Fragment(),
     OrderCallBack, StatusChangeEventListener {
 
@@ -76,7 +77,7 @@ class OnlineDetailFragment(
     private lateinit var endDate: DatePickerDialog.OnDateSetListener
     private lateinit var startTime: TimePickerDialog.OnTimeSetListener
     private lateinit var endTime: TimePickerDialog.OnTimeSetListener
-    private lateinit var adapter: OnlineOrderAdapter
+    private lateinit var adapter: AllOrderAdapter
     var myCalendar = Calendar.getInstance()
     var myCalendar1 = Calendar.getInstance()
     val myCalendar2 = Calendar.getInstance()
@@ -554,7 +555,7 @@ class OnlineDetailFragment(
             )
         )
 
-        adapter = OnlineOrderAdapter(requireContext(),prefProvider)
+        adapter = AllOrderAdapter(requireContext(),prefProvider)
         adapter.setCallback(this)
         binding.rvOpenOrder?.adapter = adapter
     }

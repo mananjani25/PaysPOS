@@ -205,7 +205,6 @@
                 android:textColor="@color/white"
                 android:textSize="@dimen/text_size_medium" />
 
-
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontMediumStyle"
                 android:layout_width="0dp"
@@ -214,7 +213,6 @@
                 android:text="@string/tv_total_amount"
                 android:textAllCaps="true"
                 android:textColor="@color/white"
-
                 android:textSize="@dimen/text_size_medium" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -226,6 +224,7 @@
                 android:textAllCaps="true"
                 android:textColor="@color/white"
                 android:textSize="@dimen/text_size_medium" />
+
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontMediumStyle"
                 android:layout_width="0dp"
@@ -234,7 +233,6 @@
                 android:text="@string/tv_customer_name"
                 android:textAllCaps="true"
                 android:textColor="@color/white"
-
                 android:textSize="@dimen/text_size_medium" />
 
             <androidx.appcompat.widget.AppCompatTextView

@@ -149,6 +149,19 @@
             android:id="@+id/action_onlineOrder_to_addOnlneTime"
             app:destination="@id/addOnlineTimeDialog" />
     </fragment>
+    <fragment
+        android:id="@+id/allOrdersFragment"
+        android:name="com.android.pos.ui.fragments.allorders.AllOrdersFragment"
+        android:label="allOrders">
+        <action
+            android:id="@+id/action_allOrder_to_menuposbold"
+            app:destination="@id/menuFragment"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_allOrder_to_dashboarCategorynew"
+            app:destination="@id/dashboardCategoryBoldPOS"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+    </fragment>.
 
     <fragment
         android:id="@+id/createItem"
@@ -1521,6 +1534,10 @@
         <action
             android:id="@+id/action_dashboardCategoryBoldPOS_to_onlineOrderFragment"
             app:destination="@id/onlineOrderFragment"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_dashboardCategoryBoldPOS_to_allOrdersFragment"
+            app:destination="@id/allOrdersFragment"
             app:enterAnim="@anim/nav_default_enter_anim" />
         <action
             android:id="@+id/action_dashboardCategoryBoldPOS_to_transactionFragment"
