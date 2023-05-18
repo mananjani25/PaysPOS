@@ -305,6 +305,7 @@
                                 android:padding="@dimen/_1sdp">
 
                                 <androidx.appcompat.widget.AppCompatTextView
+                                    android:id="@+id/tvTipLabel"
                                     style="@style/CustomFontMediumStyle"
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
