@@ -4,6 +4,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.android.pos.ui.fragments.allorders.AllOrdersCountsFragment
 import com.android.pos.ui.fragments.onlineorder.OnlineOrderFragment
 
 class AllOrdersTabsAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle) :
@@ -14,6 +15,6 @@ class AllOrdersTabsAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycl
     }
 
     override fun createFragment(position: Int): Fragment {
-        return OnlineOrderFragment(position)
+        return AllOrdersCountsFragment(position)
     }
 }

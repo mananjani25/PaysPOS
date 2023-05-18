@@ -119,7 +119,7 @@ class AllOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
             binding.txtCustomerName.text =
                 (item.customer?.firstName ?: "") + " " + (item.customer?.lastName ?: "")
             binding.txtEmployeeName.text =
-                (item.employee?.firstName ?: "") + " " + (item.employee?.lastName ?: "")
+                (item.employee.firstName ?: "") + " " + (item.employee.lastName ?: "")
             if (item.orderItems.isNotEmpty()) {
                 binding.rvOpenOrder.visible()
                 adapter = OnlineOrderItemsAdapter()

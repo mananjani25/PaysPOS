@@ -1,10 +1,11 @@
-package com.android.pos.ui.fragments.onlineorder
+package com.android.pos.ui.fragments.allorders
 
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,6 +17,7 @@ import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.model.InventoryItemModel
 import com.android.pos.data.remote.ApiService
+import com.android.pos.databinding.FragmentAllOrdersCountsBinding
 import com.android.pos.databinding.FragmentOnlineOrderBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
@@ -24,17 +26,20 @@ import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
 import com.android.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
+import com.android.pos.ui.fragments.onlineorder.OnlineDetailViewModel
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.TAG
+import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.getCustomerDisplay
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class OnlineOrderFragment : Fragment() {
+class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
 
-    private lateinit var binding: FragmentOnlineOrderBinding
+    private lateinit var ORDER_TAB: String
+    private lateinit var binding: FragmentAllOrdersCountsBinding
 
     @Inject
     lateinit var rolePermission: RolePermission
@@ -61,9 +66,11 @@ class OnlineOrderFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
-        binding = FragmentOnlineOrderBinding.inflate(inflater, container, false)
+        binding = FragmentAllOrdersCountsBinding.inflate(inflater, container, false)
+        Log.d(TAG, "onCreateView: CURRENT POS = $tabPosition")
         requireContext().registerReceiver(broadcastReceiver, IntentFilter("onlineOrder"));
-        configureToolbar()
+        binding.commonToolbar.root.gone()
+        //configureToolbar()
         getOrderCountsObserver(startDate, endDate)
 
         getCustomerDisplay(requireContext())?.let { display ->
@@ -145,6 +152,26 @@ class OnlineOrderFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        when (tabPosition) {
+            0 -> {
+                ORDER_TAB = "All"
+            }
+            1 -> {
+                ORDER_TAB = "Open"
+            }
+            2 -> {
+                ORDER_TAB = "Phone"
+            }
+            3 -> {
+                ORDER_TAB = "Online"
+            }
+            4 -> {
+                ORDER_TAB = "3rdParty"
+            }
+
+        }
+
         changePosition(0)
         setAdapter(mPos)
     }
@@ -199,32 +226,32 @@ class OnlineOrderFragment : Fragment() {
         when (position) {
 
             0 -> {
-                val activeOrders = OnlineDetailFragment("0", startDate, endDate)
+                val activeOrders = AllOrdersListingFragment("0", startDate, endDate,ORDER_TAB)
                 loadFragment(activeOrders)
                 binding.commonToolbar.txtSetItem.visibility = View.GONE
                 binding.commonToolbar.txtSubTitle.text = "Pending Orders"
             }
             1 -> {
-                val activeOrders = OnlineDetailFragment("1", startDate, endDate)
+                val activeOrders = AllOrdersListingFragment("1", startDate, endDate,ORDER_TAB)
                 loadFragment(activeOrders)
                 binding.commonToolbar.txtSetItem.visibility = View.GONE
                 binding.commonToolbar.txtSubTitle.text = "InProgress Orders"
             }
             2 -> {
-                val modifier: Fragment = OnlineDetailFragment("2", startDate, endDate)
+                val modifier: Fragment = AllOrdersListingFragment("2", startDate, endDate,ORDER_TAB)
                 loadFragment(modifier)
                 binding.commonToolbar.txtSetItem.visibility = View.GONE
                 binding.commonToolbar.txtSubTitle.text = "Completed Orders"
             }
 
             3 -> {
-                val cancelled = OnlineDetailFragment("3", startDate, endDate)
+                val cancelled = AllOrdersListingFragment("3", startDate, endDate,ORDER_TAB)
                 loadFragment(cancelled)
                 binding.commonToolbar.txtSetItem.visibility = View.GONE
                 binding.commonToolbar.txtSubTitle.text = "Rejected Orders"
             }
             4 -> {
-                val activeOrders = OnlineDetailFragment("4", startDate, endDate)
+                val activeOrders = AllOrdersListingFragment("4", startDate, endDate,ORDER_TAB)
                 loadFragment(activeOrders)
                 binding.commonToolbar.txtSetItem.visibility = View.GONE
                 binding.commonToolbar.txtSubTitle.text = "UpComing Orders"
