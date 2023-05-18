@@ -183,6 +183,8 @@ class AllOrdersListingFragment(
                         binding.root.resources.newTheme()
                     )
                 )
+                adapter.filterList.sortedBy { it.terminalId }
+                adapter.notifyDataSetChanged()
             } else {
                 binding.imgIndicatorStation.setImageDrawable(
                     ResourcesCompat.getDrawable(
@@ -191,6 +193,8 @@ class AllOrdersListingFragment(
                         binding.root.resources.newTheme()
                     )
                 )
+                adapter.filterList.sortedByDescending { it.terminalId }
+                adapter.notifyDataSetChanged()
             }
             binding.imgIndicatorStation.setColorFilter(
                 ContextCompat.getColor(
@@ -212,6 +216,8 @@ class AllOrdersListingFragment(
                         binding.root.resources.newTheme()
                     )
                 )
+                adapter.filterList.sortedBy { it.customer?.firstName }
+                adapter.notifyDataSetChanged()
 
             } else {
                 binding.imgIndicatorEmployee.setImageDrawable(
@@ -221,6 +227,8 @@ class AllOrdersListingFragment(
                         binding.root.resources.newTheme()
                     )
                 )
+                adapter.filterList.sortedByDescending { it.customer?.firstName }
+                adapter.notifyDataSetChanged()
             }
             binding.imgIndicatorEmployee.setColorFilter(
                 ContextCompat.getColor(
