@@ -46,22 +46,22 @@ class AllOrdersFragment : Fragment() {
         TabLayoutMediator(binding.commonToolbar.tabLayout, binding.viewPager) { tab, position ->
             when (position) {
                 0 -> {
-                    tab.text = "All Orders"
+                    tab.text = "All Orders (0)"
                 }
                 1 -> {
-                    tab.text = "Open"
+                    tab.text = "Open (0)"
                 }
                 2 -> {
-                    tab.text = "Phone"
+                    tab.text = "Phone (0)"
                 }
                 3 -> {
-                    tab.text = "Online"
+                    tab.text = "Online (0)"
                 }
                 4 -> {
-                    tab.text = "3rd Party"
+                    tab.text = "3rd Party (0)"
                 }
                 else -> {
-                    tab.text = "All Orders"
+                    tab.text = "All Orders (0)"
                 }
             }
         }.attach()

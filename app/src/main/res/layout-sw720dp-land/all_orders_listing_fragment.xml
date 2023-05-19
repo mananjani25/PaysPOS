@@ -200,8 +200,7 @@
             android:layout_height="wrap_content"
             android:background="@drawable/background_square_border_solid_grey"
             android:orientation="horizontal"
-            android:paddingHorizontal="@dimen/_10sdp"
-            android:paddingVertical="@dimen/_10sdp"
+            android:padding="@dimen/_10sdp"
             android:weightSum="8.6">
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -209,6 +208,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1.2"
+                android:gravity="start"
                 android:text="@string/tv_order_id"
                 android:textAllCaps="true"
                 android:textColor="@color/white"
@@ -219,6 +219,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1.2"
+                android:gravity="start"
                 android:text="@string/tv_date_time"
                 android:textAllCaps="true"
                 android:textColor="@color/white"
@@ -228,13 +229,13 @@
                 android:id="@+id/lnrEmployeeSort"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1.2">
+                android:layout_weight="1.2"
+                android:gravity="start|center_horizontal">
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontMediumStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="end"
                     android:text="@string/tv_employee"
                     android:textAllCaps="true"
                     android:textColor="@color/white"
@@ -242,10 +243,10 @@
 
                 <ImageView
                     android:id="@+id/imgIndicatorEmployee"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="@dimen/_10sdp"
+                    android:layout_height="@dimen/_10sdp"
                     android:layout_marginStart="@dimen/_5sdp"
-                    app:srcCompat="@drawable/ic_arrow_down"
+                    app:srcCompat="@drawable/ic_solid_up_arrow"
                     app:tint="@color/drawable_ic_color" />
 
             </LinearLayout>
@@ -255,6 +256,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:gravity="start"
                 android:text="@string/tv_amount"
                 android:textAllCaps="true"
                 android:textColor="@color/white"
@@ -265,16 +267,19 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:gravity="start"
                 android:text="@string/tv_customer"
                 android:textAllCaps="true"
                 android:textColor="@color/white"
                 android:textSize="@dimen/text_size_medium" />
 
             <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/lblDelivery"
                 style="@style/CustomFontMediumStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:gravity="start"
                 android:text="@string/tv_delivery"
                 android:textAllCaps="true"
                 android:textColor="@color/white"
@@ -285,6 +290,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:gravity="start"
                 android:text="@string/tv_type"
                 android:textAllCaps="true"
                 android:textColor="@color/white"
@@ -294,13 +300,13 @@
                 android:id="@+id/lnrStationSort"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1">
+                android:layout_weight="1"
+                android:gravity="start|center_horizontal">
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontMediumStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="end"
                     android:text="@string/tv_station"
                     android:textAllCaps="true"
                     android:textColor="@color/white"
@@ -308,10 +314,10 @@
 
                 <ImageView
                     android:id="@+id/imgIndicatorStation"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="@dimen/_10sdp"
+                    android:layout_height="@dimen/_10sdp"
                     android:layout_marginStart="@dimen/_5sdp"
-                    app:srcCompat="@drawable/ic_arrow_down"
+                    app:srcCompat="@drawable/ic_solid_up_arrow"
                     app:tint="@color/drawable_ic_color" />
 
             </LinearLayout>

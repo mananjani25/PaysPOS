@@ -849,6 +849,7 @@
     <string name="tv_delivery">Delivery</string>
     <string name="tv_type">Type</string>
     <string name="tv_station">Station</string>
+    <string name="tv_reprint_kitchen_receipt">Re-Print Kitchen Receipt</string>
 
 </resources>
 

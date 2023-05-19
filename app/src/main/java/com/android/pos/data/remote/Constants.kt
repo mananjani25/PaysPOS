@@ -354,6 +354,12 @@ object Constants {
 
     const val CUSTOMER_SIGN_REQUIRED_ON_CD = "customer_sign_required_on_cd"
 
+    const val ALL_ORDER_TAB_POS = 0
+    const val OPEN_ORDER_TAB_POS = 1
+    const val PHONE_ORDER_TAB_POS = 2
+    const val ONLINE_ORDER_TAB_POS = 3
+    const val THIRD_PARTY_ORDER_TAB_POS = 4
+
 
     fun createRequestModelForUpdatePritnerType(
         oldList: ArrayList<PrinterResponse.Data.OrderTypes>?,

@@ -35,7 +35,6 @@ import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
 import com.android.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
 import com.android.pos.data.remote.Constants.SUNMI_PRINTER
 import com.android.pos.databinding.AllOrdersListingFragmentBinding
-import com.android.pos.databinding.OnlineDetailFragmentBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
 import com.android.pos.ui.adapter.AllOrderAdapter
@@ -45,7 +44,9 @@ import com.android.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.android.pos.utils.*
 import com.android.pos.utils.callback.OrderCallBack
 import com.android.pos.utils.extensions.alert
+import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.showAlert
+import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.printer.PrinterClass
 import com.android.pos.utils.statusUtils.Status
 import com.epson.epos2.printer.Printer
@@ -155,6 +156,12 @@ class AllOrdersListingFragment(
         setupEmployeeSort()
         setupStationSort()
 
+        if(orderTab == "Open"){
+            binding.lblDelivery.gone()
+        }else{
+            binding.lblDelivery.visible()
+        }
+
         requireActivity().supportFragmentManager.setFragmentResultListener(
             "request_key_time",
             viewLifecycleOwner
@@ -179,7 +186,7 @@ class AllOrdersListingFragment(
                 binding.imgIndicatorStation.setImageDrawable(
                     ResourcesCompat.getDrawable(
                         binding.root.resources,
-                        R.drawable.ic_arrow_down,
+                        R.drawable.ic_arrow_drop_down,
                         binding.root.resources.newTheme()
                     )
                 )
@@ -189,7 +196,7 @@ class AllOrdersListingFragment(
                 binding.imgIndicatorStation.setImageDrawable(
                     ResourcesCompat.getDrawable(
                         binding.root.resources,
-                        R.drawable.ic_arrow_up,
+                        R.drawable.ic_solid_up_arrow,
                         binding.root.resources.newTheme()
                     )
                 )
@@ -212,7 +219,7 @@ class AllOrdersListingFragment(
                 binding.imgIndicatorEmployee.setImageDrawable(
                     ResourcesCompat.getDrawable(
                         binding.root.resources,
-                        R.drawable.ic_arrow_down,
+                        R.drawable.ic_arrow_drop_down,
                         binding.root.resources.newTheme()
                     )
                 )
@@ -223,7 +230,7 @@ class AllOrdersListingFragment(
                 binding.imgIndicatorEmployee.setImageDrawable(
                     ResourcesCompat.getDrawable(
                         binding.root.resources,
-                        R.drawable.ic_arrow_up,
+                        R.drawable.ic_solid_up_arrow,
                         binding.root.resources.newTheme()
                     )
                 )
@@ -326,7 +333,7 @@ class AllOrdersListingFragment(
                                 binding.llNoData.visibility = View.GONE
                                 val data = it.data
 
-                                adapter.add(data)
+                                adapter.add(data,orderTab)
                                 LogUtil.logE("DATA", data.size.toString())
 
                             } else {

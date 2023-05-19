@@ -15,15 +15,12 @@ import com.android.pos.R
 import com.android.pos.data.model.responseModel.OnlineOrderResponseModel
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.ViewAllOrderLayoutBinding
-import com.android.pos.databinding.ViewonlineorderlayoutBinding
-import com.android.pos.utils.LogUtil
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.TAG
 import com.android.pos.utils.TimeFormatUtils
 import com.android.pos.utils.callback.OrderCallBack
 import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.visible
-import com.google.gson.Gson
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -33,6 +30,7 @@ class AllOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
     Filterable {
     var orderList = ArrayList<OnlineOrderResponseModel.Data>()
     var filterList = ArrayList<OnlineOrderResponseModel.Data>()
+    var orderedTab: String = ""
     private var mCallback: OrderCallBack? = null
     fun setCallback(callback: OrderCallBack) {
         mCallback = callback
@@ -48,6 +46,7 @@ class AllOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
             binding.viewModel = item
             binding.executePendingBindings()
             binding.llShowLayout.visibility = View.GONE
+
             if (prefProvider.getValueboolean(Constants.ORDER_NUMBER_STARTING_FROM_ONE, false)) {
                 binding.tvOrderID.text = item.custom_order_id.toString()
             } else {
@@ -115,11 +114,10 @@ class AllOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
 //            }
 
 
-
             binding.txtCustomerName.text =
                 (item.customer?.firstName ?: "") + " " + (item.customer?.lastName ?: "")
-            binding.txtEmployeeName.text =
-                (item.employee?.firstName ?: "") + " " + (item.employee?.lastName ?: "")
+//            binding.txtEmployeeName.text =
+//                (item.employee?.firstName ?: "") + " " + (item.employee?.lastName ?: "")
             if (item.orderItems.isNotEmpty()) {
                 binding.rvOpenOrder.visible()
                 adapter = OnlineOrderItemsAdapter()
@@ -129,13 +127,19 @@ class AllOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
             } else {
                 binding.rvOpenOrder.gone()
             }
+
+            if (orderedTab == "Open") {
+                binding.txtDeliveryOrPickup.gone()
+            } else {
+                binding.txtDeliveryOrPickup.visible()
+            }
+
             if (!item.isCheck) {
                 binding.llMainLayout.setBackgroundColor(binding.root.resources.getColor(R.color.bg_color))
                 binding.tvDate.setTextColor(binding.root.resources.getColor(R.color.txtColor))
                 binding.tvTotalAmount.setTextColor(binding.root.resources.getColor(R.color.txtColor))
                 binding.txtCustomerName.setTextColor(binding.root.resources.getColor(R.color.txtColor))
                 binding.tvOrderID.setTextColor(binding.root.resources.getColor(R.color.txtColor))
-                binding.tvPaymentstatus.setTextColor(binding.root.resources.getColor(R.color.btnColor))
                 binding.llShowLayout.visibility = View.GONE
                 binding.imgIndicator.setImageDrawable(
                     ResourcesCompat.getDrawable(
@@ -158,8 +162,14 @@ class AllOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
                 binding.tvTotalAmount.setTextColor(binding.root.resources.getColor(R.color.white))
                 binding.txtCustomerName.setTextColor(binding.root.resources.getColor(R.color.white))
                 binding.tvOrderID.setTextColor(binding.root.resources.getColor(R.color.white))
-                binding.tvPaymentstatus.setTextColor(binding.root.resources.getColor(R.color.white))
                 binding.llShowLayout.visibility = View.VISIBLE
+
+                if (orderedTab == "Open" || orderedTab == "Phone") {
+                    binding.lnrPhoneAndOnlineButtons.visible()
+                } else {
+                    binding.lnrPhoneAndOnlineButtons.gone()
+                }
+
                 binding.imgIndicator.setImageDrawable(
                     ResourcesCompat.getDrawable(
                         binding.root.resources,
@@ -172,15 +182,6 @@ class AllOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
         }
 
         init {
-            binding.acceptImg.setOnClickListener {
-                mCallback?.onItemClickListener(it, absoluteAdapterPosition, "accepted")
-            }
-            binding.declineImg.setOnClickListener {
-                mCallback?.onItemClickListener(it, absoluteAdapterPosition, "cancelled")
-            }
-            binding.completedImg?.setOnClickListener {
-                mCallback?.onItemClickListener(it, absoluteAdapterPosition, "Completed")
-            }
             binding.root.setOnClickListener {
 
                 val item = filterList[bindingAdapterPosition]
@@ -201,9 +202,10 @@ class AllOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
     }
 
 
-    fun add(orders: List<OnlineOrderResponseModel.Data>) {
+    fun add(orders: List<OnlineOrderResponseModel.Data>, orderTab: String) {
         this.orderList = orders as ArrayList<OnlineOrderResponseModel.Data>
         this.filterList = orders
+        this.orderedTab = orderTab
         notifyDataSetChanged()
     }
 
@@ -236,10 +238,15 @@ class AllOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
                                 .contains(charString.lowercase(Locale.getDefault()))
                         ) {
                             fList.add(it)
-                        } else*/ if ((if (prefProvider.getValueboolean(Constants.ORDER_NUMBER_STARTING_FROM_ONE,false))
+                        } else*/ if ((if (prefProvider.getValueboolean(
+                                    Constants.ORDER_NUMBER_STARTING_FROM_ONE,
+                                    false
+                                )
+                            )
                                 it.custom_order_id.toString().lowercase(Locale.getDefault()) else
                                 it.id.toString().lowercase(Locale.getDefault()))
-                                .contains(charString.lowercase(Locale.getDefault()))) {
+                                .contains(charString.lowercase(Locale.getDefault()))
+                        ) {
                             fList.add(it)
                         } else if (it.customer != null && it.customer.firstName.lowercase(Locale.getDefault())
                                 .contains(charString.lowercase(Locale.getDefault()))
