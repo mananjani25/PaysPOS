@@ -583,6 +583,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                         if (type == ADD) {
                             var index = -1
                             var list = dineInList[selectedHeader].items
+                            if (prefProvider.getValueboolean(DINE_IN_UPDATE, false) == true) {
+                                item?.isEdited = true
+                            }
                             for (i in list.indices) {
                                 if (item != null) {
                                     if (item.isManualSales) {
@@ -819,6 +822,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
 
+                            item?.isEdited = true
                             for (i in list.indices) {
                                 if (item != null) {
                                     if (item.isManualSales) {
@@ -4091,7 +4095,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 orderItemsAttribute.isEdited = item.isEdited
                 orderItemsAttribute.isDestroy = item.isDestroy
                 orderItemsAttribute.isPaid = item.isPaid
-                orderItemsAttribute.isPrinted = false
+                orderItemsAttribute.isPrinted = if (prefProvider.getValueboolean(DINE_IN_UPDATE,false) == true && item.isEdited == true) false else if (prefProvider.getValueboolean(DINE_IN_UPDATE,false) == true && item.isEdited == false) true else false
                 orderItemsAttribute.isTaxRemoved = false
                 orderItemsAttribute.itemId =
                     if (item.isManualSales) item.itemId else item.itemId

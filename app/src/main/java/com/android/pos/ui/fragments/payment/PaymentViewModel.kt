@@ -1294,7 +1294,7 @@ open class PaymentViewModel @Inject constructor(
             orderItemsAttribute.isEdited = item.isEdited
             orderItemsAttribute.isDestroy = item.isDestroy
             orderItemsAttribute.isPaid = false
-            orderItemsAttribute.isPrinted = false
+            orderItemsAttribute.isPrinted = if (isUpdateOrder && item.isEdited == true) false else if (isUpdateOrder && item.isEdited == false) true else false
             orderItemsAttribute.isTaxRemoved = false
             orderItemsAttribute.itemId = item.itemId
             orderItemsAttribute.is_manual_sales = item.isManualSales
