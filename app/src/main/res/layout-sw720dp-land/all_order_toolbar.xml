@@ -76,6 +76,7 @@
             <LinearLayout
                 android:id="@+id/linearSearchView"
                 android:layout_width="wrap_content"
+                android:visibility="gone"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/_3sdp"
                 android:gravity="end|center_vertical"

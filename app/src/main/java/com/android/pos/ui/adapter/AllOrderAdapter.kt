@@ -16,6 +16,7 @@ import com.android.pos.data.model.responseModel.OnlineOrderResponseModel
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.ViewAllOrderLayoutBinding
 import com.android.pos.di.PrefProvider
+import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.TAG
 import com.android.pos.utils.TimeFormatUtils
 import com.android.pos.utils.callback.OrderCallBack
@@ -196,6 +197,49 @@ class AllOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
 
                 }
                 notifyDataSetChanged()
+
+            }
+
+            binding.txtCancelOrder.setOnClickListener {
+                if (MethodUtils.isDoubleClick()) return@setOnClickListener
+                mCallback?.onItemClickListener(it, bindingAdapterPosition, "")
+            }
+
+            binding.txtEditOrder.setOnClickListener {
+                binding.txtEditOrder.background =
+                    itemView.context.getDrawable(R.drawable.button_selected)
+                binding.txtPayNow.background =
+                    itemView.context.getDrawable(R.drawable.background_square_border_grey)
+                mCallback?.onItemClickListener(it, bindingAdapterPosition, "UPDATE")
+            }
+
+            binding.txtPayNow.setOnClickListener {
+                binding.txtEditOrder.background =
+                    itemView.context.getDrawable(R.drawable.background_square_border_grey)
+                binding.txtPayNow.background =
+                    itemView.context.getDrawable(R.drawable.button_selected)
+                mCallback?.onItemClickListener(it, bindingAdapterPosition, "PAY")
+            }
+
+            binding.txtCustomerReceipt.setOnClickListener {
+                if (filterList[bindingAdapterPosition].paymentStatus == "Paid") {
+                    mCallback?.onItemClickListener(it, bindingAdapterPosition, Constants.PRINT_PAID)
+                } else {
+                    mCallback?.onItemClickListener(it, bindingAdapterPosition,
+                        Constants.PRINT_UNPAID
+                    )
+                }
+
+            }
+
+            binding.txtRePrintKitchenReceipt.setOnClickListener {
+                if (filterList[bindingAdapterPosition].paymentStatus == "Paid") {
+                    mCallback?.onItemClickListener(it, bindingAdapterPosition, Constants.PRINT_PAID)
+                } else {
+                    mCallback?.onItemClickListener(it, bindingAdapterPosition,
+                        Constants.PRINT_UNPAID
+                    )
+                }
 
             }
         }

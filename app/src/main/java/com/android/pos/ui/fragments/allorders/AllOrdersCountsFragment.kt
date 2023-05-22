@@ -19,6 +19,7 @@ import com.android.pos.data.model.InventoryItemModel
 import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants.ALL_ORDER_TAB_POS
 import com.android.pos.data.remote.Constants.ONLINE_ORDER_TAB_POS
+import com.android.pos.data.remote.Constants.THIRD_PARTY_ORDER_TAB_POS
 import com.android.pos.databinding.FragmentAllOrdersCountsBinding
 import com.android.pos.databinding.FragmentOnlineOrderBinding
 import com.android.pos.di.PrefProvider
@@ -124,17 +125,24 @@ class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
                         pendingOrdersCount = count
                         setAdapter(0)
                     }
+
                     "1" -> {
-                        upcomingOrderCount = count
+                        ongoingOrderCount = count
                         setAdapter(1)
                     }
+
                     "2" -> {
                         completedOrdersCount = count
                         setAdapter(2)
                     }
+
                     "3" -> {
                         cancelledOrdersCount = count
                         setAdapter(3)
+                    }
+                    "4" -> {
+                        upcomingOrderCount = count
+                        setAdapter(4)
                     }
                 }
 
@@ -154,15 +162,19 @@ class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
             0 -> {
                 ORDER_TAB = "All"
             }
+
             1 -> {
                 ORDER_TAB = "Open"
             }
+
             2 -> {
                 ORDER_TAB = "Phone"
             }
+
             3 -> {
                 ORDER_TAB = "Online"
             }
+
             4 -> {
                 ORDER_TAB = "3rdParty"
             }
@@ -189,9 +201,11 @@ class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
                             setAdapter(mPos)
 
                         }
+
                         Status.ERROR -> {
                             setAdapter(mPos)
                         }
+
                         Status.LOADING -> {
                             setAdapter(mPos)
                         }
@@ -208,19 +222,22 @@ class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
         mPos = position
         when (position) {
             0 -> {
-                val activeOrders = AllOrdersListingFragment("0", startDate, endDate,ORDER_TAB)
+                val activeOrders = AllOrdersListingFragment("0", startDate, endDate, ORDER_TAB)
                 loadFragment(activeOrders)
             }
+
             1 -> {
-                val upcomingOrders = AllOrdersListingFragment("1", startDate, endDate,ORDER_TAB)
+                val upcomingOrders = AllOrdersListingFragment("1", startDate, endDate, ORDER_TAB)
                 loadFragment(upcomingOrders)
             }
+
             2 -> {
-                val completedOrders = AllOrdersListingFragment("2", startDate, endDate,ORDER_TAB)
+                val completedOrders = AllOrdersListingFragment("2", startDate, endDate, ORDER_TAB)
                 loadFragment(completedOrders)
             }
+
             3 -> {
-                val cancelledOrders = AllOrdersListingFragment("3", startDate, endDate,ORDER_TAB)
+                val cancelledOrders = AllOrdersListingFragment("3", startDate, endDate, ORDER_TAB)
                 loadFragment(cancelledOrders)
             }
         }
@@ -240,58 +257,55 @@ class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
 
         val list: ArrayList<InventoryItemModel> = arrayListOf()
 
-        list.add(InventoryItemModel(0, "Active", pendingOrdersCount, pos == 0))
-        if(tabPosition == ONLINE_ORDER_TAB_POS  || tabPosition == ALL_ORDER_TAB_POS){
-            list.add(InventoryItemModel(0, "Upcoming", upcomingOrderCount, pos == 1))
-            list.add(InventoryItemModel(0, "Completed", completedOrdersCount, pos == 2))
-            list.add(InventoryItemModel(0, "Cancelled ", cancelledOrdersCount, pos == 3))
-        }else{
-            list.add(InventoryItemModel(0, "Completed", completedOrdersCount, pos == 1))
-            list.add(InventoryItemModel(0, "Cancelled ", cancelledOrdersCount, pos == 2))
+        list.add(InventoryItemModel(0, "Pending Orders", pendingOrdersCount, pos == 0))
+        list.add(InventoryItemModel(0, "InProgress Orders", ongoingOrderCount, pos == 1))
+        list.add(InventoryItemModel(0, "Completed", completedOrdersCount, pos == 2))
+        list.add(InventoryItemModel(0, "Cancelled ", cancelledOrdersCount, pos == 3))
+        if (tabPosition == ONLINE_ORDER_TAB_POS || tabPosition == ALL_ORDER_TAB_POS || tabPosition == THIRD_PARTY_ORDER_TAB_POS) {
+            list.add(InventoryItemModel(0, "Upcoming", upcomingOrderCount, pos == 4))
         }
 
 
+        /* when (pos) {
+             0 -> {
+                 list.add(InventoryItemModel(0, "Pending Orders ", pendingOrdersCount, true))
+                 list.add(InventoryItemModel(0, "InProgress Orders ", ongoingOrderCount))
+                 list.add(InventoryItemModel(0, "Completed Orders", completedOrdersCount))
+                 list.add(InventoryItemModel(0, "Rejected Orders ", cancelledOrdersCount))
+                 list.add(InventoryItemModel(0, "UpComing Orders ", upcomingOrderCount))
+             }
+             1 -> {
+                 list.add(InventoryItemModel(0, "Pending Orders ", pendingOrdersCount))
+                 list.add(InventoryItemModel(0, "InProgress Orders ", ongoingOrderCount, true))
+                 list.add(InventoryItemModel(0, "Completed Orders", completedOrdersCount))
+                 list.add(InventoryItemModel(0, "Rejected Orders ", cancelledOrdersCount))
+                 list.add(InventoryItemModel(0, "UpComing Orders ", upcomingOrderCount))
 
-       /* when (pos) {
-            0 -> {
-                list.add(InventoryItemModel(0, "Pending Orders ", pendingOrdersCount, true))
-                list.add(InventoryItemModel(0, "InProgress Orders ", ongoingOrderCount))
-                list.add(InventoryItemModel(0, "Completed Orders", completedOrdersCount))
-                list.add(InventoryItemModel(0, "Rejected Orders ", cancelledOrdersCount))
-                list.add(InventoryItemModel(0, "UpComing Orders ", upcomingOrderCount))
-            }
-            1 -> {
-                list.add(InventoryItemModel(0, "Pending Orders ", pendingOrdersCount))
-                list.add(InventoryItemModel(0, "InProgress Orders ", ongoingOrderCount, true))
-                list.add(InventoryItemModel(0, "Completed Orders", completedOrdersCount))
-                list.add(InventoryItemModel(0, "Rejected Orders ", cancelledOrdersCount))
-                list.add(InventoryItemModel(0, "UpComing Orders ", upcomingOrderCount))
+             }
+             2 -> {
+                 list.add(InventoryItemModel(0, "Pending Orders ", pendingOrdersCount))
+                 list.add(InventoryItemModel(0, "InProgress Orders ", ongoingOrderCount))
+                 list.add(InventoryItemModel(0, "Completed Orders", completedOrdersCount, true))
+                 list.add(InventoryItemModel(0, "Rejected Orders ", cancelledOrdersCount))
+                 list.add(InventoryItemModel(0, "UpComing Orders ", upcomingOrderCount))
 
-            }
-            2 -> {
-                list.add(InventoryItemModel(0, "Pending Orders ", pendingOrdersCount))
-                list.add(InventoryItemModel(0, "InProgress Orders ", ongoingOrderCount))
-                list.add(InventoryItemModel(0, "Completed Orders", completedOrdersCount, true))
-                list.add(InventoryItemModel(0, "Rejected Orders ", cancelledOrdersCount))
-                list.add(InventoryItemModel(0, "UpComing Orders ", upcomingOrderCount))
+             }
+             3 -> {
+                 list.add(InventoryItemModel(0, "Pending Orders ", pendingOrdersCount))
+                 list.add(InventoryItemModel(0, "InProgress Orders ", ongoingOrderCount))
+                 list.add(InventoryItemModel(0, "Completed Orders", completedOrdersCount))
+                 list.add(InventoryItemModel(0, "Rejected Orders ", cancelledOrdersCount, true))
+                 list.add(InventoryItemModel(0, "UpComing Orders ", upcomingOrderCount))
 
-            }
-            3 -> {
-                list.add(InventoryItemModel(0, "Pending Orders ", pendingOrdersCount))
-                list.add(InventoryItemModel(0, "InProgress Orders ", ongoingOrderCount))
-                list.add(InventoryItemModel(0, "Completed Orders", completedOrdersCount))
-                list.add(InventoryItemModel(0, "Rejected Orders ", cancelledOrdersCount, true))
-                list.add(InventoryItemModel(0, "UpComing Orders ", upcomingOrderCount))
-
-            }
-            4 -> {
-                list.add(InventoryItemModel(0, "Pending Orders ", pendingOrdersCount))
-                list.add(InventoryItemModel(0, "InProgress Orders ", ongoingOrderCount))
-                list.add(InventoryItemModel(0, "Completed Orders", completedOrdersCount))
-                list.add(InventoryItemModel(0, "Rejected Orders ", cancelledOrdersCount))
-                list.add(InventoryItemModel(0, "UpComing Orders ", upcomingOrderCount, true))
-            }
-        }*/
+             }
+             4 -> {
+                 list.add(InventoryItemModel(0, "Pending Orders ", pendingOrdersCount))
+                 list.add(InventoryItemModel(0, "InProgress Orders ", ongoingOrderCount))
+                 list.add(InventoryItemModel(0, "Completed Orders", completedOrdersCount))
+                 list.add(InventoryItemModel(0, "Rejected Orders ", cancelledOrdersCount))
+                 list.add(InventoryItemModel(0, "UpComing Orders ", upcomingOrderCount, true))
+             }
+         }*/
 
         binding.recyclerViewItemsList.adapter =
             InventoryAdapter(
@@ -300,6 +314,7 @@ class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
                 false,
                 object : InventoryAdapter.InventoryListner {
                     override fun onItemSelect(position: Int) {
+
                         if (position == 3) {
                             if (rolePermission.hasCancelOrderPermission(binding.root)) {
                                 changePosition(position)
