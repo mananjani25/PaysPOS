@@ -7,5 +7,6 @@ import kotlinx.parcelize.Parcelize
 data class OrderRequestModel(
 
     var completed_all_payments: Boolean = false,
-    var order: OrderAttributeRequestModel
+    var order: OrderAttributeRequestModel,
+    var send_payment_link: Boolean? = false,
 )

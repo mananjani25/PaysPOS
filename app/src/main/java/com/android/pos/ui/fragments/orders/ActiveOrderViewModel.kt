@@ -64,8 +64,17 @@ class ActiveOrderViewModel @Inject constructor(
     ): LiveData<Resource<OpenOrderResponse>> =
         posRepository.getOpenOrders(paymentStatus, startDate, endDate)
 
-    fun orderCounts(startDate: String?, endDate: String?): LiveData<Resource<OrderCountsResponse>> =
-        posRepository.orderCounts(startDate, endDate)
+
+    fun phoneOrders(
+        paymentStatus: String,
+        startDate: String,
+        endDate: String
+    ): LiveData<Resource<OpenOrderResponse>> =
+        posRepository.getPhoneOrders(paymentStatus, startDate, endDate)
+
+
+    fun orderCounts(startDate: String?, endDate: String?, isOpenOrder: Boolean): LiveData<Resource<OrderCountsResponse>> =
+        posRepository.orderCounts(startDate, endDate,isOpenOrder)
 
     fun setCurrentDate(myCalendar: Calendar, paramStartDate: String?, paramEndDate: String?) {
         val myFormat = "MM/dd/yyyy" //In which you need put here

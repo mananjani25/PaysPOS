@@ -6,5 +6,5 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class SpitByOrderPaymentModel(
 
-    var payments_attributes: List<PaymentAttributes> = emptyList()
+    var payments_attributes: List<PaymentAttributes>? = emptyList()
 ): Parcelable
