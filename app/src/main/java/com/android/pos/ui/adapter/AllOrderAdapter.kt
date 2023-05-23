@@ -13,6 +13,7 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.model.responseModel.OnlineOrderResponseModel
+import com.android.pos.data.model.responseModel.OpenOrderResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ONLINE_ORDER_TAB
 import com.android.pos.data.remote.Constants.OPEN_ORDER_TAB
@@ -278,6 +279,11 @@ class AllOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
 
     override fun getItemCount(): Int {
         return filterList.size
+    }
+
+    fun getItem(pos: Int): OnlineOrderResponseModel.Data {
+
+        return filterList[pos]
     }
 
     override fun getFilter(): Filter {

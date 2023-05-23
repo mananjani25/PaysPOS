@@ -20,15 +20,21 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.core.os.bundleOf
 import androidx.core.text.trimmedLength
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.pos.R
+import com.android.pos.data.entities.CartModel
+import com.android.pos.data.entities.LoyaltyProgramsModel
+import com.android.pos.data.entities.RedeemLoyaltyInfo
+import com.android.pos.data.entities.TbCustomer
 import com.android.pos.data.model.requestModel.RefundRequestModelOnlineOrder
 import com.android.pos.data.model.responseModel.GetKitchenReceiptSettingsResponse
 import com.android.pos.data.model.responseModel.OnlineOrderStatusUpdateResponse
+import com.android.pos.data.model.responseModel.OpenOrderResponse
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
@@ -38,6 +44,7 @@ import com.android.pos.databinding.AllOrdersListingFragmentBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
 import com.android.pos.ui.adapter.AllOrderAdapter
+import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.onlineorder.OnlineDetailViewModel
 import com.android.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
 import com.android.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
@@ -78,6 +85,7 @@ class AllOrdersListingFragment(
     private var isEmployeeAtoZ: Boolean = false
     private var isStationAtoZ: Boolean = false
     private val viewModel by viewModels<OnlineDetailViewModel>()
+    private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
     lateinit var binding: AllOrdersListingFragmentBinding
     private lateinit var refundData: RefundRequestModelOnlineOrder
     private lateinit var startDate: DatePickerDialog.OnDateSetListener
@@ -676,100 +684,363 @@ class AllOrdersListingFragment(
     }
 
     override fun onItemClickListener(view: View?, pos: Int, status: String) {
-        if (status == "accepted") {
-            if (findNavController().currentDestination?.id == R.id.onlineOrderFragment) {
-                findNavController().navigate(
-                    R.id.action_onlineOrder_to_addOnlneTime,
-                    bundleOf(
-                        "order_id" to adapter.filterList[pos].id
+        val order = adapter.getItem(pos)
+        when (status) {
+            "accepted" -> {
+                if (findNavController().currentDestination?.id == R.id.onlineOrderFragment) {
+                    findNavController().navigate(
+                        R.id.action_onlineOrder_to_addOnlneTime,
+                        bundleOf(
+                            "order_id" to adapter.filterList[pos].id
+                        )
+                    )
+                }
+            }
+            "Completed" -> {
+                alert("", "Are you sure, you want to complete this order ?") {
+                    this.positiveButton("YES") {
+                        updateOrder(adapter.filterList[0].id, status)
+                    }
+                    this.negativeButton("NO") {
+                    }
+
+                }
+            }
+            "UPDATE" -> {
+                var itemDiscountTotal: Double = 0.0
+                var itemPassDis: Double = 0.0
+                order.orderItems.forEach {
+                    if (it.discountAmount != 0.0) {
+                        itemDiscountTotal += MethodUtils.roundOffAmountDouble(it.discountAmount)
+                    }
+                    if (it.discountAmount != 0.0 && it.quantity > 1) {
+
+                        //  itemDiscountTotal += MethodUtils.roundOffAmountDouble(it.discountAmount / it.quantity)
+                        it.discountAmount =
+                            MethodUtils.roundOffAmountDouble(it.discountAmount / it.quantity)
+                    }
+                }
+                LogUtil.logE(TAG, "itemDiscountTotal:  ${itemDiscountTotal}")
+                LogUtil.logE(TAG, "totalOrderDiscount  ${order.totalDiscount}")
+
+                order.totalDiscount = order.totalDiscount - itemDiscountTotal
+
+                LogUtil.logE(TAG, "OpenORderUpdateOrder:  ${Gson().toJson(order.orderItems)}")
+
+                prefProvider.setValue(Constants.ORDER_TYPE, Constants.OPEN_ORDER)
+                prefProvider.setValue(Constants.ORDER_TYPE_NAME, Constants.OPEN_ORDER)
+                prefProvider.setValueInt(Constants.ORDER_TYPE_ID, order.orderTypeId)
+
+                if (order.customer != null) {
+                    prefProvider.setValue(
+                        Constants.CUSTOMER_NAME,
+                        order.customer.firstName + " " + order.customer.lastName
+                    )
+                    prefProvider.setValueInt(Constants.CUSTOMER_ID, order.customer.id)
+                    //TODO - prefProvider.saveCustomerData(TbCustomer.customerMapping(order.customer))
+                }
+                prefProvider.setValue(Constants.OPEN_ORDER_ITEMS, Gson().toJson(order.orderItems))
+                prefProvider.setValueboolean(Constants.OPEN_ORDER_UPDATE_FOR_PRINT, true)
+
+//                //TODO - dashboardViewModel.addCart(
+//                    cartModel(order)
+//                )
+                val bundle = Bundle()
+                bundle.putBoolean("update", true)
+                bundle.putInt("orderId", order.id)
+                if (!order.payments.isNullOrEmpty()) {
+                    bundle.putInt("paymentId", order.payments[0].id)
+                    bundle.putString("paymentOfflineId", order.payments[0].offlineId)
+                } else {
+                    bundle.putString("paymentOfflineId", randomOfflineId())
+                }
+                bundle.putString("orderOfflineId", order.offlineId)
+                bundle.putBoolean("isFromActiveOrder", true)
+                bundle.putBoolean("isLoyaltyApplied", order.isLoyaltyApplied)
+
+                prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER, true)
+                prefProvider.setValueboolean(
+                    Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED,
+                    order.isLoyaltyApplied
+                )
+                prefProvider.setValueboolean(
+                    Constants.LOYALTY_ADDED,
+                    order.isLoyaltyApplied
+                )
+                prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER, true)
+                prefProvider.setValueInt(Constants.IS_UPDATE_ORDER_ID, order.id)
+
+                if (!order.payments.isNullOrEmpty()) {
+                    prefProvider.setValueInt(
+                        Constants.IS_UPDATE_ORDER_PAYMENT_ID,
+                        order.payments[0].id
+                    )
+                    prefProvider.setValue(
+                        Constants.IS_UPDATE_ORDER_PAY_OFFLINE_ID,
+                        order.payments[0].offlineId
+                    )
+                } else {
+                    prefProvider.setValue(
+                        Constants.IS_UPDATE_ORDER_PAY_OFFLINE_ID,
+                        randomOfflineId()
+                    )
+                }
+                prefProvider.setValue(Constants.IS_UPDATE_ORDER_OFFLINE_ID, order.offlineId)
+
+
+                if (findNavController().currentDestination?.id == R.id.orders) {
+                    findNavController().navigate(
+                        R.id.action_orders_to_dashboardCategoryBoldPOS, bundle
+                    )
+                }
+
+//                findNavController().navigateUp()
+
+            }
+            "PAY" -> {
+
+                prefProvider.setValue("PaidAmount", "")
+                prefProvider.setValue(Constants.WHOLE_AMOUNT, "")
+                prefProvider.setValueInt("cardCount", 0)
+                prefProvider.setValue(Constants.SUB_TOTAL, "")
+                prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
+                prefProvider.setValue(Constants.TOTAL_DISCOUNT, "")
+                prefProvider.setValue(Constants.TIP, "")
+                prefProvider.setValue(Constants.TAX_CHARGE, "")
+                prefProvider.setValue(Constants.SERVICE_CHARGE, "")
+
+                dashboardViewModel.deleteCart()
+                prefProvider.setValue(Constants.ORDER_TYPE, Constants.OPEN_ORDER)
+                prefProvider.setValue(Constants.ORDER_TYPE_NAME, Constants.OPEN_ORDER_)
+
+                var itemDiscountTotal: Double = 0.0
+                var itemPassDis: Double = 0.0
+                order.orderItems.forEach {
+                    if (it.discountAmount != 0.0) {
+                        itemDiscountTotal += MethodUtils.roundOffAmountDouble(it.discountAmount)
+                    }
+                    if (it.discountAmount != 0.0 && it.quantity > 1) {
+
+                        //  itemDiscountTotal += MethodUtils.roundOffAmountDouble(it.discountAmount / it.quantity)
+                        it.discountAmount =
+                            MethodUtils.roundOffAmountDouble(it.discountAmount / it.quantity)
+                    }
+                }
+                LogUtil.logE(TAG, "itemDiscountTotal:  ${itemDiscountTotal}")
+                LogUtil.logE(TAG, "totalOrderDiscount  ${order.totalDiscount}")
+
+                order.totalDiscount = order.totalDiscount - itemDiscountTotal
+
+
+                if (order.customer != null) {
+                    prefProvider.setValue(
+                        Constants.CUSTOMER_NAME,
+                        order.customer.firstName + " " + order.customer.lastName
+                    )
+                    prefProvider.setValueInt(Constants.CUSTOMER_ID, order.customer.id)
+                    //TODO - prefProvider.saveCustomerData(TbCustomer.customerMapping(order.customer))
+                }
+
+                LogUtil.logE(TAG, "getOrder  ${Gson().toJson(order)}")
+//                //TODO - dashboardViewModel.addCart(
+//                    cartModel(order)
+//                )
+
+                val bundle = Bundle()
+                bundle.putBoolean("update", true)
+                bundle.putDouble("totalPrice", order.totalAmount)
+                bundle.putDouble("finalprice", order.totalAmount)
+                bundle.putDouble(
+                    "cashDiscountSurcharge",
+                    MethodUtils.calculateCashDiscount(
+                        order.subTotal,
+                        prefProvider,
+                        requireContext()
                     )
                 )
-            }
-        } else if (status == "Completed") {
-            alert("", "Are you sure, you want to complete this order ?") {
-                this.positiveButton("YES") {
-                    updateOrder(adapter.filterList[0].id, status)
+                bundle.putDouble("subTotalPrice", order.subTotal)
+                bundle.putDouble("totalTax", order.totalTaxAmount)
+                bundle.putDouble("totalDiscount", order.totalDiscount)
+                bundle.putDouble("totalServiceCharge", order.totalServiceCharges)
+                bundle.putString("future_delivery_date", order.futureDeliveryDate)
+                bundle.putString("future_delivery_time", order.futureDeliveryTime)
+                //TODO - bundle.putParcelable("cartList", cartModel(order))
+
+                bundle.putInt("orderId", order.id)
+                LogUtil.logE("orderId :: ", order.id.toString())
+                if (order.payments.isNotEmpty()) {
+                    bundle.putInt("paymentId", order.payments[0].id)
+                    bundle.putString("paymentOfflineId", order.payments[0].offlineId)
+                } else {
+                    bundle.putString("paymentOfflineId", randomOfflineId())
                 }
-                this.negativeButton("NO") {
-                }
+                bundle.putString("orderOfflineId", order.offlineId)
+
+                val redeemLoyaltyInfo = RedeemLoyaltyInfo()
+                val loyaltyProgramsModel = LoyaltyProgramsModel(
+                    0.0,
+                    "",
+                    order.loyaltyProgramId,
+                    order.isLoyaltyApplied,
+                    order.locationId,
+                    "",
+                    0,
+                    "",
+                    ""
+                )
+                redeemLoyaltyInfo.loyaltyProgramsModel = loyaltyProgramsModel
+                //redeemLoyaltyInfo.isLoyaltyApplied = order.isLoyaltyApplied
+                redeemLoyaltyInfo.needToApplyLoyalty = order.isLoyaltyApplied
+                redeemLoyaltyInfo.usedLoyaltyAmount = order.loyaltyAmount
+                redeemLoyaltyInfo.usedLoyaltyPoints = order.usedRewardPoints
+
+                bundle.putString(
+                    "redeemLoyalty",
+                    Gson().toJson(redeemLoyaltyInfo)
+                )
+                bundle.putBoolean("isFromActiveOrder", true)
+                bundle.putBoolean("isLoyaltyApplied", order.isLoyaltyApplied)
+                prefProvider.setValueboolean(
+                    Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED,
+                    order.isLoyaltyApplied
+                )
+                prefProvider.setValueboolean(
+                    Constants.LOYALTY_ADDED,
+                    order.isLoyaltyApplied
+                )
+
+                findNavController().navigate(R.id.action_orders_to_paymentBoldPosFragment, bundle)
+
 
             }
-        } else {
-            alert("", "Are you sure, you want to reject this order ?") {
+            Constants.PRINT_UNPAID -> {
 
-                this.positiveButton("YES") {
-                    var employeeIdtemp = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
-                    var terminal_id = prefProvider.getValueInt(Constants.TERMINAL_ID, 0)
-                    var orderItemRefundsAttributesList =
-                        ArrayList<RefundRequestModelOnlineOrder.PaymentRefund.OrderItemRefundsAttribute>()
-                    adapter.orderList[pos].orderItems.forEach { item ->
-                        val orderItemRefundsAttributeModel =
-                            RefundRequestModelOnlineOrder.PaymentRefund.OrderItemRefundsAttribute()
+                //TODO - getCustomerPrinters(order, status)
+            }
+            Constants.PRINT_PAID -> {
+                //TODO - getCustomerPrinters(order, status)
+            }
 
-                        orderItemRefundsAttributeModel.amount = item.totalPrice
-                        orderItemRefundsAttributeModel.employeeId = employeeIdtemp
-                        orderItemRefundsAttributeModel.orderId = item.orderId
-                        orderItemRefundsAttributeModel.refundType = 0
-                        orderItemRefundsAttributeModel.paymentId =
-                            adapter.orderList[pos].payments[0].id
-                        orderItemRefundsAttributeModel.orderItemId = item.id
-                        orderItemRefundsAttributeModel.quantity = item.quantity
-                        orderItemRefundsAttributesList.add(orderItemRefundsAttributeModel)
-                    }
-
-                    refundData = RefundRequestModelOnlineOrder().apply {
-                        paymentRefund = RefundRequestModelOnlineOrder.PaymentRefund().apply {
-                            amount =
-                                adapter.orderList[pos].payments[0].amount + adapter.orderList[pos].payments[0].tips
-                            orderId = adapter.orderList[pos].id
-                            paymentId = adapter.orderList[pos].payments[0].id
-                            employeeId = employeeIdtemp
-                            taxRefunded = adapter.orderList[pos].payments[0].taxAmount
-                            tipsRefunded = adapter.orderList[pos].payments[0].tips
-                            terminalId = terminal_id
-                            serviceChargeRefunded =
-                                adapter.orderList[pos].payments[0].serviceChargeAmount
-                            cash_discount_or_surcharge_refunded =
-                                adapter.orderList[pos].payments[0].cashDiscount
-                            subtotal_refunded = adapter.orderList[pos].payments[0].subTotal
-                            orderItemRefundsAttributes = orderItemRefundsAttributesList
-                        }
-                    }
+            "cancel-order" -> {
+                if (rolePermission.hasCancelOrderPermission(binding.root)) {
                     val bundle = Bundle().apply {
-                        putParcelable("refundData", refundData)
-                        putDouble(
-                            "refundAmount",
-                            adapter.orderList[pos].payments[0].amount + adapter.orderList[pos].payments[0].tips
-                        )
-                        putString("paymentType", adapter.orderList[pos].payments[0].paymentType)
-                        putString(
-                            "magensa_response_data",
-                            adapter.orderList[pos].magensa_response_data
-                        )
-                    }
-                    bundle.putString("isFrom", "rejectOnlineOrder")
-                    if (prefProvider.isAdmin() || prefProvider.isManager()) {
-                        if (findNavController().currentDestination?.id == R.id.onlineOrderFragment) {
-                            findNavController().navigate(
-                                R.id.action_onlineOrder_to_reasonForrefundonline,
-                                bundle
-                            )
-                        }
-                    } else {
-                        if (findNavController().currentDestination?.id == R.id.onlineOrderFragment) {
-                            findNavController().navigate(
-                                R.id.action_onlineOrder_to_passcodeManager,
-                                bundle
-                            )
-                        }
+                        /* putParcelable("refundData", refundData)
+                         putDouble("refundAmount", subTotalPrice)*/
+
+                        putInt("orderId", order.id)
+                        putString("startDate", viewModel.startDate.value.toString())
+                        putString("endDate", viewModel.endDate.value.toString())
                     }
 
-
+                    findNavController().navigate(
+                        R.id.action_order_fragment_to_reason_for_cancel_order_dialog,
+                        bundle
+                    )
                 }
-                this.negativeButton("NO") {
-                }
-
             }
+            "reject-order" -> {
+                alert("", "Are you sure, you want to reject this order ?") {
+
+                    this.positiveButton("YES") {
+                        var employeeIdtemp = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+                        var terminal_id = prefProvider.getValueInt(Constants.TERMINAL_ID, 0)
+                        var orderItemRefundsAttributesList =
+                            ArrayList<RefundRequestModelOnlineOrder.PaymentRefund.OrderItemRefundsAttribute>()
+                        adapter.orderList[pos].orderItems.forEach { item ->
+                            val orderItemRefundsAttributeModel =
+                                RefundRequestModelOnlineOrder.PaymentRefund.OrderItemRefundsAttribute()
+
+                            orderItemRefundsAttributeModel.amount = item.totalPrice
+                            orderItemRefundsAttributeModel.employeeId = employeeIdtemp
+                            orderItemRefundsAttributeModel.orderId = item.orderId
+                            orderItemRefundsAttributeModel.refundType = 0
+                            orderItemRefundsAttributeModel.paymentId =
+                                adapter.orderList[pos].payments[0].id
+                            orderItemRefundsAttributeModel.orderItemId = item.id
+                            orderItemRefundsAttributeModel.quantity = item.quantity
+                            orderItemRefundsAttributesList.add(orderItemRefundsAttributeModel)
+                        }
+
+                        refundData = RefundRequestModelOnlineOrder().apply {
+                            paymentRefund = RefundRequestModelOnlineOrder.PaymentRefund().apply {
+                                amount =
+                                    adapter.orderList[pos].payments[0].amount + adapter.orderList[pos].payments[0].tips
+                                orderId = adapter.orderList[pos].id
+                                paymentId = adapter.orderList[pos].payments[0].id
+                                employeeId = employeeIdtemp
+                                taxRefunded = adapter.orderList[pos].payments[0].taxAmount
+                                tipsRefunded = adapter.orderList[pos].payments[0].tips
+                                terminalId = terminal_id
+                                serviceChargeRefunded =
+                                    adapter.orderList[pos].payments[0].serviceChargeAmount
+                                cash_discount_or_surcharge_refunded =
+                                    adapter.orderList[pos].payments[0].cashDiscount
+                                subtotal_refunded = adapter.orderList[pos].payments[0].subTotal
+                                orderItemRefundsAttributes = orderItemRefundsAttributesList
+                            }
+                        }
+                        val bundle = Bundle().apply {
+                            putParcelable("refundData", refundData)
+                            putDouble(
+                                "refundAmount",
+                                adapter.orderList[pos].payments[0].amount + adapter.orderList[pos].payments[0].tips
+                            )
+                            putString("paymentType", adapter.orderList[pos].payments[0].paymentType)
+                            putString(
+                                "magensa_response_data",
+                                adapter.orderList[pos].magensa_response_data
+                            )
+                        }
+                        bundle.putString("isFrom", "rejectOnlineOrder")
+                        if (prefProvider.isAdmin() || prefProvider.isManager()) {
+                            if (findNavController().currentDestination?.id == R.id.onlineOrderFragment) {
+                                findNavController().navigate(
+                                    R.id.action_onlineOrder_to_reasonForrefundonline,
+                                    bundle
+                                )
+                            }
+                        } else {
+                            if (findNavController().currentDestination?.id == R.id.onlineOrderFragment) {
+                                findNavController().navigate(
+                                    R.id.action_onlineOrder_to_passcodeManager,
+                                    bundle
+                                )
+                            }
+                        }
+
+
+                    }
+                    this.negativeButton("NO") {
+                    }
+
+                }
+            }
+        }
+    }
+
+    private fun cartModel(order: OpenOrderResponse.Data.Order): CartModel {
+        LogUtil.logE("futureDeliveryDate  ", Gson().toJson(order))
+        return CartModel().apply {
+            terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
+            employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1)
+            locationId = order.locationId
+            orderTypeId = order.orderTypeId
+            orderType = order.orderType
+            orderTypeName = order.orderType
+            futureDeliveryDate = order.futureDeliveryDate.toString()
+            isOpenOrder = true
+            //TODO - serviceCharge = serviceChargesList(order)
+            //TODO - customer = assignCustomer(order)
+            //TODO - items = inventoryList(order)
+            note = order.note
+            var itemDiscount = 0.0
+            items?.forEach {
+                itemDiscount += it.discountPrice
+            }
+            discountPrice = order.totalDiscount
+            deliveryType = order.deliveryType ?: ""
+            //TODO - taxlistDynamic = getTaxBirfucationList(order.orderItems)
+
         }
     }
 
