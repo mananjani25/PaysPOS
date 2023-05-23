@@ -329,6 +329,9 @@ class AllOrdersListingFragment(
                         resource.data?.let {
 
                             if (it.data.isNotEmpty()) {
+                                if (orderTab == Constants.ONLINE_ORDER_TAB || orderTab == Constants.THIRD_PARTY_ORDER_TAB) {
+                                    binding.tvOrderStatus.visible()
+                                }
                                 binding.rvOpenOrder.visibility = View.VISIBLE
                                 binding.llNoData.visibility = View.GONE
                                 val data = it.data

@@ -14,6 +14,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.model.responseModel.OnlineOrderResponseModel
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.ONLINE_ORDER_TAB
+import com.android.pos.data.remote.Constants.OPEN_ORDER_TAB
+import com.android.pos.data.remote.Constants.PHONE_ORDER_TAB
+import com.android.pos.data.remote.Constants.THIRD_PARTY_ORDER_TAB
 import com.android.pos.databinding.ViewAllOrderLayoutBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.MethodUtils
@@ -81,38 +85,47 @@ class AllOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
                     )
             }
 
+            if (orderedTab == ONLINE_ORDER_TAB || orderedTab == THIRD_PARTY_ORDER_TAB) {
 
-//            if (item.order_status == "Pending") {
-//                binding.orderStatusLinear?.visible()
-//                binding.orderInprogressButton?.gone()
-//                binding.orderCompletedButton?.gone()
-//                binding.orderCancelledButton?.gone()
-//                binding.orderUpcomingButton?.gone()
-//            } else if (item.order_status == "InProgress") {
-//                binding.orderStatusLinear?.gone()
-//                binding.orderInprogressButton?.visible()
-//                binding.orderCompletedButton?.gone()
-//                binding.orderCancelledButton?.gone()
-//                binding.orderUpcomingButton?.gone()
-//            } else if (item.order_status == "Completed") {
-//                binding.orderStatusLinear?.gone()
-//                binding.orderInprogressButton?.gone()
-//                binding.orderCompletedButton?.visible()
-//                binding.orderCancelledButton?.gone()
-//                binding.orderUpcomingButton?.gone()
-//            } else if (item.order_status == "UpComing") {
-//                binding.orderStatusLinear?.gone()
-//                binding.orderInprogressButton?.gone()
-//                binding.orderCompletedButton?.gone()
-//                binding.orderCancelledButton?.gone()
-//                binding.orderUpcomingButton?.visible()
-//            } else {
-//                binding.orderStatusLinear?.gone()
-//                binding.orderInprogressButton?.gone()
-//                binding.orderCompletedButton?.gone()
-//                binding.orderCancelledButton?.visible()
-//                binding.orderUpcomingButton?.gone()
-//            }
+                when (item.order_status) {
+                    "Pending" -> {
+                        binding.orderStatusLinear.visible()
+                        binding.orderInprogressButton.gone()
+                        binding.orderCompletedButton.gone()
+                        binding.orderCancelledButton.gone()
+                        binding.orderUpcomingButton.gone()
+                    }
+                    "InProgress" -> {
+                        binding.orderStatusLinear.gone()
+                        binding.orderInprogressButton.visible()
+                        binding.orderCompletedButton.gone()
+                        binding.orderCancelledButton.gone()
+                        binding.orderUpcomingButton.gone()
+                    }
+                    "Completed" -> {
+                        binding.orderStatusLinear.gone()
+                        binding.orderInprogressButton.gone()
+                        binding.orderCompletedButton.visible()
+                        binding.orderCancelledButton.gone()
+                        binding.orderUpcomingButton.gone()
+                    }
+                    "UpComing" -> {
+                        binding.orderStatusLinear.gone()
+                        binding.orderInprogressButton.gone()
+                        binding.orderCompletedButton.gone()
+                        binding.orderCancelledButton.gone()
+                        binding.orderUpcomingButton.visible()
+                    }
+                    else -> {
+                        binding.orderStatusLinear.gone()
+                        binding.orderInprogressButton.gone()
+                        binding.orderCompletedButton.gone()
+                        binding.orderCancelledButton.visible()
+                        binding.orderUpcomingButton.gone()
+                    }
+                }
+            }
+
 
 
             binding.txtCustomerName.text =
@@ -129,7 +142,7 @@ class AllOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
                 binding.rvOpenOrder.gone()
             }
 
-            if (orderedTab == "Open") {
+            if (orderedTab == OPEN_ORDER_TAB) {
                 binding.txtDeliveryOrPickup.gone()
             } else {
                 binding.txtDeliveryOrPickup.visible()
@@ -165,7 +178,7 @@ class AllOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
                 binding.tvOrderID.setTextColor(binding.root.resources.getColor(R.color.white))
                 binding.llShowLayout.visibility = View.VISIBLE
 
-                if (orderedTab == "Open" || orderedTab == "Phone") {
+                if (orderedTab == OPEN_ORDER_TAB || orderedTab == PHONE_ORDER_TAB) {
                     binding.lnrPhoneAndOnlineButtons.visible()
                 } else {
                     binding.lnrPhoneAndOnlineButtons.gone()

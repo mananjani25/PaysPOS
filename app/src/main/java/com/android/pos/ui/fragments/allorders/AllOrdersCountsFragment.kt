@@ -17,8 +17,13 @@ import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.model.InventoryItemModel
 import com.android.pos.data.remote.ApiService
+import com.android.pos.data.remote.Constants.ALL_ORDER_TAB
 import com.android.pos.data.remote.Constants.ALL_ORDER_TAB_POS
+import com.android.pos.data.remote.Constants.ONLINE_ORDER_TAB
 import com.android.pos.data.remote.Constants.ONLINE_ORDER_TAB_POS
+import com.android.pos.data.remote.Constants.OPEN_ORDER_TAB
+import com.android.pos.data.remote.Constants.PHONE_ORDER_TAB
+import com.android.pos.data.remote.Constants.THIRD_PARTY_ORDER_TAB
 import com.android.pos.data.remote.Constants.THIRD_PARTY_ORDER_TAB_POS
 import com.android.pos.databinding.FragmentAllOrdersCountsBinding
 import com.android.pos.databinding.FragmentOnlineOrderBinding
@@ -160,23 +165,23 @@ class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
 
         when (tabPosition) {
             0 -> {
-                ORDER_TAB = "All"
+                ORDER_TAB = ALL_ORDER_TAB
             }
 
             1 -> {
-                ORDER_TAB = "Open"
+                ORDER_TAB = OPEN_ORDER_TAB
             }
 
             2 -> {
-                ORDER_TAB = "Phone"
+                ORDER_TAB = PHONE_ORDER_TAB
             }
 
             3 -> {
-                ORDER_TAB = "Online"
+                ORDER_TAB = ONLINE_ORDER_TAB
             }
 
             4 -> {
-                ORDER_TAB = "3rdParty"
+                ORDER_TAB = THIRD_PARTY_ORDER_TAB
             }
 
         }

@@ -360,6 +360,12 @@ object Constants {
     const val ONLINE_ORDER_TAB_POS = 3
     const val THIRD_PARTY_ORDER_TAB_POS = 4
 
+    const val ALL_ORDER_TAB = "allOrder"
+    const val OPEN_ORDER_TAB = "openOrder"
+    const val PHONE_ORDER_TAB = "phoneOrder"
+    const val ONLINE_ORDER_TAB = "onlineOrder"
+    const val THIRD_PARTY_ORDER_TAB = "thirdPartyOrder"
+
 
     fun createRequestModelForUpdatePritnerType(
         oldList: ArrayList<PrinterResponse.Data.OrderTypes>?,
