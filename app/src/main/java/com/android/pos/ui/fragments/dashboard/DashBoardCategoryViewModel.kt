@@ -2613,7 +2613,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         context: Context
     ) {
 
-
+        if (cartList != null && cartList.isNotEmpty()) {
         var totalAmmount = 0.0
         nonCashAdj = 0.0
         totalPrice = 0.0
@@ -2623,7 +2623,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         totalTax = 0.0
         totalServiceCharge = 0.0
         var amountToBePaid = 0.0
-        if (cartList != null && cartList.isNotEmpty()) {
+
             if (cartList[0].orderType == DINE_IN) {
 
                 var dineInItems = 0
