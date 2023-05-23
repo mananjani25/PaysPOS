@@ -513,9 +513,14 @@ open class PaymentViewModel @Inject constructor(
         orderAttributeRequestModel.openOrderType =
             prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT)
 
+        Log.e("checkOrderTypeID","getOrderTypeID  ${prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)}")
         if (order_type_id == -1 && prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT) == Constants.OPEN_ORDER){
             order_type_id = prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)
         }
+        else if (prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT) == Constants.DINE_IN && orderId != 0){
+            order_type_id = prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)
+        }
+
 
         orderAttributeRequestModel.orderTypeId = order_type_id
         orderAttributeRequestModel.date = TimeFormatUtils.getCurrentDate()
