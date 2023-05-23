@@ -68,7 +68,6 @@ android {
         abortOnError false
         checkReleaseBuilds false
     }
-    namespace 'com.android.pos'
 }
 
 dependencies {

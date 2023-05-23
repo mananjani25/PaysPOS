@@ -105,6 +105,7 @@ object Constants {
 
     const val TAKEOUT = "TakeOut"
     const val DINE_IN = "DineIn"
+    const val PHONE_ORDER = "PhoneOrder"
     const val DINE_IN_UPDATE = "DineInUpdate"
     const val DINE_IN_ITEM = "DineInItem"
     const val OPEN_ORDER = "OpenOrder"
@@ -120,6 +121,8 @@ object Constants {
 
     const val PICK_UP = "Pickup"
     const val DELIVERY = "Delivery"
+
+    const val DELIVERY_TYPE = "Delivery_Type"
     const val OPEN_ORDER_ITEMS = "Open_Order_Items"
 
     //Api End Points
@@ -176,6 +179,8 @@ object Constants {
 
     const val DISCOUNTS = "discounts"
     const val DISCOUNTS_UPDATE_DELETE = "discounts/{id}"
+
+    const val TEXT_TO_PAY_SPIT = "sms_order_payment_link/{id}"
 
     const val DISCOUNTS_ACTIVE = "discounts/{id}/active"
 
@@ -294,6 +299,7 @@ object Constants {
     const val ORDER_ASSIGN_CUSTOMER = "orders/{id}/assign_customer_into_order"
     const val ORDER_PAY_AMOUNT_WISE = "payments/pay_amount_wise"
     const val ORDER_COUNTS = "orders/open_orders_show_count"
+    const val PHONE_ORDER_COUNTS = "orders/phone_orders_show_count"
     const val ONLINE_ORDER_COUNTS = "online_ordering_orders/web_orders_count"
     const val ONLINE_ORDER_NOTIFICATION_COUNT = "locations/web_ordering_count"
     const val UPDATE_LOCK_SCREEN_PERMISSION = "locations/update_lock_screen_permission"
@@ -460,6 +466,7 @@ object Constants {
 
 
     const val OPEN_ORDERS = "orders/open_orders"
+    const val PHONE_ORDERS = "orders/phone_orders"
     const val ONLINE_ORDERING = "online_ordering_orders/web_orders"
     const val ACCEPTED_DECLINE_ONLINEORDER = "online_ordering_orders/{id}/accept_order"
     const val UPDATE_ONLINE_ORDER = "online_ordering_orders/{id}"
