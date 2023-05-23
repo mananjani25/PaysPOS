@@ -1,6 +1,8 @@
 package com.android.pos.ui.fragments.dashboard.bolddashboard
 
-import android.app.Activity
+import android.annotation.SuppressLint
+import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothDevice
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -20,7 +22,6 @@ import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.*
 import androidx.lifecycle.Observer
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.android.pos.MainApplication
 import com.android.pos.R
@@ -28,11 +29,14 @@ import com.android.pos.aidl.ICallback
 import com.android.pos.aidl.IWoyouService
 import com.android.pos.data.entities.*
 import com.android.pos.data.model.DineInModel
+import com.android.pos.data.model.PrinterListModel
+import com.android.pos.data.model.requestModel.CreatePrinterRequestModel
 import com.android.pos.data.model.requestModel.CreateQueuePrinterRequestModel
 import com.android.pos.data.model.requestModel.OrderAttributeRequestModel
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.CUSTOMER
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
 import com.android.pos.data.remote.Constants.IS_PAYMENT_SCREEN
@@ -58,6 +62,8 @@ import com.android.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.ui.fragments.payment.PaymentViewModel
 import com.android.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
+import com.android.pos.ui.fragments.settings.hardware.printer.ESCUtil
+import com.android.pos.ui.fragments.settings.hardware.printer.PrinterViewModel
 import com.android.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.android.pos.ui.fragments.settings.servicecharge.ServiceChargeListViewModel
 import com.android.pos.utils.*
@@ -74,6 +80,8 @@ import com.android.pos.utils.statusUtils.Status
 import com.epson.epos2.printer.Printer
 import com.epson.eposprint.Builder
 import com.epson.eposprint.Print
+import com.epson.epsonio.DevType
+import com.epson.epsonio.DeviceInfo
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.sunmi.externalprinterlibrary.api.ConnectCallback
@@ -85,6 +93,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.io.IOException
 import java.util.*
 import javax.inject.Inject
 
@@ -92,6 +101,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     ScannerAppEngine.IScannerAppEngineDevEventsDelegate, ICallback, DineInOrderCallBack {
+    private var mBluetoothAdapter: BluetoothAdapter? = null
     private val mHandler = Handler(Looper.myLooper()!!)
     private lateinit var presentation: CustomDisplay
     private var dineInList: List<DineInModel>? = null
@@ -101,6 +111,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
     private val viewModelPayment by activityViewModels<PaymentViewModel>()
     private val passcodeViewModel by activityViewModels<PasscodeViewModel>()
+    private val printerViewModel by viewModels<PrinterViewModel>()
     private var serviceChargesList: ArrayList<TbServiceCharge>? = null
     private var serviceChargesObserve: Observer<Resource<List<TbServiceCharge>>>? = null
     private var orderTypeObserver: Observer<Resource<List<TbOrderType>>>? = null
@@ -118,6 +129,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     lateinit var cashDiscountModel: CashDiscountModel
     private var orderFloorDetails: GetOrderDetailsResponse.Data.FloorPlanTable =
         GetOrderDetailsResponse.Data.FloorPlanTable()
+    var handler = Handler()
 
     @Inject
     lateinit var rolePermission: RolePermission
@@ -186,6 +198,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 //        hideSystemUI()
 
         binding = FragmentDashboardCategoryBoldPosBinding.inflate(inflater, container, false)
+        binding.lifecycleOwner = this
         syncData()
         getCustomerDisplay(requireContext())?.let { display ->
             presentation = CustomDisplay(
@@ -226,13 +239,14 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
         checkDineInEditOrder()
         printerProgress()
+        observeShowProgress()
         getwebOrderingCountObserver()
         getDineInData()
         checkSearch()
         observeServiceChargeUpdate()
         observerSyncItemPriceChange()
         prefProvider.setValueboolean(Constants.ORDER_COMPLETED, false)
-        binding.lifecycleOwner = this
+
 
 
         binding.layoutHeader.ivLock.setOnClickListener {
@@ -641,17 +655,19 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         if (!sync) {
             ProgressUtils.showProgressDialog(requireActivity())
             viewModel.syncInventoryModule(false)
-            //binding.maskLayout?.visible()
-            //hideLoaderAfterDelay()
+            viewModel.syncDone.observe(viewLifecycleOwner) { event ->
+                event.getContentIfNotHandled()?.let {
+                    Log.d(TAG, "syncDataDone: $it")
+                    if (it) {
+                        binding.maskLayout?.gone()
+                        getConnectedPrinters()
+                    } else {
+                        binding.maskLayout?.visible()
+                    }
+                }
+            }
         } else {
             viewModel.getOnlineOrderCount()
-        }
-    }
-
-    private fun hideLoaderAfterDelay() {
-        GlobalScope.launch(Dispatchers.Main) {
-            delay(10000)
-            binding.maskLayout?.gone()
         }
     }
 
@@ -849,7 +865,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                     }
                                 }
 
-                            } else if (it.data[i].name.startsWith("InnerPrinter", true) == true) {
+                            } else if (it.data[i].name.startsWith(SUNMI_INNER_PRINTER, true) == true) {
 
                                 if (woyouService != null) {
                                     woyouService!!.sendRAWData(byteArrayOf(0x1B, 0x45, 0x01), this)
@@ -1085,15 +1101,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     }
 
     private fun addObserver() {
-        viewModel.showProgress.observe(requireActivity()) { event ->
-            event.getContentIfNotHandled()?.let {
-                if (it) {
-                    //ProgressUtils.showProgressDialog(requireActivity())
-                } else {
-                    // ProgressUtils.dismissProgressDialog()
-                }
-            }
-        }
         viewModel.clockOut.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
 
@@ -3378,6 +3385,20 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         }
     }
 
+    private fun observeShowProgress() {
+
+        printerViewModel.showProgress.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it) {
+                    ProgressUtils.showProgressDialog(requireActivity())
+                } else {
+                    ProgressUtils.dismissProgressDialog()
+                    getConnectedPrinters()
+                }
+            }
+        }
+    }
+
     private fun observeQueueCreate() {
         viewModelPayment.queueStartSaveOrder.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
@@ -3626,6 +3647,130 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             salt.append(SALTCHARS[index])
         }
         return salt.toString()
+    }
+
+    private fun getConnectedPrinters() {
+
+        printerViewModel.printerList().observe(viewLifecycleOwner) {
+            when (it.status) {
+
+                Status.SUCCESS -> {
+                    ProgressUtils.dismissProgressDialog()
+
+                    val data = it.data
+                    LogUtil.logE(TAG, "getConnectedPrinters:  ${Gson().toJson(data)}")
+
+                    if (data?.isNotEmpty() == true) {
+                        var isInnerPrinterConnected = false
+                        for (i in data.indices) {
+                            if (data[i].name.startsWith(SUNMI_INNER_PRINTER, true) && data[i].receiptPrintType.equals(
+                                    CUSTOMER)) {
+                                isInnerPrinterConnected = true
+                            }
+                        }
+                        if (!isInnerPrinterConnected) {
+                            searchBluetooth()
+                        }
+
+                    } else {
+                        searchBluetooth()
+                    }
+
+                }
+
+                Status.ERROR -> {
+                    LogUtil.logE(TAG, "getConnectedPrinters - ${it.message}")
+                    ProgressUtils.dismissProgressDialog()
+
+                }
+
+                Status.LOADING -> {
+                    ProgressUtils.showProgressDialog(requireActivity())
+                }
+            }
+
+        }
+
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun searchBluetooth() {
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
+        if (mBluetoothAdapter?.isEnabled == true) {
+
+            val availableDevices: Set<BluetoothDevice> = mBluetoothAdapter!!.bondedDevices
+            var innerPrinterModel = PrinterListModel()
+            for (i in availableDevices) {
+
+                if(i.name.startsWith(SUNMI_INNER_PRINTER,true)){
+                    innerPrinterModel = PrinterListModel(
+                        printerName = i.name,
+                        connectionType = Constants.BLUETOOTH,
+                        deviceModel = DeviceInfo(
+                            DevType.BLUETOOTH,
+                            i.address,
+                            i.name,
+                            i.address,
+                            i.address
+                        ),
+                        type = Constants.AVAILABLE,
+                        uuid = UUID.randomUUID()
+                    )
+                }
+
+            }
+
+            setupInnerPrinterAttributes(innerPrinterModel)
+
+        }
+    }
+
+    private fun setupInnerPrinterAttributes(innerPrinterModel: PrinterListModel) {
+        val list: ArrayList<CreatePrinterRequestModel.PrinterSettingsAttributes> = arrayListOf()
+        for (i in 0 until ordertypelist.size) {
+            list.add(
+                CreatePrinterRequestModel.PrinterSettingsAttributes(
+                    printType = CUSTOMER,
+                    orderTypeId = ordertypelist[i].id,
+                )
+            )
+        }
+
+        val createPrinter = CreatePrinterRequestModel(
+            name = innerPrinterModel.printerName,
+            terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, 0),
+            macAddress = innerPrinterModel.deviceModel?.macAddress,
+            modalName = innerPrinterModel.deviceModel?.printerName,
+            terminalIds = listOf(prefProvider.getValueInt(Constants.TERMINAL_ID, 1)),
+            status = true,
+            locationId = prefProvider.getValueInt(Constants.LOCATION_ID, 1),
+            receiptPrintType = CUSTOMER,
+            printer_type = innerPrinterModel.connectionType,
+            ip_address = innerPrinterModel.deviceModel?.ipAddress,
+            printerSettingsAttributes = list
+
+        )
+        printerViewModel.createPrinter(createPrinter)
+    }
+
+    private fun printByBluTooth(content: String) {
+        try {
+            if (true) {
+                BluetoothUtil.sendData(ESCUtil.boldOn())
+            } else {
+                BluetoothUtil.sendData(ESCUtil.boldOff())
+            }
+            if (true) {
+                BluetoothUtil.sendData(ESCUtil.underlineWithOneDotWidthOn())
+            } else {
+                BluetoothUtil.sendData(ESCUtil.underlineOff())
+            }
+
+            BluetoothUtil.sendData(content.toByteArray(charset("GB18030")))
+            BluetoothUtil.sendData(ESCUtil.nextLine(3))
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
     }
 
 }

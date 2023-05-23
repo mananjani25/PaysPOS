@@ -231,6 +231,9 @@ class DashBoardCategoryViewModel @Inject constructor(
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
 
+    private val _syncDone = MutableLiveData<Event<Boolean?>>()
+    val syncDone: LiveData<Event<Boolean?>> = _syncDone
+
     private val _logout = MutableLiveData<Event<Boolean>>()
     val logout: LiveData<Event<Boolean>> = _logout
 
@@ -4736,6 +4739,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun syncInventoryModule(b: Boolean) {
         _showProgress.value = Event(true)
+        _syncDone.value = Event(false)
         viewModelScope.launch {
             val resource = posRepository.syncInventory(
                 prefProvider.getValueInt(TERMINAL_ID, -1), prefProvider.getValue(
@@ -5206,7 +5210,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 SYNC_SETTING_TIME_STAMP,
                                 venueDetailsResponse.settingData.timeStamp
                             )
-
+                            _syncDone.value = Event(true)
 
                         } else {
                             _snackbarText.value = Event(resource.message)
