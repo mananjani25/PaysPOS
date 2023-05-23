@@ -500,6 +500,25 @@ class CartFragment(
             var count: Int = bundle.getInt("count")
             addGuestToOrder(count)
         }
+        requireActivity().supportFragmentManager.setFragmentResultListener(
+            "request_order_type_change",
+            viewLifecycleOwner
+        ) { _: String, bundle: Bundle ->
+            var data: TbOrderType = bundle.getParcelable<TbCustomer>("orderData") as TbOrderType
+
+            prefProvider.setValue(REDIRECT_FROM, "")
+            checkOrderType()
+            if (cartlist.isNotEmpty()) {
+                cartlist[0].orderTypeName = data.name
+                cartlist[0].orderType = data.orderType
+                cartlist[0].orderTypeId = data.id
+                viewModel.addCart(cartModel = cartlist[0])
+            }
+//            viewLifecycleOwner.lifecycleScope.launch {
+//                delay(1000)
+//                addObserver()
+//            }
+        }
     }
 
     private fun removeObserver() {
@@ -693,7 +712,8 @@ class CartFragment(
                 }
 
                 prefProvider.setValue(ORDER_TYPE, prefProvider.getValue(ORDER_TYPE, ""))
-                prefProvider.setValue(Constants.ORDER_TYPE_NAME, Constants.DINE_IN)
+                prefProvider.setValue(Constants.ORDER_TYPE_NAME, prefProvider.getValue(
+                    ORDER_TYPE_NAME, DINE_IN))
                 prefProvider.setValueInt(
                     Constants.ORDER_TYPE_ID,
                     prefProvider.getValueInt(ORDER_TYPE_ID, 0)
@@ -958,14 +978,14 @@ class CartFragment(
             if (view != null) {
 
 
-
                 viewModel.mAllWordsFlow(
                     prefProvider.getValue(ORDER_TYPE, TAKEOUT),
                     prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
                 ).asLiveData().observe(requireActivity()) {
 
 
-                    Log.e("mAllWordsFlow", "asLiveData" + it.size)
+                    Log.e("mAllWordsFlow", "asLiveData >> size : ${it.size} >> " + Gson().toJson(it))
+                    Log.e("mAllWordsFlow", "asLiveData items >>" + viewModel.cartModel?.items?.size)
 
                     if (it.isEmpty()) {
                         if (oldItemSize != null && oldItemSize != 1)
@@ -997,6 +1017,7 @@ class CartFragment(
                     if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
                         binding.rvCartDineIn.visible()
                         binding.rvCartList.gone()
+                        checkOrderType()
                         if (it.isNotEmpty()) {
 
                             cartlist = it as ArrayList<CartModel>
@@ -2374,6 +2395,7 @@ class CartFragment(
 
         if (model?.orderType == DINE_IN) {
             Log.e(TAG, "InsideDine inNew")
+            checkOrderType()
             dineInCallback?.onDineInClickListener()
         } else {
             Log.e(TAG, "InsideDine inNoDine")

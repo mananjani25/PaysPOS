@@ -768,6 +768,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             bundle.putInt("orderId", orderId ?: -1)
             bundle.putInt(GUEST_POSITION, 0)
             prefProvider.setValue(Constants.ORDER_TYPE, Constants.DINE_IN)
+            prefProvider.setValueInt(Constants.ORDER_TYPE_ID, getOrderDetailsResponse?.orderTypeId ?: 2)
+            prefProvider.setValue(Constants.ORDER_TYPE_NAME, getOrderDetailsResponse?.orderTypeName ?: DINE_IN)
 
             if (findNavController().currentDestination?.id == R.id.dineInOrderTable)
                 findNavController().navigate(R.id.action_dineInOrderTable_to_checkoutDineIN, bundle)
@@ -875,11 +877,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             bundle.putParcelable("tableDetails", getOrderDetailsResponse?.floorPlanTable)
             viewModelPayment.deleteCart()
             orderId?.let { it1 -> bundle.putInt("orderId", it1) }
-            Log.e(TAG, "dineIndorderId:   ${orderId}")
+            Log.e(TAG, "dineIndorderId:   ${orderId}  >> ${getOrderDetailsResponse?.orderTypeName ?: DINE_IN}")
 
             prefProvider.setValueboolean(DINE_IN_UPDATE, true)
             prefProvider.setValue(Constants.ORDER_TYPE, DINE_IN)
-            prefProvider.setValue(ORDER_TYPE_NAME, DINE_IN)
+            prefProvider.setValueInt(Constants.ORDER_TYPE_ID, getOrderDetailsResponse?.orderTypeId ?: 2)
+            prefProvider.setValue(Constants.ORDER_TYPE_NAME, getOrderDetailsResponse?.orderTypeName ?: DINE_IN)
             prefProvider.setValueInt(
                 Constants.DINE_IN_TABLE_ID,
                 prefProvider.getValueInt(Constants.ORDER_TYPE_ID, 0)
@@ -1443,6 +1446,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE_DINEIN, "")
         prefProvider.setValue(Constants.TOTAL_PRICE_DINEIN, "")
         prefProvider.setValue(Constants.ORDER_TYPE, DINE_IN)
+        prefProvider.setValueInt(Constants.ORDER_TYPE_ID, prefProvider.getValueInt(ORDER_TYPE_ID, 2))
+        prefProvider.setValue(Constants.ORDER_TYPE_NAME, prefProvider.getValue(ORDER_TYPE_NAME, DINE_IN))
+        println("order type name and id in cartlist : ${prefProvider.getValueInt(ORDER_TYPE_ID, 2)}  >> ${prefProvider.getValue(ORDER_TYPE_NAME, DINE_IN)}")
         var modelReq = DineInOrderPayment(dineInOrderModel)
         var model = GuestPaymentRequest(paymentAttr, dineInOrderModel)
 
@@ -1734,6 +1740,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         dineinCartPaymentModel?.floorPlanModel = floorPlanModel
 
         prefProvider.setValue(Constants.ORDER_TYPE, prefProvider.getValue(Constants.ORDER_TYPE, ""))
+        prefProvider.setValueInt(Constants.ORDER_TYPE_ID, getOrderDetailsResponse?.orderTypeId ?: 2)
+        prefProvider.setValue(Constants.ORDER_TYPE_NAME, getOrderDetailsResponse?.orderTypeName ?: DINE_IN)
         bundle.putParcelable("dineinPaymentModel", dineinCartPaymentModel)
 
 
@@ -2711,6 +2719,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         model.employeeID = prefProvider.getValueInt(EMPLOYEE_ID, 0)
         model.locationId = prefProvider.getValueInt(LOCATION_ID, 0)
         model.terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
+        model.orderTypeId = prefProvider.getValueInt(ORDER_TYPE_ID, 2)
+        model.orderTypeName = prefProvider.getValue(ORDER_TYPE_NAME, DINE_IN)
 
 
         return model

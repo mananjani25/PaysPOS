@@ -13,6 +13,9 @@ import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.responseModel.NoteResponse
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.OPEN_ORDER
+import com.android.pos.data.remote.Constants.ORDER_TYPE
+import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.databinding.DailogAddNoteBinding
 import com.android.pos.databinding.DialogChangeOrderTypeBinding
 import com.android.pos.di.PrefProvider
@@ -65,19 +68,32 @@ class ChangeOrderTypeDialog : DialogFragment(), ItemCallback {
         binding.imgBack.setOnClickListener {
             dismiss()
         }
-        binding.txtChangeOrderType.setOnClickListener {
-            dismiss()
-        }
     }
 
     private fun getOrderTypes() {
-        orderTypeAdapter = OrderTypeAdapter()
+        orderTypeAdapter = OrderTypeAdapter(isFromTypeChangeDialog = true, prefProvider)
         orderTypeAdapter?.setCallback(this)
         binding.rvOrderTypes.adapter = orderTypeAdapter
 
         viewModel.orderTypes().observe(requireActivity()) {
 
-            it.data?.let { it1 -> orderTypeAdapter?.addAll(it1.filter { it.primaryOrderType }) }
+            if (prefProvider.getValue(ORDER_TYPE, "") == OPEN_ORDER || prefProvider.getValue(
+                    ORDER_TYPE, "") == TAKEOUT
+            ) {
+                it.data?.let { it1 ->
+                    orderTypeAdapter?.addAll(it1.filter { order ->
+                        order.orderType == TAKEOUT || order.orderType == OPEN_ORDER
+                    })
+                }
+            } else {
+                it.data?.let { it1 ->
+                    orderTypeAdapter?.addAll(it1.filter { order ->
+                        order.orderType == prefProvider.getValue(
+                            ORDER_TYPE, ""
+                        )
+                    })
+                }
+            }
         }
 
     }
@@ -99,9 +115,14 @@ class ChangeOrderTypeDialog : DialogFragment(), ItemCallback {
         LogUtil.logE(TAG, "itemClicked  ${Gson().toJson(model)}")
         prefProvider.setValue(Constants.ORDER_TYPE, model?.orderType!!)
         prefProvider.setValue(Constants.ORDER_TYPE_NAME, model.name)
-        prefProvider.setValue(Constants.ORDER_TYPE_ID, model.id.toString())
-        dismiss()
+        prefProvider.setValueInt(Constants.ORDER_TYPE_ID, model.id)
+        val result = Bundle().apply {
+            putParcelable("orderData", model)
+        }
+        requireActivity().supportFragmentManager.setFragmentResult(
+            "request_order_type_change",
+            result
+        )
+        findNavController().navigateUp()
     }
-
-
 }

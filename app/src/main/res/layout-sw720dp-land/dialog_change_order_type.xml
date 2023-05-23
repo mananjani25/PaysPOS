@@ -74,6 +74,7 @@
             android:paddingBottom="@dimen/_6sdp"
             android:text="Change Order Type"
             android:textColor="@color/white"
+            android:visibility="gone"
             android:textSize="@dimen/_7mdpi" />
 
     </androidx.appcompat.widget.LinearLayoutCompat>

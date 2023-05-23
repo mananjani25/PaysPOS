@@ -1475,7 +1475,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 }
 
                 prefProvider.setValue(ORDER_TYPE, prefProvider.getValue(ORDER_TYPE, ""))
-                prefProvider.setValue(Constants.ORDER_TYPE_NAME, DINE_IN)
+                prefProvider.setValue(Constants.ORDER_TYPE_NAME, prefProvider.getValue(
+                    ORDER_TYPE_NAME, DINE_IN
+                ))
                 prefProvider.setValueInt(
                     Constants.ORDER_TYPE_ID, prefProvider.getValueInt(
                         ORDER_TYPE_ID, 0
