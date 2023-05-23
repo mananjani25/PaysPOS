@@ -440,72 +440,43 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                                     }
 
                                 } else {
-                                    var mPrinter =
-                                        Printer(
-                                            Printer.TM_M30,
-                                            Printer.MODEL_ANK,
-                                            (activity as MainActivity).applicationContext
-                                        )
+                                   try {
+                                       var mPrinter =
+                                           Printer(
+                                               Printer.TM_M30,
+                                               Printer.MODEL_ANK,
+                                               (activity as MainActivity).applicationContext
+                                           )
 
 
-                                    var printerAdd =
-                                        if (data[i].printer_type == Constants.BLUETOOTH) "BT:" + data[i].macAddress else "TCP:" + data[i].ipAddress
-                                    mPrinter.connect(
-                                        printerAdd,
-                                        Printer.PARAM_DEFAULT
-                                    )
+                                       var printerAdd =
+                                           if (data[i].printer_type == Constants.BLUETOOTH) "BT:" + data[i].macAddress else "TCP:" + data[i].ipAddress
+                                       mPrinter.connect(
+                                           printerAdd,
+                                           Printer.PARAM_DEFAULT
+                                       )
 
-                                    mPrinter.addPulse(
-                                        com.epson.epos2.printer.Printer.DRAWER_HIGH,
-                                        com.epson.epos2.printer.Printer.PULSE_100
-                                    )
+                                       mPrinter.addPulse(
+                                           com.epson.epos2.printer.Printer.DRAWER_HIGH,
+                                           com.epson.epos2.printer.Printer.PULSE_100
+                                       )
 
-                                    try {
-
-                                        mPrinter.sendData(Printer.PARAM_DEFAULT)
-                                        mPrinter.disconnect()
-                                        sendToTransaction()
-                                    } catch (e: java.lang.Exception) {
-                                        e.printStackTrace()
-                                        try{
-                                        mPrinter.disconnect()}
-                                        catch (e:Exception){
-
-                                        }
-                                        sendToTransaction()
-                                    }
-
-
-                                    /* var builder: Builder = Builder(
-                                         if (data[i].name.substring(0, 6).toString()
-                                                 .lowercase() == "TM-m30".lowercase()
-                                         ) {
-                                             "TM-m30"
-                                         } else {
-                                             data[i].name
-                                         }, PrinterClass.language, requireActivity()
-                                     )
-
-
-                                     builder.addPulse(
-                                         com.epson.epos2.printer.Printer.DRAWER_HIGH,
-                                         com.epson.epos2.printer.Printer.PULSE_100
-                                     )
-
-                                     val status = IntArray(1)
-                                     val battery = IntArray(1)
-                                     try {
-
-                                         PrinterClass.getPrinter()?.sendData(
-                                             builder,
-                                             PrinterClass.BLUETOOTH_TIMEOUT, status, battery
-                                         )
-                                         sendToTransaction()
-                                     } catch (e: java.lang.Exception) {
-                                         e.printStackTrace()
-                                         sendToTransaction()
-                                     }*/
-
+                                       try {
+                                           mPrinter.sendData(Printer.PARAM_DEFAULT)
+                                           mPrinter.disconnect()
+                                           sendToTransaction()
+                                       } catch (e: java.lang.Exception) {
+                                           e.printStackTrace()
+                                           try{
+                                               mPrinter.disconnect()}
+                                           catch (e:Exception){
+                                               e.printStackTrace()
+                                           }
+                                           sendToTransaction()
+                                       }
+                                   } catch (e: Exception){
+                                       e.printStackTrace()
+                                   }
 
                                 }
                             }

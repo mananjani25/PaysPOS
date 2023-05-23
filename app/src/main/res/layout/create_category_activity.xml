@@ -49,6 +49,7 @@
                     android:layout_marginEnd="@dimen/_50sdp"
                     android:layout_height="wrap_content">
                 <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/etCategoryName"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"

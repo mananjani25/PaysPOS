@@ -17,6 +17,7 @@ import com.android.pos.databinding.ViewCustomerAssignOrderBinding
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.extensions.gone
+import com.android.pos.utils.extensions.setOnSingleClickListener
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -130,7 +131,7 @@ class AssignCustomerToOrderAdapter :
         }
 
         init {
-            binding.root.setOnClickListener {
+            binding.root.setOnSingleClickListener {
                 mCallback.onItemClickListener(it, bindingAdapterPosition)
             }
         }
