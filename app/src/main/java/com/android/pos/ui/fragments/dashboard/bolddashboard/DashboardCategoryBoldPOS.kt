@@ -1101,6 +1101,17 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     }
 
     private fun addObserver() {
+
+        viewModel.showProgress.observe(requireActivity()) { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it) {
+                    //ProgressUtils.showProgressDialog(requireActivity())
+                } else {
+                    // ProgressUtils.dismissProgressDialog()
+                }
+            }
+        }
+
         viewModel.clockOut.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
 
