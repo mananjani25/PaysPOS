@@ -2232,7 +2232,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
 
                         if (it.data?.isNotEmpty() == true && createOrderResponse.data.order.orderItems.isNotEmpty()) {
-
+                            var  allstatus = false
 
                             for (i in 0 until it.data.size) {
                                 it.data[i].orderTypes.forEach { order ->
@@ -2256,6 +2256,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                                         "statusPrinter  ${it.data[i].status}"
                                                     )
                                                     if (it.data[i].status) {
+                                                        allstatus = true
                                                         initKitchenPrinter(
                                                             it.data.get(i),
                                                             Constants.KITCHEN,
@@ -2276,7 +2277,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
 
                             }
-
+                            if (!allstatus){
+                                viewModel.downloadFinished(false)
+                                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                            }
 
                         } else {
                             viewModel.downloadFinished(false)

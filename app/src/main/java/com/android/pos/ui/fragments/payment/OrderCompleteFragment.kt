@@ -3658,7 +3658,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 )
                 builder.addTextAlign(Builder.ALIGN_CENTER)
 
-                builder.addText(getDineInOrderDetails?.orderType + "\n")
+                builder.addText(getDineInOrderDetails?.orderTypeName + "\n")
 
                 if (customerSettingModel.fonts == LARGE) {
 
@@ -4663,7 +4663,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 SunmiPrinterApi.getInstance().lineWrap(1)
             }
             if(customerSettingModel.showOrderType) {
-                getDineInOrderDetails?.orderType?.trim()?.let { PrintSunmiUtils.printOrderType(it) }
+                getDineInOrderDetails?.orderTypeName?.trim()?.let { PrintSunmiUtils.printOrderType(it) }
                 SunmiPrinterApi.getInstance().lineWrap(1)
             }
 
@@ -8740,7 +8740,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     )
                     builder.addTextAlign(Builder.ALIGN_CENTER)
 
-                    addBuilderText(builder, receiptModel?.order?.orderType.toString())
+                    addBuilderText(builder, receiptModel?.order?.orderTypeName.toString())
                 }
                 var tmps = "Open Order".toString().trim()
                     .toString().lowercase()

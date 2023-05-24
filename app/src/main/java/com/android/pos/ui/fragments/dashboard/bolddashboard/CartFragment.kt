@@ -124,7 +124,7 @@ class CartFragment(
     var isActiveOrder: Boolean = false
     var reorder: Boolean = false
 
-    private val DELAY_MILLIS = 100L
+    private val DELAY_MILLIS = 200L
 
     private var previousClickTimeMillis = 0L
 
@@ -506,18 +506,15 @@ class CartFragment(
         ) { _: String, bundle: Bundle ->
             var data: TbOrderType = bundle.getParcelable<TbCustomer>("orderData") as TbOrderType
 
-            prefProvider.setValue(REDIRECT_FROM, "")
             checkOrderType()
+            addObserver()
+
             if (cartlist.isNotEmpty()) {
                 cartlist[0].orderTypeName = data.name
                 cartlist[0].orderType = data.orderType
                 cartlist[0].orderTypeId = data.id
                 viewModel.addCart(cartModel = cartlist[0])
             }
-//            viewLifecycleOwner.lifecycleScope.launch {
-//                delay(1000)
-//                addObserver()
-//            }
         }
     }
 
@@ -984,12 +981,11 @@ class CartFragment(
                 ).asLiveData().observe(requireActivity()) {
 
 
-                    Log.e("mAllWordsFlow", "asLiveData >> size : ${it.size} >> " + Gson().toJson(it))
-                    Log.e("mAllWordsFlow", "asLiveData items >>" + viewModel.cartModel?.items?.size)
+                    Log.e("mAllWordsFlow", "asLiveData >> size : ${it.size}")
 
                     if (it.isEmpty()) {
-                        if (oldItemSize != null && oldItemSize != 1)
-                        return@observe
+//                        if (oldItemSize != null && oldItemSize != 1)
+                            return@observe
                     } else {
                         val currentTimeMillis = System.currentTimeMillis()
 
@@ -2138,10 +2134,18 @@ class CartFragment(
 
                         var ordertype = ""
                         var ordertypeId = 0
-                        viewModel.ordertypelist.forEach {
-                            if (it.orderType == OPEN_ORDER) {
-                                ordertype = it.orderType
-                                ordertypeId = it.id
+                        if (prefProvider.getValue(ORDER_TYPE, "") == OPEN_ORDER) {
+                            ordertype = prefProvider.getValue(ORDER_TYPE, "")
+                            ordertypeId = prefProvider.getValueInt(ORDER_TYPE_ID, 0)
+                        } else {
+                            run breaking@{
+                                viewModel.ordertypelist.forEach {
+                                    if (it.orderType == OPEN_ORDER) {
+                                        ordertype = it.orderType
+                                        ordertypeId = it.id
+                                        return@breaking
+                                    }
+                                }
                             }
                         }
                         Log.e("ordertypeId :: ", ordertypeId.toString())

@@ -387,7 +387,7 @@ class ActiveOrderFragment(
                 LogUtil.logE(TAG, "OpenORderUpdateOrder:  ${Gson().toJson(order.orderItems)}")
 
                 prefProvider.setValue(Constants.ORDER_TYPE, OPEN_ORDER)
-                prefProvider.setValue(Constants.ORDER_TYPE_NAME, OPEN_ORDER)
+                prefProvider.setValue(Constants.ORDER_TYPE_NAME, order.orderTypeName)
                 prefProvider.setValueInt(Constants.ORDER_TYPE_ID, order.orderTypeId)
 
                 if (order.customer != null) {
@@ -470,7 +470,8 @@ class ActiveOrderFragment(
 
                 dashboardViewModel.deleteCart()
                 prefProvider.setValue(Constants.ORDER_TYPE, OPEN_ORDER)
-                prefProvider.setValue(Constants.ORDER_TYPE_NAME, OPEN_ORDER_)
+                prefProvider.setValue(Constants.ORDER_TYPE_NAME, order.orderTypeName)
+                prefProvider.setValueInt(Constants.ORDER_TYPE_ID, order.orderTypeId)
 
                 var itemDiscountTotal: Double = 0.0
                 var itemPassDis: Double = 0.0
