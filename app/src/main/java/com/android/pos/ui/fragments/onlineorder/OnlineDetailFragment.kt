@@ -139,18 +139,22 @@ class OnlineDetailFragment(
                 order_status = "Pending"
                 binding.txtOrderWillAppear?.text = "Pending order will appear here."
             }
+
             "1" -> {
                 order_status = "InProgress"
                 binding.txtOrderWillAppear?.text = "InProgress order will appear here."
             }
+
             "2" -> {
                 order_status = "Completed"
                 binding.txtOrderWillAppear?.text = "Completed order will appear here."
             }
+
             "3" -> {
                 order_status = "Rejected"
                 binding.txtOrderWillAppear?.text = "Rejected order will appear here."
             }
+
             "4" -> {
                 order_status = "UpComing"
                 binding.txtOrderWillAppear?.text = "UpComing order will appear here."
@@ -202,11 +206,13 @@ class OnlineDetailFragment(
 
                         }
                     }
+
                     Status.ERROR -> {
                         ProgressUtils.dismissProgressDialog()
                         binding.root.showAlert(resource.message)
 
                     }
+
                     Status.LOADING -> {
                         ProgressUtils.showProgressDialog(requireActivity())
                     }
@@ -229,11 +235,13 @@ class OnlineDetailFragment(
                             getOnlineOrders()
                         }
                     }
+
                     Status.ERROR -> {
                         ProgressUtils.dismissProgressDialog()
                         binding.root.showAlert(resource.message)
 
                     }
+
                     Status.LOADING -> {
                         ProgressUtils.showProgressDialog(requireActivity())
                     }
@@ -279,11 +287,13 @@ class OnlineDetailFragment(
                             requireContext().sendBroadcast(intent)
                         }
                     }
+
                     Status.ERROR -> {
                         ProgressUtils.dismissProgressDialog()
                         binding.root.showAlert(resource.message)
 
                     }
+
                     Status.LOADING -> {
                         ProgressUtils.showProgressDialog(requireActivity())
                     }
@@ -727,9 +737,11 @@ class OnlineDetailFragment(
 
 
                 }
+
                 Status.LOADING -> {
                     ProgressUtils.showProgressDialog(requireActivity())
                 }
+
                 Status.ERROR -> {
                     ProgressUtils.dismissProgressDialog()
                     findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
@@ -954,10 +966,12 @@ class OnlineDetailFragment(
                     fontSizeH = 1
                     fontSizeW = 1
                 }
+
                 Constants.MEDIUM -> {
                     fontSizeH = 1
                     fontSizeW = 2
                 }
+
                 Constants.LARGE -> {
                     fontSizeH = 2
                     fontSizeW = 2
@@ -1006,12 +1020,30 @@ class OnlineDetailFragment(
                     )
                     builder.addTextAlign(Builder.ALIGN_CENTER)
 
-                    addBuilderTextForU220(builder, "Online Order")
+                    addBuilderTextForU220(builder, orderData.data.order_type_name)
                 }
-                var tmps = "Open Order".toString().trim()
-                    .toString().lowercase()
-                LogUtil.logE(TAG, "LowerCAse ${tmps.trimmedLength()}")
 
+                if (orderData.data.orderType.equals(Constants.PHONE_ORDER, true) ||
+                    orderData.data.orderType.equals("OnlineWebOrder", true) ||
+                    orderData.data.orderType.equals("Online Order", true) ||
+                    orderData.data.orderType.equals("OnlineOrder", true)
+                ) {
+
+
+                    builder.addFeedLine(0)
+                    builder.addTextFont(Builder.FONT_E)
+                    builder.addTextLang(Builder.LANG_EN)
+                    builder.addTextSize(fontSizeH, fontSizeW)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.TRUE,
+                        Builder.COLOR_1
+                    )
+                    builder.addTextAlign(Builder.ALIGN_CENTER)
+
+                    addBuilderTextForU220(builder, orderData.data.deliveryType)
+                }
 
                 if (kitchenSettingModel.showTeamMember) {
 
@@ -1578,10 +1610,12 @@ class OnlineDetailFragment(
                     fontSizeH = 1
                     fontSizeW = 1
                 }
+
                 Constants.MEDIUM -> {
                     fontSizeH = 1
                     fontSizeW = 2
                 }
+
                 Constants.LARGE -> {
                     fontSizeH = 2
                     fontSizeW = 2
@@ -2246,10 +2280,14 @@ class OnlineDetailFragment(
             SunmiPrinterApi.getInstance().lineWrap(1)
 
             if (kitchenSettingModel.showOrderType) {
-                PrintSunmiUtils.printOrderType("Online Order")
+                PrintSunmiUtils.printOrderType(orderData.data.order_type_name)
             }
 
-            if (kitchenSettingModel.showOrderType) {
+            if (orderData.data.orderType.equals(Constants.PHONE_ORDER, true) ||
+                orderData.data.orderType.equals("OnlineWebOrder", true) ||
+                orderData.data.orderType.equals("Online Order", true) ||
+                orderData.data.orderType.equals("OnlineOrder", true)
+            ) {
                 SunmiPrinterApi.getInstance().lineWrap(1)
                 PrintSunmiUtils.printOrderType(orderData.data.deliveryType)
             }
@@ -2416,12 +2454,16 @@ class OnlineDetailFragment(
 
 
             if (kitchenSettingModel.showOrderType) {
-                PrintSunmiUtils.headerText("Online Order")
+                PrintSunmiUtils.headerText(orderData.data.order_type_name)
             }
 
-            if (kitchenSettingModel.showOrderType) {
+            if (orderData.data.orderType.equals(Constants.PHONE_ORDER, true) ||
+                orderData.data.orderType.equals("OnlineWebOrder", true) ||
+                orderData.data.orderType.equals("Online Order", true) ||
+                orderData.data.orderType.equals("OnlineOrder", true)
+            ) {
                 SunmiPrintHelper.getInstance().lineWrap(1)
-                PrintSunmiUtils.headerText(orderData?.data.deliveryType)
+                PrintSunmiUtils.headerText(orderData.data.deliveryType)
             }
 
             if (kitchenSettingModel.showTeamMember) {
