@@ -1938,7 +1938,7 @@ fun addOrdersForKitchen(
                     )
 
                     builder.addText(obj.quantity.toString() + " " + obj.itemName.uppercase())
-
+                    builder.addFeedLine(1)
                     if (obj.orderItemModifiers.isNotEmpty()) {
                         for (j in 0 until obj.orderItemModifiers.size) {
                             val modifierObj = obj.orderItemModifiers.get(j)
@@ -1968,7 +1968,9 @@ fun addOrdersForKitchen(
 
 
                         }
+                        builder.addFeedLine(1)
                     }
+
                     if (obj.note.isNotEmpty()) {
                         builder.addTextLineSpace(30)
                         builder.addFeedUnit(30)
@@ -1985,6 +1987,7 @@ fun addOrdersForKitchen(
                         )
                         builder.addText("  Note:" + obj.note)
 
+                        builder.addFeedLine(1)
                     }
 
 
@@ -2223,7 +2226,7 @@ fun addOrderItemOpenOrder(
                         if (font == Constants.LARGE) {
                             23
                         } else {
-                            47
+                            48
                         }
                     )
                 )
@@ -2331,7 +2334,7 @@ fun addOrderItemOpenOrderSunmiInner(
 
         PrintSunmiUtils.normalText(
             padLineCustomerItem(
-                obj.quantity.toString() + "x " + getItemNameToShow(obj.itemName),
+                obj.quantity.toString() + "  " + getItemNameToShow(obj.itemName),
                 getItemPriceToShow(totalPriceOpenOrder(obj)),
                 if (font == Constants.LARGE) {
                     23
@@ -2575,7 +2578,7 @@ fun addWholeTbItemToGuest(
 
     PrintSunmiUtils.orderTime(
         padLineCustomerItem(
-            obj.itemQuantity.toString() + "x " + getItemNameToShow(obj.name),
+            obj.itemQuantity.toString() + "  " + getItemNameToShow(obj.name),
             "" + priceToShow,
             if (font == Constants.LARGE) 23 else 48
         ).toString()
@@ -2725,7 +2728,7 @@ fun addOrderItemForDineIn(
 
     builder.addText(
         padLineCustomerItem(
-            obj.itemQuantity.toString() + "x " + getItemNameToShow(obj.name),
+            obj.itemQuantity.toString() + "  " + getItemNameToShow(obj.name),
             getItemPriceToShow(totalPriceDineInItem(obj)),
             if (font == Constants.LARGE) {
                 24
@@ -2751,7 +2754,7 @@ fun addOrderItemForDineIn(
                 Builder.FALSE,
                 Builder.COLOR_1
             )
-            builder.addTextPosition(4)
+            //builder.addTextPosition(4)
             builder.addText(
                 padLineCustomerItem(
                     "   " + getItemNameToShow(modifierObj.name),
@@ -2759,7 +2762,7 @@ fun addOrderItemForDineIn(
                     if (font == Constants.LARGE) {
                         23
                     } else {
-                        47
+                        48
                     }
                 )
             )
@@ -2958,7 +2961,7 @@ fun addOrderItems(
 
                 /*builder.addText(
                     padLineCustomerItem(
-                         modifierObj.quantity.toString() + "x" + "    " + modifierObj.name + " x" + modifierObj.modifierQuantity ,
+                         modifierObj.quantity.toString() + " " + "    " + modifierObj.name + " x" + modifierObj.modifierQuantity ,
                         "$" + MethodUtils.roundOffAmountString(modifierObj.price.toDouble() * modifierObj.quantity),
                         if (font == Constants.LARGE) {
                             24
@@ -3063,7 +3066,7 @@ fun addOrderItemsInner(
 
 
         val item = padLineCustomerItem(
-            obj.quantity.toString() + "x " + getItemNameToShow(obj.itemName),
+            obj.quantity.toString() + "  " + getItemNameToShow(obj.itemName),
             getItemPriceToShow(totalPrice(obj)),
             if (font == Constants.LARGE) 23 else 48
         )
@@ -3139,7 +3142,7 @@ fun addOrderItemsTransaction(
 
         builder.addText(
             padLineCustomerItem(
-                obj.quantity.toString() + "x " + getItemNameToShow(obj.itemName),
+                obj.quantity.toString() + "  " + getItemNameToShow(obj.itemName),
                 getItemPriceToShow(totalPriceTransaction(obj)),
                 if (font == Constants.LARGE) {
                     24
@@ -3165,7 +3168,7 @@ fun addOrderItemsTransaction(
                     Builder.FALSE,
                     Builder.COLOR_1
                 )
-                builder.addTextPosition(4)
+                //builder.addTextPosition(4)
                 builder.addText(
                     padLineCustomerItem(
                         "   " + getItemNameToShow(modifierObj.name),
@@ -3173,7 +3176,7 @@ fun addOrderItemsTransaction(
                         if (font == Constants.LARGE) {
                             23
                         } else {
-                            47
+                            48
                         }
                     )
                 )
@@ -3198,7 +3201,7 @@ fun addOrderItemsTransaction(
         val obj = list.get(i)
 
         val item = padLineCustomerItem(
-            obj.quantity.toString() + "x " + getItemNameToShow(obj.itemName),
+            obj.quantity.toString() + "  " + getItemNameToShow(obj.itemName),
             getItemPriceToShow(totalPriceTransaction(obj)),
             if (font == Constants.LARGE) 23 else 48
         )
@@ -3235,7 +3238,7 @@ fun addOrderItemsTransactionInner(
         val obj = list.get(i)
 
         val item = padLineCustomerItem(
-            obj.quantity.toString() + "x " + getItemNameToShow(obj.itemName),
+            obj.quantity.toString() + "  " + getItemNameToShow(obj.itemName),
             getItemPriceToShow(totalPriceTransaction(obj)),
             if (font == Constants.LARGE) 23 else 48
         )
@@ -3305,9 +3308,9 @@ fun getModifierItemPriceToShow(modifierPrice: Double, modifierQty: Int): String 
 
 fun getItemNameToShow(itemName: String): String {
 //    Commented below code to hide 15 char limit for item/modifier names to prevent receipt disruption with big names.
-//    var updatedItemName = itemName
-//    if(updatedItemName.length > 15){
-//        updatedItemName = updatedItemName.substring(0, 15) + "..."
-//    }
-    return itemName
+    var updatedItemName = itemName
+    if(updatedItemName.length > 15){
+        updatedItemName = updatedItemName.substring(0, 15) + "..."
+    }
+    return updatedItemName
 }

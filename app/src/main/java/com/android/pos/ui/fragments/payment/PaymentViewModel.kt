@@ -15,7 +15,9 @@ import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.android.pos.data.remote.Constants.ORDER_TYPE_ID
 import com.android.pos.data.remote.Constants.PAYMENT_ID
+import com.android.pos.data.remote.Constants.PHONE_ORDER
 import com.android.pos.data.remote.Constants.PAYMENT_ID_FOR_CUSTOMER_DISPLAY
+import com.android.pos.data.remote.Constants.PICK_UP
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
@@ -38,6 +40,7 @@ open class PaymentViewModel @Inject constructor(
     private val prefProvider: PrefProvider
 ) : ViewModel() {
 
+    private var textToPay: Boolean = false
     private var cardNumberLast4: String = ""
     private val TAG = "PaymentViewModel"
     var isUpdateOrder: Boolean = false
@@ -70,6 +73,9 @@ open class PaymentViewModel @Inject constructor(
 
     private var _queueCreateSaveOrder = MutableLiveData<Event<Boolean?>>()
     val QueueCreateSaveOrder: LiveData<Event<Boolean?>> = _queueCreateSaveOrder
+
+    private var _textToPaySpit = MutableLiveData<Event<Boolean?>>()
+    val textToPaySpit: LiveData<Event<Boolean?>> = _textToPaySpit
 
     private val _queueStartSaveOrder = MutableLiveData<Event<CreateOrderResponse?>>()
     val queueStartSaveOrder: LiveData<Event<CreateOrderResponse?>> = _queueStartSaveOrder
@@ -193,15 +199,18 @@ open class PaymentViewModel @Inject constructor(
                                     _queueStart.value = Event(createOrderResponse)
 
                                 } else {
-                                    if (createOrderResponse.data.order.orderType != "Dine In" && response.data.order.payments[response.data.order.payments.size - 1].paymentType != "Card") {
-                                        cashLogApi(createOrderResponse, "in")
-                                        LogUtil.logE("QueueCheck", "CashLogAPI")
-                                    } else {
-                                        _data.value = Event(createOrderResponse)
-                                        LogUtil.logE("QueueCheck", "CreateOrderData")
+                                    //Added by Dharmesh Basapati to avoid crash due to empty payments array
+                                    if( response.data.order.payments.isNotEmpty()){
+                                        if (createOrderResponse.data.order.orderType != "Dine In" && response.data.order.payments[response.data.order.payments.size - 1].paymentType != "Card") {
+                                            cashLogApi(createOrderResponse, "in")
+                                            LogUtil.logE("QueueCheck", "CashLogAPI")
+                                        } else {
+                                            _data.value = Event(createOrderResponse)
+                                            LogUtil.logE("QueueCheck", "CreateOrderData")
+                                        }
                                     }
 
-                                    if (createOrderResponse.data.order.orderType != "Dine In") {
+                                    if (createOrderResponse.data.order.orderType != "Dine In" && createOrderResponse.data.order.orderType != PHONE_ORDER) {
                                         _queueStartTakeOut.value = Event(createOrderResponse)
                                         LogUtil.logE("QueueCheck", "QueueStart")
                                     }
@@ -256,9 +265,9 @@ open class PaymentViewModel @Inject constructor(
 
     private fun cashPaymentTypeSplit(orderRequestModel: SpitByOrderRequestModel): Boolean {
 
-        if (orderRequestModel.amount_tab.payments_attributes.isEmpty()) return true
+        if (orderRequestModel.amount_tab.payments_attributes?.isEmpty() == true) return true
 
-        return orderRequestModel.amount_tab.payments_attributes[0].paymentType.equals(
+        return orderRequestModel.amount_tab.payments_attributes?.get(0)?.paymentType.equals(
             "Cash",
             ignoreCase = true
         )
@@ -510,11 +519,20 @@ open class PaymentViewModel @Inject constructor(
             orderAttributeRequestModel.id = orderId
 
 
+        if (prefProvider.getValue(Constants.ORDER_TYPE, "")
+                .equals(PHONE_ORDER, ignoreCase = true)
+        ) {
+            orderAttributeRequestModel.send_payment_link = true
+        }
 
         orderAttributeRequestModel.openOrderType =
-            prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT)
+            prefProvider.getValue(Constants.ORDER_TYPE, "")
 
         if (order_type_id == -1 && prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT) == Constants.OPEN_ORDER){
+            order_type_id = prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)
+        }
+
+        if (order_type_id == -1 && prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT) == Constants.PHONE_ORDER){
             order_type_id = prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)
         }
 
@@ -526,10 +544,15 @@ open class PaymentViewModel @Inject constructor(
         if (future_delivery_time.isNotEmpty())
             orderAttributeRequestModel.futureDeliveryTime = future_delivery_time
 
+
         if (cartModel.openOrderType.isNotEmpty() && cartModel.openOrderType != null) {
             orderAttributeRequestModel.deliveryType = cartModel.openOrderType
         } else {
             orderAttributeRequestModel.deliveryType = cartModel.deliveryType
+        }
+
+        if (cartModel.orderType == PHONE_ORDER){
+            orderAttributeRequestModel.deliveryType = prefProvider.getValue(Constants.DELIVERY_TYPE, PICK_UP)
         }
         orderAttributeRequestModel.employeeId = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
         orderAttributeRequestModel.locationId = prefProvider.getValueInt(Constants.LOCATION_ID, 1)
@@ -585,7 +608,12 @@ open class PaymentViewModel @Inject constructor(
 
 
         LogUtil.logE(TAG, "openOrderType: " + cartModel.orderType)
-        orderAttributeRequestModel.paymentStatus = if (isPaid) 1 else 0
+
+        if (textToPay) {
+            orderAttributeRequestModel.paymentStatus = 0
+        } else
+            orderAttributeRequestModel.paymentStatus = if (isPaid) 1 else 0
+
         orderAttributeRequestModel.serviceChargeEnabled = true
         orderAttributeRequestModel.taxEnabled = true
         orderAttributeRequestModel.subTotal = actual_SubTotal
@@ -635,8 +663,12 @@ open class PaymentViewModel @Inject constructor(
             orderAttributeRequestModel.customer_id = "" + customerId
         }
 
+        var needPaymentAttributes = needToAddPaymentAttributes
+        if (textToPay) {
+            needPaymentAttributes = false
+        }
 
-        orderAttributeRequestModel.paymentAttributes = if (needToAddPaymentAttributes == true) {
+        orderAttributeRequestModel.paymentAttributes = if (needPaymentAttributes == true) {
             paymentAttributes(
                 cartModel,
                 totalPrice,
@@ -675,7 +707,22 @@ open class PaymentViewModel @Inject constructor(
 //            orderAttributeRequestModel.customerAttributes = customerAttributes(cartModel)
 
 
-        val orderRequestModel = OrderRequestModel(isPaid, orderAttributeRequestModel)
+        var sendPaymentLink = false
+        val isPaidOrder: Boolean
+        if (prefProvider.getValue(Constants.ORDER_TYPE, "")
+                .equals(PHONE_ORDER, ignoreCase = true)
+        ) {
+            orderAttributeRequestModel.send_payment_link = true
+            sendPaymentLink = true
+            isPaidOrder = false
+        } else {
+            isPaidOrder = isPaid
+        }
+
+        Log.e("isPaidOrder", isPaidOrder.toString())
+
+        val orderRequestModel =
+            OrderRequestModel(isPaidOrder, orderAttributeRequestModel, sendPaymentLink)
 
         LogUtil.logE("orderRequestModel", ":  ${Gson().toJson(orderRequestModel)}")
 
@@ -760,6 +807,11 @@ open class PaymentViewModel @Inject constructor(
         } else {
             orderAttributeRequestModel.deliveryType = cartModel.deliveryType
         }
+
+        if (cartModel.orderType == PHONE_ORDER){
+            orderAttributeRequestModel.deliveryType = prefProvider.getValue(Constants.DELIVERY_TYPE, PICK_UP)
+        }
+
         orderAttributeRequestModel.employeeId = cartModel.employeeID
         orderAttributeRequestModel.locationId = cartModel.locationId
         orderAttributeRequestModel.terminalId = cartModel.terminalId
@@ -780,6 +832,8 @@ open class PaymentViewModel @Inject constructor(
             MethodUtils.roundOffAmountDouble(totalPrice) - MethodUtils.roundOffAmountDouble(
                 tipAmount
             )
+
+
         if (cartModel.discountId != null && cartModel.discountId != -1)
             orderAttributeRequestModel.discount_id = cartModel.discountId
         orderAttributeRequestModel.totalDiscount = totalDiscount
@@ -2043,5 +2097,36 @@ open class PaymentViewModel @Inject constructor(
     @JvmName("setServiceChargeListApplied1")
     fun setServiceChargeListApplied(temp_serviceChargeApplied: ArrayList<OrderServiceChargesAttribute>) {
         this.serviceChargeListApplied = temp_serviceChargeApplied
+    }
+
+    fun textPay(tPay: Boolean) {
+        textToPay = tPay
+    }
+
+    fun textPaySplit(orderId: Int) {
+
+        _showProgress.value = Event(true)
+        viewModelScope.launch {
+            val resource = posRepository.textPaySplit(orderId)
+
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    _showProgress.value = Event(false)
+                    _textToPaySpit.value = Event(true)
+
+                }
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+
+                }
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message)
+                    _showProgress.value = Event(false)
+                }
+            }
+
+
+        }
+
     }
 }

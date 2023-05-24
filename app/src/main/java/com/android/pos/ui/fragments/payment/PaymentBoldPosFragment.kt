@@ -157,7 +157,7 @@ class PaymentBoldPosFragment : Fragment() {
                     )
                     guestRequestModel = requireArguments().getParcelable("model")
                     viewModel.setGuestPay(true)
-                    if (this::presentation.isInitialized) {
+                    if(this::presentation.isInitialized){
                         presentation.show()
                         presentation.onDisplayChanged()
                         presentation.setGuestPay(true, model)

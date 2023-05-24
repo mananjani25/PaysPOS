@@ -267,9 +267,9 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
             setFragmentResult("request_key_customer", result)
         }
 
-        val navController = findNavController()
-        navController.previousBackStackEntry?.savedStateHandle?.set("data", result)
-        navController.popBackStack()
+//        val navController =
+//        navController.previousBackStackEntry?.savedStateHandle?.set("data",result)
+        findNavController().popBackStack()
 
 
     }

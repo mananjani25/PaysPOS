@@ -837,6 +837,9 @@
     <string name="toast_6">Bluetooth connect failed!</string>
     <string name="no_categories_available">No categories available</string>
     <string name="add_guest">Add Guest</string>
+    <string name="search_customer_by_name_amp_phone_number"><![CDATA[Search customer by name & phone number]]></string>
+    <string name="select_your_order_type">Select your order type</string>
+    <string name="phone_orders">Phone Orders</string>
     <string name="add_reason">Add Reason</string>
     <string name="remember_me">Remember me</string>
     <string name="search_by_item">Search by item</string>
@@ -845,6 +848,8 @@
     <string name="search_by_order_id_employee_customer_name">Search by Order id, employee, customer name</string>
     <string name="search_by_customer_name_order_id_receipt_id_amount">Search by employee name/customer name/order id/receipt id/$ amount</string>
     <string name="serving_efficiency">Serving Efficiency</string>
+    <string name="order_total">Order Total</string>
+    <string name="cash">Cash</string>
 
 </resources>
 

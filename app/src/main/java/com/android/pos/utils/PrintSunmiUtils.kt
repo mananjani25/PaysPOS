@@ -639,6 +639,17 @@ class PrintSunmiUtils {
             SunmiPrintHelper.getInstance().lineWrap(1)
         }
 
+        fun normalTextTest(value: String) {
+            SunmiPrintHelper.getInstance().setAlign(0)
+            if (fontSizeInner == LARGE) {
+                SunmiPrintHelper.getInstance()
+                    .printText(value, 36f, false, false, fontName)
+            } else
+                SunmiPrintHelper.getInstance()
+                    .printText(value, setFontSizeInner(), false, false, fontName)
+            //SunmiPrintHelper.getInstance().lineWrap(1)
+        }
+
         fun normalTextDineInItem(value: String) {
             SunmiPrintHelper.getInstance().setAlign(0)
             if (fontSizeInner == LARGE) {

@@ -259,7 +259,13 @@ class Categories(val clickedPosition: Int) : Fragment(),ItemCallback {
 
     override fun onItemClickListener(view: View?, pos: Int) {
         val popupMenu = view?.let { PopupMenu(requireContext(), it) }
-        popupMenu?.menuInflater?.inflate(R.menu.edit_delete__hide_menu, popupMenu.menu)
+        popupMenu?.menuInflater?.inflate(
+            if (adapter.getItem(pos).name == "Default Category") {
+                R.menu.edit_menu
+            } else {
+                R.menu.edit_delete__hide_menu
+            }, popupMenu.menu
+        )
         popupMenu?.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.menu_edit -> {

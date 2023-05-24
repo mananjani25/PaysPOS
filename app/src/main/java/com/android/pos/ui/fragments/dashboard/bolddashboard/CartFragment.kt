@@ -29,6 +29,8 @@ import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.CUSTOMER_ID
+import com.android.pos.data.remote.Constants.DELIVERY
+import com.android.pos.data.remote.Constants.DELIVERY_TYPE
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.DINE_IN_LIST_EDIT
 import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
@@ -50,6 +52,7 @@ import com.android.pos.data.remote.Constants.OPTION_TYPE
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.ORDER_TYPE_ID
 import com.android.pos.data.remote.Constants.ORDER_TYPE_NAME
+import com.android.pos.data.remote.Constants.PHONE_ORDER
 import com.android.pos.data.remote.Constants.REDIRECT_FROM
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.remote.Constants.WHOLE_AMOUNT
@@ -59,7 +62,6 @@ import com.android.pos.ui.adapter.DineInAdapter
 import com.android.pos.ui.adapter.OrderTypeAdapter
 import com.android.pos.ui.adapter.boldpos.CartAdapter
 import com.android.pos.ui.adapter.boldpos.TaxBirfurcationAdapter
-import com.android.pos.ui.fragments.checkout.CheckoutDineInPaymentViewModel
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
@@ -67,7 +69,6 @@ import com.android.pos.ui.fragments.payment.PaymentViewModel
 import com.android.pos.utils.*
 import com.android.pos.utils.callback.*
 import com.android.pos.utils.extensions.*
-import com.android.pos.utils.statusUtils.Resource
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -104,7 +105,6 @@ class CartFragment(
     var dashboardHeaderId: Int = 0
     var numOfGuest: Int = 0
     private var isOrderUpdate: Boolean = false
-    private var isLoyaltyApplied: Boolean = false
     private lateinit var cartAdapter: CartAdapter
     private var orderId: Int? = null
     private var orderOfflineId: String = ""
@@ -118,7 +118,6 @@ class CartFragment(
     var cartlist: ArrayList<CartModel> = arrayListOf()
     private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
     private val viewModelPayment by activityViewModels<PaymentViewModel>()
-    private val dineInPayViewModel by activityViewModels<CheckoutDineInPaymentViewModel>()
     var updateBundle: Bundle? = null
     var isFromPayment: Boolean = false
     var isActiveOrder: Boolean = false
@@ -128,12 +127,10 @@ class CartFragment(
 
     private var previousClickTimeMillis = 0L
 
-    private var serviceChargesObserve: Observer<Resource<List<TbServiceCharge>>>? = null
     private lateinit var nameObserver: Observer<List<CartModel>>
     private lateinit var dineInCartAdapter: DineInAdapter
     private lateinit var taxBirfurcationAdapter: TaxBirfurcationAdapter
     private var assignCustomer: TbCustomer? = null
-    private var openORderType: String = ""
     private var orderFloorDetails: GetOrderDetailsResponse.Data.FloorPlanTable =
         GetOrderDetailsResponse.Data.FloorPlanTable()
     private var serviceChargesList: List<TbServiceCharge>? = null
@@ -156,7 +153,7 @@ class CartFragment(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentCartBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
         LogUtil.logE("bundleData", arguments.toString())
@@ -247,6 +244,11 @@ class CartFragment(
             binding.rlCartView.visible()
             binding.rvOrderType.gone()
 
+            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
+                binding.txtAddCustomer.invisible()
+            } else {
+                binding.txtAddCustomer.visible()
+            }
             binding.orderTypeDisplay.text =
                 getString(R.string.current_order) + " : " + prefProvider.getValue(ORDER_TYPE_NAME, "")
 
@@ -370,7 +372,7 @@ class CartFragment(
         }
 
 
-        if (prefProvider.getValueInt(Constants.CUSTOMER_ID, -1) != -1) {
+        if (prefProvider.getValueInt(CUSTOMER_ID, -1) != -1) {
             displayCustomer()
         }
         //  getCartList()
@@ -428,7 +430,7 @@ class CartFragment(
     private fun setupTaxAdapter() {
         taxBirfurcationAdapter = TaxBirfurcationAdapter("dashboard")
         binding.rvTax.adapter = taxBirfurcationAdapter
-        var taxlist = arrayListOf<TaxData>()
+        val taxlist = arrayListOf<TaxData>()
         taxBirfurcationAdapter.setList(taxlist)
     }
 
@@ -474,7 +476,7 @@ class CartFragment(
 //            viewModel.redeemLoyaltyInfo.needToApplyLoyalty = p1
             prefProvider.setValueboolean(Constants.LOYALTY_ADDED, p1)
             prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED, p1)
-//            addObserver()
+            addObserver()
             if (this::presentation.isInitialized) {
                 presentation.show()
                 presentation.onDisplayChanged()
@@ -488,7 +490,7 @@ class CartFragment(
             "request_key_customer",
             viewLifecycleOwner
         ) { requestKey: String, bundle: Bundle ->
-            var data: TbCustomer = bundle.getParcelable<TbCustomer>("data") as TbCustomer
+            val data: TbCustomer = bundle.getParcelable<TbCustomer>("data") as TbCustomer
             viewModel.assignCustomer = data
             viewModel.setcheckedLoyaltyApply(false)
             viewModel.selectedCustomer = data
@@ -497,7 +499,7 @@ class CartFragment(
             "request_for_guestcount",
             viewLifecycleOwner
         ) { requestKey: String, bundle: Bundle ->
-            var count: Int = bundle.getInt("count")
+            val count: Int = bundle.getInt("count")
             addGuestToOrder(count)
         }
         requireActivity().supportFragmentManager.setFragmentResultListener(
@@ -518,14 +520,6 @@ class CartFragment(
         }
     }
 
-    private fun removeObserver() {
-
-        viewModel.mAllWords(
-            prefProvider.getValue(ORDER_TYPE, ""),
-            prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
-        ).removeObserver(nameObserver)
-        //  addObserver()
-    }
 
     private fun getDineInData() {
         if (updateBundle != null) {
@@ -645,10 +639,10 @@ class CartFragment(
         if (cartlist.isEmpty()) {
             val cartModel = CartModel().apply {
                 terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
-                employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1)
+                employeeID = prefProvider.getValueInt(EMPLOYEE_ID, -1)
                 locationId = prefProvider.getValueInt(Constants.LOCATION_ID, -1)
-                orderTypeId = prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)
-                orderType = prefProvider.getValue(Constants.ORDER_TYPE, "").toString()
+                orderTypeId = prefProvider.getValueInt(ORDER_TYPE_ID, -1)
+                orderType = prefProvider.getValue(ORDER_TYPE, "").toString()
                 orderTypeName = prefProvider.getValue(Constants.ORDER_TYPE_NAME, "").toString()
 
                 serviceCharge = getServiceChargeFromGuestCount(numOfGuest)
@@ -672,7 +666,7 @@ class CartFragment(
 
     private fun checkDineInEditOrder() {
         if (arguments?.getBoolean("is_dine_in_edit") == true) {
-            var dineInList = arguments?.getParcelableArrayList<DineInModel>("dine_in_list")
+            val dineInList = arguments?.getParcelableArrayList<DineInModel>("dine_in_list")
 
             if (dineInList?.isNotEmpty() == true) {
                 //  binding.layoutCart.txtOrderType.setText("Dine In")
@@ -685,7 +679,7 @@ class CartFragment(
                 if (cartlist.isEmpty()) {
                     val cartModel = CartModel().apply {
                         terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
-                        employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1)
+                        employeeID = prefProvider.getValueInt(EMPLOYEE_ID, -1)
                         locationId = prefProvider.getValueInt(Constants.LOCATION_ID, -1)
                         orderTypeId = 2
                         orderType = Constants.DINE_IN
@@ -712,7 +706,7 @@ class CartFragment(
                 prefProvider.setValue(Constants.ORDER_TYPE_NAME, prefProvider.getValue(
                     ORDER_TYPE_NAME, DINE_IN))
                 prefProvider.setValueInt(
-                    Constants.ORDER_TYPE_ID,
+                    ORDER_TYPE_ID,
                     prefProvider.getValueInt(ORDER_TYPE_ID, 0)
                 )
 
@@ -737,7 +731,7 @@ class CartFragment(
 
         viewModel.mAllWords(
             prefProvider.getValue(ORDER_TYPE, ""),
-            prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+            prefProvider.getValueInt(EMPLOYEE_ID, 0)
         ).observe(
             requireActivity(), nameObserver
         )
@@ -814,7 +808,7 @@ class CartFragment(
         if (prefProvider.getValue(REDIRECT_FROM, "") == MANUAL_SALE) {
             viewModel.manualSaleItems(
                 prefProvider.getValue(ORDER_TYPE, TAKEOUT),
-                prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+                prefProvider.getValueInt(EMPLOYEE_ID, 0)
             ).observe(requireActivity()) {
                 LogUtil.logE(TAG, "listSize  ${Gson().toJson(it)}")
                 if (it.isNotEmpty()) {
@@ -831,7 +825,7 @@ class CartFragment(
                             ) {
                                 binding.labelCashSurcharge?.text = "Cash Discount"
                             } else {
-                                binding.labelCashSurcharge?.text = "SurCharge"
+                                showSurchargeWithPercentage()
                             }
                         } else {
                             binding.linearCashDiscount.gone()
@@ -968,7 +962,7 @@ class CartFragment(
 
                 }
 
-                prefProvider.setValue(REDIRECT_FROM, "")
+                //prefProvider.setValue(REDIRECT_FROM, "")
             }
 
         } else {
@@ -997,16 +991,6 @@ class CartFragment(
                         }
                     }
 
-                    if (this::presentation.isInitialized) {
-                        if (!presentation.isShowing)
-                            presentation.show()
-                        if (it.isNotEmpty()) {
-                            presentation.updateCustomerDisplay(it)
-                        } else {
-                            presentation.onLogOutOrClockOutWithApiService(apiService)
-                        }
-                    }
-
                     saveVisibility()
 
 
@@ -1028,7 +1012,7 @@ class CartFragment(
                                     ) {
                                         binding.labelCashSurcharge?.text = "Cash Discount"
                                     } else {
-                                        binding.labelCashSurcharge?.text = "SurCharge"
+                                        showSurchargeWithPercentage()
                                     }
                                 } else {
                                     binding.linearCashDiscount.gone()
@@ -1236,7 +1220,7 @@ class CartFragment(
                                     ) {
                                         binding.labelCashSurcharge?.text = "Cash Discount"
                                     } else {
-                                        binding.labelCashSurcharge?.text = "SurCharge"
+                                        showSurchargeWithPercentage()
                                     }
                                 } else {
                                     binding.linearCashDiscount.gone()
@@ -1303,7 +1287,7 @@ class CartFragment(
                                     ) {
                                         binding.labelCashSurcharge?.text = "Cash Discount"
                                     } else {
-                                        binding.labelCashSurcharge?.text = "SurCharge"
+                                        showSurchargeWithPercentage()
                                     }
                                 } else {
                                     binding.linearCashDiscount.gone()
@@ -1509,6 +1493,16 @@ class CartFragment(
 
                     }
 
+                    if (this::presentation.isInitialized) {
+                        if (!presentation.isShowing)
+                            presentation.show()
+                        if (it.isNotEmpty()) {
+                            presentation.updateCustomerDisplay(it)
+                        } else {
+                            presentation.onLogOutOrClockOutWithApiService(apiService)
+                        }
+                    }
+
                     if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
                         binding.txtAddCustomer.invisible()
                     } else {
@@ -1568,6 +1562,16 @@ class CartFragment(
                     }
                 }
             }
+        }
+    }
+
+    private fun showSurchargeWithPercentage() {
+        val amountType = prefProvider.getValue(Constants.AMOUNT_TYPE, "")
+        val rateOrAmount = prefProvider.getValue(Constants.RATE_OR_AMOUNT, "0")
+        if(amountType=="Percentage"){
+            binding.labelCashSurcharge.text = "SurCharge (${rateOrAmount}%)"
+        }else{
+            binding.labelCashSurcharge.text = "SurCharge"
         }
     }
 
@@ -1819,6 +1823,7 @@ class CartFragment(
                     isOrderUpdate = false
                     prefProvider.setValue(ORDER_TYPE, "")
                     prefProvider.setValue(ORDER_TYPE_NAME, "")
+                    prefProvider.setValue(DELIVERY_TYPE, "")
                     prefProvider.setValueboolean(Constants.LOYALTY_ADDED, false)
 
                     itemClickListner?.onDineInOrderCleared()
@@ -2147,7 +2152,23 @@ class CartFragment(
                                     }
                                 }
                             }
+
+
                         }
+
+                        if (prefProvider.getValue(ORDER_TYPE, "").toString().trim() == PHONE_ORDER.toString().trim()){
+
+                            viewModel.ordertypelist.forEach {
+                                if (it.orderType == PHONE_ORDER) {
+                                    ordertype = it.orderType
+                                    ordertypeId = it.id
+                                }
+
+
+                            }
+                        }
+
+
                         Log.e("ordertypeId :: ", ordertypeId.toString())
 
                         if (viewModel.restrictedAmount(binding.txtTotal)) {
@@ -2395,12 +2416,21 @@ class CartFragment(
 
         Log.e(TAG, "checkOrderType  ${model?.orderType}")
 
+        prefProvider.setValue(DELIVERY_TYPE, "")
+
         prefProvider.setValue(Constants.REDIRECT_FROM, "")
 
         if (model?.orderType == DINE_IN) {
             Log.e(TAG, "InsideDine inNew")
             checkOrderType()
             dineInCallback?.onDineInClickListener()
+        } else if (model?.orderType == PHONE_ORDER) {
+
+            findNavController().navigate(
+                R.id.action_dashboardCategoryBoldPOS_to_phoneOrderFragment
+            )
+
+
         } else {
             Log.e(TAG, "InsideDine inNoDine")
             model?.orderType?.let { prefProvider.setValue(ORDER_TYPE, it) }
@@ -2432,6 +2462,7 @@ class CartFragment(
         if (event != null) {
             Log.e("onMessageEvent", event)
         }
+        prefProvider.setValue(DELIVERY_TYPE, "")
         checkOrderType()
 
         addObserver()

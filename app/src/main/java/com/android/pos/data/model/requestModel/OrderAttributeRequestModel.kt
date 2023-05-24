@@ -40,6 +40,11 @@ class OrderAttributeRequestModel {
     @SerializedName("offline_id")
     var offlineId: String? = null
 
+
+    @SerializedName("send_payment_link")
+    var send_payment_link: Boolean = false
+
+
     @SerializedName("open_order_type")
     var openOrderType: String = ""
 
@@ -339,6 +344,9 @@ class OrderItemsAttribute {
 
     @SerializedName("is_fired")
     var isFired: Boolean = false
+
+    @SerializedName("sort")
+    var sort: Int? = null
 }
 
 class OrderItemTaxesAttribute {
@@ -549,7 +557,7 @@ class PaymentAttributes : Parcelable {
     var payableType: String = ""
 
     @SerializedName("payment_type")
-    var paymentType: String = ""
+    var paymentType: String? = ""
 
     @SerializedName("service_charge_amount")
     var serviceChargeAmount: Double = 0.0
