@@ -1536,9 +1536,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE_DINEIN, "")
         prefProvider.setValue(Constants.TOTAL_PRICE_DINEIN, "")
         prefProvider.setValue(Constants.ORDER_TYPE, DINE_IN)
-        prefProvider.setValueInt(Constants.ORDER_TYPE_ID, prefProvider.getValueInt(ORDER_TYPE_ID, 2))
-        prefProvider.setValue(Constants.ORDER_TYPE_NAME, prefProvider.getValue(ORDER_TYPE_NAME, DINE_IN))
-        println("order type name and id in cartlist : ${prefProvider.getValueInt(ORDER_TYPE_ID, 2)}  >> ${prefProvider.getValue(ORDER_TYPE_NAME, DINE_IN)}")
         var modelReq = DineInOrderPayment(dineInOrderModel)
         var model = GuestPaymentRequest(paymentAttr, dineInOrderModel)
 
