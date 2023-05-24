@@ -544,11 +544,11 @@ open class PaymentViewModel @Inject constructor(
             orderAttributeRequestModel.futureDeliveryTime = future_delivery_time
 
 
-        if (cartModel.openOrderType.isNotEmpty() && cartModel.openOrderType != null) {
-            orderAttributeRequestModel.deliveryType = cartModel.openOrderType
-        } else {
-            orderAttributeRequestModel.deliveryType = cartModel.deliveryType
-        }
+//        if (cartModel.openOrderType.isNotEmpty()) {
+//            orderAttributeRequestModel.deliveryType = cartModel.openOrderType
+//        } else {
+//            orderAttributeRequestModel.deliveryType = cartModel.deliveryType
+//        }
 
         if (cartModel.orderType == PHONE_ORDER){
             orderAttributeRequestModel.deliveryType = prefProvider.getValue(Constants.DELIVERY_TYPE, PICK_UP)
