@@ -957,7 +957,8 @@ class CartFragment(
                     if (it.isEmpty()) {
                         if (oldItemSize != null && oldItemSize != 1)
                         return@observe
-                    } else {
+                    }
+                    else {
                         val currentTimeMillis = System.currentTimeMillis()
 
                         if (currentTimeMillis >= previousClickTimeMillis + DELAY_MILLIS) {
@@ -2430,6 +2431,9 @@ class CartFragment(
             Log.e("onMessageEvent", event)
         }
         prefProvider.setValue(DELIVERY_TYPE, "")
+
+        viewModel.cartModel = null
+
         checkOrderType()
 
         addObserver()

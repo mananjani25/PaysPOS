@@ -309,6 +309,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         }
         binding.layoutHeader.txtHome.setOnClickListener {
             prefProvider.setValue(Constants.REDIRECT_FROM, "")
+            viewModel.cartModel = null
             findNavController().navigateUp()
         }
 
