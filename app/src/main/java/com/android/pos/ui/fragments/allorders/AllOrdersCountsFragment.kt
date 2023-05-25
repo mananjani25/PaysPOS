@@ -15,6 +15,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
+import com.android.pos.data.entities.TbOrderType
 import com.android.pos.data.model.InventoryItemModel
 import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants.ALL_ORDER_TAB
@@ -46,6 +47,8 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
 
+    private var ORDER_TAB_TYPE_ID: String = ""
+    private lateinit var ordertypelist: java.util.ArrayList<TbOrderType>
     private lateinit var ORDER_TAB: String
     private lateinit var binding: FragmentAllOrdersCountsBinding
 
@@ -145,6 +148,7 @@ class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
                         cancelledOrdersCount = count
                         setAdapter(3)
                     }
+
                     "4" -> {
                         upcomingOrderCount = count
                         setAdapter(4)
@@ -160,31 +164,52 @@ class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    private fun getOrderTypes() {
 
-        when (tabPosition) {
-            0 -> {
-                ORDER_TAB = ALL_ORDER_TAB
-            }
+        dashboardViewModel.getOrderTypes.observe(requireActivity()) { res ->
+            if (res.status == Status.SUCCESS) {
+                if (res.data != null) {
+                    ordertypelist = res.data.toCollection(arrayListOf())
+                    when (tabPosition) {
+                        0 -> {
+                            ORDER_TAB = ALL_ORDER_TAB
+                        }
 
-            1 -> {
-                ORDER_TAB = OPEN_ORDER_TAB
-            }
+                        1 -> {
+                            ORDER_TAB = OPEN_ORDER_TAB
+                        }
 
-            2 -> {
-                ORDER_TAB = PHONE_ORDER_TAB
-            }
+                        2 -> {
+                            ORDER_TAB = PHONE_ORDER_TAB
+                        }
 
-            3 -> {
-                ORDER_TAB = ONLINE_ORDER_TAB
-            }
+                        3 -> {
+                            ORDER_TAB = ONLINE_ORDER_TAB
+                        }
 
-            4 -> {
-                ORDER_TAB = THIRD_PARTY_ORDER_TAB
+                        4 -> {
+                            ORDER_TAB = THIRD_PARTY_ORDER_TAB
+                        }
+
+                    }
+
+                    if (ORDER_TAB != ALL_ORDER_TAB) {
+                        ORDER_TAB_TYPE_ID =
+                            ordertypelist.filter { it.orderType == ORDER_TAB }[0].id.toString()
+                    }
+
+                }
             }
 
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        getOrderTypes()
+
+
 
         changePosition(0)
         setAdapter(mPos)
@@ -227,22 +252,26 @@ class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
         mPos = position
         when (position) {
             0 -> {
-                val activeOrders = AllOrdersListingFragment("0", startDate, endDate, ORDER_TAB)
+                val activeOrders =
+                    AllOrdersListingFragment("0", startDate, endDate, ORDER_TAB, ORDER_TAB_TYPE_ID)
                 loadFragment(activeOrders)
             }
 
             1 -> {
-                val upcomingOrders = AllOrdersListingFragment("1", startDate, endDate, ORDER_TAB)
+                val upcomingOrders =
+                    AllOrdersListingFragment("1", startDate, endDate, ORDER_TAB, ORDER_TAB_TYPE_ID)
                 loadFragment(upcomingOrders)
             }
 
             2 -> {
-                val completedOrders = AllOrdersListingFragment("2", startDate, endDate, ORDER_TAB)
+                val completedOrders =
+                    AllOrdersListingFragment("2", startDate, endDate, ORDER_TAB, ORDER_TAB_TYPE_ID)
                 loadFragment(completedOrders)
             }
 
             3 -> {
-                val cancelledOrders = AllOrdersListingFragment("3", startDate, endDate, ORDER_TAB)
+                val cancelledOrders =
+                    AllOrdersListingFragment("3", startDate, endDate, ORDER_TAB, ORDER_TAB_TYPE_ID)
                 loadFragment(cancelledOrders)
             }
         }

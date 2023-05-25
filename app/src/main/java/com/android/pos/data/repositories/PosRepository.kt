@@ -886,6 +886,21 @@ class PosRepository @Inject constructor(
             )
         })
 
+    fun getAllOrders(
+        startDate: String,
+        endDate: String,
+        order_status: String,
+        order_type_id: String
+    ): LiveData<Resource<OnlineOrderResponseModel>> =
+        performGetOperationNew(networkCall = {
+            apiHelperNew.getAllOrders(
+                startDate,
+                endDate,
+                order_status,
+                order_type_id
+            )
+        })
+
     fun acceptedAndDeclineOrders(
         time: Int,
         order_id: Int,

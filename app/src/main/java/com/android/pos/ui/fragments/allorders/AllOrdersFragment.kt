@@ -30,6 +30,7 @@ class AllOrdersFragment : Fragment() {
 
     private fun setupTabs() {
         val adapter = AllOrdersTabsAdapter(requireActivity().supportFragmentManager, lifecycle)
+
         binding.viewPager.adapter = adapter
         binding.commonToolbar.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabReselected(tab: TabLayout.Tab?) {

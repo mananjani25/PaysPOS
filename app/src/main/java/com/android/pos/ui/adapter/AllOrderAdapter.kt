@@ -15,6 +15,7 @@ import com.android.pos.R
 import com.android.pos.data.model.responseModel.OnlineOrderResponseModel
 import com.android.pos.data.model.responseModel.OpenOrderResponse
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.ALL_ORDER_TAB
 import com.android.pos.data.remote.Constants.ONLINE_ORDER_TAB
 import com.android.pos.data.remote.Constants.OPEN_ORDER_TAB
 import com.android.pos.data.remote.Constants.PHONE_ORDER_TAB
@@ -53,12 +54,20 @@ class AllOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
             binding.executePendingBindings()
             binding.llShowLayout.visibility = View.GONE
 
+            if (orderedTab == ALL_ORDER_TAB) {
+                binding.txtOrderType.visible()
+                binding.txtOrderType.text = item.orderTypeName
+            } else {
+                binding.txtOrderType.gone()
+            }
+
             if (prefProvider.getValueboolean(Constants.ORDER_NUMBER_STARTING_FROM_ONE, false)) {
                 binding.tvOrderID.text = item.custom_order_id.toString()
             } else {
                 binding.tvOrderID.text = item.id.toString()
             }
-            if (item.futureDeliveryDate != null) {
+
+            if (item.futureDeliveryDate != null && item.futureDeliveryDate.isNotEmpty()) {
                 val inputFormat = SimpleDateFormat("yyyy-MM-dd")
                 val outputFormat = SimpleDateFormat("MMM-dd-yyyy")
                 val date = inputFormat.parse(item.futureDeliveryDate)
@@ -71,7 +80,7 @@ class AllOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
                         context
                     )
             }
-            if (item.futureDeliveryTime != null) {
+            if (item.futureDeliveryTime != null && item.futureDeliveryTime.isNotEmpty()) {
                 val inputFormat = SimpleDateFormat("hh:mm a")
                 val outputFormat = SimpleDateFormat("hh:mm a")
                 TimeFormatUtils.prefProvider = PrefProvider(context = context!!)
@@ -86,53 +95,108 @@ class AllOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
                     )
             }
 
-            if (orderedTab == ONLINE_ORDER_TAB || orderedTab == THIRD_PARTY_ORDER_TAB) {
+            if (orderedTab == ALL_ORDER_TAB) {
+                if (item.orderType == ONLINE_ORDER_TAB || item.orderType == THIRD_PARTY_ORDER_TAB) {
+                    binding.viewOrderStatus.gone()
+                    when (item.order_status) {
+                        "Pending" -> {
+                            binding.orderStatusLinear.visible()
+                            binding.orderInprogressButton.gone()
+                            binding.orderCompletedButton.gone()
+                            binding.orderCancelledButton.gone()
+                            binding.orderUpcomingButton.gone()
+                        }
 
-                when (item.order_status) {
-                    "Pending" -> {
-                        binding.orderStatusLinear.visible()
-                        binding.orderInprogressButton.gone()
-                        binding.orderCompletedButton.gone()
-                        binding.orderCancelledButton.gone()
-                        binding.orderUpcomingButton.gone()
+                        "InProgress" -> {
+                            binding.orderStatusLinear.gone()
+                            binding.orderInprogressButton.visible()
+                            binding.orderCompletedButton.gone()
+                            binding.orderCancelledButton.gone()
+                            binding.orderUpcomingButton.gone()
+                        }
+
+                        "Completed" -> {
+                            binding.orderStatusLinear.gone()
+                            binding.orderInprogressButton.gone()
+                            binding.orderCompletedButton.visible()
+                            binding.orderCancelledButton.gone()
+                            binding.orderUpcomingButton.gone()
+                        }
+
+                        "UpComing" -> {
+                            binding.orderStatusLinear.gone()
+                            binding.orderInprogressButton.gone()
+                            binding.orderCompletedButton.gone()
+                            binding.orderCancelledButton.gone()
+                            binding.orderUpcomingButton.visible()
+                        }
+
+                        else -> {
+                            binding.orderStatusLinear.gone()
+                            binding.orderInprogressButton.gone()
+                            binding.orderCompletedButton.gone()
+                            binding.orderCancelledButton.visible()
+                            binding.orderUpcomingButton.gone()
+                        }
                     }
-                    "InProgress" -> {
-                        binding.orderStatusLinear.gone()
-                        binding.orderInprogressButton.visible()
-                        binding.orderCompletedButton.gone()
-                        binding.orderCancelledButton.gone()
-                        binding.orderUpcomingButton.gone()
-                    }
-                    "Completed" -> {
-                        binding.orderStatusLinear.gone()
-                        binding.orderInprogressButton.gone()
-                        binding.orderCompletedButton.visible()
-                        binding.orderCancelledButton.gone()
-                        binding.orderUpcomingButton.gone()
-                    }
-                    "UpComing" -> {
-                        binding.orderStatusLinear.gone()
-                        binding.orderInprogressButton.gone()
-                        binding.orderCompletedButton.gone()
-                        binding.orderCancelledButton.gone()
-                        binding.orderUpcomingButton.visible()
-                    }
-                    else -> {
-                        binding.orderStatusLinear.gone()
-                        binding.orderInprogressButton.gone()
-                        binding.orderCompletedButton.gone()
-                        binding.orderCancelledButton.visible()
-                        binding.orderUpcomingButton.gone()
+                } else {
+                    binding.viewOrderStatus.visible()
+                }
+            } else {
+                binding.viewOrderStatus.gone()
+                if (orderedTab == ONLINE_ORDER_TAB || orderedTab == THIRD_PARTY_ORDER_TAB
+                    || item.orderType == ONLINE_ORDER_TAB || item.orderType == THIRD_PARTY_ORDER_TAB
+                ) {
+
+                    when (item.order_status) {
+                        "Pending" -> {
+                            binding.orderStatusLinear.visible()
+                            binding.orderInprogressButton.gone()
+                            binding.orderCompletedButton.gone()
+                            binding.orderCancelledButton.gone()
+                            binding.orderUpcomingButton.gone()
+                        }
+
+                        "InProgress" -> {
+                            binding.orderStatusLinear.gone()
+                            binding.orderInprogressButton.visible()
+                            binding.orderCompletedButton.gone()
+                            binding.orderCancelledButton.gone()
+                            binding.orderUpcomingButton.gone()
+                        }
+
+                        "Completed" -> {
+                            binding.orderStatusLinear.gone()
+                            binding.orderInprogressButton.gone()
+                            binding.orderCompletedButton.visible()
+                            binding.orderCancelledButton.gone()
+                            binding.orderUpcomingButton.gone()
+                        }
+
+                        "UpComing" -> {
+                            binding.orderStatusLinear.gone()
+                            binding.orderInprogressButton.gone()
+                            binding.orderCompletedButton.gone()
+                            binding.orderCancelledButton.gone()
+                            binding.orderUpcomingButton.visible()
+                        }
+
+                        else -> {
+                            binding.orderStatusLinear.gone()
+                            binding.orderInprogressButton.gone()
+                            binding.orderCompletedButton.gone()
+                            binding.orderCancelledButton.visible()
+                            binding.orderUpcomingButton.gone()
+                        }
                     }
                 }
             }
 
 
-
             binding.txtCustomerName.text =
-                (item.customer?.firstName ?: "") + " " + (item.customer?.lastName ?: "")
-//            binding.txtEmployeeName.text =
-//                (item.employee?.firstName ?: "") + " " + (item.employee?.lastName ?: "")
+                (item.customer?.firstName ?: "-") + " " + (item.customer?.lastName ?: "-")
+            binding.txtEmployeeName.text =
+                (item.employee?.firstName ?: "-") + " " + (item.employee?.lastName ?: "-")
             if (item.orderItems.isNotEmpty()) {
                 binding.rvOpenOrder.visible()
                 adapter = OnlineOrderItemsAdapter()
@@ -197,6 +261,48 @@ class AllOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
         }
 
         init {
+            binding.acceptImg.setOnClickListener {
+                mCallback?.onItemClickListener(it, absoluteAdapterPosition, "accepted")
+            }
+            binding.declineImg.setOnClickListener {
+                mCallback?.onItemClickListener(it, absoluteAdapterPosition, "cancelled")
+            }
+            binding.completedImg.setOnClickListener {
+                mCallback?.onItemClickListener(it, absoluteAdapterPosition, "Completed")
+            }
+
+            binding.txtCancelOrder.setOnClickListener {
+                if (MethodUtils.isDoubleClick()) return@setOnClickListener
+                mCallback?.onItemClickListener(it, bindingAdapterPosition, "")
+            }
+
+            binding.txtEditOrder.setOnClickListener {
+                binding.txtEditOrder.background =
+                    itemView.context.getDrawable(R.drawable.button_selected)
+                binding.txtPayNow.background =
+                    itemView.context.getDrawable(R.drawable.background_square_border_grey)
+                mCallback?.onItemClickListener(it, bindingAdapterPosition, "UPDATE")
+            }
+
+            binding.txtPayNow.setOnClickListener {
+                binding.txtEditOrder.background =
+                    itemView.context.getDrawable(R.drawable.background_square_border_grey)
+                binding.txtPayNow.background =
+                    itemView.context.getDrawable(R.drawable.button_selected)
+                mCallback?.onItemClickListener(it, bindingAdapterPosition, "PAY")
+            }
+
+            binding.txtCustomerReceipt.setOnClickListener {
+                if (filterList[bindingAdapterPosition].paymentStatus == "Paid") {
+                    mCallback?.onItemClickListener(it, bindingAdapterPosition, Constants.PRINT_PAID)
+                } else {
+                    mCallback?.onItemClickListener(it, bindingAdapterPosition,
+                        Constants.PRINT_UNPAID
+                    )
+                }
+
+            }
+
             binding.root.setOnClickListener {
 
                 val item = filterList[bindingAdapterPosition]
@@ -239,7 +345,8 @@ class AllOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
                 if (filterList[bindingAdapterPosition].paymentStatus == "Paid") {
                     mCallback?.onItemClickListener(it, bindingAdapterPosition, Constants.PRINT_PAID)
                 } else {
-                    mCallback?.onItemClickListener(it, bindingAdapterPosition,
+                    mCallback?.onItemClickListener(
+                        it, bindingAdapterPosition,
                         Constants.PRINT_UNPAID
                     )
                 }
@@ -250,7 +357,8 @@ class AllOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
                 if (filterList[bindingAdapterPosition].paymentStatus == "Paid") {
                     mCallback?.onItemClickListener(it, bindingAdapterPosition, Constants.PRINT_PAID)
                 } else {
-                    mCallback?.onItemClickListener(it, bindingAdapterPosition,
+                    mCallback?.onItemClickListener(
+                        it, bindingAdapterPosition,
                         Constants.PRINT_UNPAID
                     )
                 }

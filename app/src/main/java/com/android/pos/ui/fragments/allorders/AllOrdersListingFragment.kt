@@ -31,13 +31,16 @@ import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.LoyaltyProgramsModel
 import com.android.pos.data.entities.RedeemLoyaltyInfo
 import com.android.pos.data.entities.TbCustomer
+import com.android.pos.data.entities.TbOrderType
 import com.android.pos.data.model.requestModel.RefundRequestModelOnlineOrder
 import com.android.pos.data.model.responseModel.GetKitchenReceiptSettingsResponse
 import com.android.pos.data.model.responseModel.OnlineOrderStatusUpdateResponse
 import com.android.pos.data.model.responseModel.OpenOrderResponse
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.ALL_ORDER_TAB
 import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
+import com.android.pos.data.remote.Constants.OPEN_ORDER_TAB
 import com.android.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
 import com.android.pos.data.remote.Constants.SUNMI_PRINTER
 import com.android.pos.databinding.AllOrdersListingFragmentBinding
@@ -77,11 +80,12 @@ class AllOrdersListingFragment(
     var param1: String,
     var startDateTime: String?,
     var endDateTime: String?,
-    var orderTab: String
+    var orderTab: String,
+    var orderTabTypeId: String,
 ) : Fragment(),
     OrderCallBack, StatusChangeEventListener {
 
-
+    var ordertypelist: ArrayList<TbOrderType> = arrayListOf()
     private var isEmployeeAtoZ: Boolean = false
     private var isStationAtoZ: Boolean = false
     private val viewModel by viewModels<OnlineDetailViewModel>()
@@ -113,7 +117,7 @@ class AllOrdersListingFragment(
             if (refresh == true) {
                 adapter.orderList.clear()
                 adapter.filterList.clear()
-                getOnlineOrders()
+                getAllOrders()
             }
 
         }
@@ -160,7 +164,7 @@ class AllOrdersListingFragment(
 
         }
         searchFilter()
-        getOnlineOrders()
+        getAllOrders()
         setupEmployeeSort()
         setupStationSort()
 
@@ -187,6 +191,8 @@ class AllOrdersListingFragment(
             acceptedAndDeclineOrder(0, order_id, false)
         }
     }
+
+
 
     private fun setupStationSort() {
         binding.lnrStationSort.setOnClickListener {
@@ -270,7 +276,7 @@ class AllOrdersListingFragment(
                 when (resource.status) {
                     Status.SUCCESS -> {
                         ProgressUtils.dismissProgressDialog()
-                        getOnlineOrders()
+                        getAllOrders()
                         resource.data?.let {
                             LogUtil.logE(TAG, "getREsponseForOnline  ${Gson().toJson(it)}")
                             if (it.data.orderItems.isNotEmpty()) {
@@ -305,7 +311,7 @@ class AllOrdersListingFragment(
                     Status.SUCCESS -> {
                         ProgressUtils.dismissProgressDialog()
                         resource.data?.let {
-                            getOnlineOrders()
+                            getAllOrders()
                         }
                     }
 
@@ -323,13 +329,13 @@ class AllOrdersListingFragment(
         }
     }
 
-    private fun getOnlineOrders() {
-        viewModel.onlineOrders(
+    private fun getAllOrders() {
+        viewModel.getAllOrders(
             viewModel.startDate.value.toString(),
             viewModel.endDate.value.toString(),
-            order_status
+            order_status,
+            orderTabTypeId
         ).observe(viewLifecycleOwner) { it ->
-
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
@@ -337,8 +343,18 @@ class AllOrdersListingFragment(
                         resource.data?.let {
 
                             if (it.data.isNotEmpty()) {
-                                if (orderTab == Constants.ONLINE_ORDER_TAB || orderTab == Constants.THIRD_PARTY_ORDER_TAB) {
-                                    binding.tvOrderStatus.visible()
+                                when (orderTab) {
+                                    ALL_ORDER_TAB -> {
+                                        binding.tvOrderType.visible()
+                                        binding.tvOrderStatus.visible()
+                                    }
+                                    Constants.ONLINE_ORDER_TAB, Constants.THIRD_PARTY_ORDER_TAB -> {
+                                        binding.tvOrderStatus.visible()
+                                    }
+                                    OPEN_ORDER_TAB -> {
+                                        binding.lblDelivery.gone()
+                                    }
+
                                 }
                                 binding.rvOpenOrder.visibility = View.VISIBLE
                                 binding.llNoData.visibility = View.GONE
@@ -416,7 +432,7 @@ class AllOrdersListingFragment(
                 /*checkFilter = true
                 currentPage = 1
                 apiCallTimeSheet()*/
-                getOnlineOrders()
+                getAllOrders()
             } else {
                 AlertUtils.showCustomAlertWithListenerWithOK(
                     requireActivity(),
@@ -434,7 +450,7 @@ class AllOrdersListingFragment(
             /*checkFilter = true
             currentPage = 1*/
             if (differnceTrue(viewModel.endDate.value!!, viewModel.startDate.value) <= 30)
-                getOnlineOrders()
+                getAllOrders()
             else {
                 AlertUtils.showCustomAlertWithListenerWithOK(
                     requireActivity(),
@@ -921,7 +937,7 @@ class AllOrdersListingFragment(
                 //TODO - getCustomerPrinters(order, status)
             }
 
-            "cancel-order" -> {
+            "" -> {//cancel order
                 if (rolePermission.hasCancelOrderPermission(binding.root)) {
                     val bundle = Bundle().apply {
                         /* putParcelable("refundData", refundData)
@@ -938,7 +954,7 @@ class AllOrdersListingFragment(
                     )
                 }
             }
-            "reject-order" -> {
+            "cancelled" -> {
                 alert("", "Are you sure, you want to reject this order ?") {
 
                     this.positiveButton("YES") {

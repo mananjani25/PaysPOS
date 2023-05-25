@@ -41,7 +41,7 @@ data class OnlineOrderResponseModel(
         @SerializedName("edited_order_timestamp")
         val editedOrderTimestamp: Any,
         @SerializedName("employee")
-        val employee: Employee,
+        val employee: Employee?,
         @SerializedName("employee_id")
         val employeeId: Int,
         @SerializedName("future_delivery_date")
@@ -74,6 +74,8 @@ data class OnlineOrderResponseModel(
         val orderServiceCharges: List<OrderServiceCharge>,
         @SerializedName("order_type")
         val orderType: String,
+        @SerializedName("order_type_name")
+        val orderTypeName: String,
         @SerializedName("order_type_id")
         val orderTypeId: Int,
         @SerializedName("payment_status")

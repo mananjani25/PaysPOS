@@ -360,11 +360,11 @@ object Constants {
     const val ONLINE_ORDER_TAB_POS = 3
     const val THIRD_PARTY_ORDER_TAB_POS = 4
 
-    const val ALL_ORDER_TAB = "allOrder"
-    const val OPEN_ORDER_TAB = "openOrder"
-    const val PHONE_ORDER_TAB = "phoneOrder"
-    const val ONLINE_ORDER_TAB = "onlineOrder"
-    const val THIRD_PARTY_ORDER_TAB = "thirdPartyOrder"
+    const val ALL_ORDER_TAB = "ALL"
+    const val OPEN_ORDER_TAB = "OpenOrder"
+    const val PHONE_ORDER_TAB = "PhoneOrder"
+    const val ONLINE_ORDER_TAB = "OnlineWebOrder"
+    const val THIRD_PARTY_ORDER_TAB = "OnlineOrder"
 
 
     fun createRequestModelForUpdatePritnerType(
@@ -478,6 +478,8 @@ object Constants {
     const val CASH_EVENTS = "cash_events"
 
     const val UTC_SERVER_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+
+    const val ALL_ORDERS = "orders/all_orders"
 
     fun getCurrentTimeFromTimeZone(context: Context, mdate: String): String {
         try {
