@@ -549,7 +549,6 @@ open class PaymentViewModel @Inject constructor(
 //        } else {
 //            orderAttributeRequestModel.deliveryType = cartModel.deliveryType
 //        }
-
         if (cartModel.orderType == PHONE_ORDER){
             orderAttributeRequestModel.deliveryType = prefProvider.getValue(Constants.DELIVERY_TYPE, PICK_UP)
         }
