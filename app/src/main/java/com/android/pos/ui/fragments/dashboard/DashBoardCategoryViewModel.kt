@@ -4919,7 +4919,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     resource.data.let { venueDetailsResponse ->
                         if (venueDetailsResponse?.status == 200) {
 
-                            resource.data?.let {
+                            resource.data?.let { it ->
                                 if (it.settingData.data.teamRoles.isNotEmpty()) {
                                     posRepository.addTeamRoleFromDb(it.settingData.data.teamRoles)
                                     rolePermission.findCurrentUserRoleAndSave(it.settingData.data.teamRoles)
@@ -5082,7 +5082,13 @@ class DashBoardCategoryViewModel @Inject constructor(
 //                                posRepository.deleteCustomerPrinters()
 //                                posRepository.deleteKitchenPrinters()
                                 posRepository.addKitchenPrinter(it.settingData.data.printers.kitchenPrinterList)
-                                posRepository.addCustomerPrinter(it.settingData.data.printers.customerPrinterList)
+
+                                val custList = it.settingData.data.printers.customerPrinterList
+                                custList.forEach {
+                                    it.name = it.name.ifEmpty { "" }
+                                    it.modalName = it.modalName.ifEmpty { "" }
+                                }
+                                posRepository.addCustomerPrinter(custList)
                                 it.settingData.data.customerReceipt?.let { it1 ->
                                     posRepository.addCustomerReceiptSettings(
                                         it1

@@ -762,7 +762,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     builder.addText(
                         padLine(
                             it.key,
-                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            if (it.value?.isNotEmpty() == true)MethodUtils.roundOffAmount(it.value.toString().toDouble()) else "$0.00",
                             48
                         )
                     )

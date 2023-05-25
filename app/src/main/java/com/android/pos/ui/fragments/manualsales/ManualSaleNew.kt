@@ -136,6 +136,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
                     prefProvider.setValue(Constants.REDIRECT_FROM, "")
+                    viewModel.cartModel = null
                     findNavController().popBackStack()
                 }
             }

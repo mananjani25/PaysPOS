@@ -172,7 +172,11 @@ fun addPaymentDetailsThreeDataInner(keyValue: java.util.ArrayList<KeyValue>) {
             refund = "$" + it.value
         } else {
             title = it.key.toString()
-            amount = MethodUtils.roundOffAmount(it.value.toString().toDouble())
+            if (it.value?.isNotEmpty() == true) {
+                amount = MethodUtils.roundOffAmount(it.value.toString().toDouble())
+            }else{
+                amount = "$0.00"
+            }
         }
     }
 
@@ -298,7 +302,7 @@ fun addPaymentDetailsTwoDataInner(keyValue: KeyValue) {
     PrintSunmiUtils.normalText(
         padLine(
             keyValue.key,
-            MethodUtils.roundOffAmount(keyValue.value.toString().toDouble() ?: 0.0),
+            if (keyValue.value?.isNotEmpty() == true)MethodUtils.roundOffAmount(keyValue.value.toString().toDouble() ?: 0.0) else "$0.00",
             48
         ).toString()
     )

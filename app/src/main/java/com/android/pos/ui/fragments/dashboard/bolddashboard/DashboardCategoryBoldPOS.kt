@@ -3715,12 +3715,12 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                 if(i.name.startsWith(SUNMI_INNER_PRINTER,true)){
                     innerPrinterModel = PrinterListModel(
-                        printerName = i.name,
+                        printerName = i.name.ifEmpty { "" },
                         connectionType = Constants.BLUETOOTH,
                         deviceModel = DeviceInfo(
                             DevType.BLUETOOTH,
                             i.address,
-                            i.name,
+                            i.name.ifEmpty { "" },
                             i.address,
                             i.address
                         ),
