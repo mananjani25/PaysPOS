@@ -137,7 +137,11 @@ fun addPaymentDetailsThreeData(keyValue: java.util.ArrayList<KeyValue>) {
             refund = MethodUtils.roundOffAmount(it.value?.toDouble() ?: 0.0)
         } else {
             title = it.key.toString()
-            amount = MethodUtils.roundOffAmount(it.value.toString().toDouble())
+            if (it.value?.isNotEmpty() == true) {
+                amount = MethodUtils.roundOffAmount(it.value.toString().toDouble())
+            }else{
+                amount = "$0.00"
+            }
         }
     }
 
@@ -813,7 +817,10 @@ fun padLineForItem(
 
 /** utility: string repeat  */
 fun repeat(str: String?, i: Int): String? {
+    if (i != -1)
     return String(CharArray(i)).replace("\u0000", str!!)
+
+    return ""
 }
 
 fun getBitmapFromVectorDrawable(context: Context?, drawableId: Int): Bitmap {
