@@ -954,10 +954,10 @@ class AllOrdersListingFragment(
             }
             Constants.PRINT_UNPAID -> {
 
-                getCustomerPrinters(order, status)
+                //getCustomerPrinters(order, status)
             }
             Constants.PRINT_PAID -> {
-                getCustomerPrinters(order, status)
+                //getCustomerPrinters(order, status)
             }
 
             "" -> {//cancel order
@@ -1144,7 +1144,7 @@ class AllOrdersListingFragment(
             SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
             viewLifecycleOwner.lifecycleScope.launch {
                 delay(100)
-                setService(customerReceiptPrinters, type, order, printType)
+                //setService(customerReceiptPrinters, type, order, printType)
             }
 
 
@@ -1187,7 +1187,7 @@ class AllOrdersListingFragment(
                     if (printer != null) {
                         PrinterClass.setPrinter(printer)
 
-                        generatePrint(customerReceiptPrinters, type, order, printType)
+                        //generatePrint(customerReceiptPrinters, type, order, printType)
 
                     }
 
@@ -1228,7 +1228,7 @@ class AllOrdersListingFragment(
                     .isNotEmpty()
             ) {
 
-                printBusinessLogo()
+                //printBusinessLogo()
             }
 
 
@@ -1634,14 +1634,14 @@ class AllOrdersListingFragment(
 
                 PrintSunmiUtils.additionalTips()
 
-                if (tipsList.isNotEmpty()) {
-                    addTipsList(
-                        tipsList,
-                        receiptModel.totalAmount.toDouble(),
-                        customerSettingModel.fonts
-                    )
-
-                }
+//                if (tipsList.isNotEmpty()) {
+//                    addTipsList(
+//                        tipsList,
+//                        receiptModel.totalAmount.toDouble(),
+//                        customerSettingModel.fonts
+//                    )
+//
+//                }
             }
 
             if (printType == Constants.PRINT_PAID) {
