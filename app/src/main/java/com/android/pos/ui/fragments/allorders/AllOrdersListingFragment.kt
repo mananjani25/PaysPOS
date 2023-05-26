@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -29,11 +30,21 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.pos.R
 import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.LoyaltyProgramsModel
+import com.android.pos.data.entities.Modifier
 import com.android.pos.data.entities.RedeemLoyaltyInfo
+import com.android.pos.data.entities.TaxData
+import com.android.pos.data.entities.TbAddress
 import com.android.pos.data.entities.TbCustomer
+import com.android.pos.data.entities.TbItem
 import com.android.pos.data.entities.TbOrderType
+import com.android.pos.data.entities.TbPhones
+import com.android.pos.data.entities.TbServiceCharge
+import com.android.pos.data.entities.VariationsAttribute
+import com.android.pos.data.model.requestModel.OrderItemVariationAttribute
 import com.android.pos.data.model.requestModel.RefundRequestModelOnlineOrder
+import com.android.pos.data.model.responseModel.GetCustomerReceiptSettingsResponse
 import com.android.pos.data.model.responseModel.GetKitchenReceiptSettingsResponse
+import com.android.pos.data.model.responseModel.OnlineOrderResponseModel
 import com.android.pos.data.model.responseModel.OnlineOrderStatusUpdateResponse
 import com.android.pos.data.model.responseModel.OpenOrderResponse
 import com.android.pos.data.model.responseModel.PrinterResponse
@@ -49,6 +60,7 @@ import com.android.pos.di.RolePermission
 import com.android.pos.ui.adapter.AllOrderAdapter
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.onlineorder.OnlineDetailViewModel
+import com.android.pos.ui.fragments.orders.ActiveOrderViewModel
 import com.android.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
 import com.android.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.android.pos.utils.*
@@ -71,6 +83,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 import javax.inject.Inject
 import kotlin.math.abs
@@ -90,6 +104,7 @@ class AllOrdersListingFragment(
     private var isStationAtoZ: Boolean = false
     private val viewModel by viewModels<OnlineDetailViewModel>()
     private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
+    private val activeOrderViewModel by viewModels<ActiveOrderViewModel>()
     lateinit var binding: AllOrdersListingFragmentBinding
     private lateinit var refundData: RefundRequestModelOnlineOrder
     private lateinit var startDate: DatePickerDialog.OnDateSetListener
@@ -104,6 +119,7 @@ class AllOrdersListingFragment(
     var order_status = "Pending"
     private val TAG = "AllOrdersListingFrag"
     private var kitchenSettingModel = GetKitchenReceiptSettingsResponse.Data()
+    private var customerSettingModel = GetCustomerReceiptSettingsResponse.Data()
 
 
     @Inject
@@ -422,6 +438,7 @@ class AllOrdersListingFragment(
         getKitchenReceiptSettings()
         startDatePickerObserver()
         endDatePickerObserver()
+        getCustomerReceiptSettings()
 
         startTime = TimePickerDialog.OnTimeSetListener { view, hour, minute ->
             val timecalender = Calendar.getInstance()
@@ -491,6 +508,17 @@ class AllOrdersListingFragment(
 
         }
         return binding.root
+    }
+
+
+    private fun getCustomerReceiptSettings() {
+        activeOrderViewModel.getCustomerReceiptSettings().observe(viewLifecycleOwner) {
+            if (it != null) {
+                customerSettingModel = it
+            }
+
+        }
+
     }
 
     fun randomOfflineId(): String {
@@ -591,11 +619,6 @@ class AllOrdersListingFragment(
         } catch (e: Exception) {
         }
         return daydifference
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
     }
 
     private fun startDatePickerObserver() {
@@ -703,9 +726,9 @@ class AllOrdersListingFragment(
         val order = adapter.getItem(pos)
         when (status) {
             "accepted" -> {
-                if (findNavController().currentDestination?.id == R.id.onlineOrderFragment) {
+                if (findNavController().currentDestination?.id == R.id.allOrdersFragment) {
                     findNavController().navigate(
-                        R.id.action_onlineOrder_to_addOnlneTime,
+                        R.id.action_allOrders_to_addOnlneTime,
                         bundleOf(
                             "order_id" to adapter.filterList[pos].id
                         )
@@ -753,14 +776,14 @@ class AllOrdersListingFragment(
                         order.customer.firstName + " " + order.customer.lastName
                     )
                     prefProvider.setValueInt(Constants.CUSTOMER_ID, order.customer.id)
-                    //TODO - prefProvider.saveCustomerData(TbCustomer.customerMapping(order.customer))
+                    prefProvider.saveCustomerData(TbCustomer.customerMapping(order.customer))
                 }
                 prefProvider.setValue(Constants.OPEN_ORDER_ITEMS, Gson().toJson(order.orderItems))
                 prefProvider.setValueboolean(Constants.OPEN_ORDER_UPDATE_FOR_PRINT, true)
 
-//                //TODO - dashboardViewModel.addCart(
-//                    cartModel(order)
-//                )
+                dashboardViewModel.addCart(
+                    cartModel(order)
+                )
                 val bundle = Bundle()
                 bundle.putBoolean("update", true)
                 bundle.putInt("orderId", order.id)
@@ -806,7 +829,7 @@ class AllOrdersListingFragment(
 
                 if (findNavController().currentDestination?.id == R.id.orders) {
                     findNavController().navigate(
-                        R.id.action_orders_to_dashboardCategoryBoldPOS, bundle
+                        R.id.action_allOrder_to_dashboardCategoryBoldPOS, bundle
                     )
                 }
 
@@ -854,13 +877,13 @@ class AllOrdersListingFragment(
                         order.customer.firstName + " " + order.customer.lastName
                     )
                     prefProvider.setValueInt(Constants.CUSTOMER_ID, order.customer.id)
-                    //TODO - prefProvider.saveCustomerData(TbCustomer.customerMapping(order.customer))
+                    prefProvider.saveCustomerData(TbCustomer.customerMapping(order.customer))
                 }
 
                 LogUtil.logE(TAG, "getOrder  ${Gson().toJson(order)}")
-//                //TODO - dashboardViewModel.addCart(
-//                    cartModel(order)
-//                )
+                dashboardViewModel.addCart(
+                    cartModel(order)
+                )
 
                 val bundle = Bundle()
                 bundle.putBoolean("update", true)
@@ -880,7 +903,7 @@ class AllOrdersListingFragment(
                 bundle.putDouble("totalServiceCharge", order.totalServiceCharges)
                 bundle.putString("future_delivery_date", order.futureDeliveryDate)
                 bundle.putString("future_delivery_time", order.futureDeliveryTime)
-                //TODO - bundle.putParcelable("cartList", cartModel(order))
+                bundle.putParcelable("cartList", cartModel(order))
 
                 bundle.putInt("orderId", order.id)
                 LogUtil.logE("orderId :: ", order.id.toString())
@@ -925,16 +948,16 @@ class AllOrdersListingFragment(
                     order.isLoyaltyApplied
                 )
 
-                findNavController().navigate(R.id.action_orders_to_paymentBoldPosFragment, bundle)
+                findNavController().navigate(R.id.action_allOrder_to_paymentBoldPosFragment, bundle)
 
 
             }
             Constants.PRINT_UNPAID -> {
 
-                //TODO - getCustomerPrinters(order, status)
+                getCustomerPrinters(order, status)
             }
             Constants.PRINT_PAID -> {
-                //TODO - getCustomerPrinters(order, status)
+                getCustomerPrinters(order, status)
             }
 
             "" -> {//cancel order
@@ -949,7 +972,7 @@ class AllOrdersListingFragment(
                     }
 
                     findNavController().navigate(
-                        R.id.action_order_fragment_to_reason_for_cancel_order_dialog,
+                        R.id.action_allOrder_to_reason_for_cancel_order_dialog,
                         bundle
                     )
                 }
@@ -1034,7 +1057,696 @@ class AllOrdersListingFragment(
         }
     }
 
-    private fun cartModel(order: OpenOrderResponse.Data.Order): CartModel {
+    private fun getCustomerPrinters(order: OpenOrderResponse.Data.Order, type: String) {
+
+        activeOrderViewModel.getCustomerPrinterList().observe(viewLifecycleOwner) {
+            when (it.status) {
+                Status.SUCCESS -> {
+                    ProgressUtils.dismissProgressDialog()
+                    if (it.data != null) {
+                        val customerList = it.data
+
+                        customerList.forEach {
+                            if (it.status) {
+                                initPrinter(it, Constants.CUSTOMER, order, type)
+                            }
+
+
+                        }
+
+
+                    }
+
+
+                }
+                Status.ERROR -> {
+
+                    ProgressUtils.dismissProgressDialog()
+
+                }
+                Status.LOADING -> {
+                    ProgressUtils.showProgressDialog(requireActivity())
+
+                }
+
+            }
+
+        }
+
+    }
+
+    private fun initPrinter(
+        customerReceiptPrinters: PrinterResponse.Data.CustomerReceiptPrinters,
+        type: String,
+        order: OpenOrderResponse.Data.Order,
+        printType: String
+    ) {
+
+        if (customerReceiptPrinters.name.startsWith(SUNMI_PRINTER, true)) {
+
+            SunmiPrinterApi.getInstance()
+                .setPrinter(SunmiPrinter.SunmiBlueToothPrinter, customerReceiptPrinters.ipAddress)
+
+
+            if (!SunmiPrinterApi.getInstance().isConnected) {
+                SunmiPrinterApi.getInstance()
+                    .connectPrinter(requireContext(), object : ConnectCallback {
+
+                        override fun onFound() {
+                            println("onFound")
+                        }
+
+                        override fun onUnfound() {
+                            println("onUnfound")
+                        }
+
+                        override fun onConnect() {
+                            println("onConnect")
+                            generatePrintSunmi(customerReceiptPrinters, type, order, printType)
+
+
+                        }
+
+                        override fun onDisconnect() {
+                            println("onDisconnect")
+                        }
+
+                    })
+            } else {
+                generatePrintSunmi(customerReceiptPrinters, type, order, printType)
+
+
+            }
+
+
+        } else if (customerReceiptPrinters.name.startsWith(Constants.SUNMI_INNER_PRINTER, true)) {
+
+            SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
+            viewLifecycleOwner.lifecycleScope.launch {
+                delay(100)
+                setService(customerReceiptPrinters, type, order, printType)
+            }
+
+
+        } else {
+            PrinterClass.closePrinter()
+            if (PrinterClass.getPrinter() == null) {
+                var printer: Print? = Print(requireContext())
+                if (printer != null) {
+                    //  printer.setStatusChangeEventCallback(this)
+                    // printer.setBatteryStatusChangeEventCallback(this)
+                }
+
+                val enabled = Print.FALSE
+
+                try {
+                    var interval: Int = 1000
+                    if (customerReceiptPrinters.printer_type == Constants.BLUETOOTH) {
+                        interval = PrinterClass.BLUETOOTH_TIMEOUT
+                    }
+                    printer?.openPrinter(
+
+                        if (customerReceiptPrinters.printer_type == Constants.BLUETOOTH) {
+                            Print.DEVTYPE_BLUETOOTH
+                        } else {
+                            Print.DEVTYPE_TCP
+                        },
+                        customerReceiptPrinters.ipAddress,
+                        enabled,
+                        1000
+                    )
+                    //printer?.setStatusChangeEventCallback(this)
+
+                } catch (e: Exception) {
+                    LogUtil.logE(TAG, "PrinterException: " + e.message)
+                    printer = null
+                    return
+                }
+                try {
+
+                    if (printer != null) {
+                        PrinterClass.setPrinter(printer)
+
+                        generatePrint(customerReceiptPrinters, type, order, printType)
+
+                    }
+
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            } else {
+                LogUtil.logE(TAG, "PrinterIsNotNull:")
+            }
+        }
+
+    }
+
+    private fun generatePrintSunmi(
+        customerReceiptPrinters: PrinterResponse.Data.CustomerReceiptPrinters,
+        type: String,
+        receiptModel: OpenOrderResponse.Data.Order,
+        printType: String
+    ) {
+        try {
+
+            PrintSunmiUtils.fontSize(customerSettingModel.fonts)
+
+            if (customerSettingModel.showOrderIdTop) {
+                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
+                    PrintSunmiUtils.orderIdLarge("OrderID:" + receiptModel.custom_order_id)
+                } else {
+                    PrintSunmiUtils.orderIdLarge("OrderID:" + receiptModel?.id)
+                }
+                SunmiPrinterApi.getInstance().lineWrap(1)
+            }
+
+
+            if (customerSettingModel.showVenueLogo && prefProvider.getValue(
+                    Constants.VENUE_LOGO,
+                    ""
+                )
+                    .isNotEmpty()
+            ) {
+
+                printBusinessLogo()
+            }
+
+
+            if (printType == Constants.PRINT_PAID) {
+                PrintSunmiUtils.paidStatus("Paid")
+            } else {
+                PrintSunmiUtils.paidStatus("Unpaid")
+            }
+
+            PrintSunmiUtils.printBusinessDetails(
+                prefProvider.getValue(Constants.BUSINESS_NAME, ""),
+                if (customerSettingModel.showVenueAddress) prefProvider.getValue(
+                    Constants.BUSINESS_ADDRESS,
+                    ""
+                ) else "",
+                if (customerSettingModel.showVenuePhone) prefProvider.getValue(
+                    Constants.BUSINESS_PHONE_NO,
+                    ""
+                ) else ""
+            )
+
+            if (customerSettingModel.showWebsiteAddress) {
+                PrintSunmiUtils.venueWebsite(prefProvider.getValue(Constants.BUSINESS_WEBSITE, ""))
+            }
+
+            if(customerSettingModel.showOrderType) {
+                PrintSunmiUtils.printOrderType(receiptModel?.orderTypeName?.trim())
+            }
+
+
+            if (receiptModel?.orderType?.lowercase() == Constants.OPEN_ORDER.lowercase()
+                || receiptModel?.orderType?.lowercase() == Constants.OPEN_ORDER.lowercase()
+            ) {
+
+//                PrintSunmiUtils.deliveryType(receiptModel?.deliveryType)
+
+            }
+
+
+            SunmiPrinterApi.getInstance().lineWrap(1)
+
+
+            if (customerSettingModel.fonts == Constants.LARGE) {
+
+
+                PrintSunmiUtils.receiptID("ReceiptID:" + receiptModel?.offlineId)
+
+
+                if (customerSettingModel.showTeam) {
+
+                    PrintSunmiUtils.employee("Employee:" + receiptModel?.employee?.name)
+
+                }
+
+                if (customerSettingModel.showOrderTime) {
+
+
+                    PrintSunmiUtils.orderTime(
+                        "Order Time:" + Constants.getReceiptFormatDateFromUTCServer(
+                            requireContext(),
+                            receiptModel?.createdAt.toString()
+                        )
+                    )
+
+                }
+
+                if (customerSettingModel.showPrintTime) {
+
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+                        PrintSunmiUtils.orderTime(
+                            "Print Time:" + Constants.getCurrentTimeFromTimeZone(
+                                requireContext(),
+                                MethodUtils.formatted()
+                            )
+                        )
+                    }
+
+
+                }
+            } else {
+
+
+                val str = padLine(
+
+                    "ReceiptID:" + receiptModel?.offlineId,
+                    "",
+                    if (customerSettingModel.fonts == Constants.LARGE) {
+                        23
+                    } else {
+                        48
+                    }
+                ).toString().trim()
+
+                PrintSunmiUtils.orderId(str)
+                if (customerSettingModel.showTeam) {
+
+
+                    val empName = padLine(
+                        if (customerSettingModel.showTeam) {
+                            "Employee:" + receiptModel.employee.name
+                        } else {
+                            ""
+                        },
+                        "",
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            23
+                        } else {
+                            48
+                        }
+                    ).toString()
+
+                    PrintSunmiUtils.employee(empName)
+                }
+                if (customerSettingModel.showOrderTime) {
+
+
+                    val orderTime = padLine(
+                        if (customerSettingModel.showOrderTime) {
+                            "Order Time:" + Constants.getReceiptFormatDateFromUTCServer(
+                                requireContext(),
+                                receiptModel?.createdAt.toString()
+                            )
+                        } else {
+                            ""
+                        },
+                        "",
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            23
+                        } else {
+                            48
+                        }
+                    ).toString()
+
+                    PrintSunmiUtils.orderTime(orderTime)
+                }
+
+
+                if (customerSettingModel.showPrintTime) {
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+
+                        val current = LocalDateTime.now()
+                        val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy hh:mm:a")
+                        val formatted = current.format(formatter)
+
+
+                        val printTime = padLine(
+                            if (customerSettingModel.showPrintTime) {
+                                "Print Time:$formatted"
+                            } else {
+                                ""
+                            },
+                            "",
+                            if (customerSettingModel.fonts == Constants.LARGE) {
+                                23
+                            } else {
+                                48
+                            }
+                        ).toString()
+
+                        PrintSunmiUtils.orderTime(printTime)
+
+                    }
+                }
+            }
+
+
+            PrintSunmiUtils.addHorizontal()
+
+
+
+            receiptModel.orderItems.let {
+                addOrderItemOpenOrderSunmi(
+                    it,
+                    customerSettingModel.fonts,
+                    customerSettingModel.showModifiers
+                )
+            }
+
+            SunmiPrinterApi.getInstance().lineWrap(2)
+
+
+            if (receiptModel?.totalDiscount != null) {
+
+                val str1 = padLine(
+                    "Total Discount",
+
+                    if (receiptModel.totalDiscount == 0.0) {
+                        "$" + MethodUtils.roundOffAmountString(receiptModel.totalDiscount)
+                    } else {
+                        "-$" + MethodUtils.roundOffAmountString(receiptModel.totalDiscount)
+                    },
+                    if (customerSettingModel.fonts == Constants.LARGE) {
+                        23
+                    } else {
+                        48
+                    }
+                ).toString()
+                PrintSunmiUtils.totalDiscount(str1)
+
+            }
+
+
+            val str2 = padLine(
+                "Sub Total",
+                "$" + MethodUtils.roundOffAmountString(receiptModel.subTotal),
+                if (customerSettingModel.fonts == Constants.LARGE) {
+                    23
+                } else {
+                    48
+                }
+            ).toString()
+
+            PrintSunmiUtils.subTotal(str2)
+
+
+            if (receiptModel?.totalTaxAmount != null) {
+
+
+                val str3 = padLine(
+                    "Tax",
+                    "$" + MethodUtils.roundOffAmountString(receiptModel.totalTaxAmount),
+                    if (customerSettingModel.fonts == Constants.LARGE) {
+                        23
+                    } else {
+                        48
+                    }
+                ).toString()
+                PrintSunmiUtils.tax(str3)
+            }
+
+            if (receiptModel.totalServiceCharges != null) {
+
+
+                val str4 = padLine(
+                    "Service Charge",
+                    "$" + MethodUtils.roundOffAmountString(receiptModel.totalServiceCharges),
+                    if (customerSettingModel.fonts == Constants.LARGE) {
+                        23
+                    } else {
+                        48
+                    }
+                ).toString()
+                PrintSunmiUtils.serviceCharge(str4)
+            }
+
+            if (receiptModel?.totalTips != 0.0) {
+
+
+                val str8 = padLine(
+                    "Tips",
+                    "$" + receiptModel.totalTips?.let {
+                        MethodUtils.roundOffAmountString(
+                            it
+                        )
+                    },
+                    if (customerSettingModel.fonts == Constants.LARGE) {
+                        23
+                    } else {
+                        48
+                    }
+                ).toString()
+                PrintSunmiUtils.tip(str8)
+
+
+            }
+
+
+
+
+            if (receiptModel.cash_discount_or_surcharge != 0.0 && customerSettingModel.showCashDisSurCharg) {
+
+
+                if (receiptModel.payments.isNotEmpty() && receiptModel.payments.get(receiptModel.payments.size - 1).paymentType.lowercase() == "Card".lowercase()) {
+
+                    val str8 = padLine(
+                        "SurCharge",
+                        "$" + MethodUtils.roundOffAmountString(receiptModel.cash_discount_or_surcharge!!),
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            23
+                        } else {
+                            48
+                        }
+                    ).toString()
+                    PrintSunmiUtils.surCharge(str8)
+
+                } else {
+
+                    val str8 = padLine(
+                        "Cash Discount",
+                        if (receiptModel.cash_discount_or_surcharge == 0.0) {
+                            "$" + MethodUtils.roundOffAmountString(receiptModel.cash_discount_or_surcharge!!)
+                        } else {
+                            "-$" + MethodUtils.roundOffAmountString(receiptModel.cash_discount_or_surcharge!!)
+                        },
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            23
+                        } else {
+                            48
+                        }
+                    ).toString()
+                    PrintSunmiUtils.cashDiscount(str8)
+
+                }
+            }
+
+            if (receiptModel?.isLoyaltyApplied == true && receiptModel?.loyaltyAmount != 0.0) {
+
+                val str8 = padLine(
+                    "Used Loyalty Amount",
+                    "-$" + receiptModel?.loyaltyAmount?.let {
+                        MethodUtils.roundOffAmountString(
+                            it
+                        )
+                    },
+                    if (customerSettingModel.fonts == Constants.LARGE) {
+                        23
+                    } else {
+                        48
+                    }
+                ).toString()
+
+                PrintSunmiUtils.loyaltyAmount(str8)
+
+                val str9 = padLine(
+                    "Used Loyalty Points",
+                    receiptModel?.usedRewardPoints.toString(),
+                    if (customerSettingModel.fonts == Constants.LARGE) {
+                        23
+                    } else {
+                        48
+                    }
+                ).toString()
+
+                PrintSunmiUtils.loyaltyPoint(str9)
+
+
+            }
+
+
+
+
+            SunmiPrinterApi.getInstance().lineWrap(1)
+
+            if (receiptModel.totalAmount != null) {
+
+                val totalAmt = MethodUtils.roundOffAmountDouble(receiptModel.totalAmount)
+
+                val str5 = padLine(
+                    "Total Price",
+                    "$" + MethodUtils.roundOffAmountString(totalAmt),
+                    if (customerSettingModel.fonts == Constants.LARGE) {
+                        23
+                    } else {
+                        48
+                    }
+                ).toString()
+                PrintSunmiUtils.totalPrice(str5)
+
+            }
+
+            if (customerSettingModel.showRefundAmount && printType == Constants.PRINT_PAID) {
+
+                val str7 = padLine(
+                    "Change Amount",
+                    "$" + MethodUtils.roundOffAmountString(0.00),
+                    if (customerSettingModel.fonts == Constants.LARGE) {
+                        23
+                    } else {
+                        48
+                    }
+                ).toString()
+                PrintSunmiUtils.changeAmount(str7)
+                SunmiPrinterApi.getInstance().lineWrap(2)
+
+
+            }
+
+            if (receiptModel?.totalTips == 0.0 && printType == Constants.PRINT_PAID) {
+
+
+                if (customerSettingModel.showTipLineForCash) {
+
+                    if (customerSettingModel.fonts == Constants.LARGE) {
+                        PrintSunmiUtils.tips("Tips      _____________")
+                        SunmiPrinterApi.getInstance().lineWrap(1)
+                    } else {
+                        PrintSunmiUtils.tips("Tips                              _____________")
+                    }
+
+                }
+
+            }
+
+            SunmiPrinterApi.getInstance().lineWrap(1)
+
+
+            if (customerSettingModel.showTipSuggestion) {
+
+
+                PrintSunmiUtils.additionalTips()
+
+                if (tipsList.isNotEmpty()) {
+                    addTipsList(
+                        tipsList,
+                        receiptModel.totalAmount.toDouble(),
+                        customerSettingModel.fonts
+                    )
+
+                }
+            }
+
+            if (printType == Constants.PRINT_PAID) {
+
+                val str10 = padLine(
+                    "Transaction ID",
+                    receiptModel.payments.get(0).transactionId,
+                    if (customerSettingModel.fonts == Constants.LARGE) {
+                        23
+                    } else {
+                        48
+                    }
+                ).toString()
+                PrintSunmiUtils.transactionId(str10)
+            }
+
+            if (printType == Constants.PRINT_PAID) {
+
+                val str11 = padLine(
+                    "Transaction Type",
+                    receiptModel.payments.get(0).paymentType,
+                    if (customerSettingModel.fonts == Constants.LARGE) {
+                        23
+                    } else {
+                        48
+                    }
+                ).toString()
+                PrintSunmiUtils.transactionType(str11)
+            }
+            if (customerSettingModel.showCustomerAddress or customerSettingModel.showCustomerPhone or customerSettingModel.showCustomerName) {
+
+                SunmiPrinterApi.getInstance().lineWrap(1)
+
+                if (receiptModel.customer != null) {
+
+                    PrintSunmiUtils.customerDetails()
+
+                    if (customerSettingModel.showCustomerName) {
+                        PrintSunmiUtils.customerName(receiptModel.customer.firstName + " " + receiptModel.customer.lastName)
+                    }
+
+                    if (customerSettingModel.showCustomerPhone) {
+                        if (receiptModel?.customer?.phones?.isNotEmpty()) {
+
+                            val phoneNoFormatted = MethodUtils.getUSFormatNumber(
+                                receiptModel?.customer?.phones?.get(receiptModel?.customer?.phones?.size - 1).phoneNumber
+                            )
+                            PrintSunmiUtils.customerPhone(phoneNoFormatted)
+
+                        }
+                    }
+
+                    if (customerSettingModel.showCustomerAddress) {
+                        if (receiptModel.customer?.addresses?.isNotEmpty() == true) {
+
+//                            PrintSunmiUtils.customerAddress(
+//                                receiptModel.customer?.addresses?.get(receiptModel.customer?.addresses?.size - 1)?.fullAddress
+//                            )
+
+                            receiptModel.customer?.addresses.filter { it.typeOfAddress == Constants.SHIPPING_ADDRESS }
+                                .forEach {
+
+                                    if (it.typeOfAddress.equals(
+                                            Constants.SHIPPING_ADDRESS,
+                                            ignoreCase = true
+                                        )
+                                    ) {
+                                        PrintSunmiUtils.customerAddress(
+                                            it.fullAddress
+                                        )
+                                    }
+                                }
+                        }
+                    }
+
+                }
+            }
+
+
+            if (receiptModel.note != null && receiptModel.note != "" && customerSettingModel.showOrderNote) {
+                SunmiPrinterApi.getInstance().lineWrap(1)
+                PrintSunmiUtils.orderNote(receiptModel.note)
+            }
+            SunmiPrinterApi.getInstance().lineWrap(2)
+            val str8 = padLine(
+                "Customer Signature",
+                "     _________________________",
+                48
+            ).toString()
+
+            PrintSunmiUtils.customerSignature(str8)
+
+            if (customerSettingModel.showQrCode) {
+
+                PrintSunmiUtils.qrCode(receiptModel.digitalReceiptUrl)
+            }
+
+            PrintSunmiUtils.cutPaper()
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun cartModel(order: OnlineOrderResponseModel.Data): CartModel {
         LogUtil.logE("futureDeliveryDate  ", Gson().toJson(order))
         return CartModel().apply {
             terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
@@ -1045,9 +1757,9 @@ class AllOrdersListingFragment(
             orderTypeName = order.orderType
             futureDeliveryDate = order.futureDeliveryDate.toString()
             isOpenOrder = true
-            //TODO - serviceCharge = serviceChargesList(order)
-            //TODO - customer = assignCustomer(order)
-            //TODO - items = inventoryList(order)
+            serviceCharge = serviceChargesList(order)
+            customer = assignCustomer(order)
+            items = inventoryList(order)
             note = order.note
             var itemDiscount = 0.0
             items?.forEach {
@@ -1055,9 +1767,332 @@ class AllOrdersListingFragment(
             }
             discountPrice = order.totalDiscount
             deliveryType = order.deliveryType ?: ""
-            //TODO - taxlistDynamic = getTaxBirfucationList(order.orderItems)
+            taxlistDynamic = getTaxBirfucationList(order.orderItems)
 
         }
+    }
+
+    private fun getTaxBirfucationList(orderItems: List<OnlineOrderResponseModel.Data.OrderItem>): ArrayList<TaxData> {
+        var taxListDynamic: ArrayList<TaxData> = arrayListOf()
+        if (orderItems.isNotEmpty()) {
+            orderItems.forEach { orderItem ->
+                var totalPrice =
+                    (orderItem.price * orderItem.quantity) - (orderItem.discountAmount * orderItem.quantity)
+                orderItem.orderItemModifiers.forEach { orderItemModifier ->
+                    totalPrice += orderItemModifier.price * orderItemModifier.quantity
+                }
+                Log.d(TAG, "navigate: itemPrice : $totalPrice")
+                var totaltaxtemp = 0.0
+                orderItem.orderItemTax.forEach { orderItemTaxe ->
+                    if (taxListDynamic?.isNotEmpty() == true) {
+                        var found = -1
+                        taxListDynamic.forEachIndexed { index, taxData ->
+                            if (taxData.orderTaxId == orderItemTaxe.taxId) {
+                                found = index
+                                return@forEachIndexed
+                            }
+                        }
+                        if (found == -1) {
+                            var taxData: TaxData = TaxData(
+                                orderItemTaxe.createdAt,
+                                orderItemTaxe.taxId,
+                                0,
+                                orderItemTaxe.name,
+                                orderItemTaxe.rate,
+                                orderItemTaxe.taxType,
+                                orderItemTaxe.updatedAt,
+                                true,
+                                orderItemTaxe.isDefault,
+                                false,
+                                "",
+                                listOf(orderItemTaxe.orderItemId),
+                                orderItemTaxe.taxId,
+                                false,
+                                getTaxFromTotalPrice(
+                                    orderItemTaxe,
+                                    totalPrice,
+                                    orderItem
+                                ),
+                                totalPrice
+                            )
+                            taxListDynamic?.add(taxData)
+                        } else {
+                            taxListDynamic!![found].totalTaxTypePrice =
+                                taxListDynamic!![found].totalTaxTypePrice + getTaxFromTotalPrice(
+                                    orderItemTaxe,
+                                    totalPrice,
+                                    orderItem
+                                )
+                            taxListDynamic!![found].subTotalAmount =
+                                taxListDynamic!![found].subTotalAmount + totalPrice
+                        }
+                        Log.d(TAG, "found : " + found)
+                    } else {
+                        var taxData: TaxData = TaxData(
+                            orderItemTaxe.createdAt,
+                            orderItemTaxe.taxId,
+                            0,
+                            orderItemTaxe.name,
+                            orderItemTaxe.rate,
+                            orderItemTaxe.taxType,
+                            orderItemTaxe.updatedAt,
+                            true,
+                            orderItemTaxe.isDefault,
+                            false,
+                            "",
+                            listOf(orderItemTaxe.orderItemId),
+                            orderItemTaxe.taxId,
+                            false,
+                            getTaxFromTotalPrice(
+                                orderItemTaxe,
+                                totalPrice,
+                                orderItem
+                            ),
+                            totalPrice
+                        )
+                        taxListDynamic.add(taxData)
+                    }
+
+
+                    Log.d(TAG, "navigate: " + totaltaxtemp)
+                }
+
+            }
+
+            Log.d(TAG, "navigate: list " + Gson().toJson(taxListDynamic))
+        }
+        return taxListDynamic
+    }
+
+
+    fun getTaxFromTotalPrice(
+        orderItemTaxe: OnlineOrderResponseModel.Data.OrderItem.OrderItemTax,
+        totalPrice: Double,
+        item: OnlineOrderResponseModel.Data.OrderItem
+    ): Double {
+        var totaltaxtemp = 0.0
+
+
+        totaltaxtemp += if (orderItemTaxe.taxType == "Percentage") {
+            if (totalPrice < 0.0) {
+
+                String.format("%.2f", 0.00)
+                    .toDouble()
+            } else {
+                val itemTaxPrice =
+                    (orderItemTaxe.rate * totalPrice) / 100
+                LogUtil.logE("itemTaxPrice", "" + itemTaxPrice)
+                itemTaxPrice
+            }
+
+        } else {
+            Log.d("yash", "taxCalculation: " + orderItemTaxe.taxType)
+            if (totalPrice <= 0.0) {
+                String.format("%.2f", 0.00)
+                    .toDouble()
+            } else {
+                String.format("%.2f", orderItemTaxe.rate * item.quantity)
+                    .toDouble()
+            }
+        }
+        return totaltaxtemp
+    }
+
+    private fun inventoryList(order: OnlineOrderResponseModel.Data): List<TbItem>? {
+
+        val inventoryModelList = ArrayList<TbItem>()
+
+        order.orderItems.forEach {
+            var ismanualsale = false
+            var mannual_Sale_ID = ""
+            if (it.itemId == 1) {
+                mannual_Sale_ID = UUID.randomUUID().toString()
+                ismanualsale = true
+            }
+            val items = TbItem().apply {
+                orderItemId = it.id
+                itemId = it.itemId
+                id = it.custom_item_id
+                name = it.itemName
+                cost = it.price
+                isManualSales = ismanualsale
+                manualSaleId = mannual_Sale_ID
+                price = it.price
+                priceType = ""
+                isEdited = it.isEdited
+                itemQuantity = it.quantity
+                kitchenName = ""
+                productCode = ""
+                sku = ""
+                isHide = false
+                sort = 0
+                imageUrl = ""
+                thumbImageUrl = ""
+                categoryId = it.categoryId
+                categoryName = ""
+                taxes = taxes(it.orderItemTax, order.locationId)
+                modifier_set_ids = modifiersIds(it.orderItemModifiers)
+                modifiers = modifierSets(it.orderItemModifiers)
+                discountPrice = it.discountAmount
+                discountType = it.discountType
+                if (it.discountId != null)
+                    discountId = it.discountId
+                if (it.order_item_variation != null)
+                    variationsAttributes = variationAtt(it.order_item_variation)
+                note = it.note
+            }
+
+            inventoryModelList.add(items)
+
+        }
+
+        return inventoryModelList
+    }
+
+    private fun variationAtt(variation: OrderItemVariationAttribute): List<VariationsAttribute> {
+
+        val variationsAttributeList = ArrayList<VariationsAttribute>()
+
+        val variationsAttribute = VariationsAttribute()
+        variationsAttribute.id = variation.variationId
+        variationsAttribute.name = variation.name
+        variationsAttribute.price = variation.price
+        variationsAttribute.orderVariationId = variation.id
+        variationsAttributeList.add(variationsAttribute)
+
+        return variationsAttributeList
+    }
+
+    private fun modifierSets(orderItemModifiers: List<OnlineOrderResponseModel.Data.OrderItem.OrderItemModifier>): List<Modifier> {
+
+        val modifierList = ArrayList<Modifier>()
+
+        orderItemModifiers.forEach {
+
+            val modifier = Modifier().apply {
+                id = it.modifierId
+                modifierSetId = it.modifierSetId
+                name = it.name
+                price = it.price
+                itemQuantity = it.quantity
+                orderModifierId = it.id
+                modifier_quantity = it.modifier_quantity
+
+            }
+            modifierList.add(modifier)
+        }
+
+        return modifierList
+    }
+
+    private fun modifiersIds(orderItemModifiers: List<OnlineOrderResponseModel.Data.OrderItem.OrderItemModifier>): List<Int> {
+
+        val selectedIds = ArrayList<Int>()
+        if (orderItemModifiers.isNotEmpty()) {
+            orderItemModifiers.forEach {
+                selectedIds.add(it.modifierSetId)
+            }
+        }
+        var uniqueSelectedId = HashSet<Int>(selectedIds)
+        return uniqueSelectedId.toList()
+    }
+
+    private fun taxes(
+        taxs: List<OnlineOrderResponseModel.Data.OrderItem.OrderItemTax>,
+        locationId: Int
+    ): List<TaxData>? {
+        val taxList = ArrayList<TaxData>()
+
+        taxs.forEach {
+            val tax = TaxData(
+                it.createdAt,
+                it.taxId,
+                locationId,
+                it.name,
+                it.rate,
+                it.taxType,
+                it.updatedAt,
+                true,
+                it.isDefault,
+                false,
+                "",
+                listOf(),
+                it.id
+            )
+            taxList.add(tax)
+        }
+
+        return taxList
+    }
+
+    private fun assignCustomer(order: OnlineOrderResponseModel.Data): TbCustomer {
+
+        val phoneList = ArrayList<TbPhones>()
+        order.customer?.phones?.forEach {
+            val phone = TbPhones(it.id, it.phoneNumber)
+            phoneList.add(phone)
+        }
+
+        val addressList = ArrayList<TbAddress>()
+        order.customer?.addresses?.forEach {
+            val address = TbAddress(
+                it.id,
+                it.address1,
+                it.address2,
+                it.city,
+                it.state,
+                it.country ?: "",
+                it.postcode ?: "",
+                "",
+                it.latitude ?: "",
+                it.longitude ?: "",
+                "",
+                it.fullAddress,
+                it.street
+            )
+            addressList.add(address)
+        }
+
+        return TbCustomer(
+            order.customer?.id,
+            order.customer?.firstName.toString(),
+            order.customer?.lastName.toString(),
+            order.customer?.birthDate.toString(),
+            order.customer?.email.toString(),
+            false,
+            false,
+            0,
+            order.customer?.company.toString(),
+            phoneList,
+            addressList
+        )
+    }
+
+
+    private fun serviceChargesList(order: OnlineOrderResponseModel.Data): List<TbServiceCharge> {
+
+        val serviceChargeList = ArrayList<TbServiceCharge>()
+
+        order.orderServiceCharges.forEach {
+            val serviceCharge = TbServiceCharge(
+                it.createdAt.toString(),
+                it.serviceChargeId,
+                true,
+                order.locationId,
+                it.max_guest_count,
+                it.min_guest_count,
+                it.name,
+                it.order_type,
+                it.rate,
+                it.updatedAt.toString(),
+                isActive = false,
+                isChecked = true,
+                order_service_charge_id = it.id
+            )
+            serviceChargeList.add(serviceCharge)
+        }
+
+        return serviceChargeList
     }
 
     private fun getKitchenReceiptSettings() {

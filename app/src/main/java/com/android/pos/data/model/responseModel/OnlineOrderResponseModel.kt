@@ -125,6 +125,10 @@ data class OnlineOrderResponseModel(
         data class OrderItem(
             @SerializedName("category_id")
             val categoryId: Int,
+            @SerializedName("custom_item_id")
+            val custom_item_id: Int,
+            @SerializedName("is_edited")
+            val isEdited: Boolean,
             @SerializedName("completed_in_kitchen")
             val completedInKitchen: Boolean,
             @SerializedName("discount_amount")
@@ -248,7 +252,13 @@ data class OnlineOrderResponseModel(
             @SerializedName("service_charge_id")
             val serviceChargeId: Int,
             @SerializedName("updated_at")
-            val updatedAt: String
+            val updatedAt: String,
+            @SerializedName("min_guest_count")
+            val min_guest_count: Int? = null,
+            @SerializedName("max_guest_count")
+            val max_guest_count: Int? = null,
+            @SerializedName("order_type")
+            val order_type: String
         )
 
         data class Payment(

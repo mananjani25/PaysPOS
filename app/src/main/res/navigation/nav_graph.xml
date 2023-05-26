@@ -161,8 +161,20 @@
             android:id="@+id/action_allOrder_to_dashboarCategorynew"
             app:destination="@id/dashboardCategoryBoldPOS"
             app:enterAnim="@anim/nav_default_enter_anim" />
-    </fragment>.
-
+        <action
+            android:id="@+id/action_allOrders_to_addOnlneTime"
+            app:destination="@id/addOnlineTimeDialog" />
+        <action
+            android:id="@+id/action_allOrder_to_dashboardCategoryBoldPOS"
+            app:destination="@id/dashboardCategoryBoldPOS"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_allOrder_to_paymentBoldPosFragment"
+            app:destination="@id/paymentBoldPosFragment" />
+        <action
+            android:id="@+id/action_allOrder_to_reason_for_cancel_order_dialog"
+            app:destination="@id/reasonForCancleOrderDialog" />
+    </fragment>
     <fragment
         android:id="@+id/createItem"
         android:name="com.android.pos.ui.fragments.createitem.CreateItem"
