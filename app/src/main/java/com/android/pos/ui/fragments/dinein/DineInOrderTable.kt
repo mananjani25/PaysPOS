@@ -8596,7 +8596,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     .lowercase() == "TM-m30".lowercase() && customerReceiptPrinters.printer_type != Constants.BLUETOOTH
             ) {
 
-                timeOut = 1000
+                timeOut = 10000
             }
 
             try {
