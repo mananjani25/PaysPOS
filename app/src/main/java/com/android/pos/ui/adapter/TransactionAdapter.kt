@@ -85,7 +85,7 @@ class TransactionAdapter(val viewModel: TransactionViewModel, val prefProvider: 
                 itemBinding.tvPaymentType.setTextColor(itemBinding.root.resources.getColor(R.color.txtColor))
             }
 
-            if (model.orderDetails.orderTypeName != null) {
+            if (model.orderDetails != null && model.orderDetails.orderTypeName != null) {
                 itemBinding.tvOrderType?.text = model.orderDetails.orderTypeName.toString()
             } else {
                 itemBinding.tvOrderType?.text = "-"

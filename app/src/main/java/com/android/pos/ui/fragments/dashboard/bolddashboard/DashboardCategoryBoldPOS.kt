@@ -472,17 +472,17 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             val singleItem = bundle.getParcelable<TbItem>("item")
             // val cartList = bundle.getParcelableArrayList<CartModel>("cartList")
             var dineInArrayList: List<DineInModel>? = null
-            /*
-                        if (prefProvider.getValue(
-                                ORDER_TYPE,
-                                TAKEOUT
-                            ) ==DINE_IN
-                        ) {
-                            Log.e(TAG,"notecartlist$cartList")
-                            dineInArrayList = cartList?.get(0)?.dineInList
-                            dineInArrayList?.get(0)?.selectedPosition = bundle.getInt("headerPos")
-                        }
-            */
+/*
+            if (prefProvider.getValue(
+                    ORDER_TYPE,
+                    TAKEOUT
+                ) ==DINE_IN
+            ) {
+                Log.e(TAG,"notecartlist$cartList")
+                dineInArrayList = cartList?.get(0)?.dineInList
+                dineInArrayList?.get(0)?.selectedPosition = bundle.getInt("headerPos")
+            }
+*/
 
 
             if (isOrderNote) {
@@ -616,15 +616,15 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             }
         }
 
-        /*
-                setFragmentResultListener("request_key_customer_dine_in") { _, bundle ->
-                    result = bundle
-                    resultData = bundle.getParcelable<TbCustomer>("data")
-                    if (result != null) {
-                        Log.e(TAG,"REQUEST_KEY_CUSTOMER_DINE_IN$result")
-                    }
-                }
-        */
+/*
+        setFragmentResultListener("request_key_customer_dine_in") { _, bundle ->
+            result = bundle
+            resultData = bundle.getParcelable<TbCustomer>("data")
+            if (result != null) {
+                Log.e(TAG,"REQUEST_KEY_CUSTOMER_DINE_IN$result")
+            }
+        }
+*/
 
         if (prefProvider.getValueboolean(SPLIT_ENABLE, false)) {
             if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
@@ -867,11 +867,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                     }
                                 }
 
-                            } else if (it.data[i].name.startsWith(
-                                    SUNMI_INNER_PRINTER,
-                                    true
-                                ) == true
-                            ) {
+                            } else if (it.data[i].name.startsWith(SUNMI_INNER_PRINTER, true) == true) {
 
                                 if (woyouService != null) {
                                     woyouService!!.sendRAWData(byteArrayOf(0x1B, 0x45, 0x01), this)
@@ -1011,13 +1007,13 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     override fun onItemSelected(item: TbItem) {
         item.timeStamp = randomOfflineId()
 
-        Log.e("viewModel.cartModel", Gson().toJson(viewModel.cartModel))
+        Log.e("viewModel.cartModel",Gson().toJson(viewModel.cartModel))
 
         prefProvider.setValue(Constants.REDIRECT_FROM, "")
 
         if (cartList.isEmpty() && viewModel.cartModel != null) {
             viewModel.cartModel?.let {
-                cartList.add(it)
+              cartList.add(it)
             }
         }
 
@@ -1663,28 +1659,28 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         "PrinterEvent  ${Gson().toJson(printerStatusInfo)} other1 ${s}  other2 ${i}"
                     )
 
-                    try {
-                        printer.disconnect()
-                        requireActivity().runOnUiThread {
-                            viewModel.downloadFinished(false)
-                            if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
-                                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
-                            }
-                        }
-
-                    } catch (e: java.lang.Exception) {
                         try {
+                            printer.disconnect()
                             requireActivity().runOnUiThread {
                                 viewModel.downloadFinished(false)
                                 if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
                                     findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
                                 }
                             }
-                        } catch (e: Exception) {
 
+                        } catch (e: java.lang.Exception) {
+                            try {
+                                requireActivity().runOnUiThread {
+                                    viewModel.downloadFinished(false)
+                                    if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                                        findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                                    }
+                                }
+                            }catch (e:Exception){
+
+                            }
+                            e.printStackTrace()
                         }
-                        e.printStackTrace()
-                    }
 
                 }
                 try {
@@ -1703,6 +1699,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 } catch (e: java.lang.Exception) {
                     e.printStackTrace()
                 }
+
 
 
             } else {
@@ -1791,12 +1788,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     fontSizeH = 1
                     fontSizeW = 1
                 }
-
                 MEDIUM -> {
                     fontSizeH = 1
                     fontSizeW = 2
                 }
-
                 LARGE -> {
                     fontSizeH = 2
                     fontSizeW = 2
@@ -2102,10 +2097,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
             try {
                 builder.sendData(Printer.PARAM_DEFAULT)
-                // viewModel.downloadFinished(false)
-                /* if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
-                     findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
-                 }*/
+               // viewModel.downloadFinished(false)
+               /* if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                }*/
 
                 //PrinterClass.getPrinter()?.sendData(builder, 0, status, battery)
             } catch (e: Exception) {
@@ -2309,11 +2304,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                     }
                 }
-
                 Status.LOADING -> {
                     ProgressUtils.showProgressDialog(requireActivity())
                 }
-
                 Status.ERROR -> {
                     ProgressUtils.dismissProgressDialog()
                     findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
@@ -2347,12 +2340,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     fontSizeH = 1
                     fontSizeW = 1
                 }
-
                 MEDIUM -> {
                     fontSizeH = 1
                     fontSizeW = 2
                 }
-
                 LARGE -> {
                     fontSizeH = 2
                     fontSizeW = 2
@@ -3504,10 +3495,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                                         addItemInCartThroughBarcode(resource.data)
                                                     }
                                                 }
-
                                                 Status.ERROR -> {
                                                 }
-
                                                 Status.LOADING -> {
 
                                                 }
@@ -3531,10 +3520,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                 }
                             }
                         }
-
                         Status.ERROR -> {
                         }
-
                         Status.LOADING -> {
 
                         }
@@ -3689,13 +3676,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     if (data?.isNotEmpty() == true) {
                         var isInnerPrinterConnected = false
                         for (i in data.indices) {
-                            if (data[i].name.startsWith(
-                                    SUNMI_INNER_PRINTER,
-                                    true
-                                ) && data[i].receiptPrintType.equals(
-                                    CUSTOMER
-                                )
-                            ) {
+                            if (data[i].name.startsWith(SUNMI_INNER_PRINTER, true) && data[i].receiptPrintType.equals(
+                                    CUSTOMER)) {
                                 isInnerPrinterConnected = true
                             }
                         }
