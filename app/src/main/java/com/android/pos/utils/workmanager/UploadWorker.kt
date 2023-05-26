@@ -162,7 +162,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
 
                 LogUtil.logE(TAG, "onActionCableStarts")
-               connectActionCable()
+                connectActionCable()
 
             }
             return Result.success()
@@ -516,14 +516,17 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                             } catch (e: Epos2Exception) {
                                 try {
                                     printer1.disconnect()
-                                    printer1.connect("TCP:" + dataList.get(i).asJsonObject.get("mac_address").asString,
-                                        Printer.PARAM_DEFAULT)
-                                }catch (e:Exception){
-                                    try{
-                                        printer1.connect("TCP:" + dataList.get(i).asJsonObject.get("mac_address").asString,
-                                            Printer.PARAM_DEFAULT)
-                                    }
-                                    catch (e:java.lang.Exception){
+                                    printer1.connect(
+                                        "TCP:" + dataList.get(i).asJsonObject.get("mac_address").asString,
+                                        Printer.PARAM_DEFAULT
+                                    )
+                                } catch (e: Exception) {
+                                    try {
+                                        printer1.connect(
+                                            "TCP:" + dataList.get(i).asJsonObject.get("mac_address").asString,
+                                            Printer.PARAM_DEFAULT
+                                        )
+                                    } catch (e: java.lang.Exception) {
                                         e.printStackTrace()
                                     }
                                     e.printStackTrace()
@@ -619,7 +622,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                                                 orderId = it.asJsonObject.get("id").asInt,
                                                 itemName = it1.asJsonObject.get("name").asString,
                                                 totalPrice = 0.0,
-                                                timestamp = "",
+                                                timestamp = it1.asJsonObject.get("message").asString,
                                                 quantity = it1.asJsonObject.get("quantity").asInt,
                                                 price = 0.0,
                                                 orderItemModifiers = listOfMod,
@@ -811,7 +814,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                                                 orderId = it.asJsonObject.get("id").asInt,
                                                 itemName = it1.asJsonObject.get("name").asString,
                                                 totalPrice = 0.0,
-                                                timestamp = "",
+                                                timestamp = it1.asJsonObject.get("message").asString,
                                                 quantity = it1.asJsonObject.get("quantity").asInt,
                                                 price = 0.0,
                                                 orderItemModifiers = listOfMod,
@@ -1294,7 +1297,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
             }
 
-            //  Log.e(TAG, "checkprinterBreak: ${printerBreak}")
+              Log.e(TAG, "checkprinterBreak: ${printerBreak}")
             if (printerBreak) {
 
                 try {
@@ -1343,6 +1346,8 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
 
                     }
+
+                    Log.e(TAG, "checkIsBreak:   ${isBreakDown}")
 
                     if (isBreakDown == false) {
                         runBlocking {
@@ -1457,7 +1462,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                     )
 
 
-                    printer.addText("" + obj.orderItems[m].quantity + " " + obj.orderItems[m].itemName)
+                    printer.addText("" + obj.orderItems[m].quantity + " " + obj.orderItems[m].itemName + "   " + obj.orderItems[m].timestamp)
                     if (obj.orderItems[m].orderItemModifiers.isNotEmpty()) {
                         obj.orderItems[m].orderItemModifiers.forEach { mod ->
 
@@ -2575,7 +2580,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
 
 
-        if (p1 >= 0 ) {
+        if (p1 >= 0) {
             p0?.clearCommandBuffer()
             try {
 

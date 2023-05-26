@@ -514,6 +514,7 @@ open class PaymentViewModel @Inject constructor(
             prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT)
 
         Log.e("checkOrderTypeID","getOrderTypeID  ${prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)}")
+        Log.e("checkOrderTypeID","getOrderTypeIDVARTE  ${order_type_id}")
         if (order_type_id == -1 && prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT) == Constants.OPEN_ORDER){
             order_type_id = prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)
         }
