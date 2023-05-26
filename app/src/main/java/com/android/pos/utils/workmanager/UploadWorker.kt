@@ -1297,7 +1297,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
             }
 
-              Log.e(TAG, "checkprinterBreak: ${printerBreak}")
+            Log.e(TAG, "checkprinterBreak: ${printerBreak}")
             if (printerBreak) {
 
                 try {
@@ -1461,8 +1461,15 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                         Builder.COLOR_1
                     )
 
+                    if (obj.orderItems[m].timestamp.isNotEmpty()) {
+                        var msg = "("+obj.orderItems[m].timestamp+")"
+                        printer.addText("" + obj.orderItems[m].quantity + " " + obj.orderItems[m].itemName +"  "+msg)
 
-                    printer.addText("" + obj.orderItems[m].quantity + " " + obj.orderItems[m].itemName + "   " + obj.orderItems[m].timestamp)
+                    } else {
+
+                        printer.addText("" + obj.orderItems[m].quantity + " " + obj.orderItems[m].itemName)
+                    }
+
                     if (obj.orderItems[m].orderItemModifiers.isNotEmpty()) {
                         obj.orderItems[m].orderItemModifiers.forEach { mod ->
 
