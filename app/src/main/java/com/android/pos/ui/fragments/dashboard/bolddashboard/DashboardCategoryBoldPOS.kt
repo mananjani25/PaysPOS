@@ -661,7 +661,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 event.getContentIfNotHandled()?.let {
                     Log.d(TAG, "syncDataDone: $it")
                     if (it) {
-                        binding.maskLayout?.gone()
+                        //binding.maskLayout?.gone()
                         getConnectedPrinters()
                     } else {
                         binding.maskLayout?.visible()
@@ -3403,9 +3403,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         printerViewModel.showProgress.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
-                    ProgressUtils.showProgressDialog(requireActivity())
+                    binding.maskLayout?.visible()
+                    //ProgressUtils.showProgressDialog(requireActivity())
                 } else {
-                    ProgressUtils.dismissProgressDialog()
+                    binding.maskLayout?.gone()
+                    //ProgressUtils.dismissProgressDialog()
                     getConnectedPrinters()
                 }
             }
@@ -3735,8 +3737,12 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 )
                 setupInnerPrinterAttributes(innerPrinterModel)
 
+            }else{
+                binding.maskLayout?.gone()
             }
 
+        }else{
+            binding.maskLayout?.gone()
         }
     }
 
