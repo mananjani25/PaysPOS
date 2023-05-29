@@ -435,6 +435,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         viewModel.newCartLogicModifier(cartList, item, Constants.UPDATE, false)
 
                     }
+
                     "Amount" -> {
 
                         item?.discountPrice = result.percentage
@@ -444,6 +445,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                         viewModel.newCartLogicModifier(cartList, item, Constants.UPDATE, false)
                     }
+
                     else -> {
                         item?.discountPrice = result.percentage
                         item?.discountId = 0
@@ -3040,7 +3042,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     .lowercase() == "TM-m30".lowercase() && customerReceiptPrinters.printer_type != Constants.BLUETOOTH
             ) {
 
-                timeOut = 1000
+                timeOut = 10000
             }
 
             try {
@@ -3710,28 +3712,30 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         if (mBluetoothAdapter?.isEnabled == true) {
 
             val availableDevices: Set<BluetoothDevice> = mBluetoothAdapter!!.bondedDevices
-            var innerPrinterModel = PrinterListModel()
-            for (i in availableDevices) {
 
-                if(i.name.startsWith(SUNMI_INNER_PRINTER,true)){
-                    innerPrinterModel = PrinterListModel(
-                        printerName = i.name,
-                        connectionType = Constants.BLUETOOTH,
-                        deviceModel = DeviceInfo(
-                            DevType.BLUETOOTH,
-                            i.address,
-                            i.name,
-                            i.address,
-                            i.address
-                        ),
-                        type = Constants.AVAILABLE,
-                        uuid = UUID.randomUUID()
-                    )
-                }
+            val innerPrinterModel: PrinterListModel
+
+            val filteredPrintersList =
+                availableDevices.filter { it.name.startsWith(SUNMI_INNER_PRINTER, true) }
+
+            if (filteredPrintersList.isNotEmpty()) {
+                val foundPrinter = filteredPrintersList[0]
+                innerPrinterModel = PrinterListModel(
+                    printerName = foundPrinter.name,
+                    connectionType = Constants.BLUETOOTH,
+                    deviceModel = DeviceInfo(
+                        DevType.BLUETOOTH,
+                        foundPrinter.address,
+                        foundPrinter.name,
+                        foundPrinter.address,
+                        foundPrinter.address
+                    ),
+                    type = Constants.AVAILABLE,
+                    uuid = UUID.randomUUID()
+                )
+                setupInnerPrinterAttributes(innerPrinterModel)
 
             }
-
-            setupInnerPrinterAttributes(innerPrinterModel)
 
         }
     }
