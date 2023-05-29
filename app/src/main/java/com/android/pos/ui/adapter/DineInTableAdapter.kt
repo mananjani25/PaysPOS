@@ -198,7 +198,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 }
             } else if (noItem && guestAmt == 0.0) {
                 Log.e(TAG, "NoItemGuestAmt")
-                binding.btnPay.visibility = View.GONE
+                binding.btnPay.visibility = View.INVISIBLE
             } else {
                 binding.btnPay.visibility = View.VISIBLE
 
@@ -304,7 +304,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     binding.btnPay.setBackgroundColor(binding.root.context.getColor(R.color.btnColorDark))
                 }
-                binding.txtPay.text = "Pay " + MethodUtils.roundOffAmount(finalAmt)
+                binding.txtPay.text = "Pay :" + MethodUtils.roundOffAmount(finalAmt)
             }
 
             binding.btnPay.setOnClickListener {
