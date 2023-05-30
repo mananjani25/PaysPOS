@@ -3670,7 +3670,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             when (it.status) {
 
                 Status.SUCCESS -> {
-                    ProgressUtils.dismissProgressDialog()
+                    //ProgressUtils.dismissProgressDialog()
+                    binding.maskLayout?.gone()
 
                     val data = it.data
                     LogUtil.logE(TAG, "getConnectedPrinters:  ${Gson().toJson(data)}")
@@ -3685,6 +3686,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         }
                         if (!isInnerPrinterConnected) {
                             searchBluetooth()
+                        }else{
+                            binding.maskLayout?.gone()
                         }
 
                     } else {
@@ -3695,12 +3698,14 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                 Status.ERROR -> {
                     LogUtil.logE(TAG, "getConnectedPrinters - ${it.message}")
-                    ProgressUtils.dismissProgressDialog()
+                    //ProgressUtils.dismissProgressDialog()
+                    binding.maskLayout?.gone()
 
                 }
 
                 Status.LOADING -> {
-                    ProgressUtils.showProgressDialog(requireActivity())
+                    //ProgressUtils.showProgressDialog(requireActivity())
+                    binding.maskLayout?.visible()
                 }
             }
 
