@@ -295,7 +295,7 @@ class CustomDisplay(
         }
     }
 
-    private val shouldShowCDS = false
+    private val shouldShowCDS = true
 
     private fun setupTotalsNew(isDineIn: Boolean) {
 
