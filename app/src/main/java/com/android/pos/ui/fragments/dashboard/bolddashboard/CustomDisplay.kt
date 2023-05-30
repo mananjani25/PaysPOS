@@ -230,7 +230,7 @@ class CustomDisplay(
                 } else {
                     binding.rowHeaderLayoutDineIn?.gone()
                     binding.rowHeaderLayout.visible()
-                    if (MethodUtils.isEnableCashDiscount(context)) {
+                    if (MethodUtils.isEnableCashDiscount(context) && !shouldShowCDS) {
                         binding.txtTotalLabel.gone()
                         binding.txtCashLabel.visible()
                         binding.txtCardLabel.visible()
@@ -279,26 +279,28 @@ class CustomDisplay(
     fun showSurcharge(isInCheckout: Boolean) {
         if (isInCheckout) {
             if (MethodUtils.isEnableCashDiscount(context)) {
-                binding.linearCashDiscount.visible()
+                binding.lnrLayoutCashDiscountSurcharge?.visible()
                 if (prefProvider.getValue(
                         Constants.OPTION_TYPE,
                         "CashDiscount"
                     ) == "CashDiscount"
                 ) {
-                    binding.labelCashSurcharge.text = "Cash Discount"
+                    binding.txtCashDiscountSurchargeLabel?.text = "Cash Discount"
                 } else {
-                    binding.labelCashSurcharge.text = "SurCharge"
+                    binding.txtCashDiscountSurchargeLabel?.text = "SurCharge"
                 }
             } else {
-                binding.linearCashDiscount.gone()
+                binding.lnrLayoutCashDiscountSurcharge?.gone()
             }
         }
     }
 
+    private val shouldShowCDS = false
+
     private fun setupTotalsNew(isDineIn: Boolean) {
 
         dashBoardCategoryViewModel.apply {
-            if (MethodUtils.isEnableCashDiscount(context) && !isDineIn) {
+            if (MethodUtils.isEnableCashDiscount(context) && !isDineIn && !shouldShowCDS) {
                 binding.txtSubTotalCash?.visible()
                 binding.txtSubTotalCard?.visible()
                 binding.txtTaxCash?.visible()
@@ -367,6 +369,8 @@ class CustomDisplay(
                 binding.txtOrderTotal?.visible()
 
                 binding.txtOrderTotal?.text = MethodUtils.roundOffAmount(totalPrice)
+
+                binding.txtCashDiscountSurchargeCard?.text = MethodUtils.roundOffAmount(cashdiscountAmount)
 
             }
 

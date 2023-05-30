@@ -188,7 +188,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         if (this::presentation.isInitialized) {
             presentation.show()
             presentation.onDisplayChanged()
-            //presentation.showSurcharge(true)
+            val shouldShowCDS = false
+            if(shouldShowCDS){
+                presentation.showSurcharge(true)
+            }
             //presentation.showWouldYouLikeToAddTipScreen(tipListViewModel,WholetotalPrice)
         }
     }

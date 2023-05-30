@@ -34,6 +34,7 @@ class CartAdapterCustomerDisplay : RecyclerView.Adapter<CartAdapterCustomerDispl
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: TbItem, pos: Int) {
+            val shouldShowCDS = false
             prefProvider = PrefProvider(itemView.context)
             LogUtil.logE(TAG, "itemprice:  ${item.price}")
             binding.txtName.text = item.name
@@ -41,7 +42,7 @@ class CartAdapterCustomerDisplay : RecyclerView.Adapter<CartAdapterCustomerDispl
             binding.txtEachQntPrice.text = MethodUtils.roundOffAmount((item.price))
             MethodUtils.setPriceTextView(binding.txtEachQntPrice, totalEachPrice(item))
 
-            if (MethodUtils.isEnableCashDiscount(itemView.context)) {
+            if (MethodUtils.isEnableCashDiscount(itemView.context) && !shouldShowCDS) {
                 binding.txtTotalPrice.gone()
                 binding.txtCashAmount.visible()
                 binding.txtCardAmount.visible()
