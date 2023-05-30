@@ -12,6 +12,8 @@ import com.android.pos.ui.adapter.AllOrdersTabsAdapter
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
 @AndroidEntryPoint
 class AllOrdersFragment : Fragment() {
@@ -76,5 +78,31 @@ class AllOrdersFragment : Fragment() {
             findNavController().navigate(R.id.action_allOrder_to_dashboarCategorynew)
         }
     }
+
+    override fun onStart() {
+        super.onStart()
+        org.greenrobot.eventbus.EventBus.getDefault().register(this)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        org.greenrobot.eventbus.EventBus.getDefault().unregister(this)
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onMessageEvent(pendingCounts: PendingCounts) {
+        updateTabTitle(pendingCounts.allPendingCount,pendingCounts.openPendingCount,pendingCounts.phonePendingCount,pendingCounts.onlinePendingCount,pendingCounts.thirdPartyPendingCount)
+    }
+
+    private fun updateTabTitle(
+        allPendingCount: Int,
+        openPendingCount: Int,
+        phonePendingCount: Int,
+        onlinePendingCount: Int,
+        thirdPartyPendingCount: Int
+    ) {
+        TODO("Not yet implemented")
+    }
+
 
 }

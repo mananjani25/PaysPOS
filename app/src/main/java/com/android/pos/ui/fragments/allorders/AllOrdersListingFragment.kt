@@ -750,10 +750,87 @@ class AllOrdersListingFragment(
                     )
                 }
             }
-            "Completed" -> {
+            "completed" -> {
                 alert("", "Are you sure, you want to complete this order ?") {
                     this.positiveButton("YES") {
                         updateOrder(adapter.filterList[0].id, status)
+                    }
+                    this.negativeButton("NO") {
+                    }
+
+                }
+            }
+            "rejected" -> {
+                alert("", "Are you sure, you want to reject this order ?") {
+
+                    this.positiveButton("YES") {
+                        var employeeIdtemp = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+                        var terminal_id = prefProvider.getValueInt(Constants.TERMINAL_ID, 0)
+                        var orderItemRefundsAttributesList =
+                            ArrayList<RefundRequestModelOnlineOrder.PaymentRefund.OrderItemRefundsAttribute>()
+                        adapter.orderList[pos].orderItems.forEach { item ->
+                            val orderItemRefundsAttributeModel =
+                                RefundRequestModelOnlineOrder.PaymentRefund.OrderItemRefundsAttribute()
+
+                            orderItemRefundsAttributeModel.amount = item.totalPrice
+                            orderItemRefundsAttributeModel.employeeId = employeeIdtemp
+                            orderItemRefundsAttributeModel.orderId = item.orderId
+                            orderItemRefundsAttributeModel.refundType = 0
+                            orderItemRefundsAttributeModel.paymentId =
+                                adapter.orderList[pos].payments[0].id
+                            orderItemRefundsAttributeModel.orderItemId = item.id
+                            orderItemRefundsAttributeModel.quantity = item.quantity
+                            orderItemRefundsAttributesList.add(orderItemRefundsAttributeModel)
+                        }
+
+                        refundData = RefundRequestModelOnlineOrder().apply {
+                            paymentRefund = RefundRequestModelOnlineOrder.PaymentRefund().apply {
+                                amount =
+                                    adapter.orderList[pos].payments[0].amount + adapter.orderList[pos].payments[0].tips
+                                orderId = adapter.orderList[pos].id
+                                paymentId = adapter.orderList[pos].payments[0].id
+                                employeeId = employeeIdtemp
+                                taxRefunded = adapter.orderList[pos].payments[0].taxAmount
+                                tipsRefunded = adapter.orderList[pos].payments[0].tips
+                                terminalId = terminal_id
+                                serviceChargeRefunded =
+                                    adapter.orderList[pos].payments[0].serviceChargeAmount
+                                cash_discount_or_surcharge_refunded =
+                                    adapter.orderList[pos].payments[0].cashDiscount
+                                subtotal_refunded = adapter.orderList[pos].payments[0].subTotal
+                                orderItemRefundsAttributes = orderItemRefundsAttributesList
+                            }
+                        }
+                        val bundle = Bundle().apply {
+                            putParcelable("refundData", refundData)
+                            putDouble(
+                                "refundAmount",
+                                adapter.orderList[pos].payments[0].amount + adapter.orderList[pos].payments[0].tips
+                            )
+                            putString("paymentType", adapter.orderList[pos].payments[0].paymentType)
+                            putString(
+                                "magensa_response_data",
+                                adapter.orderList[pos].magensa_response_data
+                            )
+                        }
+                        bundle.putString("isFrom", "rejectOnlineOrder")
+                        if (prefProvider.isAdmin() || prefProvider.isManager()) {
+                            if (findNavController().currentDestination?.id == R.id.onlineOrderFragment) {
+                                findNavController().navigate(
+                                    R.id.action_onlineOrder_to_reasonForrefundonline,
+                                    bundle
+                                )
+                            }
+                        } else {
+                            if (findNavController().currentDestination?.id == R.id.onlineOrderFragment) {
+                                findNavController().navigate(
+                                    R.id.action_onlineOrder_to_passcodeManager,
+                                    bundle
+                                )
+                            }
+                        }
+
+
                     }
                     this.negativeButton("NO") {
                     }
@@ -974,8 +1051,7 @@ class AllOrdersListingFragment(
             Constants.PRINT_PAID -> {
                 getCustomerPrinters(order, status)
             }
-
-            "" -> {//cancel order
+            "CANCEL" -> {//cancel order
                 if (rolePermission.hasCancelOrderPermission(binding.root)) {
                     val bundle = Bundle().apply {
                         /* putParcelable("refundData", refundData)
@@ -992,82 +1068,8 @@ class AllOrdersListingFragment(
                     )
                 }
             }
-            "cancelled" -> {
-                alert("", "Are you sure, you want to reject this order ?") {
-
-                    this.positiveButton("YES") {
-                        var employeeIdtemp = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
-                        var terminal_id = prefProvider.getValueInt(Constants.TERMINAL_ID, 0)
-                        var orderItemRefundsAttributesList =
-                            ArrayList<RefundRequestModelOnlineOrder.PaymentRefund.OrderItemRefundsAttribute>()
-                        adapter.orderList[pos].orderItems.forEach { item ->
-                            val orderItemRefundsAttributeModel =
-                                RefundRequestModelOnlineOrder.PaymentRefund.OrderItemRefundsAttribute()
-
-                            orderItemRefundsAttributeModel.amount = item.totalPrice
-                            orderItemRefundsAttributeModel.employeeId = employeeIdtemp
-                            orderItemRefundsAttributeModel.orderId = item.orderId
-                            orderItemRefundsAttributeModel.refundType = 0
-                            orderItemRefundsAttributeModel.paymentId =
-                                adapter.orderList[pos].payments[0].id
-                            orderItemRefundsAttributeModel.orderItemId = item.id
-                            orderItemRefundsAttributeModel.quantity = item.quantity
-                            orderItemRefundsAttributesList.add(orderItemRefundsAttributeModel)
-                        }
-
-                        refundData = RefundRequestModelOnlineOrder().apply {
-                            paymentRefund = RefundRequestModelOnlineOrder.PaymentRefund().apply {
-                                amount =
-                                    adapter.orderList[pos].payments[0].amount + adapter.orderList[pos].payments[0].tips
-                                orderId = adapter.orderList[pos].id
-                                paymentId = adapter.orderList[pos].payments[0].id
-                                employeeId = employeeIdtemp
-                                taxRefunded = adapter.orderList[pos].payments[0].taxAmount
-                                tipsRefunded = adapter.orderList[pos].payments[0].tips
-                                terminalId = terminal_id
-                                serviceChargeRefunded =
-                                    adapter.orderList[pos].payments[0].serviceChargeAmount
-                                cash_discount_or_surcharge_refunded =
-                                    adapter.orderList[pos].payments[0].cashDiscount
-                                subtotal_refunded = adapter.orderList[pos].payments[0].subTotal
-                                orderItemRefundsAttributes = orderItemRefundsAttributesList
-                            }
-                        }
-                        val bundle = Bundle().apply {
-                            putParcelable("refundData", refundData)
-                            putDouble(
-                                "refundAmount",
-                                adapter.orderList[pos].payments[0].amount + adapter.orderList[pos].payments[0].tips
-                            )
-                            putString("paymentType", adapter.orderList[pos].payments[0].paymentType)
-                            putString(
-                                "magensa_response_data",
-                                adapter.orderList[pos].magensa_response_data
-                            )
-                        }
-                        bundle.putString("isFrom", "rejectOnlineOrder")
-                        if (prefProvider.isAdmin() || prefProvider.isManager()) {
-                            if (findNavController().currentDestination?.id == R.id.onlineOrderFragment) {
-                                findNavController().navigate(
-                                    R.id.action_onlineOrder_to_reasonForrefundonline,
-                                    bundle
-                                )
-                            }
-                        } else {
-                            if (findNavController().currentDestination?.id == R.id.onlineOrderFragment) {
-                                findNavController().navigate(
-                                    R.id.action_onlineOrder_to_passcodeManager,
-                                    bundle
-                                )
-                            }
-                        }
-
-
-                    }
-                    this.negativeButton("NO") {
-                    }
-
-                }
+            "REPRINT_KITCHEN_RECEIPT" -> {
+                //getKitchenPrinters(order)
             }
         }
     }
@@ -3486,46 +3488,6 @@ class AllOrdersListingFragment(
 
             }
 
-            /*  PrinterClass.closePrinter()
-              if (PrinterClass.getPrinter() == null) {
-                  //  printerDialog.show(requireContext())
-
-                  var printer: Print? = Print(requireContext())
-
-
-                  val enabled = Print.FALSE
-
-                  try {
-
-                      printer?.openPrinter(
-                          if (data.printer_type == Constants.BLUETOOTH) {
-                              Print.DEVTYPE_BLUETOOTH
-                          } else {
-                              Print.DEVTYPE_TCP
-                          },
-                          data.ipAddress,
-                          enabled,
-                          1000
-                      )
-
-                  } catch (e: Exception) {
-                      //  printerDialog.dismiss()
-                      LogUtil.logE(TAG, "PrinterException: " + e.message)
-                      printer = null
-                      return
-                  }
-
-                  if (printer != null) {
-                      PrinterClass.setPrinter(printer)
-
-
-                      generateKitchenReceipt(data, type, orderData)
-
-                  }
-
-              } else {
-                  LogUtil.logE(TAG, "PrinterIsNotNull:")
-              }*/
         }
 
     }

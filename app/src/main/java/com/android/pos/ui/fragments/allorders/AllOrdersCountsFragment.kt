@@ -42,6 +42,7 @@ import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.getCustomerDisplay
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
+import org.greenrobot.eventbus.EventBus
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -228,8 +229,12 @@ class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
                             cancelledOrdersCount = it.data?.data?.online_rejected_orders
                             upcomingOrderCount = it.data?.data?.upcoming_orders
 
-                            setAdapter(mPos)
+                            EventBus.getDefault().post(
+                                PendingCounts(99,99,99,99,99)
+                            )
 
+                            setAdapter(mPos)
+                            
                         }
 
                         Status.ERROR -> {

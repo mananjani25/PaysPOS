@@ -265,42 +265,10 @@ class AllOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
                 mCallback?.onItemClickListener(it, absoluteAdapterPosition, "accepted")
             }
             binding.declineImg.setOnClickListener {
-                mCallback?.onItemClickListener(it, absoluteAdapterPosition, "cancelled")
+                mCallback?.onItemClickListener(it, absoluteAdapterPosition, "rejected")
             }
             binding.completedImg.setOnClickListener {
-                mCallback?.onItemClickListener(it, absoluteAdapterPosition, "Completed")
-            }
-
-            binding.txtCancelOrder.setOnClickListener {
-                if (MethodUtils.isDoubleClick()) return@setOnClickListener
-                mCallback?.onItemClickListener(it, bindingAdapterPosition, "")
-            }
-
-            binding.txtEditOrder.setOnClickListener {
-                binding.txtEditOrder.background =
-                    itemView.context.getDrawable(R.drawable.button_selected)
-                binding.txtPayNow.background =
-                    itemView.context.getDrawable(R.drawable.background_square_border_grey)
-                mCallback?.onItemClickListener(it, bindingAdapterPosition, "UPDATE")
-            }
-
-            binding.txtPayNow.setOnClickListener {
-                binding.txtEditOrder.background =
-                    itemView.context.getDrawable(R.drawable.background_square_border_grey)
-                binding.txtPayNow.background =
-                    itemView.context.getDrawable(R.drawable.button_selected)
-                mCallback?.onItemClickListener(it, bindingAdapterPosition, "PAY")
-            }
-
-            binding.txtCustomerReceipt.setOnClickListener {
-                if (filterList[bindingAdapterPosition].paymentStatus == "Paid") {
-                    mCallback?.onItemClickListener(it, bindingAdapterPosition, Constants.PRINT_PAID)
-                } else {
-                    mCallback?.onItemClickListener(it, bindingAdapterPosition,
-                        Constants.PRINT_UNPAID
-                    )
-                }
-
+                mCallback?.onItemClickListener(it, absoluteAdapterPosition, "completed")
             }
 
             binding.root.setOnClickListener {
@@ -322,7 +290,7 @@ class AllOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
 
             binding.txtCancelOrder.setOnClickListener {
                 if (MethodUtils.isDoubleClick()) return@setOnClickListener
-                mCallback?.onItemClickListener(it, bindingAdapterPosition, "")
+                mCallback?.onItemClickListener(it, bindingAdapterPosition, "CANCEL")
             }
 
             binding.txtEditOrder.setOnClickListener {
@@ -354,14 +322,15 @@ class AllOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
             }
 
             binding.txtRePrintKitchenReceipt.setOnClickListener {
-                if (filterList[bindingAdapterPosition].paymentStatus == "Paid") {
-                    mCallback?.onItemClickListener(it, bindingAdapterPosition, Constants.PRINT_PAID)
-                } else {
-                    mCallback?.onItemClickListener(
-                        it, bindingAdapterPosition,
-                        Constants.PRINT_UNPAID
-                    )
-                }
+                mCallback?.onItemClickListener(it, bindingAdapterPosition, "REPRINT_KITCHEN_RECEIPT")
+//                if (filterList[bindingAdapterPosition].paymentStatus == "Paid") {
+//                    mCallback?.onItemClickListener(it, bindingAdapterPosition, Constants.PRINT_PAID)
+//                } else {
+//                    mCallback?.onItemClickListener(
+//                        it, bindingAdapterPosition,
+//                        Constants.PRINT_UNPAID
+//                    )
+//                }
 
             }
         }
