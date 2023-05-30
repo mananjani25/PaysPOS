@@ -317,34 +317,69 @@
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
-
                     <androidx.appcompat.widget.LinearLayoutCompat
-                        android:id="@+id/linearReports"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:background="@drawable/menu_hover"
-                        android:gravity="center"
-                        android:orientation="horizontal"
-                        android:paddingVertical="@dimen/_8sdp">
+                        android:orientation="vertical">
 
-                        <ImageView
-                            android:layout_width="@dimen/_14mdpi"
-                            android:layout_height="@dimen/_12sdp"
-                            android:src="@drawable/ic_reports"
-                            app:tint="@color/txtColor" />
-
-                        <TextView
-                            style="@style/CustomFontRegularStyle"
-                            android:layout_width="wrap_content"
+                        <androidx.appcompat.widget.LinearLayoutCompat
+                            android:id="@+id/linearReports"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/_5sdp"
-                            android:text="@string/reports"
-                            android:textAllCaps="true"
-                            android:textSize="@dimen/_6mdpi" />
+                            android:layout_marginBottom="@dimen/_10sdp"
+                            android:background="@drawable/menu_hover"
+                            android:gravity="center"
+                            android:orientation="horizontal"
+                            android:paddingVertical="@dimen/_8sdp">
 
+                            <ImageView
+                                android:layout_width="@dimen/_14mdpi"
+                                android:layout_height="@dimen/_12sdp"
+                                android:src="@drawable/ic_reports"
+                                app:tint="@color/txtColor" />
+
+                            <TextView
+                                style="@style/CustomFontRegularStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/_5sdp"
+                                android:text="@string/reports"
+                                android:textAllCaps="true"
+                                android:textSize="@dimen/_6mdpi" />
+
+
+                        </androidx.appcompat.widget.LinearLayoutCompat>
+
+                        <androidx.appcompat.widget.LinearLayoutCompat
+                            android:id="@+id/linearPrinterQueue"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/menu_hover"
+                            android:gravity="center"
+                            android:orientation="horizontal"
+                            android:paddingVertical="@dimen/_8sdp">
+
+                            <ImageView
+                                android:layout_width="@dimen/_14mdpi"
+                                android:layout_height="@dimen/_12sdp"
+                                android:src="@drawable/ic_print_24"
+                                app:tint="@color/txtColor" />
+
+                            <TextView
+                                style="@style/CustomFontRegularStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/_5sdp"
+                                android:text="@string/printer_queue"
+                                android:textAllCaps="true"
+                                android:textSize="@dimen/_6mdpi" />
+
+
+                        </androidx.appcompat.widget.LinearLayoutCompat>
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
+
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
 

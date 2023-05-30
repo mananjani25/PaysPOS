@@ -2,7 +2,6 @@ package com.android.pos.ui.fragments.posmenu
 
 import android.app.Dialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,15 +19,14 @@ import com.android.pos.di.ApiModule.BASE_URL
 import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
-import com.android.pos.utils.AlertUtils
 import com.android.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
 import com.android.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
+import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.alert
-import com.android.pos.utils.getCustomerDisplay
 import com.android.pos.utils.extensions.visible
-import com.google.gson.Gson
+import com.android.pos.utils.getCustomerDisplay
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -45,6 +43,8 @@ class MenuFragment : DialogFragment() {
 
     @Inject
     lateinit var prefProvider: PrefProvider
+
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -90,6 +90,11 @@ class MenuFragment : DialogFragment() {
         binding.header.txtTitle.text = "Settings"
         binding.header.txtSave.text = getString(R.string.tv_home)
         binding.header.txtLogout?.visible()
+      /*  if (prefProvider.getValueboolean(IS_MASTER_TERMINAL, false)) {
+            binding.linearPrinterQueue.visible()
+        } else {
+            binding.linearPrinterQueue.gone()
+        }*/
     }
 
     private fun versionDisplay() {
@@ -219,7 +224,7 @@ class MenuFragment : DialogFragment() {
                         viewLifecycleOwner.lifecycleScope.launch {
                             viewModel.decreaseOnGoingOrderCounter(true)
                         }
-                    }else{
+                    } else {
                         viewModel.logoutAPI()
                     }
 

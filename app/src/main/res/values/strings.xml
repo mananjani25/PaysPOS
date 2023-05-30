@@ -519,6 +519,7 @@
     <string name="marketing">Marketing</string>
     <string name="team_member">Employee</string>
     <string name="reports">Reports</string>
+    <string name="printer_queue">Printer Queue</string>
     <string name="customer_details">Customer Details</string>
     <string name="delivery_address">Delivery Address</string>
     <string name="billing_address">Billing Address</string>
