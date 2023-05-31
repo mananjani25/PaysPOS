@@ -188,7 +188,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         if (this::presentation.isInitialized) {
             presentation.show()
             presentation.onDisplayChanged()
-            val shouldShowCDS = true
+            val shouldShowCDS = prefProvider.getValueboolean(Constants.CUSTOMER_SIGN_REQUIRED_ON_CD, false)
             if(shouldShowCDS){
                 presentation.showSurcharge(true)
             }

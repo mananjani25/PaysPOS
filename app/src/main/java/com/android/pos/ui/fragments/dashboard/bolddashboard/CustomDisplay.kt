@@ -108,6 +108,8 @@ class CustomDisplay(
     lateinit var tipsListViewModel: TipListViewModel
     lateinit var activeTipsListAdapter: ActiveTipsListAdapter
 
+    private var shouldShowCDS = false
+
     private val TAG = "CustomDisplay"
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -206,6 +208,7 @@ class CustomDisplay(
 
     fun updateCustomerDisplay(cartList: List<CartModel>) {
         Log.d(TAG, "updateCustomerDisplay: OUTSIDE")
+        shouldShowCDS = prefProvider.getValueboolean(CUSTOMER_SIGN_REQUIRED_ON_CD, false)
         if (this::binding.isInitialized) {
             Log.d(TAG, "updateCustomerDisplay: INSIDE")
             if (cartList.isNotEmpty()) {
@@ -295,10 +298,8 @@ class CustomDisplay(
         }
     }
 
-    private val shouldShowCDS = true
-
     private fun setupTotalsNew(isDineIn: Boolean) {
-
+        shouldShowCDS = prefProvider.getValueboolean(CUSTOMER_SIGN_REQUIRED_ON_CD, false)
         dashBoardCategoryViewModel.apply {
             if (MethodUtils.isEnableCashDiscount(context) && !isDineIn && !shouldShowCDS) {
                 binding.txtSubTotalCash?.visible()

@@ -34,8 +34,8 @@ class CartAdapterCustomerDisplay : RecyclerView.Adapter<CartAdapterCustomerDispl
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: TbItem, pos: Int) {
-            val shouldShowCDS = true
             prefProvider = PrefProvider(itemView.context)
+            val shouldShowCDS = prefProvider.getValueboolean(Constants.CUSTOMER_SIGN_REQUIRED_ON_CD, false)
             LogUtil.logE(TAG, "itemprice:  ${item.price}")
             binding.txtName.text = item.name
             binding.txtQuantity.text = "x" + item.itemQuantity
