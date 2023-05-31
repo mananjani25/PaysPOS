@@ -1435,6 +1435,13 @@
         android:id="@+id/menuFragment"
         android:name="com.android.pos.ui.fragments.posmenu.MenuFragment"
         android:label="MenuFragment">
+
+        <action
+            android:id="@+id/action_menuFragment_to_printerQueueList"
+            app:destination="@id/printerQueueList"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:popUpToInclusive="true" />
+
         <action
             android:id="@+id/action_menuFragment_to_settings"
             app:destination="@id/settings"
@@ -1654,6 +1661,10 @@
         android:id="@+id/transferTableDialog"
         android:name="com.android.pos.ui.dialog.TransferTableDialog"
         android:label="TransferTableDialog" />
+    <fragment
+        android:id="@+id/printerQueueList"
+        android:name="com.android.pos.ui.fragments.printerqueue.PrinterQueue"
+        android:label="PrinterQueue" />
 
 
 </navigation>

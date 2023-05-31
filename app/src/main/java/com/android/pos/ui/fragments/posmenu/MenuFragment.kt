@@ -167,6 +167,10 @@ class MenuFragment : DialogFragment() {
 
 
     private fun onClick() {
+        binding.linearPrinterQueue.setOnClickListener {
+            findNavController().navigate(R.id.action_menuFragment_to_printerQueueList)
+        }
+
         binding.header.txtSave.setOnClickListener {
             findNavController().navigateUp()
             manageCustomerDisplay()
