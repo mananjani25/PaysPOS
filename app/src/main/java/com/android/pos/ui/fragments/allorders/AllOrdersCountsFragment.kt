@@ -207,11 +207,7 @@ class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         getOrderTypes()
-
-
-
         changePosition(0)
         setAdapter(mPos)
     }
@@ -230,7 +226,7 @@ class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
                             upcomingOrderCount = it.data?.data?.upcoming_orders
 
                             EventBus.getDefault().post(
-                                PendingCounts(99,99,99,99,99)
+                                PendingCounts(99,90,3,6,0)
                             )
 
                             setAdapter(mPos)

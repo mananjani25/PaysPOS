@@ -101,7 +101,26 @@ class AllOrdersFragment : Fragment() {
         onlinePendingCount: Int,
         thirdPartyPendingCount: Int
     ) {
-        TODO("Not yet implemented")
+        TabLayoutMediator(binding.commonToolbar.tabLayout, binding.viewPager) { tab, position ->
+            when (position) {
+                0 -> {
+                    tab.text = "All Orders ($allPendingCount)"
+                }
+                1 -> {
+                    tab.text = "Open ($openPendingCount)"
+                }
+                2 -> {
+                    tab.text = "Phone ($phonePendingCount)"
+                }
+                3 -> {
+                    tab.text = "Online ($onlinePendingCount)"
+                }
+                4 -> {
+                    tab.text = "3rd Party ($thirdPartyPendingCount)"
+                }
+            }
+
+        }.attach()
     }
 
 
