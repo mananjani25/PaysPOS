@@ -108,7 +108,7 @@ class CustomDisplay(
     lateinit var tipsListViewModel: TipListViewModel
     lateinit var activeTipsListAdapter: ActiveTipsListAdapter
 
-    private var shouldShowCDS = false
+    private var showCashCreditPrice = false
 
     private val TAG = "CustomDisplay"
 
@@ -208,7 +208,7 @@ class CustomDisplay(
 
     fun updateCustomerDisplay(cartList: List<CartModel>) {
         Log.d(TAG, "updateCustomerDisplay: OUTSIDE")
-        shouldShowCDS = prefProvider.getValueboolean(CUSTOMER_SIGN_REQUIRED_ON_CD, false)
+        showCashCreditPrice = prefProvider.getValueboolean(Constants.SHOW_CASH_CREDIT_PRICE_ON_CUSTOMER_DISPLAY, false)
         if (this::binding.isInitialized) {
             Log.d(TAG, "updateCustomerDisplay: INSIDE")
             if (cartList.isNotEmpty()) {
@@ -233,7 +233,7 @@ class CustomDisplay(
                 } else {
                     binding.rowHeaderLayoutDineIn?.gone()
                     binding.rowHeaderLayout.visible()
-                    if (MethodUtils.isEnableCashDiscount(context) && !shouldShowCDS) {
+                    if (MethodUtils.isEnableCashDiscount(context) && showCashCreditPrice) {
                         binding.txtTotalLabel.gone()
                         binding.txtCashLabel.visible()
                         binding.txtCardLabel.visible()
@@ -299,9 +299,9 @@ class CustomDisplay(
     }
 
     private fun setupTotalsNew(isDineIn: Boolean) {
-        shouldShowCDS = prefProvider.getValueboolean(CUSTOMER_SIGN_REQUIRED_ON_CD, false)
+        showCashCreditPrice = prefProvider.getValueboolean(Constants.SHOW_CASH_CREDIT_PRICE_ON_CUSTOMER_DISPLAY, false)
         dashBoardCategoryViewModel.apply {
-            if (MethodUtils.isEnableCashDiscount(context) && !isDineIn && !shouldShowCDS) {
+            if (MethodUtils.isEnableCashDiscount(context) && !isDineIn && showCashCreditPrice) {
                 binding.txtSubTotalCash?.visible()
                 binding.txtSubTotalCard?.visible()
                 binding.txtTaxCash?.visible()

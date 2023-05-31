@@ -188,8 +188,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         if (this::presentation.isInitialized) {
             presentation.show()
             presentation.onDisplayChanged()
-            val shouldShowCDS = prefProvider.getValueboolean(Constants.CUSTOMER_SIGN_REQUIRED_ON_CD, false)
-            if(shouldShowCDS){
+            val showCashCreditPrice = prefProvider.getValueboolean(Constants.SHOW_CASH_CREDIT_PRICE_ON_CUSTOMER_DISPLAY, false)
+            if(!showCashCreditPrice){
                 presentation.showSurcharge(true)
             }
             //presentation.showWouldYouLikeToAddTipScreen(tipListViewModel,WholetotalPrice)

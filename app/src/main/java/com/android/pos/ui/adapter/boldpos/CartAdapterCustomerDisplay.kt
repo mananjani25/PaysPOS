@@ -35,14 +35,14 @@ class CartAdapterCustomerDisplay : RecyclerView.Adapter<CartAdapterCustomerDispl
 
         fun bind(item: TbItem, pos: Int) {
             prefProvider = PrefProvider(itemView.context)
-            val shouldShowCDS = prefProvider.getValueboolean(Constants.CUSTOMER_SIGN_REQUIRED_ON_CD, false)
+            val showCashCreditPrice = prefProvider.getValueboolean(Constants.SHOW_CASH_CREDIT_PRICE_ON_CUSTOMER_DISPLAY, false)
             LogUtil.logE(TAG, "itemprice:  ${item.price}")
             binding.txtName.text = item.name
             binding.txtQuantity.text = "x" + item.itemQuantity
             binding.txtEachQntPrice.text = MethodUtils.roundOffAmount((item.price))
             MethodUtils.setPriceTextView(binding.txtEachQntPrice, totalEachPrice(item))
 
-            if (MethodUtils.isEnableCashDiscount(itemView.context) && !shouldShowCDS) {
+            if (MethodUtils.isEnableCashDiscount(itemView.context) && showCashCreditPrice) {
                 binding.txtTotalPrice.gone()
                 binding.txtCashAmount.visible()
                 binding.txtCardAmount.visible()
@@ -91,7 +91,7 @@ class CartAdapterCustomerDisplay : RecyclerView.Adapter<CartAdapterCustomerDispl
                 dPrice = total_price_fordiscount - (item.discountPrice * item.itemQuantity)
 
                 binding.lnrDiscountRates?.visibility = View.VISIBLE
-                if (MethodUtils.isEnableCashDiscount(itemView.context)) {
+                if (MethodUtils.isEnableCashDiscount(itemView.context) && showCashCreditPrice) {
                     binding.txtCashAmount.strike = true
                     binding.tvCashDiscountRate?.visible()
                     binding.txtCardAmount.strike = true
