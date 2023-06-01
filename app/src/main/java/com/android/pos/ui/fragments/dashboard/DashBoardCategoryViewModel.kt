@@ -542,9 +542,11 @@ class DashBoardCategoryViewModel @Inject constructor(
         dineInList: List<DineInModel> = arrayListOf(),
         isFromDineInScreen: Boolean = false
     ) {
+        Log.e("DashViewModModel","checkCartSize: ${cartList?.size}")
         if (cartList != null && cartList.isEmpty()) {
             // empty cart hoy to new cart create kare
 
+            Log.e("DashViewModModel","checkItem:  ${Gson().toJson(item?.modifiers)}")
 
             var cartModel = item?.let { addCartModel(it, isManualSales) }
             if (item != null) {
@@ -1281,17 +1283,17 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         Log.e(TAG,"moditemQuantity  ${it.itemQuantity}")
                                         Log.e(TAG,"itemQuantity  ${item.itemQuantity}")
 
-                                        if (type == ADD){
+                                      /*  if (type == ADD){
                                             it.modifier_quantity = it.itemQuantity / item.itemQuantity
 
                                                 it.itemQuantity = item.itemQuantity
 
                                         }
-                                        else{
+                                        else{*/
                                             it.modifier_quantity = it.itemQuantity
                                             it.itemQuantity = it.itemQuantity * item.itemQuantity
 
-                                        }
+                                        /*}*/
 
                                         item.singleItemPrice += it.price * it.itemQuantity
                                     }
@@ -1464,7 +1466,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                     tbmodifier.modifier_quantity =
                                                         it.modifier_quantity
                                                 } else {
-                                                    it.modifier_quantity =
+                                                    tbmodifier.modifier_quantity =
                                                         it.itemQuantity / model.itemQuantity
                                                 }
 
