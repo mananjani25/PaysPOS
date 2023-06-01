@@ -240,7 +240,7 @@ data class OnlineOrderResponseModel(
             @SerializedName("amount")
             val amount: Double,
             @SerializedName("created_at")
-            val createdAt: String,
+            val createdAt: String?,
             @SerializedName("id")
             val id: Int,
             @SerializedName("name")

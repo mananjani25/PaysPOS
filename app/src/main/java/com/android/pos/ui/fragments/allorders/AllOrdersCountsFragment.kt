@@ -108,6 +108,9 @@ class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
             presentation.show()
             presentation.onLogOutOrClockOutWithApiService(apiService)
         }
+        getOrderTypes()
+        changePosition(0)
+        setAdapter(mPos)
     }
 
     override fun onDestroy() {
@@ -171,6 +174,7 @@ class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
             if (res.status == Status.SUCCESS) {
                 if (res.data != null) {
                     ordertypelist = res.data.toCollection(arrayListOf())
+                    Log.d("JUNELOGS", "getOrderTypes: $ordertypelist")
                     when (tabPosition) {
                         0 -> {
                             ORDER_TAB = ALL_ORDER_TAB
@@ -195,8 +199,11 @@ class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
                     }
 
                     if (ORDER_TAB != ALL_ORDER_TAB) {
-                        ORDER_TAB_TYPE_ID =
-                            ordertypelist.filter { it.orderType == ORDER_TAB }[0].id.toString()
+                        val filterList = ordertypelist.filter { it.orderType == ORDER_TAB }
+                        if(filterList.isNotEmpty()){
+                            ORDER_TAB_TYPE_ID =
+                                filterList[0].id.toString()
+                        }
                     }
 
                 }
@@ -207,9 +214,7 @@ class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        getOrderTypes()
-        changePosition(0)
-        setAdapter(mPos)
+
     }
 
     private fun getOrderCountsObserver(startDate: String?, endDate: String?) {

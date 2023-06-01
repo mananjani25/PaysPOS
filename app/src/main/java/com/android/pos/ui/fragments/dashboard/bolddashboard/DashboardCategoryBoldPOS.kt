@@ -1586,7 +1586,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                             viewModel.downloadFinished(false)
                             if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
-                                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
                             }
                         }
 
@@ -1643,7 +1643,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                             requireActivity().runOnUiThread {
                                 viewModel.downloadFinished(false)
                                 if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
-                                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
                                 }
                             }
 
@@ -1652,7 +1652,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                 requireActivity().runOnUiThread {
                                     viewModel.downloadFinished(false)
                                     if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
-                                        findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                                        findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
                                     }
                                 }
                             }catch (e:Exception){
@@ -1717,7 +1717,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     printer = null
                     viewModel.downloadFinished(false)
                     if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
-                        findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                        findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
                     }
 
                 }
@@ -1732,7 +1732,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     LogUtil.logE(TAG, "PrinterIsNotNull:")
                     viewModel.downloadFinished(false)
                     if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
-                        findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                        findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
                     }
 
                 }
@@ -2085,7 +2085,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             } catch (e: Exception) {
                 viewModel.downloadFinished(false)
                 if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
-                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
                 }
                 /*PrinterClass.closePrinter()
                 e.printStackTrace()
@@ -2098,7 +2098,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             e.printStackTrace()
             viewModel.downloadFinished(false)
             if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
-                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
             }
         }
 
@@ -2146,7 +2146,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                 clearCustomer()
                 if (prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)) {
-                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
                 } else {
                     getKitchenPrinters(it)
                 }
@@ -2264,7 +2264,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                                             } else {
                                                 if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
-                                                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                                                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
                                                 }
                                             }
                                         }
@@ -2278,7 +2278,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                         } else {
                             viewModel.downloadFinished(false)
-                            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
                         }
 
                     }
@@ -2288,7 +2288,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 }
                 Status.ERROR -> {
                     ProgressUtils.dismissProgressDialog()
-                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
 
                 }
             }
@@ -3033,14 +3033,14 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 PrinterClass.closePrinter()
                 viewModel.downloadFinished(false)
                 if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
-                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
                 }
 
                 //PrinterClass.getPrinter()?.sendData(builder, 0, status, battery)
             } catch (e: Exception) {
                 viewModel.downloadFinished(false)
                 if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
-                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
                 }
                 /*PrinterClass.closePrinter()
                 e.printStackTrace()
@@ -3053,7 +3053,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             e.printStackTrace()
             viewModel.downloadFinished(false)
             if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
-                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
             }
         }
 
@@ -3204,14 +3204,14 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             viewModel.downloadFinished(false)
 
             if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS)
-                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
 
 
         } catch (e: Exception) {
             e.printStackTrace()
             viewModel.downloadFinished(false)
             if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS)
-                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
         }
 
     }
@@ -3341,14 +3341,14 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
             viewModel.downloadFinished(false)
             if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS)
-                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
 
 
         } catch (e: Exception) {
             e.printStackTrace()
             viewModel.downloadFinished(false)
             if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS)
-                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
         }
 
     }
