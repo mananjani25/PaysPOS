@@ -920,7 +920,7 @@ class AllOrdersListingFragment(
                 prefProvider.setValue(Constants.IS_UPDATE_ORDER_OFFLINE_ID, order.offlineId)
 
 
-                if (findNavController().currentDestination?.id == R.id.orders) {
+                if (findNavController().currentDestination?.id == R.id.allOrdersFragment) {
                     findNavController().navigate(
                         R.id.action_allOrder_to_dashboardCategoryBoldPOS, bundle
                     )
