@@ -977,10 +977,14 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                             binding.includeView.spTerminals.selectedItemPosition
                         )
                     }
-                    findNavController().navigate(
-                        R.id.action_transactionFragment_to_transactionDetailsFragment,
-                        bundle
-                    )
+
+
+                    if (findNavController().currentDestination?.id == R.id.transactionFragment) {
+                        findNavController().navigate(
+                            R.id.action_transactionFragment_to_transactionDetailsFragment,
+                            bundle
+                        )
+                    }
                 }
             }
         }

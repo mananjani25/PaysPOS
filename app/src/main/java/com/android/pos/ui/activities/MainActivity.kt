@@ -486,7 +486,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                                         )
                                     }
 
-                                    if (kitchenSettingModel.showCustomerAddress != false or kitchenSettingModel.showCustomerPhone != false or kitchenSettingModel.showCustomerName != false) {
+                                    if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName != false) {
                                         if (printerQueueModel.customerName.isNotEmpty()) {
 
                                             mPrinter?.addFeedUnit(30)

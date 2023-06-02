@@ -1,6 +1,8 @@
 package com.android.pos.ui.fragments.dashboard.bolddashboard
 
-import android.app.Activity
+import android.annotation.SuppressLint
+import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothDevice
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -20,7 +22,6 @@ import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.*
 import androidx.lifecycle.Observer
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.android.pos.MainApplication
 import com.android.pos.R
@@ -28,15 +29,19 @@ import com.android.pos.aidl.ICallback
 import com.android.pos.aidl.IWoyouService
 import com.android.pos.data.entities.*
 import com.android.pos.data.model.DineInModel
+import com.android.pos.data.model.PrinterListModel
+import com.android.pos.data.model.requestModel.CreatePrinterRequestModel
 import com.android.pos.data.model.requestModel.CreateQueuePrinterRequestModel
 import com.android.pos.data.model.requestModel.OrderAttributeRequestModel
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.CUSTOMER
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
 import com.android.pos.data.remote.Constants.IS_PAYMENT_SCREEN
 import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
+import com.android.pos.data.remote.Constants.KITCHENANDCUSTOMER
 import com.android.pos.data.remote.Constants.LARGE
 import com.android.pos.data.remote.Constants.MEDIUM
 import com.android.pos.data.remote.Constants.ONLINE_ORDER_ENABLE
@@ -58,6 +63,8 @@ import com.android.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.ui.fragments.payment.PaymentViewModel
 import com.android.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
+import com.android.pos.ui.fragments.settings.hardware.printer.ESCUtil
+import com.android.pos.ui.fragments.settings.hardware.printer.PrinterViewModel
 import com.android.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.android.pos.ui.fragments.settings.servicecharge.ServiceChargeListViewModel
 import com.android.pos.utils.*
@@ -74,6 +81,8 @@ import com.android.pos.utils.statusUtils.Status
 import com.epson.epos2.printer.Printer
 import com.epson.eposprint.Builder
 import com.epson.eposprint.Print
+import com.epson.epsonio.DevType
+import com.epson.epsonio.DeviceInfo
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.sunmi.externalprinterlibrary.api.ConnectCallback
@@ -85,6 +94,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.io.IOException
 import java.util.*
 import javax.inject.Inject
 
@@ -92,6 +102,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     ScannerAppEngine.IScannerAppEngineDevEventsDelegate, ICallback, DineInOrderCallBack {
+    private var mBluetoothAdapter: BluetoothAdapter? = null
     private val mHandler = Handler(Looper.myLooper()!!)
     private lateinit var presentation: CustomDisplay
     private var dineInList: List<DineInModel>? = null
@@ -101,6 +112,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
     private val viewModelPayment by activityViewModels<PaymentViewModel>()
     private val passcodeViewModel by activityViewModels<PasscodeViewModel>()
+    private val printerViewModel by viewModels<PrinterViewModel>()
     private var serviceChargesList: ArrayList<TbServiceCharge>? = null
     private var serviceChargesObserve: Observer<Resource<List<TbServiceCharge>>>? = null
     private var orderTypeObserver: Observer<Resource<List<TbOrderType>>>? = null
@@ -118,6 +130,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     lateinit var cashDiscountModel: CashDiscountModel
     private var orderFloorDetails: GetOrderDetailsResponse.Data.FloorPlanTable =
         GetOrderDetailsResponse.Data.FloorPlanTable()
+    var handler = Handler()
 
     @Inject
     lateinit var rolePermission: RolePermission
@@ -186,6 +199,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 //        hideSystemUI()
 
         binding = FragmentDashboardCategoryBoldPosBinding.inflate(inflater, container, false)
+        binding.lifecycleOwner = this
         syncData()
         getCustomerDisplay(requireContext())?.let { display ->
             presentation = CustomDisplay(
@@ -226,13 +240,14 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
         checkDineInEditOrder()
         printerProgress()
+        observeShowProgress()
         getwebOrderingCountObserver()
         getDineInData()
         checkSearch()
         observeServiceChargeUpdate()
         observerSyncItemPriceChange()
         prefProvider.setValueboolean(Constants.ORDER_COMPLETED, false)
-        binding.lifecycleOwner = this
+
 
 
         binding.layoutHeader.ivLock.setOnClickListener {
@@ -421,6 +436,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         viewModel.newCartLogicModifier(cartList, item, Constants.UPDATE, false)
 
                     }
+
                     "Amount" -> {
 
                         item?.discountPrice = result.percentage
@@ -430,6 +446,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                         viewModel.newCartLogicModifier(cartList, item, Constants.UPDATE, false)
                     }
+
                     else -> {
                         item?.discountPrice = result.percentage
                         item?.discountId = 0
@@ -493,6 +510,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
     private fun setUpCustomer(result: TbCustomer, bundle: Bundle) {
         if (cartList.isNotEmpty()) {
+            cartList[0].deliveryType = bundle.getString("TYPE").toString()
             cartList[0].customer = result
             viewModel.addCart(cartList[0])
             viewModel.setcheckedLoyaltyApply(false)
@@ -640,17 +658,19 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         if (!sync) {
             ProgressUtils.showProgressDialog(requireActivity())
             viewModel.syncInventoryModule(false)
-            //binding.maskLayout?.visible()
-            //hideLoaderAfterDelay()
+            viewModel.syncDone.observe(viewLifecycleOwner) { event ->
+                event.getContentIfNotHandled()?.let {
+                    Log.d(TAG, "syncDataDone: $it")
+                    if (it) {
+                        //binding.maskLayout?.gone()
+                        getConnectedPrinters()
+                    } else {
+                        binding.maskLayout?.visible()
+                    }
+                }
+            }
         } else {
             viewModel.getOnlineOrderCount()
-        }
-    }
-
-    private fun hideLoaderAfterDelay() {
-        GlobalScope.launch(Dispatchers.Main) {
-            delay(10000)
-            binding.maskLayout?.gone()
         }
     }
 
@@ -848,7 +868,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                     }
                                 }
 
-                            } else if (it.data[i].name.startsWith("InnerPrinter", true) == true) {
+                            } else if (it.data[i].name.startsWith(SUNMI_INNER_PRINTER, true) == true) {
 
                                 if (woyouService != null) {
                                     woyouService!!.sendRAWData(byteArrayOf(0x1B, 0x45, 0x01), this)
@@ -1084,6 +1104,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     }
 
     private fun addObserver() {
+
         viewModel.showProgress.observe(requireActivity()) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
@@ -1093,6 +1114,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 }
             }
         }
+
         viewModel.clockOut.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
 
@@ -1476,8 +1498,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                 prefProvider.setValue(ORDER_TYPE, prefProvider.getValue(ORDER_TYPE, ""))
                 prefProvider.setValue(Constants.ORDER_TYPE_NAME, DINE_IN)
-                prefProvider.setValueInt(
-                    Constants.ORDER_TYPE_ID, prefProvider.getValueInt(
+                prefProvider.setValueInt(Constants.ORDER_TYPE_ID, prefProvider.getValueInt(
                         ORDER_TYPE_ID, 0
                     )
                 )
@@ -1944,7 +1965,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 }
 
 
-                if (kitchenSettingModel.showCustomerAddress != false or kitchenSettingModel.showCustomerPhone != false or kitchenSettingModel.showCustomerName) {
+                if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName) {
                     if (receiptModel?.order?.customer != null) {
 
                         builder.addFeedUnit(30)
@@ -2534,7 +2555,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 }
 
 
-                if (kitchenSettingModel.showCustomerAddress != false or kitchenSettingModel.showCustomerPhone != false or kitchenSettingModel.showCustomerName) {
+                if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName) {
                     if (receiptModel?.order?.customer != null) {
 
                         builder.addTextLineSpace(30)
@@ -2874,7 +2895,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 }
 
 
-                if (kitchenSettingModel.showCustomerAddress != false or kitchenSettingModel.showCustomerPhone != false or kitchenSettingModel.showCustomerName) {
+                if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName) {
                     if (receiptModel?.order?.customer != null) {
 
                         builder.addTextLineSpace(30)
@@ -3021,7 +3042,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     .lowercase() == "TM-m30".lowercase() && customerReceiptPrinters.printer_type != Constants.BLUETOOTH
             ) {
 
-                timeOut = 1000
+                timeOut = 10000
             }
 
             try {
@@ -3130,7 +3151,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             }
 
 
-            if (kitchenSettingModel.showCustomerAddress != false or kitchenSettingModel.showCustomerPhone != false or kitchenSettingModel.showCustomerName) {
+            if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName) {
                 if (receiptModel?.order?.customer != null) {
 
                     PrintSunmiUtils.customerDetails()
@@ -3267,7 +3288,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             }
 
 
-            if (kitchenSettingModel.showCustomerAddress != false or kitchenSettingModel.showCustomerPhone != false or kitchenSettingModel.showCustomerName) {
+            if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName) {
                 if (receiptModel?.order?.customer != null) {
 
                     PrintSunmiUtils.customerDetailsInner()
@@ -3373,6 +3394,22 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     ProgressUtils.dismissProgressDialog()
                 }
 
+            }
+        }
+    }
+
+    private fun observeShowProgress() {
+
+        printerViewModel.showProgress.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it) {
+                    binding.maskLayout?.visible()
+                    //ProgressUtils.showProgressDialog(requireActivity())
+                } else {
+                    binding.maskLayout?.gone()
+                    //ProgressUtils.dismissProgressDialog()
+                    getConnectedPrinters()
+                }
             }
         }
     }
@@ -3625,6 +3662,141 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             salt.append(SALTCHARS[index])
         }
         return salt.toString()
+    }
+
+    private fun getConnectedPrinters() {
+
+        printerViewModel.printerList().observe(viewLifecycleOwner) {
+            when (it.status) {
+
+                Status.SUCCESS -> {
+                    //ProgressUtils.dismissProgressDialog()
+                    //binding.maskLayout?.gone()
+
+                    val data = it.data
+                    LogUtil.logE(TAG, "getConnectedPrinters:  ${Gson().toJson(data)}")
+
+                    if (data?.isNotEmpty() == true) {
+                        var isInnerPrinterConnected = false
+                        for (i in data.indices) {
+                            if (data[i].name.startsWith(SUNMI_INNER_PRINTER, true) && (data[i].receiptPrintType == CUSTOMER || data[i].receiptPrintType == KITCHENANDCUSTOMER)) {
+                                isInnerPrinterConnected = true
+                                break
+                            }
+                        }
+                        if (!isInnerPrinterConnected) {
+                            searchBluetooth()
+                        }else{
+                            binding.maskLayout?.gone()
+                        }
+
+                    } else {
+                        searchBluetooth()
+                    }
+
+                }
+
+                Status.ERROR -> {
+                    LogUtil.logE(TAG, "getConnectedPrinters - ${it.message}")
+                    //ProgressUtils.dismissProgressDialog()
+                    binding.maskLayout?.gone()
+
+                }
+
+                Status.LOADING -> {
+                    //ProgressUtils.showProgressDialog(requireActivity())
+                    binding.maskLayout?.visible()
+                }
+            }
+
+        }
+
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun searchBluetooth() {
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
+        if (mBluetoothAdapter?.isEnabled == true) {
+
+            val availableDevices: Set<BluetoothDevice> = mBluetoothAdapter!!.bondedDevices
+
+            val innerPrinterModel: PrinterListModel
+
+            val filteredPrintersList =
+                availableDevices.filter { it.name.startsWith(SUNMI_INNER_PRINTER, true) }
+
+            if (filteredPrintersList.isNotEmpty()) {
+                val foundPrinter = filteredPrintersList[0]
+                innerPrinterModel = PrinterListModel(
+                    printerName = foundPrinter.name,
+                    connectionType = Constants.BLUETOOTH,
+                    deviceModel = DeviceInfo(
+                        DevType.BLUETOOTH,
+                        foundPrinter.address,
+                        foundPrinter.name,
+                        foundPrinter.address,
+                        foundPrinter.address
+                    ),
+                    type = Constants.AVAILABLE,
+                    uuid = UUID.randomUUID()
+                )
+                setupInnerPrinterAttributes(innerPrinterModel)
+
+            }else{
+                binding.maskLayout?.gone()
+            }
+
+        }else{
+            binding.maskLayout?.gone()
+        }
+    }
+
+    private fun setupInnerPrinterAttributes(innerPrinterModel: PrinterListModel) {
+        val list: ArrayList<CreatePrinterRequestModel.PrinterSettingsAttributes> = arrayListOf()
+        for (i in 0 until ordertypelist.size) {
+            list.add(
+                CreatePrinterRequestModel.PrinterSettingsAttributes(
+                    printType = CUSTOMER,
+                    orderTypeId = ordertypelist[i].id,
+                )
+            )
+        }
+
+        val createPrinter = CreatePrinterRequestModel(
+            name = innerPrinterModel.printerName,
+            terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, 0),
+            macAddress = innerPrinterModel.deviceModel?.macAddress,
+            modalName = innerPrinterModel.deviceModel?.printerName,
+            terminalIds = listOf(prefProvider.getValueInt(Constants.TERMINAL_ID, 1)),
+            status = true,
+            locationId = prefProvider.getValueInt(Constants.LOCATION_ID, 1),
+            receiptPrintType = CUSTOMER,
+            printer_type = innerPrinterModel.connectionType,
+            ip_address = innerPrinterModel.deviceModel?.ipAddress,
+            printerSettingsAttributes = list
+
+        )
+        printerViewModel.createPrinter(createPrinter)
+    }
+
+    private fun printByBluTooth(content: String) {
+        try {
+            if (true) {
+                BluetoothUtil.sendData(ESCUtil.boldOn())
+            } else {
+                BluetoothUtil.sendData(ESCUtil.boldOff())
+            }
+            if (true) {
+                BluetoothUtil.sendData(ESCUtil.underlineWithOneDotWidthOn())
+            } else {
+                BluetoothUtil.sendData(ESCUtil.underlineOff())
+            }
+
+            BluetoothUtil.sendData(content.toByteArray(charset("GB18030")))
+            BluetoothUtil.sendData(ESCUtil.nextLine(3))
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
     }
 
 }

@@ -63,6 +63,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragment(), magtekCallback,
     DeleteOptionCallback, IDeviceListCallback {
+    private var textToPay: Boolean = false
     private var isShow: Boolean = false
     private lateinit var presentation: CustomDisplay
     private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
@@ -187,7 +188,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         if (this::presentation.isInitialized) {
             presentation.show()
             presentation.onDisplayChanged()
-            presentation.showSurcharge(true)
+            //presentation.showSurcharge(true)
             //presentation.showWouldYouLikeToAddTipScreen(tipListViewModel,WholetotalPrice)
         }
     }
@@ -822,6 +823,14 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
             }
         }
+
+        paymentviewModel.data.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let {
+
+            }
+        }
+
+
     }
 
     private fun observeShowProgress() {
@@ -900,6 +909,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     }
 
     private fun paymentClick() {
+
         binding.llCreditCard.setOnSingleClickListener {
 
             val device = prefProvider.getValueInt(Constants.MAGTEK_HARDWARE, 0)
@@ -980,6 +990,16 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         }
         binding.tvPaymentLink.setOnSingleClickListener {
+            textToPay = true
+
+            custom_paymentAmount = 0.0
+
+            paymentviewModel.totalPayAmount(
+                binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
+            )
+            paymentAmount = binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
+            cashPaymentWithVariation()
+
 
         }
 
@@ -1264,12 +1284,16 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             binding.tvCash0,
             getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount
         )
-        binding.tvCash.text = "Cash (" + binding.tvCash.text + ")"
         Log.e(TAG, "WholetotalPrice:   ${WholetotalPrice}")
         MethodUtils.setPriceTextView(
             binding.tvCard,
             getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectCount
         )
+        if (this::presentation.isInitialized) {
+            presentation.show()
+            presentation.updateTotals(binding.tvCash.text.toString(),binding.tvCard.text.toString())
+        }
+        binding.tvCash.text = "Cash (" + binding.tvCash.text + ")"
         binding.tvCard.text = "Card (" + binding.tvCard.text + ")"
     }
 
@@ -1290,6 +1314,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 binding.tvCard,
                 getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectedCount
             )
+            if (this::presentation.isInitialized) {
+                presentation.show()
+                presentation.updateTotals(binding.tvCash.text.toString(),binding.tvCard.text.toString())
+            }
             binding.tvCash.text = "Cash (" + binding.tvCash.text + ")"
             binding.tvCard.text = "Card (" + binding.tvCard.text + ")"
             MethodUtils.setPriceTextViewDown(
@@ -1316,6 +1344,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 binding.tvCard,
                 (getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectedCount) + tipAmount
             )
+            if (this::presentation.isInitialized) {
+                presentation.show()
+                presentation.updateTotals(binding.tvCash.text.toString(),binding.tvCard.text.toString())
+            }
             binding.tvCash.text =
                 "Cash (" + binding.tvCash.text + ")"
             binding.tvtipcash?.visible()
@@ -1546,6 +1578,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
 
         paymentviewModel.saveOrder(false)
+        paymentviewModel.textPay(textToPay)
         Log.d("yash", "makeCashPayment: total Price : " + paymentAmount)
         Log.d("yash", "makeCashPayment: sub_total   : " + subTotalPrice)
         Log.d("yash", "makeCashPayment: totaltax    : " + totalTax)
@@ -1573,7 +1606,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             )
         }
         LogUtil.logE(TAG, "myRequestOriginal ${Gson().toJson(myRequest)}")
-        LogUtil.logE("ORDER TYPE 1", prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT))
+        LogUtil.logE("ORDER TYPE 1", prefProvider.getValue(Constants.ORDER_TYPE, ""))
         if (myRequest != null) {
             if (custom_paymentAmount != 0.0) {
                 paymentviewModel.totalPayAmount(custom_paymentAmount)
@@ -1585,27 +1618,39 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     private fun paymentAttributesRequest(myRequest: OrderRequestModel) {
         val orderId = prefProvider.getValueInt("ORDER_ID", -1)
         LogUtil.logE(TAG, "orderIdmyRequestOriginal ${orderId}")
+        Log.e("textToPay", textToPay.toString())
         if (orderId == -1) {
-            if (myRequest.order.totalAmount != 0.0) {
-                myRequest.completed_all_payments = isSelectedCount <= 1
+            if (textToPay) {
+                myRequest.completed_all_payments = false
             } else {
-                myRequest.completed_all_payments = true
+                if (myRequest.order.totalAmount != 0.0) {
+                    myRequest.completed_all_payments = isSelectedCount <= 1
+                } else {
+                    myRequest.completed_all_payments = true
+                }
             }
             paymentviewModel.submit(myRequest)
         } else {
-            val paymentReq = myRequest.order.paymentAttributes
-            if (paymentReq != null) {
-                paymentReq.order_id = orderId
+
+            if (textToPay) {
+
+                paymentviewModel.textPaySplit(orderId)
+
+            } else {
+
+                val paymentReq = myRequest.order.paymentAttributes
+                if (paymentReq != null) {
+                    paymentReq.order_id = orderId
+                }
+
+                // total amount - (hal pay amoutn + alredy pay )
+                val aa = SpitByOrderRequestModel(
+                    orderId, isSelectedCount <= 1,
+                    SpitByOrderPaymentModel(listOf(paymentReq) as List<PaymentAttributes>)
+                )
+
+                paymentviewModel.splitByOrder(aa, false)
             }
-
-            // total amount - (hal pay amoutn + alredy pay )
-            val aa = SpitByOrderRequestModel(
-                orderId, isSelectedCount <= 1,
-                SpitByOrderPaymentModel(listOf(paymentReq) as List<PaymentAttributes>)
-            )
-
-            paymentviewModel.splitByOrder(aa, false)
-
         }
     }
 

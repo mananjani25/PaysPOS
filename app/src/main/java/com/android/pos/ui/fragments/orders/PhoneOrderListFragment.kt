@@ -33,17 +33,19 @@ import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.BUSINESS_ADDRESS
 import com.android.pos.data.remote.Constants.OPEN_ORDER
-import com.android.pos.data.remote.Constants.OPEN_ORDER_
 import com.android.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
+import com.android.pos.data.remote.Constants.PHONE_ORDER
 import com.android.pos.data.remote.Constants.PRINT_PAID
 import com.android.pos.data.remote.Constants.PRINT_UNPAID
 import com.android.pos.data.remote.Constants.SHIPPING_ADDRESS
 import com.android.pos.data.remote.Constants.SUNMI_INNER_PRINTER
 import com.android.pos.data.remote.Constants.SUNMI_PRINTER
 import com.android.pos.databinding.FragmentActiveOrdersBinding
+import com.android.pos.databinding.FragmentPhoneOrdersBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
 import com.android.pos.ui.adapter.OpenOrderAdapter
+import com.android.pos.ui.adapter.PhoneOrderAdapter
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
 import com.android.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
@@ -69,7 +71,7 @@ import javax.inject.Inject
 import kotlin.math.abs
 
 @AndroidEntryPoint
-class ActiveOrderFragment(
+class PhoneOrderListFragment(
     var param1: String,
     var startDateTime: String?,
     var endDateTime: String?
@@ -78,10 +80,10 @@ class ActiveOrderFragment(
     private var paramEndDate: String = ""
 
     private var itemPos: Int = 0
-    private lateinit var binding: FragmentActiveOrdersBinding
+    private lateinit var binding: FragmentPhoneOrdersBinding
     private val viewModel by viewModels<ActiveOrderViewModel>()
     private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
-    private lateinit var adapter: OpenOrderAdapter
+    private lateinit var adapter: PhoneOrderAdapter
     private var customerSettingModel = GetCustomerReceiptSettingsResponse.Data()
     private val TAG = "ActiveOrderFragment"
     private var tipsList: List<GetTipReponse.Data> = listOf()
@@ -103,29 +105,9 @@ class ActiveOrderFragment(
     @Inject
     lateinit var rolePermission: RolePermission
 
-/*
-    companion object {
-        @JvmStatic
-        fun newInstance(param1: String, startTime: String?, endTime: String?) =
-            ActiveOrderFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, startTime)
-                    putString(ARG_PARAM3, endTime)
-                }
-            }
-    }
-*/
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-/*
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1).toString()
-            paramStartDate = it.getString(ARG_PARAM2).toString()
-            paramEndDate = it.getString(ARG_PARAM3).toString()
-        }
-*/
         viewModel.setCurrentDate(myCalendar, startDateTime, endDateTime)
     }
 
@@ -135,7 +117,7 @@ class ActiveOrderFragment(
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentActiveOrdersBinding.inflate(inflater, container, false)
+        binding = FragmentPhoneOrdersBinding.inflate(inflater, container, false)
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
 
@@ -279,7 +261,7 @@ class ActiveOrderFragment(
             )
         )
 
-        adapter = OpenOrderAdapter(requireContext(), prefProvider)
+        adapter = PhoneOrderAdapter(requireContext(),prefProvider)
         adapter.setCallback(this)
         binding.rvOpenOrder.adapter = adapter
     }
@@ -290,7 +272,7 @@ class ActiveOrderFragment(
         LogUtil.logE(TAG, "startTime  ${startTime}")
         LogUtil.logE(TAG, "endTime  ${endTime}")
 
-        viewModel.openOrders(
+        viewModel.phoneOrders(
             param1,
             viewModel.startDate.value.toString(),
             viewModel.endDate.value.toString()
@@ -387,8 +369,6 @@ class ActiveOrderFragment(
                 LogUtil.logE(TAG, "OpenORderUpdateOrder:  ${Gson().toJson(order.orderItems)}")
 
                 prefProvider.setValue(Constants.ORDER_TYPE, OPEN_ORDER)
-                prefProvider.setValue(Constants.ORDER_TYPE_NAME, OPEN_ORDER)
-                prefProvider.setValueInt(Constants.ORDER_TYPE_ID, order.orderTypeId)
 
                 if (order.customer != null) {
                     prefProvider.setValue(
@@ -399,7 +379,6 @@ class ActiveOrderFragment(
                     prefProvider.saveCustomerData(TbCustomer.customerMapping(order.customer))
                 }
                 prefProvider.setValue(Constants.OPEN_ORDER_ITEMS, Gson().toJson(order.orderItems))
-                prefProvider.setValueboolean(Constants.OPEN_ORDER_UPDATE_FOR_PRINT, true)
 
                 dashboardViewModel.addCart(
                     cartModel(order)
@@ -469,8 +448,10 @@ class ActiveOrderFragment(
                 prefProvider.setValue(Constants.SERVICE_CHARGE, "")
 
                 dashboardViewModel.deleteCart()
-                prefProvider.setValue(Constants.ORDER_TYPE, OPEN_ORDER)
-                prefProvider.setValue(Constants.ORDER_TYPE_NAME, OPEN_ORDER_)
+                prefProvider.setValue(Constants.ORDER_TYPE, PHONE_ORDER)
+                prefProvider.setValue(Constants.ORDER_TYPE_NAME, PHONE_ORDER)
+                prefProvider.setValueInt(Constants.ORDER_TYPE_ID, order.orderTypeId)
+
 
                 var itemDiscountTotal: Double = 0.0
                 var itemPassDis: Double = 0.0
@@ -767,7 +748,6 @@ class ActiveOrderFragment(
             val items = TbItem().apply {
                 orderItemId = it.id
                 itemId = it.itemId
-                id = it.custom_item_id
                 name = it.itemName
                 cost = it.price
                 isManualSales = ismanualsale
@@ -831,7 +811,6 @@ class ActiveOrderFragment(
                 price = it.price
                 itemQuantity = it.quantity
                 orderModifierId = it.id
-                modifier_quantity = it.modifier_quantity
 
             }
             modifierList.add(modifier)
@@ -1176,9 +1155,9 @@ class ActiveOrderFragment(
                     Builder.TRUE,
                     Builder.COLOR_1
                 )
-                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
+                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE,false)){
                     builder.addText("OrderID:" + receiptModel.custom_order_id)
-                } else {
+                }else{
                     builder.addText("OrderID:" + receiptModel.id)
                 }
 
@@ -1246,88 +1225,62 @@ class ActiveOrderFragment(
             builder.addTextAlign(Builder.ALIGN_CENTER)
 
             addBuilderText(builder, prefProvider.getValue(Constants.BUSINESS_NAME, "").toString())
+            builder.addFeedLine(1)
+            builder.addTextFont(Builder.FONT_E)
+            builder.addTextAlign(Builder.ALIGN_CENTER)
+            builder.addTextLang(Builder.LANG_EN)
+            addCustomerTextSize(builder, customerSettingModel.fonts)
 
-           if(customerSettingModel.showVenueAddress) {
-               builder.addFeedLine(1)
-               builder.addTextFont(Builder.FONT_E)
-               builder.addTextAlign(Builder.ALIGN_CENTER)
-               builder.addTextLang(Builder.LANG_EN)
-               addCustomerTextSize(builder, customerSettingModel.fonts)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.COLOR_1
+            )
 
-               builder.addTextStyle(
-                   Builder.FALSE,
-                   Builder.FALSE,
-                   Builder.FALSE,
-                   Builder.COLOR_1
-               )
-
-               addBuilderText(
-                   builder,
-                   prefProvider.getValue(
-                       Constants.BUSINESS_ADDRESS, prefProvider.getValue(
-                           BUSINESS_ADDRESS, ""
-                       )
-                   ).toString()
-               )
-           }
-            if(customerSettingModel.showVenuePhone) {
-                builder.addFeedLine(1)
-
-                builder.addTextFont(Builder.FONT_E)
-                builder.addTextAlign(Builder.ALIGN_CENTER)
-                builder.addTextLang(Builder.LANG_EN)
-                addCustomerTextSize(builder, customerSettingModel.fonts)
-                builder.addTextStyle(
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.COLOR_1
-                )
-                addBuilderText(
-                    builder,
-                    MethodUtils.getUSFormatNumber(
-                        prefProvider.getValue(Constants.BUSINESS_PHONE_NO, "").toString()
+            addBuilderText(
+                builder,
+                prefProvider.getValue(
+                    Constants.BUSINESS_ADDRESS, prefProvider.getValue(
+                        BUSINESS_ADDRESS, ""
                     )
+                ).toString()
+            )
+            builder.addFeedLine(1)
+
+            builder.addTextFont(Builder.FONT_E)
+            builder.addTextAlign(Builder.ALIGN_CENTER)
+            builder.addTextLang(Builder.LANG_EN)
+            addCustomerTextSize(builder, customerSettingModel.fonts)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.COLOR_1
+            )
+            addBuilderText(
+                builder,
+                MethodUtils.getUSFormatNumber(
+                    prefProvider.getValue(Constants.BUSINESS_PHONE_NO, "").toString()
                 )
-            }
+            )
 
-            if(customerSettingModel.showWebsiteAddress) {
-                builder.addFeedLine(1)
+            builder.addFeedLine(1)
 
-                builder.addTextFont(Builder.FONT_E)
-                builder.addTextAlign(Builder.ALIGN_CENTER)
-                builder.addTextLang(Builder.LANG_EN)
-                addCustomerTextSize(builder, customerSettingModel.fonts)
-                builder.addTextStyle(
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.COLOR_1
-                )
-                addBuilderText(
-                    builder,
-                    prefProvider.getValue(Constants.BUSINESS_WEBSITE, "")
-                )
-            }
+            builder.addTextFont(Builder.FONT_E)
 
-            if(customerSettingModel.showOrderType) {
-                builder.addFeedLine(1)
+            builder.addTextLang(Builder.LANG_EN)
+            builder.addTextSize(2, 2)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.COLOR_1
+            )
+            builder.addTextAlign(Builder.ALIGN_CENTER)
+            builder.addText(receiptModel?.orderType + "\n")
 
-                builder.addTextFont(Builder.FONT_E)
-
-                builder.addTextLang(Builder.LANG_EN)
-                builder.addTextSize(2, 2)
-                builder.addTextStyle(
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.COLOR_1
-                )
-                builder.addTextAlign(Builder.ALIGN_CENTER)
-                builder.addText(receiptModel?.orderTypeName + "\n")
-            }
-
-            /*if (receiptModel?.orderType?.lowercase() == Constants.OPEN_ORDER.lowercase()
+            if (receiptModel?.orderType?.lowercase() == Constants.OPEN_ORDER.lowercase()
                 || receiptModel?.orderType?.lowercase() == Constants.OPEN_ORDER.lowercase()
             ) {
 
@@ -1348,7 +1301,7 @@ class ActiveOrderFragment(
 //                builder.addText(receiptModel?.deliveryType + "\n")
 
 
-            }*/
+            }
 
 
 
@@ -1611,7 +1564,7 @@ class ActiveOrderFragment(
                         "Total Discount",
 
                         if (receiptModel.totalDiscount == 0.0) {
-                            "-$" + MethodUtils.roundOffAmountString(receiptModel.totalDiscount)
+                            "$" + MethodUtils.roundOffAmountString(receiptModel.totalDiscount)
                         } else {
                             "-$" + MethodUtils.roundOffAmountString(receiptModel.totalDiscount)
                         },
@@ -1738,7 +1691,7 @@ class ActiveOrderFragment(
 
 
 
-            if (receiptModel.cash_discount_or_surcharge != 0.0 && customerSettingModel.showCashDisSurCharg) {
+            if (receiptModel.cash_discount_or_surcharge != 0.0) {
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
                 builder.addTextFont(Builder.FONT_E)
@@ -2284,9 +2237,9 @@ class ActiveOrderFragment(
             PrintSunmiUtils.fontSize(customerSettingModel.fonts)
 
             if (customerSettingModel.showOrderIdTop) {
-                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
+                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE,false)){
                     PrintSunmiUtils.orderIdLarge("OrderID:" + receiptModel.custom_order_id)
-                } else {
+                }else{
                     PrintSunmiUtils.orderIdLarge("OrderID:" + receiptModel?.id)
                 }
                 SunmiPrinterApi.getInstance().lineWrap(1)
@@ -2312,23 +2265,11 @@ class ActiveOrderFragment(
 
             PrintSunmiUtils.printBusinessDetails(
                 prefProvider.getValue(Constants.BUSINESS_NAME, ""),
-                if (customerSettingModel.showVenueAddress) prefProvider.getValue(
-                    BUSINESS_ADDRESS,
-                    ""
-                ) else "",
-                if (customerSettingModel.showVenuePhone) prefProvider.getValue(
-                    Constants.BUSINESS_PHONE_NO,
-                    ""
-                ) else ""
+                prefProvider.getValue(BUSINESS_ADDRESS, ""),
+                prefProvider.getValue(Constants.BUSINESS_PHONE_NO, "")
             )
 
-            if (customerSettingModel.showWebsiteAddress) {
-                PrintSunmiUtils.venueWebsite(prefProvider.getValue(Constants.BUSINESS_WEBSITE, ""))
-            }
-
-            if(customerSettingModel.showOrderType) {
-                PrintSunmiUtils.printOrderType(receiptModel?.orderTypeName?.trim())
-            }
+            PrintSunmiUtils.printOrderType(receiptModel?.orderType.trim())
 
 
             if (receiptModel?.orderType?.lowercase() == Constants.OPEN_ORDER.lowercase()
@@ -2492,7 +2433,7 @@ class ActiveOrderFragment(
                     "Total Discount",
 
                     if (receiptModel.totalDiscount == 0.0) {
-                        "-$" + MethodUtils.roundOffAmountString(receiptModel.totalDiscount)
+                        "$" + MethodUtils.roundOffAmountString(receiptModel.totalDiscount)
                     } else {
                         "-$" + MethodUtils.roundOffAmountString(receiptModel.totalDiscount)
                     },
@@ -2574,7 +2515,7 @@ class ActiveOrderFragment(
 
 
 
-            if (receiptModel.cash_discount_or_surcharge != 0.0 && customerSettingModel.showCashDisSurCharg) {
+            if (receiptModel.cash_discount_or_surcharge != 0.0) {
 
 
                 if (receiptModel.payments.isNotEmpty() && receiptModel.payments.get(receiptModel.payments.size - 1).paymentType.lowercase() == "Card".lowercase()) {
@@ -2830,9 +2771,9 @@ class ActiveOrderFragment(
 
             SunmiPrintHelper.getInstance().initPrinter()
             if (customerSettingModel.showOrderIdTop) {
-                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
+                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE,false)){
                     PrintSunmiUtils.headerText("OrderID:" + receiptModel?.custom_order_id)
-                } else {
+                }else{
                     PrintSunmiUtils.headerText("OrderID:" + receiptModel?.id)
                 }
                 SunmiPrintHelper.getInstance().lineWrap(1)
@@ -2863,23 +2804,11 @@ class ActiveOrderFragment(
 
             PrintSunmiUtils.printBusinessDetailsInner(
                 prefProvider.getValue(Constants.BUSINESS_NAME, ""),
-                if (customerSettingModel.showVenueAddress) prefProvider.getValue(
-                    BUSINESS_ADDRESS,
-                    ""
-                ) else "",
-                if (customerSettingModel.showVenuePhone) prefProvider.getValue(
-                    Constants.BUSINESS_PHONE_NO,
-                    ""
-                ) else ""
+                prefProvider.getValue(BUSINESS_ADDRESS, ""),
+                prefProvider.getValue(Constants.BUSINESS_PHONE_NO, "")
             )
-            if (customerSettingModel.showWebsiteAddress) {
-                PrintSunmiUtils.venueWebsiteInner(prefProvider.getValue(Constants.BUSINESS_WEBSITE, ""))
-            }else {
-                SunmiPrintHelper.getInstance().lineWrap(1)
-            }
-            if(customerSettingModel.showOrderType) {
-                PrintSunmiUtils.headerText(receiptModel?.orderTypeName?.trim())
-            }
+            SunmiPrintHelper.getInstance().lineWrap(1)
+            PrintSunmiUtils.headerText(receiptModel?.orderType.trim())
 
 
             if (receiptModel?.orderType?.lowercase() == Constants.OPEN_ORDER.lowercase()
@@ -3024,7 +2953,7 @@ class ActiveOrderFragment(
                     "Total Discount",
 
                     if (receiptModel.totalDiscount == 0.0) {
-                        "-$" + MethodUtils.roundOffAmountString(receiptModel.totalDiscount)
+                        "$" + MethodUtils.roundOffAmountString(receiptModel.totalDiscount)
                     } else {
                         "-$" + MethodUtils.roundOffAmountString(receiptModel.totalDiscount)
                     },
@@ -3106,7 +3035,7 @@ class ActiveOrderFragment(
 
 
 
-            if (receiptModel.cash_discount_or_surcharge != 0.0 && customerSettingModel.showCashDisSurCharg) {
+            if (receiptModel.cash_discount_or_surcharge != 0.0) {
 
 
                 if (receiptModel.payments.isNotEmpty() && receiptModel.payments.get(receiptModel.payments.size - 1).paymentType.lowercase() == "Card".lowercase()) {
@@ -3504,7 +3433,7 @@ class ActiveOrderFragment(
         viewModel.startDateSelection.observe(requireActivity()) { event ->
             event.getContentIfNotHandled()?.let {
                 //currentPage = 1
-                val dialog = DatePickerDialog(
+                DatePickerDialog(
                     requireActivity(),
                     android.R.style.Theme_Material_Light_Dialog,
                     startDate,
@@ -3513,9 +3442,7 @@ class ActiveOrderFragment(
                     myCalendar.get(Calendar.MONTH),
                     myCalendar.get(Calendar.DAY_OF_MONTH)
 
-                )
-                dialog.datePicker.maxDate = Date().time
-                dialog.show()
+                ).show()
             }
 
         }
@@ -3525,7 +3452,7 @@ class ActiveOrderFragment(
         viewModel.endDateSelection.observe(requireActivity()) { event ->
             event.getContentIfNotHandled()?.let {
                 //currentPage = 1
-                val dialog = DatePickerDialog(
+                DatePickerDialog(
                     requireActivity(),
                     android.R.style.Theme_Material_Light_Dialog,
                     endDate,
@@ -3534,9 +3461,7 @@ class ActiveOrderFragment(
                     myCalendar1.get(Calendar.MONTH),
                     myCalendar1.get(Calendar.DAY_OF_MONTH)
 
-                )
-                dialog.datePicker.maxDate = Date().time
-                dialog.show()
+                ).show()
             }
         }
     }
@@ -3545,9 +3470,7 @@ class ActiveOrderFragment(
 
         binding.autoSearch.addTextChangedListener(object : TextWatcher {
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                if (s.toString() == " ") {
-                    binding.autoSearch.setText("")
-                }
+
             }
 
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {

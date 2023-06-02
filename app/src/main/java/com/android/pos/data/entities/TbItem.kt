@@ -33,6 +33,7 @@ class TbItem : Parcelable {
     var sku: String = ""
     var isHide: Boolean = false
     var sort: Int = 0
+    var dineInSort: Int = 0
     var hide_status: String? = null
     var website_hide_status: String? = null
     var taxes: List<TaxData>? = null

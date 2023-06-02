@@ -71,7 +71,7 @@ class CreateTax : Fragment() {
             binding.header.txtTitle.text = getString(R.string.tv_update_tax)
             viewModel.setTaxData(taxData)
 
-            binding.itemsCount.text = "" + taxData.itemIds.size + " Items"
+            binding.itemsCount.text = "" + taxData.itemIds?.size + " Items"
             binding.tvItemPricing.text = taxData.itemPricing
             binding.edtAmount.setText(String.format("%.2f", viewModel.createTaxDetails.value?.rate))
             binding.swtEnableTax.isChecked = taxData.isActive
@@ -173,6 +173,7 @@ class CreateTax : Fragment() {
 
         val resultDialogKey = getNavigationResultLiveData<ArrayList<TbItem>>(DIALOG_KEY)
         resultDialogKey?.observe(viewLifecycleOwner) {
+
             itemIds.clear()
             if (it.size > 0) {
                 binding.itemsCount.text = "" + it.size + " Items"
@@ -184,7 +185,7 @@ class CreateTax : Fragment() {
                 itemIds.add(it.itemId)
             }
 
-            // viewModel.setItemIds(itemIds)
+             viewModel.setItemIds(itemIds)
         }
 
         val resultDialogKeyTax = getNavigationResultLiveData<String>(DIALOG_KEY_TAX)
