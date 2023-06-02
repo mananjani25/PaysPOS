@@ -5,8 +5,19 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.databinding.ViewPrinterQueueListRvBinding
 
-class PrinterQueueList():RecyclerView.Adapter<PrinterQueueList.MyViewHolder>()  {
-    inner class MyViewHolder(private var binding:ViewPrinterQueueListRvBinding):RecyclerView.ViewHolder(binding.root) {
+class PrinterQueueList() : RecyclerView.Adapter<PrinterQueueList.MyViewHolder>() {
+
+    private var list: ArrayList<com.android.pos.data.model.PrinterQueueList> = arrayListOf()
+
+    inner class MyViewHolder(private var binding: ViewPrinterQueueListRvBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+
+        fun bind(data: com.android.pos.data.model.PrinterQueueList) {
+
+            binding.model = data
+
+            binding.executePendingBindings()
+        }
 
     }
 
@@ -17,10 +28,20 @@ class PrinterQueueList():RecyclerView.Adapter<PrinterQueueList.MyViewHolder>()  
     }
 
     override fun getItemCount(): Int {
-        return 0
+        return list.size
 
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
+        holder.bind(list.get(position))
+    }
+
+    fun addData(listD: java.util.ArrayList<com.android.pos.data.model.PrinterQueueList>) {
+        list.clear()
+        list = arrayListOf()
+        list.addAll(listD)
+        notifyDataSetChanged()
+
+
     }
 }
