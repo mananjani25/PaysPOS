@@ -208,7 +208,10 @@ class CustomDisplay(
 
     fun updateCustomerDisplay(cartList: List<CartModel>) {
         Log.d(TAG, "updateCustomerDisplay: OUTSIDE")
-        showCashCreditPrice = prefProvider.getValueboolean(Constants.SHOW_CASH_CREDIT_PRICE_ON_CUSTOMER_DISPLAY, false)
+        showCashCreditPrice = prefProvider.getValueboolean(
+            Constants.SHOW_CASH_CREDIT_PRICE_ON_CUSTOMER_DISPLAY,
+            false
+        )
         if (this::binding.isInitialized) {
             Log.d(TAG, "updateCustomerDisplay: INSIDE")
             if (cartList.isNotEmpty()) {
@@ -369,9 +372,25 @@ class CustomDisplay(
                 binding.lnrLayoutCardTotal?.gone()
                 binding.txtOrderTotal?.visible()
 
-                binding.txtOrderTotal?.text = MethodUtils.roundOffAmount(totalPrice)
 
-                binding.txtCashDiscountSurchargeCard?.text = MethodUtils.roundOffAmount(cashdiscountAmount)
+                if (MethodUtils.isEnableCashDiscount(context)) {
+
+                    if (prefProvider.getValue(
+                            Constants.OPTION_TYPE,
+                            "CashDiscount"
+                        ) == "CashDiscount"
+                    ) {
+                        binding.txtOrderTotal?.text = getCashDiscountedPrice(totalPrice)
+                    } else {
+                        binding.txtOrderTotal?.text = getSurchargedPrice(totalPrice)
+                    }
+
+                } else {
+                    binding.txtOrderTotal?.text = MethodUtils.roundOffAmount(totalPrice)
+                }
+
+                binding.txtCashDiscountSurchargeCard?.text =
+                    MethodUtils.roundOffAmount(cashdiscountAmount)
 
             }
 
