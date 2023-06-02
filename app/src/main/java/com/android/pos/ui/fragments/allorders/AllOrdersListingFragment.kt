@@ -93,6 +93,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 import kotlin.math.abs
 
 @AndroidEntryPoint
@@ -226,8 +227,8 @@ class AllOrdersListingFragment(
                         binding.root.resources.newTheme()
                     )
                 )
-                adapter.filterList.sortedBy { it.terminalId }
-                adapter.notifyDataSetChanged()
+                val filteredList = adapter.orderList.sortedBy { it.terminalId }
+                adapter.add(filteredList.toCollection(arrayListOf()),orderTab)
             } else {
                 binding.imgIndicatorStation.setImageDrawable(
                     ResourcesCompat.getDrawable(
@@ -236,8 +237,8 @@ class AllOrdersListingFragment(
                         binding.root.resources.newTheme()
                     )
                 )
-                adapter.filterList.sortedByDescending { it.terminalId }
-                adapter.notifyDataSetChanged()
+                val filteredList = adapter.orderList.sortedByDescending { it.terminalId }
+                adapter.add(filteredList.toCollection(arrayListOf()),orderTab)
             }
             binding.imgIndicatorStation.setColorFilter(
                 ContextCompat.getColor(
@@ -259,8 +260,8 @@ class AllOrdersListingFragment(
                         binding.root.resources.newTheme()
                     )
                 )
-                adapter.filterList.sortedBy { it.customer?.firstName }
-                adapter.notifyDataSetChanged()
+                val filteredList = adapter.orderList.sortedBy { it.employee?.firstName }
+                adapter.add(filteredList.toCollection(arrayListOf()),orderTab)
 
             } else {
                 binding.imgIndicatorEmployee.setImageDrawable(
@@ -270,8 +271,8 @@ class AllOrdersListingFragment(
                         binding.root.resources.newTheme()
                     )
                 )
-                adapter.filterList.sortedByDescending { it.customer?.firstName }
-                adapter.notifyDataSetChanged()
+                val filteredList = adapter.orderList.sortedByDescending { it.employee?.firstName }
+                adapter.add(filteredList.toCollection(arrayListOf()),orderTab)
             }
             binding.imgIndicatorEmployee.setColorFilter(
                 ContextCompat.getColor(

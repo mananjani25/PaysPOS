@@ -141,6 +141,11 @@ class AllOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
                     }
                 } else {
                     binding.viewOrderStatus.visible()
+                    binding.orderStatusLinear.gone()
+                    binding.orderInprogressButton.gone()
+                    binding.orderCompletedButton.gone()
+                    binding.orderCancelledButton.gone()
+                    binding.orderUpcomingButton.gone()
                 }
             } else {
                 binding.viewOrderStatus.gone()
@@ -243,7 +248,8 @@ class AllOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
                 binding.tvOrderID.setTextColor(binding.root.resources.getColor(R.color.white))
                 binding.llShowLayout.visibility = View.VISIBLE
 
-                if (orderedTab == OPEN_ORDER_TAB || orderedTab == PHONE_ORDER_TAB) {
+                if (orderedTab == OPEN_ORDER_TAB || orderedTab == PHONE_ORDER_TAB
+                    || item.orderType == OPEN_ORDER_TAB || item.orderType == PHONE_ORDER_TAB) {
                     binding.lnrPhoneAndOnlineButtons.visible()
                 } else {
                     binding.lnrPhoneAndOnlineButtons.gone()
@@ -322,16 +328,11 @@ class AllOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
             }
 
             binding.txtRePrintKitchenReceipt.setOnClickListener {
-                mCallback?.onItemClickListener(it, bindingAdapterPosition, "REPRINT_KITCHEN_RECEIPT")
-//                if (filterList[bindingAdapterPosition].paymentStatus == "Paid") {
-//                    mCallback?.onItemClickListener(it, bindingAdapterPosition, Constants.PRINT_PAID)
-//                } else {
-//                    mCallback?.onItemClickListener(
-//                        it, bindingAdapterPosition,
-//                        Constants.PRINT_UNPAID
-//                    )
-//                }
-
+                mCallback?.onItemClickListener(
+                    it,
+                    bindingAdapterPosition,
+                    "REPRINT_KITCHEN_RECEIPT"
+                )
             }
         }
     }
