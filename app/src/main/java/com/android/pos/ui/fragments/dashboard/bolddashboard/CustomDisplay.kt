@@ -400,21 +400,33 @@ class CustomDisplay(
 
     private fun getCashDiscountedPrice(amount: Double): String {
         return MethodUtils.roundOffAmount(
-            amount - MethodUtils.calculateCashDiscount(
-                amount,
-                prefProvider,
-                context
-            )
+            amount - getCashDiscountSurcharge()
         )
+    }
+
+    private fun getCashDiscountSurcharge(): Double {
+        var cashDiscountSurcharge = 0.0
+        if (prefProvider.getValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
+                .isEmpty() || prefProvider.getValue(
+                Constants.CASH_DISCOUNT_SURCHARGE,
+                ""
+            ) == "0.0"
+        ) {
+            cashDiscountSurcharge = dashBoardCategoryViewModel.cashdiscountAmount
+            prefProvider.setValue(
+                Constants.CASH_DISCOUNT_SURCHARGE,
+                String.format("%.2f", dashBoardCategoryViewModel.cashdiscountAmount)
+            )
+        } else {
+            cashDiscountSurcharge =
+                prefProvider.getValue(Constants.CASH_DISCOUNT_SURCHARGE, "").toDouble()
+        }
+        return cashDiscountSurcharge
     }
 
     private fun getSurchargedPrice(amount: Double): String {
         return MethodUtils.roundOffAmount(
-            amount + MethodUtils.calculateCashDiscount(
-                amount,
-                prefProvider,
-                context
-            )
+            amount + getCashDiscountSurcharge()
         )
     }
 
