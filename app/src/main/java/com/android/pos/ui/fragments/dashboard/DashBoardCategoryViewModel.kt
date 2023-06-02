@@ -58,6 +58,7 @@ import com.android.pos.data.remote.Constants.REPORT_END_TIME
 import com.android.pos.data.remote.Constants.REPORT_START_TIME
 import com.android.pos.data.remote.Constants.SERVICECHARGE_DINEIN_ORDER
 import com.android.pos.data.remote.Constants.SERVICECHARGE_TAKEOUT_OPENORDER
+import com.android.pos.data.remote.Constants.SHOW_CASH_CREDIT_PRICE_ON_CUSTOMER_DISPLAY
 import com.android.pos.data.remote.Constants.SYNC_SETTING_TIME_STAMP
 import com.android.pos.data.remote.Constants.SYNC_TIME_STAMP
 import com.android.pos.data.remote.Constants.SYSTEM_TIMEZONE
@@ -5008,9 +5009,15 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     IS_PRINTER_QUEUE_ENABLE,
                                     it.settingData.data.isPrinterQueueEnable
                                 )
+
                                 prefProvider.setValueboolean(
                                     CUSTOMER_SIGN_REQUIRED_ON_CD,
                                     it.settingData.data.customer_sign_required_on_cd
+                                )
+
+                                prefProvider.setValueboolean(
+                                    SHOW_CASH_CREDIT_PRICE_ON_CUSTOMER_DISPLAY,
+                                    it.settingData.data.show_cash_credit_price_on_customer_display
                                 )
 
                                 prefProvider.setValue(
