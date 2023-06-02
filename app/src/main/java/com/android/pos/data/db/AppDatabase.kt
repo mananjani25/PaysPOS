@@ -105,7 +105,7 @@ import com.android.pos.data.typeconvert.TypeConvertorPhone
         GetCustomerReceiptSettingsResponse.Data::class, LoyaltyProgramsModel::class, SplitDetailListModel::class,
         CashDiscountModel::class, TbCountryList::class, TbCardReader::class, VenueDetailsResponse.Data.CancelOrderReason::class,
         DineInCartModel::class, ShiftRportConfiguration::class, TbBusinessDetails::class, TbTimeZones::class, PrinterQueueModel::class],
-    version = 5
+    version = 6
 )
 @TypeConverters(
     TypeConvertersIds::class,
@@ -225,7 +225,7 @@ abstract class AppDatabase : RoomDatabase() {
 
         }
 
-        val MIGRATION_5_6: Migration = object : Migration(4, 5) {
+        val MIGRATION_5_6: Migration = object : Migration(5, 6) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 try {
                     database.execSQL("ALTER TABLE TbItem ADD COLUMN dineInSort INTEGER DEFAULT 0 NOT NULL")
