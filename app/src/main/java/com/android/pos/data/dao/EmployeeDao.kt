@@ -20,7 +20,7 @@ interface EmployeeDao {
     @get:Query("select * from TbEmployee where TbEmployee.isDeleted = 0")
     val allEmployee: LiveData<List<Employee>>
 
-    @Query("select * from TbEmployee where TbEmployee.locationId  = :id")
+    @Query("select * from TbEmployee where TbEmployee.locationId  = :id and TbEmployee.isDeleted = 0")
     fun allEmployeeLocationWise(id: Int?): LiveData<List<Employee>>
 
     @Query("select * from TbEmployee")
