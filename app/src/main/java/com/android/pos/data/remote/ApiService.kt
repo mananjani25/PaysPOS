@@ -120,6 +120,7 @@ import com.android.pos.data.remote.Constants.UPDATE_SERVICECHARGE
 import com.android.pos.data.remote.Constants.UPDATE_TIP
 import com.android.pos.data.remote.Constants.UPDATE_TIP_WITH_SIGNATURE
 import com.android.pos.data.remote.Constants.USERS_LOG_IN
+import com.android.pos.data.remote.Constants.WASTAGE_ITEM
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.http.*
@@ -912,6 +913,9 @@ interface ApiService {
 
     @POST(CREATE_QUEUE_PRINTER)
     suspend fun createQueuePrinter(@Body createPrinterQueueRequest: CreateQueuePrinterRequestModel): BaseResponse
+
+    @POST(WASTAGE_ITEM)
+    suspend fun addItemToWastage(@Body wastageItemRequest: WastageItemRequest): GetOrderDetailsResponse
 
     @GET(ORDER_COUNTS)
     suspend fun orderCounts(

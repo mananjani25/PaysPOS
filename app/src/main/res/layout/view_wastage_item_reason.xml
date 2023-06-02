@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingDefaultResource">
+
+    <data>
+
+        <variable
+            name="wastageItemsReasons"
+            type="com.android.pos.data.model.responseModel.VenueDetailsResponse.Data.WastageReason" />
+    </data>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/llMain"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:background="@drawable/dine_in_order_footer_unselected"
+        android:orientation="horizontal">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            style="@style/CustomFontMediumStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:padding="@dimen/_8sdp"
+            android:textStyle="bold"
+            android:text="@{wastageItemsReasons.name}"
+            android:textColor="@color/txtColor"
+            android:textSize="@dimen/_6mdpi" />
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+</layout>

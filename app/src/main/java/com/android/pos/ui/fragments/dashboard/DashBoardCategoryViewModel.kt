@@ -4212,7 +4212,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         return orderItemTaxesAttributeList
     }
 
-    private fun orderItemModifierAttributes(
+    fun orderItemModifierAttributes(
         item: TbItem,
         terminalId: Int
     ): List<OrderItemModifierAttribute> {
@@ -5079,6 +5079,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 tipDiscountRepository.addTips(it.settingData.data.tip_settings)
 //                                posRepository.deleteCustomerReceiptSettingsFromDb()
                                 posRepository.addCancelOrderReasonFromDb(it.settingData.data.cancelOrderReasons)
+                                posRepository.addWastageReasonInDb(it.settingData.data.wastageReasons)
 //                                posRepository.deleteCustomerPrinters()
 //                                posRepository.deleteKitchenPrinters()
                                 posRepository.addKitchenPrinter(it.settingData.data.printers.kitchenPrinterList)
