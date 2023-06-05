@@ -36,6 +36,7 @@ import com.android.pos.data.dao.TeamRoleDao
 import com.android.pos.data.dao.TerminalsDao
 import com.android.pos.data.dao.TimeZonesDao
 import com.android.pos.data.dao.TipsDao
+import com.android.pos.data.dao.WastageReasonsDao
 import com.android.pos.data.dao.cardReaderDao
 import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.CashDiscountModel
