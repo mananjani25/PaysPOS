@@ -20,6 +20,7 @@ class CartItemModifierAdapterForCustomerDisplay :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(item: Modifier) {
             prefProvider = PrefProvider(itemView.context)
+            val showCashCreditPrice = prefProvider.getValueboolean(Constants.SHOW_CASH_CREDIT_PRICE_ON_CUSTOMER_DISPLAY, false)
             binding.model = item
             binding.executePendingBindings()
             if (item.modifier_quantity > 1) {
@@ -32,7 +33,7 @@ class CartItemModifierAdapterForCustomerDisplay :
                 binding.txtName.text = "       ${item.name}"
             }
 
-            if (MethodUtils.isEnableCashDiscount(itemView.context)) {
+            if (MethodUtils.isEnableCashDiscount(itemView.context) && showCashCreditPrice) {
                 binding.apply {
                     tvRate.gone()
                     tvRateCash.visible()

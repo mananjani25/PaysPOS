@@ -1977,7 +1977,7 @@ fun addOrdersForKitchen(
                                 } + modifierObj.name.uppercase()
                             )
 
-
+                            builder.addFeedLine(1)
                         }
                         builder.addFeedLine(1)
                     }

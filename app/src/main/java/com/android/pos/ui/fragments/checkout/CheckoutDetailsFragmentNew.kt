@@ -188,7 +188,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         if (this::presentation.isInitialized) {
             presentation.show()
             presentation.onDisplayChanged()
-            //presentation.showSurcharge(true)
+            val showCashCreditPrice = prefProvider.getValueboolean(Constants.SHOW_CASH_CREDIT_PRICE_ON_CUSTOMER_DISPLAY, false)
+            if(!showCashCreditPrice){
+                presentation.showSurcharge(true)
+            }
             //presentation.showWouldYouLikeToAddTipScreen(tipListViewModel,WholetotalPrice)
         }
     }

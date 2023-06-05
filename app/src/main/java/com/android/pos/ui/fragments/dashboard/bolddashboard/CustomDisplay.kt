@@ -108,6 +108,8 @@ class CustomDisplay(
     lateinit var tipsListViewModel: TipListViewModel
     lateinit var activeTipsListAdapter: ActiveTipsListAdapter
 
+    private var showCashCreditPrice = false
+
     private val TAG = "CustomDisplay"
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -206,6 +208,10 @@ class CustomDisplay(
 
     fun updateCustomerDisplay(cartList: List<CartModel>) {
         Log.d(TAG, "updateCustomerDisplay: OUTSIDE")
+        showCashCreditPrice = prefProvider.getValueboolean(
+            Constants.SHOW_CASH_CREDIT_PRICE_ON_CUSTOMER_DISPLAY,
+            false
+        )
         if (this::binding.isInitialized) {
             Log.d(TAG, "updateCustomerDisplay: INSIDE")
             if (cartList.isNotEmpty()) {
@@ -230,7 +236,7 @@ class CustomDisplay(
                 } else {
                     binding.rowHeaderLayoutDineIn?.gone()
                     binding.rowHeaderLayout.visible()
-                    if (MethodUtils.isEnableCashDiscount(context)) {
+                    if (MethodUtils.isEnableCashDiscount(context) && showCashCreditPrice) {
                         binding.txtTotalLabel.gone()
                         binding.txtCashLabel.visible()
                         binding.txtCardLabel.visible()
@@ -279,26 +285,26 @@ class CustomDisplay(
     fun showSurcharge(isInCheckout: Boolean) {
         if (isInCheckout) {
             if (MethodUtils.isEnableCashDiscount(context)) {
-                binding.linearCashDiscount.visible()
+                binding.lnrLayoutCashDiscountSurcharge?.visible()
                 if (prefProvider.getValue(
                         Constants.OPTION_TYPE,
                         "CashDiscount"
                     ) == "CashDiscount"
                 ) {
-                    binding.labelCashSurcharge.text = "Cash Discount"
+                    binding.txtCashDiscountSurchargeLabel?.text = "Cash Discount"
                 } else {
-                    binding.labelCashSurcharge.text = "SurCharge"
+                    binding.txtCashDiscountSurchargeLabel?.text = "SurCharge"
                 }
             } else {
-                binding.linearCashDiscount.gone()
+                binding.lnrLayoutCashDiscountSurcharge?.gone()
             }
         }
     }
 
     private fun setupTotalsNew(isDineIn: Boolean) {
-
+        showCashCreditPrice = prefProvider.getValueboolean(Constants.SHOW_CASH_CREDIT_PRICE_ON_CUSTOMER_DISPLAY, false)
         dashBoardCategoryViewModel.apply {
-            if (MethodUtils.isEnableCashDiscount(context) && !isDineIn) {
+            if (MethodUtils.isEnableCashDiscount(context) && !isDineIn && showCashCreditPrice) {
                 binding.txtSubTotalCash?.visible()
                 binding.txtSubTotalCard?.visible()
                 binding.txtTaxCash?.visible()
@@ -366,7 +372,25 @@ class CustomDisplay(
                 binding.lnrLayoutCardTotal?.gone()
                 binding.txtOrderTotal?.visible()
 
-                binding.txtOrderTotal?.text = MethodUtils.roundOffAmount(totalPrice)
+
+                if (MethodUtils.isEnableCashDiscount(context)) {
+
+                    if (prefProvider.getValue(
+                            Constants.OPTION_TYPE,
+                            "CashDiscount"
+                        ) == "CashDiscount"
+                    ) {
+                        binding.txtOrderTotal?.text = getCashDiscountedPrice(totalPrice)
+                    } else {
+                        binding.txtOrderTotal?.text = getSurchargedPrice(totalPrice)
+                    }
+
+                } else {
+                    binding.txtOrderTotal?.text = MethodUtils.roundOffAmount(totalPrice)
+                }
+
+                binding.txtCashDiscountSurchargeCard?.text =
+                    MethodUtils.roundOffAmount(cashdiscountAmount)
 
             }
 
@@ -376,21 +400,33 @@ class CustomDisplay(
 
     private fun getCashDiscountedPrice(amount: Double): String {
         return MethodUtils.roundOffAmount(
-            amount - MethodUtils.calculateCashDiscount(
-                amount,
-                prefProvider,
-                context
-            )
+            amount - getCashDiscountSurcharge()
         )
+    }
+
+    private fun getCashDiscountSurcharge(): Double {
+        var cashDiscountSurcharge = 0.0
+        if (prefProvider.getValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
+                .isEmpty() || prefProvider.getValue(
+                Constants.CASH_DISCOUNT_SURCHARGE,
+                ""
+            ) == "0.0"
+        ) {
+            cashDiscountSurcharge = dashBoardCategoryViewModel.cashdiscountAmount
+            prefProvider.setValue(
+                Constants.CASH_DISCOUNT_SURCHARGE,
+                String.format("%.2f", dashBoardCategoryViewModel.cashdiscountAmount)
+            )
+        } else {
+            cashDiscountSurcharge =
+                prefProvider.getValue(Constants.CASH_DISCOUNT_SURCHARGE, "").toDouble()
+        }
+        return cashDiscountSurcharge
     }
 
     private fun getSurchargedPrice(amount: Double): String {
         return MethodUtils.roundOffAmount(
-            amount + MethodUtils.calculateCashDiscount(
-                amount,
-                prefProvider,
-                context
-            )
+            amount + getCashDiscountSurcharge()
         )
     }
 

@@ -709,7 +709,8 @@ class MagtekRequestUtils @Inject constructor(
             transactionInput = ProcessCardSwipeRequest.TransactionInput(
                 processorName = processorName(),
                 transactionType = transactionType,
-                referenceTransactionID = transactionID
+                referenceTransactionID = transactionID,
+                amount = payableAmount.toPrecision(2)
             )
         )
 
