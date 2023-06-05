@@ -2915,7 +2915,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 val str10 = padLine(
                     "Transaction ID",
                     "" + receiptModel?.order?.payments?.size?.minus(1)
-                        ?.let { receiptModel?.order?.payments?.get(it)?.id }, if (customerSettingModel.fonts == LARGE) 23 else 48
+                        ?.let { receiptModel?.order?.payments?.get(it)?.id },
+                    if (customerSettingModel.fonts == LARGE) 23 else 48
                 ).toString()
                 PrintSunmiUtils.transactionId(str10)
 
@@ -2932,20 +2933,23 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 PrintSunmiUtils.normalText(
                     padLine(
                         "",
-                        receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardName, if (customerSettingModel.fonts == LARGE) 23 else 48
+                        receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardName,
+                        if (customerSettingModel.fonts == LARGE) 23 else 48
                     ).toString()
                 )
 
                 PrintSunmiUtils.normalText(
                     padLine(
                         "",
-                        receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardType, if (customerSettingModel.fonts == LARGE) 23 else 48
+                        receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardType,
+                        if (customerSettingModel.fonts == LARGE) 23 else 48
                     ).toString()
                 )
                 PrintSunmiUtils.normalText(
                     padLine(
                         "",
-                        receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardNumber, if (customerSettingModel.fonts == LARGE) 23 else 48
+                        receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardNumber,
+                        if (customerSettingModel.fonts == LARGE) 23 else 48
                     ).toString()
                 )
 
@@ -3361,7 +3365,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 val str10 = padLine(
                     "Transaction ID",
                     "" + receiptModel?.order?.payments?.size?.minus(1)
-                        ?.let { receiptModel?.order?.payments?.get(it)?.id }, if (customerSettingModel.fonts == LARGE) 23 else 48
+                        ?.let { receiptModel?.order?.payments?.get(it)?.id },
+                    if (customerSettingModel.fonts == LARGE) 23 else 48
                 ).toString()
                 PrintSunmiUtils.normalText(str10)
 
@@ -3378,20 +3383,23 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 PrintSunmiUtils.normalText(
                     padLine(
                         "",
-                        receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardName, if (customerSettingModel.fonts == LARGE) 23 else 48
+                        receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardName,
+                        if (customerSettingModel.fonts == LARGE) 23 else 48
                     ).toString()
                 )
 
                 PrintSunmiUtils.normalText(
                     padLine(
                         "",
-                        receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardType, if (customerSettingModel.fonts == LARGE) 23 else 48
+                        receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardType,
+                        if (customerSettingModel.fonts == LARGE) 23 else 48
                     ).toString()
                 )
                 PrintSunmiUtils.normalText(
                     padLine(
                         "",
-                        receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardNumber, if (customerSettingModel.fonts == LARGE) 23 else 48
+                        receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardNumber,
+                        if (customerSettingModel.fonts == LARGE) 23 else 48
                     ).toString()
                 )
 
@@ -6371,6 +6379,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     ) {
         pd.show()
 
+
         if (customerReceiptPrinters.name.startsWith(SUNMI_PRINTER, true)) {
 
             customerReceiptPrinters.ipAddress?.let { sunmiPrinterInit(it) }
@@ -6599,8 +6608,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 builder.addTextAlign(Builder.ALIGN_CENTER)
                 builder.addText(receiptModel?.order?.orderTypeName + "\n")
             }
-            /*if (receiptModel?.order?.orderType?.lowercase() == OPEN_ORDER.lowercase()
-                || receiptModel?.order?.orderType?.lowercase() == OPEN_ORDER.lowercase()
+
+            if (receiptModel?.order?.orderType.equals(PHONE_ORDER, true) ||
+                receiptModel?.order?.orderType.equals("OnlineWebOrder", true) ||
+                receiptModel?.order?.orderType.equals("Online Order", true) ||
+                receiptModel?.order?.orderType.equals("OnlineOrder", true)
             ) {
 
 
@@ -6617,10 +6629,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     Builder.COLOR_1
                 )
                 builder.addTextAlign(Builder.ALIGN_CENTER)
-                //   builder.addText(receiptModel?.order?.deliveryType + "\n")
+                builder.addText(receiptModel?.order?.deliveryType + "\n")
 
 
-            }*/
+            }
 
 
 
@@ -8154,8 +8166,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             .toString().lowercase()
         LogUtil.logE(TAG, "LowerCAse ${tmps.trimmedLength()}")
 
-        if (receiptModel?.order?.orderType.toString().lowercase() == PHONE_ORDER.trim()
-                .toString().lowercase()
+        if (receiptModel?.order?.orderType.equals(PHONE_ORDER, true) ||
+            receiptModel?.order?.orderType.equals("OnlineWebOrder", true) ||
+            receiptModel?.order?.orderType.equals("Online Order", true) ||
+            receiptModel?.order?.orderType.equals("OnlineOrder", true)
         ) {
             mPrinter.addFeedLine(1)
             mPrinter.addTextFont(Builder.FONT_E)
@@ -8542,8 +8556,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     .toString().lowercase()
                 LogUtil.logE(TAG, "LowerCAse ${tmps.trimmedLength()}")
 
-                if (receiptModel?.order?.orderType.toString().lowercase() == PHONE_ORDER.trim()
-                        .toString().lowercase()
+                if (receiptModel?.order?.orderType.equals(PHONE_ORDER, true) ||
+                    receiptModel?.order?.orderType.equals("OnlineWebOrder", true) ||
+                    receiptModel?.order?.orderType.equals("Online Order", true) ||
+                    receiptModel?.order?.orderType.equals("OnlineOrder", true)
                 ) {
                     builder.addFeedLine(1)
                     builder.addTextFont(Builder.FONT_E)
@@ -8901,8 +8917,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     .toString().lowercase()
                 LogUtil.logE(TAG, "LowerCAse ${tmps.trimmedLength()}")
 
-                if (receiptModel?.order?.orderType.toString().lowercase() == PHONE_ORDER.lowercase()
-                        .trim()
+
+
+                if (receiptModel?.order?.orderType.equals(PHONE_ORDER, true) ||
+                    receiptModel?.order?.orderType.equals("OnlineWebOrder", true) ||
+                    receiptModel?.order?.orderType.equals("Online Order", true) ||
+                    receiptModel?.order?.orderType.equals("OnlineOrder", true)
                 ) {
                     builder.addFeedLine(1)
                     builder.addTextFont(Builder.FONT_E)
@@ -9208,7 +9228,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     .lowercase() == "TM-m30".lowercase() && customerReceiptPrinters.printer_type != Constants.BLUETOOTH
             ) {
 
-                timeOut = 1000
+                timeOut = 10000
             }
 
             try {
@@ -9264,13 +9284,17 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             }
 
-            if (kitchenSettingModel.showOrderType) {
 
 
+            if (receiptModel?.order?.orderType.equals(PHONE_ORDER, true) ||
+                receiptModel?.order?.orderType.equals("OnlineWebOrder", true) ||
+                receiptModel?.order?.orderType.equals("Online Order", true) ||
+                receiptModel?.order?.orderType.equals("OnlineOrder", true)
+            ) {
                 PrintSunmiUtils.printOrderType(receiptModel?.order?.deliveryType.toString())
                 SunmiPrinterApi.getInstance().lineWrap(1)
-
             }
+
 
             /*  if (receiptModel?.order?.orderType.toString().lowercase() == "OpenOrder".trim()
                       .toString().lowercase() || receiptModel?.order?.orderType.toString()
@@ -9448,7 +9472,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 SunmiPrintHelper.getInstance().lineWrap(1)
             }
 
-            if (kitchenSettingModel.showOrderType) {
+            if (receiptModel?.order?.orderType.equals("Online Order", true) ||
+                receiptModel?.order?.orderType.equals("OnlineWebOrder", true) ||
+                receiptModel?.order?.orderType.equals(PHONE_ORDER, true)
+            ) {
                 PrintSunmiUtils.headerText(receiptModel?.order?.deliveryType.toString())
                 SunmiPrintHelper.getInstance().lineWrap(1)
             }
@@ -9865,8 +9892,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
 
 
-            if (receiptModel?.order?.orderType?.lowercase() == PHONE_ORDER.lowercase()
-            ) {
+            if (receiptModel?.order?.orderType.equals(PHONE_ORDER, true) ||
+                receiptModel?.order?.orderType.equals("OnlineWebOrder", true) ||
+                receiptModel?.order?.orderType.equals("Online Order", true) ||
+                receiptModel?.order?.orderType.equals("OnlineOrder", true)
+            ){
                 SunmiPrinterApi.getInstance().lineWrap(1)
                 receiptModel?.order?.deliveryType?.let { PrintSunmiUtils.deliveryType(it) }
                 SunmiPrinterApi.getInstance().lineWrap(1)
@@ -10547,7 +10577,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 SunmiPrintHelper.getInstance().lineWrap(1)
             }
 
-            if (receiptModel?.order?.orderType?.lowercase() == PHONE_ORDER.lowercase()
+            if (receiptModel?.order?.orderType.equals(PHONE_ORDER, true) ||
+                receiptModel?.order?.orderType.equals("OnlineWebOrder", true) ||
+                receiptModel?.order?.orderType.equals("Online Order", true) ||
+                receiptModel?.order?.orderType.equals("OnlineOrder", true)
             ) {
 
                 receiptModel?.order?.deliveryType?.let { PrintSunmiUtils.headerText(it) }

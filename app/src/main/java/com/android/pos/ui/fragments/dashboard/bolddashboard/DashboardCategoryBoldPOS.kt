@@ -41,6 +41,7 @@ import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
 import com.android.pos.data.remote.Constants.IS_PAYMENT_SCREEN
 import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
+import com.android.pos.data.remote.Constants.KITCHENANDCUSTOMER
 import com.android.pos.data.remote.Constants.LARGE
 import com.android.pos.data.remote.Constants.MEDIUM
 import com.android.pos.data.remote.Constants.ONLINE_ORDER_ENABLE
@@ -435,6 +436,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         viewModel.newCartLogicModifier(cartList, item, Constants.UPDATE, false)
 
                     }
+
                     "Amount" -> {
 
                         item?.discountPrice = result.percentage
@@ -444,6 +446,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                         viewModel.newCartLogicModifier(cartList, item, Constants.UPDATE, false)
                     }
+
                     else -> {
                         item?.discountPrice = result.percentage
                         item?.discountId = 0
@@ -659,7 +662,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 event.getContentIfNotHandled()?.let {
                     Log.d(TAG, "syncDataDone: $it")
                     if (it) {
-                        binding.maskLayout?.gone()
+                        //binding.maskLayout?.gone()
                         getConnectedPrinters()
                     } else {
                         binding.maskLayout?.visible()
@@ -3043,7 +3046,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     .lowercase() == "TM-m30".lowercase() && customerReceiptPrinters.printer_type != Constants.BLUETOOTH
             ) {
 
-                timeOut = 1000
+                timeOut = 10000
             }
 
             try {
@@ -3404,9 +3407,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         printerViewModel.showProgress.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
-                    ProgressUtils.showProgressDialog(requireActivity())
+                    binding.maskLayout?.visible()
+                    //ProgressUtils.showProgressDialog(requireActivity())
                 } else {
-                    ProgressUtils.dismissProgressDialog()
+                    binding.maskLayout?.gone()
+                    //ProgressUtils.dismissProgressDialog()
                     getConnectedPrinters()
                 }
             }
@@ -3669,7 +3674,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             when (it.status) {
 
                 Status.SUCCESS -> {
-                    ProgressUtils.dismissProgressDialog()
+                    //ProgressUtils.dismissProgressDialog()
+                    //binding.maskLayout?.gone()
 
                     val data = it.data
                     LogUtil.logE(TAG, "getConnectedPrinters:  ${Gson().toJson(data)}")
@@ -3677,13 +3683,15 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     if (data?.isNotEmpty() == true) {
                         var isInnerPrinterConnected = false
                         for (i in data.indices) {
-                            if (data[i].name.startsWith(SUNMI_INNER_PRINTER, true) && data[i].receiptPrintType.equals(
-                                    CUSTOMER)) {
+                            if (data[i].name.startsWith(SUNMI_INNER_PRINTER, true) && (data[i].receiptPrintType == CUSTOMER || data[i].receiptPrintType == KITCHENANDCUSTOMER)) {
                                 isInnerPrinterConnected = true
+                                break
                             }
                         }
                         if (!isInnerPrinterConnected) {
                             searchBluetooth()
+                        }else{
+                            binding.maskLayout?.gone()
                         }
 
                     } else {
@@ -3694,12 +3702,14 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                 Status.ERROR -> {
                     LogUtil.logE(TAG, "getConnectedPrinters - ${it.message}")
-                    ProgressUtils.dismissProgressDialog()
+                    //ProgressUtils.dismissProgressDialog()
+                    binding.maskLayout?.gone()
 
                 }
 
                 Status.LOADING -> {
-                    ProgressUtils.showProgressDialog(requireActivity())
+                    //ProgressUtils.showProgressDialog(requireActivity())
+                    binding.maskLayout?.visible()
                 }
             }
 
@@ -3713,29 +3723,35 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         if (mBluetoothAdapter?.isEnabled == true) {
 
             val availableDevices: Set<BluetoothDevice> = mBluetoothAdapter!!.bondedDevices
-            var innerPrinterModel = PrinterListModel()
-            for (i in availableDevices) {
 
-                if(i.name.startsWith(SUNMI_INNER_PRINTER,true)){
-                    innerPrinterModel = PrinterListModel(
-                        printerName = i.name,
-                        connectionType = Constants.BLUETOOTH,
-                        deviceModel = DeviceInfo(
-                            DevType.BLUETOOTH,
-                            i.address,
-                            i.name,
-                            i.address,
-                            i.address
-                        ),
-                        type = Constants.AVAILABLE,
-                        uuid = UUID.randomUUID()
-                    )
-                }
+            val innerPrinterModel: PrinterListModel
 
+            val filteredPrintersList =
+                availableDevices.filter { it.name.startsWith(SUNMI_INNER_PRINTER, true) }
+
+            if (filteredPrintersList.isNotEmpty()) {
+                val foundPrinter = filteredPrintersList[0]
+                innerPrinterModel = PrinterListModel(
+                    printerName = foundPrinter.name,
+                    connectionType = Constants.BLUETOOTH,
+                    deviceModel = DeviceInfo(
+                        DevType.BLUETOOTH,
+                        foundPrinter.address,
+                        foundPrinter.name,
+                        foundPrinter.address,
+                        foundPrinter.address
+                    ),
+                    type = Constants.AVAILABLE,
+                    uuid = UUID.randomUUID()
+                )
+                setupInnerPrinterAttributes(innerPrinterModel)
+
+            }else{
+                binding.maskLayout?.gone()
             }
 
-            setupInnerPrinterAttributes(innerPrinterModel)
-
+        }else{
+            binding.maskLayout?.gone()
         }
     }
 

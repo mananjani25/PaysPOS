@@ -2461,6 +2461,9 @@ class CartFragment(
             Log.e("onMessageEvent", event)
         }
         prefProvider.setValue(DELIVERY_TYPE, "")
+
+        viewModel.cartModel = null
+
         checkOrderType()
 
         addObserver()
