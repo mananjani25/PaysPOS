@@ -85,7 +85,6 @@ import kotlinx.coroutines.flow.Flow
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.InputStream
-import java.lang.Runnable
 import java.net.HttpURLConnection
 import java.net.URL
 import java.text.NumberFormat
@@ -543,9 +542,11 @@ class DashBoardCategoryViewModel @Inject constructor(
         dineInList: List<DineInModel> = arrayListOf(),
         isFromDineInScreen: Boolean = false
     ) {
+        Log.e("DashViewModModel","checkCartSize: ${cartList?.size}")
         if (cartList != null && cartList.isEmpty()) {
             // empty cart hoy to new cart create kare
 
+            Log.e("DashViewModModel","checkItem:  ${Gson().toJson(item?.modifiers)}")
 
             var cartModel = item?.let { addCartModel(it, isManualSales) }
             if (item != null) {
@@ -737,16 +738,14 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                 model.price = item.price
                                                 model.variationsAttributes = item.variationsAttributes
                                                 item.modifiers.forEach {
-                                                    it.itemQuantity =
-                                                        it.itemQuantity * it.modifier_quantity
-                                                    /*model.modifiers.forEach { tbmodfier ->
+                                                    model.modifiers.forEach { tbmodfier ->
                                                         if (it.id == tbmodfier.id) {
                                                             it.modifier_quantity =
                                                                 it.itemQuantity / item.itemQuantity
                                                             it.itemQuantity =
                                                                 it.itemQuantity + tbmodfier.itemQuantity
                                                         }
-                                                    }*/
+                                                    }
 
                                                 }
 
@@ -904,10 +903,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         }
                                         item.singleItemPrice = item.price
                                         item.modifiers.forEach {
-                                            it.itemQuantity =
-                                                (it.modifier_quantity * item.itemQuantity)
-                                            it.isChecked = item.isChecked
-                                           /* model.modifiers.forEach { tbmodifier ->
+                                            model.modifiers.forEach { tbmodifier ->
                                                 if (it.id == tbmodifier.id) {
                                                     if (it.modifier_quantity != tbmodifier.modifier_quantity) {
                                                         tbmodifier.modifier_quantity =
@@ -921,7 +917,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                         (it.modifier_quantity * item.itemQuantity)
                                                     it.isChecked = item.isChecked
                                                 }
-                                            }*/
+                                            }
                                             item.singleItemPrice += it.price * it.modifier_quantity
                                         }
                                         Log.d(TAG, "newCartLogicModifier: " + item.singleItemPrice)
@@ -1282,9 +1278,23 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 Log.e("DashViewModModel", "getIndexSecond  ${index}")
                                 if (item != null) {
                                     item.singleItemPrice = item.price
+
                                     item.modifiers.forEach { it ->
-                                        it.modifier_quantity = it.itemQuantity
-                                        it.itemQuantity = it.itemQuantity * item.itemQuantity
+                                        Log.e(TAG,"moditemQuantity  ${it.itemQuantity}")
+                                        Log.e(TAG,"itemQuantity  ${item.itemQuantity}")
+
+                                      /*  if (type == ADD){
+                                            it.modifier_quantity = it.itemQuantity / item.itemQuantity
+
+                                                it.itemQuantity = item.itemQuantity
+
+                                        }
+                                        else{*/
+                                            it.modifier_quantity = it.itemQuantity
+                                            it.itemQuantity = it.itemQuantity * item.itemQuantity
+
+                                        /*}*/
+
                                         item.singleItemPrice += it.price * it.itemQuantity
                                     }
                                     item.isDestroy = false
@@ -1450,22 +1460,20 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     }
                                     item.singleItemPrice = item.price
                                     item.modifiers.forEach {
-                                        it.itemQuantity =
-                                            (it.modifier_quantity * item.itemQuantity)
-                                        /*model.modifiers.forEach { tbmodifier ->
+                                        model.modifiers.forEach { tbmodifier ->
                                             if (it.id == tbmodifier.id) {
                                                 if (it.modifier_quantity != tbmodifier.modifier_quantity) {
                                                     tbmodifier.modifier_quantity =
                                                         it.modifier_quantity
                                                 } else {
-                                                    it.modifier_quantity =
+                                                    tbmodifier.modifier_quantity =
                                                         it.itemQuantity / model.itemQuantity
                                                 }
 
                                                 it.itemQuantity =
                                                     (it.modifier_quantity * item.itemQuantity)
                                             }
-                                        }*/
+                                        }
                                         item.singleItemPrice += it.price * it.modifier_quantity
                                     }
                                     Log.d(TAG, "newCartLogicModifier: " + item.singleItemPrice)
@@ -1590,12 +1598,12 @@ class DashBoardCategoryViewModel @Inject constructor(
                         if (item != null) {
                             if (item.modifiers.isNotEmpty()) {
                                 item.modifiers.forEach { mod ->
-//                                    if (item.itemQuantity > mod.itemQuantity) {
-//                                        mod.modifier_quantity = mod.itemQuantity
-                                        mod.itemQuantity = item.itemQuantity * mod.modifier_quantity
-//                                    } else {
-//                                        mod.modifier_quantity = mod.itemQuantity / item.itemQuantity
-//                                    }
+                                    if (item.itemQuantity > mod.itemQuantity) {
+                                        mod.modifier_quantity = mod.itemQuantity
+                                        mod.itemQuantity = item.itemQuantity * mod.itemQuantity
+                                    } else {
+                                        mod.modifier_quantity = mod.itemQuantity / item.itemQuantity
+                                    }
 
                                 }
                             }

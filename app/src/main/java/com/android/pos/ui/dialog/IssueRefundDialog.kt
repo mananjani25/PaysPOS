@@ -29,6 +29,7 @@ import com.android.pos.ui.fragments.transactions.TransactionDetailsViewModel
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
+import com.android.pos.utils.MethodUtils.Companion.toPrecision
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.NumberFormat
 import java.util.*
@@ -501,7 +502,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
 
         val nf2: NumberFormat = NumberFormat.getNumberInstance()
         nf2.maximumFractionDigits = 2
-        val rounded2: String = nf2.format(selectedCashDiscountDivided)
+        val rounded2: String = selectedCashDiscountDivided.toPrecision(2)
         selectedCashDiscountDivided = rounded2.toDouble()
 
         if (selectedCashDiscountDivided > 0.0) {

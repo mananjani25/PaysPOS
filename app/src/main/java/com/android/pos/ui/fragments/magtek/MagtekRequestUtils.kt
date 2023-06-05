@@ -20,11 +20,14 @@ import com.android.pos.data.remote.Constants.VANIT_EXORESS_GATEWAY
 import com.android.pos.data.remote.Constants.VOID
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.MethodUtils
+import com.android.pos.utils.MethodUtils.Companion.getTwoDecimalWithZero
+import com.android.pos.utils.MethodUtils.Companion.toPrecision
 import com.android.pos.utils.Pref
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import dagger.hilt.android.qualifiers.ApplicationContext
+import java.text.DecimalFormat
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -77,7 +80,7 @@ class MagtekRequestUtils @Inject constructor(
                     pAN = cardNumber
                 ),
                 transactionInput = ProcessCardSwipeRequest.TransactionInput(
-                    amount = getPayableAmount(payableAmount),
+                    amount = getPayableAmount(payableAmount).toPrecision(2),
                     processorName = processorName(),
                     transactionType = AUTHORIZE
                 )
@@ -143,7 +146,7 @@ class MagtekRequestUtils @Inject constructor(
                     )
                 ),
                 transactionInput = ProcessCardSwipeRequest.TransactionInput(
-                    amount = getPayableAmount(payableAmount),
+                    amount = getPayableAmount(payableAmount).toPrecision(2),
                     processorName = processorName(),
                     transactionType = AUTHORIZE
                 )
@@ -198,7 +201,7 @@ class MagtekRequestUtils @Inject constructor(
 
 
             val transactionInput = ProcessCardSwipeRequest.TransactionInput(
-                amount = getPayableAmount(payableAmount),
+                amount = getPayableAmount(payableAmount).toPrecision(2),
                 processorName = processorName(),
                 transactionType = transactionType
             )
@@ -263,7 +266,12 @@ class MagtekRequestUtils @Inject constructor(
 
     private fun getPayableAmount(price: Double): Double {
         if (processorName() == TSYS_PRODUCTION || processorName() == TSYS_PILOT) {
-            return price / 100
+
+            val amount = price/100.00
+            val df = DecimalFormat("0.00")
+           return java.lang.Double.valueOf(df.format(amount))
+
+//            return getTwoDecimalWithZero((price / 100.00))
         } else if (processorName() == RAPID_PRODUCTION || processorName() == RAPID_PILOT) {
             return price
         }
@@ -288,7 +296,7 @@ class MagtekRequestUtils @Inject constructor(
                 customerTransactionID = customerTransactionID,
                 token = token,
                 transactionInput = ProcessCardSwipeRequest.TransactionInput(
-                    amount = getPayableAmount(payableAmount),
+                    amount = getPayableAmount(payableAmount).toPrecision(2),
                     processorName = processorName(),
                     transactionType = transactionType,
                     transactionInputDetails = transactionInputDetails("")
@@ -346,7 +354,7 @@ class MagtekRequestUtils @Inject constructor(
             customerTransactionID = customerTransactionID,
             token = token,
             transactionInput = ProcessCardSwipeRequest.TransactionInput(
-                amount = payableAmount,
+                amount = payableAmount.toPrecision(2),
                 processorName = processorName(),
                 transactionType = REFUND1,
                 transactionInputDetails = transactionInputDetails(lastRecordNumber)
@@ -379,7 +387,7 @@ class MagtekRequestUtils @Inject constructor(
             customerTransactionID = customerTransactionID,
             token = token,
             transactionInput = ProcessCardSwipeRequest.TransactionInput(
-                amount = payableAmount,
+                amount = payableAmount.toPrecision(2),
                 processorName = processorName(),
                 transactionType = VOID,
                 transactionInputDetails = transactionInputDetailsElavon(
@@ -412,7 +420,7 @@ class MagtekRequestUtils @Inject constructor(
             authentication = authentication(),
             customerTransactionID = customerTransactionID,
             transactionInput = ProcessCardSwipeRequest.TransactionInput(
-                amount = payableAmount,
+                amount = payableAmount.toPrecision(2),
                 processorName = processorName(),
                 transactionType = transactionType,
                 referenceTransactionID = transactionID,
@@ -442,7 +450,7 @@ class MagtekRequestUtils @Inject constructor(
             authentication = authentication(),
             customerTransactionID = customerTransactionID,
             transactionInput = ProcessCardSwipeRequest.TransactionInput(
-                amount = payableAmount,
+                amount = payableAmount.toPrecision(2),
                 processorName = processorName(),
                 transactionType = transactionType,
                 referenceTransactionID = transactionID,
@@ -475,7 +483,7 @@ class MagtekRequestUtils @Inject constructor(
             authentication = authentication(),
             customerTransactionID = customerTransactionID,
             transactionInput = ProcessCardSwipeRequest.TransactionInput(
-                amount = payableAmount,
+                amount = payableAmount.toPrecision(2),
                 processorName = processorName(),
                 transactionType = CAPTURE,
                 referenceTransactionID = transactionID,
@@ -506,7 +514,7 @@ class MagtekRequestUtils @Inject constructor(
             authentication = authentication(),
             customerTransactionID = customerTransactionID,
             transactionInput = ProcessCardSwipeRequest.TransactionInput(
-                amount = payableAmount,
+                amount = payableAmount.toPrecision(2),
                 processorName = processorName(),
                 transactionType = REFUND1,
                 referenceTransactionID = transactionID,
@@ -536,7 +544,7 @@ class MagtekRequestUtils @Inject constructor(
             authentication = authentication(),
             customerTransactionID = customerTransactionID,
             transactionInput = ProcessCardSwipeRequest.TransactionInput(
-                amount = payableAmount,
+                amount = payableAmount.toPrecision(2),
                 processorName = processorName(),
                 transactionType = VOID,
                 referenceTransactionID = transactionID,
@@ -574,7 +582,7 @@ class MagtekRequestUtils @Inject constructor(
             customerTransactionID = customerTransactionID,
             token = token,
             transactionInput = ProcessCardSwipeRequest.TransactionInput(
-                amount = payableAmount,
+                amount = payableAmount.toPrecision(2),
                 processorName = processorName(),
                 transactionType = transactionType,
                 transactionInputDetails = transactionInputDetails(priorAuthCd)
@@ -607,7 +615,7 @@ class MagtekRequestUtils @Inject constructor(
             authentication = authentication(),
             customerTransactionID = customerTransactionID,
             transactionInput = ProcessCardSwipeRequest.TransactionInput(
-                amount = payableAmount,
+                amount = payableAmount.toPrecision(2),
                 processorName = processorName(),
                 transactionType = transactionType,
                 referenceAuthCode = priorAuthCd,
@@ -639,7 +647,7 @@ class MagtekRequestUtils @Inject constructor(
             authentication = authentication(),
             customerTransactionID = customerTransactionID,
             transactionInput = ProcessCardSwipeRequest.TransactionInput(
-                amount = payableAmount,
+                amount = payableAmount.toPrecision(2),
                 processorName = processorName(),
                 transactionType = transactionType,
                 referenceTransactionID = transactionID,
@@ -668,7 +676,7 @@ class MagtekRequestUtils @Inject constructor(
             authentication = authentication(),
             customerTransactionID = customerTransactionID,
             transactionInput = ProcessCardSwipeRequest.TransactionInput(
-                amount = payableAmount,
+                amount = payableAmount.toPrecision(2),
                 processorName = processorName(),
                 transactionType = CAPTURE,
                 referenceTransactionID = transactionID,
