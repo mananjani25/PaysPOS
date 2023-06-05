@@ -783,7 +783,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/_3sdp"
                             android:gravity="end"
-                            android:text="@{orderDetails.data.order.order_type}"
+                            android:text="@{orderDetails.data.order.order_type_name}"
                             android:textColor="@color/white"
                             android:textSize="@dimen/text_size_medium" />
                     </LinearLayout>
