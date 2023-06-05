@@ -14,6 +14,7 @@ import com.android.pos.BuildConfig
 import com.android.pos.R
 import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.IS_MASTER_TERMINAL
 import com.android.pos.databinding.FragmentMenuBinding
 import com.android.pos.di.ApiModule.BASE_URL
 import com.android.pos.di.PrefProvider
@@ -25,6 +26,7 @@ import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.alert
+import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.getCustomerDisplay
 import dagger.hilt.android.AndroidEntryPoint
@@ -90,11 +92,11 @@ class MenuFragment : DialogFragment() {
         binding.header.txtTitle.text = "Settings"
         binding.header.txtSave.text = getString(R.string.tv_home)
         binding.header.txtLogout?.visible()
-      /*  if (prefProvider.getValueboolean(IS_MASTER_TERMINAL, false)) {
+        if (prefProvider.getValueboolean(IS_MASTER_TERMINAL, false)) {
             binding.linearPrinterQueue.visible()
         } else {
             binding.linearPrinterQueue.gone()
-        }*/
+        }
     }
 
     private fun versionDisplay() {

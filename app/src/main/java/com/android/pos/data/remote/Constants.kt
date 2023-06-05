@@ -9,7 +9,8 @@ import com.android.pos.utils.LogUtil
 import com.android.pos.utils.TimeFormatUtils
 import com.google.gson.Gson
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Locale
+import java.util.TimeZone
 
 object Constants {
     val IS_ORDER_LAST_PAYMENT = "is_order_last_payment"
@@ -160,6 +161,7 @@ object Constants {
     const val SYNC_VENUE_DETAILS = "locations/setting_data"
     const val ORDER_TYPES = "order_types"
     const val GET_PRINTERS = "printers"
+    const val DESTROY_QUEUE = "printer_queues/clear_printer_queue"
     const val DELETE_UPDATE_PRINTER = "printers/{id}"
     const val DELETE_QUEUE_PRINTER = "printer_queues/{id}"
     const val DELETE_ALL_QUEUE_PRINTER = "printer_queues/delete_all"

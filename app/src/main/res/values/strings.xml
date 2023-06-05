@@ -179,6 +179,7 @@
     <string name="search_modifiers">Search Modifiers</string>
     <string name="create_modifier_set">Create Modifier Set</string>
     <string name="tv_home">Home</string>
+    <string name="tv_clear_queue">Clear Printer Queue</string>
     <string name="tv_add_new">Add New</string>
     <string name="tv_price">Price</string>
     <string name="tv_quantity">Quantity</string>

@@ -44,4 +44,10 @@ class PrinterQueueList() : RecyclerView.Adapter<PrinterQueueList.MyViewHolder>()
 
 
     }
+
+    fun clearData() {
+        list.clear()
+        list = arrayListOf()
+        notifyDataSetChanged()
+    }
 }

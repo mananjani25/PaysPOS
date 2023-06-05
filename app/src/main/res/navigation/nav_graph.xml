@@ -1664,7 +1664,15 @@
     <fragment
         android:id="@+id/printerQueueList"
         android:name="com.android.pos.ui.fragments.printerqueue.PrinterQueue"
-        android:label="PrinterQueue" />
+        android:label="PrinterQueue" >
+
+        <action
+            android:id="@+id/action_printer_queue_to_dashboardCategoryNew"
+            app:destination="@id/dashboardCategoryBoldPOS"
+            app:popUpTo="@id/printerQueueList"
+            app:popUpToInclusive="true" />
+
+    </fragment>
 
 
 </navigation>
