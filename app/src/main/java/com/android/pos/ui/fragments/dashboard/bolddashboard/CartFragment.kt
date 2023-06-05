@@ -1660,7 +1660,6 @@ class CartFragment(
     }
 
     private fun  addGuestToOrder(count: Int) {
-        Log.d(TAG, "addGuestToOrder: " + Gson().toJson(cartlist[0].dineInList))
         var existing_count = dineInCartAdapter.getList().size - 1
         var total_count = existing_count + count
         if (total_count <= 15) {
@@ -1750,27 +1749,23 @@ class CartFragment(
 
     override fun onRemoveGuest(position: Int) {
         if (dineInCartAdapter.getList().isNotEmpty() && dineInCartAdapter.getList().size > 2) {
-            if ((dineInCartAdapter.getList()[position].items.size) > 0) {
-                viewModel.unableToRemoveGuest(getString(R.string.guests_having_order_items_cannot_be_removed))
-            } else {
-                if (prefProvider.getValueboolean(DINE_IN_UPDATE, false)) {
-                    cartlist.get(0).dineInList?.forEach {
-                        if (it.title == dineInCartAdapter.getList()[position].title) {
-                            it.apply {
-                                this.isDestroy = true
-                            }
+            if (prefProvider.getValueboolean(DINE_IN_UPDATE, false)) {
+                cartlist.get(0).dineInList?.forEach {
+                    if (it.title == dineInCartAdapter.getList()[position].title) {
+                        it.apply {
+                            this.isDestroy = true
                         }
                     }
-                } else {
-                    val dineIn = cartlist[0].dineInList as ArrayList<DineInModel>
-                    val destroyedGuestsList: ArrayList<DineInModel> = ArrayList()
-                    dineIn.filter { (it.title == dineInCartAdapter.getList()[position].title) }
-                        .forEach { destroyedGuestsList.add(it) }
-                    dineIn.removeAll(destroyedGuestsList.toSet())
-                    cartlist[0].dineInList = dineIn
                 }
-                viewModel.addCart(cartlist[0])
+            } else {
+                val dineIn = cartlist[0].dineInList as ArrayList<DineInModel>
+                val destroyedGuestsList: ArrayList<DineInModel> = ArrayList()
+                dineIn.filter { (it.title == dineInCartAdapter.getList()[position].title) }
+                    .forEach { destroyedGuestsList.add(it) }
+                dineIn.removeAll(destroyedGuestsList.toSet())
+                cartlist[0].dineInList = dineIn
             }
+            viewModel.addCart(cartlist[0])
         } else {
             viewModel.unableToRemoveGuest(getString(R.string.minimum_one_guest_is_required))
         }

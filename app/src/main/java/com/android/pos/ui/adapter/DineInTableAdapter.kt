@@ -92,7 +92,11 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 binding.removeGuest.visibility = View.INVISIBLE
             } else {
                 binding.imgPrint.visibility = View.VISIBLE
-                binding.removeGuest.visibility = View.VISIBLE
+                if(list[position].itemsCount == 0) {
+                    binding.removeGuest.visibility = View.VISIBLE
+                } else {
+                    binding.removeGuest.visibility = View.INVISIBLE
+                }
             }
             var guestDiscount = 0.0
 
