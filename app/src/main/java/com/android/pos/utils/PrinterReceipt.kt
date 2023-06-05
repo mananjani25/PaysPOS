@@ -2259,6 +2259,110 @@ fun addOrderItemOpenOrder(
 
 }
 
+fun addOrderItemOnlineOrder(
+    builder: Builder,
+    list: List<OnlineOrderResponseModel.Data.OrderItem>,
+    font: String,
+    showModifiers: Boolean
+): Builder {
+    for (i in 0 until list.size) {
+        val obj = list.get(i)
+        builder.addTextLineSpace(30)
+        builder.addFeedUnit(30)
+        builder.addTextFont(Builder.FONT_E)
+        // builder.addTextAlign(Builder.ALIGN_LEFT)
+        builder.addTextLang(Builder.LANG_EN)
+        addCustomerTextSize(builder, font)
+        builder.addTextStyle(
+            Builder.FALSE,
+            Builder.FALSE,
+            Builder.FALSE,
+            Builder.COLOR_1
+        )
+
+
+
+        builder.addText(
+            padLineCustomerItem(
+                obj.quantity.toString() + "  " + getItemNameToShow(obj.itemName),
+                getItemPriceToShow(totalPriceOnlineOrder(obj)),
+                if (font == Constants.LARGE) {
+                    24
+                } else {
+                    48
+                }
+            )
+        )
+
+
+        if (obj.orderItemModifiers.isNotEmpty() && showModifiers) {
+            for (j in 0 until obj.orderItemModifiers.size) {
+                val modifierObj = obj.orderItemModifiers.get(j)
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addTextFont(Builder.FONT_E)
+                //builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, font)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+                // builder.addTextPosition(4)
+
+                builder.addText(
+                    padLineCustomerItem(
+                        "   " + if (modifierObj.modifier_quantity == 1) {
+                            "   "
+                        } else {
+                            "" + modifierObj.modifier_quantity + "x "
+                        } + getItemNameToShow(modifierObj.name),
+                        getModifierItemPriceToShow(modifierObj.price,modifierObj.quantity),
+                        if (font == Constants.LARGE) {
+                            23
+                        } else {
+                            47
+                        }
+                    )
+                )
+
+
+            }
+
+        }
+
+        if (obj.note.isNotEmpty()) {
+            builder.addTextLineSpace(30)
+            builder.addFeedUnit(30)
+            builder.addTextFont(Builder.FONT_E)
+            builder.addTextAlign(Builder.ALIGN_LEFT)
+            builder.addTextLang(Builder.LANG_EN)
+            addCustomerTextSize(builder, font)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.COLOR_1
+            )
+            builder.addText("   Note: " + obj.note)
+            builder.addFeedLine(1)
+
+
+        }
+    }
+
+
+    return builder
+
+
+}
+
+fun totalPriceOnlineOrder(model: OnlineOrderResponseModel.Data.OrderItem): Double {
+    return model.price * model.quantity
+}
+
 fun addOrderItemOpenOrderSunmi(
     list: List<OpenOrderResponse.Data.Order.OrderItem>,
     font: String,

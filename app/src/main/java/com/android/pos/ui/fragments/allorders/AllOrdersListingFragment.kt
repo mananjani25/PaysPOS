@@ -428,6 +428,24 @@ class AllOrdersListingFragment(
                 }
             }
         }
+
+        viewModel.data.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let { baseResponse ->
+                activity?.let {
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        it, baseResponse.message
+                    ) { _, _ ->
+                        var intent = Intent()
+                        intent.action = "cancelled"
+                        intent.putExtra("isCount", false)
+                        intent.putExtra("position", 2)
+                        intent.putExtra("start_date", viewModel.startDate.value.toString())
+                        intent.putExtra("end_date", viewModel.endDate.value.toString())
+                        requireContext().sendBroadcast(intent)
+                    }
+                }
+            }
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -1660,13 +1678,13 @@ class AllOrdersListingFragment(
 
 
 
-            receiptModel.orderItems?.let {
-// TO-DO               addOrderItemOpenOrder(
-//                    builder,
-//                    it,
-//                    customerSettingModel.fonts,
-//                    customerSettingModel.showModifiers
-//                )
+            receiptModel.orderItems.let {
+              addOrderItemOnlineOrder(
+                    builder,
+                    it,
+                    customerSettingModel.fonts,
+                    customerSettingModel.showModifiers
+                )
             }
 
             builder.addFeedLine(2)
