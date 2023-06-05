@@ -53,6 +53,7 @@ import com.android.pos.data.remote.Constants.ONLINE_ORDER_ENABLE
 import com.android.pos.data.remote.Constants.ONLY_SHOW_PRICE_GREATER_THAN_ZERO
 import com.android.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
 import com.android.pos.data.remote.Constants.ORDER_TYPE
+import com.android.pos.data.remote.Constants.ORDER_TYPE_ID
 import com.android.pos.data.remote.Constants.ORDER_TYPE_NAME
 import com.android.pos.data.remote.Constants.REPORT_END_TIME
 import com.android.pos.data.remote.Constants.REPORT_START_TIME
@@ -3687,7 +3688,8 @@ class DashBoardCategoryViewModel @Inject constructor(
         orderAttributeRequestModel.note = cartModel.note
         orderAttributeRequestModel.offlineId = randomOfflineId()
         orderAttributeRequestModel.openOrderType = cartModel.orderType
-        orderAttributeRequestModel.orderTypeId = cartModel.orderTypeId
+        orderAttributeRequestModel.orderTypeId = prefProvider.getValueInt(ORDER_TYPE_ID, 2)
+        orderAttributeRequestModel.orderTypeName = prefProvider.getValue(ORDER_TYPE_NAME, DINE_IN)
         orderAttributeRequestModel.paymentStatus = 0
         orderAttributeRequestModel.serviceChargeEnabled = true
         orderAttributeRequestModel.taxEnabled = true
@@ -4507,7 +4509,8 @@ class DashBoardCategoryViewModel @Inject constructor(
             terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, 0)
             note = cartModel.note
             openOrderType = "DineIn"
-            orderTypeId = 2
+            orderTypeId = prefProvider.getValueInt(ORDER_TYPE_ID, 2)
+            orderTypeName = prefProvider.getValue(ORDER_TYPE_NAME, DINE_IN)
             tax_bifurcation_data = Gson().toJson(cartModel.taxlistDynamic)
             taxEnabled = true
             subTotal = MethodUtils.roundOffAmountDouble(subTotalPrice)

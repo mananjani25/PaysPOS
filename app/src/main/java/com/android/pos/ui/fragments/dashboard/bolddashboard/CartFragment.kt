@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -122,7 +123,7 @@ class CartFragment(
     var isActiveOrder: Boolean = false
     var reorder: Boolean = false
 
-    private val DELAY_MILLIS = 100L
+    private val DELAY_MILLIS = 200L
 
     private var previousClickTimeMillis = 0L
 
@@ -250,6 +251,12 @@ class CartFragment(
             }
             binding.orderTypeDisplay.text =
                 getString(R.string.current_order) + " : " + prefProvider.getValue(ORDER_TYPE_NAME, "")
+
+            binding.orderTypeDisplay.setOnClickListener {
+                findNavController().navigate(
+                    R.id.action_dashboardCategoryBoldPOS_to_changeOrderTypeDialog,
+                )
+            }
         }
     }
 
@@ -495,6 +502,22 @@ class CartFragment(
             val count: Int = bundle.getInt("count")
             addGuestToOrder(count)
         }
+        requireActivity().supportFragmentManager.setFragmentResultListener(
+            "request_order_type_change",
+            viewLifecycleOwner
+        ) { _: String, bundle: Bundle ->
+            var data: TbOrderType = bundle.getParcelable<TbCustomer>("orderData") as TbOrderType
+
+            checkOrderType()
+            addObserver()
+
+            if (cartlist.isNotEmpty()) {
+                cartlist[0].orderTypeName = data.name
+                cartlist[0].orderType = data.orderType
+                cartlist[0].orderTypeId = data.id
+                viewModel.addCart(cartModel = cartlist[0])
+            }
+        }
     }
 
 
@@ -680,7 +703,6 @@ class CartFragment(
                 }
 
                 prefProvider.setValue(ORDER_TYPE, prefProvider.getValue(ORDER_TYPE, ""))
-                prefProvider.setValue(Constants.ORDER_TYPE_NAME, Constants.DINE_IN)
                 prefProvider.setValueInt(
                     ORDER_TYPE_ID,
                     prefProvider.getValueInt(ORDER_TYPE_ID, 0)
@@ -945,20 +967,18 @@ class CartFragment(
             if (view != null) {
 
 
-
                 viewModel.mAllWordsFlow(
                     prefProvider.getValue(ORDER_TYPE, TAKEOUT),
                     prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
                 ).asLiveData().observe(requireActivity()) {
 
 
-                    Log.e("mAllWordsFlow", "asLiveData" + it.size)
+                    Log.e("mAllWordsFlow", "asLiveData >> size : ${it.size}")
 
                     if (it.isEmpty()) {
-                        if (oldItemSize != null && oldItemSize != 1)
-                        return@observe
-                    }
-                    else {
+//                        if (oldItemSize != null && oldItemSize != 1)
+                            return@observe
+                    } else {
                         val currentTimeMillis = System.currentTimeMillis()
 
                         if (currentTimeMillis >= previousClickTimeMillis + DELAY_MILLIS) {
@@ -975,6 +995,7 @@ class CartFragment(
                     if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
                         binding.rvCartDineIn.visible()
                         binding.rvCartList.gone()
+                        checkOrderType()
                         if (it.isNotEmpty()) {
 
                             cartlist = it as ArrayList<CartModel>
@@ -2116,10 +2137,18 @@ class CartFragment(
 
                         var ordertype = ""
                         var ordertypeId = 0
-                        viewModel.ordertypelist.forEach {
-                            if (it.orderType == OPEN_ORDER) {
-                                ordertype = it.orderType
-                                ordertypeId = it.id
+                        if (prefProvider.getValue(ORDER_TYPE, "") == OPEN_ORDER) {
+                            ordertype = prefProvider.getValue(ORDER_TYPE, "")
+                            ordertypeId = prefProvider.getValueInt(ORDER_TYPE_ID, 0)
+                        } else {
+                            run breaking@{
+                                viewModel.ordertypelist.forEach {
+                                    if (it.orderType == OPEN_ORDER) {
+                                        ordertype = it.orderType
+                                        ordertypeId = it.id
+                                        return@breaking
+                                    }
+                                }
                             }
 
 
@@ -2391,6 +2420,7 @@ class CartFragment(
 
         if (model?.orderType == DINE_IN) {
             Log.e(TAG, "InsideDine inNew")
+            checkOrderType()
             dineInCallback?.onDineInClickListener()
         } else if (model?.orderType == PHONE_ORDER) {
 

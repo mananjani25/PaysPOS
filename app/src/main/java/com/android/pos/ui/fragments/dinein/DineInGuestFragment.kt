@@ -86,7 +86,6 @@ class DineInGuestFragment : Fragment(), GuestListAdapter.GuestListner {
 
     private fun gotoDashboard() {
         prefProvider.setValue(ORDER_TYPE, DINE_IN)
-        prefProvider.setValue(ORDER_TYPE_NAME, DINE_IN)
         val bundle = bundleOf(
             "isFromDineIn" to true,
             "numberOfGuest" to guestCount,

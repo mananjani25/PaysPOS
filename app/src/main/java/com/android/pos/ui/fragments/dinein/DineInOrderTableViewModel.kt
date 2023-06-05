@@ -16,6 +16,9 @@ import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.DINE_IN
+import com.android.pos.data.remote.Constants.ORDER_TYPE_ID
+import com.android.pos.data.remote.Constants.ORDER_TYPE_NAME
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.data.repositories.TaxServiceChargeRepository
 import com.android.pos.data.repositories.TipDiscountRepository
@@ -413,7 +416,8 @@ class DineInOrderTableViewModel @Inject constructor(
             terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, 0)
             note = ""
             openOrderType = "DineIn"
-            orderTypeId = 2
+            orderTypeId = prefProvider.getValueInt(ORDER_TYPE_ID, 2)
+            orderTypeName = prefProvider.getValue(ORDER_TYPE_NAME, DINE_IN)
             paymentStatus = 0
             subTotal = 0.0
             totalAmount = 0.0
