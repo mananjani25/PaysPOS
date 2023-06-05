@@ -137,7 +137,11 @@ fun addPaymentDetailsThreeData(keyValue: java.util.ArrayList<KeyValue>) {
             refund = MethodUtils.roundOffAmount(it.value?.toDouble() ?: 0.0)
         } else {
             title = it.key.toString()
-            amount = MethodUtils.roundOffAmount(it.value.toString().toDouble())
+            if (it.value?.isNotEmpty() == true) {
+                amount = MethodUtils.roundOffAmount(it.value.toString().toDouble())
+            }else{
+                amount = "$0.00"
+            }
         }
     }
 
@@ -168,7 +172,11 @@ fun addPaymentDetailsThreeDataInner(keyValue: java.util.ArrayList<KeyValue>) {
             refund = "$" + it.value
         } else {
             title = it.key.toString()
-            amount = MethodUtils.roundOffAmount(it.value.toString().toDouble())
+            if (it.value?.isNotEmpty() == true) {
+                amount = MethodUtils.roundOffAmount(it.value.toString().toDouble())
+            }else{
+                amount = "$0.00"
+            }
         }
     }
 
@@ -294,7 +302,7 @@ fun addPaymentDetailsTwoDataInner(keyValue: KeyValue) {
     PrintSunmiUtils.normalText(
         padLine(
             keyValue.key,
-            MethodUtils.roundOffAmount(keyValue.value.toString().toDouble() ?: 0.0),
+            if (keyValue.value?.isNotEmpty() == true)MethodUtils.roundOffAmount(keyValue.value.toString().toDouble() ?: 0.0) else "$0.00",
             48
         ).toString()
     )
@@ -813,7 +821,10 @@ fun padLineForItem(
 
 /** utility: string repeat  */
 fun repeat(str: String?, i: Int): String? {
+    if (i != -1)
     return String(CharArray(i)).replace("\u0000", str!!)
+
+    return ""
 }
 
 fun getBitmapFromVectorDrawable(context: Context?, drawableId: Int): Bitmap {
@@ -2754,7 +2765,7 @@ fun addOrderItemForDineIn(
                 Builder.FALSE,
                 Builder.COLOR_1
             )
-            builder.addTextPosition(4)
+            //builder.addTextPosition(4)
             builder.addText(
                 padLineCustomerItem(
                     "   " + getItemNameToShow(modifierObj.name),
@@ -3168,7 +3179,7 @@ fun addOrderItemsTransaction(
                     Builder.FALSE,
                     Builder.COLOR_1
                 )
-                builder.addTextPosition(4)
+                //builder.addTextPosition(4)
                 builder.addText(
                     padLineCustomerItem(
                         "   " + getItemNameToShow(modifierObj.name),

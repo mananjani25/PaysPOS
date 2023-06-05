@@ -838,6 +838,9 @@
     <string name="toast_6">Bluetooth connect failed!</string>
     <string name="no_categories_available">No categories available</string>
     <string name="add_guest">Add Guest</string>
+    <string name="search_customer_by_name_amp_phone_number"><![CDATA[Search customer by name & phone number]]></string>
+    <string name="select_your_order_type">Select your order type</string>
+    <string name="phone_orders">Phone Orders</string>
     <string name="add_reason">Add Reason</string>
     <string name="remember_me">Remember me</string>
     <string name="search_by_item">Search by item</string>
@@ -848,6 +851,8 @@
     <string name="serving_efficiency">Serving Efficiency</string>
     <string name="guests_having_order_items_cannot_be_removed">Guests having order items cannot be removed.</string>
     <string name="minimum_one_guest_is_required">Minimum one guest is required</string>
+    <string name="order_total">Order Total</string>
+    <string name="cash">Cash</string>
 
 </resources>
 

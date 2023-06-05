@@ -1577,6 +1577,9 @@
         <action
             android:id="@+id/action_dashboardCategoryBoldPOS_to_createItem"
             app:destination="@id/createItem" />
+        <action
+            android:id="@+id/action_dashboardCategoryBoldPOS_to_phoneOrderFragment"
+            app:destination="@id/phoneOrderFragment" />
 
 
     </fragment>
@@ -1654,6 +1657,14 @@
         android:id="@+id/transferTableDialog"
         android:name="com.android.pos.ui.dialog.TransferTableDialog"
         android:label="TransferTableDialog" />
+    <fragment
+        android:id="@+id/phoneOrderFragment"
+        android:name="com.android.pos.ui.fragments.phoneOrder.PhoneOrderFragment"
+        android:label="PhoneOrderFragment" >
+        <action
+            android:id="@+id/action_phoneOrderFragment_to_assignCustomerOrderFragment"
+            app:destination="@id/assignCustomerOrderFragment" />
+    </fragment>
 
 
 </navigation>

@@ -14,6 +14,7 @@ import com.android.pos.databinding.ViewRefundItemBinding
 import com.android.pos.ui.fragments.transactions.TransactionDetailsViewModel
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
+import com.android.pos.utils.MethodUtils.Companion.toPrecision
 import java.text.NumberFormat
 
 class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
@@ -206,10 +207,19 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
                 cashDiscountDivide = (cash_discount_or_surcharge * totalItemPrice) / final_Amount
             }
 
-            val nf2: NumberFormat = NumberFormat.getNumberInstance()
-            nf2.maximumFractionDigits = 2
-            val rounded2: String = nf2.format(cashDiscountDivide)
-            cashDiscountDivide = rounded2.toDouble()
+//            val nf2: NumberFormat = NumberFormat.getNumberInstance()
+//            nf2.maximumFractionDigits = 2
+//            val rounded2: String = nf2.format(cashDiscountDivide)
+//
+            val rounded2 = cashDiscountDivide.toPrecision(2)
+
+            Log.e("rounded2",rounded2)
+            try {
+                cashDiscountDivide = rounded2.toDouble()
+            }catch (e : Exception){
+                e.printStackTrace()
+            }
+
 
             Log.d(
                 "yash",
@@ -251,7 +261,7 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
             val nf1: NumberFormat = NumberFormat.getNumberInstance()
             nf1.maximumFractionDigits = 2
             val rounded: String = nf1.format(tip_divided)
-            tip_divided = rounded.toDouble()
+            tip_divided = rounded.replace(",","").toDouble()
             if (paymentType == "Card") {
                     if (totalItemPrice >= tip_divided) {
                         totalItemPrice += tip_divided

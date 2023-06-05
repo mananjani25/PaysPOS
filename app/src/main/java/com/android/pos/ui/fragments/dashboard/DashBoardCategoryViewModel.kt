@@ -85,7 +85,6 @@ import kotlinx.coroutines.flow.Flow
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.InputStream
-import java.lang.Runnable
 import java.net.HttpURLConnection
 import java.net.URL
 import java.text.NumberFormat
@@ -232,6 +231,9 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
+
+    private val _syncDone = MutableLiveData<Event<Boolean?>>()
+    val syncDone: LiveData<Event<Boolean?>> = _syncDone
 
     private val _logout = MutableLiveData<Event<Boolean>>()
     val logout: LiveData<Event<Boolean>> = _logout
@@ -542,9 +544,11 @@ class DashBoardCategoryViewModel @Inject constructor(
         dineInList: List<DineInModel> = arrayListOf(),
         isFromDineInScreen: Boolean = false
     ) {
+        Log.e("DashViewModModel","checkCartSize: ${cartList?.size}")
         if (cartList != null && cartList.isEmpty()) {
             // empty cart hoy to new cart create kare
 
+            Log.e("DashViewModModel","checkItem:  ${Gson().toJson(item?.modifiers)}")
 
             var cartModel = item?.let { addCartModel(it, isManualSales) }
             if (item != null) {
@@ -1276,9 +1280,23 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 Log.e("DashViewModModel", "getIndexSecond  ${index}")
                                 if (item != null) {
                                     item.singleItemPrice = item.price
+
                                     item.modifiers.forEach { it ->
-                                        it.modifier_quantity = it.itemQuantity
-                                        it.itemQuantity = it.itemQuantity * item.itemQuantity
+                                        Log.e(TAG,"moditemQuantity  ${it.itemQuantity}")
+                                        Log.e(TAG,"itemQuantity  ${item.itemQuantity}")
+
+                                      /*  if (type == ADD){
+                                            it.modifier_quantity = it.itemQuantity / item.itemQuantity
+
+                                                it.itemQuantity = item.itemQuantity
+
+                                        }
+                                        else{*/
+                                            it.modifier_quantity = it.itemQuantity
+                                            it.itemQuantity = it.itemQuantity * item.itemQuantity
+
+                                        /*}*/
+
                                         item.singleItemPrice += it.price * it.itemQuantity
                                     }
                                     item.isDestroy = false
@@ -1450,7 +1468,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                     tbmodifier.modifier_quantity =
                                                         it.modifier_quantity
                                                 } else {
-                                                    it.modifier_quantity =
+                                                    tbmodifier.modifier_quantity =
                                                         it.itemQuantity / model.itemQuantity
                                                 }
 
@@ -2615,7 +2633,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         context: Context
     ) {
 
-
+        if (cartList != null && cartList.isNotEmpty()) {
         var totalAmmount = 0.0
         nonCashAdj = 0.0
         totalPrice = 0.0
@@ -2625,7 +2643,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         totalTax = 0.0
         totalServiceCharge = 0.0
         var amountToBePaid = 0.0
-        if (cartList != null && cartList.isNotEmpty()) {
+
             if (cartList[0].orderType == DINE_IN) {
 
                 var dineInItems = 0
@@ -4732,6 +4750,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun syncInventoryModule(b: Boolean) {
         _showProgress.value = Event(true)
+        _syncDone.value = Event(false)
         viewModelScope.launch {
             val resource = posRepository.syncInventory(
                 prefProvider.getValueInt(TERMINAL_ID, -1), prefProvider.getValue(
@@ -4911,7 +4930,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     resource.data.let { venueDetailsResponse ->
                         if (venueDetailsResponse?.status == 200) {
 
-                            resource.data?.let {
+                            resource.data?.let { it ->
                                 if (it.settingData.data.teamRoles.isNotEmpty()) {
                                     posRepository.addTeamRoleFromDb(it.settingData.data.teamRoles)
                                     rolePermission.findCurrentUserRoleAndSave(it.settingData.data.teamRoles)
@@ -5074,7 +5093,13 @@ class DashBoardCategoryViewModel @Inject constructor(
 //                                posRepository.deleteCustomerPrinters()
 //                                posRepository.deleteKitchenPrinters()
                                 posRepository.addKitchenPrinter(it.settingData.data.printers.kitchenPrinterList)
-                                posRepository.addCustomerPrinter(it.settingData.data.printers.customerPrinterList)
+
+                                val custList = it.settingData.data.printers.customerPrinterList
+                                custList.forEach {
+                                    it.name = it.name.ifEmpty { "" }
+                                    it.modalName = it.modalName.ifEmpty { "" }
+                                }
+                                posRepository.addCustomerPrinter(custList)
                                 it.settingData.data.customerReceipt?.let { it1 ->
                                     posRepository.addCustomerReceiptSettings(
                                         it1
@@ -5202,7 +5227,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 SYNC_SETTING_TIME_STAMP,
                                 venueDetailsResponse.settingData.timeStamp
                             )
-
+                            _syncDone.value = Event(true)
 
                         } else {
                             _snackbarText.value = Event(resource.message)

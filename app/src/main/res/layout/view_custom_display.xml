@@ -68,7 +68,7 @@
                 style="@style/CustomFontSemiBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1.5"
+                android:layout_weight="1"
                 android:text="Item Name"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_6mdpi" />
@@ -89,23 +89,50 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
-                android:layout_weight="1"
+                android:layout_weight="0.5"
                 android:gravity="end"
                 android:text="Each"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_6mdpi" />
 
             <TextView
+                android:id="@+id/txtTotalLabel"
                 style="@style/CustomFontSemiBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
-                android:layout_weight="0.7"
+                android:layout_weight="1"
                 android:gravity="end"
+                android:visibility="visible"
                 android:text="Total"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_6mdpi" />
 
+            <TextView
+                android:id="@+id/txtCashLabel"
+                style="@style/CustomFontSemiBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_weight="0.5"
+                android:gravity="end"
+                android:visibility="gone"
+                android:text="Cash"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_6mdpi" />
+
+            <TextView
+                android:id="@+id/txtCardLabel"
+                style="@style/CustomFontSemiBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_weight="0.5"
+                android:visibility="gone"
+                android:gravity="end"
+                android:text="Card"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_6mdpi" />
 
         </LinearLayout>
 
@@ -127,7 +154,7 @@
             app:layout_constraintBottom_toTopOf="@id/linearBottom"
             app:layout_constraintTop_toBottomOf="@id/dividerView"
             tools:itemCount="5"
-            tools:listitem="@layout/view_item_cart" />
+            tools:listitem="@layout/view_item_cart_customer_display" />
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/linearBottom"
@@ -796,7 +823,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#1D1D1F"
-        android:paddingHorizontal="@dimen/_70sdp"
+        android:paddingHorizontal="@dimen/_50sdp"
         android:visibility="gone">
 
         <androidx.appcompat.widget.AppCompatTextView
@@ -804,7 +831,7 @@
             style="@style/CustomFontMediumStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_15sdp"
+            android:layout_marginTop="@dimen/_10sdp"
             android:gravity="center"
             android:padding="@dimen/_5sdp"
             android:text="Add Tip"
@@ -837,13 +864,13 @@
             <LinearLayout
                 android:id="@+id/otherNoTipLayout"
                 android:layout_width="match_parent"
-                android:layout_marginTop="@dimen/_3sdp"
+                android:layout_marginHorizontal="5dp"
                 android:layout_height="wrap_content">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/otherRootLayout"
                     android:layout_width="0dp"
-                    android:layout_height="@dimen/_16sdp"
+                    android:layout_height="@dimen/_20sdp"
                     android:layout_marginVertical="@dimen/_2sdp"
                     android:layout_marginEnd="@dimen/_5sdp"
                     android:layout_weight="1"
@@ -867,7 +894,7 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/noTipRootLayout"
                     android:layout_width="0dp"
-                    android:layout_height="@dimen/_16sdp"
+                    android:layout_height="@dimen/_20sdp"
                     android:layout_marginVertical="@dimen/_2sdp"
                     android:layout_weight="1"
                     android:background="#363636">
@@ -893,6 +920,7 @@
                 android:id="@+id/signRootLayout"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
+                android:layout_margin="5dp"
                 android:layout_marginTop="@dimen/_5sdp"
                 android:layout_weight="1"
                 android:visibility="visible"
@@ -951,15 +979,17 @@
                 style="@style/CustomFontBold"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginHorizontal="5dp"
                 android:layout_marginTop="@dimen/_5sdp"
                 android:background="@color/btnColorDark"
                 android:gravity="center"
-                android:padding="@dimen/_5sdp"
+                android:paddingHorizontal="@dimen/_5sdp"
                 android:text="CONFIRM"
                 android:enabled="false"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_7mdpi"
                 android:visibility="gone"
+                android:paddingVertical="@dimen/_5sdp"
                 app:layout_constraintTop_toBottomOf="@id/signRootLayout" />
         </LinearLayout>
 

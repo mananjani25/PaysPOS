@@ -49,6 +49,7 @@ import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.ui.fragments.payment.OrderCompleteViewModel
 import com.android.pos.ui.fragments.settings.hardware.Hardware
 import com.android.pos.utils.*
+import com.android.pos.utils.MethodUtils.Companion.toPrecision
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.statusUtils.Status
 import com.android.pos.utils.workmanager.ThreadPoolManager
@@ -767,6 +768,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN)
+
 
         // connectionActionCable()
         val intentFilter = IntentFilter("PrinterQueue")
