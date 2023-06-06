@@ -2608,11 +2608,11 @@ class AllOrdersListingFragment(
 
 
             receiptModel.orderItems.let {
-// TO-DO               addOrderItemOpenOrderSunmi(
-//                    it,
-//                    customerSettingModel.fonts,
-//                    customerSettingModel.showModifiers
-//                )
+             addOrderItemOnlineOrderSunmi(
+                    it,
+                    customerSettingModel.fonts,
+                    customerSettingModel.showModifiers
+                )
             }
 
             SunmiPrinterApi.getInstance().lineWrap(2)
@@ -5139,11 +5139,11 @@ class AllOrdersListingFragment(
 
 
             receiptModel.orderItems.let {
-// TO-DO                addOrderItemOpenOrderSunmiInner(
-//                    it,
-//                    customerSettingModel.fonts,
-//                    customerSettingModel.showModifiers
-//                )
+                addOrderItemOnlineOrderSunmiInner(
+                    it,
+                    customerSettingModel.fonts,
+                    customerSettingModel.showModifiers
+                )
             }
 
             SunmiPrintHelper.getInstance().lineWrap(2)
