@@ -848,7 +848,7 @@ class DineInFragment : Fragment() {
 
     private fun onTableSelected(dineInFloorTableModel: GetFloorPlanResponse.Data.FloorPlanTable) {
         if (dineInFloorTableModel.status == AVAILABLE) {
-            viewModelDash.deleteCart()
+            dashBoardCategoryViewModel.deleteCart()
             prefProvider.setValue(Constants.CUSTOMER_NAME, "")
             prefProvider.setValue(Constants.PREF_CUSTOMER, "")
             prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
@@ -901,7 +901,7 @@ class DineInFragment : Fragment() {
         }
 
 
-        viewModelDash.showProgress.observe(viewLifecycleOwner) { event ->
+        dashBoardCategoryViewModel.showProgress.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
                     ProgressUtils.showProgressDialog(requireActivity())
