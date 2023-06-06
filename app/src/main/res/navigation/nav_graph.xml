@@ -174,6 +174,14 @@
         <action
             android:id="@+id/action_allOrder_to_reason_for_cancel_order_dialog"
             app:destination="@id/reasonForCancleOrderDialog" />
+        <action
+            android:id="@+id/action_allOrder_to_reasonForrefundonline"
+            app:destination="@id/reasonForRefundDialogonline"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_allOrder_to_passcodeManager"
+            app:destination="@id/pascodeManagerDailog"
+            app:enterAnim="@anim/nav_default_enter_anim" />
     </fragment>
     <fragment
         android:id="@+id/createItem"

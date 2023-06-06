@@ -57,9 +57,11 @@ import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ALL_ORDER_TAB
 import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
+import com.android.pos.data.remote.Constants.ONLINE_ORDER_TAB
 import com.android.pos.data.remote.Constants.OPEN_ORDER_TAB
 import com.android.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
 import com.android.pos.data.remote.Constants.SUNMI_PRINTER
+import com.android.pos.data.remote.Constants.THIRD_PARTY_ORDER_TAB
 import com.android.pos.databinding.AllOrdersListingFragmentBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
@@ -191,9 +193,9 @@ class AllOrdersListingFragment(
         setupEmployeeSort()
         setupStationSort()
 
-        if(orderTab == "Open"){
+        if (orderTab == "Open") {
             binding.lblDelivery.gone()
-        }else{
+        } else {
             binding.lblDelivery.visible()
         }
 
@@ -216,7 +218,6 @@ class AllOrdersListingFragment(
     }
 
 
-
     private fun setupStationSort() {
         binding.lnrStationSort.setOnClickListener {
             if (isStationAtoZ) {
@@ -228,7 +229,7 @@ class AllOrdersListingFragment(
                     )
                 )
                 val filteredList = adapter.orderList.sortedBy { it.terminalId }
-                adapter.add(filteredList.toCollection(arrayListOf()),orderTab)
+                adapter.add(filteredList.toCollection(arrayListOf()), orderTab)
             } else {
                 binding.imgIndicatorStation.setImageDrawable(
                     ResourcesCompat.getDrawable(
@@ -238,7 +239,7 @@ class AllOrdersListingFragment(
                     )
                 )
                 val filteredList = adapter.orderList.sortedByDescending { it.terminalId }
-                adapter.add(filteredList.toCollection(arrayListOf()),orderTab)
+                adapter.add(filteredList.toCollection(arrayListOf()), orderTab)
             }
             binding.imgIndicatorStation.setColorFilter(
                 ContextCompat.getColor(
@@ -261,7 +262,7 @@ class AllOrdersListingFragment(
                     )
                 )
                 val filteredList = adapter.orderList.sortedBy { it.employee?.firstName }
-                adapter.add(filteredList.toCollection(arrayListOf()),orderTab)
+                adapter.add(filteredList.toCollection(arrayListOf()), orderTab)
 
             } else {
                 binding.imgIndicatorEmployee.setImageDrawable(
@@ -272,7 +273,7 @@ class AllOrdersListingFragment(
                     )
                 )
                 val filteredList = adapter.orderList.sortedByDescending { it.employee?.firstName }
-                adapter.add(filteredList.toCollection(arrayListOf()),orderTab)
+                adapter.add(filteredList.toCollection(arrayListOf()), orderTab)
             }
             binding.imgIndicatorEmployee.setColorFilter(
                 ContextCompat.getColor(
@@ -283,7 +284,7 @@ class AllOrdersListingFragment(
             isEmployeeAtoZ = !isEmployeeAtoZ
         }
     }
-    
+
     private fun acceptedAndDeclineOrder(time: Int, orderId: Int, is_accepted: Boolean) {
         var employee_id = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
         var terminal_id = prefProvider.getValueInt(Constants.TERMINAL_ID, 0)
@@ -371,9 +372,11 @@ class AllOrdersListingFragment(
                                         binding.tvOrderType.visible()
                                         binding.tvOrderStatus.visible()
                                     }
+
                                     Constants.ONLINE_ORDER_TAB, Constants.THIRD_PARTY_ORDER_TAB -> {
                                         binding.tvOrderStatus.visible()
                                     }
+
                                     OPEN_ORDER_TAB -> {
                                         binding.lblDelivery.gone()
                                     }
@@ -383,7 +386,7 @@ class AllOrdersListingFragment(
                                 binding.llNoData.visibility = View.GONE
                                 val data = it.data
 
-                                adapter.add(data,orderTab)
+                                adapter.add(data, orderTab)
                                 LogUtil.logE("DATA", data.size.toString())
 
                             } else {
@@ -769,7 +772,8 @@ class AllOrdersListingFragment(
                     )
                 }
             }
-            "completed" -> {
+
+            "Completed" -> {
                 alert("", "Are you sure, you want to complete this order ?") {
                     this.positiveButton("YES") {
                         updateOrder(adapter.filterList[0].id, status)
@@ -779,83 +783,108 @@ class AllOrdersListingFragment(
 
                 }
             }
+
             "rejected" -> {
-                alert("", "Are you sure, you want to reject this order ?") {
 
-                    this.positiveButton("YES") {
-                        var employeeIdtemp = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
-                        var terminal_id = prefProvider.getValueInt(Constants.TERMINAL_ID, 0)
-                        var orderItemRefundsAttributesList =
-                            ArrayList<RefundRequestModelOnlineOrder.PaymentRefund.OrderItemRefundsAttribute>()
-                        adapter.orderList[pos].orderItems.forEach { item ->
-                            val orderItemRefundsAttributeModel =
-                                RefundRequestModelOnlineOrder.PaymentRefund.OrderItemRefundsAttribute()
+                if ((orderTab == ALL_ORDER_TAB || orderTab == ONLINE_ORDER_TAB)
+                    && adapter.orderList[pos].orderType == ONLINE_ORDER_TAB) {
+                    alert("", "Are you sure, you want to reject this order ?") {
 
-                            orderItemRefundsAttributeModel.amount = item.totalPrice
-                            orderItemRefundsAttributeModel.employeeId = employeeIdtemp
-                            orderItemRefundsAttributeModel.orderId = item.orderId
-                            orderItemRefundsAttributeModel.refundType = 0
-                            orderItemRefundsAttributeModel.paymentId =
-                                adapter.orderList[pos].payments[0].id
-                            orderItemRefundsAttributeModel.orderItemId = item.id
-                            orderItemRefundsAttributeModel.quantity = item.quantity
-                            orderItemRefundsAttributesList.add(orderItemRefundsAttributeModel)
-                        }
+                        this.positiveButton("YES") {
+                            var employeeIdtemp = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+                            var terminal_id = prefProvider.getValueInt(Constants.TERMINAL_ID, 0)
+                            var orderItemRefundsAttributesList =
+                                ArrayList<RefundRequestModelOnlineOrder.PaymentRefund.OrderItemRefundsAttribute>()
+                            adapter.orderList[pos].orderItems.forEach { item ->
+                                val orderItemRefundsAttributeModel =
+                                    RefundRequestModelOnlineOrder.PaymentRefund.OrderItemRefundsAttribute()
 
-                        refundData = RefundRequestModelOnlineOrder().apply {
-                            paymentRefund = RefundRequestModelOnlineOrder.PaymentRefund().apply {
-                                amount =
+                                orderItemRefundsAttributeModel.amount = item.totalPrice
+                                orderItemRefundsAttributeModel.employeeId = employeeIdtemp
+                                orderItemRefundsAttributeModel.orderId = item.orderId
+                                orderItemRefundsAttributeModel.refundType = 0
+                                orderItemRefundsAttributeModel.paymentId =
+                                    adapter.orderList[pos].payments[0].id
+                                orderItemRefundsAttributeModel.orderItemId = item.id
+                                orderItemRefundsAttributeModel.quantity = item.quantity
+                                orderItemRefundsAttributesList.add(orderItemRefundsAttributeModel)
+                            }
+
+                            refundData = RefundRequestModelOnlineOrder().apply {
+                                paymentRefund =
+                                    RefundRequestModelOnlineOrder.PaymentRefund().apply {
+                                        amount =
+                                            adapter.orderList[pos].payments[0].amount + adapter.orderList[pos].payments[0].tips
+                                        orderId = adapter.orderList[pos].id
+                                        paymentId = adapter.orderList[pos].payments[0].id
+                                        employeeId = employeeIdtemp
+                                        taxRefunded = adapter.orderList[pos].payments[0].taxAmount
+                                        tipsRefunded = adapter.orderList[pos].payments[0].tips
+                                        terminalId = terminal_id
+                                        serviceChargeRefunded =
+                                            adapter.orderList[pos].payments[0].serviceChargeAmount
+                                        cash_discount_or_surcharge_refunded =
+                                            adapter.orderList[pos].payments[0].cashDiscount
+                                        subtotal_refunded =
+                                            adapter.orderList[pos].payments[0].subTotal
+                                        orderItemRefundsAttributes = orderItemRefundsAttributesList
+                                    }
+                            }
+                            val bundle = Bundle().apply {
+                                putParcelable("refundData", refundData)
+                                putDouble(
+                                    "refundAmount",
                                     adapter.orderList[pos].payments[0].amount + adapter.orderList[pos].payments[0].tips
-                                orderId = adapter.orderList[pos].id
-                                paymentId = adapter.orderList[pos].payments[0].id
-                                employeeId = employeeIdtemp
-                                taxRefunded = adapter.orderList[pos].payments[0].taxAmount
-                                tipsRefunded = adapter.orderList[pos].payments[0].tips
-                                terminalId = terminal_id
-                                serviceChargeRefunded =
-                                    adapter.orderList[pos].payments[0].serviceChargeAmount
-                                cash_discount_or_surcharge_refunded =
-                                    adapter.orderList[pos].payments[0].cashDiscount
-                                subtotal_refunded = adapter.orderList[pos].payments[0].subTotal
-                                orderItemRefundsAttributes = orderItemRefundsAttributesList
-                            }
-                        }
-                        val bundle = Bundle().apply {
-                            putParcelable("refundData", refundData)
-                            putDouble(
-                                "refundAmount",
-                                adapter.orderList[pos].payments[0].amount + adapter.orderList[pos].payments[0].tips
-                            )
-                            putString("paymentType", adapter.orderList[pos].payments[0].paymentType)
-                            putString(
-                                "magensa_response_data",
-                                adapter.orderList[pos].magensa_response_data
-                            )
-                        }
-                        bundle.putString("isFrom", "rejectOnlineOrder")
-                        if (prefProvider.isAdmin() || prefProvider.isManager()) {
-                            if (findNavController().currentDestination?.id == R.id.onlineOrderFragment) {
-                                findNavController().navigate(
-                                    R.id.action_onlineOrder_to_reasonForrefundonline,
-                                    bundle
+                                )
+                                putString(
+                                    "paymentType",
+                                    adapter.orderList[pos].payments[0].paymentType
+                                )
+                                putString(
+                                    "magensa_response_data",
+                                    adapter.orderList[pos].magensa_response_data
                                 )
                             }
-                        } else {
-                            if (findNavController().currentDestination?.id == R.id.onlineOrderFragment) {
-                                findNavController().navigate(
-                                    R.id.action_onlineOrder_to_passcodeManager,
-                                    bundle
-                                )
+                            bundle.putString("isFrom", "rejectOnlineOrder")
+                            if (prefProvider.isAdmin() || prefProvider.isManager()) {
+                                if (findNavController().currentDestination?.id == R.id.allOrdersFragment) {
+                                    findNavController().navigate(
+                                        R.id.action_allOrder_to_reasonForrefundonline,
+                                        bundle
+                                    )
+                                }
+                            } else {
+                                if (findNavController().currentDestination?.id == R.id.allOrdersFragment) {
+                                    findNavController().navigate(
+                                        R.id.action_allOrder_to_passcodeManager,
+                                        bundle
+                                    )
+                                }
                             }
+
+
+                        }
+                        this.negativeButton("NO") {
                         }
 
+                    }
+                } else if ((orderTab == ALL_ORDER_TAB || orderTab == THIRD_PARTY_ORDER_TAB)
+                    && adapter.orderList[pos].orderType == THIRD_PARTY_ORDER_TAB
+                ) {
+                    alert("", "Are you sure, you want to reject this order ?") {
+
+                        this.positiveButton("YES") {
+                            acceptedAndDeclineOrder(0, adapter.filterList[pos].id, false)
+                        }
+                        this.negativeButton("NO") {
+                        }
 
                     }
-                    this.negativeButton("NO") {
-                    }
-
                 }
+
+
             }
+
             "UPDATE" -> {
                 var itemDiscountTotal: Double = 0.0
                 var itemPassDis: Double = 0.0
@@ -947,6 +976,7 @@ class AllOrdersListingFragment(
 //                findNavController().navigateUp()
 
             }
+
             "PAY" -> {
 
                 prefProvider.setValue("PaidAmount", "")
@@ -1063,13 +1093,16 @@ class AllOrdersListingFragment(
 
 
             }
+
             Constants.PRINT_UNPAID -> {
 
                 getCustomerPrinters(order, status)
             }
+
             Constants.PRINT_PAID -> {
                 getCustomerPrinters(order, status)
             }
+
             "CANCEL" -> {//cancel order
                 if (rolePermission.hasCancelOrderPermission(binding.root)) {
                     val bundle = Bundle().apply {
@@ -1087,6 +1120,7 @@ class AllOrdersListingFragment(
                     )
                 }
             }
+
             "REPRINT_KITCHEN_RECEIPT" -> {
                 //getKitchenPrinters(order)
             }
@@ -1115,11 +1149,13 @@ class AllOrdersListingFragment(
 
 
                 }
+
                 Status.ERROR -> {
 
                     ProgressUtils.dismissProgressDialog()
 
                 }
+
                 Status.LOADING -> {
                     ProgressUtils.showProgressDialog(requireActivity())
 
@@ -1343,7 +1379,7 @@ class AllOrdersListingFragment(
 
             addBuilderText(builder, prefProvider.getValue(Constants.BUSINESS_NAME, "").toString())
 
-            if(customerSettingModel.showVenueAddress) {
+            if (customerSettingModel.showVenueAddress) {
                 builder.addFeedLine(1)
                 builder.addTextFont(Builder.FONT_E)
                 builder.addTextAlign(Builder.ALIGN_CENTER)
@@ -1366,7 +1402,7 @@ class AllOrdersListingFragment(
                     ).toString()
                 )
             }
-            if(customerSettingModel.showVenuePhone) {
+            if (customerSettingModel.showVenuePhone) {
                 builder.addFeedLine(1)
 
                 builder.addTextFont(Builder.FONT_E)
@@ -1387,7 +1423,7 @@ class AllOrdersListingFragment(
                 )
             }
 
-            if(customerSettingModel.showWebsiteAddress) {
+            if (customerSettingModel.showWebsiteAddress) {
                 builder.addFeedLine(1)
 
                 builder.addTextFont(Builder.FONT_E)
@@ -1406,7 +1442,7 @@ class AllOrdersListingFragment(
                 )
             }
 
-            if(customerSettingModel.showOrderType) {
+            if (customerSettingModel.showOrderType) {
                 builder.addFeedLine(1)
 
                 builder.addTextFont(Builder.FONT_E)
@@ -1679,7 +1715,7 @@ class AllOrdersListingFragment(
 
 
             receiptModel.orderItems.let {
-              addOrderItemOnlineOrder(
+                addOrderItemOnlineOrder(
                     builder,
                     it,
                     customerSettingModel.fonts,
@@ -2458,7 +2494,7 @@ class AllOrdersListingFragment(
                 PrintSunmiUtils.venueWebsite(prefProvider.getValue(Constants.BUSINESS_WEBSITE, ""))
             }
 
-            if(customerSettingModel.showOrderType) {
+            if (customerSettingModel.showOrderType) {
                 PrintSunmiUtils.printOrderType(receiptModel?.orderTypeName?.trim())
             }
 
@@ -2608,7 +2644,7 @@ class AllOrdersListingFragment(
 
 
             receiptModel.orderItems.let {
-             addOrderItemOnlineOrderSunmi(
+                addOrderItemOnlineOrderSunmi(
                     it,
                     customerSettingModel.fonts,
                     customerSettingModel.showModifiers
@@ -5004,11 +5040,16 @@ class AllOrdersListingFragment(
                 ) else ""
             )
             if (customerSettingModel.showWebsiteAddress) {
-                PrintSunmiUtils.venueWebsiteInner(prefProvider.getValue(Constants.BUSINESS_WEBSITE, ""))
-            }else {
+                PrintSunmiUtils.venueWebsiteInner(
+                    prefProvider.getValue(
+                        Constants.BUSINESS_WEBSITE,
+                        ""
+                    )
+                )
+            } else {
                 SunmiPrintHelper.getInstance().lineWrap(1)
             }
-            if(customerSettingModel.showOrderType) {
+            if (customerSettingModel.showOrderType) {
                 PrintSunmiUtils.headerText(receiptModel?.orderTypeName?.trim())
             }
 

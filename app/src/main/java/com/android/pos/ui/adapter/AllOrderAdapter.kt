@@ -274,7 +274,7 @@ class AllOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
                 mCallback?.onItemClickListener(it, absoluteAdapterPosition, "rejected")
             }
             binding.completedImg.setOnClickListener {
-                mCallback?.onItemClickListener(it, absoluteAdapterPosition, "completed")
+                mCallback?.onItemClickListener(it, absoluteAdapterPosition, "Completed")
             }
 
             binding.root.setOnClickListener {
