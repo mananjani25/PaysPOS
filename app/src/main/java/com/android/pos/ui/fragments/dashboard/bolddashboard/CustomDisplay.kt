@@ -1342,7 +1342,7 @@ class CustomDisplay(
             )
 
             binding.txtTipLabel?.text = "Tip ($percentageTip%)"
-            if (MethodUtils.isEnableCashDiscount(context)) {
+            if (MethodUtils.isEnableCashDiscount(context) && showCashCreditPrice) {
                 binding.txtTipCash?.visible()
                 binding.txtTipCard?.visible()
                 binding.txtTipCash?.text = "" + MethodUtils.roundOffAmount(tipAmount)
