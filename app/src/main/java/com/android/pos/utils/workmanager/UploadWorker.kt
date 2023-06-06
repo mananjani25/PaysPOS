@@ -67,6 +67,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
     val printerQueueModel: PrinterQueueModel = PrinterQueueModel()
     private var printerObjList: HashMap<String, Printer> = hashMapOf()
     var listOfPrintersData: ArrayList<PrinterJSONElementData> = arrayListOf()
+    var isQueueRunning: Boolean = false
 
     var printerBreak: Boolean = false
     var printerSize: Int = 0
@@ -622,7 +623,11 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                                                 orderId = it.asJsonObject.get("id").asInt,
                                                 itemName = it1.asJsonObject.get("name").asString,
                                                 totalPrice = 0.0,
-                                                timestamp = it1.asJsonObject.get("message").asString,
+                                                timestamp = if (it1.asJsonObject.has("message")) {
+                                                    it1.asJsonObject.get("message").asString
+                                                } else {
+                                                    ""
+                                                },
                                                 quantity = it1.asJsonObject.get("quantity").asInt,
                                                 price = 0.0,
                                                 orderItemModifiers = listOfMod,
@@ -1207,8 +1212,11 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
         orderIndex: Int
     ) {
         Log.e(TAG, "checkPrinterQueue  ${printerQueueModelList.size}")
+        if (isQueueRunning == false) {
+            isQueueRunning = true
 
-        printerObj?.let { callPrinter(it, printerQueueModelList.get(orderIndex), macAddress) }
+            printerObj?.let { callPrinter(it, printerQueueModelList.get(orderIndex), macAddress) }
+        }
 
     }
 
@@ -1299,6 +1307,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
             Log.e(TAG, "checkprinterBreak: ${printerBreak}")
             if (printerBreak) {
+                isQueueRunning = false
 
                 try {
 
@@ -1462,8 +1471,8 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                     )
 
                     if (obj.orderItems[m].timestamp.isNotEmpty()) {
-                        var msg = "("+obj.orderItems[m].timestamp+")"
-                        printer.addText("" + obj.orderItems[m].quantity + " " + obj.orderItems[m].itemName +"  "+msg)
+                        var msg = "(" + obj.orderItems[m].timestamp + ")"
+                        printer.addText("" + obj.orderItems[m].quantity + " " + obj.orderItems[m].itemName + "  " + msg)
 
                     } else {
 
@@ -2586,6 +2595,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
         )
 
 
+        isQueueRunning = false
 
         if (p1 >= 0) {
             p0?.clearCommandBuffer()
@@ -2599,19 +2609,25 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
             if (listOfPrintersData.size - 1 >= currentPrinterIndex) {
 
-                val params = JsonObject()
-                var deleteUrl =
-                    baseUrl + DELETE_QUEUE_ORDER_PHASE3 + listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.get(
-                        currentOrderIndex
-                    ).id
-                LogUtil.logE(TAG, "DeleteUrl ${deleteUrl}")
-                params.addProperty("url", deleteUrl)
-                params.addProperty(
-                    "mac_address",
-                    listOfPrintersData.get(currentPrinterIndex).macAddress
-                )
+                try {
+                    val params = JsonObject()
+                    var deleteUrl =
+                        baseUrl + DELETE_QUEUE_ORDER_PHASE3 + listOfPrintersData.get(
+                            currentPrinterIndex
+                        ).printerQueueModelList.get(
+                            currentOrderIndex
+                        ).id
+                    LogUtil.logE(TAG, "DeleteUrl ${deleteUrl}")
+                    params.addProperty("url", deleteUrl)
+                    params.addProperty(
+                        "mac_address",
+                        listOfPrintersData.get(currentPrinterIndex).macAddress
+                    )
 
-                subscription?.perform("delete_order", params)
+                    subscription?.perform("delete_order", params)
+                } catch (e: java.lang.Exception) {
+                    e.printStackTrace()
+                }
 
             }
 
