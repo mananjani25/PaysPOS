@@ -2091,15 +2091,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     }
 
     override fun onRemoveGuest(position: Int) {
-        println("total guest count : ${getOrderDetailsResponse?.guestAttributes?.size?.minus(1)}")
-        if((getOrderDetailsResponse?.guestAttributes?.size?.minus(1) ?: 0) > 1) {
-            if (dineInTableAdapter.getList()[position].itemsCount > 0) {
-                viewModel.unableToRemoveGuest(getString(R.string.guests_having_order_items_cannot_be_removed))
-            } else {
-                // Remove guest from list
-                dineInTableAdapter.getList()[position].apply { this.isDestroy = true }
-                updateOrderCall(isFromReorder = false)
-            }
+        if ((getOrderDetailsResponse?.guestAttributes?.size?.minus(1) ?: 0) > 1) {
+            // Remove guest from list
+            dineInTableAdapter.getList()[position].apply { this.isDestroy = true }
+            updateOrderCall(isFromReorder = false)
         } else {
             viewModel.unableToRemoveGuest(getString(R.string.minimum_one_guest_is_required))
         }

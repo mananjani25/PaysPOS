@@ -154,6 +154,7 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>() {
                 } else {
                     popupMenu.menu.get(0).setTitle("Remove Customer")
                 }
+                popupMenu.menu[1].isVisible = list[layoutPosition].items.size <= 0
 
                 popupMenu.show()
 
