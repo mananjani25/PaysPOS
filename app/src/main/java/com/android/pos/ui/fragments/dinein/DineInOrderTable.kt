@@ -93,6 +93,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
 class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
@@ -208,6 +209,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
         navigateDineInOrderNew()
         reorderedItemObserver()
+        removeGuestObserver()
         observeUnMergeTable()
         requireActivity().supportFragmentManager.setFragmentResultListener(
             "request_for_guestcount",
@@ -1101,13 +1103,28 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             Log.d(TAG, "addGuestToOrder size: " + existinglist.size)
             val dineInList: java.util.ArrayList<DineInModel> = arrayListOf()
             if (existinglist.isNotEmpty()) {
+                // List of available counts from list to add new guest
+                var availableName: ArrayList<Int> = arrayListOf()
+                for (i in 1 until 16) {
+                    var filteredList: List<DineInModel> = arrayListOf()
+                    filteredList = dineInTableAdapter.getList()
+                        .filter { item -> item.title?.substringAfter("Guest ") == i.toString() }
+                        ?: arrayListOf()
+                    if (filteredList.isEmpty()) {
+                        availableName.add(i)
+                    }
+                    if (availableName.size >= count) {
+                        break
+                    }
+                }
+
                 for (i in 1..count) {
                     dineInList.add(
                         DineInModel(
                             0,
                             false,
                             0,
-                            "Guest ${existing_count.plus(i)}",
+                            "Guest ${availableName[i - 1]}",
                             floorPlanTable = cartList!!.dineInList!![0].floorPlanTable
 
                         )
@@ -2073,6 +2090,21 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
     }
 
+    override fun onRemoveGuest(position: Int) {
+        println("total guest count : ${getOrderDetailsResponse?.guestAttributes?.size?.minus(1)}")
+        if((getOrderDetailsResponse?.guestAttributes?.size?.minus(1) ?: 0) > 1) {
+            if (dineInTableAdapter.getList()[position].itemsCount > 0) {
+                viewModel.unableToRemoveGuest(getString(R.string.guests_having_order_items_cannot_be_removed))
+            } else {
+                // Remove guest from list
+                dineInTableAdapter.getList()[position].apply { this.isDestroy = true }
+                updateOrderCall(isFromReorder = false)
+            }
+        } else {
+            viewModel.unableToRemoveGuest(getString(R.string.minimum_one_guest_is_required))
+        }
+    }
+
     private fun guestPrint(
         paymentStatus: String,
         listGuestItem: ArrayList<TbItem>,
@@ -2154,6 +2186,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                         if (it.itemId == dineInItem.item?.itemId && it.orderItemId == dineInItem.item?.orderItemId) {
                                             dineInItem.item?.guestItemId = it.id
                                         }
+                                    } else {
+                                        if(dineInItem.title == baseResponse.order.guestAttributes[i].name) {
+                                            dineInItem.itemsCount = guestItemsList.size
+                                        }
                                     }
                                 }
                             }
@@ -2162,6 +2198,14 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     dineInTableAdapter.setList(newList as ArrayList<DineInModel>)
                 }
             }
+        }
+    }
+
+    private fun removeGuestObserver() {
+        viewModel.removeGuestSuccess.observe(viewLifecycleOwner) { event ->
+            AlertUtils.showCustomAlertWithListenerWithOK(
+                requireContext(), event.getContentIfNotHandled().toString()
+            ) { _, _ -> }
         }
     }
 
@@ -2233,11 +2277,13 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         model.isHeader = 0
                         model.id = baseResponse.guestAttributes[i].id
                         model.isPaid = baseResponse.guestAttributes.get(i).isPaid
+                        model.itemsCount = baseResponse.guestAttributes.get(i).guestItemAttributes.size
                         if (baseResponse.guestAttributes.get(i).guestItemAttributes.isNotEmpty()) {
                             if (baseResponse.guestAttributes.get(i).name.trim()
                                     .lowercase() != "Whole Table".trim().lowercase()
                             ) {
                                 totalGuestCount++
+                                println("total guest count >>: $totalGuestCount")
                             }
 
                         }
@@ -3099,17 +3145,17 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             dineInTableAdapter.setList(newList)
 
-            updateOrderCall()
+            updateOrderCall(isFromReorder = true)
         }
 
     }
 
-    private fun updateOrderCall() {
+    private fun updateOrderCall(isFromReorder: Boolean) {
         cartList = getCartModel(dineInTableAdapter.getList().toCollection(arrayListOf()))
         cartList?.listOfItemRemoved = listOfMoveItemIds
         prefProvider.setValueboolean(DINE_IN_UPDATE, true)
         val orderRequestModel = dashboardViewModel.updateOrder(cartList!!)
-        orderId?.let { viewModel.updateOrder(it, orderRequestModel, true) }
+        orderId?.let { viewModel.updateOrder(it, orderRequestModel, isFromReorder, message = "removed") }
         listOfMoveItemIds.clear()
     }
 
@@ -9080,10 +9126,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
     fun checkForAutoFire(isCheckAndFire: Boolean) {
         Log.d("###17MAR23", "checkForAutoFire: Called - Start - $isCheckAndFire")
-        var list = dineInTableAdapter.getList()
+        var list : List<DineInModel> = arrayListOf()
+         list = dineInTableAdapter.getList() ?: arrayListOf()
         val builder = ArrayList<String>()
         var listItem: ArrayList<TbItem> = arrayListOf()
-        LogUtil.logE(TAG, "dineInList:  ${Gson().toJson(list)}")
+//        LogUtil.logE(TAG, "dineInList:  ${Gson().toJson(list)}")
         list.forEach {
             if (it.isHeader == 1) {
                 it.item?.let {

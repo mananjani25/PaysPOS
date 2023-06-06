@@ -149,6 +149,8 @@ class DashBoardCategoryViewModel @Inject constructor(
     var orderId: Int? = 0
 
     var openOrderUpdate: Boolean? = false
+    private val _removeGuestSuccess = MutableLiveData<Event<String>>()
+    val removeGuestSuccess: LiveData<Event<String>> = _removeGuestSuccess
 
 
     fun getCustomerReceiptSettings() = posRepository.getCustomerReceiptSettings()
@@ -3968,6 +3970,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         cartModel.dineInList?.forEach { it ->
             val model = GuestsAttributes()
             model.name = it.title.toString()
+            model.Destroy = it.isDestroy
             if (it.id != 0) {
                 model.id = it.id
             }
@@ -5586,6 +5589,10 @@ class DashBoardCategoryViewModel @Inject constructor(
         prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER, false)
         prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED, false)
 
+    }
+
+    fun unableToRemoveGuest(message: String = "") {
+        _removeGuestSuccess.value = Event(message)
     }
 
 }

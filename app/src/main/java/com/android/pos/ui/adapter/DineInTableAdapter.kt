@@ -89,8 +89,10 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
             if (list[position].title?.trim()?.lowercase() == "Whole Table".trim().lowercase()) {
                 binding.imgPrint.visibility = View.INVISIBLE
+                binding.removeGuest.visibility = View.INVISIBLE
             } else {
                 binding.imgPrint.visibility = View.VISIBLE
+                binding.removeGuest.visibility = View.VISIBLE
             }
             var guestDiscount = 0.0
 
@@ -414,7 +416,9 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
             }
 
-
+            binding.removeGuest.setOnClickListener {
+                listner.onRemoveGuest(layoutPosition)
+            }
         }
 
         init {
@@ -741,6 +745,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             serviceChargeGuest: Double,
             divideDiscount: Double
         )
+        fun onRemoveGuest(position: Int)
     }
 
     fun getList(): List<DineInModel> {
