@@ -1896,10 +1896,7 @@ class ActiveOrderFragment(
 
             }
 
-            if (prefProvider.getValue(
-                    Constants.OPTION_TYPE,
-                    "CashDiscount"
-                ) == "CashDiscount"
+            if (receiptModel.cashDiscountType == "CashDiscount"
             ) {
 
                 var cashdiscountAmount = 0.0
@@ -1968,10 +1965,7 @@ class ActiveOrderFragment(
                 )
 
 
-            } else if (prefProvider.getValue(
-                    Constants.OPTION_TYPE,
-                    "CashDiscount"
-                ) == "SurCharge"
+            } else if (receiptModel.cashDiscountType == "SurCharge"
             ) {
 
 
@@ -2824,10 +2818,7 @@ class ActiveOrderFragment(
 
 
 
-            if (prefProvider.getValue(
-                    Constants.OPTION_TYPE,
-                    "CashDiscount"
-                ) == "CashDiscount"
+            if (receiptModel.cashDiscountType == "CashDiscount"
             ) {
 
                 var cashdiscountAmount = 0.0
@@ -2864,10 +2855,7 @@ class ActiveOrderFragment(
                     }
                 ).toString()
                 PrintSunmiUtils.totalPrice(str51)
-            } else if (prefProvider.getValue(
-                    Constants.OPTION_TYPE,
-                    "CashDiscount"
-                ) == "SurCharge"
+            } else if (receiptModel.cashDiscountType == "SurCharge"
             ) {
 
                 var cashdiscountAmount = 0.0
@@ -3443,10 +3431,7 @@ class ActiveOrderFragment(
             }
 
 
-            if (prefProvider.getValue(
-                    Constants.OPTION_TYPE,
-                    "CashDiscount"
-                ) == "CashDiscount"
+            if (receiptModel.cashDiscountType == "CashDiscount"
             ) {
 
                 var cashdiscountAmount = 0.0
@@ -3482,11 +3467,8 @@ class ActiveOrderFragment(
                         48
                     }
                 ).toString()
-                PrintSunmiUtils.boldText(str5)
-            } else if (prefProvider.getValue(
-                    Constants.OPTION_TYPE,
-                    "CashDiscount"
-                ) == "SurCharge"
+                PrintSunmiUtils.boldText(str51)
+            } else if (receiptModel.cashDiscountType == "SurCharge"
             ) {
 
                 var cashdiscountAmount = 0.0
@@ -3518,7 +3500,7 @@ class ActiveOrderFragment(
                         48
                     }
                 ).toString()
-                PrintSunmiUtils.boldText(str5)
+                PrintSunmiUtils.boldText(str51)
 
             }
 
