@@ -508,8 +508,8 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun getOnlineOrders(startDate: String, endDate: String, order_status: String) =
         getResult { apiService.getOnlineOrders(startDate, endDate, order_status) }
 
-    suspend fun getAllOrders(startDate: String, endDate: String, order_status: String, order_type_id: String) =
-        getResult { apiService.getAllOrders(startDate, endDate, order_status, order_type_id) }
+    suspend fun getAllOrders(startDate: String, endDate: String, order_status: String, payment_status: String, order_type_id: String) =
+        getResult { apiService.getAllOrders(startDate, endDate, order_status, payment_status, order_type_id) }
 
     suspend fun setAcceptedAndDeclineorder(
         time: Int,

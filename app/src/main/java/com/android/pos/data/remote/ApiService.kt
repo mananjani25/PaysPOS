@@ -743,6 +743,7 @@ interface ApiService {
         @Query("start_date") starDate: String,
         @Query("end_date") endDate: String,
         @Query("order_status") order_status: String,
+        @Query("payment_status") payment_status: String,
         @Query("order_type_id") order_type_id: String,
     ): OnlineOrderResponseModel
 

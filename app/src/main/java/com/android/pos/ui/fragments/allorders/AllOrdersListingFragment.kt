@@ -354,10 +354,27 @@ class AllOrdersListingFragment(
     }
 
     private fun getAllOrders() {
+
+        val paymentStatus: String = when (order_status) {
+            "Pending", "InProgress" -> {
+                "Unpaid"
+            }
+            "Completed" -> {
+                "Paid"
+            }
+            "Rejected" -> {
+                "Cancelled"
+            }
+            else -> {
+                ""
+            }
+        }
+
         viewModel.getAllOrders(
             viewModel.startDate.value.toString(),
             viewModel.endDate.value.toString(),
             order_status,
+            paymentStatus,
             orderTabTypeId
         ).observe(viewLifecycleOwner) { it ->
             it?.let { resource ->

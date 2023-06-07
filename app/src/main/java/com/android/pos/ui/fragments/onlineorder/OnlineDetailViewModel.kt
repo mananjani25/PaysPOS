@@ -78,9 +78,10 @@ class OnlineDetailViewModel @Inject constructor(
         startDate: String,
         endDate: String,
         order_status: String,
+        payment_status: String,
         order_type_id: String
     ): LiveData<Resource<OnlineOrderResponseModel>> =
-        posRepository.getAllOrders(startDate, endDate, order_status, order_type_id)
+        posRepository.getAllOrders(startDate, endDate, order_status, payment_status, order_type_id)
 
     fun acceptedAndDeclineOrder(
         time: Int,

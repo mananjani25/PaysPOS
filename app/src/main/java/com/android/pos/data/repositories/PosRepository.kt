@@ -890,6 +890,7 @@ class PosRepository @Inject constructor(
         startDate: String,
         endDate: String,
         order_status: String,
+        payment_status: String,
         order_type_id: String
     ): LiveData<Resource<OnlineOrderResponseModel>> =
         performGetOperationNew(networkCall = {
@@ -897,6 +898,7 @@ class PosRepository @Inject constructor(
                 startDate,
                 endDate,
                 order_status,
+                payment_status,
                 order_type_id
             )
         })
