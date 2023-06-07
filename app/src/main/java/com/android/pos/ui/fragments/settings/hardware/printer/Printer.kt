@@ -22,6 +22,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -210,10 +211,10 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     }
 
     private fun startFinder() {
-        scheduler = Executors.newSingleThreadScheduledExecutor()
+       /* scheduler = Executors.newSingleThreadScheduledExecutor()
         if (scheduler == null) {
             return
-        }
+        }*/
 
         try {
             Finder.start(requireContext(), DevType.TCP, "255.255.255.255")
@@ -223,8 +224,10 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
         }
 
+        printersLisFromFinder()
+
         // start thread
-        future = scheduler!!.schedule(this, 0, TimeUnit.MILLISECONDS)
+//        future = scheduler!!.schedule(this, 0, TimeUnit.MILLISECONDS)
         /* future = scheduler!!.scheduleWithFixedDelay(
              this,
              0,
@@ -377,27 +380,30 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         }
 
         binding.header.imgSync.setOnSingleClickListener {
-            isOneClick = true
-            binding.maskLayout?.visible()
-            availableNetworkAdapter.clearList()
+            if(!isOneClick) {
+                isOneClick = true
+                binding.maskLayout?.visible()
+                availableNetworkAdapter.clearList()
 
-            //searchBluetooth()
-            try {
-                //  stopFinder()
+                //searchBluetooth()
+                try {
+                    //  stopFinder()
 
-                syncPrinterList()
+                    syncPrinterList()
 
-                // startFinder()
+                    // startFinder()
 
-            } catch (e: Exception) {
-                e.printStackTrace()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+
+                GlobalScope.launch(Dispatchers.Main) {
+                    delay(4000)
+                    hideLoaderAfterDelay()
+                    isOneClick = false
+                }
+
             }
-
-            GlobalScope.launch(Dispatchers.Main) {
-                delay(4000)
-                hideLoaderAfterDelay()
-            }
-
 
         }
 
@@ -558,9 +564,9 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                     if (data?.isEmpty() == true) {
                         customerAdapter.clearList()
                     }
-                    availableNetworkAdapter.clearList()
-                    searchBluetooth()
-                    startFinder()
+//                    availableNetworkAdapter.clearList()
+//                    searchBluetooth()
+//                    startFinder()
 
                     if (saved) {
 
@@ -692,9 +698,9 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                     if (data?.isEmpty() == true) {
                         kitchenAdapter.clearList()
                     }
-                    availableNetworkAdapter.clearList()
-                    searchBluetooth()
-                    startFinder()
+//                    availableNetworkAdapter.clearList()
+//                    searchBluetooth()
+//                    startFinder(3)
 
 
                 }
@@ -714,6 +720,9 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
         }
 
+        availableNetworkAdapter.clearList()
+        searchBluetooth()
+        startFinder()
 
     }
 
@@ -1078,6 +1087,182 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             return
         }
 
+    }
+
+    private fun printersLisFromFinder(){
+        viewModel.viewModelScope.launch {
+            try {
+                deviceList = Finder.getDeviceInfoList(com.epson.epsonio.FilterOption.PARAM_DEFAULT)
+                LogUtil.logE(TAG, "deviceList  ${Gson().toJson(deviceList)}")
+
+                if (deviceList != null) {
+                    var tempAvailableList: ArrayList<PrinterListModel> = arrayListOf()
+                    for (i in 0 until deviceList!!.size) {
+
+                        var isAdded: Boolean = false
+                        for (j in 0 until allPrinterlist.size) {
+                            if (allPrinterlist.get(j).deviceModel?.macAddress?.lowercase() == deviceList!!.get(
+                                    i
+                                ).macAddress.lowercase()
+                            ) {
+                                isAdded = true
+                                break
+                            } else {
+                                isAdded = false
+
+
+                            }
+
+
+                        }
+                        if (isAdded == false) {
+                            Log.e(TAG, "checkIsNotAdded ${deviceList!!.get(i).printerName.lowercase()}")
+                            if (deviceList!!.get(i).printerName.lowercase() == "TM-U220".lowercase()
+                            ) {
+                                Log.e(TAG, "checkInside 1")
+                                if (prefProvider.getValueboolean(IS_MASTER_TERMINAL, false) == true) {
+
+                                    Log.e(TAG, "checkInside 2")
+
+                                    /*  tempAvailableList.add(PrinterListModel(
+                                          printerName = deviceList!!.get(i).printerName,
+                                          connectionType = WIFI,
+                                          deviceModel = DeviceInfo(
+                                              DevType.TCP,
+                                              deviceList!!.get(i).printerName,
+                                              deviceList!!.get(i).deviceName,
+                                              deviceList!!.get(i).ipAddress,
+                                              deviceList!!.get(i).macAddress
+                                          ),
+                                          type = AVAILABLE,
+
+
+                                          ))*/
+
+                                    availableNetworkAdapter.addItem(
+                                        PrinterListModel(
+                                            printerName = deviceList!!.get(i).printerName,
+                                            connectionType = WIFI,
+                                            deviceModel = DeviceInfo(
+                                                DevType.TCP,
+                                                deviceList!!.get(i).printerName,
+                                                deviceList!!.get(i).deviceName,
+                                                deviceList!!.get(i).ipAddress,
+                                                deviceList!!.get(i).macAddress
+                                            ),
+                                            type = AVAILABLE,
+                                            modelName = deviceList!!.get(i).printerName
+
+
+                                        )
+                                    )
+                                }
+                            } else {
+                                /*  tempAvailableList.add(  PrinterListModel(
+                                      printerName = deviceList!!.get(i).printerName,
+                                      connectionType = WIFI,
+                                      deviceModel = DeviceInfo(
+                                          DevType.TCP,
+                                          deviceList!!.get(i).printerName,
+                                          deviceList!!.get(i).deviceName,
+                                          deviceList!!.get(i).ipAddress,
+                                          deviceList!!.get(i).macAddress
+                                      ),
+                                      type = AVAILABLE,
+
+
+                                      ))*/
+                                Log.e(TAG, "availableNetworkAdapter item3 ${deviceList!!.get(i).printerName}")
+                                availableNetworkAdapter.addItem(
+                                    PrinterListModel(
+                                        printerName = deviceList!!.get(i).printerName,
+                                        connectionType = WIFI,
+                                        deviceModel = DeviceInfo(
+                                            DevType.TCP,
+                                            deviceList!!.get(i).printerName,
+                                            deviceList!!.get(i).deviceName,
+                                            deviceList!!.get(i).ipAddress,
+                                            deviceList!!.get(i).macAddress
+                                        ),
+                                        type = AVAILABLE,
+                                        modelName = deviceList!!.get(i).printerName
+
+
+                                    )
+                                )
+                            }
+                        }
+
+
+                    }
+
+                    //availableNetworkAdapter.addAll(tempAvailableList)
+
+                }
+
+
+
+
+                if (deviceList == null) {
+                    if (printerList.size > 0) {
+                        printerList.clear()
+                        // printerListAdapter!!.notifyDataSetChanged()
+                    }
+                } else if (deviceList!!.size != printerList.size) {
+                    printerList.clear()
+                    var name: String? = null
+                    var address: String? = null
+                    for (i in deviceList!!.indices) {
+                        name = deviceList!![i].printerName
+                        address = deviceList!![i].deviceName
+                        val item = HashMap<String, String>()
+                        item["PrinterName"] = name
+                        item["Address"] = address
+                        printerList.add(item)
+                    }
+
+                    /* for (i in 0 until list!!.size) {
+                         availableNetworkAdapter.addItem(
+                             PrinterListModel(
+                                 printerName = list!![i].printerName,
+                                 connectionType = WIFI,
+                                 isActive = false,
+                                 type = AVAILABLE,
+                                 deviceModel = list!!.get(i),
+
+                             )
+                         )
+                     }*/
+
+
+                }
+
+
+//                future?.cancel(false)
+                //stopFinder()
+
+
+                /* if (deviceList?.isNotEmpty() == true) {
+                     stopFinder()
+                 }*/
+
+                /* if (deviceList?.isEmpty() == true) {
+                     handler.post(UpdateListThread(deviceList))
+                 }*/
+
+                /*if (deviceList != null) {
+                    stopFinder()
+                } else {
+                    handler.post(UpdateListThread(deviceList))
+                    //startFinder()
+                }*/
+                // stopFinder()
+
+
+            } catch (e: Exception) {
+                return@launch
+            }
+        }
     }
 
 
