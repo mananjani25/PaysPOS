@@ -853,6 +853,7 @@
     <string name="minimum_one_guest_is_required">Minimum one guest is required</string>
     <string name="order_total">Order Total</string>
     <string name="cash">Cash</string>
+    <string name="minimum_guest_count_should_be_one">Minimum guest count should be 1</string>
 
 </resources>
 

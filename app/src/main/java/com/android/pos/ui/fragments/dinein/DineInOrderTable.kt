@@ -1094,7 +1094,13 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     }
 
     private fun addGuestToOrder(count: Int) {
-
+        if (count == 0) {
+            AlertUtils.showCustomAlertWithListenerWithOK(
+                requireContext(), getString(R.string.minimum_guest_count_should_be_one)
+            ) { _, _ ->
+            }
+            return
+        }
         val adapterList = dineInTableAdapter.getList()
         cartList = getCartModel(adapterList.toCollection(arrayListOf()))
         Log.d(TAG, "addGuestToOrder: " + Gson().toJson(cartList))
