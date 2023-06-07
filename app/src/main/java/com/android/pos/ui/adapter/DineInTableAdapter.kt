@@ -799,17 +799,19 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     fun updateStatus(clickedPos: Int, isFireAll: Boolean) {
         if (isFireAll) {
-            list.forEach {
-                if (it.isHeader == 1) {
-                    it.item?.isFired = true
-
-                } else {
-                    it.isFired = true
+            if(list.isNotEmpty()) {
+                list.forEach {
+                    if (it.isHeader == 1) {
+                        it.item?.isFired = true
+                    } else {
+                        it.isFired = true
+                    }
                 }
             }
         } else {
-
-            list[clickedPos].item?.isFired = true
+            if(list.isNotEmpty() && clickedPos < list.size){
+                list[clickedPos].item?.isFired = true
+            }
         }
         notifyDataSetChanged()
     }
