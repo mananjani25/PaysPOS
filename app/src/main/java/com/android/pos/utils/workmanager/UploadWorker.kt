@@ -1284,7 +1284,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
             } catch (e: Exception) {
 
                 printerBreak = true
-                sendNotification("Please check.TM-U220 is Offline.")
+                sendNotification("Printer - ${listOfPrintersData[currentPrinterIndex].modelName} is Offline.")
 
                 /* try {
                      // printer?.disconnect()
@@ -2693,7 +2693,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
         } else if (p2?.paper ?: 0 > 0) {
 
-            sendNotification("Please fill the Paper in TM-U220.")
+            sendNotification("Please fill the Paper in ${listOfPrintersData.get(currentPrinterIndex).modelName}.")
             try {
                 p0?.clearCommandBuffer()
                 p0?.endTransaction()
@@ -2908,7 +2908,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
             notificationManager.createNotificationChannel(channel)
         }
 
-        notificationManager.notify(102 /* ID of notification */, notificationBuilder.build())
+        notificationManager.notify(System.currentTimeMillis().toInt()/* ID of notification */, notificationBuilder.build())
     }
 
 }

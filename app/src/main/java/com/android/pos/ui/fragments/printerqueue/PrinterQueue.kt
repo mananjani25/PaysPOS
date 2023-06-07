@@ -149,6 +149,7 @@ class PrinterQueue : Fragment() {
                                     )
                                 }
                                 runOnUiThread(Runnable {
+                                    Log.e(TAG,"checkRunUITHREAD")
 
                                     adapter.addData(listPrinterQueue)
                                 })
