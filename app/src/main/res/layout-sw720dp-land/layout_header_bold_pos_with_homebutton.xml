@@ -37,7 +37,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:background="?attr/selectableItemBackground"
+                android:background="@color/bg_color"
                 android:padding="@dimen/_5sdp"
                 android:text="KEYPAD"
                 android:textAllCaps="true"

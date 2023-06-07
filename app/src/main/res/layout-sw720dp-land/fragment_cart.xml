@@ -32,7 +32,7 @@
             android:orientation="vertical">
 
 
-            <androidx.appcompat.widget.LinearLayoutCompat
+            <RelativeLayout
                 android:id="@+id/relHeader"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -51,38 +51,46 @@
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi" />
 
-            <TextView
-                android:id="@+id/txtAddCustomer"
-                style="@style/CustomFontSemiBold"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_toStartOf="@+id/imgOrderMenu"
-                android:layout_weight="9.5"
-                android:ellipsize="end"
-                android:gravity="end"
-                android:maxLength="40"
-                android:paddingVertical="@dimen/_5sdp"
-                android:singleLine="true"
-                android:text="@string/add_customer2"
-                android:textColor="@color/btnColor"
-                android:textSize="@dimen/_6mdpi" />
-
-                <ImageView
-                    android:id="@+id/imgOrderMenu"
-                    android:layout_width="@dimen/_15sdp"
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_gravity="center"
-                    android:background="?attr/selectableItemBackground"
-                    android:contentDescription="@string/menu"
-                    android:paddingVertical="@dimen/_4sdp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_toEndOf="@+id/orderTypeDisplay"
+                    android:gravity="end">
 
-                    android:src="@drawable/ic_dot_menu"
-                    app:tint="@color/txtColor" />
+                    <TextView
+                        android:id="@+id/txtAddCustomer"
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_toStartOf="@+id/imgOrderMenu"
+                        android:ellipsize="end"
+                        android:gravity="end"
+                        android:maxLength="40"
+                        android:paddingVertical="@dimen/_5sdp"
+                        android:singleLine="true"
+                        android:text="@string/add_customer2"
+                        android:textColor="@color/btnColor"
+                        android:textSize="@dimen/_6mdpi" />
 
+                    <ImageView
+                        android:id="@+id/imgOrderMenu"
+                        android:layout_width="@dimen/_15sdp"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:layout_gravity="center"
+                        android:background="?attr/selectableItemBackground"
+                        android:contentDescription="@string/menu"
+                        android:paddingVertical="@dimen/_4sdp"
 
-            </androidx.appcompat.widget.LinearLayoutCompat>
+                        android:src="@drawable/ic_dot_menu"
+                        app:tint="@color/txtColor" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+            </RelativeLayout>
 
             <include
                 android:id="@+id/viewDivider"
