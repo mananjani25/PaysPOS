@@ -864,7 +864,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 hideClearCart()
             }
         }
-        binding.relAddCustomer.setOnClickListener {
+        binding.txtAddCustomer.setOnClickListener {
             findNavController().navigate(R.id.action_manualSaleNew_to_assignCustomerOrderFragment)
         }
 

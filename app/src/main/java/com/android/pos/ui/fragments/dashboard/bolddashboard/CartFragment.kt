@@ -1671,6 +1671,13 @@ class CartFragment(
     }
 
     private fun  addGuestToOrder(count: Int) {
+        if (count == 0) {
+            AlertUtils.showCustomAlertWithListenerWithOK(
+                requireContext(), getString(R.string.minimum_guest_count_should_be_one)
+            ) { _, _ ->
+            }
+            return
+        }
         var existing_count = dineInCartAdapter.getList().size - 1
         var total_count = existing_count + count
         if (total_count <= 15) {
