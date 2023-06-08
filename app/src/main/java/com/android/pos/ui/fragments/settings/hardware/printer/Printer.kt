@@ -564,9 +564,9 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                     if (data?.isEmpty() == true) {
                         customerAdapter.clearList()
                     }
-//                    availableNetworkAdapter.clearList()
-//                    searchBluetooth()
-//                    startFinder()
+                    availableNetworkAdapter.clearList()
+                    searchBluetooth()
+                    startFinder()
 
                     if (saved) {
 
@@ -594,7 +594,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
         }
 
-        viewModel.getKitchenPrinters().observe(viewLifecycleOwner) {
+        viewModel.getKitchenPrintersList().observe(viewLifecycleOwner) {
             when (it.status) {
 
                 Status.SUCCESS -> {
@@ -720,9 +720,9 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
         }
 
-        availableNetworkAdapter.clearList()
-        searchBluetooth()
-        startFinder()
+//        availableNetworkAdapter.clearList()
+//        searchBluetooth()
+//        startFinder()
 
     }
 
