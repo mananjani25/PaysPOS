@@ -295,6 +295,7 @@ object Constants {
     const val ORDER_PAY_AMOUNT_WISE = "payments/pay_amount_wise"
     const val ORDER_COUNTS = "orders/open_orders_show_count"
     const val ONLINE_ORDER_COUNTS = "online_ordering_orders/web_orders_count"
+    const val ALL_ORDER_COUNTS = "orders/all_orders_count"
     const val ONLINE_ORDER_NOTIFICATION_COUNT = "locations/web_ordering_count"
     const val UPDATE_LOCK_SCREEN_PERMISSION = "locations/update_lock_screen_permission"
 

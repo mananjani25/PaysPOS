@@ -32,7 +32,6 @@ class AllOrdersFragment : Fragment() {
         binding = FragmentAllOrdersBinding.inflate(layoutInflater)
         configureToolbar()
         setupTabs()
-        requireContext().registerReceiver(broadcastReceiver, IntentFilter("cancelled"))
         return binding.root
     }
 
@@ -52,28 +51,7 @@ class AllOrdersFragment : Fragment() {
             }
 
         })
-        TabLayoutMediator(binding.commonToolbar.tabLayout, binding.viewPager) { tab, position ->
-            when (position) {
-                0 -> {
-                    tab.text = "All Orders (0)"
-                }
-                1 -> {
-                    tab.text = "Open (0)"
-                }
-                2 -> {
-                    tab.text = "Phone (0)"
-                }
-                3 -> {
-                    tab.text = "Online (0)"
-                }
-                4 -> {
-                    tab.text = "3rd Party (0)"
-                }
-                else -> {
-                    tab.text = "All Orders (0)"
-                }
-            }
-        }.attach()
+        updateTabTitle(0,0,0,0,0)
     }
 
     private fun configureToolbar() {
@@ -128,47 +106,5 @@ class AllOrdersFragment : Fragment() {
 
         }.attach()
     }
-
-    var broadcastReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-
-            val isCount = intent?.getBooleanExtra("isCount", false)
-//            startDate = intent?.getStringExtra("start_date")
-//            endDate = intent?.getStringExtra("end_date")
-//
-//            getOrderCountsObserver(startDate, endDate)
-
-            if (isCount == true) {
-
-                val count = intent.getIntExtra("count", 0)
-                val orderType = intent.getStringExtra("param1")
-
-                when (orderType) {
-                    "0" -> {
-                        //active
-//                        activeOrdersCount = count
-//                        setAdapter(0)
-                    }
-                    "1" -> {
-                        //complete
-//                        completedOrdersCount = count
-//                        setAdapter(1)
-                    }
-                    "2" -> {
-                        //cancel
-//                        cancelledOrdersCount = count
-//                        setAdapter(2)
-                    }
-                }
-
-                LogUtil.logE("broadcastReceiver", count.toString())
-            } else {
-                val position = intent?.getIntExtra("position", 0)
-//                changePosition(position!!)
-//                setAdapter(position)
-            }
-        }
-    }
-
 
 }

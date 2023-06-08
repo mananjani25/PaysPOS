@@ -58,7 +58,7 @@ class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
     var startDate: String? = null
     var endDate: String? = null
     private var mPos: Int = 0
-    private val viewModel by viewModels<OnlineDetailViewModel>()
+    private val viewModel by viewModels<AllOrdersViewModel>()
     private var ongoingOrderCount: Int? = 0
     private var pendingOrdersCount: Int? = 0
     private var cancelledOrdersCount: Int? = 0
@@ -77,13 +77,11 @@ class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        // Inflate the layout for this fragment
         binding = FragmentAllOrdersCountsBinding.inflate(inflater, container, false)
         Log.d(TAG, "onCreateView: CURRENT POS = $tabPosition")
-        requireContext().registerReceiver(broadcastReceiver, IntentFilter("onlineOrder"));
+        requireContext().registerReceiver(broadcastReceiver, IntentFilter("allOrderCounts"));
         binding.commonToolbar.root.gone()
-        //configureToolbar()
-        getOrderCountsObserver(startDate, endDate)
+        getAllOrderCounts(startDate, endDate)
 
         getCustomerDisplay(requireContext())?.let { display ->
             presentation = CustomDisplay(
@@ -120,17 +118,17 @@ class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
 
     var broadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-
+            Log.d("08JUNE23", "onReceive: CALLED")
             val isCount = intent?.getBooleanExtra("isCount", false)
             startDate = intent?.getStringExtra("start_date")
             endDate = intent?.getStringExtra("end_date")
 
-            getOrderCountsObserver(startDate, endDate)
+            getAllOrderCounts(startDate, endDate)
 
             if (isCount == true) {
 
                 val count = intent.getIntExtra("count", 0)
-                val orderType = intent.getStringExtra("param1")
+                val orderType = intent.getStringExtra("orderType")
 
                 when (orderType) {
                     "0" -> {
@@ -217,23 +215,40 @@ class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
 
     }
 
-    private fun getOrderCountsObserver(startDate: String?, endDate: String?) {
+    private fun getAllOrderCounts(startDate: String?, endDate: String?) {
+        Log.d("08JUNE23", "getAllOrderCounts: CALLED")
         try {
-            viewModel.onLineorderCounts(startDate, endDate).observe(viewLifecycleOwner) {
+            viewModel.allOrderCounts(startDate, endDate).observe(viewLifecycleOwner) {
                 it?.let { resource ->
                     when (resource.status) {
                         Status.SUCCESS -> {
+                            Log.d("08JUNE23", "getAllOrderCounts: ${it.data?.data}")
 
-                            pendingOrdersCount = it.data?.data?.online_pending_orders
-                            ongoingOrderCount = it.data?.data?.online_in_progress_orders
-                            completedOrdersCount = it.data?.data?.online_complete_orders
-                            cancelledOrdersCount = it.data?.data?.online_rejected_orders
-                            upcomingOrderCount = it.data?.data?.upcoming_orders
 
+                            when(ORDER_TAB){
+                                 ALL_ORDER_TAB -> {}
+                                 ALL_ORDER_TAB -> {}
+                                 ALL_ORDER_TAB -> {}
+                                 ALL_ORDER_TAB -> {}
+                                 ALL_ORDER_TAB -> {}
+                            }
+
+                            pendingOrdersCount = it.data?.data?.all_orders?.pending ?: 0
+                            ongoingOrderCount = it.data?.data?.all_orders?.in_progress ?: 0
+                            completedOrdersCount = it.data?.data?.all_orders?.completed ?: 0
+                            cancelledOrdersCount = it.data?.data?.all_orders?.rejected ?: 0
+                            upcomingOrderCount = it.data?.data?.all_orders?.upcoming ?: 0
+
+                            val allOrdersPendingCount = it.data?.data?.all_orders?.pending ?: 0
+                            val openOrdersPendingCount = it.data?.data?.open_orders?.active ?: 0
+                            val phoneOrdersPendingCount = it.data?.data?.phone_orders?.pending ?: 0
+                            val webOrdersPendingCount = it.data?.data?.web_orders?.pending ?: 0
+                            val thirdPartyOrdersPendingCount = it.data?.data?.third_party_online_orders?.pending ?: 0
+//
                             EventBus.getDefault().post(
-                                PendingCounts(99,90,3,6,0)
+                                PendingCounts(allOrdersPendingCount,openOrdersPendingCount,phoneOrdersPendingCount,webOrdersPendingCount,thirdPartyOrdersPendingCount)
                             )
-
+//
                             setAdapter(mPos)
                             
                         }

@@ -1,4 +1,4 @@
-package com.android.pos.ui.fragments.onlineorder
+package com.android.pos.ui.fragments.allorders
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -21,7 +21,7 @@ import javax.inject.Inject
 import kotlin.io.path.createTempDirectory
 
 @HiltViewModel
-class OnlineDetailViewModel @Inject constructor(
+class AllOrdersViewModel @Inject constructor(
     private val posRepository: PosRepository,
     private val prefProvider: PrefProvider
 ) : ViewModel() {
@@ -69,14 +69,6 @@ class OnlineDetailViewModel @Inject constructor(
 
     fun allOrderCounts(startDate: String?, endDate: String?): LiveData<Resource<AllOrdersCountResponse>> =
         posRepository.allOrderCounts(startDate, endDate)
-
-
-    fun onlineOrders(
-        startDate: String,
-        endDate: String,
-        order_status: String
-    ): LiveData<Resource<OnlineOrderResponseModel>> =
-        posRepository.getOnlineOrders(startDate, endDate, order_status)
 
     fun getAllOrders(
         startDate: String,

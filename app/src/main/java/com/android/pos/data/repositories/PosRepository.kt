@@ -1084,6 +1084,9 @@ class PosRepository @Inject constructor(
     fun onlineOrderCounts(startDate: String?, endDate: String?) =
         performGetOperationNew(networkCall = { apiHelperNew.onlineOrderCounts(startDate, endDate) })
 
+    fun allOrderCounts(startDate: String?, endDate: String?) =
+        performGetOperationNew(networkCall = { apiHelperNew.allOrderCounts(startDate, endDate) })
+
     fun inventoryCounts() =
         performGetOperationNew(networkCall = { apiHelperNew.inventoryCounts() })
 

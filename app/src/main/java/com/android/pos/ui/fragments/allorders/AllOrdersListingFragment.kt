@@ -100,7 +100,7 @@ import kotlin.math.abs
 
 @AndroidEntryPoint
 class AllOrdersListingFragment(
-    var param1: String,
+    var orderType: String,
     var startDateTime: String?,
     var endDateTime: String?,
     var orderTab: String,
@@ -111,7 +111,7 @@ class AllOrdersListingFragment(
     var ordertypelist: ArrayList<TbOrderType> = arrayListOf()
     private var isEmployeeAtoZ: Boolean = false
     private var isStationAtoZ: Boolean = false
-    private val viewModel by viewModels<OnlineDetailViewModel>()
+    private val viewModel by viewModels<AllOrdersViewModel>()
     private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
     private val activeOrderViewModel by viewModels<ActiveOrderViewModel>()
     lateinit var binding: AllOrdersListingFragmentBinding
@@ -161,7 +161,7 @@ class AllOrdersListingFragment(
             broadcastReceiver,
             IntentFilter(Constants.ONLINE_ORDER_REFRESH)
         )
-        when (param1) {
+        when (orderType) {
             "0" -> {
                 order_status = "Pending"
                 binding.txtOrderWillAppear?.text = "Pending order will appear here."
@@ -377,6 +377,7 @@ class AllOrdersListingFragment(
             paymentStatus,
             orderTabTypeId
         ).observe(viewLifecycleOwner) { it ->
+            Log.d("08JUNE23", "getAllOrders response: CALLED")
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
@@ -413,9 +414,9 @@ class AllOrdersListingFragment(
 
                             }
                             val intent = Intent()
-                            intent.action = "onlineOrder"
+                            intent.action = "allOrderCounts"
                             intent.putExtra("isCount", true)
-                            intent.putExtra("param1", param1)
+                            intent.putExtra("orderType", orderType)
                             intent.putExtra("count", it.data.size)
                             intent.putExtra("start_date", viewModel.startDate.value.toString())
                             intent.putExtra("end_date", viewModel.endDate.value.toString())
@@ -470,7 +471,7 @@ class AllOrdersListingFragment(
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.setCurrentDate(Calendar.getInstance(), "", "", param1)
+        viewModel.setCurrentDate(Calendar.getInstance(), "", "", orderType)
     }
 
     override fun onCreateView(
@@ -699,7 +700,7 @@ class AllOrdersListingFragment(
 
                 )
                 datePickerDialog.show()
-                if (param1 == "4") {
+                if (orderType == "4") {
                     datePickerDialog.datePicker.minDate = myCalendar.timeInMillis
                     var temp_calender = Calendar.getInstance()
                     temp_calender.add(Calendar.DATE, 7)
@@ -717,7 +718,7 @@ class AllOrdersListingFragment(
     private fun endDatePickerObserver() {
         viewModel.endDateSelection.observe(requireActivity()) { event ->
             event.getContentIfNotHandled()?.let {
-                if (param1 == "4") {
+                if (orderType == "4") {
                     myCalendar1 = Calendar.getInstance()
                     myCalendar1.add(Calendar.DATE, 7)
                 }
@@ -731,7 +732,7 @@ class AllOrdersListingFragment(
                     myCalendar1.get(Calendar.DAY_OF_MONTH)
 
                 )
-                if (param1 == "4") {
+                if (orderType == "4") {
                     datePickerDialog.datePicker.minDate = myCalendar1.timeInMillis
                 } else {
                     datePickerDialog.datePicker.maxDate = Date().time

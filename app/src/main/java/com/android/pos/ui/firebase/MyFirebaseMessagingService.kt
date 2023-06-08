@@ -53,7 +53,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                     intent.action = SEND_CLOCKOUT_NOTIFICATION
                     prefProvider.setValueboolean("clockOutFromNoti", true)
                     sendBroadcast(intent)
-                } else if (type == "onlineorder") {
+                } else if (type == "onlineorder") {//for online and third-party pending orders count
                     val intent = Intent()
                     intent.putExtra("message", remoteMessage.data["message"].toString())
                     intent.putExtra("count", remoteMessage.data["count"])
