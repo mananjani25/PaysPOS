@@ -226,11 +226,41 @@ class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
 
 
                             when(ORDER_TAB){
-                                 ALL_ORDER_TAB -> {}
-                                 ALL_ORDER_TAB -> {}
-                                 ALL_ORDER_TAB -> {}
-                                 ALL_ORDER_TAB -> {}
-                                 ALL_ORDER_TAB -> {}
+                                 ALL_ORDER_TAB -> {
+                                     pendingOrdersCount = it.data?.data?.all_orders?.pending ?: 0
+                                     ongoingOrderCount = it.data?.data?.all_orders?.in_progress ?: 0
+                                     completedOrdersCount = it.data?.data?.all_orders?.completed ?: 0
+                                     cancelledOrdersCount = it.data?.data?.all_orders?.rejected ?: 0
+                                     upcomingOrderCount = it.data?.data?.all_orders?.upcoming ?: 0
+                                 }
+                                 OPEN_ORDER_TAB -> {
+                                     pendingOrdersCount = it.data?.data?.open_orders?.active ?: 0
+                                     ongoingOrderCount = 0
+                                     completedOrdersCount = it.data?.data?.open_orders?.completed ?: 0
+                                     cancelledOrdersCount = it.data?.data?.open_orders?.cancelled ?: 0
+                                     upcomingOrderCount = 0
+                                 }
+                                 PHONE_ORDER_TAB -> {
+                                     pendingOrdersCount = it.data?.data?.phone_orders?.pending ?: 0
+                                     ongoingOrderCount = it.data?.data?.phone_orders?.in_progress ?: 0
+                                     completedOrdersCount = it.data?.data?.phone_orders?.completed ?: 0
+                                     cancelledOrdersCount = it.data?.data?.phone_orders?.rejected ?: 0
+                                     upcomingOrderCount = it.data?.data?.phone_orders?.upcoming ?: 0
+                                 }
+                                 ONLINE_ORDER_TAB -> {
+                                     pendingOrdersCount = it.data?.data?.web_orders?.pending ?: 0
+                                     ongoingOrderCount = it.data?.data?.web_orders?.in_progress ?: 0
+                                     completedOrdersCount = it.data?.data?.web_orders?.completed ?: 0
+                                     cancelledOrdersCount = it.data?.data?.web_orders?.rejected ?: 0
+                                     upcomingOrderCount = it.data?.data?.web_orders?.upcoming ?: 0
+                                 }
+                                 THIRD_PARTY_ORDER_TAB -> {
+                                     pendingOrdersCount = it.data?.data?.third_party_online_orders?.pending ?: 0
+                                     ongoingOrderCount = it.data?.data?.third_party_online_orders?.in_progress ?: 0
+                                     completedOrdersCount = it.data?.data?.third_party_online_orders?.completed ?: 0
+                                     cancelledOrdersCount = it.data?.data?.third_party_online_orders?.rejected ?: 0
+                                     upcomingOrderCount = it.data?.data?.third_party_online_orders?.upcoming ?: 0
+                                 }
                             }
 
                             pendingOrdersCount = it.data?.data?.all_orders?.pending ?: 0
@@ -244,11 +274,11 @@ class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
                             val phoneOrdersPendingCount = it.data?.data?.phone_orders?.pending ?: 0
                             val webOrdersPendingCount = it.data?.data?.web_orders?.pending ?: 0
                             val thirdPartyOrdersPendingCount = it.data?.data?.third_party_online_orders?.pending ?: 0
-//
+
                             EventBus.getDefault().post(
                                 PendingCounts(allOrdersPendingCount,openOrdersPendingCount,phoneOrdersPendingCount,webOrdersPendingCount,thirdPartyOrdersPendingCount)
                             )
-//
+
                             setAdapter(mPos)
                             
                         }
