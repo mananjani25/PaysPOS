@@ -2298,12 +2298,16 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                             }
                             if (!allstatus){
                                 viewModel.downloadFinished(false)
-                                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                                if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                                }
                             }
 
                         } else {
                             viewModel.downloadFinished(false)
-                            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                            if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                            }
                         }
 
                     }
