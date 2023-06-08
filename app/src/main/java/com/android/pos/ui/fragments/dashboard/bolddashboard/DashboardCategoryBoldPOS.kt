@@ -90,10 +90,6 @@ import com.sunmi.externalprinterlibrary.api.SunmiPrinter
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import com.zebra.scannercontrol.FirmwareUpdateEvent
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import java.io.IOException
 import java.util.*
 import javax.inject.Inject
@@ -1066,6 +1062,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                             "checkDineHeaderPos",
                             "dineInHeaderPosition:  ${viewModel.dineInHeaderPosition}"
                         )
+
+                        if (prefProvider.getValueboolean(Constants.DINE_IN_UPDATE, false)) {
+                            item.isEdited = true
+                        }
 
                         var dineInList = cartList[0].dineInList
                         dineInList!![0]?.selectedPosition = viewModel.dineInHeaderPosition
