@@ -58,7 +58,9 @@ import com.android.pos.data.entities.TbOrderType
 import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.data.entities.TbTimeZones
 import com.android.pos.data.entities.TeamRole
+import com.android.pos.data.entities.TypeConvertersQueueDineIn
 import com.android.pos.data.model.CharacterModel
+import com.android.pos.data.model.GuestAttrQueue
 import com.android.pos.data.model.PrinterQueueModel
 import com.android.pos.data.model.ShiftRportConfiguration
 import com.android.pos.data.model.SplitDetailListModel
@@ -104,8 +106,8 @@ import com.android.pos.data.typeconvert.TypeConvertorPhone
         PrinterResponse.Data.KitchenReceiptPrinters::class, GetKitchenReceiptSettingsResponse.Data::class,
         GetCustomerReceiptSettingsResponse.Data::class, LoyaltyProgramsModel::class, SplitDetailListModel::class,
         CashDiscountModel::class, TbCountryList::class, TbCardReader::class, VenueDetailsResponse.Data.CancelOrderReason::class,
-        DineInCartModel::class, ShiftRportConfiguration::class, TbBusinessDetails::class, TbTimeZones::class, PrinterQueueModel::class],
-    version = 5
+        DineInCartModel::class, ShiftRportConfiguration::class, TbBusinessDetails::class, TbTimeZones::class, PrinterQueueModel::class, GuestAttrQueue::class],
+    version = 6
 )
 @TypeConverters(
     TypeConvertersIds::class,
@@ -130,7 +132,8 @@ import com.android.pos.data.typeconvert.TypeConvertorPhone
     TCBusiness::class,
     TCPrinterQueueData::class,
     TCOrderItemsPrinter::class,
-    TCPrinterQueueSuucessModel::class
+    TCPrinterQueueSuucessModel::class,
+    TypeConvertersQueueDineIn::class
 )
 
 

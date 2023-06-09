@@ -18,16 +18,17 @@ data class PrinterQueueModel(
     var paymentType: String = "",
     var orderID: String = "",
     var status: String = "",
-  //PrinterQueueReponse.Data
-    val printerQueueData: String="",
+    //PrinterQueueReponse.Data
+    val printerQueueData: String = "",
     var orderItems: List<CreateOrderResponse.Data.Order.OrderItem> = emptyList(),
     var position: Int = 0,
     var customerName: String = "",
     var customerPhoneNo: String = "",
     var customerAddress: String = "",
-   var printSuccessData: String = "",
-    var employeeName:String = "",
-    var dateAndTime:String = ""
+    var printSuccessData: String = "",
+    var employeeName: String = "",
+    var dateAndTime: String = "",
+    var guestAttributes: List<GuestAttrQueue> = emptyList()
 ) {
     data class PrinterReceivedSuccessModel(
         var printerId: Int,
