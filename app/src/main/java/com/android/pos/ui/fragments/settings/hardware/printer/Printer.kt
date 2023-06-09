@@ -99,6 +99,7 @@ import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 
 //Original New
@@ -138,6 +139,10 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
 
     private val viewModel by viewModels<PrinterViewModel>()
+
+    var addedCustomerPrinters = false
+    var addedKitchenPrinters = false
+
 
     lateinit var readBuffer: ByteArray
     var readBufferPosition = 0
@@ -401,6 +406,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                     delay(4000)
                     hideLoaderAfterDelay()
                     isOneClick = false
+                    addedCustomerPrinters = false
+                    addedKitchenPrinters = false
                 }
 
             }
@@ -458,6 +465,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
     private fun syncPrinterList(saved: Boolean = false) {
         allPrinterlist.clear()
+        addedCustomerPrinters = false
+        addedKitchenPrinters = false
         viewModel.printerList().observe(viewLifecycleOwner) {
             when (it.status) {
 
@@ -471,81 +480,87 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                     LogUtil.logE(TAG, "PrinterREsponseData:  ${Gson().toJson(data)}")
 
                     if (it.data != null) {
-                        if (data != null) {
-                            val customerData = data
-                            customerAdapter.clearList()
-                            customerAdapter.setList(arrayListOf())
 
+                        val customerData = data
+                        customerAdapter.clearList()
+                        customerAdapter.setList(arrayListOf())
 
-                            if (customerData != null) {
-                                for (i in customerData.indices) {
-                                    customerAdapter.addItem(
-                                        PrinterListModel(
-                                            id = customerData[i].id,
-                                            printerName = customerData[i].name,
-                                            modelName = customerData[i].modalName,
-                                            connectionType = if (customerData[i].printer_type == BLUETOOTH) {
-                                                BLUETOOTH
+                        var customerPrintersList: ArrayList<PrinterListModel> = arrayListOf()
+                        if (customerData != null) {
+                            for (i in customerData.indices) {
+                                customerPrintersList.add(
+                                    PrinterListModel(
+                                        id = customerData[i].id,
+                                        printerName = customerData[i].name,
+                                        modelName = customerData[i].modalName,
+                                        connectionType = if (customerData[i].printer_type == BLUETOOTH) {
+                                            BLUETOOTH
+                                        } else {
+                                            WIFI
+                                        },
+                                        isActive = customerData[i].status,
+                                        type = customerData[i].receiptPrintType,
+                                        deviceModel = DeviceInfo(
+                                            if (customerData[i].printer_type == BLUETOOTH) {
+                                                DevType.BLUETOOTH
                                             } else {
-                                                WIFI
+                                                DevType.TCP
                                             },
-                                            isActive = customerData[i].status,
-                                            type = customerData[i].receiptPrintType,
-                                            deviceModel = DeviceInfo(
-                                                if (customerData[i].printer_type == BLUETOOTH) {
-                                                    DevType.BLUETOOTH
-                                                } else {
-                                                    DevType.TCP
-                                                },
-                                                customerData[i].ipAddress,
-                                                customerData[i].name,
-                                                customerData[i].ipAddress,
-                                                customerData[i].macAddress
-                                            ),
-                                            printerModel = customerData[i].orderTypes,
-                                            currentPrinterType = CUSTOMER,
-                                            printerCategories = customerData[i].printerCategories
+                                            customerData[i].ipAddress,
+                                            customerData[i].name,
+                                            customerData[i].ipAddress,
+                                            customerData[i].macAddress
+                                        ),
+                                        printerModel = customerData[i].orderTypes,
+                                        currentPrinterType = CUSTOMER,
+                                        printerCategories = customerData[i].printerCategories
 
-
-                                        )
-                                    )
-
-                                    allPrinterlist.add(
-                                        PrinterListModel(
-                                            id = customerData[i].id,
-                                            printerName = customerData[i].name,
-                                            modelName = customerData[i].modalName,
-                                            connectionType = if (customerData[i].printer_type == BLUETOOTH) {
-                                                BLUETOOTH
-                                            } else {
-                                                WIFI
-                                            },
-                                            isActive = customerData[i].status,
-                                            type = customerData[i].receiptPrintType,
-                                            deviceModel = DeviceInfo(
-                                                if (customerData[i].printer_type == BLUETOOTH) {
-                                                    DevType.BLUETOOTH
-                                                } else {
-                                                    DevType.TCP
-                                                },
-                                                customerData[i].ipAddress,
-                                                customerData[i].name,
-                                                customerData[i].ipAddress,
-                                                customerData[i].macAddress
-                                            ),
-                                            printerModel = customerData[i].orderTypes,
-                                            printerCategories = customerData[i].printerCategories
-
-
-                                        )
 
                                     )
+                                )
 
-                                }
+                                /*  allPrinterlist.add(
+                                      PrinterListModel(
+                                          id = customerData[i].id,
+                                          printerName = customerData[i].name,
+                                          modelName = customerData[i].modalName,
+                                          connectionType = if (customerData[i].printer_type == BLUETOOTH) {
+                                              BLUETOOTH
+                                          } else {
+                                              WIFI
+                                          },
+                                          isActive = customerData[i].status,
+                                          type = customerData[i].receiptPrintType,
+                                          deviceModel = DeviceInfo(
+                                              if (customerData[i].printer_type == BLUETOOTH) {
+                                                  DevType.BLUETOOTH
+                                              } else {
+                                                  DevType.TCP
+                                              },
+                                              customerData[i].ipAddress,
+                                              customerData[i].name,
+                                              customerData[i].ipAddress,
+                                              customerData[i].macAddress
+                                          ),
+                                          printerModel = customerData[i].orderTypes,
+                                          printerCategories = customerData[i].printerCategories
+
+
+                                      )
+
+                                  )*/
+
                             }
+                            customerAdapter.setList(customerPrintersList)
+                            allPrinterlist.addAll(customerPrintersList)
+                            addedCustomerPrinters = true
                         } else {
-                            LogUtil.logE(TAG, "CustomerListCleared ")
-                            customerAdapter.clearList()
+                            addedCustomerPrinters = true
+                        }
+                        if (addedCustomerPrinters && addedKitchenPrinters) {
+                            availableNetworkAdapter.clearList()
+                            searchBluetooth()
+                            startFinder()
                         }
 
 
@@ -554,6 +569,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                         kitchenAdapter.clearList()
 
                         customerAdapter.clearList()
+                        addedCustomerPrinters = true
                     }
 
                     /*if (data?.kitchenReceiptPrinters?.isEmpty() == true) {
@@ -561,12 +577,10 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                     }
 */
 
-                    if (data?.isEmpty() == true) {
-                        customerAdapter.clearList()
-                    }
-                    availableNetworkAdapter.clearList()
-                    searchBluetooth()
-                    startFinder()
+                    /* if (data?.isEmpty() == true) {
+                         customerAdapter.clearList()
+                     }*/
+
 
                     if (saved) {
 
@@ -580,6 +594,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
                     }
                 }
+
                 Status.ERROR -> {
                     LogUtil.logE(TAG, "PrinterError ")
                     ProgressUtils.dismissProgressDialog()
@@ -587,143 +602,115 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                     searchBluetooth()
                     startFinder()
                 }
+
                 Status.LOADING -> {
                     ProgressUtils.showProgressDialog(requireActivity())
                 }
             }
 
         }
+        getAllKitchenPrintersListFromDB()
+    }
 
-        viewModel.getKitchenPrintersList().observe(viewLifecycleOwner) {
-            when (it.status) {
-
-                Status.SUCCESS -> {
-                    LogUtil.logE(TAG, "SyncPrinterList")
-                    ProgressUtils.dismissProgressDialog()
-                    val data = it.data
-
-
-                    LogUtil.logE(TAG, "PrinterREsponseData:  ${Gson().toJson(data)}")
-
-                    if (it.data != null) {
-                        if (data != null) {
-                            val kitchenData = data
-                            kitchenAdapter.clearList()
-                            kitchenAdapter.setList(arrayListOf())
-                            if (kitchenData != null) {
-                                for (i in kitchenData.indices) {
-                                    kitchenAdapter.addItem(
-                                        PrinterListModel(
-                                            id = kitchenData[i].id,
-                                            printerName = kitchenData[i].name,
-                                            modelName = kitchenData[i].modalName,
-                                            connectionType = if (kitchenData[i].printer_type == BLUETOOTH) {
-                                                BLUETOOTH
-                                            } else {
-                                                WIFI
-                                            },
-                                            isActive = kitchenData[i].status,
-                                            type = kitchenData[i].receiptPrintType,
-                                            deviceModel = DeviceInfo(
-                                                if (kitchenData[i].printer_type == BLUETOOTH) {
-                                                    DevType.BLUETOOTH
-                                                } else {
-                                                    DevType.TCP
-                                                },
-                                                kitchenData[i].ipAddress,
-                                                kitchenData[i].name,
-                                                kitchenData[i].ipAddress,
-                                                kitchenData[i].macAddress
-                                            ),
-                                            printerModel = kitchenData[i].orderTypes,
-                                            currentPrinterType = KITCHEN,
-                                            printerCategories = kitchenData[i].printerCategories
+    private fun getAllKitchenPrintersListFromDB() {
+        viewModel.viewModelScope.launch {
+            ProgressUtils.showProgressDialog(requireActivity())
+            try {
+                var kitchenData = viewModel.getKitchenPrintersList()
+                requireActivity()
+                if (kitchenData.isNotEmpty()) {
+                    kitchenAdapter.clearList()
+                    kitchenAdapter.setList(arrayListOf())
+                    var kitchenPrintersList: ArrayList<PrinterListModel> = arrayListOf()
+                    if (kitchenData != null) {
+                        for (i in kitchenData.indices) {
+                            kitchenPrintersList.add(
+                                PrinterListModel(
+                                    id = kitchenData[i].id,
+                                    printerName = kitchenData[i].name,
+                                    modelName = kitchenData[i].modalName,
+                                    connectionType = if (kitchenData[i].printer_type == BLUETOOTH) {
+                                        BLUETOOTH
+                                    } else {
+                                        WIFI
+                                    },
+                                    isActive = kitchenData[i].status,
+                                    type = kitchenData[i].receiptPrintType,
+                                    deviceModel = DeviceInfo(
+                                        if (kitchenData[i].printer_type == BLUETOOTH) {
+                                            DevType.BLUETOOTH
+                                        } else {
+                                            DevType.TCP
+                                        },
+                                        kitchenData[i].ipAddress,
+                                        kitchenData[i].name,
+                                        kitchenData[i].ipAddress,
+                                        kitchenData[i].macAddress
+                                    ),
+                                    printerModel = kitchenData[i].orderTypes,
+                                    currentPrinterType = KITCHEN,
+                                    printerCategories = kitchenData[i].printerCategories
 
 
-                                        )
-                                    )
-
-                                    allPrinterlist.add(
-                                        PrinterListModel(
-
-                                            id = kitchenData[i].id,
-                                            printerName = kitchenData[i].name,
-                                            modelName = kitchenData[i].modalName,
-                                            connectionType = if (kitchenData[i].printer_type == BLUETOOTH) {
-                                                BLUETOOTH
-                                            } else {
-                                                WIFI
-                                            },
-                                            isActive = kitchenData[i].status,
-                                            type = kitchenData[i].receiptPrintType,
-                                            deviceModel = DeviceInfo(
-                                                if (kitchenData[i].printer_type == BLUETOOTH) {
-                                                    DevType.BLUETOOTH
-                                                } else {
-                                                    DevType.TCP
-                                                },
-                                                kitchenData[i].ipAddress,
-                                                kitchenData[i].name,
-                                                kitchenData[i].ipAddress,
-                                                kitchenData[i].macAddress
-                                            ),
-                                            printerModel = kitchenData[i].orderTypes,
-                                            printerCategories = kitchenData[i].printerCategories
+                                )
+                            )
 
 
-                                        )
-                                    )
-                                }
+                            /*allPrinterlist.add(
+                            PrinterListModel(
 
-                            }
+                                id = kitchenData[i].id,
+                                printerName = kitchenData[i].name,
+                                modelName = kitchenData[i].modalName,
+                                connectionType = if (kitchenData[i].printer_type == BLUETOOTH) {
+                                    BLUETOOTH
+                                } else {
+                                    WIFI
+                                },
+                                isActive = kitchenData[i].status,
+                                type = kitchenData[i].receiptPrintType,
+                                deviceModel = DeviceInfo(
+                                    if (kitchenData[i].printer_type == BLUETOOTH) {
+                                        DevType.BLUETOOTH
+                                    } else {
+                                        DevType.TCP
+                                    },
+                                    kitchenData[i].ipAddress,
+                                    kitchenData[i].name,
+                                    kitchenData[i].ipAddress,
+                                    kitchenData[i].macAddress
+                                ),
+                                printerModel = kitchenData[i].orderTypes,
+                                printerCategories = kitchenData[i].printerCategories
 
-                        } else {
-                            LogUtil.logE(TAG, "CustomerListCleared 2")
-                            kitchenAdapter.clearList()
+
+                            )
+                        )*/
                         }
-
-
+                        kitchenAdapter.setList(kitchenPrintersList)
+                        allPrinterlist.addAll(kitchenPrintersList)
+                        addedKitchenPrinters = true
                     } else {
-                        LogUtil.logE(TAG, "ITNotNull  ")
-                        kitchenAdapter.clearList()
-
-
+                        addedKitchenPrinters = true
                     }
 
-                    /*if (data?.kitchenReceiptPrinters?.isEmpty() == true) {
-                        kitchenAdapter.clearList()
+                    if (addedCustomerPrinters && addedKitchenPrinters) {
+                        availableNetworkAdapter.clearList()
+                        searchBluetooth()
+                        startFinder()
                     }
-*/
-
-                    if (data?.isEmpty() == true) {
-                        kitchenAdapter.clearList()
-                    }
-//                    availableNetworkAdapter.clearList()
-//                    searchBluetooth()
-//                    startFinder(3)
 
 
+                } else {
+                    LogUtil.logE(TAG, "ITNotNull  ")
+                    kitchenAdapter.clearList()
+                    addedKitchenPrinters = true
                 }
-
-                Status.ERROR -> {
-                    LogUtil.logE(TAG, "PrinterError ")
-                    ProgressUtils.dismissProgressDialog()
-                    availableNetworkAdapter.clearList()
-                    searchBluetooth()
-                    startFinder()
-                }
-
-                Status.LOADING -> {
-                    ProgressUtils.showProgressDialog(requireActivity())
-                }
+                ProgressUtils.dismissProgressDialog()
+            } catch (e: Exception) {
+                ProgressUtils.dismissProgressDialog()
             }
-
         }
-
-//        availableNetworkAdapter.clearList()
-//        searchBluetooth()
-//        startFinder()
-
     }
 
     @SuppressLint("MissingPermission")
@@ -1853,7 +1840,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         )
 
         viewModel.createPrinter(createPrinter)
-        availableNetworkAdapter.removeItemAt(layoutPosition)
+        availableNetworkAdapter.clearList()
+//        availableNetworkAdapter.removeItemAt(layoutPosition)
         syncPrinterList()
     }
 

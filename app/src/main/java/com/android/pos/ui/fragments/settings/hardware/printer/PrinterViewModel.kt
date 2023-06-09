@@ -60,7 +60,7 @@ class PrinterViewModel @Inject constructor(
         return posRepository.getKitchenPrinters()
     }
 
-    fun getKitchenPrintersList(): LiveData<com.android.pos.utils.statusUtils.Resource<List<PrinterResponse.Data.KitchenReceiptPrinters>>> {
+    suspend fun getKitchenPrintersList(): List<PrinterResponse.Data.KitchenReceiptPrinters> {
         return posRepository.getKitchenPrintersList()
     }
 
