@@ -102,10 +102,18 @@ fun addPaymentDetailsThreeData(builder: Builder, keyValue: java.util.ArrayList<K
 
 
         if (it.key.toString().toLowerCase().contains("Refund".toLowerCase())) {
-            refund = MethodUtils.roundOffAmount(it.value.toString().toDouble() ?: 0.0)
+            refund = if (it.value?.isNotEmpty() == true) {
+                MethodUtils.roundOffAmount(it.value.toString().toDouble())
+            }else{
+                "$0.00"
+            }
         } else {
             title = it.key.toString()
-            amount = MethodUtils.roundOffAmount(it.value.toString().toDouble())
+            amount = if (it.value?.isNotEmpty() == true) {
+                MethodUtils.roundOffAmount(it.value.toString().toDouble())
+            }else{
+                "$0.00"
+            }
         }
     }
 
@@ -137,10 +145,10 @@ fun addPaymentDetailsThreeData(keyValue: java.util.ArrayList<KeyValue>) {
             refund = MethodUtils.roundOffAmount(it.value?.toDouble() ?: 0.0)
         } else {
             title = it.key.toString()
-            if (it.value?.isNotEmpty() == true) {
-                amount = MethodUtils.roundOffAmount(it.value.toString().toDouble())
+            amount = if (it.value?.isNotEmpty() == true) {
+                MethodUtils.roundOffAmount(it.value.toString().toDouble())
             }else{
-                amount = "$0.00"
+                "$0.00"
             }
         }
     }
@@ -172,10 +180,10 @@ fun addPaymentDetailsThreeDataInner(keyValue: java.util.ArrayList<KeyValue>) {
             refund = "$" + it.value
         } else {
             title = it.key.toString()
-            if (it.value?.isNotEmpty() == true) {
-                amount = MethodUtils.roundOffAmount(it.value.toString().toDouble())
+            amount = if (it.value?.isNotEmpty() == true) {
+                MethodUtils.roundOffAmount(it.value.toString().toDouble())
             }else{
-                amount = "$0.00"
+                "$0.00"
             }
         }
     }
@@ -821,7 +829,7 @@ fun padLineForItem(
 
 /** utility: string repeat  */
 fun repeat(str: String?, i: Int): String? {
-    if (i != -1)
+    if (i > -1)
     return String(CharArray(i)).replace("\u0000", str!!)
 
     return ""
