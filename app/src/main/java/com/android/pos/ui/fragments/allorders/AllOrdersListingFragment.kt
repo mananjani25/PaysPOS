@@ -67,7 +67,6 @@ import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
 import com.android.pos.ui.adapter.AllOrderAdapter
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
-import com.android.pos.ui.fragments.onlineorder.OnlineDetailViewModel
 import com.android.pos.ui.fragments.orders.ActiveOrderViewModel
 import com.android.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
 import com.android.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
@@ -100,7 +99,8 @@ import kotlin.math.abs
 
 @AndroidEntryPoint
 class AllOrdersListingFragment(
-    var orderType: String,
+    var orderStatus: String,
+    var orderStatusLabel: String,
     var startDateTime: String?,
     var endDateTime: String?,
     var orderTab: String,
@@ -125,7 +125,6 @@ class AllOrdersListingFragment(
     var myCalendar1 = Calendar.getInstance()
     val myCalendar2 = Calendar.getInstance()
     val myCalendar3 = Calendar.getInstance()
-    var order_status = "Pending"
     private val TAG = "AllOrdersListingFrag"
     private var kitchenSettingModel = GetKitchenReceiptSettingsResponse.Data()
     private var customerSettingModel = GetCustomerReceiptSettingsResponse.Data()
@@ -161,29 +160,24 @@ class AllOrdersListingFragment(
             broadcastReceiver,
             IntentFilter(Constants.ONLINE_ORDER_REFRESH)
         )
-        when (orderType) {
+        when (orderStatus) {
             "0" -> {
-                order_status = "Pending"
                 binding.txtOrderWillAppear?.text = "Pending order will appear here."
             }
 
             "1" -> {
-                order_status = "InProgress"
                 binding.txtOrderWillAppear?.text = "InProgress order will appear here."
             }
 
             "2" -> {
-                order_status = "Completed"
                 binding.txtOrderWillAppear?.text = "Completed order will appear here."
             }
 
             "3" -> {
-                order_status = "Rejected"
                 binding.txtOrderWillAppear?.text = "Rejected order will appear here."
             }
 
             "4" -> {
-                order_status = "UpComing"
                 binding.txtOrderWillAppear?.text = "UpComing order will appear here."
             }
 
@@ -193,7 +187,7 @@ class AllOrdersListingFragment(
         setupEmployeeSort()
         setupStationSort()
 
-        if (orderTab == "Open") {
+        if (orderTab == OPEN_ORDER_TAB) {
             binding.lblDelivery.gone()
         } else {
             binding.lblDelivery.visible()
@@ -355,7 +349,7 @@ class AllOrdersListingFragment(
 
     private fun getAllOrders() {
 
-        val paymentStatus: String = when (order_status) {
+        var paymentStatus: String = when (orderStatusLabel) {
             "Pending", "InProgress" -> {
                 "Unpaid"
             }
@@ -370,10 +364,18 @@ class AllOrdersListingFragment(
             }
         }
 
+        if(orderTab == ALL_ORDER_TAB && orderStatusLabel == "InProgress"){
+            paymentStatus = ""
+        }
+
+        if (orderTab == OPEN_ORDER_TAB) {
+            orderStatusLabel = ""
+        }
+
         viewModel.getAllOrders(
             viewModel.startDate.value.toString(),
             viewModel.endDate.value.toString(),
-            order_status,
+            orderStatusLabel,
             paymentStatus,
             orderTabTypeId
         ).observe(viewLifecycleOwner) { it ->
@@ -416,7 +418,7 @@ class AllOrdersListingFragment(
                             val intent = Intent()
                             intent.action = "allOrderCounts"
                             intent.putExtra("isCount", true)
-                            intent.putExtra("orderType", orderType)
+                            intent.putExtra("orderStatus", orderStatus)
                             intent.putExtra("count", it.data.size)
                             intent.putExtra("start_date", viewModel.startDate.value.toString())
                             intent.putExtra("end_date", viewModel.endDate.value.toString())
@@ -450,18 +452,18 @@ class AllOrdersListingFragment(
             }
         }
 
-        viewModel.data.observe(viewLifecycleOwner) { event ->
+        activeOrderViewModel.data.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { baseResponse ->
                 activity?.let {
                     AlertUtils.showCustomAlertWithListenerWithOK(
                         it, baseResponse.message
                     ) { _, _ ->
                         var intent = Intent()
-                        intent.action = "cancelled"
+                        intent.action = "allOrderCounts"
                         intent.putExtra("isCount", false)
-                        intent.putExtra("position", 2)
                         intent.putExtra("start_date", viewModel.startDate.value.toString())
                         intent.putExtra("end_date", viewModel.endDate.value.toString())
+                        intent.putExtra("position", 3)
                         requireContext().sendBroadcast(intent)
                     }
                 }
@@ -471,7 +473,7 @@ class AllOrdersListingFragment(
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.setCurrentDate(Calendar.getInstance(), "", "", orderType)
+        viewModel.setCurrentDate(Calendar.getInstance(), "", "", orderStatus)
     }
 
     override fun onCreateView(
@@ -700,7 +702,7 @@ class AllOrdersListingFragment(
 
                 )
                 datePickerDialog.show()
-                if (orderType == "4") {
+                if (orderStatus == "4") {
                     datePickerDialog.datePicker.minDate = myCalendar.timeInMillis
                     var temp_calender = Calendar.getInstance()
                     temp_calender.add(Calendar.DATE, 7)
@@ -718,7 +720,7 @@ class AllOrdersListingFragment(
     private fun endDatePickerObserver() {
         viewModel.endDateSelection.observe(requireActivity()) { event ->
             event.getContentIfNotHandled()?.let {
-                if (orderType == "4") {
+                if (orderStatus == "4") {
                     myCalendar1 = Calendar.getInstance()
                     myCalendar1.add(Calendar.DATE, 7)
                 }
@@ -732,7 +734,7 @@ class AllOrdersListingFragment(
                     myCalendar1.get(Calendar.DAY_OF_MONTH)
 
                 )
-                if (orderType == "4") {
+                if (orderStatus == "4") {
                     datePickerDialog.datePicker.minDate = myCalendar1.timeInMillis
                 } else {
                     datePickerDialog.datePicker.maxDate = Date().time

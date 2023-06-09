@@ -44,6 +44,7 @@ import com.android.pos.utils.getCustomerDisplay
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 import org.greenrobot.eventbus.EventBus
+import java.util.Calendar
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -74,15 +75,19 @@ class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
     private val passcodeViewModel by activityViewModels<PasscodeViewModel>()
     private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel.setCurrentDate(Calendar.getInstance(), "", "", "0")
+    }
+
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         binding = FragmentAllOrdersCountsBinding.inflate(inflater, container, false)
         Log.d(TAG, "onCreateView: CURRENT POS = $tabPosition")
         requireContext().registerReceiver(broadcastReceiver, IntentFilter("allOrderCounts"));
         binding.commonToolbar.root.gone()
-        getAllOrderCounts(startDate, endDate)
+        getAllOrderCounts(viewModel.startDate.value, viewModel.endDate.value)
 
         getCustomerDisplay(requireContext())?.let { display ->
             presentation = CustomDisplay(
@@ -117,7 +122,7 @@ class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
         requireContext().unregisterReceiver(broadcastReceiver)
     }
 
-    var broadcastReceiver = object : BroadcastReceiver() {
+    private var broadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             Log.d("08JUNE23", "onReceive: CALLED")
             val isCount = intent?.getBooleanExtra("isCount", false)
@@ -129,41 +134,33 @@ class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
             if (isCount == true) {
 
                 val count = intent.getIntExtra("count", 0)
-                val orderType = intent.getStringExtra("orderType")
+                val orderType = intent.getStringExtra("param1")
 
                 when (orderType) {
                     "0" -> {
+                        //active
                         pendingOrdersCount = count
                         setAdapter(0)
                     }
-
                     "1" -> {
-                        ongoingOrderCount = count
+                        //complete
+                        completedOrdersCount = count
                         setAdapter(1)
                     }
-
                     "2" -> {
-                        completedOrdersCount = count
-                        setAdapter(2)
-                    }
-
-                    "3" -> {
+                        //cancel
                         cancelledOrdersCount = count
-                        setAdapter(3)
-                    }
-
-                    "4" -> {
-                        upcomingOrderCount = count
-                        setAdapter(4)
+                        setAdapter(2)
                     }
                 }
 
                 LogUtil.logE("broadcastReceiver", count.toString())
             } else {
-                val position = intent?.getIntExtra("position", 0)
-                changePosition(position!!)
+                val position = intent?.getIntExtra("position", 0) ?: 0
+                changePosition(position)
                 setAdapter(position)
             }
+
         }
     }
 
@@ -200,8 +197,7 @@ class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
                     if (ORDER_TAB != ALL_ORDER_TAB) {
                         val filterList = ordertypelist.filter { it.orderType == ORDER_TAB }
                         if (filterList.isNotEmpty()) {
-                            ORDER_TAB_TYPE_ID =
-                                filterList[0].id.toString()
+                            ORDER_TAB_TYPE_ID = filterList[0].id.toString()
                         }
                     }
 
@@ -209,11 +205,6 @@ class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
             }
 
         }
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
     }
 
     private fun getAllOrderCounts(startDate: String?, endDate: String?) {
@@ -317,39 +308,78 @@ class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
 
     private fun changePosition(position: Int) {
         mPos = position
-        when (position) {
-            0 -> {
-                val activeOrders =
-                    AllOrdersListingFragment("0", startDate, endDate, ORDER_TAB, ORDER_TAB_TYPE_ID)
-                loadFragment(activeOrders)
+
+        if (tabPosition != OPEN_ORDER_TAB_POS) {
+
+            when (position) {
+                0 -> {
+                    val activeOrders = AllOrdersListingFragment(
+                        "0", "Pending", startDate, endDate, ORDER_TAB, ORDER_TAB_TYPE_ID
+                    )
+                    loadFragment(activeOrders)
+                }
+
+                1 -> {
+                    val inProgressOrders = AllOrdersListingFragment(
+                        "1", "InProgress", startDate, endDate, ORDER_TAB, ORDER_TAB_TYPE_ID
+                    )
+                    loadFragment(inProgressOrders)
+                }
+
+                2 -> {
+                    val completedOrders = AllOrdersListingFragment(
+                        "2", "Completed", startDate, endDate, ORDER_TAB, ORDER_TAB_TYPE_ID
+                    )
+                    loadFragment(completedOrders)
+                }
+
+                3 -> {
+                    val cancelledOrders = AllOrdersListingFragment(
+                        "3", "Rejected", startDate, endDate, ORDER_TAB, ORDER_TAB_TYPE_ID
+                    )
+                    loadFragment(cancelledOrders)
+                }
+
+                4 -> {
+                    val upcomingOrders = AllOrdersListingFragment(
+                        "4", "UpComing", startDate, endDate, ORDER_TAB, ORDER_TAB_TYPE_ID
+                    )
+                    loadFragment(upcomingOrders)
+                }
+            }
+        } else {
+
+            when (position) {
+                0 -> {
+                    val activeOrders = AllOrdersListingFragment(
+                        "0", "Pending", startDate, endDate, ORDER_TAB, ORDER_TAB_TYPE_ID
+                    )
+                    loadFragment(activeOrders)
+                }
+
+                1 -> {
+                    val completedOrders = AllOrdersListingFragment(
+                        "1", "Completed", startDate, endDate, ORDER_TAB, ORDER_TAB_TYPE_ID
+                    )
+                    loadFragment(completedOrders)
+                }
+
+                2 -> {
+                    val cancelledOrders = AllOrdersListingFragment(
+                        "2", "Rejected", startDate, endDate, ORDER_TAB, ORDER_TAB_TYPE_ID
+                    )
+                    loadFragment(cancelledOrders)
+                }
+
             }
 
-            1 -> {
-                val upcomingOrders =
-                    AllOrdersListingFragment("1", startDate, endDate, ORDER_TAB, ORDER_TAB_TYPE_ID)
-                loadFragment(upcomingOrders)
-            }
-
-            2 -> {
-                val completedOrders =
-                    AllOrdersListingFragment("2", startDate, endDate, ORDER_TAB, ORDER_TAB_TYPE_ID)
-                loadFragment(completedOrders)
-            }
-
-            3 -> {
-                val cancelledOrders =
-                    AllOrdersListingFragment("3", startDate, endDate, ORDER_TAB, ORDER_TAB_TYPE_ID)
-                loadFragment(cancelledOrders)
-            }
         }
-
 
     }
 
     private fun loadFragment(frag: Fragment) {
         val fm: FragmentManager = requireActivity().supportFragmentManager
         fm.beginTransaction().replace(binding.frameLayout.id, frag).commit()
-
     }
 
     private fun setAdapter(pos: Int) {
@@ -361,35 +391,42 @@ class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
         list.add(InventoryItemModel(0, "Pending Orders", pendingOrdersCount, pos == 0))
         if (tabPosition != OPEN_ORDER_TAB_POS) {
             list.add(InventoryItemModel(0, "InProgress Orders", ongoingOrderCount, pos == 1))
-        }
-        list.add(InventoryItemModel(0, "Completed", completedOrdersCount, pos == 2))
-        list.add(InventoryItemModel(0, "Cancelled ", cancelledOrdersCount, pos == 3))
-        if (tabPosition == ONLINE_ORDER_TAB_POS || tabPosition == ALL_ORDER_TAB_POS || tabPosition == THIRD_PARTY_ORDER_TAB_POS) {
-            list.add(InventoryItemModel(0, "Upcoming", upcomingOrderCount, pos == 4))
+            list.add(InventoryItemModel(0, "Completed", completedOrdersCount, pos == 2))
+            list.add(InventoryItemModel(0, "Cancelled ", cancelledOrdersCount, pos == 3))
+            if (tabPosition == ONLINE_ORDER_TAB_POS || tabPosition == ALL_ORDER_TAB_POS || tabPosition == THIRD_PARTY_ORDER_TAB_POS) {
+                list.add(InventoryItemModel(0, "Upcoming", upcomingOrderCount, pos == 4))
+            }
+        } else {
+            list.add(InventoryItemModel(0, "Completed", completedOrdersCount, pos == 1))
+            list.add(InventoryItemModel(0, "Cancelled ", cancelledOrdersCount, pos == 2))
         }
 
-        binding.recyclerViewItemsList.adapter =
-            InventoryAdapter(
-                requireContext(),
-                list,
-                false,
-                object : InventoryAdapter.InventoryListner {
-                    override fun onItemSelect(position: Int) {
+        binding.recyclerViewItemsList.adapter = InventoryAdapter(requireContext(),
+            list,
+            false,
+            object : InventoryAdapter.InventoryListner {
+                override fun onItemSelect(position: Int) {
 
-                        if (tabPosition != OPEN_ORDER_TAB_POS && position == 3) {
-                            if (rolePermission.hasCancelOrderPermission(binding.root)) {
-                                changePosition(position)
-                            }
-                        } else if (tabPosition == OPEN_ORDER_TAB_POS && position == 2) {
-                            if (rolePermission.hasCancelOrderPermission(binding.root)) {
-                                changePosition(position)
-                            }
-                        } else {
-                            changePosition(position)
-                        }
-                        LogUtil.logE(TAG, "position  $position")
+                    var cancelPosition = 0
+
+                    cancelPosition = if (tabPosition == OPEN_ORDER_TAB_POS) {
+                        2
+                    } else {
+                        3
                     }
-                })
+
+                    if (position == cancelPosition && rolePermission.hasCancelOrderPermission(
+                            binding.root
+                        )
+                    ) {
+                        changePosition(position)
+                    } else {
+                        changePosition(position)
+                    }
+
+                    LogUtil.logE(TAG, "position  $position")
+                }
+            })
     }
 
 }

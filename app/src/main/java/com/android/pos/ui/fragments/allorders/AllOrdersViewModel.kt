@@ -1,9 +1,11 @@
 package com.android.pos.ui.fragments.allorders
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.android.pos.data.model.requestModel.OrderCancelRequest
 import com.android.pos.data.model.requestModel.RefundRequestModelOnlineOrder
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.model.responseModel.allOrders.AllOrdersCountResponse
@@ -64,8 +66,6 @@ class AllOrdersViewModel @Inject constructor(
             _endDateSelection.value = Event(Unit)
         }
     }
-    fun onLineorderCounts(startDate: String?, endDate: String?): LiveData<Resource<OnlineOrderCountResponse>> =
-        posRepository.onlineOrderCounts(startDate, endDate)
 
     fun allOrderCounts(startDate: String?, endDate: String?): LiveData<Resource<AllOrdersCountResponse>> =
         posRepository.allOrderCounts(startDate, endDate)
@@ -186,6 +186,52 @@ class AllOrdersViewModel @Inject constructor(
                     ).format(Date(System.currentTimeMillis() + 60000))
                 }
 
+            }
+        }
+    }
+
+    val getcancelOrderReasonsDatabse = posRepository.getCancelOrderListDatabse()
+
+    fun cancelOrder(orderId: Int, reason: String, reason_id: Int?) {
+        _showProgress.value = Event(true)
+
+        val request = OrderCancelRequest.OrderData(
+            "Cancelled", reason, reason_id, prefProvider.getValueInt(
+                Constants.EMPLOYEE_ID, 0
+            )
+        )
+
+        val orderCancelRequest = OrderCancelRequest(request)
+
+        viewModelScope.launch {
+            val resource = posRepository.orderCancel(orderId, orderCancelRequest)
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    _showProgress.value = Event(false)
+
+                    resource.data.let {
+                        if (it?.status == 200) {
+                            resource.data?.let { createTaxResponse ->
+                                Log.d("08JUNE23", "Set Data Value From Cancel API")
+                                _data.value = Event(createTaxResponse)
+                            }
+                        } else {
+                            _snackbarText.value = Event(resource.message)
+                        }
+
+                    }
+
+
+                }
+
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message)
+                    _showProgress.value = Event(false)
+                }
+
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+                }
             }
         }
     }

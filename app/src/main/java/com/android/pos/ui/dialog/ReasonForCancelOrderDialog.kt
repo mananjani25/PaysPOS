@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Point
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
@@ -15,7 +16,7 @@ import com.android.pos.data.model.responseModel.VenueDetailsResponse
 import com.android.pos.databinding.DialogCancelOrderReasonBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.CancelOrderReasonAdapter
-import com.android.pos.ui.fragments.orders.ActiveOrderViewModel
+import com.android.pos.ui.fragments.allorders.AllOrdersViewModel
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.alert
@@ -33,7 +34,7 @@ class ReasonForCancelOrderDialog : DialogFragment() {
     private var refundAmount: Double = 0.0
     private lateinit var binding: DialogCancelOrderReasonBinding
     private lateinit var refundData: RefundRequestModel
-    private val viewModel by viewModels<ActiveOrderViewModel>()
+    private val viewModel by viewModels<AllOrdersViewModel>()
     var cancelOrderReasonsList = ArrayList<VenueDetailsResponse.Data.CancelOrderReason>()
     private lateinit var cancelOrderReasonAdapter: CancelOrderReasonAdapter
     private var itemPos: Int = 0
@@ -53,7 +54,7 @@ class ReasonForCancelOrderDialog : DialogFragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding =
             DataBindingUtil.inflate(inflater, R.layout.dialog_cancel_order_reason, container, false)
 
@@ -65,20 +66,6 @@ class ReasonForCancelOrderDialog : DialogFragment() {
         orderId = arguments?.getInt("orderId")
         startDate = arguments?.getString("startDate").toString()
         endDate = arguments?.getString("endDate").toString()
-
-/*
-        binding.tvTagRefundAmount.text = requireActivity()?.getString(R.string.tv_refund) + " " +
-                requireActivity()?.getString(R.string.symbole) + "" + String.format(
-            requireActivity().getString(R.string.format), refundAmount
-        )
-
-
-        binding.tvRefundAmount.text =
-            requireActivity()?.getString(R.string.symbole) + " " + String.format(
-                requireActivity().getString(R.string.format), refundAmount
-            )
-*/
-
 
         binding.txtDone.setOnClickListener {
 
@@ -171,12 +158,12 @@ class ReasonForCancelOrderDialog : DialogFragment() {
                         it, baseResponse.message
                     ) { _, _ ->
                         dismiss()
-                        var intent = Intent()
-                        intent.action = "cancelled"
+                        val intent = Intent()
+                        intent.action = "allOrderCounts"
                         intent.putExtra("isCount", false)
-                        intent.putExtra("position", 2)
                         intent.putExtra("start_date", startDate)
                         intent.putExtra("end_date", endDate)
+                        intent.putExtra("position", 3)
                         requireContext().sendBroadcast(intent)
                     }
                 }

@@ -249,8 +249,13 @@ class AllOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
                 binding.llShowLayout.visibility = View.VISIBLE
 
                 if (orderedTab == OPEN_ORDER_TAB || orderedTab == PHONE_ORDER_TAB
-                    || item.orderType == OPEN_ORDER_TAB || item.orderType == PHONE_ORDER_TAB) {
-                    binding.lnrPhoneAndOnlineButtons.visible()
+                    || item.orderType == OPEN_ORDER_TAB || item.orderType == PHONE_ORDER_TAB
+                ) {
+                    if (item.paymentStatus == "Paid" || item.paymentStatus == "Cancelled") {
+                        binding.lnrPhoneAndOnlineButtons.gone()
+                    } else {
+                        binding.lnrPhoneAndOnlineButtons.visible()
+                    }
                 } else {
                     binding.lnrPhoneAndOnlineButtons.gone()
                 }
