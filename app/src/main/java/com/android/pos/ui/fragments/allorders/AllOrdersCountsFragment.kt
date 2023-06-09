@@ -25,6 +25,7 @@ import com.android.pos.data.remote.Constants.ONLINE_ORDER_TAB_POS
 import com.android.pos.data.remote.Constants.OPEN_ORDER_TAB
 import com.android.pos.data.remote.Constants.OPEN_ORDER_TAB_POS
 import com.android.pos.data.remote.Constants.PHONE_ORDER_TAB
+import com.android.pos.data.remote.Constants.PHONE_ORDER_TAB_POS
 import com.android.pos.data.remote.Constants.THIRD_PARTY_ORDER_TAB
 import com.android.pos.data.remote.Constants.THIRD_PARTY_ORDER_TAB_POS
 import com.android.pos.databinding.FragmentAllOrdersCountsBinding
@@ -142,11 +143,13 @@ class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
                         pendingOrdersCount = count
                         setAdapter(0)
                     }
+
                     "1" -> {
                         //complete
                         completedOrdersCount = count
                         setAdapter(1)
                     }
+
                     "2" -> {
                         //cancel
                         cancelledOrdersCount = count
@@ -237,14 +240,13 @@ class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
                                 }
 
                                 PHONE_ORDER_TAB -> {
-                                    pendingOrdersCount = it.data?.data?.phone_orders?.pending ?: 0
-                                    ongoingOrderCount =
-                                        it.data?.data?.phone_orders?.in_progress ?: 0
+                                    pendingOrdersCount = it.data?.data?.phone_orders?.active ?: 0
+                                    ongoingOrderCount = 0
                                     completedOrdersCount =
                                         it.data?.data?.phone_orders?.completed ?: 0
                                     cancelledOrdersCount =
-                                        it.data?.data?.phone_orders?.rejected ?: 0
-                                    upcomingOrderCount = it.data?.data?.phone_orders?.upcoming ?: 0
+                                        it.data?.data?.phone_orders?.cancelled ?: 0
+                                    upcomingOrderCount = 0
                                 }
 
                                 ONLINE_ORDER_TAB -> {
@@ -271,7 +273,7 @@ class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
 
                             val allOrdersPendingCount = it.data?.data?.all_orders?.pending ?: 0
                             val openOrdersPendingCount = it.data?.data?.open_orders?.active ?: 0
-                            val phoneOrdersPendingCount = it.data?.data?.phone_orders?.pending ?: 0
+                            val phoneOrdersPendingCount = it.data?.data?.phone_orders?.active ?: 0
                             val webOrdersPendingCount = it.data?.data?.web_orders?.pending ?: 0
                             val thirdPartyOrdersPendingCount =
                                 it.data?.data?.third_party_online_orders?.pending ?: 0
@@ -309,7 +311,33 @@ class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
     private fun changePosition(position: Int) {
         mPos = position
 
-        if (tabPosition != OPEN_ORDER_TAB_POS) {
+        if (tabPosition == OPEN_ORDER_TAB_POS || tabPosition == PHONE_ORDER_TAB_POS) {
+
+            when (position) {
+                0 -> {
+                    val activeOrders = AllOrdersListingFragment(
+                        "0", "Pending", startDate, endDate, ORDER_TAB, ORDER_TAB_TYPE_ID
+                    )
+                    loadFragment(activeOrders)
+                }
+
+                1 -> {
+                    val completedOrders = AllOrdersListingFragment(
+                        "1", "Completed", startDate, endDate, ORDER_TAB, ORDER_TAB_TYPE_ID
+                    )
+                    loadFragment(completedOrders)
+                }
+
+                2 -> {
+                    val cancelledOrders = AllOrdersListingFragment(
+                        "2", "Rejected", startDate, endDate, ORDER_TAB, ORDER_TAB_TYPE_ID
+                    )
+                    loadFragment(cancelledOrders)
+                }
+
+            }
+
+        } else {
 
             when (position) {
                 0 -> {
@@ -347,32 +375,6 @@ class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
                     loadFragment(upcomingOrders)
                 }
             }
-        } else {
-
-            when (position) {
-                0 -> {
-                    val activeOrders = AllOrdersListingFragment(
-                        "0", "Pending", startDate, endDate, ORDER_TAB, ORDER_TAB_TYPE_ID
-                    )
-                    loadFragment(activeOrders)
-                }
-
-                1 -> {
-                    val completedOrders = AllOrdersListingFragment(
-                        "1", "Completed", startDate, endDate, ORDER_TAB, ORDER_TAB_TYPE_ID
-                    )
-                    loadFragment(completedOrders)
-                }
-
-                2 -> {
-                    val cancelledOrders = AllOrdersListingFragment(
-                        "2", "Rejected", startDate, endDate, ORDER_TAB, ORDER_TAB_TYPE_ID
-                    )
-                    loadFragment(cancelledOrders)
-                }
-
-            }
-
         }
 
     }
@@ -389,16 +391,16 @@ class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
         val list: ArrayList<InventoryItemModel> = arrayListOf()
 
         list.add(InventoryItemModel(0, "Pending Orders", pendingOrdersCount, pos == 0))
-        if (tabPosition != OPEN_ORDER_TAB_POS) {
+        if (tabPosition == OPEN_ORDER_TAB_POS || tabPosition == PHONE_ORDER_TAB_POS) {
+            list.add(InventoryItemModel(0, "Completed", completedOrdersCount, pos == 1))
+            list.add(InventoryItemModel(0, "Cancelled ", cancelledOrdersCount, pos == 2))
+        } else {
             list.add(InventoryItemModel(0, "InProgress Orders", ongoingOrderCount, pos == 1))
             list.add(InventoryItemModel(0, "Completed", completedOrdersCount, pos == 2))
             list.add(InventoryItemModel(0, "Cancelled ", cancelledOrdersCount, pos == 3))
             if (tabPosition == ONLINE_ORDER_TAB_POS || tabPosition == ALL_ORDER_TAB_POS || tabPosition == THIRD_PARTY_ORDER_TAB_POS) {
                 list.add(InventoryItemModel(0, "Upcoming", upcomingOrderCount, pos == 4))
             }
-        } else {
-            list.add(InventoryItemModel(0, "Completed", completedOrdersCount, pos == 1))
-            list.add(InventoryItemModel(0, "Cancelled ", cancelledOrdersCount, pos == 2))
         }
 
         binding.recyclerViewItemsList.adapter = InventoryAdapter(requireContext(),
@@ -409,11 +411,12 @@ class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
 
                     var cancelPosition = 0
 
-                    cancelPosition = if (tabPosition == OPEN_ORDER_TAB_POS) {
-                        2
-                    } else {
-                        3
-                    }
+                    cancelPosition =
+                        if (tabPosition == OPEN_ORDER_TAB_POS || tabPosition == PHONE_ORDER_TAB_POS) {
+                            2
+                        } else {
+                            3
+                        }
 
                     if (position == cancelPosition && rolePermission.hasCancelOrderPermission(
                             binding.root

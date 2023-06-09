@@ -206,7 +206,7 @@
                 style="@style/CustomFontMediumStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1.2"
+                android:layout_weight="1"
                 android:gravity="start"
                 android:text="@string/tv_order_id"
                 android:textAllCaps="true"

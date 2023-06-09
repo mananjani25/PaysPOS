@@ -60,6 +60,7 @@ import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
 import com.android.pos.data.remote.Constants.ONLINE_ORDER_TAB
 import com.android.pos.data.remote.Constants.OPEN_ORDER_TAB
 import com.android.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
+import com.android.pos.data.remote.Constants.PHONE_ORDER_TAB
 import com.android.pos.data.remote.Constants.SUNMI_PRINTER
 import com.android.pos.data.remote.Constants.THIRD_PARTY_ORDER_TAB
 import com.android.pos.databinding.AllOrdersListingFragmentBinding
@@ -160,28 +161,8 @@ class AllOrdersListingFragment(
             broadcastReceiver,
             IntentFilter(Constants.ONLINE_ORDER_REFRESH)
         )
-        when (orderStatus) {
-            "0" -> {
-                binding.txtOrderWillAppear?.text = "Pending order will appear here."
-            }
+        binding.txtOrderWillAppear.text = "$orderStatusLabel order will appear here."
 
-            "1" -> {
-                binding.txtOrderWillAppear?.text = "InProgress order will appear here."
-            }
-
-            "2" -> {
-                binding.txtOrderWillAppear?.text = "Completed order will appear here."
-            }
-
-            "3" -> {
-                binding.txtOrderWillAppear?.text = "Rejected order will appear here."
-            }
-
-            "4" -> {
-                binding.txtOrderWillAppear?.text = "UpComing order will appear here."
-            }
-
-        }
         searchFilter()
         getAllOrders()
         setupEmployeeSort()
@@ -368,7 +349,7 @@ class AllOrdersListingFragment(
             paymentStatus = ""
         }
 
-        if (orderTab == OPEN_ORDER_TAB) {
+        if (orderTab == OPEN_ORDER_TAB || orderTab == PHONE_ORDER_TAB) {
             orderStatusLabel = ""
         }
 
@@ -479,7 +460,7 @@ class AllOrdersListingFragment(
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = AllOrdersListingFragmentBinding.inflate(inflater, container, false)
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
