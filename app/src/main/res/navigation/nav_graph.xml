@@ -992,8 +992,8 @@
         android:name="com.android.pos.ui.fragments.eGiftCard.PurchaseGiftCardFragment"
         android:label="@string/lbl_purchase_gift_card">
         <action
-            android:id="@+id/action_purchaseGiftCard_to_dashboard_category_new"
-            app:destination="@id/dashboardCategoryBoldPOS" />
+            android:id="@+id/action_purchaseGiftCard_to_addCustomerToGiftCard"
+            app:destination="@id/addCustomerToGiftCard" />
     </fragment>
     <fragment
         android:id="@+id/orders"
@@ -1677,6 +1677,19 @@
             android:id="@+id/action_phoneOrderFragment_to_assignCustomerOrderFragment"
             app:destination="@id/assignCustomerOrderFragment" />
     </fragment>
-
+    <fragment android:id="@+id/addCustomerToGiftCard"
+        android:name="com.android.pos.ui.fragments.eGiftCard.AddCustomerToGiftCardFragment"
+        android:label="@string/lbl_add_customer_to_gift_card">
+        <action
+            android:id="@+id/action_addCustomerToGiftCard_to_addNewCustomerForGiftCard"
+            app:destination="@id/addNewCustomerForGiftCard" />
+        <action
+            android:id="@+id/action_addCustomerToGiftCard_to_dashboard_category_new"
+            app:destination="@id/dashboardCategoryBoldPOS" />
+    </fragment>
+    <fragment
+        android:id="@+id/addNewCustomerForGiftCard"
+        android:name="com.android.pos.ui.fragments.eGiftCard.AddNewCustomerForGiftCardFragment"
+        android:label="@string/lbl_add_customer_to_gift_card"/>
 
 </navigation>

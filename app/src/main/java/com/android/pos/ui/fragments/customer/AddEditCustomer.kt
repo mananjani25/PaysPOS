@@ -434,7 +434,6 @@ class AddEditCustomer : Fragment(), AddressTextChangeListner {
     private fun setTextWatcherForAddressField(onTextChanges: Boolean) {
         binding.edtZip.addTextChangedListener(
             CustomerAddressTextWatcher(
-                binding.chksameasbilling,
                 binding.edtZip,
                 changeField,
                 this,
@@ -443,7 +442,6 @@ class AddEditCustomer : Fragment(), AddressTextChangeListner {
         )
         binding.edtZipDel.addTextChangedListener(
             CustomerAddressTextWatcher(
-                binding.chksameasbilling,
                 binding.edtZipDel,
                 changeField,
                 this,
@@ -452,15 +450,13 @@ class AddEditCustomer : Fragment(), AddressTextChangeListner {
         )
         binding.edtSuiteDel.addTextChangedListener(
             CustomerAddressTextWatcher(
-                binding.chksameasbilling,
                 binding.edtSuiteDel,
-                changeField, this,
-                onTextChanges
+                changeField,
+                this, onTextChanges
             )
         )
         binding.edtCityDel.addTextChangedListener(
             CustomerAddressTextWatcher(
-                binding.chksameasbilling,
                 binding.edtCityDel,
                 changeField,
                 this,
@@ -469,7 +465,6 @@ class AddEditCustomer : Fragment(), AddressTextChangeListner {
         )
         binding.edtStateDel.addTextChangedListener(
             CustomerAddressTextWatcher(
-                binding.chksameasbilling,
                 binding.edtStateDel,
                 changeField,
                 this,
@@ -478,7 +473,6 @@ class AddEditCustomer : Fragment(), AddressTextChangeListner {
         )
         binding.edtSuite.addTextChangedListener(
             CustomerAddressTextWatcher(
-                binding.chksameasbilling,
                 binding.edtSuite,
                 changeField,
                 this,
@@ -487,18 +481,16 @@ class AddEditCustomer : Fragment(), AddressTextChangeListner {
         )
         binding.edtCity.addTextChangedListener(
             CustomerAddressTextWatcher(
-                binding.chksameasbilling,
                 binding.edtCity,
-                changeField, this,
-                onTextChanges
+                changeField,
+                this, onTextChanges
             )
         )
         binding.edtState.addTextChangedListener(
             CustomerAddressTextWatcher(
-                binding.chksameasbilling,
                 binding.edtState,
-                changeField, this,
-                onTextChanges
+                changeField,
+                this, onTextChanges
             )
         )
     }

@@ -146,7 +146,7 @@ class PurchaseGiftCardFragment : Fragment() {
                 Log.d("TAG", "onClick: giftCardPurchaseAmount = $amount")
                 prefProvider.setValue(Constants.GIFT_CARD_PURCHASE_AMOUNT, amount.toString())
 
-                findNavController().navigate(R.id.action_purchaseGiftCard_to_dashboard_category_new)
+                findNavController().navigate(R.id.action_purchaseGiftCard_to_addCustomerToGiftCard)
 
             } else {
 

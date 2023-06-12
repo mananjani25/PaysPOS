@@ -854,6 +854,7 @@
     <string name="lbl_select_gift_card">Select Gift Card:</string>
     <string name="lbl_digital_gift_card">Digital Gift Card</string>
     <string name="lbl_plastic_gift_card">Plastic Gift Card</string>
+    <string name="lbl_add_customer_to_gift_card">Add Customer To Gift Card</string>
 
 </resources>
 
