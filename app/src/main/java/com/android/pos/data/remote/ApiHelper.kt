@@ -42,6 +42,9 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun deletePrinter(id: Int, type: String? = null) =
         getResult { apiService.deletePrinter(id, type) }
 
+    suspend fun textPaySplit(id: Int) =
+        getResult { apiService.textPaySplit(id) }
+
     suspend fun deleteQueuePrinter(id: Int) = getResult { apiService.deletePrinterQueue(id) }
 
     suspend fun deleteAllQueuePrinter(id: Array<Int>) =
@@ -505,6 +508,9 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun getOpenOrders(paymentStatus: String, startDate: String, endDate: String) =
         getResult { apiService.getOpenOrders(paymentStatus, startDate, endDate) }
 
+    suspend fun getPhoneOrders(paymentStatus: String, startDate: String, endDate: String) =
+        getResult { apiService.getPhoneOrders(paymentStatus, startDate, endDate) }
+
     suspend fun getOnlineOrders(startDate: String, endDate: String, order_status: String) =
         getResult { apiService.getOnlineOrders(startDate, endDate, order_status) }
 
@@ -656,8 +662,13 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
             apiService.createQueuePrinter(createQueuePrinterModel)
         }
 
-    suspend fun orderCounts(startDate: String?, endDate: String?) =
-        getResult { apiService.orderCounts(startDate, endDate) }
+    suspend fun orderCounts(startDate: String?, endDate: String?, isOpenOrder: Boolean) =
+        getResult {
+            if (!isOpenOrder) apiService.phoneOrderCounts(
+                startDate,
+                endDate
+            ) else apiService.orderCounts(startDate, endDate)
+        }
 
     suspend fun inventoryCounts() =
         getResult { apiService.inventoryCounts() }
