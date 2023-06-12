@@ -907,9 +907,13 @@ class AllOrdersListingFragment(
 
                 LogUtil.logE(TAG, "OpenORderUpdateOrder:  ${Gson().toJson(order.orderItems)}")
 
-                prefProvider.setValue(Constants.ORDER_TYPE, Constants.OPEN_ORDER)
-                prefProvider.setValue(Constants.ORDER_TYPE_NAME, Constants.OPEN_ORDER)
-                prefProvider.setValueInt(Constants.ORDER_TYPE_ID, order.orderTypeId)
+                if (order.orderType == OPEN_ORDER_TAB) {
+                    prefProvider.setValue(Constants.ORDER_TYPE, Constants.OPEN_ORDER)
+                    prefProvider.setValue(Constants.ORDER_TYPE_NAME, Constants.OPEN_ORDER_)
+                } else if (order.orderType == PHONE_ORDER_TAB) {
+                    prefProvider.setValue(Constants.ORDER_TYPE, Constants.PHONE_ORDER)
+                    prefProvider.setValue(Constants.ORDER_TYPE_NAME, Constants.PHONE_ORDER)
+                }
 
                 if (order.customer != null) {
                     prefProvider.setValue(
@@ -991,8 +995,16 @@ class AllOrdersListingFragment(
                 prefProvider.setValue(Constants.SERVICE_CHARGE, "")
 
                 dashboardViewModel.deleteCart()
-                prefProvider.setValue(Constants.ORDER_TYPE, Constants.OPEN_ORDER)
-                prefProvider.setValue(Constants.ORDER_TYPE_NAME, Constants.OPEN_ORDER_)
+
+                if (order.orderType == OPEN_ORDER_TAB) {
+                    prefProvider.setValue(Constants.ORDER_TYPE, Constants.OPEN_ORDER)
+                    prefProvider.setValue(Constants.ORDER_TYPE_NAME, Constants.OPEN_ORDER_)
+                } else if (order.orderType == PHONE_ORDER_TAB) {
+                    prefProvider.setValue(Constants.ORDER_TYPE, Constants.PHONE_ORDER)
+                    prefProvider.setValue(Constants.ORDER_TYPE_NAME, Constants.PHONE_ORDER)
+                }
+
+                prefProvider.setValueInt(Constants.ORDER_TYPE_ID, order.orderTypeId)
 
                 var itemDiscountTotal: Double = 0.0
                 var itemPassDis: Double = 0.0
