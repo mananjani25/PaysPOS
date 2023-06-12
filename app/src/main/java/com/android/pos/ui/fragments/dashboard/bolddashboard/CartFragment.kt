@@ -1,14 +1,14 @@
 package com.android.pos.ui.fragments.dashboard.bolddashboard
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
+import android.text.SpannableString
+import android.text.SpannableStringBuilder
+import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
-import android.widget.Toast
+import android.widget.TextView
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -29,7 +29,6 @@ import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.CUSTOMER_ID
-import com.android.pos.data.remote.Constants.DELIVERY
 import com.android.pos.data.remote.Constants.DELIVERY_TYPE
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.DINE_IN_LIST_EDIT
@@ -77,7 +76,6 @@ import org.greenrobot.eventbus.ThreadMode
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 
 
 @AndroidEntryPoint
@@ -88,6 +86,7 @@ class CartFragment(
     val guestCalModel: GuestPaymentCalculationModel? = null,
     val isGuestPayment: Boolean = false,
     val dineInCallback: DineInOrderCallBack? = null,
+    val isFromDashboard: Boolean? = false,
 ) :
     Fragment(), MyCallback,
     DineInAdapter.DineInCallback, ItemCallback {
@@ -250,13 +249,26 @@ class CartFragment(
             } else {
                 binding.txtAddCustomer.visible()
             }
-            binding.orderTypeDisplay.text =
-                getString(R.string.current_order) + " : " + prefProvider.getValue(ORDER_TYPE_NAME, "")
 
-            binding.orderTypeDisplay.setOnClickListener {
-                findNavController().navigate(
-                    R.id.action_dashboardCategoryBoldPOS_to_changeOrderTypeDialog,
-                )
+            if(isFromDashboard!!) {
+                val builder = SpannableStringBuilder()
+                val str1 = SpannableString(getString(R.string.current_order) + " : " )
+                str1.setSpan(ForegroundColorSpan(getColor(R.color.txtColor)), 0, str1.length, 0)
+                builder.append(str1)
+                val str2 = SpannableString(prefProvider.getValue(ORDER_TYPE_NAME, ""))
+                str2.setSpan(ForegroundColorSpan(getColor(R.color.btnColor)), 0, str2.length, 0)
+                builder.append(str2)
+
+                binding.orderTypeDisplay.setText(builder, TextView.BufferType.SPANNABLE)
+
+                binding.orderTypeDisplay.setOnClickListener {
+                    findNavController().navigate(
+                        R.id.action_dashboardCategoryBoldPOS_to_changeOrderTypeDialog,
+                    )
+                }
+            } else {
+                binding.orderTypeDisplay.text =
+                    getString(R.string.current_order) + " : " + prefProvider.getValue(ORDER_TYPE_NAME, "")
             }
         }
     }
