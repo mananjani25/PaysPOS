@@ -988,6 +988,14 @@
             app:popUpTo="@id/orderCompleteFragment" />
     </fragment>
     <fragment
+        android:id="@+id/purchaseGiftCard"
+        android:name="com.android.pos.ui.fragments.eGiftCard.PurchaseGiftCardFragment"
+        android:label="@string/lbl_purchase_gift_card">
+        <action
+            android:id="@+id/action_purchaseGiftCard_to_dashboard_category_new"
+            app:destination="@id/dashboardCategoryBoldPOS" />
+    </fragment>
+    <fragment
         android:id="@+id/orders"
         android:name="com.android.pos.ui.fragments.orders.Orders"
         android:label="Orders">
@@ -1529,6 +1537,10 @@
         <action
             android:id="@+id/action_dashboardCategoryBoldPOS_to_orders"
             app:destination="@id/orders"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_dashboardCategoryBoldPOS_to_purchaseGiftCard"
+            app:destination="@id/purchaseGiftCard"
             app:enterAnim="@anim/nav_default_enter_anim" />
 
         <action

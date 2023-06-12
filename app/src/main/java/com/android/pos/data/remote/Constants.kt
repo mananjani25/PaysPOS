@@ -706,4 +706,7 @@ object Constants {
     const val OPEN_ORDER_DIRECT_PAY = "open_order_direct_pay"
     const val DEFAULT_ORDER = "Take Out"
 
+    const val GIFT_CARD_TYPE = "gift_card_type"
+    const val GIFT_CARD_PURCHASE_AMOUNT = "gift_card_purchase_amount"
+
 }

@@ -743,9 +743,12 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
         }
         binding.layoutHeader.txtOpenOrder.setOnClickListener {
+//            if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+//                prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
+//                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+//            }
             if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
-                prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
-                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_purchaseGiftCard)
             }
         }
         binding.layoutHeader.txtOnlineOrder?.setOnClickListener {
