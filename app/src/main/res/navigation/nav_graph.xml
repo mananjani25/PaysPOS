@@ -1686,6 +1686,9 @@
         <action
             android:id="@+id/action_addCustomerToGiftCard_to_dashboard_category_new"
             app:destination="@id/dashboardCategoryBoldPOS" />
+        <action
+            android:id="@+id/action_addCustomerToGiftCard_to_paymentBoldPosFragment"
+            app:destination="@id/paymentBoldPosFragment" />
     </fragment>
     <fragment
         android:id="@+id/addNewCustomerForGiftCard"

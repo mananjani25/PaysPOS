@@ -3,23 +3,26 @@ package com.android.pos.ui.fragments.eGiftCard
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.setFragmentResult
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.pos.R
 import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.TbCustomer
+import com.android.pos.data.entities.TbItem
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentAddCustomerToGiftCardBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.AssignCustomerToOrderAdapter
 import com.android.pos.ui.fragments.customer.CustomerListViewModel
-import com.android.pos.utils.LogUtil
+import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.callback.PaginationScrollListener
 import com.android.pos.utils.statusUtils.Status
@@ -29,27 +32,20 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class AddCustomerToGiftCardFragment : Fragment(), ItemCallback {
 
-    private val TAG = "AddCustomerToGiftCardFr"
+    private var selectedPosition: Int = -1
 
     private lateinit var binding: FragmentAddCustomerToGiftCardBinding
     private val viewModel by viewModels<CustomerListViewModel>()
     private lateinit var adapter: AssignCustomerToOrderAdapter
-    private var isFromDineIn: Boolean? = false
-    private var dineInPosition: Int? = null
-    private var isFromCompletePayment: Boolean = false
     private var customerListIDs: ArrayList<Int> = arrayListOf()
-
 
     @Inject
     lateinit var prefProvider: PrefProvider
 
-    private var currentpage = 1
-    private val perpagedata = 50
+    private var currentPage = 1
+    private val perPageData = 50
     private var isLoading = false
     private var isLastPage = false
-    private var firstDetailLoad = false
-    private var selectedDate: String? = null
-    private var cartList: ArrayList<CartModel> = arrayListOf()
     val data = LinkedHashMap<String, String>()
 
 
@@ -59,12 +55,12 @@ class AddCustomerToGiftCardFragment : Fragment(), ItemCallback {
     ): View {
         binding = FragmentAddCustomerToGiftCardBinding.inflate(layoutInflater)
 
-        data["page"] = currentpage.toString()
-        data["per_page"] = perpagedata.toString()
+        data["page"] = currentPage.toString()
+        data["per_page"] = perPageData.toString()
 
         setupUI()
 
-        loadCustomerLocalList(currentpage)
+        loadCustomerLocalList(currentPage)
 
         return binding.root
     }
@@ -98,8 +94,8 @@ class AddCustomerToGiftCardFragment : Fragment(), ItemCallback {
             override fun loadMoreItems() {
                 if (adapter.itemCount >= 50) {
                     isLoading = true
-                    currentpage += 1
-                    loadCustomerLocalList(currentpage)
+                    currentPage += 1
+                    loadCustomerLocalList(currentPage)
                 }
 
             }
@@ -140,14 +136,91 @@ class AddCustomerToGiftCardFragment : Fragment(), ItemCallback {
             findNavController().navigate(R.id.action_addCustomerToGiftCard_to_addNewCustomerForGiftCard)
         }
         binding.txtNext.setOnClickListener {
-            findNavController().navigate(R.id.action_addCustomerToGiftCard_to_dashboard_category_new)
+            if (selectedPosition != -1) {
+                moveToCheckout()
+            } else {
+                AlertUtils.showCustomAlert(requireContext(), "Please choose customer")
+                return@setOnClickListener
+            }
         }
 
     }
 
-    private fun loadCustomerLocalList(currentpage: Int) {
-        data["page"] = currentpage.toString()
-        data["per_page"] = perpagedata.toString()
+    private fun moveToCheckout() {
+        val customer = adapter.getItem(selectedPosition)
+
+        prefProvider.setValue(
+            Constants.CUSTOMER_NAME,
+            customer.first_name + " " + customer.last_name
+        )
+
+        customer.id?.let { prefProvider.setValueInt(Constants.CUSTOMER_ID, it) }
+
+        prefProvider.saveCustomerData(customer)
+
+        prefProvider.setValue("PaidAmount", "")
+        prefProvider.setValue(Constants.WHOLE_AMOUNT, "")
+        prefProvider.setValueInt("cardCount", 0)
+        prefProvider.setValue(Constants.SUB_TOTAL, "")
+        prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
+        prefProvider.setValue(Constants.TOTAL_DISCOUNT, "")
+        prefProvider.setValue(Constants.TIP, "")
+        prefProvider.setValue(Constants.TAX_CHARGE, "")
+        prefProvider.setValue(Constants.SERVICE_CHARGE, "")
+
+        dashboardViewModel.deleteCart()
+
+        prefProvider.setValue(Constants.ORDER_TYPE, Constants.GIFT_CARD)
+        prefProvider.setValue(Constants.ORDER_TYPE_NAME, Constants.GIFT_CARD_NAME)
+
+        val cm = CartModel()
+        val tbItem = TbItem()
+        tbItem.name = "Digital Gift Card"
+        tbItem.quantity = 1
+        tbItem.itemQuantity = 1
+        val totalPrice =
+            prefProvider.getValue(Constants.GIFT_CARD_PURCHASE_AMOUNT, "0.0").toDouble()
+        tbItem.price = totalPrice
+
+        cm.apply {
+            items = listOf(tbItem)
+            employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1)
+            terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
+            isOpenOrder = false
+            orderTypeId = 0
+            orderType = Constants.GIFT_CARD
+            orderTypeName = Constants.GIFT_CARD
+        }
+
+        dashboardViewModel.addCart(cm)
+
+        val bundle = Bundle()
+        bundle.putBoolean("update", true)
+        bundle.putDouble("totalPrice", totalPrice)
+        bundle.putDouble("finalprice", totalPrice)
+        bundle.putDouble(
+            "cashDiscountSurcharge",
+            MethodUtils.calculateCashDiscount(
+                totalPrice,
+                prefProvider,
+                requireContext()
+            )
+        )
+        bundle.putDouble("subTotalPrice", totalPrice)
+        bundle.putDouble("totalTax", 0.0)
+        bundle.putDouble("totalDiscount", 0.0)
+        bundle.putDouble("totalServiceCharge", 0.0)
+        bundle.putParcelable("cartList", cm)
+
+        findNavController().navigate(
+            R.id.action_addCustomerToGiftCard_to_paymentBoldPosFragment,
+            bundle
+        )
+    }
+
+    private fun loadCustomerLocalList(currentPage: Int) {
+        data["page"] = currentPage.toString()
+        data["per_page"] = perPageData.toString()
         viewModel.customerList(data).observe(viewLifecycleOwner) {
             it?.let { resource ->
                 when (resource.status) {
@@ -158,8 +231,12 @@ class AddCustomerToGiftCardFragment : Fragment(), ItemCallback {
                             val data =
                                 resource.data as ArrayList<TbCustomer>
 
-                            if (prefProvider.getValue(Constants.ORDER_TYPE, "") == Constants.DINE_IN) {
-                                data.removeAll { customerListIDs.contains(it.id) }
+                            if (prefProvider.getValue(
+                                    Constants.ORDER_TYPE,
+                                    ""
+                                ) == Constants.DINE_IN
+                            ) {
+                                data.removeAll { tbCustomer -> customerListIDs.contains(tbCustomer.id) }
                             }
                             adapter.add(data)
                         }
@@ -167,11 +244,13 @@ class AddCustomerToGiftCardFragment : Fragment(), ItemCallback {
                         binding.progressCircular.visibility = View.GONE
 
                     }
+
                     Status.LOADING -> {
 
                         binding.rvCustomerList.visibility = View.GONE
                         binding.progressCircular.visibility = View.VISIBLE
                     }
+
                     Status.ERROR -> {
                         binding.rvCustomerList.visibility = View.GONE
                         binding.progressCircular.visibility = View.GONE
@@ -188,21 +267,11 @@ class AddCustomerToGiftCardFragment : Fragment(), ItemCallback {
 
     }
 
+    private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
+
     override fun onItemClickListener(view: View?, pos: Int) {
-
-        val customer = adapter.getItem(pos)
-
-        prefProvider.setValue(
-            Constants.CUSTOMER_NAME,
-            customer.first_name + " " + customer.last_name
-        )
-
-        customer.id?.let { prefProvider.setValueInt(Constants.CUSTOMER_ID, it) }
-
-        prefProvider.saveCustomerData(customer)
-
-        findNavController().navigate(R.id.action_addCustomerToGiftCard_to_dashboard_category_new)
-
+        selectedPosition = pos
+        moveToCheckout()
     }
 
 }

@@ -110,6 +110,8 @@ object Constants {
     const val DINE_IN_ITEM = "DineInItem"
     const val OPEN_ORDER = "OpenOrder"
     const val OPEN_ORDER_ = "Open Order"
+    const val GIFT_CARD = "GiftCard"
+    const val GIFT_CARD_NAME = "Gift Card"
     const val DINE_IN_STATUS = "DineInStatus"
     const val DINE_IN_TABLE_ID = "DineInTableId"
 
@@ -708,5 +710,6 @@ object Constants {
 
     const val GIFT_CARD_TYPE = "gift_card_type"
     const val GIFT_CARD_PURCHASE_AMOUNT = "gift_card_purchase_amount"
+    const val IS_GIFT_CARD_ACTIVATED = "is_gift_card_activated"
 
 }

@@ -364,6 +364,39 @@
                             android:visibility="visible"
                             android:weightSum="3">
 
+                            <androidx.appcompat.widget.LinearLayoutCompat
+                                android:id="@+id/lnrGiftCard"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:visibility="gone"
+                                android:background="@drawable/background_txt_selector"
+                                android:gravity="center_vertical|center_horizontal"
+                                android:paddingVertical="@dimen/_10sdp">
+
+                                <ImageView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginEnd="@dimen/_3sdp"
+                                    app:srcCompat="@drawable/baseline_card_giftcard_24"
+                                    app:tint="@color/white" />
+
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    android:id="@+id/tvGiftCard"
+                                    style="@style/CustomFontSemiBold"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_below="@+id/tvCard"
+                                    android:layout_gravity="center_vertical"
+
+                                    android:gravity="center_horizontal"
+                                    android:text="Gift Card"
+                                    android:textColor="@color/txtColor"
+                                    android:textSize="@dimen/_7mdpi"
+                                    android:visibility="visible" />
+
+                            </androidx.appcompat.widget.LinearLayoutCompat>
+
                             <androidx.appcompat.widget.AppCompatTextView
                                 android:id="@+id/tvPaymentLink"
                                 style="@style/CustomFontSemiBold"
@@ -377,9 +410,9 @@
                                 android:orientation="horizontal"
                                 android:paddingVertical="@dimen/_10sdp"
                                 android:text="Text To Pay"
-                                android:visibility="gone"
                                 android:textColor="@color/txtColor"
-                                android:textSize="@dimen/_7mdpi" />
+                                android:textSize="@dimen/_7mdpi"
+                                android:visibility="gone" />
 
 
                         </androidx.appcompat.widget.LinearLayoutCompat>
@@ -704,9 +737,9 @@
                     android:layout_weight="4"
                     android:background="@null"
                     android:hint="@string/_1234_5678_xxxx_1121"
+                    android:importantForAutofill="no"
                     android:inputType="number"
                     android:maxLength="23"
-                    android:importantForAutofill="no"
                     android:textColor="@color/btnColor"
                     android:textColorHint="@color/hint_color"
                     android:textSize="@dimen/_7mdpi"

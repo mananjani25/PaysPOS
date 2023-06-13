@@ -24,6 +24,7 @@ import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DEFAULT_ORDER
+import com.android.pos.data.remote.Constants.IS_GIFT_CARD_ACTIVATED
 import com.android.pos.data.remote.Constants.TIP_ADDED
 import com.android.pos.data.remote.Constants.TIP_ADDED_AMOUNT
 import com.android.pos.databinding.FragmentCheckoutDetailsNewBinding
@@ -176,6 +177,16 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             paymentId = arguments?.getInt("paymentId")!!
             paymentOfflineId = arguments?.getString("paymentOfflineId").toString()
             orderOfflineId = arguments?.getString("orderOfflineId").toString()
+        }
+
+        prefProvider.setValueboolean(IS_GIFT_CARD_ACTIVATED,true)
+
+        if(prefProvider.getValueboolean(IS_GIFT_CARD_ACTIVATED,false)){
+            binding.tvOther.visible()
+            binding.lnrGiftCard.visible()
+        }else{
+            binding.tvOther.gone()
+            binding.lnrGiftCard.gone()
         }
 
         return binding.root
