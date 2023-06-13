@@ -388,22 +388,26 @@ class PaymentBoldPosFragment : Fragment() {
     }
 
     private fun loadCategoryFragment(fragment: Fragment) {
-        val fm: FragmentManager = requireActivity().supportFragmentManager
+        try {
+            val fm: FragmentManager = requireActivity().supportFragmentManager
 
-        LogUtil.logE("orderId :: ", orderId.toString())
-        val bundle = Bundle().apply {
-            orderId?.let { putInt("orderId", it) }
-            putInt("paymentId", paymentId)
-            putString("orderOfflineId", orderOfflineId)
-            putString("paymentOfflineId", paymentOfflineId)
-            putString(REDIRECT_FROM, prefProvider.getValue(REDIRECT_FROM, ""))
+            LogUtil.logE("orderId :: ", orderId.toString())
+            val bundle = Bundle().apply {
+                orderId?.let { putInt("orderId", it) }
+                putInt("paymentId", paymentId)
+                putString("orderOfflineId", orderOfflineId)
+                putString("paymentOfflineId", paymentOfflineId)
+                putString(REDIRECT_FROM, prefProvider.getValue(REDIRECT_FROM, ""))
 
+            }
+            fragment.arguments = bundle
+            // fragment.arguments = arguments
+
+            fm.beginTransaction().replace(binding.frameLayout.id, fragment).commit()
+            // binding.frameLayout?.let { fm.beginTransaction().replace(it, fragment).commit() }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
-        fragment.arguments = bundle
-        // fragment.arguments = arguments
-
-        fm.beginTransaction().replace(binding.frameLayout.id, fragment).commit()
-        // binding.frameLayout?.let { fm.beginTransaction().replace(it, fragment).commit() }
     }
 
     fun removeCustomer() {
