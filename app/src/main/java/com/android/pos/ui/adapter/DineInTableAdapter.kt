@@ -27,6 +27,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private lateinit var itemAdapter: DineInTableItemAdapter
     private lateinit var listner: DineInTableListner
     private val TAG = "DineInTableAdapter"
+    private var isAnyPaymentDone : Boolean = false
 
 
     fun setListner(listner: DineInTableListner) {
@@ -89,9 +90,13 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
             if (list[position].title?.trim()?.lowercase() == "Whole Table".trim().lowercase()) {
                 binding.imgPrint.visibility = View.INVISIBLE
-                binding.removeGuest.visibility = View.INVISIBLE
             } else {
                 binding.imgPrint.visibility = View.VISIBLE
+            }
+
+            if (list[position].title?.trim()?.lowercase() == "Whole Table".trim().lowercase() || isAnyPaymentDone) {
+                binding.removeGuest.visibility = View.INVISIBLE
+            } else {
                 if(list[position].itemsCount == 0 && !list[position].isPaid) {
                     binding.removeGuest.visibility = View.VISIBLE
                 } else {
@@ -717,7 +722,8 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     }
 
-    fun setList(list: ArrayList<DineInModel>) {
+    fun setList(list: ArrayList<DineInModel>, isAnyPaymentDone: Boolean = false) {
+        this.isAnyPaymentDone = isAnyPaymentDone
         this.list = list
         notifyDataSetChanged()
     }
