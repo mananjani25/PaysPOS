@@ -382,12 +382,21 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     fun addDineInRemovedItems(cartModel: CartModel): CartModel {
-        val items = arrayListOf<TbItem>()
-        cartModel.items.let { it?.let { it1 -> items.addAll(it1) } }
-        items.addAll(removeItemDineInList)
-        cartModel.items = items
-        removeItemDineInList.clear()
-        removeItemDineInList = arrayListOf()
+        var destroyedItems: ArrayList<TbItem> = arrayListOf()
+        cartModel.items?.forEach {
+
+            destroyedItems.add(it)
+
+        }
+        Log.e(TAG, "checkTotalDITems:  ${destroyedItems.size}")
+        cartModel.items = destroyedItems
+
+        /*  val items = arrayListOf<TbItem>()
+          cartModel.items.let { it?.let { it1 -> items.addAll(it1) } }
+          items.addAll(removeItemDineInList)
+          cartModel.items = items
+          removeItemDineInList.clear()
+          removeItemDineInList = arrayListOf()*/
         return cartModel
     }
 
@@ -813,7 +822,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         } else {
                                             item.isEdited = item.isEdited
                                         }
-                                        Log.e("checkISItemEdit","isEdited  ${item.isEdited}")
+                                        Log.e("checkISItemEdit", "isEdited  ${item.isEdited}")
                                         list.add(item)
                                     }
                                 }
@@ -956,7 +965,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                         } else if (type == DELETE) {
                             var list: ArrayList<TbItem> = arrayListOf()
                             if (item != null) {
-                                list = dineInList[item!!.headerPositionDinein].items
+                                list = dineInList[item.headerPositionDinein].items
                             } else {
                                 list = dineInList[dineInList.get(0).selectedPosition].items
                             }
@@ -2820,13 +2829,15 @@ class DashBoardCategoryViewModel @Inject constructor(
             cartModel.dineInList?.forEach { dine ->
 
                 dine.items.forEach { item ->
-                    totalCount += item.itemQuantity
-                    subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
+                    if (item.isDestroy != true) {
+                        totalCount += item.itemQuantity
+                        subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
 
-                    taxCalculation(item, cartModel.discountPrice / dineInItems)
+                        taxCalculation(item, cartModel.discountPrice / dineInItems)
 
-                    item.modifiers.forEach {
-                        subTotalPrice += (it.price * it.itemQuantity)
+                        item.modifiers.forEach {
+                            subTotalPrice += (it.price * it.itemQuantity)
+                        }
                     }
                 }
 
@@ -4152,7 +4163,31 @@ class DashBoardCategoryViewModel @Inject constructor(
             }
         }
 
-        LogUtil.logE("removeItemDine", "removeItemDineInList  ${removeItemDineInList.size}")
+
+        cartModel.items?.forEach {
+            cartModel?.dineInList?.forEach { m ->
+                m.items.forEach { oi ->
+                    if (oi.name.equals(it.name, true) == false && it.isDestroy) {
+                        var model = OrderItemsAttribute()
+                        model.category_id = it.categoryId
+                        model.itemId = it.itemId
+                        model.id = it.orderItemId
+                        model.isDestroy = it.isDestroy
+                        model.isEdited = it.isEdited
+                        orderItemsAttributeList.add(model)
+
+                    }
+                }
+            }
+
+        }
+
+
+
+        LogUtil.logE(
+            "removeItemDine",
+            "removeItemDineInList  ${removeItemDineInList.size}  checkUpdate ${isOrderUpdate}"
+        )
         if (removeItemDineInList.isNotEmpty()) {
             orderItemsAttributeList = addDestroyedItemsinDinein(orderItemsAttributeList)
         }
