@@ -1,14 +1,10 @@
 package com.android.pos.ui.fragments.dashboard.bolddashboard
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
-import android.widget.Toast
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -20,7 +16,13 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.android.pos.BuildConfig
 import com.android.pos.R
-import com.android.pos.data.entities.*
+import com.android.pos.data.entities.CartModel
+import com.android.pos.data.entities.CashDiscountModel
+import com.android.pos.data.entities.TaxData
+import com.android.pos.data.entities.TbCustomer
+import com.android.pos.data.entities.TbItem
+import com.android.pos.data.entities.TbOrderType
+import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.data.model.DineInModel
 import com.android.pos.data.model.DineInOrderDetailAttributes
 import com.android.pos.data.model.GuestPaymentCalculationModel
@@ -29,7 +31,6 @@ import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.CUSTOMER_ID
-import com.android.pos.data.remote.Constants.DELIVERY
 import com.android.pos.data.remote.Constants.DELIVERY_TYPE
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.DINE_IN_LIST_EDIT
@@ -66,18 +67,31 @@ import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.ui.fragments.payment.PaymentViewModel
-import com.android.pos.utils.*
-import com.android.pos.utils.callback.*
-import com.android.pos.utils.extensions.*
+import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.LogUtil
+import com.android.pos.utils.MethodUtils
+import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.callback.DineInOrderCallBack
+import com.android.pos.utils.callback.ItemCallback
+import com.android.pos.utils.callback.ItemClickListner
+import com.android.pos.utils.callback.ItemListner
+import com.android.pos.utils.callback.MyCallback
+import com.android.pos.utils.extensions.alert
+import com.android.pos.utils.extensions.disableItemAnimator
+import com.android.pos.utils.extensions.getColor
+import com.android.pos.utils.extensions.gone
+import com.android.pos.utils.extensions.invisible
+import com.android.pos.utils.extensions.isVisible
+import com.android.pos.utils.extensions.visible
+import com.android.pos.utils.getCustomerDisplay
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 
 
 @AndroidEntryPoint
@@ -251,7 +265,10 @@ class CartFragment(
                 binding.txtAddCustomer.visible()
             }
             binding.orderTypeDisplay.text =
-                getString(R.string.current_order) + " : " + prefProvider.getValue(ORDER_TYPE_NAME, "")
+                getString(R.string.current_order) + " : " + prefProvider.getValue(
+                    ORDER_TYPE_NAME,
+                    ""
+                )
 
             binding.orderTypeDisplay.setOnClickListener {
                 findNavController().navigate(
@@ -918,8 +935,7 @@ class CartFragment(
                     setTaxBifurcationData(it[0].taxlistDynamic as ArrayList<TaxData>)
 
 
-                }
-                else {
+                } else {
                     cartlist = arrayListOf()
                     viewModel.clearListTax()
                     cartAdapter.clearList()
@@ -978,7 +994,7 @@ class CartFragment(
 
                     if (it.isEmpty()) {
 //                        if (oldItemSize != null && oldItemSize != 1)
-                            return@observe
+                        return@observe
                     } else {
                         val currentTimeMillis = System.currentTimeMillis()
 
@@ -1024,9 +1040,13 @@ class CartFragment(
                             }
                             if (it[0].dineInList?.isNotEmpty() == true) {
                                 var dineInList = it[0].dineInList
-                                if (dineInList?.get(0)?.selectedPosition != -1){
-                                    Log.e("checkDineInHeaderPos","dineInSelectedItemHeaderPos:  ${viewModel.dineInHeaderPosition}")
-                                    dineInList?.get(0)?.selectedPosition = viewModel.dineInHeaderPosition
+                                if (dineInList?.get(0)?.selectedPosition != -1) {
+                                    Log.e(
+                                        "checkDineInHeaderPos",
+                                        "dineInSelectedItemHeaderPos:  ${viewModel.dineInHeaderPosition}"
+                                    )
+                                    dineInList?.get(0)?.selectedPosition =
+                                        viewModel.dineInHeaderPosition
                                 }
 
                                 dineInCartAdapter.setList(
@@ -1567,9 +1587,9 @@ class CartFragment(
     private fun showSurchargeWithPercentage() {
         val amountType = prefProvider.getValue(Constants.AMOUNT_TYPE, "")
         val rateOrAmount = prefProvider.getValue(Constants.RATE_OR_AMOUNT, "0")
-        if(amountType=="Percentage"){
+        if (amountType == "Percentage") {
             binding.labelCashSurcharge.text = "SurCharge (${rateOrAmount}%)"
-        }else{
+        } else {
             binding.labelCashSurcharge.text = "SurCharge"
         }
     }
@@ -1649,15 +1669,20 @@ class CartFragment(
 
         } else {
 
-            var listOfCustomersID:ArrayList<Int> = arrayListOf()
+            var listOfCustomersID: ArrayList<Int> = arrayListOf()
             cartlist[0].dineInList?.forEach {
-                if(it.customer != null){
+                if (it.customer != null) {
                     listOfCustomersID.add(it.customer?.id ?: 0)
 
                 }
 
             }
-            val bundle = bundleOf("DINE_IN" to true, "position" to position, "cartList" to cartlist, "listOfCustomersID" to listOfCustomersID)
+            val bundle = bundleOf(
+                "DINE_IN" to true,
+                "position" to position,
+                "cartList" to cartlist,
+                "listOfCustomersID" to listOfCustomersID
+            )
             findNavController().navigate(
                 R.id.action_dashboardCategoryBoldPOS_to_assignCustomerOrderFragment, bundle
             )
@@ -1670,7 +1695,7 @@ class CartFragment(
         return listOf(*lists).flatten()
     }
 
-    private fun  addGuestToOrder(count: Int) {
+    private fun addGuestToOrder(count: Int) {
         if (count == 0) {
             AlertUtils.showCustomAlertWithListenerWithOK(
                 requireContext(), getString(R.string.minimum_guest_count_should_be_one)
@@ -1977,13 +2002,21 @@ class CartFragment(
                             ) { _, _ ->
                             }
                         } else {
-                            //cartlist[0] = viewModel.addDineInRemovedItems(viewModel.cartModel!!)
+                            Log.e(TAG,".destroyedListRelPR:  ${viewModel.destroyedList.size}")
+                            Log.e("IssueBIS777","getITems:  ${viewModel.cartModel?.items?.size}")
+                            Log.e("IssueBIS777","getITemsFromScreen:  ${viewModel.cartModel?.items?.size}")
+
+                            if (cartlist[0] != null) {
+
+                                cartlist[0] = viewModel.generateCombinedItems(cartlist[0])
+                            }else{
+                                cartlist[0] = viewModel.addDineInRemovedItems(viewModel.cartModel!!)
+                            }
 
                             val request = viewModel.updateOrder(cartlist[0])
+                            Log.e(TAG, "checkITemSize:  ${cartlist[0].items?.size}")
 
-                            prefProvider.setValueboolean(DINE_IN_UPDATE, false)
-                            prefProvider.setValueboolean(DINE_IN_LIST_EDIT, false)
-                            prefProvider.setValueboolean(DINE_IN_UPDATE, false)
+
 
 
                             if (cartlist[0].orderId != 0) {
@@ -1991,6 +2024,10 @@ class CartFragment(
                             } else {
                                 orderId?.let { it1 -> viewModel.updateOrderCall(it1, request) }
                             }
+
+                            prefProvider.setValueboolean(DINE_IN_UPDATE, false)
+                            prefProvider.setValueboolean(DINE_IN_LIST_EDIT, false)
+                            prefProvider.setValueboolean(DINE_IN_UPDATE, false)
 
 
                         }
@@ -2075,6 +2112,7 @@ class CartFragment(
                         popupMenu.dismiss() //For resolving BIS-273
                         clearCart()
                     }
+
                     R.id.menu_remove_customer -> {
 
                         if (cartlist.isNotEmpty() && cartlist[0].customer != null) {
@@ -2085,17 +2123,20 @@ class CartFragment(
 
 
                     }
+
                     R.id.menu_add_guest -> {
                         findNavController().navigate(
                             R.id.action_dashboardCategoryBoldPOS_to_addguestcount
                         )
                     }
+
                     R.id.menu_order_note -> {
                         findNavController().navigate(
                             R.id.action_dashboardCategoryBoldPOS_to_addNoteDialog,
                             bundleOf("isOrderNote" to true, "cartList" to cartlist)
                         )
                     }
+
                     R.id.menu_discount -> {
                         val bundle = Bundle()
                         bundle.putBoolean("isOrderDiscount", true)
@@ -2221,7 +2262,9 @@ class CartFragment(
 
                         }
 
-                        if (prefProvider.getValue(ORDER_TYPE, "").toString().trim() == PHONE_ORDER.toString().trim()){
+                        if (prefProvider.getValue(ORDER_TYPE, "").toString()
+                                .trim() == PHONE_ORDER.toString().trim()
+                        ) {
 
                             viewModel.ordertypelist.forEach {
                                 if (it.orderType == PHONE_ORDER) {
@@ -2315,7 +2358,7 @@ class CartFragment(
                     ) { _, _ ->
                     }
                 }
-            } catch (e: Exception){
+            } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
@@ -2425,14 +2468,13 @@ class CartFragment(
         }
         cartlist[0].openOrderType = Constants.PICK_UP
         var finalDiscount = 0.0
-        if (BuildConfig.DEBUG == false){
-            finalDiscount = cartlist[0].discountPrice  + viewModel.totalDiscount
-        }
-        else{
+        if (BuildConfig.DEBUG == false) {
+            finalDiscount = cartlist[0].discountPrice + viewModel.totalDiscount
+        } else {
             finalDiscount = viewModel.totalDiscount
         }
-        Log.e("checkDiscount","totalDiscount:  ${viewModel.totalDiscount}")
-        Log.e("checkDiscount","totalDiscountdiscountPrice:  ${cartlist[0].discountPrice}")
+        Log.e("checkDiscount", "totalDiscount:  ${viewModel.totalDiscount}")
+        Log.e("checkDiscount", "totalDiscountdiscountPrice:  ${cartlist[0].discountPrice}")
 
         val orderRequestModel = viewModel.createDineInOrderRequest(
             cartModel = cartlist[0],
@@ -2444,7 +2486,7 @@ class CartFragment(
             "",
             "",
             false,
-            totalDiscount =finalDiscount,
+            totalDiscount = finalDiscount,
             0.0,
             floorPlanDetails = floorModel
         )
@@ -2477,7 +2519,7 @@ class CartFragment(
         val model = orderTypeAdapter?.getItem(pos)
 
         model?.id?.let { prefProvider.setValueInt(ORDER_TYPE_ID, it) }
-        model?.name?.let {  prefProvider.setValue(ORDER_TYPE_NAME, it)}
+        model?.name?.let { prefProvider.setValue(ORDER_TYPE_NAME, it) }
 
         Log.e(TAG, "checkOrderType  ${model?.orderType}")
 
