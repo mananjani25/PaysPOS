@@ -63,6 +63,7 @@ import com.android.pos.data.remote.Constants.SHOW_CASH_CREDIT_PRICE_ON_CUSTOMER_
 import com.android.pos.data.remote.Constants.SYNC_SETTING_TIME_STAMP
 import com.android.pos.data.remote.Constants.SYNC_TIME_STAMP
 import com.android.pos.data.remote.Constants.SYSTEM_TIMEZONE
+import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.data.remote.Constants.UPDATE
 import com.android.pos.data.remote.Constants.VENUE_LOGO
@@ -783,6 +784,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                 itemDiscountApply(model, item)
                                             }
 
+
                                             list[index] = model
                                         } else {
                                             if (item != null) {
@@ -822,9 +824,15 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         } else {
                                             item.isEdited = item.isEdited
                                         }
+
                                         Log.e("checkISItemEdit", "isEdited  ${item.isEdited}")
                                         list.add(item)
                                     }
+                                }
+                                else if ( prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN){
+                                    Log.e(TAG,"checkInsideSc  ${item?.isDestroy}")
+                                    item?.let { list.add(it) }
+
                                 }
                                 Log.e("GEtDineInData", "getList  ${Gson().toJson(list)}")
                                 cartList[0].items = list
