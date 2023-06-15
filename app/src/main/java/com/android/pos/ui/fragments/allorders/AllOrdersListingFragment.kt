@@ -57,6 +57,7 @@ import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ALL_ORDER_TAB
 import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
+import com.android.pos.data.remote.Constants.IS_FROM_ALL_ORDER
 import com.android.pos.data.remote.Constants.ONLINE_ORDER_TAB
 import com.android.pos.data.remote.Constants.OPEN_ORDER_TAB
 import com.android.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
@@ -1101,7 +1102,7 @@ class AllOrdersListingFragment(
                     Constants.LOYALTY_ADDED,
                     order.isLoyaltyApplied
                 )
-
+                prefProvider.setValueboolean(IS_FROM_ALL_ORDER,true)
                 findNavController().navigate(R.id.action_allOrder_to_paymentBoldPosFragment, bundle)
 
 

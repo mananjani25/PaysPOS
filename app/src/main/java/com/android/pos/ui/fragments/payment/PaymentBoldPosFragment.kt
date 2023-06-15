@@ -20,6 +20,7 @@ import com.android.pos.data.model.requestModel.GuestPaymentRequest
 import com.android.pos.data.model.requestModel.OrderServiceChargesAttribute
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN
+import com.android.pos.data.remote.Constants.IS_FROM_ALL_ORDER
 import com.android.pos.data.remote.Constants.OPEN_ORDER
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.REDIRECT_FROM
@@ -308,9 +309,18 @@ class PaymentBoldPosFragment : Fragment() {
                             "data", bundle1
                         )
                     }
-                    navController.popBackStack()
+                    if(prefProvider.getValueboolean(IS_FROM_ALL_ORDER,false)){
+                        navController.navigate(R.id.action_paymentBoldPosFragment_to_allOrdersFragment)
+                    }else{
+                        navController.popBackStack()
+                    }
+
                 } else {
-                    findNavController().popBackStack()
+                    if(prefProvider.getValueboolean(IS_FROM_ALL_ORDER,false)){
+                        findNavController().navigate(R.id.action_paymentBoldPosFragment_to_allOrdersFragment)
+                    }else{
+                        findNavController().popBackStack()
+                    }
                 }
 
             }

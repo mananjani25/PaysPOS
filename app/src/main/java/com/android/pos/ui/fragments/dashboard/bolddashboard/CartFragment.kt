@@ -1,13 +1,10 @@
 package com.android.pos.ui.fragments.dashboard.bolddashboard
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -19,7 +16,12 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.android.pos.BuildConfig
 import com.android.pos.R
-import com.android.pos.data.entities.*
+import com.android.pos.data.entities.CartModel
+import com.android.pos.data.entities.CashDiscountModel
+import com.android.pos.data.entities.TaxData
+import com.android.pos.data.entities.TbCustomer
+import com.android.pos.data.entities.TbItem
+import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.data.model.DineInModel
 import com.android.pos.data.model.DineInOrderDetailAttributes
 import com.android.pos.data.model.GuestPaymentCalculationModel
@@ -28,13 +30,13 @@ import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.CUSTOMER_ID
-import com.android.pos.data.remote.Constants.DELIVERY
 import com.android.pos.data.remote.Constants.DELIVERY_TYPE
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.DINE_IN_LIST_EDIT
 import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
 import com.android.pos.data.remote.Constants.DINE_IN_UPDATE_LIST
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
+import com.android.pos.data.remote.Constants.IS_FROM_ALL_ORDER
 import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER
 import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER
 import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER_ID
@@ -65,16 +67,30 @@ import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.ui.fragments.payment.PaymentViewModel
-import com.android.pos.utils.*
-import com.android.pos.utils.callback.*
-import com.android.pos.utils.extensions.*
+import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.LogUtil
+import com.android.pos.utils.MethodUtils
+import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.callback.DineInOrderCallBack
+import com.android.pos.utils.callback.ItemCallback
+import com.android.pos.utils.callback.ItemClickListner
+import com.android.pos.utils.callback.ItemListner
+import com.android.pos.utils.callback.MyCallback
+import com.android.pos.utils.extensions.alert
+import com.android.pos.utils.extensions.disableItemAnimator
+import com.android.pos.utils.extensions.getColor
+import com.android.pos.utils.extensions.gone
+import com.android.pos.utils.extensions.invisible
+import com.android.pos.utils.extensions.isVisible
+import com.android.pos.utils.extensions.visible
+import com.android.pos.utils.getCustomerDisplay
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
 import javax.inject.Inject
 
 
@@ -2054,6 +2070,7 @@ class CartFragment(
                     bundle.putString("paymentOfflineId", paymentOfflineId)
                     bundle.putString("orderOfflineId", orderOfflineId)
                     if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                        prefProvider.setValueboolean(IS_FROM_ALL_ORDER,false)
                         findNavController().navigate(
                             R.id.action_dashboardCategoryBoldPOS_to_paymentBoldPosFragment,
                             bundle
@@ -2061,6 +2078,7 @@ class CartFragment(
                     }
                 } else {
                     if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                        prefProvider.setValueboolean(IS_FROM_ALL_ORDER,false)
                         findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_paymentBoldPosFragment)
                     }
                 }

@@ -721,4 +721,6 @@ object Constants {
     const val OPEN_ORDER_DIRECT_PAY = "open_order_direct_pay"
     const val DEFAULT_ORDER = "Take Out"
 
+    const val IS_FROM_ALL_ORDER="IS_FROM_ALL_ORDER"
+
 }
