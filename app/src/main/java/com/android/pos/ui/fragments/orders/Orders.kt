@@ -110,22 +110,22 @@ class Orders : Fragment() {
 
     private fun setupClickEvent() {
 
-//        binding.commonToolbar.txtOpenOrder.setOnSingleClickListener {
-//
-//            isOpenOrder = true
-//            binding.commonToolbar.txtOpenOrder.setBackgroundResource(R.drawable.button_action_hover)
-//            binding.commonToolbar.txtPhoneOrder.setBackgroundResource(R.drawable.background_square_border_grey)
-//            changePosition(0)
-//            setAdapter(mPos)
-//
-//        }
-//        binding.commonToolbar.txtPhoneOrder.setOnSingleClickListener {
-//            isOpenOrder = false
-//            binding.commonToolbar.txtOpenOrder.setBackgroundResource(R.drawable.background_square_border_grey)
-//            binding.commonToolbar.txtPhoneOrder.setBackgroundResource(R.drawable.button_action_hover)
-//            changePosition(0)
-//            getOrderCountsObserver("", "")
-//        }
+        binding.commonToolbar.txtOpenOrder.setOnSingleClickListener {
+
+            isOpenOrder = true
+            binding.commonToolbar.txtOpenOrder.setBackgroundResource(R.drawable.button_action_hover)
+            binding.commonToolbar.txtPhoneOrder.setBackgroundResource(R.drawable.background_square_border_grey)
+            changePosition(0)
+            setAdapter(mPos)
+
+        }
+        binding.commonToolbar.txtPhoneOrder.setOnSingleClickListener {
+            isOpenOrder = false
+            binding.commonToolbar.txtOpenOrder.setBackgroundResource(R.drawable.background_square_border_grey)
+            binding.commonToolbar.txtPhoneOrder.setBackgroundResource(R.drawable.button_action_hover)
+            changePosition(0)
+            getOrderCountsObserver("", "")
+        }
 
     }
 

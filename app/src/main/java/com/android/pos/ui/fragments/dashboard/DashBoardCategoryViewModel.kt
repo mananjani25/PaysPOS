@@ -3494,7 +3494,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                             (tax.rate * totalPrice) / 100
                         Log.e("itemTaxPrice", "" + itemTaxPrice)
                         //String.format("%.2f",itemTaxPrice).toDouble()
-                        itemTaxPrice
+                        String.format("%.2f", itemTaxPrice)
+                            .toDouble()
                         //  MethodUtils.getTwoDecimal(itemTaxPrice)
                     }
 
@@ -3508,8 +3509,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                         //   MethodUtils.getTwoDecimal(tax.rate * item.itemQuantity)
                         /*String.format("%.2f", tax.rate * item.itemQuantity)
                             .toDouble()*/
+                        String.format("%.2f",  tax.rate * item.itemQuantity)
+                            .toDouble()
 
-                        tax.rate * item.itemQuantity
                     }
 
                 }
