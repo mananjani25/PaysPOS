@@ -368,7 +368,20 @@ class PhoneOrderListFragment(
 
                 LogUtil.logE(TAG, "OpenORderUpdateOrder:  ${Gson().toJson(order.orderItems)}")
 
-                prefProvider.setValue(Constants.ORDER_TYPE, OPEN_ORDER)
+                prefProvider.setValue(Constants.ORDER_TYPE, PHONE_ORDER)
+
+                var orderName = ""
+                var ordertypeId = 0
+                dashboardViewModel.ordertypelist.forEach {
+                    if (it.orderType == PHONE_ORDER) {
+                        orderName = it.name
+                        ordertypeId = it.id
+                    }
+
+
+                }
+                prefProvider.setValue(Constants.ORDER_TYPE_NAME, orderName)
+                prefProvider.setValueInt(Constants.ORDER_TYPE_ID, ordertypeId)
 
                 if (order.customer != null) {
                     prefProvider.setValue(

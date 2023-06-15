@@ -109,7 +109,8 @@ class PhoneOrderFragment : Fragment() {
 
         binding.edtFName.setText(customer.first_name)
         binding.edtLName.setText(customer.last_name)
-        binding.edtPhoneNo.setText(AlertUtils.usNumberFormat(customer.phones[0].phone_number))
+        if (customer.phones.isNotEmpty())
+            binding.edtPhoneNo.setText(AlertUtils.usNumberFormat(customer.phones[0].phone_number))
         binding.edtEmail.setText(customer.email)
 
         if (customer.addresses.isNotEmpty()) {
@@ -144,6 +145,13 @@ class PhoneOrderFragment : Fragment() {
 
     private fun clickEvent() {
 
+        binding.imgBack.setOnClickListener {
+            findNavController().popBackStack()
+        }
+        binding.txtHome.setOnClickListener {
+            findNavController().popBackStack()
+        }
+
         binding.txtPickup.setOnSingleClickListener {
 
             orderType = PICK_UP
@@ -172,15 +180,15 @@ class PhoneOrderFragment : Fragment() {
 
         binding.txtNext.setOnSingleClickListener {
             if (binding.edtFName.text.toString().trim().isEmpty()) {
-                AlertUtils.showAlert(requireContext(), getString(R.string.phone_validate))
+                AlertUtils.showCustomAlert(requireContext(), getString(R.string.first_name_validate))
 
             } else if (binding.edtPhoneNo.rawText.toString().trim().isEmpty()) {
-                AlertUtils.showAlert(requireContext(), getString(R.string.phone_validate))
+                AlertUtils.showCustomAlert(requireContext(), getString(R.string.phone_validate))
 
             } else if (binding.edtPhoneNo.rawText.toString().trim().length < 10) {
-                AlertUtils.showAlert(requireContext(), getString(R.string.valid_phone_validate))
+                AlertUtils.showCustomAlert(requireContext(), getString(R.string.valid_phone_validate))
             } else if (isDelivey && binding.edtStreet.text.toString().trim().isEmpty()) {
-                AlertUtils.showAlert(requireContext(), "Please enter address")
+                AlertUtils.showCustomAlert(requireContext(), "Please enter address")
             } else {
 
                 val phonesList: ArrayList<TbPhones> =
@@ -339,22 +347,27 @@ class PhoneOrderFragment : Fragment() {
                                             .lowercase() -> {
                                             street += addressComponent.name
                                         }
+
                                         type.trim().lowercase() == "route".trim().lowercase() -> {
                                             street += addressComponent.name
                                         }
+
                                         type.trim().lowercase() == "neighborhood".trim()
                                             .lowercase() -> {
                                             suite = addressComponent.name
                                         }
+
                                         type.trim().lowercase() == "locality".trim()
                                             .lowercase() -> {
                                             city = addressComponent.name
                                         }
+
                                         type.trim()
                                             .lowercase() == "administrative_area_level_1".trim()
                                             .lowercase() -> {
                                             state = addressComponent.name
                                         }
+
                                         type.trim().lowercase() == "postal_code".trim()
                                             .lowercase() -> {
                                             zip = addressComponent.name
