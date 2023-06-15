@@ -961,6 +961,14 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         }
 
+        binding.lnrGiftCard.setOnSingleClickListener {
+            binding.frameLayoutId.visible()
+            binding.relativeMain.gone()
+            binding.llManualCard.gone()
+            binding.llGiftCard.visible()
+            isManualCard = false
+        }
+
         binding.tvCash0.setOnSingleClickListener {
 
             custom_paymentAmount = 0.0
@@ -1020,6 +1028,14 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             isManualCard = false
             binding.relativeMain.visible()
             binding.llManualCard.gone()
+
+        }
+
+        binding.imgBackGiftCard.setOnSingleClickListener {
+            MethodUtils.hideKeyboard(requireActivity())
+            isManualCard = false
+            binding.relativeMain.visible()
+            binding.llGiftCard.gone()
 
         }
 

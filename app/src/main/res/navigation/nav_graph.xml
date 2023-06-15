@@ -1542,6 +1542,14 @@
             android:id="@+id/action_dashboardCategoryBoldPOS_to_purchaseGiftCard"
             app:destination="@id/purchaseGiftCard"
             app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_dashboardCategoryBoldPOS_to_addValueInGiftCard"
+            app:destination="@id/addValueInGiftCard"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_dashboardCategoryBoldPOS_to_balanceInquiry"
+            app:destination="@id/balanceInquiry"
+            app:enterAnim="@anim/nav_default_enter_anim" />
 
         <action
             android:id="@+id/action_dashboardCategoryBoldPOS_to_passcode"
@@ -1694,5 +1702,13 @@
         android:id="@+id/addNewCustomerForGiftCard"
         android:name="com.android.pos.ui.fragments.eGiftCard.AddNewCustomerForGiftCardFragment"
         android:label="@string/lbl_add_customer_to_gift_card"/>
+    <fragment
+        android:id="@+id/addValueInGiftCard"
+        android:name="com.android.pos.ui.fragments.eGiftCard.AddValueInGiftCardFragment"
+        android:label="@string/lbl_add_value"/>
+    <fragment
+        android:id="@+id/balanceInquiry"
+        android:name="com.android.pos.ui.fragments.eGiftCard.BalanceInquiryFragment"
+        android:label="@string/lbl_balance_inquiry"/>
 
 </navigation>

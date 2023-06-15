@@ -1015,12 +1015,12 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             }
             "Add Value" -> {
                 if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
-                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_purchaseGiftCard)
+                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_addValueInGiftCard)
                 }
             }
             "Balance Inquiry" -> {
                 if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
-                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_purchaseGiftCard)
+                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_balanceInquiry)
                 }
             }
             else -> {
