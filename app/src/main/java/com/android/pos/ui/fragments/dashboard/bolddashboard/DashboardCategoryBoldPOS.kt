@@ -743,12 +743,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
         }
         binding.layoutHeader.txtOpenOrder.setOnClickListener {
-//            if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
-//                prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
-//                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
-//            }
             if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
-                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_purchaseGiftCard)
+                prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
+                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
             }
         }
         binding.layoutHeader.txtOnlineOrder?.setOnClickListener {
@@ -1009,84 +1006,103 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
 
     override fun onItemSelected(item: TbItem) {
-        item.timeStamp = randomOfflineId()
 
-        Log.e("viewModel.cartModel",Gson().toJson(viewModel.cartModel))
-
-        prefProvider.setValue(Constants.REDIRECT_FROM, "")
-
-        if (cartList.isEmpty() && viewModel.cartModel != null) {
-            viewModel.cartModel?.let {
-              cartList.add(it)
-            }
-        }
-
-        if (cartList.isEmpty() && viewModel.cartModel != null) {
-            cartList = arrayListOf()
-            cartList = viewModel.createCart(cartList)
-            if (cartList[0].employeeID != prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)) {
-                cartList[0] = viewModel.cartModel!!
-            }
-        }
-
-
-        if (item.modifier_set_ids.isNotEmpty() || item.variationsAttributes.isNotEmpty()) {
-            /*  if (item.variationsAttributes.isNotEmpty()) {
-                  item.variationsAttributes.get(0).isChecked = true
-              }*/
-            item.modifiers.forEach { it.isChecked = false }
-            item.variationsAttributes.forEach { it ->
-                if (it.priceType == "Variable") {
-                    it.price = null
+        when (item.name) {
+            "Sell Card" -> {
+                if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_purchaseGiftCard)
                 }
             }
-            val backStateName: String = AddItemFragment.javaClass.getName()
-            val fragment = AddItemFragment.newInstance(item, this, cartList, false)
-            val fm: FragmentManager = requireActivity().supportFragmentManager
-            fm.beginTransaction().add(binding.frameLayout.id, fragment)
-                .setReorderingAllowed(true)
-                .addToBackStack(backStateName).commit()
-            //  loadCategoryFragment(fragment)
-        } else {
-            Log.e(TAG, "cartListItemAddSize: ${cartList.size}")
-            if (cartList.isEmpty()) {
-                viewModel.createCart(cartList)
+            "Add Value" -> {
+                if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_purchaseGiftCard)
+                }
             }
-            item.itemQuantity = 1
-            if (cartList.size > 0) {
+            "Balance Inquiry" -> {
+                if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_purchaseGiftCard)
+                }
+            }
+            else -> {
+                item.timeStamp = randomOfflineId()
 
-                if (cartList.isNotEmpty())
-                    cartList[0].employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+                Log.e("viewModel.cartModel",Gson().toJson(viewModel.cartModel))
 
-                if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
-                    if (cartList[0].dineInList?.isEmpty() == true) {
-                        cartList[0].dineInList = dineInList
+                prefProvider.setValue(Constants.REDIRECT_FROM, "")
+
+                if (cartList.isEmpty() && viewModel.cartModel != null) {
+                    viewModel.cartModel?.let {
+                        cartList.add(it)
                     }
+                }
 
-
-                    if (cartList[0].dineInList?.isNotEmpty() == true) {
-                        Log.e(
-                            "checkDineHeaderPos",
-                            "dineInHeaderPosition:  ${viewModel.dineInHeaderPosition}"
-                        )
-
-                        var dineInList = cartList[0].dineInList
-                        dineInList!![0]?.selectedPosition = viewModel.dineInHeaderPosition
-                        viewModel.newCartLogicModifier(
-                            cartList,
-                            item,
-                            Constants.ADD,
-                            false,
-                            dineInList = dineInList
-                        )
+                if (cartList.isEmpty() && viewModel.cartModel != null) {
+                    cartList = arrayListOf()
+                    cartList = viewModel.createCart(cartList)
+                    if (cartList[0].employeeID != prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)) {
+                        cartList[0] = viewModel.cartModel!!
                     }
+                }
+
+
+                if (item.modifier_set_ids.isNotEmpty() || item.variationsAttributes.isNotEmpty()) {
+                    /*  if (item.variationsAttributes.isNotEmpty()) {
+                          item.variationsAttributes.get(0).isChecked = true
+                      }*/
+                    item.modifiers.forEach { it.isChecked = false }
+                    item.variationsAttributes.forEach { it ->
+                        if (it.priceType == "Variable") {
+                            it.price = null
+                        }
+                    }
+                    val backStateName: String = AddItemFragment.javaClass.getName()
+                    val fragment = AddItemFragment.newInstance(item, this, cartList, false)
+                    val fm: FragmentManager = requireActivity().supportFragmentManager
+                    fm.beginTransaction().add(binding.frameLayout.id, fragment)
+                        .setReorderingAllowed(true)
+                        .addToBackStack(backStateName).commit()
+                    //  loadCategoryFragment(fragment)
                 } else {
-                    viewModel.newCartLogicModifier(cartList, item, Constants.ADD, false)
+                    Log.e(TAG, "cartListItemAddSize: ${cartList.size}")
+                    if (cartList.isEmpty()) {
+                        viewModel.createCart(cartList)
+                    }
+                    item.itemQuantity = 1
+                    if (cartList.size > 0) {
+
+                        if (cartList.isNotEmpty())
+                            cartList[0].employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+
+                        if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
+                            if (cartList[0].dineInList?.isEmpty() == true) {
+                                cartList[0].dineInList = dineInList
+                            }
+
+
+                            if (cartList[0].dineInList?.isNotEmpty() == true) {
+                                Log.e(
+                                    "checkDineHeaderPos",
+                                    "dineInHeaderPosition:  ${viewModel.dineInHeaderPosition}"
+                                )
+
+                                var dineInList = cartList[0].dineInList
+                                dineInList!![0]?.selectedPosition = viewModel.dineInHeaderPosition
+                                viewModel.newCartLogicModifier(
+                                    cartList,
+                                    item,
+                                    Constants.ADD,
+                                    false,
+                                    dineInList = dineInList
+                                )
+                            }
+                        } else {
+                            viewModel.newCartLogicModifier(cartList, item, Constants.ADD, false)
+                        }
+                    }
+
                 }
             }
-
         }
-
 
     }
 
