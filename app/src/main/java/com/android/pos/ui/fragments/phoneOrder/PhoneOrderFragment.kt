@@ -5,9 +5,11 @@ import android.content.Context
 import android.graphics.Point
 import android.os.Bundle
 import android.text.Editable
+import android.text.TextUtils
 import android.text.TextWatcher
 import android.text.style.UnderlineSpan
 import android.util.Log
+import android.util.Patterns
 import android.view.*
 import android.widget.AdapterView
 import android.widget.Toast
@@ -180,13 +182,29 @@ class PhoneOrderFragment : Fragment() {
 
         binding.txtNext.setOnSingleClickListener {
             if (binding.edtFName.text.toString().trim().isEmpty()) {
-                AlertUtils.showCustomAlert(requireContext(), getString(R.string.first_name_validate))
+                AlertUtils.showCustomAlert(
+                    requireContext(),
+                    getString(R.string.first_name_validate)
+                )
 
             } else if (binding.edtPhoneNo.rawText.toString().trim().isEmpty()) {
                 AlertUtils.showCustomAlert(requireContext(), getString(R.string.phone_validate))
 
             } else if (binding.edtPhoneNo.rawText.toString().trim().length < 10) {
-                AlertUtils.showCustomAlert(requireContext(), getString(R.string.valid_phone_validate))
+                AlertUtils.showCustomAlert(
+                    requireContext(),
+                    getString(R.string.valid_phone_validate)
+                )
+            } else if (!TextUtils.isEmpty(
+                    binding.edtEmail.text.toString().trim()
+                ) && !Patterns.EMAIL_ADDRESS.matcher(
+                    binding.edtEmail.text.toString().trim()
+                ).matches()
+            ) {
+                AlertUtils.showCustomAlert(
+                    requireContext(),
+                    getString(R.string.valid_email_validate)
+                )
             } else if (isDelivey && binding.edtStreet.text.toString().trim().isEmpty()) {
                 AlertUtils.showCustomAlert(requireContext(), "Please enter address")
             } else {
