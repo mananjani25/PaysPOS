@@ -1705,7 +1705,11 @@
     <fragment
         android:id="@+id/addValueInGiftCard"
         android:name="com.android.pos.ui.fragments.eGiftCard.AddValueInGiftCardFragment"
-        android:label="@string/lbl_add_value"/>
+        android:label="@string/lbl_add_value">
+        <action
+            android:id="@+id/action_addValueInGiftCard_to_paymentBoldPosFragment"
+            app:destination="@id/paymentBoldPosFragment" />
+    </fragment>
     <fragment
         android:id="@+id/balanceInquiry"
         android:name="com.android.pos.ui.fragments.eGiftCard.BalanceInquiryFragment"

@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.databinding.FragmentBalanceInquiryBinding
+import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.extensions.gone
 
 class BalanceInquiryFragment : Fragment() {
@@ -42,7 +43,12 @@ class BalanceInquiryFragment : Fragment() {
         }
 
         binding.txtNext.setOnClickListener {
-
+            AlertUtils.showCustomAlertWithTitleListenerWithOK(
+                requireContext(),
+                title = getString(R.string.msg_balance_inquiry_results),
+                message = "$15.00"
+            ) { _, _ ->
+            }
         }
     }
 

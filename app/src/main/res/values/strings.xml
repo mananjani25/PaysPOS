@@ -859,6 +859,7 @@
     <string name="lbl_balance_inquiry">Balance Inquiry</string>
     <string name="hint_enter_your_gift_card_number">Enter Your Gift Card Number</string>
     <string name="hint_enter_your_gift_card_amount">Enter Your Gift Card Amount</string>
+    <string name="msg_balance_inquiry_results">Balance Inquiry Results</string>
 
 </resources>
 

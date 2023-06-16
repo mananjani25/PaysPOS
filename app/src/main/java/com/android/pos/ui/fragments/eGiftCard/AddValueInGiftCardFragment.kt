@@ -6,17 +6,29 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
+import com.android.pos.data.entities.CartModel
+import com.android.pos.data.entities.TbItem
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentAddValueInGiftCardBinding
+import com.android.pos.di.PrefProvider
+import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.AmountTextWatcher
 import com.android.pos.utils.MethodUtils
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class AddValueInGiftCardFragment : Fragment() {
 
     private lateinit var binding: FragmentAddValueInGiftCardBinding
+
+    @Inject
+    lateinit var prefProvider: PrefProvider
+    private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -118,7 +130,22 @@ class AddValueInGiftCardFragment : Fragment() {
         }
 
         binding.txtNext.setOnClickListener {
+            val amount = binding.edtAmount.text.toString().replace("$", "").trim().toDouble()
 
+            if (amount > 0.0) {
+
+                prefProvider.setValue(Constants.GIFT_CARD_TYPE,"Digital")
+
+                prefProvider.setValue(Constants.GIFT_CARD_PURCHASE_AMOUNT, amount.toString())
+
+                moveToCheckout()
+
+            } else {
+
+                AlertUtils.showCustomAlert(requireContext(), "Please enter amount")
+                return@setOnClickListener
+
+            }
         }
 
         binding.llKeypad.txt10.setOnClickListener {
@@ -132,6 +159,73 @@ class AddValueInGiftCardFragment : Fragment() {
         binding.llKeypad.txt30.setOnClickListener {
             binding.edtAmount.setText(MethodUtils.roundOffAmount(35.0))
         }
+    }
+
+    private fun moveToCheckout() {
+
+        prefProvider.setValue(Constants.CUSTOMER_NAME, "")
+
+        prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
+
+        prefProvider.saveCustomerData(null)
+
+        prefProvider.setValue("PaidAmount", "")
+        prefProvider.setValue(Constants.WHOLE_AMOUNT, "")
+        prefProvider.setValueInt("cardCount", 0)
+        prefProvider.setValue(Constants.SUB_TOTAL, "")
+        prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
+        prefProvider.setValue(Constants.TOTAL_DISCOUNT, "")
+        prefProvider.setValue(Constants.TIP, "")
+        prefProvider.setValue(Constants.TAX_CHARGE, "")
+        prefProvider.setValue(Constants.SERVICE_CHARGE, "")
+
+        dashboardViewModel.deleteCart()
+
+        prefProvider.setValue(Constants.ORDER_TYPE, Constants.GIFT_CARD)
+        prefProvider.setValue(Constants.ORDER_TYPE_NAME, Constants.GIFT_CARD_NAME)
+
+        val cm = CartModel()
+        val tbItem = TbItem()
+        tbItem.name = "Digital Gift Card"
+        tbItem.quantity = 1
+        tbItem.itemQuantity = 1
+        val totalPrice = binding.edtAmount.text.toString().replace("$", "").trim().toDouble()
+        tbItem.price = totalPrice
+
+        cm.apply {
+            items = listOf(tbItem)
+            employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1)
+            terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
+            isOpenOrder = false
+            orderTypeId = 0
+            orderType = Constants.GIFT_CARD
+            orderTypeName = Constants.GIFT_CARD
+        }
+
+        dashboardViewModel.addCart(cm)
+
+        val bundle = Bundle()
+        bundle.putBoolean("update", true)
+        bundle.putDouble("totalPrice", totalPrice)
+        bundle.putDouble("finalprice", totalPrice)
+        bundle.putDouble(
+            "cashDiscountSurcharge",
+            MethodUtils.calculateCashDiscount(
+                totalPrice,
+                prefProvider,
+                requireContext()
+            )
+        )
+        bundle.putDouble("subTotalPrice", totalPrice)
+        bundle.putDouble("totalTax", 0.0)
+        bundle.putDouble("totalDiscount", 0.0)
+        bundle.putDouble("totalServiceCharge", 0.0)
+        bundle.putParcelable("cartList", cm)
+
+        findNavController().navigate(
+            R.id.action_addValueInGiftCard_to_paymentBoldPosFragment,
+            bundle
+        )
     }
 
 }

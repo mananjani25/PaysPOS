@@ -41,6 +41,7 @@ class AddCustomerToGiftCardFragment : Fragment(), ItemCallback {
 
     @Inject
     lateinit var prefProvider: PrefProvider
+    private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
 
     private var currentPage = 1
     private val perPageData = 50
@@ -266,8 +267,6 @@ class AddCustomerToGiftCardFragment : Fragment(), ItemCallback {
         }
 
     }
-
-    private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
 
     override fun onItemClickListener(view: View?, pos: Int) {
         selectedPosition = pos

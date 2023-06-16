@@ -24,7 +24,10 @@ import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DEFAULT_ORDER
+import com.android.pos.data.remote.Constants.GIFT_CARD
 import com.android.pos.data.remote.Constants.IS_GIFT_CARD_ACTIVATED
+import com.android.pos.data.remote.Constants.ORDER_TYPE
+import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.remote.Constants.TIP_ADDED
 import com.android.pos.data.remote.Constants.TIP_ADDED_AMOUNT
 import com.android.pos.databinding.FragmentCheckoutDetailsNewBinding
@@ -181,7 +184,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         prefProvider.setValueboolean(IS_GIFT_CARD_ACTIVATED,true)
 
-        if(prefProvider.getValueboolean(IS_GIFT_CARD_ACTIVATED,false)){
+        if(prefProvider.getValue(ORDER_TYPE, TAKEOUT) != GIFT_CARD){
             binding.tvOther.visible()
             binding.lnrGiftCard.visible()
         }else{
@@ -1092,6 +1095,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                 }
             }
+        }
+
+        binding.txtChargeGC.setOnSingleClickListener {
+            val giftCardNumber = binding.edtGiftCardNumber.rawText.toString().trim()
         }
     }
 
