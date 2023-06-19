@@ -894,7 +894,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         if (cashDiscountType == "CashDiscount") {
             paymentAmount -= cashDiscountSurcharge
         }
-        makeCashPayment()
+        if(prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD){
+            sellGiftCardUsingCash()
+        }else{
+            makeCashPayment()
+        }
     }
 
     private fun getTwoDecimal(value: Double): Double {
@@ -1590,6 +1594,22 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         if (myRequest != null) {
             paymentviewModel.totalPayAmount(paymentAmount)
             paymentAttributesRequest(myRequest)
+        }
+    }
+
+    private fun sellGiftCardUsingCash() {
+        paymentType = "Cash"
+        LogUtil.logE(TAG, "makeCashPayorderId  ${orderId}")
+        LogUtil.logE(TAG, "makeCashPrefOrderId  ${prefProvider.getValueInt("ORDER_ID", -1)}")
+
+        paymentviewModel.saveOrder(false)
+        val myRequest = cartList?.let {
+            paymentviewModel.createSellGiftCardRequest()
+        }
+        LogUtil.logE(TAG, "myRequestOriginal ${Gson().toJson(myRequest)}")
+        LogUtil.logE("ORDER TYPE 1", prefProvider.getValue(Constants.ORDER_TYPE, ""))
+        if (myRequest != null) {
+            paymentviewModel.sellGiftCard(myRequest)
         }
     }
 

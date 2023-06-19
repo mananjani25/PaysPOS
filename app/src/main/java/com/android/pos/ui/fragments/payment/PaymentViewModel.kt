@@ -8,10 +8,14 @@ import androidx.lifecycle.viewModelScope
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.entities.*
 import com.android.pos.data.model.requestModel.*
+import com.android.pos.data.model.requestModel.giftCard.request.GiftCard
+import com.android.pos.data.model.requestModel.giftCard.request.SellGiftCardRequestModel
+import com.android.pos.data.model.requestModel.giftCard.response.SellGiftCardResponseModel
 import com.android.pos.data.model.responseModel.BaseResponse
 import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN
+import com.android.pos.data.remote.Constants.GIFT_CARD_PURCHASE_AMOUNT
 import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.android.pos.data.remote.Constants.PAYMENT_ID
 import com.android.pos.data.remote.Constants.PHONE_ORDER
@@ -199,7 +203,7 @@ open class PaymentViewModel @Inject constructor(
 
                                 } else {
                                     //Added by Dharmesh Basapati to avoid crash due to empty payments array
-                                    if( response.data.order.payments.isNotEmpty()){
+                                    if (response.data.order.payments.isNotEmpty()) {
                                         if (createOrderResponse.data.order.orderType != "Dine In" && response.data.order.payments[response.data.order.payments.size - 1].paymentType != "Card") {
                                             cashLogApi(createOrderResponse, "in")
                                             LogUtil.logE("QueueCheck", "CashLogAPI")
@@ -252,11 +256,90 @@ open class PaymentViewModel @Inject constructor(
         }
     }
 
+    fun sellGiftCard(sellGiftCardRequestModel: SellGiftCardRequestModel) {
+
+        if (checkIsCashPaymentTypeForGiftCard(sellGiftCardRequestModel)) {
+            _showProgressCash.value = Event(true)
+        } else
+            _showProgress.value = Event(true)
+
+        viewModelScope.launch {
+
+            val resource: Resource<SellGiftCardResponseModel> =
+                posRepository.sellGiftCard(sellGiftCardRequestModel)
+
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    _showProgress.value = Event(false)
+                    resource.data.let { response ->
+                        if (response?.status == 200) {
+
+                            resource.data?.let { createOrderResponse ->
+
+                                prefProvider.setValueInt(
+                                    PAYMENT_ID,
+                                    createOrderResponse.data.gift_card.payment.transaction_id.toInt()
+                                )
+
+                                prefProvider.setValueInt(
+                                    PAYMENT_ID_FOR_CUSTOMER_DISPLAY,
+                                    createOrderResponse.data.gift_card.payment.transaction_id.toInt()
+                                )
+
+                                posRepository.deleteCart(
+                                    prefProvider.getValueInt(
+                                        Constants.EMPLOYEE_ID,
+                                        0
+                                    )
+                                )
+
+                                _msgText.value = Event(response.message)
+
+                                _orderCreate.value = Event(true)
+
+                            }
+
+                        } else {
+                            _snackbarText.value = Event(resource.message)
+                        }
+                    }
+
+                }
+
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message)
+
+                    if (checkIsCashPaymentTypeForGiftCard(sellGiftCardRequestModel)) {
+                        _showProgressCash.value = Event(false)
+                    } else
+                        _showProgress.value = Event(false)
+
+                }
+
+                Status.LOADING -> {
+                    if (checkIsCashPaymentTypeForGiftCard(sellGiftCardRequestModel)) {
+                        _showProgressCash.value = Event(true)
+                    } else
+                        _showProgress.value = Event(true)
+
+                }
+            }
+        }
+    }
+
     private fun cashPaymentType(orderRequestModel: OrderRequestModel): Boolean {
 
         if (orderRequestModel.order.paymentAttributes == null) return true
 
         return orderRequestModel.order.paymentAttributes?.paymentType.equals(
+            "Cash",
+            ignoreCase = true
+        )
+    }
+
+    private fun checkIsCashPaymentTypeForGiftCard(sellGiftCardRequestModel: SellGiftCardRequestModel): Boolean {
+
+        return sellGiftCardRequestModel.gift_card.payment_attributes?.payment_type.equals(
             "Cash",
             ignoreCase = true
         )
@@ -484,6 +567,29 @@ open class PaymentViewModel @Inject constructor(
         }
     }
 
+    fun createSellGiftCardRequest(): SellGiftCardRequestModel{
+
+        val paymentAttributes = com.android.pos.data.model.requestModel.giftCard.request.PaymentAttributes(
+            amount = prefProvider.getValue(GIFT_CARD_PURCHASE_AMOUNT,"0.0").toDouble(),
+            card_name = "",
+            card_number = "",
+            employee_id = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0),
+            magensa_response = "",
+            offline_id = "",
+            payable_type = "GiftCard",
+            payment_type = "Cash",
+            sub_total = prefProvider.getValue(GIFT_CARD_PURCHASE_AMOUNT,"0.0").toDouble(),
+            terminal_id = prefProvider.getValueInt(Constants.TERMINAL_ID, 0),
+            transaction_id = ""
+        )
+
+        val giftCard = GiftCard(name = "222222222222", amount = prefProvider.getValue(GIFT_CARD_PURCHASE_AMOUNT,"0.0"),
+            customer_id = prefProvider.getValueInt(Constants.CUSTOMER_ID, 0),
+            location_id = prefProvider.getValueInt(Constants.LOCATION_ID, 1),
+            password = "8888", payment_attributes = paymentAttributes)
+
+        return SellGiftCardRequestModel(gift_card = giftCard)
+    }
 
     fun createOrderRequest(
         cartModel: CartModel,
@@ -527,11 +633,19 @@ open class PaymentViewModel @Inject constructor(
         orderAttributeRequestModel.openOrderType =
             prefProvider.getValue(Constants.ORDER_TYPE, "")
 
-        if (order_type_id == -1 && prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT) == Constants.OPEN_ORDER){
+        if (order_type_id == -1 && prefProvider.getValue(
+                Constants.ORDER_TYPE,
+                TAKEOUT
+            ) == Constants.OPEN_ORDER
+        ) {
             order_type_id = prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)
         }
 
-        if (order_type_id == -1 && prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT) == Constants.PHONE_ORDER){
+        if (order_type_id == -1 && prefProvider.getValue(
+                Constants.ORDER_TYPE,
+                TAKEOUT
+            ) == Constants.PHONE_ORDER
+        ) {
             order_type_id = prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)
         }
 
@@ -549,8 +663,9 @@ open class PaymentViewModel @Inject constructor(
 //        } else {
 //            orderAttributeRequestModel.deliveryType = cartModel.deliveryType
 //        }
-        if (cartModel.orderType == PHONE_ORDER){
-            orderAttributeRequestModel.deliveryType = prefProvider.getValue(Constants.DELIVERY_TYPE, PICK_UP)
+        if (cartModel.orderType == PHONE_ORDER) {
+            orderAttributeRequestModel.deliveryType =
+                prefProvider.getValue(Constants.DELIVERY_TYPE, PICK_UP)
         }
         orderAttributeRequestModel.employeeId = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
         orderAttributeRequestModel.locationId = prefProvider.getValueInt(Constants.LOCATION_ID, 1)
@@ -806,8 +921,9 @@ open class PaymentViewModel @Inject constructor(
             orderAttributeRequestModel.deliveryType = cartModel.deliveryType
         }
 
-        if (cartModel.orderType == PHONE_ORDER){
-            orderAttributeRequestModel.deliveryType = prefProvider.getValue(Constants.DELIVERY_TYPE, PICK_UP)
+        if (cartModel.orderType == PHONE_ORDER) {
+            orderAttributeRequestModel.deliveryType =
+                prefProvider.getValue(Constants.DELIVERY_TYPE, PICK_UP)
         }
 
         orderAttributeRequestModel.employeeId = cartModel.employeeID
@@ -936,8 +1052,8 @@ open class PaymentViewModel @Inject constructor(
         paymentType: String,
         cashdiscountType: String,
         tipID: Int? = null,
-        totalServiceChargeM:Double = 0.0,
-        totalDiscountM:Double = 0.0
+        totalServiceChargeM: Double = 0.0,
+        totalDiscountM: Double = 0.0
     ): OrderRequestModel {
 
         val orderAttributeRequestModel = OrderAttributeRequestModel()
@@ -1727,7 +1843,7 @@ open class PaymentViewModel @Inject constructor(
         return PaymentAttributes().apply {
 //            if (isUpdateOrder)
 //                id = paymentId
-            val totalPP =totalPrice
+            val totalPP = totalPrice
             val totalDC = MethodUtils.roundOffAmountDouble(tipAmount)
             val totalAM = totalPP /*- totalDC*/
             amount = totalAM
@@ -2054,10 +2170,12 @@ open class PaymentViewModel @Inject constructor(
                     // _queuePrinter.value = Event(resource?.data?.message.toString())
 
                 }
+
                 Status.LOADING -> {
                     _showProgress.value = Event(true)
 
                 }
+
                 Status.ERROR -> {
                     _snackbarText.value = Event(resource.message)
                     _showProgress.value = Event(false)
@@ -2112,10 +2230,12 @@ open class PaymentViewModel @Inject constructor(
                     _textToPaySpit.value = Event(true)
 
                 }
+
                 Status.LOADING -> {
                     _showProgress.value = Event(true)
 
                 }
+
                 Status.ERROR -> {
                     _snackbarText.value = Event(resource.message)
                     _showProgress.value = Event(false)

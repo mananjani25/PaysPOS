@@ -294,6 +294,7 @@ object Constants {
 
 
     const val ORDERS = "orders"
+    const val GIFT_CARDS = "gift_cards"
     const val ORDER_DETAILS = "orders/{id}"
     const val PAYMENT_DETAILS = "payments/{id}"
     const val ORDER_EMAIL_RECEIPT = "orders/send_order_email_receipt"

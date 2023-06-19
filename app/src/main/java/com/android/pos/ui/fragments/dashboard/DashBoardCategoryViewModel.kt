@@ -45,6 +45,7 @@ import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.DINE_IN_LIST_EDIT
 import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
+import com.android.pos.data.remote.Constants.GIFT_CARD
 import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.android.pos.data.remote.Constants.IS_SYNC_MARKUP
 import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER
@@ -61,6 +62,7 @@ import com.android.pos.data.remote.Constants.SERVICECHARGE_TAKEOUT_OPENORDER
 import com.android.pos.data.remote.Constants.SYNC_SETTING_TIME_STAMP
 import com.android.pos.data.remote.Constants.SYNC_TIME_STAMP
 import com.android.pos.data.remote.Constants.SYSTEM_TIMEZONE
+import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.data.remote.Constants.UPDATE
 import com.android.pos.data.remote.Constants.VENUE_LOGO
@@ -3032,7 +3034,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                         }
                     }
 
-                    if (MethodUtils.isEnableCashDiscount(context)) {
+                    if (MethodUtils.isEnableCashDiscount(context) && prefProvider.getValue(ORDER_TYPE, TAKEOUT) != GIFT_CARD) {
                         cashdiscountAmount = MethodUtils.calculateCashDiscount(
                             totalPrice,
                             prefProvider,

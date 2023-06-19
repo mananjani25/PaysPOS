@@ -3,6 +3,7 @@ package com.android.pos.data.remote
 import com.android.pos.data.entities.TbBusinessDetails
 import com.android.pos.data.entities.VariationsAttribute
 import com.android.pos.data.model.requestModel.*
+import com.android.pos.data.model.requestModel.giftCard.request.SellGiftCardRequestModel
 import com.android.pos.utils.FileUtils.getContentType
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
@@ -441,6 +442,9 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
 
     suspend fun createOrder(data: OrderRequestModel) =
         getResult { apiService.createOrder(data) }
+
+    suspend fun sellGiftCard(data: SellGiftCardRequestModel) =
+        getResult { apiService.sellGiftCard(data) }
 
     suspend fun splitByOrder(data: SpitByOrderRequestModel) =
         getResult { apiService.splitByOrder(data) }
