@@ -499,283 +499,280 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         }
 
         binding.btnPayNew.setOnClickListener {
-            //new Calculation for total Discount
-            var listWT: ArrayList<TbItem> = arrayListOf()
-            var list = dineInTableAdapter.getList()
+            try {
+                //new Calculation for total Discount
+                var listWT: ArrayList<TbItem> = arrayListOf()
+                var list = dineInTableAdapter.getList()
 
-            for (i in 0 until list.size) {
-                if (list.get(i).title.equals("Whole Table", true) && i + 1 <= list.size) {
-                    if (list[i + 1].isHeader == 1) {
-                        for (j in i + 1 until list.size) {
-                            if (list.get(j).isHeader == 1) {
-                                listWT.add(list.get(j).item!!)
-                            } else {
-                                break
+                for (i in 0 until list.size) {
+                    if (list.get(i).title.equals("Whole Table", true) && i + 1 <= list.size) {
+                        if (list[i + 1].isHeader == 1) {
+                            for (j in i + 1 until list.size) {
+                                if (list.get(j).isHeader == 1) {
+                                    listWT.add(list.get(j).item!!)
+                                } else {
+                                    break
+                                }
                             }
                         }
                     }
                 }
-            }
-            LogUtil.logE(TAG, "listWTItems ${Gson().toJson(listWT)}")
-            prefProvider.setValue(Constants.ORDER_TYPE, DINE_IN)
+                LogUtil.logE(TAG, "listWTItems ${Gson().toJson(listWT)}")
+                prefProvider.setValue(Constants.ORDER_TYPE, DINE_IN)
 
-            var dividedOrderDiscount = 0.0
-            totalGuestCount = getOrderDetailsResponse?.guestAttributes?.size!! - 1
-            var tmpOrderDis = 0.0
-            if (paidGuestAmount > 0 && globalOrderDiscount > 0.0) {
+                var dividedOrderDiscount = 0.0
+                totalGuestCount = getOrderDetailsResponse?.guestAttributes?.size!! - 1
+                var tmpOrderDis = 0.0
+                if (paidGuestAmount > 0 && globalOrderDiscount > 0.0) {
                 LogUtil.logE("globalOrderDiscount", "globalOrderDiscount  ${globalOrderDiscount}")
-                var eachGuestDiscount =
-                    MethodUtils.roundOffAmountDouble(globalOrderDiscount / (getOrderDetailsResponse?.guestAttributes?.size!! - 1))
+                    var eachGuestDiscount =
+                        MethodUtils.roundOffAmountDouble(globalOrderDiscount / (getOrderDetailsResponse?.guestAttributes?.size!! - 1))
 
                 dividedOrderDiscount = globalOrderDiscount - (eachGuestDiscount * paidGuestAmount)
-                LogUtil.logE(TAG, "DividedOrwrs ${dividedOrderDiscount}")
+                    LogUtil.logE(TAG, "DividedOrwrs ${dividedOrderDiscount}")
 
-                tmpOrderDis = globalOrderDiscount - (eachGuestDiscount * paidGuestAmount)
-
-
-                var wholeDisDivide =
-                    MethodUtils.roundOffAmountDouble(wholeTableDiscount / (getOrderDetailsResponse?.guestAttributes?.size!! - 1))
-                if (wholeDisDivide > dividedOrderDiscount) {
-                    dividedOrderDiscount = wholeDisDivide - dividedOrderDiscount
-                } else {
-                    dividedOrderDiscount -= wholeDisDivide
-                }
-                totalDiscount -= wholeDisDivide
-
-                subTotalDInin -= tmpOrderDis
-                LogUtil.logE(
-                    "dividedOrderDiscount",
-                    "dividedOrderDiscount  ${dividedOrderDiscount}"
-                )
-                LogUtil.logE("WRqwrfarf", "wholeDisDivide  ${wholeDisDivide}")
-                LogUtil.logE(TAG, "subtotal :: " + subTotalDInin)
-            }
-
-            LogUtil.logE("WholeTableDis", "wholeDis  ${wholeTableDiscount}")
+                    tmpOrderDis = globalOrderDiscount - (eachGuestDiscount * paidGuestAmount)
 
 
-            LogUtil.logE("totalDiscount", "totalDiscount  ${totalDiscount}")
-            if (totalDiscount > tmpOrderDis) {
-                totalDiscount -= tmpOrderDis
-            }
-
-
-            val adapterList = dineInTableAdapter.getList()
-            var offlineId = randomOfflineId()
-
-            cartList = getCartModel(adapterList.toCollection(arrayListOf()))
-            cartList?.note = order_note
-            LogUtil.logE(TAG, "getcartList  ${Gson().toJson(cartList)}")
-            cartList!!.taxlistDynamic = listOf()
-            var temp_itemsList: ArrayList<TbItem> = arrayListOf()
-            cartList?.dineInList?.forEach { dineModel ->
-                if (!dineModel.isPaid) {
-                    temp_itemsList.addAll(dineModel.items)
-                }
-            }
-
-
-            temp_itemsList.forEach { item ->
-                cartList = taxBifurcationCalculation(
-                    item,
-                    cartList!!
-                )
-            }
-
-
-            Log.d(TAG, "onClick: listof Tax:  " + Gson().toJson(cartList?.taxlistDynamic))
-
-            var listreemaining: List<TaxData> = emptyList()
-            listWT.forEach { wholetableitems ->
-                wholetableitems.taxes?.forEachIndexed { index, taxData ->
-                    var modifierPrice: Double = 0.0
-                    var totaltaxtemp: Double = 0.0
-                    val price =
-                        (wholetableitems.price * wholetableitems.itemQuantity) - (wholetableitems.discountPrice * wholetableitems.itemQuantity)
-
-                    wholetableitems.modifiers.forEach {
-                        modifierPrice += (it.price * it.itemQuantity)
-                    }
-
-                    val totalPrice =
-                        price + modifierPrice
-                    totaltaxtemp += if (taxData.taxType == "Percentage") {
-                        if (totalPrice < 0.0) {
-
-                            String.format("%.2f", 0.00)
-                                .toDouble()
-                        } else {
-                            val itemTaxPrice =
-                                (taxData.rate * totalPrice) / 100
-                            LogUtil.logE("itemTaxPrice", "" + itemTaxPrice)
-                            MethodUtils.getTwoDecimal(itemTaxPrice)
-                            /* String.format("%.2f", itemTaxPrice)
-                                 .toDouble()*/
-                        }
-
+                    var wholeDisDivide =
+                        MethodUtils.roundOffAmountDouble(wholeTableDiscount / (getOrderDetailsResponse?.guestAttributes?.size!! - 1))
+                    if (wholeDisDivide > dividedOrderDiscount) {
+                        dividedOrderDiscount = wholeDisDivide - dividedOrderDiscount
                     } else {
-                        Log.d("yash", "taxCalculation: " + taxData.taxType)
-                        if (totalPrice <= 0.0) {
-                            String.format("%.2f", 0.00)
-                                .toDouble()
-                        } else {
-
-                            MethodUtils.getTwoDecimal(taxData.rate * wholetableitems.itemQuantity)
-                            /*  String.format("%.2f", taxData.rate * wholetableitems.itemQuantity)
-                                  .toDouble()*/
-                        }
-
+                        dividedOrderDiscount -= wholeDisDivide
                     }
+                    totalDiscount -= wholeDisDivide
 
-                    Log.d(TAG, "onClick: wholetable total tax $totaltaxtemp")
-                    var found = -1
-                    totaltaxtemp /= (getOrderDetailsResponse?.guestAttributes?.size!! - 1)
-                    var temp_remaining = totaltaxtemp * paidGuestAmount
-                    var temp_subtotal =
-                        totalPrice / (getOrderDetailsResponse?.guestAttributes?.size!! - 1)
-                    cartList?.taxlistDynamic?.forEachIndexed { indexcart, cartTaxtData ->
-                        if (cartTaxtData.taxType == taxData.taxType) {
-                            found = indexcart
-                        }
-                    }
-                    if (found != -1) {
-                        if (found <= cartList?.taxlistDynamic?.size!! - 1) {
-                            if (cartList?.taxlistDynamic?.get(found)?.taxType != "Percentage") {
-                                cartList?.taxlistDynamic?.get(found)?.subTotalAmount =
-                                    cartList?.taxlistDynamic?.get(found)?.subTotalAmount!!.plus(
-                                        temp_subtotal
-                                    )
-                            }
-                            cartList?.taxlistDynamic?.get(found)?.totalTaxTypePrice =
-                                cartList?.taxlistDynamic?.get(found)?.totalTaxTypePrice!!.minus(
-                                    temp_remaining
-                                )
-                        }
-
-                    } else {
-                        var data = taxData
-                        data.subTotalAmount = temp_subtotal
-                        data.totalTaxTypePrice = temp_remaining
-                        listreemaining = listOf(data)
-                    }
-
+                    subTotalDInin -= tmpOrderDis
+                    LogUtil.logE(
+                        "dividedOrderDiscount",
+                        "dividedOrderDiscount  ${dividedOrderDiscount}"
+                    )
+                    LogUtil.logE("WRqwrfarf", "wholeDisDivide  ${wholeDisDivide}")
+                    LogUtil.logE(TAG, "subtotal :: " + subTotalDInin)
                 }
-            }
 
-            listreemaining.forEach { remainingdata ->
-                cartList?.taxlistDynamic =
-                    concatenate(cartList?.taxlistDynamic!!, listOf(remainingdata))
-            }
+                LogUtil.logE("WholeTableDis", "wholeDis  ${wholeTableDiscount}")
 
 
-            Log.d(TAG, "onClick: listof Tax: after  " + Gson().toJson(cartList?.taxlistDynamic))
-            viewModelPayment.addCart(cartList!!)
-            LogUtil.logE(TAG, "getcartListAfterAdd  ${Gson().toJson(cartList)}")
+                LogUtil.logE("totalDiscount", "totalDiscount  ${totalDiscount}")
+                if (totalDiscount > tmpOrderDis) {
+                    totalDiscount -= tmpOrderDis
+                }
 
-            totalTax = 0.0
-            var subTotal = 0.0
-            var amtToPay = 0.0
-            val totalItem: ArrayList<TbItem> = arrayListOf()
-            for (i in 0 until adapterList.size) {
-                if (adapterList.get(i).isHeader == 1) {
-                    adapterList.get(i).item?.let {
-                        totalItem.add(it)
+
+                val adapterList = dineInTableAdapter.getList()
+                var offlineId = randomOfflineId()
+
+                cartList = getCartModel(adapterList.toCollection(arrayListOf()))
+                cartList?.note = order_note
+                cartList!!.taxlistDynamic = listOf()
+                var temp_itemsList: ArrayList<TbItem> = arrayListOf()
+                cartList?.dineInList?.forEach { dineModel ->
+                    if (!dineModel.isPaid) {
+                        temp_itemsList.addAll(dineModel.items)
                     }
                 }
-            }
-            if (totalItem.isNotEmpty()) {
-                totalItem.forEach {
-                    if (!it.isPaid) {
-                        subTotal += (it.price * it.itemQuantity) - it.discountPrice
-                        if (it.modifiers.isNotEmpty()) {
-                            it.modifiers.forEach {
-                                subTotal += it.itemQuantity * it.price
-                            }
+
+
+                temp_itemsList.forEach { item ->
+                    cartList = taxBifurcationCalculation(
+                        item,
+                        cartList!!
+                    )
+                }
+
+
+
+                var listreemaining: List<TaxData> = emptyList()
+                listWT.forEach { wholetableitems ->
+                    wholetableitems.taxes?.forEachIndexed { index, taxData ->
+                        var modifierPrice: Double = 0.0
+                        var totaltaxtemp: Double = 0.0
+                        val price =
+                            (wholetableitems.price * wholetableitems.itemQuantity) - (wholetableitems.discountPrice * wholetableitems.itemQuantity)
+
+                        wholetableitems.modifiers.forEach {
+                            modifierPrice += (it.price * it.itemQuantity)
                         }
 
-                        it.taxes?.forEach { tax ->
-                            totalTax += if (tax.taxType == "Percentage") {
+                        val totalPrice =
+                            price + modifierPrice
+                        totaltaxtemp += if (taxData.taxType == "Percentage") {
+                            if (totalPrice < 0.0) {
 
-                                var modifierPrice = 0.0
-                                val price =
-                                    (it.price * it.quantity) - it.discountPrice
-
-                                it.modifiers.forEach {
-                                    modifierPrice += (it.price * it.itemQuantity)
-                                }
-
-                                val totalPrice = price + modifierPrice
-
+                                String.format("%.2f", 0.00)
+                                    .toDouble()
+                            } else {
                                 val itemTaxPrice =
-                                    (tax.rate * totalPrice) / 100
+                                    (taxData.rate * totalPrice) / 100
                                 LogUtil.logE("itemTaxPrice", "" + itemTaxPrice)
                                 MethodUtils.getTwoDecimal(itemTaxPrice)
                                 /* String.format("%.2f", itemTaxPrice)
-                                     .toDouble()*/
-                            } else {
-                                MethodUtils.getTwoDecimal(tax.rate * it.quantity)
+                                 .toDouble()*/
+                            }
 
-                                /* String.format(
+                        } else {
+                            Log.d("yash", "taxCalculation: " + taxData.taxType)
+                            if (totalPrice <= 0.0) {
+                                String.format("%.2f", 0.00)
+                                    .toDouble()
+                            } else {
+
+                                MethodUtils.getTwoDecimal(taxData.rate * wholetableitems.itemQuantity)
+                                /*  String.format("%.2f", taxData.rate * wholetableitems.itemQuantity)
+                                  .toDouble()*/
+                            }
+
+                        }
+
+                        Log.d(TAG, "onClick: wholetable total tax $totaltaxtemp")
+                        var found = -1
+                        totaltaxtemp /= (getOrderDetailsResponse?.guestAttributes?.size!! - 1)
+                        var temp_remaining = totaltaxtemp * paidGuestAmount
+                        var temp_subtotal =
+                            totalPrice / (getOrderDetailsResponse?.guestAttributes?.size!! - 1)
+                        cartList?.taxlistDynamic?.forEachIndexed { indexcart, cartTaxtData ->
+                            if (cartTaxtData.taxType == taxData.taxType) {
+                                found = indexcart
+                            }
+                        }
+                        if (found != -1) {
+                            if (found <= cartList?.taxlistDynamic?.size!! - 1) {
+                                if (cartList?.taxlistDynamic?.get(found)?.taxType != "Percentage") {
+                                    cartList?.taxlistDynamic?.get(found)?.subTotalAmount =
+                                        cartList?.taxlistDynamic?.get(found)?.subTotalAmount!!.plus(
+                                            temp_subtotal
+                                        )
+                                }
+                                cartList?.taxlistDynamic?.get(found)?.totalTaxTypePrice =
+                                    cartList?.taxlistDynamic?.get(found)?.totalTaxTypePrice!!.minus(
+                                        temp_remaining
+                                    )
+                            }
+
+                        } else {
+                            var data = taxData
+                            data.subTotalAmount = temp_subtotal
+                            data.totalTaxTypePrice = temp_remaining
+                            listreemaining = listOf(data)
+                        }
+
+                    }
+                }
+
+                listreemaining.forEach { remainingdata ->
+                    cartList?.taxlistDynamic =
+                        concatenate(cartList?.taxlistDynamic!!, listOf(remainingdata))
+                }
+
+
+                viewModelPayment.addCart(cartList!!)
+
+                totalTax = 0.0
+                var subTotal = 0.0
+                var amtToPay = 0.0
+                val totalItem: ArrayList<TbItem> = arrayListOf()
+                for (i in 0 until adapterList.size) {
+                    if (adapterList.get(i).isHeader == 1) {
+                        adapterList.get(i).item?.let {
+                            totalItem.add(it)
+                        }
+                    }
+                }
+                if (totalItem.isNotEmpty()) {
+                    totalItem.forEach {
+                        if (!it.isPaid) {
+                            subTotal += (it.price * it.itemQuantity) - it.discountPrice
+                            if (it.modifiers.isNotEmpty()) {
+                                it.modifiers.forEach {
+                                    subTotal += it.itemQuantity * it.price
+                                }
+                            }
+
+                            it.taxes?.forEach { tax ->
+                                totalTax += if (tax.taxType == "Percentage") {
+
+                                    var modifierPrice = 0.0
+                                    val price =
+                                        (it.price * it.quantity) - it.discountPrice
+
+                                    it.modifiers.forEach {
+                                        modifierPrice += (it.price * it.itemQuantity)
+                                    }
+
+                                    val totalPrice = price + modifierPrice
+
+                                    val itemTaxPrice =
+                                        (tax.rate * totalPrice) / 100
+                                    LogUtil.logE("itemTaxPrice", "" + itemTaxPrice)
+                                    MethodUtils.getTwoDecimal(itemTaxPrice)
+                                    /* String.format("%.2f", itemTaxPrice)
+                                     .toDouble()*/
+                                } else {
+                                    MethodUtils.getTwoDecimal(tax.rate * it.quantity)
+
+                                    /* String.format(
                                      "%.2f",
                                      tax.rate * it.quantity
                                  )
                                      .toDouble()*/
+                                }
+
+
                             }
-
-
                         }
                     }
                 }
-            }
-            // subTotal += dineInTableAdapter.getList().get(0).guestDividedAmt
+                // subTotal += dineInTableAdapter.getList().get(0).guestDividedAmt
 
 
-            if (MethodUtils.isEnableCashDiscount(requireContext())) {
-                var divideGuest = totalGuestCount - paidGuestAmount
-                if (paidGuestAmount == 0) {
-                    divideCashDiscount = MethodUtils.calculateCashDiscount(
-                        toFinalAmt,
-                        prefProvider,
-                        requireContext()
-                    )
-                } else {
-                    divideCashDiscount =
-                        MethodUtils.calculateCashDiscount(
+                if (MethodUtils.isEnableCashDiscount(requireContext())) {
+                    var divideGuest = totalGuestCount - paidGuestAmount
+                    if (paidGuestAmount == 0) {
+                        divideCashDiscount = MethodUtils.calculateCashDiscount(
                             toFinalAmt,
                             prefProvider,
                             requireContext()
-                        ) / (getOrderDetailsResponse?.guestAttributes?.size!! - 1)
+                        )
+                    } else {
+                        divideCashDiscount =
+                            MethodUtils.calculateCashDiscount(
+                                toFinalAmt,
+                                prefProvider,
+                                requireContext()
+                            ) / (getOrderDetailsResponse?.guestAttributes?.size!! - 1)
+                    }
+                } else {
+                    divideCashDiscount = 0.0
                 }
-            } else {
-                divideCashDiscount = 0.0
-            }
-            var dineInOrderModel = DineInPaymentUpdateModel()
-            dineInOrderModel.id = orderId
-            var model = GuestPaymentRequest(
-                GuestPaymentAttributes().apply {
-                    amount = MethodUtils.roundOffAmountDouble(toFinalAmt)
-                    cardName = ""
-                    cardNumber = ""
-                    cardType = ""
-                    cashDiscount = 0.0
-                    cash_discount_or_surcharge = divideCashDiscount
-                    cashDiscountFee = 0.0
-                    employeeId = prefProvider.getValueInt(EMPLOYEE_ID, 0)
-                    taxAmount = MethodUtils.roundOffAmountDouble(finalTaxAmt)
-                    subTotalPrice = MethodUtils.roundOffAmountDouble(subTotalWT)
-                    offlineId = getOrderDetailsResponse?.offlineId ?: ""
-                    payableType = "GuestTab"
-                    paymentType = "Cash"
-                    transactionId = randomOfflineId()
-                    terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
-                    serviceChargeAmount = MethodUtils.roundOffAmountDouble(serviceCharge)
+                var dineInOrderModel = DineInPaymentUpdateModel()
+                dineInOrderModel.id = orderId
+                var model = GuestPaymentRequest(
+                    GuestPaymentAttributes().apply {
+                        amount = MethodUtils.roundOffAmountDouble(toFinalAmt)
+                        cardName = ""
+                        cardNumber = ""
+                        cardType = ""
+                        cashDiscount = 0.0
+                        cash_discount_or_surcharge = divideCashDiscount
+                        cashDiscountFee = 0.0
+                        employeeId = prefProvider.getValueInt(EMPLOYEE_ID, 0)
+                        taxAmount = MethodUtils.roundOffAmountDouble(finalTaxAmt)
+                        subTotalPrice = MethodUtils.roundOffAmountDouble(subTotalWT)
+                        offlineId = getOrderDetailsResponse?.offlineId ?: ""
+                        payableType = "GuestTab"
+                        paymentType = "Cash"
+                        transactionId = randomOfflineId()
+                        terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
+                        serviceChargeAmount = MethodUtils.roundOffAmountDouble(serviceCharge)
 
 
-                },
-                dineInOrderModel
-            )
+                    },
+                    dineInOrderModel
+                )
 //            LogUtil.logE(TAG, "getPassmodel  ${Gson().toJson(model)}")
-            val bundle = Bundle()
+                val bundle = Bundle()
 //            viewModelPayment.totalPrice = MethodUtils.roundOffAmobtnPayuntDouble(toFinalAmt)
 //            viewModelPayment.subTotalPrice = MethodUtils.roundOffAmountDouble(subTotalDInin)
 //            viewModelPayment.totalTax = MethodUtils.roundOffAmountDouble(finalTaxAmt)
@@ -784,89 +781,92 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 //            viewModelPayment.totalServiceCharge = MethodUtils.roundOffAmountDouble(serviceCharge)
 //            viewModelPayment.totalDiscount = MethodUtils.roundOffAmountDouble(totalDiscount)
 
-            LogUtil.logE(
-                "AAJE",
-                "subTotalDInin:  ${MethodUtils.roundOffAmountDouble(subTotalDInin)}"
-            )
-            bundle.putDouble("totalPrice", MethodUtils.roundOffAmountDouble(toFinalAmt))
-            bundle.putDouble("subTotalPrice", MethodUtils.roundOffAmountDouble(subTotalDInin))
-            bundle.putDouble("totalTax", MethodUtils.roundOffAmountDouble(finalTaxAmt))
-            bundle.putParcelable("model", model)
-            bundle.putBoolean("update", true)
-            bundle.putDouble(
-                "divideCashDiscount",
-                MethodUtils.roundOffAmountDouble(divideCashDiscount)
-            )
-            LogUtil.logE("DineCheck", "totalDiscount  ${totalDiscount}")
-            bundle.putParcelable("floorPlan", floorPlanModel)
+                LogUtil.logE(
+                    "AAJE",
+                    "subTotalDInin:  ${MethodUtils.roundOffAmountDouble(subTotalDInin)}"
+                )
+                bundle.putDouble("totalPrice", MethodUtils.roundOffAmountDouble(toFinalAmt))
+                bundle.putDouble("subTotalPrice", MethodUtils.roundOffAmountDouble(subTotalDInin))
+                bundle.putDouble("totalTax", MethodUtils.roundOffAmountDouble(finalTaxAmt))
+                bundle.putParcelable("model", model)
+                bundle.putBoolean("update", true)
+                bundle.putDouble(
+                    "divideCashDiscount",
+                    MethodUtils.roundOffAmountDouble(divideCashDiscount)
+                )
+                LogUtil.logE("DineCheck", "totalDiscount  ${totalDiscount}")
+                bundle.putParcelable("floorPlan", floorPlanModel)
             bundle.putDouble("totalServiceCharge", MethodUtils.roundOffAmountDouble(serviceCharge))
-            bundle.putDouble("totalDiscount", MethodUtils.roundOffAmountDouble(totalDiscount))
-            bundle.putDouble(
-                "totalOrderPassDiscount",
-                MethodUtils.roundOffAmountDouble(passDiscountTotal)
-            )
-
-            bundle.putDouble(
-                "totalOrderPassSC",
-                MethodUtils.roundOffAmountDouble(passSCTotal)
-            )
-            bundle.putString("orderOfflineId", offlineId)
-            bundle.putString("paymentOfflineId", randomOfflineId())
-            bundle.putBoolean("isTotalPayment", true)
-            bundle.putBoolean("isLastPayment", true)
-            bundle.putBoolean("isGuestPay", false)
-            bundle.putParcelable(PRINT_DATA_DINE_IN, getOrderDetailsResponse)
-            bundle.putDouble(DINE_IN_SUBTOTAL, subTotalWT)
-            bundle.putDouble(DINE_IN_TAX, viewModel.totalTaxAmount)
-            bundle.putDouble(DINE_IN_DISCOUNT, viewModel.totalDiscountAmount)
-            bundle.putDouble(DINE_IN_SERVICECHARGE, serviceCharge)
-            var appliedServiceCharge: ArrayList<OrderServiceChargesAttribute> = arrayListOf()
-            getOrderDetailsResponse?.orderServiceCharges?.forEach { service ->
-                var data: OrderServiceChargesAttribute = OrderServiceChargesAttribute(
-                    amount = service.amount,
-                    name = service.name,
-                    rate = service.rate,
-                    serviceChargeId = service.serviceChargeId,
-                    max_guest_count = service.max_guest_count,
-                    min_guest_count = service.min_guest_count,
-                    id = service.id,
-                    order_type = service.order_type
+                bundle.putDouble("totalDiscount", MethodUtils.roundOffAmountDouble(totalDiscount))
+                bundle.putDouble(
+                    "totalOrderPassDiscount",
+                    MethodUtils.roundOffAmountDouble(passDiscountTotal)
                 )
-                appliedServiceCharge.add(data)
-            }
-            bundle.putParcelableArrayList(
-                "serviceChargeAppliedList",
-                appliedServiceCharge
-            )
 
-
-            prefProvider.setValue("PaidAmount", "")
-            prefProvider.setValue(Constants.WHOLE_AMOUNT, "")
-            prefProvider.setValueInt("cardCount", 0)
-            prefProvider.setValue(Constants.SUB_TOTAL, "")
-            prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
-            prefProvider.setValue(Constants.TOTAL_DISCOUNT, "")
-            prefProvider.setValue(Constants.TIP, "")
-            prefProvider.setValue(Constants.TAX_CHARGE, "")
-            prefProvider.setValue(Constants.SERVICE_CHARGE, "")
-            bundle.putBoolean(IS_GUEST_PAYMNET, false)
-            bundle.putParcelableArrayList(
-                DINE_IN_ADAPTER_LIST, dineInTableAdapter.getList().toCollection(
-                    arrayListOf()
+                bundle.putDouble(
+                    "totalOrderPassSC",
+                    MethodUtils.roundOffAmountDouble(passSCTotal)
                 )
-            )
+                bundle.putString("orderOfflineId", offlineId)
+                bundle.putString("paymentOfflineId", randomOfflineId())
+                bundle.putBoolean("isTotalPayment", true)
+                bundle.putBoolean("isLastPayment", true)
+                bundle.putBoolean("isGuestPay", false)
+                bundle.putParcelable(PRINT_DATA_DINE_IN, getOrderDetailsResponse)
+                bundle.putDouble(DINE_IN_SUBTOTAL, subTotalWT)
+                bundle.putDouble(DINE_IN_TAX, viewModel.totalTaxAmount)
+                bundle.putDouble(DINE_IN_DISCOUNT, viewModel.totalDiscountAmount)
+                bundle.putDouble(DINE_IN_SERVICECHARGE, serviceCharge)
+                var appliedServiceCharge: ArrayList<OrderServiceChargesAttribute> = arrayListOf()
+                getOrderDetailsResponse?.orderServiceCharges?.forEach { service ->
+                    var data: OrderServiceChargesAttribute = OrderServiceChargesAttribute(
+                        amount = service.amount,
+                        name = service.name,
+                        rate = service.rate,
+                        serviceChargeId = service.serviceChargeId,
+                        max_guest_count = service.max_guest_count,
+                        min_guest_count = service.min_guest_count,
+                        id = service.id,
+                        order_type = service.order_type
+                    )
+                    appliedServiceCharge.add(data)
+                }
+                bundle.putParcelableArrayList(
+                    "serviceChargeAppliedList",
+                    appliedServiceCharge
+                )
 
-            LogUtil.logE(TAG, "passOrderId:  ${orderId}")
-            bundle.putInt("orderId", orderId ?: -1)
-            bundle.putInt(GUEST_POSITION, 0)
-            prefProvider.setValue(Constants.ORDER_TYPE, Constants.DINE_IN)
+
+                prefProvider.setValue("PaidAmount", "")
+                prefProvider.setValue(Constants.WHOLE_AMOUNT, "")
+                prefProvider.setValueInt("cardCount", 0)
+                prefProvider.setValue(Constants.SUB_TOTAL, "")
+                prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
+                prefProvider.setValue(Constants.TOTAL_DISCOUNT, "")
+                prefProvider.setValue(Constants.TIP, "")
+                prefProvider.setValue(Constants.TAX_CHARGE, "")
+                prefProvider.setValue(Constants.SERVICE_CHARGE, "")
+                bundle.putBoolean(IS_GUEST_PAYMNET, false)
+                bundle.putParcelableArrayList(
+                    DINE_IN_ADAPTER_LIST, dineInTableAdapter.getList().toCollection(
+                        arrayListOf()
+                    )
+                )
+
+                LogUtil.logE(TAG, "passOrderId:  ${orderId}")
+                bundle.putInt("orderId", orderId ?: -1)
+                bundle.putInt(GUEST_POSITION, 0)
+                prefProvider.setValue(Constants.ORDER_TYPE, Constants.DINE_IN)
             prefProvider.setValueInt(Constants.ORDER_TYPE_ID, getOrderDetailsResponse?.orderTypeId ?: 2)
             prefProvider.setValue(Constants.ORDER_TYPE_NAME, getOrderDetailsResponse?.orderTypeName ?: DINE_IN)
 
-            if (findNavController().currentDestination?.id == R.id.dineInOrderTable)
+                if (findNavController().currentDestination?.id == R.id.dineInOrderTable)
                 findNavController().navigate(R.id.action_dineInOrderTable_to_checkoutDineIN, bundle)
 
 
+            } catch (e: Exception){
+                e.printStackTrace()
+            }
         }
 
 
