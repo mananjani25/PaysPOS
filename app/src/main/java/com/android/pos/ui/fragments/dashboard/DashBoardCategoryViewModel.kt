@@ -48,6 +48,7 @@ import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.android.pos.data.remote.Constants.IS_SYNC_MARKUP
+import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER
 import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER
 import com.android.pos.data.remote.Constants.LOCK_SCREEN_TRANSACTION
 import com.android.pos.data.remote.Constants.MANUAL_SALE_CATEGORY_ID
@@ -1123,7 +1124,15 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                 item
                                             ) && checkModifierNewLogic(list[i], item)
                                         ) {
-                                            Log.d(TAG, "cartLogic: " + i)
+                                            Log.d(
+                                                TAG,
+                                                "cartLogic: " + i + "  checkUpdateOrder  ${
+                                                    prefProvider.getValueboolean(
+                                                        IS_UPDATE_ORDER,
+                                                        false
+                                                    )
+                                                }"
+                                            )
 
                                             var listTmp =
                                                 combineItem(
@@ -1297,16 +1306,46 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         item.singleItemPrice += it.price * it.itemQuantity
                                     }
                                     item.isDestroy = false
+                                    Log.e(
+                                        TAG, "check Motot  ${
+                                            prefProvider.getValueboolean(
+                                                IS_UPDATE_ORDER,
+                                                false
+                                            )
+                                        }"
+                                    )
                                     if (prefProvider.getValueboolean(
-                                            IS_UPDATE_ORDER_FROM_ACTIVE_ORDER,
+                                            IS_UPDATE_ORDER,
                                             false
-                                        )
+                                        ) == true
                                     ) {
                                         item.isEdited = true
+                                        Log.e(TAG, "checkUpdateIsEdited  ${item.isEdited}")
                                     }
                                     list.add(item)
                                 }
                             } else {
+
+                               /* if (prefProvider.getValueboolean(
+                                        IS_UPDATE_ORDER,
+                                        false
+                                    ) == true
+                                ) {
+                                    var tmpin = -1
+                                    item?.isEdited = true
+                                    item?.isFired = false
+                                    item?.itemQuantity = item?.itemQuantity?.plus(1) ?: 1
+                                    list.forEachIndexed { index2, tbItem ->
+                                        if (tbItem.itemId == item?.itemId) {
+                                            tmpin = index2
+
+                                        }
+
+                                    }
+
+                                    item?.let { list.set(tmpin, it) }
+                                }*/
+
                                 Log.e("DashViewModModel", "getIndexThird  ${index}")
 
                             }
@@ -2260,6 +2299,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 //        if(list[index].itemQuantity < MAX_ITEM_QUANTITY){
 //        }
         list[index].itemQuantity += item.itemQuantity
+        list[index].isEdited = true
         list[index].modifiers.forEach { listmod ->
             item.modifiers.forEach { itemmod ->
                 if (itemmod.id == listmod.id) {
@@ -4095,7 +4135,15 @@ class DashBoardCategoryViewModel @Inject constructor(
                 orderItemsAttribute.isEdited = item.isEdited
                 orderItemsAttribute.isDestroy = item.isDestroy
                 orderItemsAttribute.isPaid = item.isPaid
-                orderItemsAttribute.isPrinted = if (prefProvider.getValueboolean(DINE_IN_UPDATE,false) == true && item.isEdited == true) false else if (prefProvider.getValueboolean(DINE_IN_UPDATE,false) == true && item.isEdited == false) true else false
+                orderItemsAttribute.isPrinted = if (prefProvider.getValueboolean(
+                        DINE_IN_UPDATE,
+                        false
+                    ) == true && item.isEdited == true
+                ) false else if (prefProvider.getValueboolean(
+                        DINE_IN_UPDATE,
+                        false
+                    ) == true && item.isEdited == false
+                ) true else false
                 orderItemsAttribute.isTaxRemoved = false
                 orderItemsAttribute.itemId =
                     if (item.isManualSales) item.itemId else item.itemId
@@ -5595,6 +5643,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
     fun updateActiveOrderFlagClear() {
+        Log.e(TAG, "check CallThay")
 
         prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER, false)
         prefProvider.setValueInt(Constants.IS_UPDATE_ORDER_ID, -1)
