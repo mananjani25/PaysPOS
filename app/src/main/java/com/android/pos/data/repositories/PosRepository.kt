@@ -144,6 +144,8 @@ class PosRepository @Inject constructor(
 
     )
 
+    suspend fun getKitchenPrintersList() =  appDatabase.printerDao().getKitchenPrinterList()
+
 
     fun getCustomerPrinters() =
         performGetOperationDatabase { appDatabase.printerDao().customerPrintList }
