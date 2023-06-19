@@ -4551,11 +4551,11 @@ class DashBoardCategoryViewModel @Inject constructor(
         Log.e(TAG, "totalDiscountDineIn  ${totalDiscount}")
         val orderModel: OrderAttributeRequestModel = OrderAttributeRequestModel()
         var ttotalDiscount = totalDiscount
-        if (BuildConfig.DEBUG == false) {
-            ttotalDiscount = cartModel.discountPrice + totalDiscount
-        } else {
+//        if (BuildConfig.DEBUG == false) {
+//            ttotalDiscount = cartModel.discountPrice + totalDiscount
+//        } else {
             ttotalDiscount = totalDiscount
-        }
+//        }
 
         Log.e(TAG, "ttotalDiscount:  ${ttotalDiscount}")
         LogUtil.logE(TAG, "getCartmodelId  ${cartModel.orderId}")

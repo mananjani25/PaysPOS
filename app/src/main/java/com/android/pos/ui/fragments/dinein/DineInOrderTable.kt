@@ -158,6 +158,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     lateinit var cashDiscountModel: CashDiscountModel
     var optionType = ""
     private lateinit var pd: Dialog
+    private var totalDiscountWO = 0.0
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -259,6 +260,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             AlertUtils.showCustomAlertWithListenerWithOK(
                 requireContext(), event.getContentIfNotHandled().toString()
             ) { _, _ ->
+                prefProvider.setValueboolean(DINE_IN_UPDATE, false)
                 viewModel.Basedata.removeObservers(viewLifecycleOwner)
                 navigateDineInOrderNew()
                 orderId?.let { viewModel.apiCallOrderDetails(it) }
@@ -1145,7 +1147,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             cartList?.dineInList = existinglist.toList()
             Log.d(TAG, "addGuestToOrder size: " + cartList!!.dineInList?.size)
             Log.d(TAG, "addGuestToOrder: " + Gson().toJson(cartList?.dineInList))
-            val request = viewModel.updateOrderRequest(cartList!!)
+            prefProvider.setValueboolean(DINE_IN_UPDATE, true)
+            dashboardViewModel.totalDiscount = getOrderDetailsResponse?.totalDiscount ?: 0.0
+            val request = dashboardViewModel.updateOrder(cartList!!)
             orderId?.let { viewModel.updateOrder(it, request) }
         } else {
             AlertUtils.showCustomAlertWithListenerWithOK(
@@ -2655,9 +2659,13 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     totalServiceChargeAmount = MethodUtils.getTwoDecimal(totalServiceChargeAmount)
 
 
-                    var finalAmount =
+                    totalDiscountWO = baseResponse.totalDiscount
+                    totalDiscountWO -= totalItemDiscount
+                    val finalAmount =
                         totalSubTotal + totalTaxAmount + totalServiceChargeAmount - orderDiscount
 
+                    dineInList[0].orderDiscountPercentage = MethodUtils.roundOffAmountDouble(
+                        MethodUtils.calculatePercentageFromAmount(totalDiscountWO, (baseResponse.subTotal + totalDiscountWO)))
                     dineInList.get(0).guestDividedAmt =
                         guestShareTotal
                     dineInList.get(0).totalGuestCount = baseResponse.guestAttributes.size - 1
@@ -2767,10 +2775,15 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                             finalTaxAmt = (tempTax * unpaidCount) + guestTax
                             //finalTaxAmt = (subTotalWT / totalGuestCount) * unpaidCount + totalTaxAmt
                         }
-
-                        var perGuestorderDis =
-                            orderDiscount / (baseResponse.guestAttributes.size - 1)
-                        var orderDis = orderDiscount - (perGuestorderDis * paidGuestCount)
+                        var paidGuestorderDis = orderDiscount
+//                        var perGuestorderDis =
+//                            orderDiscount / (baseResponse.guestAttributes.size - 1)
+//                        var orderDis = orderDiscount - (perGuestorderDis * paidGuestCount)
+                        var orderDis = 0.0
+                        for (payment in baseResponse.payments) {
+                            paidGuestorderDis -= payment.totalDiscount
+                        }
+                        orderDis = paidGuestorderDis
 
 
                         var finalAmount = subTotalDInin + serviceCharge + finalTaxAmt - orderDis
@@ -3146,6 +3159,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             newList.get(0).wholeTableSurTax =
                 WTServiceCharge / (guestCount - 1)
             newList.get(0).orderDiscount = getOrderDetailsResponse?.totalDiscount ?: 0.0
+            newList[0].orderDiscountPercentage = MethodUtils.roundOffAmountDouble(
+                MethodUtils.calculatePercentageFromAmount(totalDiscountWO ,
+                    (getOrderDetailsResponse?.subTotal ?: 0.0) + totalDiscountWO
+                ))
             newList.get(0).orderTotalAmount = subTotalDInin
             totalGuestCount = guestCount - 1
 

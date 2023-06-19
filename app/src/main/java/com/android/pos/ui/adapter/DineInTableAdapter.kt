@@ -85,6 +85,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             var isAllFired = true
             var noItem = true
             var guestSubTotal = 0.0
+            var guestSubTotalWithOutCharges = 0.0
             var totalTaxAmt: Double = 0.0
 
             if (list[position].title?.trim()?.lowercase() == "Whole Table".trim().lowercase()) {
@@ -109,12 +110,13 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                             guestDiscount += it.discountPrice
                             guestAmt += (it.itemQuantity * it.price) - it.discountPrice
                             guestSubTotal += (it.itemQuantity * it.price) - it.discountPrice
+                            guestSubTotalWithOutCharges += (it.itemQuantity * it.price) - it.discountPrice
                             if (it.modifiers.isNotEmpty()) {
                                 it.modifiers.forEach { it ->
 
                                     guestAmt += (it.itemQuantity * it.price)
                                     guestSubTotal += (it.itemQuantity * it.price)
-
+                                    guestSubTotalWithOutCharges += (it.itemQuantity * it.price)
                                 }
                             }
 
@@ -287,8 +289,13 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
             var guestOrderDisShare = 0.0
             if (list.get(0).orderDiscount > 0) {
-                guestOrderDisShare =
-                    MethodUtils.roundOffAmountDouble(list[0].orderDiscount / (list[0].totalGuestCount))
+
+                guestOrderDisShare = MethodUtils.roundOffAmountDouble(
+                   MethodUtils.percentageCalculation(MethodUtils.roundOffAmountDouble(guestSubTotalWithOutCharges +
+                           list.get(0).wholeTableSubTotal), list[0].orderDiscountPercentage))
+
+//                guestOrderDisShare =
+//                    MethodUtils.roundOffAmountDouble(list[0].orderDiscount / (list[0].totalGuestCount))
                 /*  guestOrderDisShare =
                       (finalAmt * list.get(0).orderDiscount) / (list.get(0).orderTotalAmount + list.get(0).orderDiscount)*/
 

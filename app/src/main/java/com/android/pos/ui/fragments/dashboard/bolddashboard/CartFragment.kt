@@ -2468,11 +2468,11 @@ class CartFragment(
         }
         cartlist[0].openOrderType = Constants.PICK_UP
         var finalDiscount = 0.0
-        if (BuildConfig.DEBUG == false) {
-            finalDiscount = cartlist[0].discountPrice + viewModel.totalDiscount
-        } else {
+//        if (BuildConfig.DEBUG == false) {
+//            finalDiscount = cartlist[0].discountPrice + viewModel.totalDiscount
+//        } else {
             finalDiscount = viewModel.totalDiscount
-        }
+//        }
         Log.e("checkDiscount", "totalDiscount:  ${viewModel.totalDiscount}")
         Log.e("checkDiscount", "totalDiscountdiscountPrice:  ${cartlist[0].discountPrice}")
 
