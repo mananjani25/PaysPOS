@@ -865,14 +865,14 @@
                     android:layout_marginStart="@dimen/_10sdp"
                     android:layout_weight="4"
                     android:background="@null"
-                    android:hint="@string/_1234_5678_xxxx_1121"
+                    android:hint="@string/_1234_xxxx_5678"
                     android:importantForAutofill="no"
                     android:inputType="number"
-                    android:maxLength="23"
+                    android:maxLength="18"
                     android:textColor="@color/btnColor"
                     android:textColorHint="@color/hint_color"
                     android:textSize="@dimen/_7mdpi"
-                    app:met_mask="####  ####  ####  ####" />
+                    app:met_mask="####  ####  ####" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
             <androidx.appcompat.widget.AppCompatTextView

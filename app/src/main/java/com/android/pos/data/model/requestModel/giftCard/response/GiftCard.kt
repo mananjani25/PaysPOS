@@ -1,6 +1,7 @@
 package com.android.pos.data.model.requestModel.giftCard.response
 
 data class GiftCard(
+    val id: Int,
     val amount: String,
     val customer_id: Int,
     val location_id: Int,

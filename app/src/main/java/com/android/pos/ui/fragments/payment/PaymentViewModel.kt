@@ -96,6 +96,9 @@ open class PaymentViewModel @Inject constructor(
     private val _data = MutableLiveData<Event<CreateOrderResponse?>>()
     val data: LiveData<Event<CreateOrderResponse?>> = _data
 
+    private val _giftCardData = MutableLiveData<Event<SellGiftCardResponseModel?>>()
+    val giftCardData: LiveData<Event<SellGiftCardResponseModel?>> = _giftCardData
+
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
@@ -275,17 +278,17 @@ open class PaymentViewModel @Inject constructor(
                     resource.data.let { response ->
                         if (response?.status == 200) {
 
-                            resource.data?.let { createOrderResponse ->
+                            resource.data?.let { sellGiftCardResponse ->
 
-                                if(createOrderResponse.data.gift_card.payment.transaction_id.isNotEmpty()){
+                                if(sellGiftCardResponse.data.gift_card.payment.transaction_id.isNotEmpty()){
                                     prefProvider.setValueInt(
                                         PAYMENT_ID,
-                                        createOrderResponse.data.gift_card.payment.transaction_id.toInt()
+                                        sellGiftCardResponse.data.gift_card.payment.transaction_id.toInt()
                                     )
 
                                     prefProvider.setValueInt(
                                         PAYMENT_ID_FOR_CUSTOMER_DISPLAY,
-                                        createOrderResponse.data.gift_card.payment.transaction_id.toInt()
+                                        sellGiftCardResponse.data.gift_card.payment.transaction_id.toInt()
                                     )
                                 }
 
@@ -296,11 +299,7 @@ open class PaymentViewModel @Inject constructor(
                                     )
                                 )
 
-
-
-                                _msgText.value = Event(response.message)
-
-                                _orderCreate.value = Event(true)
+                                _giftCardData.value = Event(sellGiftCardResponse)
 
                             }
 
