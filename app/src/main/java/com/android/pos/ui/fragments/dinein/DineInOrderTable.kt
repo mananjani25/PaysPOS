@@ -1007,7 +1007,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 }
             }
 
-            dineInTableAdapter.setList(guestList.toCollection(arrayListOf()))
+            dineInTableAdapter.setList(guestList.toCollection(arrayListOf()), notPayAnyAmount)
 
             if (guestAttribute != null) {
 
@@ -2810,7 +2810,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     dineInList.sortBy { it.sort }
                     if (dineInList.isNotEmpty()) {
                         Log.d("###17MAR23", "dineInList.isNotEmpty(): Called - Start")
-                        dineInTableAdapter.setList(dineInList)
+                        dineInTableAdapter.setList(dineInList, notPayAnyAmount)
                         if (this::presentation.isInitialized) {
                             presentation.show()
                             presentation.onDisplayChanged()
