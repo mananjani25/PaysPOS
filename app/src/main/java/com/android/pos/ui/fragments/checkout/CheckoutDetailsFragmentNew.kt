@@ -1899,7 +1899,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         paymentviewModel.saveOrder(false)
         val myRequest = cartList?.let {
-            paymentviewModel.createSellGiftCardRequest()
+            paymentviewModel.createSellGiftCardRequestUsingCash()
         }
         LogUtil.logE(TAG, "myRequestOriginal ${Gson().toJson(myRequest)}")
         LogUtil.logE("ORDER TYPE 1", prefProvider.getValue(Constants.ORDER_TYPE, ""))
@@ -2196,8 +2196,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                 if (i == 3) cardNumber else ""
                             )
 
-
-                            makePaymentCreditCard()
+                            if(prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD){
+                                sellGiftCardUsingCard()
+                            }else{
+                                makePaymentCreditCard()
+                            }
 
                             isInsert = true
                             isCardRev = true
@@ -2241,6 +2244,22 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 magtekModule.stopListner(false)
             }
         })
+    }
+
+    private fun sellGiftCardUsingCard() {
+        paymentType = "Card"
+        LogUtil.logE(TAG, "makeCashPayorderId  ${orderId}")
+        LogUtil.logE(TAG, "makeCashPrefOrderId  ${prefProvider.getValueInt("ORDER_ID", -1)}")
+
+        paymentviewModel.saveOrder(false)
+        val myRequest = cartList?.let {
+            paymentviewModel.createSellGiftCardRequestUsingCard()
+        }
+        LogUtil.logE(TAG, "myRequestOriginal ${Gson().toJson(myRequest)}")
+        LogUtil.logE("ORDER TYPE 1", prefProvider.getValue(Constants.ORDER_TYPE, ""))
+        if (myRequest != null) {
+            paymentviewModel.sellGiftCard(myRequest)
+        }
     }
 
 

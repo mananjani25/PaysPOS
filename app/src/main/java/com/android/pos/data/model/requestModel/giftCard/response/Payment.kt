@@ -1,6 +1,7 @@
 package com.android.pos.data.model.requestModel.giftCard.response
 
 data class Payment(
+    val id: Int,
     val amount: Double,
     val card_name: String,
     val card_number: String,

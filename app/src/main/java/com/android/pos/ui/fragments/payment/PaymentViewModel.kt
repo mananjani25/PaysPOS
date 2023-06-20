@@ -280,17 +280,15 @@ open class PaymentViewModel @Inject constructor(
 
                             resource.data?.let { sellGiftCardResponse ->
 
-                                if(sellGiftCardResponse.data.gift_card.payment.transaction_id.isNotEmpty()){
-                                    prefProvider.setValueInt(
-                                        PAYMENT_ID,
-                                        sellGiftCardResponse.data.gift_card.payment.transaction_id.toInt()
-                                    )
+                                prefProvider.setValueInt(
+                                    PAYMENT_ID,
+                                    sellGiftCardResponse.data.gift_card.payment.id
+                                )
 
-                                    prefProvider.setValueInt(
-                                        PAYMENT_ID_FOR_CUSTOMER_DISPLAY,
-                                        sellGiftCardResponse.data.gift_card.payment.transaction_id.toInt()
-                                    )
-                                }
+                                prefProvider.setValueInt(
+                                    PAYMENT_ID_FOR_CUSTOMER_DISPLAY,
+                                    sellGiftCardResponse.data.gift_card.payment.id
+                                )
 
                                 posRepository.deleteCart(
                                     prefProvider.getValueInt(
@@ -571,23 +569,24 @@ open class PaymentViewModel @Inject constructor(
         }
     }
 
-    fun createSellGiftCardRequest(): SellGiftCardRequestModel{
+    fun createSellGiftCardRequestUsingCash(): SellGiftCardRequestModel {
 
-        val giftCardPurchaseAmount = prefProvider.getValue(GIFT_CARD_PURCHASE_AMOUNT,"0.0")
+        val giftCardPurchaseAmount = prefProvider.getValue(GIFT_CARD_PURCHASE_AMOUNT, "0.0")
 
-        val paymentAttributes = com.android.pos.data.model.requestModel.giftCard.request.PaymentAttributes(
-            amount = giftCardPurchaseAmount.toDouble(),
-            card_name = "",
-            card_number = "",
-            employee_id = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0),
-            magensa_response = "",
-            offline_id = "",
-            payable_type = "GiftCard",
-            payment_type = "Cash",
-            sub_total = giftCardPurchaseAmount.toDouble(),
-            terminal_id = prefProvider.getValueInt(Constants.TERMINAL_ID, 0),
-            transaction_id = ""
-        )
+        val paymentAttributes =
+            com.android.pos.data.model.requestModel.giftCard.request.PaymentAttributes(
+                amount = giftCardPurchaseAmount.toDouble(),
+                card_name = "",
+                card_number = "",
+                employee_id = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0),
+                magensa_response = "",
+                offline_id = "",
+                payable_type = "GiftCard",
+                payment_type = "Cash",
+                sub_total = giftCardPurchaseAmount.toDouble(),
+                terminal_id = prefProvider.getValueInt(Constants.TERMINAL_ID, 0),
+                transaction_id = ""
+            )
 
         val giftCard = GiftCard(
             name = 12.generateRandomNumbers().toString(),
@@ -595,7 +594,96 @@ open class PaymentViewModel @Inject constructor(
             customer_id = prefProvider.getValueInt(Constants.CUSTOMER_ID, 0),
             location_id = prefProvider.getValueInt(Constants.LOCATION_ID, 1),
             password = 4.generateRandomNumbers().toString(),
-            payment_attributes = paymentAttributes)
+            payment_attributes = paymentAttributes
+        )
+
+        return SellGiftCardRequestModel(gift_card = giftCard)
+    }
+
+    fun createSellGiftCardRequestUsingCard(): SellGiftCardRequestModel {
+
+        val giftCardPurchaseAmount = prefProvider.getValue(GIFT_CARD_PURCHASE_AMOUNT, "0.0")
+        var paymentAttributes: com.android.pos.data.model.requestModel.giftCard.request.PaymentAttributes? =
+            null
+
+        if (magensaResponse != null) {
+            val model = Gson().fromJson(
+                magensaResponse,
+                PaymentResponse.PaymentResponseItem::class.java
+            )
+
+            var cardNumber = ""
+            var cardName = ""
+
+            if (model.dataOutput != null) {
+                LogUtil.logE("dataOutput", Gson().toJson(model))
+                cardNumber = model.dataOutput.PANLast4
+                var cardN = ""
+                model.dataOutput.additionalOutputData?.forEach {
+                    LogUtil.logE("additionalOutputData", it.key)
+                    if (it.key == "CardType") {
+                        cardN = it.value
+                    }
+                }
+                cardName = cardN
+
+
+            }
+
+            if (model.cardSwipeOutput != null) {
+                LogUtil.logE("cardSwipeOutput", Gson().toJson(model))
+                cardNumber = model.cardSwipeOutput.pANLast4
+                var cardN = ""
+                model.cardSwipeOutput.additionalOutputData?.forEach {
+                    if (it.key == "CardType") {
+                        cardN = it.value
+                    }
+                }
+
+                cardName = cardN
+            }
+
+
+            if (model.transactionOutput?.transactionOutputDetails?.isNotEmpty() == true) {
+                var CardType = ""
+                model.transactionOutput.transactionOutputDetails.forEach {
+                    if (it.key == "CardType") {
+                        CardType = it.value
+                    }
+                }
+
+                cardName = CardType
+                cardNumber =
+                    if (cardNumberLast4.isNotEmpty()) cardNumberLast4.takeLast(4) else ""
+            }
+
+            paymentAttributes =
+                com.android.pos.data.model.requestModel.giftCard.request.PaymentAttributes(
+                    amount = giftCardPurchaseAmount.toDouble(),
+                    card_name = cardName,
+                    card_number = cardNumber,
+                    employee_id = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0),
+                    magensa_response = magensaResponse,
+                    offline_id = if (isUpdateOrder) paymentOfflineId.toString() else MethodUtils.randomOfflineId(
+                        prefProvider.getValueInt(Constants.LOCATION_ID, -1).toString()
+                    ),
+                    payable_type = "GiftCard",
+                    payment_type = "Card",
+                    sub_total = giftCardPurchaseAmount.toDouble(),
+                    terminal_id = prefProvider.getValueInt(Constants.TERMINAL_ID, 0),
+                    transaction_id = model.transactionOutput?.transactionID.toString()
+                )
+        }
+
+
+        val giftCard = GiftCard(
+            name = 12.generateRandomNumbers().toString(),
+            amount = giftCardPurchaseAmount,
+            customer_id = prefProvider.getValueInt(Constants.CUSTOMER_ID, 0),
+            location_id = prefProvider.getValueInt(Constants.LOCATION_ID, 1),
+            password = 4.generateRandomNumbers().toString(),
+            payment_attributes = paymentAttributes
+        )
 
         return SellGiftCardRequestModel(gift_card = giftCard)
     }
