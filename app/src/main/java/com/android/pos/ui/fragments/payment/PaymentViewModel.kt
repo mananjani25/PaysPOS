@@ -35,6 +35,7 @@ import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.android.pos.utils.MethodUtils.Companion.generateRandomNumbers
 
 @HiltViewModel
 open class PaymentViewModel @Inject constructor(
@@ -276,15 +277,17 @@ open class PaymentViewModel @Inject constructor(
 
                             resource.data?.let { createOrderResponse ->
 
-                                prefProvider.setValueInt(
-                                    PAYMENT_ID,
-                                    createOrderResponse.data.gift_card.payment.transaction_id.toInt()
-                                )
+                                if(createOrderResponse.data.gift_card.payment.transaction_id.isNotEmpty()){
+                                    prefProvider.setValueInt(
+                                        PAYMENT_ID,
+                                        createOrderResponse.data.gift_card.payment.transaction_id.toInt()
+                                    )
 
-                                prefProvider.setValueInt(
-                                    PAYMENT_ID_FOR_CUSTOMER_DISPLAY,
-                                    createOrderResponse.data.gift_card.payment.transaction_id.toInt()
-                                )
+                                    prefProvider.setValueInt(
+                                        PAYMENT_ID_FOR_CUSTOMER_DISPLAY,
+                                        createOrderResponse.data.gift_card.payment.transaction_id.toInt()
+                                    )
+                                }
 
                                 posRepository.deleteCart(
                                     prefProvider.getValueInt(
@@ -292,6 +295,8 @@ open class PaymentViewModel @Inject constructor(
                                         0
                                     )
                                 )
+
+
 
                                 _msgText.value = Event(response.message)
 
@@ -569,8 +574,10 @@ open class PaymentViewModel @Inject constructor(
 
     fun createSellGiftCardRequest(): SellGiftCardRequestModel{
 
+        val giftCardPurchaseAmount = prefProvider.getValue(GIFT_CARD_PURCHASE_AMOUNT,"0.0")
+
         val paymentAttributes = com.android.pos.data.model.requestModel.giftCard.request.PaymentAttributes(
-            amount = prefProvider.getValue(GIFT_CARD_PURCHASE_AMOUNT,"0.0").toDouble(),
+            amount = giftCardPurchaseAmount.toDouble(),
             card_name = "",
             card_number = "",
             employee_id = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0),
@@ -578,15 +585,18 @@ open class PaymentViewModel @Inject constructor(
             offline_id = "",
             payable_type = "GiftCard",
             payment_type = "Cash",
-            sub_total = prefProvider.getValue(GIFT_CARD_PURCHASE_AMOUNT,"0.0").toDouble(),
+            sub_total = giftCardPurchaseAmount.toDouble(),
             terminal_id = prefProvider.getValueInt(Constants.TERMINAL_ID, 0),
             transaction_id = ""
         )
 
-        val giftCard = GiftCard(name = "222222222222", amount = prefProvider.getValue(GIFT_CARD_PURCHASE_AMOUNT,"0.0"),
+        val giftCard = GiftCard(
+            name = 12.generateRandomNumbers().toString(),
+            amount = giftCardPurchaseAmount,
             customer_id = prefProvider.getValueInt(Constants.CUSTOMER_ID, 0),
             location_id = prefProvider.getValueInt(Constants.LOCATION_ID, 1),
-            password = "8888", payment_attributes = paymentAttributes)
+            password = 4.generateRandomNumbers().toString(),
+            payment_attributes = paymentAttributes)
 
         return SellGiftCardRequestModel(gift_card = giftCard)
     }

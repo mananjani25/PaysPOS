@@ -9,7 +9,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
@@ -47,7 +46,6 @@ import com.android.pos.ui.fragments.payment.PaymentViewModel
 import com.android.pos.ui.fragments.settings.tip.TipListViewModel
 import com.android.pos.utils.*
 import com.android.pos.utils.callback.DeleteOptionCallback
-import com.android.pos.utils.callback.OnTipAddedListener
 import com.android.pos.utils.callback.magtekCallback
 import com.android.pos.utils.extensions.*
 import com.android.pos.utils.statusUtils.Status
@@ -977,7 +975,6 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
 
         binding.tvCash0.setOnSingleClickListener {
-
             custom_paymentAmount = 0.0
 
             paymentviewModel.totalPayAmount(
