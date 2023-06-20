@@ -4020,6 +4020,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 var totalTips = 0.0
                 var totalDiscount = 0.0
                 var totalAmount = 0.0
+                it.items.sortedBy { it.dineInSort }
                 it.items.forEach { tb ->
 
 
@@ -4148,6 +4149,11 @@ class DashBoardCategoryViewModel @Inject constructor(
                 orderItemsAttribute.quantity = item.itemQuantity
                 orderItemsAttribute.terminalId = cartModel.terminalId
                 orderItemsAttribute.isFired = cartModel.isFired
+                item.dineInSort = if (item.dineInSort == 0) {
+                    orderItemsAttributeList.size + 1
+                } else {
+                    item.dineInSort
+                }
                 orderItemsAttribute.sort = item.dineInSort
 
 
