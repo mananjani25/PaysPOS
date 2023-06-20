@@ -19,6 +19,8 @@ import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.DINE_IN
+import com.android.pos.data.remote.Constants.ORDER_TYPE_NAME
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.data.repositories.TaxServiceChargeRepository
 import com.android.pos.data.repositories.TipDiscountRepository
@@ -1443,6 +1445,7 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
         orderAttributeRequestModel.offlineId = randomOfflineId()
         orderAttributeRequestModel.openOrderType = cartModel.orderType
         orderAttributeRequestModel.orderTypeId = cartModel.orderTypeId
+        orderAttributeRequestModel.orderTypeName = prefProvider.getValue(ORDER_TYPE_NAME, DINE_IN)
         orderAttributeRequestModel.paymentStatus = 0
         orderAttributeRequestModel.serviceChargeEnabled = true
         orderAttributeRequestModel.taxEnabled = true

@@ -14,6 +14,7 @@ import com.android.pos.databinding.ViewRefundItemBinding
 import com.android.pos.ui.fragments.transactions.TransactionDetailsViewModel
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
+import com.android.pos.utils.MethodUtils.Companion.toPrecision
 import java.text.NumberFormat
 
 class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
@@ -251,7 +252,7 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
             val nf1: NumberFormat = NumberFormat.getNumberInstance()
             nf1.maximumFractionDigits = 2
             val rounded: String = nf1.format(tip_divided)
-            tip_divided = rounded.toDouble()
+            tip_divided = rounded.replace(",","").toDouble()
             if (paymentType == "Card") {
                     if (totalItemPrice >= tip_divided) {
                         totalItemPrice += tip_divided
@@ -278,7 +279,7 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
 
 
             Log.d("yash", "bind: [$absoluteAdapterPosition] finalTotal : $totalItemPrice")
-            MethodUtils.setPriceTextView(itemBinding.tvItemPrice, totalItemPrice.toDouble())
+            MethodUtils.setPriceTextView(itemBinding.tvItemPrice, totalItemPrice.toPrecision(2).toDouble())
             itemBinding.ivCheck.setOnClickListener {
                 item.isChecked = !item.isChecked
                 selectedItemList[bindingAdapterPosition].isChecked = item.isChecked
