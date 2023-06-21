@@ -792,7 +792,7 @@ class CartFragment(
                         viewModel.selectedCustomer = null
                         viewModel.redeemLoyaltyInfo.isLoyaltyApplied = false
                         viewModel.redeemLoyaltyInfo.needToApplyLoyalty = false
-                        if (MethodUtils.isEnableCashDiscount(requireContext())) {
+                        if (MethodUtils.isEnableCashDiscount(requireContext()) && prefProvider.getValue(ORDER_TYPE, TAKEOUT) != Constants.GIFT_CARD) {
                             binding.linearCashDiscount.visible()
                             if (prefProvider.getValue(
                                     OPTION_TYPE,
@@ -980,7 +980,7 @@ class CartFragment(
                             cartlist = it as ArrayList<CartModel>
                             if (isFromPayment) {
 
-                                if (MethodUtils.isEnableCashDiscount(requireContext())) {
+                                if (MethodUtils.isEnableCashDiscount(requireContext()) && prefProvider.getValue(ORDER_TYPE, TAKEOUT) != Constants.GIFT_CARD) {
                                     binding.linearCashDiscount.visible()
                                     if (prefProvider.getValue(
                                             OPTION_TYPE,
@@ -1188,7 +1188,7 @@ class CartFragment(
                         } else {
                             cartlist = arrayListOf()
                             if (isFromPayment) {
-                                if (MethodUtils.isEnableCashDiscount(requireContext())) {
+                                if (MethodUtils.isEnableCashDiscount(requireContext()) && prefProvider.getValue(ORDER_TYPE, TAKEOUT) != Constants.GIFT_CARD) {
                                     binding.linearCashDiscount.visible()
                                     if (prefProvider.getValue(
                                             OPTION_TYPE,
@@ -1255,7 +1255,7 @@ class CartFragment(
                             }
                             if (isFromPayment) {
                                 viewModel.selectedCustomer = prefProvider.getCustomerData()
-                                if (MethodUtils.isEnableCashDiscount(requireContext())) {
+                                if (MethodUtils.isEnableCashDiscount(requireContext()) && prefProvider.getValue(ORDER_TYPE, TAKEOUT) != Constants.GIFT_CARD) {
                                     binding.linearCashDiscount.visible()
                                     if (prefProvider.getValue(
                                             OPTION_TYPE,

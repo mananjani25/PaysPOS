@@ -77,6 +77,7 @@
                 android:layout_height="@dimen/_18sdp"
                 android:layout_gravity="center_vertical"
                 android:layout_marginTop="@dimen/_10sdp"
+                android:visibility="visible"
                 android:layout_marginBottom="@dimen/_2sdp"
                 android:background="@drawable/background_square_border_grey"
                 android:padding="@dimen/_4sdp">
@@ -91,11 +92,11 @@
                     android:hint="@string/hint_enter_your_gift_card_number"
                     android:importantForAutofill="no"
                     android:inputType="number"
-                    android:maxLength="23"
+                    android:maxLength="15"
                     android:textColor="@color/btnColor"
                     android:textColorHint="@color/hint_color"
                     android:textSize="@dimen/_6sdp"
-                    app:met_mask="####  ####  ####  ####" />
+                    app:met_mask="####  ####" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -119,6 +120,7 @@
                     android:maxLength="8"
                     android:editable="true"
                     android:enabled="false"
+                    android:text="$0.00"
                     android:hint="@string/hint_enter_your_gift_card_amount"
                     android:textColor="@color/btnColor"
                     android:textColorHint="@color/txtColorGray"

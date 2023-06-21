@@ -126,6 +126,7 @@ class AddValueInGiftCardFragment : Fragment() {
     private fun onClick() {
 
         binding.imgBack.setOnClickListener {
+            clearCartOnBackPress()
             findNavController().popBackStack()
         }
 
@@ -159,6 +160,22 @@ class AddValueInGiftCardFragment : Fragment() {
         binding.llKeypad.txt30.setOnClickListener {
             binding.edtAmount.setText(MethodUtils.roundOffAmount(35.0))
         }
+    }
+
+    private fun clearCartOnBackPress() {
+        prefProvider.setValue("PaidAmount", "")
+        prefProvider.setValue(Constants.WHOLE_AMOUNT, "")
+        prefProvider.setValueInt("cardCount", 0)
+        prefProvider.setValue(Constants.SUB_TOTAL, "")
+        prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
+        prefProvider.setValue(Constants.TOTAL_DISCOUNT, "")
+        prefProvider.setValue(Constants.TIP, "")
+        prefProvider.setValue(Constants.TAX_CHARGE, "")
+        prefProvider.setValue(Constants.SERVICE_CHARGE, "")
+        prefProvider.setValue(Constants.ORDER_TYPE, "")
+        prefProvider.setValue(Constants.ORDER_TYPE_NAME, "")
+
+        dashboardViewModel.deleteCart()
     }
 
     private fun moveToCheckout() {

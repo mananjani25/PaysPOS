@@ -589,7 +589,7 @@ open class PaymentViewModel @Inject constructor(
             )
 
         val giftCard = GiftCard(
-            name = 12.generateRandomNumbers().toString(),
+            name = 8.generateRandomNumbers().toString(),
             amount = giftCardPurchaseAmount,
             customer_id = prefProvider.getValueInt(Constants.CUSTOMER_ID, 0),
             location_id = prefProvider.getValueInt(Constants.LOCATION_ID, 1),
@@ -677,7 +677,7 @@ open class PaymentViewModel @Inject constructor(
 
 
         val giftCard = GiftCard(
-            name = 12.generateRandomNumbers().toString(),
+            name = 8.generateRandomNumbers().toString(),
             amount = giftCardPurchaseAmount,
             customer_id = prefProvider.getValueInt(Constants.CUSTOMER_ID, 0),
             location_id = prefProvider.getValueInt(Constants.LOCATION_ID, 1),

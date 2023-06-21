@@ -7,11 +7,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentPurchaseGiftCardBinding
 import com.android.pos.di.PrefProvider
+import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.AmountTextWatcher
 import com.android.pos.utils.MethodUtils
@@ -26,6 +28,7 @@ class PurchaseGiftCardFragment : Fragment() {
 
     @Inject
     lateinit var prefProvider: PrefProvider
+    private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -131,6 +134,9 @@ class PurchaseGiftCardFragment : Fragment() {
     private fun onClick() {
 
         binding.imgBack.setOnClickListener {
+
+            clearCartOnBackPress()
+
             findNavController().popBackStack()
         }
 
@@ -180,6 +186,22 @@ class PurchaseGiftCardFragment : Fragment() {
         binding.llKeypad.txt30.setOnClickListener {
             binding.edtAmount.setText(MethodUtils.roundOffAmount(35.0))
         }
+    }
+
+    private fun clearCartOnBackPress() {
+        prefProvider.setValue("PaidAmount", "")
+        prefProvider.setValue(Constants.WHOLE_AMOUNT, "")
+        prefProvider.setValueInt("cardCount", 0)
+        prefProvider.setValue(Constants.SUB_TOTAL, "")
+        prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
+        prefProvider.setValue(Constants.TOTAL_DISCOUNT, "")
+        prefProvider.setValue(Constants.TIP, "")
+        prefProvider.setValue(Constants.TAX_CHARGE, "")
+        prefProvider.setValue(Constants.SERVICE_CHARGE, "")
+        prefProvider.setValue(Constants.ORDER_TYPE, "")
+        prefProvider.setValue(Constants.ORDER_TYPE_NAME, "")
+
+        dashboardViewModel.deleteCart()
     }
 
 }
