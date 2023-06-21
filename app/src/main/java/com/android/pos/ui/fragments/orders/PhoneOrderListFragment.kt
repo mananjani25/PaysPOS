@@ -561,8 +561,12 @@ class PhoneOrderListFragment(
                     Constants.LOYALTY_ADDED,
                     order.isLoyaltyApplied
                 )
-
-                findNavController().navigate(R.id.action_orders_to_paymentBoldPosFragment, bundle)
+                if (findNavController().currentDestination?.id == R.id.orders) {
+                    findNavController().navigate(
+                        R.id.action_orders_to_paymentBoldPosFragment,
+                        bundle
+                    )
+                }
 
 
             }

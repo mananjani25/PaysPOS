@@ -39,8 +39,10 @@ import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.liveSnackBar
 import com.android.pos.utils.extensions.setOnSingleClickListener
+import com.android.pos.utils.extensions.visible
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
@@ -161,7 +163,7 @@ class PhoneOrderFragment : Fragment() {
             isDelivey = false
             binding.txtPickup.setBackgroundResource(R.drawable.button_action_hover)
             binding.txtDelivery.setBackgroundResource(R.drawable.background_square_border_grey)
-
+            binding.txtAddress.gone()
         }
         binding.txtDelivery.setOnSingleClickListener {
             orderType = DELIVERY
@@ -169,6 +171,7 @@ class PhoneOrderFragment : Fragment() {
             isPickUp = false
             binding.txtPickup.setBackgroundResource(R.drawable.background_square_border_grey)
             binding.txtDelivery.setBackgroundResource(R.drawable.button_action_hover)
+            binding.txtAddress.visible()
         }
 
         binding.llSearch.setOnSingleClickListener {
