@@ -6,8 +6,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.model.requestModel.giftCard.request.GiftCard
+import com.android.pos.data.model.requestModel.giftCard.request.GiftCardAddValueRequest
 import com.android.pos.data.model.requestModel.giftCard.request.GiftCardCheckBalanceRequest
 import com.android.pos.data.model.requestModel.giftCard.request.SellGiftCardRequestModel
+import com.android.pos.data.model.requestModel.giftCard.response.GiftCardAddValueResponse
 import com.android.pos.data.model.requestModel.giftCard.response.GiftCardCheckBalanceResponse
 import com.android.pos.data.model.requestModel.giftCard.response.SellGiftCardResponseModel
 import com.android.pos.data.remote.Constants
@@ -37,6 +39,9 @@ class GiftCardViewModel @Inject constructor(
 
     private val _giftCardData = MutableLiveData<Event<SellGiftCardResponseModel?>>()
     val giftCardData: LiveData<Event<SellGiftCardResponseModel?>> = _giftCardData
+
+    private val _addValueInGiftCardData = MutableLiveData<Event<GiftCardAddValueResponse?>>()
+    val addValueInGiftCardData: LiveData<Event<GiftCardAddValueResponse?>> = _addValueInGiftCardData
 
     private val _giftCardCheckBalanceData = MutableLiveData<Event<GiftCardCheckBalanceResponse?>>()
     val giftCardCheckBalanceData: LiveData<Event<GiftCardCheckBalanceResponse?>> = _giftCardCheckBalanceData
@@ -194,12 +199,12 @@ class GiftCardViewModel @Inject constructor(
 
                                 prefProvider.setValueInt(
                                     Constants.PAYMENT_ID,
-                                    sellGiftCardResponse.data.gift_card.payment.id
+                                    sellGiftCardResponse.data.gift_card.payments[0].id
                                 )
 
                                 prefProvider.setValueInt(
                                     Constants.PAYMENT_ID_FOR_CUSTOMER_DISPLAY,
-                                    sellGiftCardResponse.data.gift_card.payment.id
+                                    sellGiftCardResponse.data.gift_card.payments[0].id
                                 )
 
                                 posRepository.deleteCart(
@@ -232,6 +237,195 @@ class GiftCardViewModel @Inject constructor(
 
                 Status.LOADING -> {
                     if (checkIsCashPaymentTypeForGiftCard(sellGiftCardRequestModel)) {
+                        _showProgressCash.value = Event(true)
+                    } else
+                        _showProgress.value = Event(true)
+
+                }
+            }
+        }
+    }
+
+    fun createAddValueInGiftCardRequestUsingCash(): GiftCardAddValueRequest {
+
+        val giftCardPurchaseAmount = prefProvider.getValue(Constants.GIFT_CARD_PURCHASE_AMOUNT, "0.0")
+        val giftCardNumber = prefProvider.getValue(Constants.GIFT_CARD_NUMBER, "")
+
+        val paymentAttributes =
+            GiftCardAddValueRequest.GiftCardAmountTab.PaymentAttributes(
+                amount = giftCardPurchaseAmount.toDouble(),
+                card_name = "",
+                card_number = "",
+                employee_id = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0),
+                magensa_response = "",
+                offline_id = "",
+                payable_type = "GiftCardAmountTab",
+                payment_type = "Cash",
+                sub_total = giftCardPurchaseAmount.toDouble(),
+                terminal_id = prefProvider.getValueInt(Constants.TERMINAL_ID, 0),
+                transaction_id = ""
+            )
+
+        val giftCard = GiftCardAddValueRequest.GiftCard(
+            name = giftCardNumber,
+            added_amount = giftCardPurchaseAmount.toDouble(),
+        )
+
+        val giftCardAmountTab = GiftCardAddValueRequest.GiftCardAmountTab(
+            payment_attributes = paymentAttributes
+        )
+
+        return GiftCardAddValueRequest(gift_card = giftCard, gift_card_amount_tab = giftCardAmountTab)
+    }
+
+    fun createAddValueInGiftCardRequestUsingCard(): GiftCardAddValueRequest {
+
+        val giftCardPurchaseAmount = prefProvider.getValue(Constants.GIFT_CARD_PURCHASE_AMOUNT, "0.0")
+        val giftCardNumber = prefProvider.getValue(Constants.GIFT_CARD_NUMBER, "")
+
+        var paymentAttributes: GiftCardAddValueRequest.GiftCardAmountTab.PaymentAttributes? = null
+
+        if(magensaResponse != null){
+            val model = Gson().fromJson(
+                magensaResponse,
+                PaymentResponse.PaymentResponseItem::class.java
+            )
+
+            var cardNumber = ""
+            var cardName = ""
+
+            if (model.dataOutput != null) {
+                LogUtil.logE("dataOutput", Gson().toJson(model))
+                cardNumber = model.dataOutput.PANLast4
+                var cardN = ""
+                model.dataOutput.additionalOutputData?.forEach {
+                    LogUtil.logE("additionalOutputData", it.key)
+                    if (it.key == "CardType") {
+                        cardN = it.value
+                    }
+                }
+                cardName = cardN
+            }
+
+            if (model.cardSwipeOutput != null) {
+                LogUtil.logE("cardSwipeOutput", Gson().toJson(model))
+                cardNumber = model.cardSwipeOutput.pANLast4
+                var cardN = ""
+                model.cardSwipeOutput.additionalOutputData?.forEach {
+                    if (it.key == "CardType") {
+                        cardN = it.value
+                    }
+                }
+
+                cardName = cardN
+            }
+
+
+            if (model.transactionOutput?.transactionOutputDetails?.isNotEmpty() == true) {
+                var CardType = ""
+                model.transactionOutput.transactionOutputDetails.forEach {
+                    if (it.key == "CardType") {
+                        CardType = it.value
+                    }
+                }
+
+                cardName = CardType
+                cardNumber =
+                    if (cardNumberLast4.isNotEmpty()) cardNumberLast4.takeLast(4) else ""
+            }
+
+            paymentAttributes =
+                GiftCardAddValueRequest.GiftCardAmountTab.PaymentAttributes(
+                    amount = giftCardPurchaseAmount.toDouble(),
+                    card_name = cardName,
+                    card_number = cardNumber,
+                    employee_id = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0),
+                    magensa_response = magensaResponse,
+                    offline_id = MethodUtils.randomOfflineId(
+                        prefProvider.getValueInt(Constants.LOCATION_ID, -1).toString()
+                    ),
+                    payable_type = "GiftCardAmountTab",
+                    payment_type = "Card",
+                    sub_total = giftCardPurchaseAmount.toDouble(),
+                    terminal_id = prefProvider.getValueInt(Constants.TERMINAL_ID, 0),
+                    transaction_id = model.transactionOutput?.transactionID.toString()
+                )
+        }
+
+
+
+        val giftCard = GiftCardAddValueRequest.GiftCard(
+            name = giftCardNumber,
+            added_amount = giftCardPurchaseAmount.toDouble(),
+        )
+
+        val giftCardAmountTab = GiftCardAddValueRequest.GiftCardAmountTab(
+            payment_attributes = paymentAttributes
+        )
+
+        return GiftCardAddValueRequest(gift_card = giftCard, gift_card_amount_tab = giftCardAmountTab)
+    }
+
+    fun addValueInGiftCard(isCashPaymentType: Boolean, giftCardAddValueRequest: GiftCardAddValueRequest) {
+
+        if (isCashPaymentType) {
+            _showProgressCash.value = Event(true)
+        } else
+            _showProgress.value = Event(true)
+
+        viewModelScope.launch {
+
+            val resource: Resource<GiftCardAddValueResponse> =
+                posRepository.addValueInGiftCard(giftCardAddValueRequest)
+
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    _showProgress.value = Event(false)
+                    resource.data.let { response ->
+                        if (response?.status == 200) {
+
+                            resource.data?.let { addValueInGiftCardResponse ->
+
+                                prefProvider.setValueInt(
+                                    Constants.PAYMENT_ID,
+                                    addValueInGiftCardResponse.data.gift_card.payments[0].id
+                                )
+
+                                prefProvider.setValueInt(
+                                    Constants.PAYMENT_ID_FOR_CUSTOMER_DISPLAY,
+                                    addValueInGiftCardResponse.data.gift_card.payments[0].id
+                                )
+
+                                posRepository.deleteCart(
+                                    prefProvider.getValueInt(
+                                        Constants.EMPLOYEE_ID,
+                                        0
+                                    )
+                                )
+
+                                _addValueInGiftCardData.value = Event(addValueInGiftCardResponse)
+
+                            }
+
+                        } else {
+                            _snackbarText.value = Event(resource.message)
+                        }
+                    }
+
+                }
+
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message)
+
+                    if (isCashPaymentType) {
+                        _showProgressCash.value = Event(false)
+                    } else
+                        _showProgress.value = Event(false)
+
+                }
+
+                Status.LOADING -> {
+                    if (isCashPaymentType) {
                         _showProgressCash.value = Event(true)
                     } else
                         _showProgress.value = Event(true)

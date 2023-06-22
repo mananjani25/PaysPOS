@@ -7,5 +7,5 @@ data class GiftCard(
     val location_id: Int,
     val name: String,
     val password: String,
-    val payment: Payment
+    val payments: List<Payment>
 )

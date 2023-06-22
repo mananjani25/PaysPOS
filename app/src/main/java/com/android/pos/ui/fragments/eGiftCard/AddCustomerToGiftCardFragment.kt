@@ -173,6 +173,7 @@ class AddCustomerToGiftCardFragment : Fragment(), ItemCallback {
 
         prefProvider.setValue(Constants.ORDER_TYPE, Constants.GIFT_CARD)
         prefProvider.setValue(Constants.ORDER_TYPE_NAME, Constants.GIFT_CARD_NAME)
+        prefProvider.setValueboolean(Constants.IS_ADD_VALUE_IN_GIFT_CARD, false)
 
         val cm = CartModel()
         val tbItem = TbItem()

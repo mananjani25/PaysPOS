@@ -36,6 +36,7 @@ import com.android.pos.data.model.DineInModel
 import com.android.pos.data.model.GuestDataModel
 import com.android.pos.data.model.SplitBundleModel
 import com.android.pos.data.model.SplitDetailListModel
+import com.android.pos.data.model.requestModel.giftCard.response.GiftCardAddValueResponse
 import com.android.pos.data.model.requestModel.giftCard.response.SellGiftCardResponseModel
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.Constants
@@ -171,6 +172,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private val paymentviewModel by viewModels<PaymentViewModel>()
     private var receiptModel: CreateOrderResponse.Data? = null
     private var giftCardReceiptModel: SellGiftCardResponseModel.Data? = null
+    private var giftCardAddValueReceiptModel: GiftCardAddValueResponse.Data? = null
     private var receiptModelForOpenORder: CreateOrderResponse.Data? = null
     private var customerSettingModel = GetCustomerReceiptSettingsResponse.Data()
     private var kitchenSettingModel = GetKitchenReceiptSettingsResponse.Data()
@@ -387,6 +389,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             orderID = requireArguments().getInt("orderID")
             receiptModel = requireArguments().getParcelable("receiptData")
             giftCardReceiptModel = requireArguments().getParcelable("giftCardReceiptData")
+            giftCardAddValueReceiptModel = requireArguments().getParcelable("giftCardAddValueReceiptModel")
             receiptModelForOpenORder = requireArguments().getParcelable("receiptData")
             Log.e(TAG, "checkreceiptModel:   ${Gson().toJson(receiptModel)}")
             splitValue = requireArguments().getInt("splitValue")

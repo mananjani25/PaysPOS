@@ -7,8 +7,10 @@ import com.android.pos.data.model.CustomerListResponse
 import com.android.pos.data.model.CustomerSearchList
 import com.android.pos.data.model.GetPaymentOrderDetailsResponse
 import com.android.pos.data.model.requestModel.*
+import com.android.pos.data.model.requestModel.giftCard.request.GiftCardAddValueRequest
 import com.android.pos.data.model.requestModel.giftCard.request.GiftCardCheckBalanceRequest
 import com.android.pos.data.model.requestModel.giftCard.request.SellGiftCardRequestModel
+import com.android.pos.data.model.requestModel.giftCard.response.GiftCardAddValueResponse
 import com.android.pos.data.model.requestModel.giftCard.response.GiftCardCheckBalanceResponse
 import com.android.pos.data.model.requestModel.giftCard.response.SellGiftCardResponseModel
 import com.android.pos.data.model.responseModel.*
@@ -52,6 +54,7 @@ import com.android.pos.data.remote.Constants.GET_FLOOR_PLAN
 import com.android.pos.data.remote.Constants.GET_PRINTERS
 import com.android.pos.data.remote.Constants.GET_TEAM_MODULE
 import com.android.pos.data.remote.Constants.GIFT_CARDS
+import com.android.pos.data.remote.Constants.GIFT_CARD_ADD_BALANCE
 import com.android.pos.data.remote.Constants.GIFT_CARD_CHECK_BALANCE
 import com.android.pos.data.remote.Constants.HIDE_CATEGORY
 import com.android.pos.data.remote.Constants.HIDE_ITEM
@@ -669,6 +672,9 @@ interface ApiService {
 
     @POST(GIFT_CARDS)
     suspend fun sellGiftCard(@Body sellGiftCardRequestModel: SellGiftCardRequestModel): SellGiftCardResponseModel
+
+    @PUT(GIFT_CARD_ADD_BALANCE)
+    suspend fun addValueInGiftCard(@Body giftCardAddValueRequest: GiftCardAddValueRequest): GiftCardAddValueResponse
 
     @POST(GIFT_CARD_CHECK_BALANCE)
     suspend fun giftCardCheckBalance(@Body giftCardCheckBalanceRequest: GiftCardCheckBalanceRequest): GiftCardCheckBalanceResponse

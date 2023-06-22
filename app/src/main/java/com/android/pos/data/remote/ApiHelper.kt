@@ -3,6 +3,7 @@ package com.android.pos.data.remote
 import com.android.pos.data.entities.TbBusinessDetails
 import com.android.pos.data.entities.VariationsAttribute
 import com.android.pos.data.model.requestModel.*
+import com.android.pos.data.model.requestModel.giftCard.request.GiftCardAddValueRequest
 import com.android.pos.data.model.requestModel.giftCard.request.GiftCardCheckBalanceRequest
 import com.android.pos.data.model.requestModel.giftCard.request.SellGiftCardRequestModel
 import com.android.pos.utils.FileUtils.getContentType
@@ -446,6 +447,9 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
 
     suspend fun sellGiftCard(data: SellGiftCardRequestModel) =
         getResult { apiService.sellGiftCard(data) }
+
+    suspend fun addValueInGiftCard(data: GiftCardAddValueRequest) =
+        getResult { apiService.addValueInGiftCard(data) }
 
     suspend fun giftCardCheckBalance(giftCardCheckBalanceRequest: GiftCardCheckBalanceRequest) =
         getResult { apiService.giftCardCheckBalance(giftCardCheckBalanceRequest) }

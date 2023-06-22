@@ -296,6 +296,7 @@ object Constants {
     const val ORDERS = "orders"
     const val GIFT_CARDS = "gift_cards"
     const val GIFT_CARD_CHECK_BALANCE = "gift_card_check_balance"
+    const val GIFT_CARD_ADD_BALANCE = "gift_card_add_balance"
     const val ORDER_DETAILS = "orders/{id}"
     const val PAYMENT_DETAILS = "payments/{id}"
     const val ORDER_EMAIL_RECEIPT = "orders/send_order_email_receipt"
@@ -713,5 +714,7 @@ object Constants {
     const val GIFT_CARD_TYPE = "gift_card_type"
     const val GIFT_CARD_PURCHASE_AMOUNT = "gift_card_purchase_amount"
     const val IS_GIFT_CARD_ACTIVATED = "is_gift_card_activated"
+    const val GIFT_CARD_NUMBER = "gift_card_number"
+    const val IS_ADD_VALUE_IN_GIFT_CARD = "is_add_value_in_gift_card"
 
 }
