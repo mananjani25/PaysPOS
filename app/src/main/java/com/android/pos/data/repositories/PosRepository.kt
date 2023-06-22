@@ -11,6 +11,7 @@ import com.android.pos.data.model.PrinterQueueModel
 import com.android.pos.data.model.ShiftRportConfiguration
 import com.android.pos.data.model.SplitDetailListModel
 import com.android.pos.data.model.requestModel.*
+import com.android.pos.data.model.requestModel.giftCard.request.GiftCardCheckBalanceRequest
 import com.android.pos.data.model.requestModel.giftCard.request.SellGiftCardRequestModel
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.ApiHelper
@@ -787,6 +788,9 @@ class PosRepository @Inject constructor(
 
     suspend fun sellGiftCard(data: SellGiftCardRequestModel) =
         apiHelperNew.sellGiftCard(data)
+
+    suspend fun giftCardCheckBalance(giftCardCheckBalanceRequest: GiftCardCheckBalanceRequest) =
+        apiHelperNew.giftCardCheckBalance(giftCardCheckBalanceRequest)
 
     suspend fun splitByOrder(data: SpitByOrderRequestModel) =
         apiHelperNew.splitByOrder(data)

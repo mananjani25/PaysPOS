@@ -7,7 +7,9 @@ import com.android.pos.data.model.CustomerListResponse
 import com.android.pos.data.model.CustomerSearchList
 import com.android.pos.data.model.GetPaymentOrderDetailsResponse
 import com.android.pos.data.model.requestModel.*
+import com.android.pos.data.model.requestModel.giftCard.request.GiftCardCheckBalanceRequest
 import com.android.pos.data.model.requestModel.giftCard.request.SellGiftCardRequestModel
+import com.android.pos.data.model.requestModel.giftCard.response.GiftCardCheckBalanceResponse
 import com.android.pos.data.model.requestModel.giftCard.response.SellGiftCardResponseModel
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.model.responseModel.category.CategoriesResponse
@@ -50,6 +52,7 @@ import com.android.pos.data.remote.Constants.GET_FLOOR_PLAN
 import com.android.pos.data.remote.Constants.GET_PRINTERS
 import com.android.pos.data.remote.Constants.GET_TEAM_MODULE
 import com.android.pos.data.remote.Constants.GIFT_CARDS
+import com.android.pos.data.remote.Constants.GIFT_CARD_CHECK_BALANCE
 import com.android.pos.data.remote.Constants.HIDE_CATEGORY
 import com.android.pos.data.remote.Constants.HIDE_ITEM
 import com.android.pos.data.remote.Constants.INCREASE_ONGOING_ORDER_COUNTER
@@ -666,6 +669,9 @@ interface ApiService {
 
     @POST(GIFT_CARDS)
     suspend fun sellGiftCard(@Body sellGiftCardRequestModel: SellGiftCardRequestModel): SellGiftCardResponseModel
+
+    @POST(GIFT_CARD_CHECK_BALANCE)
+    suspend fun giftCardCheckBalance(@Body giftCardCheckBalanceRequest: GiftCardCheckBalanceRequest): GiftCardCheckBalanceResponse
 
     @POST(ORDER_PAY_AMOUNT_WISE)
     suspend fun splitByOrder(@Body orderRequestModel: SpitByOrderRequestModel): CreateOrderResponse

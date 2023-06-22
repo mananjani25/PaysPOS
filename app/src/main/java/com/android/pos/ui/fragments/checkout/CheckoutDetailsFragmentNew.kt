@@ -36,6 +36,7 @@ import com.android.pos.di.PrefProvider
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
 import com.android.pos.ui.fragments.dinein.DineInOrderTableViewModel
+import com.android.pos.ui.fragments.eGiftCard.GiftCardViewModel
 import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.ui.fragments.magtek.MagtekRequestUtils
 import com.android.pos.ui.fragments.magtek.PaymentResponse
@@ -85,6 +86,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     private var paymentOfflineId: String = ""
     var isSelectedCount = 1
     private val paymentviewModel by activityViewModels<PaymentViewModel>()
+    private val giftCardViewModel by activityViewModels<GiftCardViewModel>()
     private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
 
     var paymentType = "Cash"
@@ -836,13 +838,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             }
         }
 
-        paymentviewModel.giftCardData.observe(viewLifecycleOwner) { event ->
+        giftCardViewModel.giftCardData.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 Log.d(TAG, "observeData: SellGiftCardResponse = $it")
                 LogUtil.logE(TAG, "receiptData: ${Gson().toJson(it.data)}")
-                viewModel.redeemLoyaltyInfo = RedeemLoyaltyInfo()
                 prefProvider.setValueInt("ORDER_ID", it.data.gift_card.id)
-                viewModel.updateActiveOrderFlagClear()
 
                 isInsert = false
                 isCardRev = false
@@ -1161,6 +1161,33 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
 
         paymentviewModel.showProgressCash.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let {
+
+                LogUtil.logE("observeShowProgress", it.toString())
+                if (it) {
+                    ProgressUtils.showProgressDialog(requireActivity())
+                } else {
+                    ProgressUtils.dismissProgressDialog()
+                }
+            }
+        }
+
+        giftCardViewModel.showProgress.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let {
+
+                LogUtil.logE("observeShowProgress", it.toString())
+                if (it) {
+                    ProgressUtils.showProgressDialog(
+                        "Please wait payment under process",
+                        requireActivity()
+                    )
+                } else {
+                    ProgressUtils.dismissProgressDialog()
+                }
+            }
+        }
+
+        giftCardViewModel.showProgressCash.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
 
                 LogUtil.logE("observeShowProgress", it.toString())
@@ -1894,17 +1921,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     private fun sellGiftCardUsingCash() {
         paymentType = "Cash"
-        LogUtil.logE(TAG, "makeCashPayorderId  ${orderId}")
-        LogUtil.logE(TAG, "makeCashPrefOrderId  ${prefProvider.getValueInt("ORDER_ID", -1)}")
-
-        paymentviewModel.saveOrder(false)
         val myRequest = cartList?.let {
-            paymentviewModel.createSellGiftCardRequestUsingCash()
+            giftCardViewModel.createSellGiftCardRequestUsingCash()
         }
-        LogUtil.logE(TAG, "myRequestOriginal ${Gson().toJson(myRequest)}")
-        LogUtil.logE("ORDER TYPE 1", prefProvider.getValue(Constants.ORDER_TYPE, ""))
         if (myRequest != null) {
-            paymentviewModel.sellGiftCard(myRequest)
+            giftCardViewModel.sellGiftCard(myRequest)
         }
     }
 
@@ -2195,6 +2216,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                 Gson().toJson(response.body()!![0]),
                                 if (i == 3) cardNumber else ""
                             )
+                            giftCardViewModel.setMagensaResponse(
+                                Gson().toJson(response.body()!![0]),
+                                if (i == 3) cardNumber else ""
+                            )
 
                             if(prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD){
                                 sellGiftCardUsingCard()
@@ -2248,17 +2273,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     private fun sellGiftCardUsingCard() {
         paymentType = "Card"
-        LogUtil.logE(TAG, "makeCashPayorderId  ${orderId}")
-        LogUtil.logE(TAG, "makeCashPrefOrderId  ${prefProvider.getValueInt("ORDER_ID", -1)}")
-
-        paymentviewModel.saveOrder(false)
         val myRequest = cartList?.let {
-            paymentviewModel.createSellGiftCardRequestUsingCard()
+            giftCardViewModel.createSellGiftCardRequestUsingCard()
         }
-        LogUtil.logE(TAG, "myRequestOriginal ${Gson().toJson(myRequest)}")
-        LogUtil.logE("ORDER TYPE 1", prefProvider.getValue(Constants.ORDER_TYPE, ""))
         if (myRequest != null) {
-            paymentviewModel.sellGiftCard(myRequest)
+            giftCardViewModel.sellGiftCard(myRequest)
         }
     }
 

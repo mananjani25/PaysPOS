@@ -1,19 +1,27 @@
 package com.android.pos.ui.fragments.eGiftCard
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
+import com.android.pos.data.model.requestModel.giftCard.request.GiftCardCheckBalanceRequest
 import com.android.pos.databinding.FragmentBalanceInquiryBinding
+import com.android.pos.ui.fragments.payment.PaymentViewModel
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.LogUtil
+import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.gone
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class BalanceInquiryFragment : Fragment() {
 
     private lateinit var binding: FragmentBalanceInquiryBinding
+    private val giftCardViewModel by activityViewModels<GiftCardViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -22,7 +30,41 @@ class BalanceInquiryFragment : Fragment() {
         binding = FragmentBalanceInquiryBinding.inflate(layoutInflater)
         hideDefaultKeypads()
         onClick()
+        showProgressObserver()
         return binding.root
+    }
+
+    private fun showProgressObserver() {
+        giftCardViewModel.showProgress.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let {
+                LogUtil.logE("observeShowProgress", it.toString())
+                if (it) {
+                    ProgressUtils.showProgressDialog(requireActivity())
+                } else {
+                    ProgressUtils.dismissProgressDialog()
+                }
+            }
+        }
+
+        giftCardViewModel.giftCardCheckBalanceData.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let {
+                if(it.data!=null){
+                    AlertUtils.showCustomAlertWithTitleListenerWithOK(
+                        requireContext(),
+                        title = getString(R.string.msg_balance_inquiry_results),
+                        message = "$${it.data.amount}"
+                    ) { _, _ ->
+                    }
+                } else {
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        requireContext(),
+                        message = it.message
+                    ) { _, _ ->
+                    }
+                }
+
+            }
+        }
     }
 
     private fun hideDefaultKeypads() {
@@ -43,13 +85,17 @@ class BalanceInquiryFragment : Fragment() {
         }
 
         binding.txtNext.setOnClickListener {
-            AlertUtils.showCustomAlertWithTitleListenerWithOK(
-                requireContext(),
-                title = getString(R.string.msg_balance_inquiry_results),
-                message = "$15.00"
-            ) { _, _ ->
+
+            val inputGiftCardNumber = binding.edtGiftCardNumber.text.toString().replace(" ","")
+
+            if (inputGiftCardNumber.isNotEmpty() && inputGiftCardNumber.length == 8) {
+                giftCardViewModel.giftCardCheckBalance(GiftCardCheckBalanceRequest(name = inputGiftCardNumber))
+            } else {
+                AlertUtils.showCustomAlert(requireContext(), "Please enter 8-digit gift card number")
+                return@setOnClickListener
             }
+
         }
     }
 
-    }
+}
