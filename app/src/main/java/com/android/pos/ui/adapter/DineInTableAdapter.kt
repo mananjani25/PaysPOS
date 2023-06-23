@@ -209,7 +209,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                     binding.btnPay.setBackgroundColor(binding.root.context.getColor(R.color.colorGreen))
                     binding.txtPay.text = "Paid"
                 }
-            } else if (noItem && guestAmt == 0.0) {
+            } else if (list[position].itemsCount == 0) {
                 Log.e(TAG, "NoItemGuestAmt")
                 binding.btnPay.visibility = View.GONE
             } else {
@@ -257,7 +257,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                         if (isInRange(
                                 it.min_guest_count!!,
                                 it.max_guest_count!!,
-                                list.get(0).totalGuestCount
+                                list[0].eligibleGuestsForDivision
                             )
                         ) {
                             isApplied = true
@@ -421,11 +421,11 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                         listItem,
                         guestName,
                         listItemWT,
-                        MethodUtils.roundOffAmountDouble(guestSubTotal + list.get(0).wholeTableSubTotal - (list[0].orderDiscount / list[0].totalGuestCount)),
+                        MethodUtils.roundOffAmountDouble(guestSubTotal + list.get(0).wholeTableSubTotal - (list[0].orderDiscount / list[0].eligibleGuestsForDivision)),
                         MethodUtils.roundOffAmountDouble(finalAmt),
                         MethodUtils.roundOffAmountDouble(totalTaxAmt + list.get(0).wholeTableTax),
                         MethodUtils.roundOffAmountDouble(totalServiceCharge + list.get(0).wholeTableSurTax),
-                        (list[0].orderDiscount / list[0].totalGuestCount) + guestDiscount + list[0].wholeTableDiscont
+                        (list[0].orderDiscount / list[0].eligibleGuestsForDivision) + guestDiscount + list[0].wholeTableDiscont
                     )
                 }
 

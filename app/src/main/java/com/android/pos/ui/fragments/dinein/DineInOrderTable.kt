@@ -2278,6 +2278,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     var totalFinalAmount: Double = 0.0
                     var totalCashDiscount: Double = 0.0
                     var totalItemDiscount: Double = 0.0
+                    var eligibleGuestsForDivision = 0
 
                     //extract logic from API data and drag & drop code
                     for (i in 0 until baseResponse.guestAttributes.size) {
@@ -2305,6 +2306,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                             ) {
                                 totalGuestCount++
                                 println("total guest count >>: $totalGuestCount")
+                            }
+                            if (baseResponse.guestAttributes.get(i).name.trim()
+                                    .lowercase() != "Whole Table".trim()
+                                    .lowercase() && baseResponse.guestAttributes[i].guestItemAttributes.isNotEmpty()
+                            ) {
+                                eligibleGuestsForDivision++
                             }
 
                         }
@@ -2504,6 +2511,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
                     }
+                    if (eligibleGuestsForDivision == 0) {
+                        eligibleGuestsForDivision = 1
+                    }
 
 
                     for (k in 0 until baseResponse.guestAttributes.size) {
@@ -2615,7 +2625,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                         totalPriceWT = subTotalWT + totalTaxWT + serviceChargeWT
 
                                         guestShareTotal =
-                                            totalPriceWT / (baseResponse.guestAttributes.size - 1)
+                                            totalPriceWT / eligibleGuestsForDivision
 
                                     }
 
@@ -2645,7 +2655,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                 if (isInRange(
                                         it.min_guest_count!!,
                                         it.max_guest_count!!,
-                                        baseResponse.guestAttributes.size - 1
+                                        eligibleGuestsForDivision
                                     )
                                 ) {
 
@@ -2681,14 +2691,15 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     dineInList.get(0).guestDividedAmt =
                         guestShareTotal
                     dineInList.get(0).totalGuestCount = baseResponse.guestAttributes.size - 1
+                    dineInList.get(0).eligibleGuestsForDivision = eligibleGuestsForDivision
                     dineInList.get(0).wholeTableSubTotal =
-                        subTotalWT / (baseResponse.guestAttributes.size - 1)
+                        subTotalWT / eligibleGuestsForDivision
                     dineInList.get(0).wholeTableTax =
-                        totalTaxWT / (baseResponse.guestAttributes.size - 1)
+                        totalTaxWT / eligibleGuestsForDivision
                     dineInList.get(0).wholeTableSurTax =
-                        serviceChargeWT / (baseResponse.guestAttributes.size - 1)
+                        serviceChargeWT / eligibleGuestsForDivision
                     dineInList.get(0).wholeTableDiscont =
-                        MethodUtils.roundOffAmountDouble(wholeTableDiscount / (baseResponse.guestAttributes.size - 1))
+                        MethodUtils.roundOffAmountDouble(wholeTableDiscount / eligibleGuestsForDivision)
 
                     dineInList.get(0).orderDiscount = orderDiscount
                     dineInList.get(0).orderTotalAmount =
@@ -2730,7 +2741,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         if (paidGuestCount > 0) {
                             paidGuestAmount = paidGuestCount
                             var perGTotal =
-                                subTotalWT / (baseResponse.guestAttributes.size - 1)
+                                subTotalWT / eligibleGuestsForDivision
                             LogUtil.logE(TAG, "perGTotal:  ${perGTotal}")
                             subTotalDInin = totalSubTotal - (perGTotal * paidGuestCount)
                         } else {
@@ -2753,7 +2764,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                         if (isInRange(
                                                 it.min_guest_count!!,
                                                 it.max_guest_count!!,
-                                                baseResponse.guestAttributes.size - 1
+                                                eligibleGuestsForDivision
                                             )
                                         ) {
                                             isApplied = true
@@ -2778,10 +2789,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                         }
 
-                        var unpaidCount = (baseResponse.guestAttributes.size - 1) - paidGuestCount
+                        var unpaidCount = eligibleGuestsForDivision - paidGuestCount
 
                         if (paidGuestCount > 0) {
-                            var tempTax = totalTaxWT / (baseResponse.guestAttributes.size - 1)
+                            var tempTax = totalTaxWT / eligibleGuestsForDivision
 
                             var guestTax = totalTaxAmount - totalTaxWT
                             finalTaxAmt = (tempTax * unpaidCount) + guestTax
@@ -2951,6 +2962,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         var totalTablePrice = 0.0
         var WTDiscount = 0.0
         var guestCount = 0
+        var eligibleGuestsForDivision = 0
         if (dragTo != -1) {
             oldList.get(dragTo).item?.guestItemId?.let { listOfMoveItemIds.add(it) }
             oldList.get(dragTo).item?.guestItemId = null
@@ -3002,6 +3014,18 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             dragFrom = -1
             dragTo = -1
 
+            // Update guest wise itemsCount for all guest after reordering to manage eligible guests division
+            var currentGuestIndex = 0
+            for (m in 0 until oldList.size) {
+                if(oldList[m].isHeader == 0) {
+                    currentGuestIndex = m
+                    oldList[currentGuestIndex].itemsCount = 0
+                }
+                if (oldList[m].isHeader == 1) {
+                    oldList[currentGuestIndex].itemsCount++
+                }
+            }
+
             for (i in 0 until oldList.size) {
                 if (oldList.get(i).isHeader == 1) {
                     if (oldList.get(i).item?.isPaid == true) {
@@ -3028,11 +3052,17 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     }
                 } else {
                     guestCount++
+                    if(oldList[i].itemsCount > 0 && oldList[i].title != "Whole Table") {
+                        eligibleGuestsForDivision++
+                    }
                 }
 
 
             }
 
+            if (eligibleGuestsForDivision == 0) {
+                eligibleGuestsForDivision = 1
+            }
 
 
             for (i in 1 until oldList.size) {
@@ -3100,7 +3130,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                             if (isInRange(
                                     it.min_guest_count!!,
                                     it.max_guest_count!!,
-                                    (guestCount - 1)
+                                    (eligibleGuestsForDivision)
                                 )
                             ) {
                                 isApplied = true
@@ -3122,7 +3152,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             }
 
-            guestShare = (wholeTableAmt + WTServiceCharge + WTTax) / (guestCount - 1)
+            guestShare = (wholeTableAmt + WTServiceCharge + WTTax) / (eligibleGuestsForDivision)
 
 
             for (i in 0 until oldList.size) {
@@ -3164,12 +3194,13 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             }
             newList.get(0).guestDividedAmt = guestShare
             newList.get(0).totalGuestCount = guestCount - 1
+            newList.get(0).eligibleGuestsForDivision = eligibleGuestsForDivision
             newList.get(0).wholeTableSubTotal =
-                wholeTableAmt / (guestCount - 1)
+                wholeTableAmt / (eligibleGuestsForDivision)
             newList.get(0).wholeTableTax =
-                WTTax / (guestCount - 1)
+                WTTax / (eligibleGuestsForDivision)
             newList.get(0).wholeTableSurTax =
-                WTServiceCharge / (guestCount - 1)
+                WTServiceCharge / (eligibleGuestsForDivision)
             newList.get(0).orderDiscount = getOrderDetailsResponse?.totalDiscount ?: 0.0
             newList[0].orderDiscountPercentage = MethodUtils.roundOffAmountDouble(
                 MethodUtils.calculatePercentageFromAmount(totalDiscountWO ,
