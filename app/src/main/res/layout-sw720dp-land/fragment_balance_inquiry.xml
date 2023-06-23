@@ -70,6 +70,7 @@
             android:layout_marginHorizontal="@dimen/_150sdp"
             android:orientation="vertical"
             android:paddingTop="@dimen/_4sdp"
+            android:gravity="center_vertical"
             android:visibility="visible">
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -104,6 +105,7 @@
                 layout="@layout/layout_discount_keypad"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 android:layout_marginTop="@dimen/_5sdp"
                 android:paddingLeft="@dimen/_5sdp"
                 android:paddingRight="@dimen/_5sdp" />

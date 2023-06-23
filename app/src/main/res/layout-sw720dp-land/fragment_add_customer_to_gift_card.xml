@@ -49,7 +49,7 @@
             android:textAllCaps="true"
             android:textColor="@color/white"
             android:textSize="@dimen/_7mdpi"
-            android:visibility="visible" />
+            android:visibility="invisible" />
 
 
     </RelativeLayout>
