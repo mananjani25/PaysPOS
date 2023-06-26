@@ -2106,6 +2106,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     }
 
     private fun setupTabDesign() {
+
+        if(prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD){
+            binding.linearTab2.gone()
+        } else {
+            binding.linearTab2.visible()
+        }
+
         binding.linearTab1.setOnSingleClickListener {
             PaymentBoldPosFragment.newInstance().addTipHideShow(false)
             isSelectedCount = 1
