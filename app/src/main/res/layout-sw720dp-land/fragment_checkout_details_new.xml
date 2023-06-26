@@ -865,7 +865,7 @@
                     android:layout_marginStart="@dimen/_10sdp"
                     android:layout_weight="4"
                     android:background="@null"
-                    android:hint="@string/_1234_xxxx"
+                    android:hint="@string/enter_card_number_here"
                     android:importantForAutofill="no"
                     android:inputType="number"
                     android:maxLength="15"
@@ -880,10 +880,45 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginStart="@dimen/_5sdp"
+                android:visibility="gone"
                 android:layout_marginTop="@dimen/_5sdp"
                 android:text="@string/enter_card_number_here"
                 android:textColor="@color/hint_color"
                 android:textSize="@dimen/_5mdpi" />
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/_10sdp"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:background="@drawable/background_square_border_grey"
+                android:orientation="horizontal"
+                android:padding="@dimen/_9sdp"
+                android:weightSum="4">
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_gift_card_pin" />
+
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/edtGiftCardPin"
+                    style="@style/CustomFontBold"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="@dimen/_10sdp"
+                    android:layout_weight="4"
+                    android:background="@null"
+                    android:hint="@string/hint_gift_card_pin"
+                    android:importantForAutofill="no"
+                    android:inputType="numberPassword"
+                    android:maxLength="4"
+                    android:textColor="@color/btnColor"
+                    android:textColorHint="@color/hint_color"
+                    android:textSize="@dimen/_7mdpi" />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtChargeGC"
