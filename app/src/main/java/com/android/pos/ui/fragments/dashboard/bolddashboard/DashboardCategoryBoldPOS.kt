@@ -290,7 +290,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     private fun observerSyncItemPriceChange() {
         viewModel.syncInventroyForPriceChange.observe(requireActivity(), Observer {
             if (isAdded) {
-                loadCartFragment(CartFragment(this, this, dineInCallback = this))
+                loadCartFragment(CartFragment(this, this, dineInCallback = this, isFromDashboard = true))
                 loadCategoryFragment(CategoryFragment(this, binding.layoutHeader.edtSearch))
             }
         })
@@ -628,7 +628,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_paymentBoldPosFragment)
             }
         } else {
-            loadCartFragment(CartFragment(this, this, dineInCallback = this))
+            loadCartFragment(CartFragment(this, this, dineInCallback = this, isFromDashboard = true))
             loadCategoryFragment(CategoryFragment(this, binding.layoutHeader.edtSearch))
         }
         binding.layoutHeader.txtUserName.text =

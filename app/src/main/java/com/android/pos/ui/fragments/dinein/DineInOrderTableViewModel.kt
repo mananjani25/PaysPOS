@@ -277,6 +277,7 @@ class DineInOrderTableViewModel @Inject constructor(
                 Status.ERROR -> {
                     _snackbarText.value = Event(resource.message)
                     _showProgress.value = Event(false)
+                    prefProvider.setValueboolean(Constants.DINE_IN_UPDATE, false)
                 }
                 Status.LOADING -> {
                     _showProgress.value = Event(true)

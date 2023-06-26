@@ -434,7 +434,11 @@ class MethodUtils {
         }
 
         fun calculatePercentageFromAmount(amount: Double, total: Double): Double {
-            return (amount / total) * 100
+            return if(((amount / total) * 100).isNaN()) {
+                0.0
+            } else {
+                (amount / total) * 100
+            }
         }
 
         @SuppressLint("SetTextI18n")
