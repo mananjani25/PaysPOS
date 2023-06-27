@@ -131,6 +131,7 @@ class AddValueInGiftCardFragment : Fragment() {
         }
 
         binding.txtNext.setOnClickListener {
+            MethodUtils.hideSoftKeyboard(requireActivity())
             val amount = binding.edtAmount.text.toString().replace("$", "").trim().toDouble()
             val giftCardNumber = binding.edtGiftCardNumber.text.toString().replace(" ","")
 

@@ -80,11 +80,11 @@ class GiftCardViewModel @Inject constructor(
             )
 
         val giftCard = GiftCard(
-            name = 8.generateRandomNumbers().toString(),
+            name = "",
             amount = giftCardPurchaseAmount,
             customer_id = prefProvider.getValueInt(Constants.CUSTOMER_ID, 0),
             location_id = prefProvider.getValueInt(Constants.LOCATION_ID, 1),
-            password = 4.generateRandomNumbers().toString(),
+            password = "",
             payment_attributes = paymentAttributes
         )
 
@@ -166,11 +166,11 @@ class GiftCardViewModel @Inject constructor(
 
 
         val giftCard = GiftCard(
-            name = 8.generateRandomNumbers().toString(),
+            name = "",
             amount = giftCardPurchaseAmount,
             customer_id = prefProvider.getValueInt(Constants.CUSTOMER_ID, 0),
             location_id = prefProvider.getValueInt(Constants.LOCATION_ID, 1),
-            password = 4.generateRandomNumbers().toString(),
+            password = "",
             payment_attributes = paymentAttributes
         )
 
@@ -197,15 +197,18 @@ class GiftCardViewModel @Inject constructor(
 
                             resource.data?.let { sellGiftCardResponse ->
 
-                                prefProvider.setValueInt(
-                                    Constants.PAYMENT_ID,
-                                    sellGiftCardResponse.data.gift_card.payments[0].id
-                                )
+                                sellGiftCardResponse.data?.let {
 
-                                prefProvider.setValueInt(
-                                    Constants.PAYMENT_ID_FOR_CUSTOMER_DISPLAY,
-                                    sellGiftCardResponse.data.gift_card.payments[0].id
-                                )
+                                    prefProvider.setValueInt(
+                                        Constants.PAYMENT_ID,
+                                        sellGiftCardResponse.data.gift_card.payments[0].id
+                                    )
+
+                                    prefProvider.setValueInt(
+                                        Constants.PAYMENT_ID_FOR_CUSTOMER_DISPLAY,
+                                        sellGiftCardResponse.data.gift_card.payments[0].id
+                                    )
+                                }
 
                                 posRepository.deleteCart(
                                     prefProvider.getValueInt(

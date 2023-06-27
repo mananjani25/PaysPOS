@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName
 
 data class SellGiftCardResponseModel(
     @SerializedName("data")
-    val `data`: Data,
+    val `data`: Data? = null,
     val message: String,
     val status: Int,
     val type: String

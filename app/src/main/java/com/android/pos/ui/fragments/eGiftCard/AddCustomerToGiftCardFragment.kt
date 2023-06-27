@@ -270,6 +270,7 @@ class AddCustomerToGiftCardFragment : Fragment(), ItemCallback {
     }
 
     override fun onItemClickListener(view: View?, pos: Int) {
+        MethodUtils.hideSoftKeyboard(requireActivity())
         selectedPosition = pos
         moveToCheckout()
     }
