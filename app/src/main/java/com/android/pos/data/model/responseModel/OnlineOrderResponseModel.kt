@@ -122,7 +122,7 @@ data class OnlineOrderResponseModel(
         var isCheck: Boolean = false,
         @SerializedName("magensa_response")
         val magensa_response_data: String,
-        @SerializedName("order_type_name") val order_type_name: String,
+        //@SerializedName("order_type_name") val order_type_name: String,
     ) {
         data class OrderItem(
             @SerializedName("category_id")
@@ -170,7 +170,7 @@ data class OnlineOrderResponseModel(
             @SerializedName("total_price")
             var totalPrice: Double,
             @SerializedName("order_item_variation")
-            val order_item_variation: GetPaymentOrderDetailsResponse.Data.Order.OrderItemVariationAttribute?,
+            val order_item_variation: OrderItemVariationAttribute?,
 
             ) {
             data class OrderItemModifier(
