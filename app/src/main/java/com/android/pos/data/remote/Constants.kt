@@ -714,8 +714,10 @@ object Constants {
 
     const val GIFT_CARD_TYPE = "gift_card_type"
     const val GIFT_CARD_PURCHASE_AMOUNT = "gift_card_purchase_amount"
-    const val IS_GIFT_CARD_ACTIVATED = "is_gift_card_activated"
+    const val IS_GIFT_CARD_REDEEM = "is_gift_card_redeem"
+    const val IS_ORDER_REDEEMABLE_WITH_GIFT_CARD = "is_order_redeemable_with_gift_card"
     const val GIFT_CARD_NUMBER = "gift_card_number"
+    const val GIFT_CARD_PIN = "gift_card_pin"
     const val IS_ADD_VALUE_IN_GIFT_CARD = "is_add_value_in_gift_card"
 
 }

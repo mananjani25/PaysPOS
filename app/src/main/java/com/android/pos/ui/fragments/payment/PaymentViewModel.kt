@@ -513,7 +513,6 @@ open class PaymentViewModel @Inject constructor(
 
         val orderAttributeRequestModel = OrderAttributeRequestModel()
 
-
         if (isUpdateOrder)
             orderAttributeRequestModel.id = orderId
 
@@ -715,7 +714,7 @@ open class PaymentViewModel @Inject constructor(
 
 
         var sendPaymentLink = false
-        val isPaidOrder: Boolean
+        var isPaidOrder: Boolean
         if (prefProvider.getValue(Constants.ORDER_TYPE, "")
                 .equals(PHONE_ORDER, ignoreCase = true)
         ) {
@@ -726,10 +725,21 @@ open class PaymentViewModel @Inject constructor(
             isPaidOrder = isPaid
         }
 
-        Log.e("isPaidOrder", isPaidOrder.toString())
+        isPaidOrder = prefProvider.getValueboolean(Constants.IS_ORDER_REDEEMABLE_WITH_GIFT_CARD, false)
+
+        Log.e("completed_all_payments", isPaidOrder.toString())
+
+        var giftCardRedeem: OrderRequestModel.GiftCardRedeem? = null
+
+        if(prefProvider.getValueboolean(Constants.IS_GIFT_CARD_REDEEM, false)){
+           giftCardRedeem = OrderRequestModel.GiftCardRedeem(prefProvider.getValue(Constants.GIFT_CARD_NUMBER, ""),prefProvider.getValue(Constants.GIFT_CARD_PIN,""))
+        }
 
         val orderRequestModel =
-            OrderRequestModel(isPaidOrder, orderAttributeRequestModel, sendPaymentLink)
+            OrderRequestModel(isPaidOrder, orderAttributeRequestModel,
+                sendPaymentLink,
+                gift_card_redeem = prefProvider.getValueboolean(Constants.IS_GIFT_CARD_REDEEM, false),
+                gift_card = giftCardRedeem)
 
         LogUtil.logE("orderRequestModel", ":  ${Gson().toJson(orderRequestModel)}")
 
@@ -1742,6 +1752,7 @@ open class PaymentViewModel @Inject constructor(
             val totalDC = MethodUtils.roundOffAmountDouble(tipAmount)
             val totalAM = totalPP /*- totalDC*/
             amount = totalAM
+            gift_card_redeemed_amount = totalAM
             if (paymentTypeStatus == "Cash") {
                 if (cashdiscountType == "SurCharge") {
                     cash_discount_or_surcharge = 0.0
@@ -1770,7 +1781,11 @@ open class PaymentViewModel @Inject constructor(
                 if (isUpdateOrder) paymentOfflineId.toString() else MethodUtils.randomOfflineId(
                     prefProvider.getValueInt(Constants.LOCATION_ID, -1).toString()
                 )
-            payableType = "Order"
+            payableType = if(prefProvider.getValueboolean(Constants.IS_GIFT_CARD_REDEEM, false)){
+                "GiftCardRedeem"
+            }else{
+                "Order"
+            }
             paymentType = paymentTypeStatus
             serviceChargeAmount = MethodUtils.roundOffAmountDouble(totalServiceCharge)
             subTotal = MethodUtils.roundOffAmountDouble(subTotalPrice)

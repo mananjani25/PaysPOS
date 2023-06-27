@@ -84,7 +84,7 @@ class BalanceInquiryFragment : Fragment() {
             findNavController().popBackStack()
         }
 
-        binding.txtNext.setOnClickListener {
+        binding.txtCheckBalance.setOnClickListener {
 
             val inputGiftCardNumber = binding.edtGiftCardNumber.text.toString().replace(" ","")
 
