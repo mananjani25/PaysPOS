@@ -207,19 +207,10 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
                 cashDiscountDivide = (cash_discount_or_surcharge * totalItemPrice) / final_Amount
             }
 
-//            val nf2: NumberFormat = NumberFormat.getNumberInstance()
-//            nf2.maximumFractionDigits = 2
-//            val rounded2: String = nf2.format(cashDiscountDivide)
-//
-            val rounded2 = cashDiscountDivide.toPrecision(2)
-
-            Log.e("rounded2",rounded2)
-            try {
-                cashDiscountDivide = rounded2.toDouble()
-            }catch (e : Exception){
-                e.printStackTrace()
-            }
-
+            val nf2: NumberFormat = NumberFormat.getNumberInstance()
+            nf2.maximumFractionDigits = 2
+            val rounded2: String = nf2.format(cashDiscountDivide)
+            cashDiscountDivide = rounded2.toDouble()
 
             Log.d(
                 "yash",
@@ -288,7 +279,7 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
 
 
             Log.d("yash", "bind: [$absoluteAdapterPosition] finalTotal : $totalItemPrice")
-            MethodUtils.setPriceTextView(itemBinding.tvItemPrice, totalItemPrice.toDouble())
+            MethodUtils.setPriceTextView(itemBinding.tvItemPrice, totalItemPrice.toPrecision(2).toDouble())
             itemBinding.ivCheck.setOnClickListener {
                 item.isChecked = !item.isChecked
                 selectedItemList[bindingAdapterPosition].isChecked = item.isChecked

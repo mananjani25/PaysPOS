@@ -218,6 +218,9 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                         getString(R.string.msg_amount_refund)
                     )
                 } else {
+
+                  //  val totalAmountRefund = binding.edtAmount.text.toString().toDouble()
+
                     subTotalPrice = binding.edtAmount.text.toString().toDouble()
                     refundData = RefundRequestModel().apply {
                         paymentRefund = RefundRequestModel.PaymentRefund().apply {
@@ -236,6 +239,8 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                             subtotal_refunded = paymentOrderDetailsResponse.data.sub_total
                         }
                     }
+
+
 
                     val bundle = Bundle().apply {
                         putParcelable("refundData", refundData)
@@ -383,7 +388,10 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                             val itemTaxPrice =
                                 (tax.rate * totalPrice) / 100
                             Log.e("itemTaxPrice", "" + itemTaxPrice)
-                            itemTaxPrice
+
+                            String.format("%.2f", itemTaxPrice)
+                                .toDouble()
+
                         }
 
                     } else {
@@ -502,7 +510,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
 
         val nf2: NumberFormat = NumberFormat.getNumberInstance()
         nf2.maximumFractionDigits = 2
-        val rounded2: String = selectedCashDiscountDivided.toPrecision(2)
+        val rounded2: String = nf2.format(selectedCashDiscountDivided)
         selectedCashDiscountDivided = rounded2.toDouble()
 
         if (selectedCashDiscountDivided > 0.0) {

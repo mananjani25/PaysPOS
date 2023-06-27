@@ -375,6 +375,10 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                 }
             } else {
                 if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
+
+                    if (prefProvider.getValueboolean(DINE_IN_UPDATE, false)) {
+                        item.isEdited = true
+                    }
                     val dineInList = cartList[0].dineInList
                     Log.e(TAG, "checkCartIsEmpty  ${cartList.size}")
                     LogUtil.logE(TAG, "dineInList:  ${Gson().toJson(dineInList)}")

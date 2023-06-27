@@ -12,10 +12,18 @@ import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.Point
 import android.graphics.drawable.ColorDrawable
-import android.os.*
+import android.os.Build
+import android.os.Bundle
+import android.os.Handler
+import android.os.IBinder
+import android.os.Looper
 import android.util.Base64
 import android.util.Log
-import android.view.*
+import android.view.Display
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.WindowManager
 import androidx.activity.OnBackPressedCallback
 import androidx.core.text.trimmedLength
 import androidx.fragment.app.Fragment
@@ -39,6 +47,12 @@ import com.android.pos.data.model.SplitDetailListModel
 import com.android.pos.data.model.requestModel.giftCard.response.GiftCardAddValueResponse
 import com.android.pos.data.model.requestModel.giftCard.response.SellGiftCardResponseModel
 import com.android.pos.data.model.responseModel.*
+import com.android.pos.data.model.responseModel.CreateOrderResponse
+import com.android.pos.data.model.responseModel.GetCustomerReceiptSettingsResponse
+import com.android.pos.data.model.responseModel.GetKitchenReceiptSettingsResponse
+import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
+import com.android.pos.data.model.responseModel.GetTipReponse
+import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.BILLING_ADDRESS
 import com.android.pos.data.remote.Constants.BLUETOOTH
@@ -94,11 +108,37 @@ import com.android.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
 import com.android.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.android.pos.ui.fragments.settings.tip.TipListViewModel
 import com.android.pos.ui.fragments.transactions.TransactionViewModel
-import com.android.pos.utils.*
+import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.LogUtil
+import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.MethodUtils.Companion.toPrecision
+import com.android.pos.utils.PrintSunmiUtils
+import com.android.pos.utils.PrinterDialog
+import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.addBuilderText
+import com.android.pos.utils.addBuilderTextForU220
+import com.android.pos.utils.addCustomerTextSize
+import com.android.pos.utils.addHorizontalHalfCustomerReceiptLine
+import com.android.pos.utils.addHorizontalKitchenLine
+import com.android.pos.utils.addHorizontalKitchenLineForU220
+import com.android.pos.utils.addHorizontalLine
+import com.android.pos.utils.addOrderItemForDineIn
+import com.android.pos.utils.addOrderItemForDineInInner
+import com.android.pos.utils.addOrderItems
+import com.android.pos.utils.addOrderItemsInner
+import com.android.pos.utils.addOrdersForKitchen
+import com.android.pos.utils.addOrdersForKitchenInner
+import com.android.pos.utils.addOrdersForKitchenU220
+import com.android.pos.utils.addTipsList
+import com.android.pos.utils.addTipsListInner
+import com.android.pos.utils.addWholeTbItemToGuest
+import com.android.pos.utils.addWholeTbItemToGuestInner
+import com.android.pos.utils.checkItemsforPrinter
 import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.liveSnackBar
 import com.android.pos.utils.extensions.visible
+import com.android.pos.utils.getCustomerDisplay
+import com.android.pos.utils.padLine
 import com.android.pos.utils.printer.PrinterClass
 import com.android.pos.utils.printer.PrinterClass.BLUETOOTH_TIMEOUT
 import com.android.pos.utils.statusUtils.Status
@@ -128,6 +168,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEventListener,
     BatteryStatusChangeEventListener, ICallback {
+    private var isPrint: Boolean = false
     private val paymentViewModel by activityViewModels<PaymentViewModel>()
     private lateinit var presentation: CustomDisplay
     private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
@@ -204,6 +245,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     ): View? {
         binding = FragmentOrderCompletBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
+        isPrint = true
 
         getCustomerDisplay(requireContext())?.let { display ->
             presentation = CustomDisplay(
@@ -927,6 +969,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 /*  binding.llPrint.background = resources.getDrawable(R.drawable.button_selected)
                   binding.llPrint.setTextColor(resources.getColor(R.color.white))*/
 
+                isPrint = true
+
                 binding.llEmail.background =
                     resources.getDrawable(R.drawable.background_square_border_grey)
                 binding.llEmail.setTextColor(resources.getColor(R.color.txtColor))
@@ -1021,6 +1065,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     }
 
     private fun customerPrintWholeOrder(shouldCheckForAutoPrinting: Boolean) {
+        isPrint = false
 
         var guestPos = requireArguments().getInt(GUEST_POSITION)
         LogUtil.logE(TAG, "getGuestPosition  ${guestPos}")
@@ -4792,7 +4837,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 SunmiPrinterApi.getInstance().lineWrap(1)
             }
             if (customerSettingModel.showOrderType) {
-                getDineInOrderDetails?.orderTypeName?.trim()?.let { PrintSunmiUtils.printOrderType(it) }
+                getDineInOrderDetails?.orderTypeName?.trim()
+                    ?.let { PrintSunmiUtils.printOrderType(it) }
                 SunmiPrinterApi.getInstance().lineWrap(1)
             }
 
@@ -6008,7 +6054,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             when (it.status) {
                 Status.SUCCESS -> {
                     ProgressUtils.dismissProgressDialog()
-                    if (it.data != null) {
+                    if (it.data != null && isPrint == true) {
 
 
                         Log.e(TAG, "CheckORderRypoe ${prefProvider.getValue(ORDER_TYPE, "")}")
@@ -6019,6 +6065,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         } else {
                             getCustomerPrinters(true)
                         }
+
+
 
 
                         if (!prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)) {
@@ -6155,6 +6203,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                 }
                             }
                         }
+
+
 
 
                         pd.dismiss()
@@ -6320,7 +6370,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             when (it.status) {
                 Status.SUCCESS -> {
                     ProgressUtils.dismissProgressDialog()
-                    if (it.data != null) {
+                    if (it.data != null && isPrint == true) {
                         val customerList = it.data
 
                         if (autoPrintCheck) {
@@ -6355,6 +6405,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                             }
                         }
+
+                        isPrint = false
 
 
                     }
@@ -9902,7 +9954,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 receiptModel?.order?.orderType.equals("OnlineWebOrder", true) ||
                 receiptModel?.order?.orderType.equals("Online Order", true) ||
                 receiptModel?.order?.orderType.equals("OnlineOrder", true)
-            ){
+            ) {
                 SunmiPrinterApi.getInstance().lineWrap(1)
                 receiptModel?.order?.deliveryType?.let { PrintSunmiUtils.deliveryType(it) }
                 SunmiPrinterApi.getInstance().lineWrap(1)

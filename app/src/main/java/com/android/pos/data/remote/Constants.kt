@@ -364,6 +364,7 @@ object Constants {
     const val TIME_DETAILS = "time_details"
 
     const val CUSTOMER_SIGN_REQUIRED_ON_CD = "customer_sign_required_on_cd"
+    const val SHOW_CASH_CREDIT_PRICE_ON_CUSTOMER_DISPLAY = "show_cash_credit_price_on_customer_display"
 
 
     fun createRequestModelForUpdatePritnerType(

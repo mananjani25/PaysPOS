@@ -27,6 +27,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private lateinit var itemAdapter: DineInTableItemAdapter
     private lateinit var listner: DineInTableListner
     private val TAG = "DineInTableAdapter"
+    private var isAnyPaymentDone : Boolean = false
 
 
     fun setListner(listner: DineInTableListner) {
@@ -85,12 +86,23 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             var isAllFired = true
             var noItem = true
             var guestSubTotal = 0.0
+            var guestSubTotalWithOutCharges = 0.0
             var totalTaxAmt: Double = 0.0
 
             if (list[position].title?.trim()?.lowercase() == "Whole Table".trim().lowercase()) {
                 binding.imgPrint.visibility = View.INVISIBLE
             } else {
                 binding.imgPrint.visibility = View.VISIBLE
+            }
+
+            if (list[position].title?.trim()?.lowercase() == "Whole Table".trim().lowercase() || isAnyPaymentDone) {
+                binding.removeGuest.visibility = View.INVISIBLE
+            } else {
+                if(list[position].itemsCount == 0 && !list[position].isPaid) {
+                    binding.removeGuest.visibility = View.VISIBLE
+                } else {
+                    binding.removeGuest.visibility = View.INVISIBLE
+                }
             }
             var guestDiscount = 0.0
 
@@ -103,12 +115,13 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                             guestDiscount += it.discountPrice
                             guestAmt += (it.itemQuantity * it.price) - it.discountPrice
                             guestSubTotal += (it.itemQuantity * it.price) - it.discountPrice
+                            guestSubTotalWithOutCharges += (it.itemQuantity * it.price) - it.discountPrice
                             if (it.modifiers.isNotEmpty()) {
                                 it.modifiers.forEach { it ->
 
                                     guestAmt += (it.itemQuantity * it.price)
                                     guestSubTotal += (it.itemQuantity * it.price)
-
+                                    guestSubTotalWithOutCharges += (it.itemQuantity * it.price)
                                 }
                             }
 
@@ -281,8 +294,13 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
             var guestOrderDisShare = 0.0
             if (list.get(0).orderDiscount > 0) {
-                guestOrderDisShare =
-                    MethodUtils.roundOffAmountDouble(list[0].orderDiscount / (list[0].totalGuestCount))
+
+                guestOrderDisShare = MethodUtils.roundOffAmountDouble(
+                   MethodUtils.percentageCalculation(MethodUtils.roundOffAmountDouble(guestSubTotalWithOutCharges +
+                           list.get(0).wholeTableSubTotal), list[0].orderDiscountPercentage))
+
+//                guestOrderDisShare =
+//                    MethodUtils.roundOffAmountDouble(list[0].orderDiscount / (list[0].totalGuestCount))
                 /*  guestOrderDisShare =
                       (finalAmt * list.get(0).orderDiscount) / (list.get(0).orderTotalAmount + list.get(0).orderDiscount)*/
 
@@ -414,7 +432,9 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
             }
 
-
+            binding.removeGuest.setOnClickListener {
+                listner.onRemoveGuest(layoutPosition)
+            }
         }
 
         init {
@@ -709,7 +729,8 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     }
 
-    fun setList(list: ArrayList<DineInModel>) {
+    fun setList(list: ArrayList<DineInModel>, isAnyPaymentDone: Boolean = false) {
+        this.isAnyPaymentDone = isAnyPaymentDone
         this.list = list
         notifyDataSetChanged()
     }
@@ -741,6 +762,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             serviceChargeGuest: Double,
             divideDiscount: Double
         )
+        fun onRemoveGuest(position: Int)
     }
 
     fun getList(): List<DineInModel> {
@@ -790,17 +812,19 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     fun updateStatus(clickedPos: Int, isFireAll: Boolean) {
         if (isFireAll) {
-            list.forEach {
-                if (it.isHeader == 1) {
-                    it.item?.isFired = true
-
-                } else {
-                    it.isFired = true
+            if(list.isNotEmpty()) {
+                list.forEach {
+                    if (it.isHeader == 1) {
+                        it.item?.isFired = true
+                    } else {
+                        it.isFired = true
+                    }
                 }
             }
         } else {
-
-            list[clickedPos].item?.isFired = true
+            if(list.isNotEmpty() && clickedPos < list.size){
+                list[clickedPos].item?.isFired = true
+            }
         }
         notifyDataSetChanged()
     }

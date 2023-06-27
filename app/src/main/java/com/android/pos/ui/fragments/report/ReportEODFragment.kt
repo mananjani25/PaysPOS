@@ -258,6 +258,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
     }
 
     private fun generateEODReport() {
+        Log.d("BIS-685", "generateEODReport: Called")
         customerList.forEach {
             if (it.status) {
                 initPrinter(it)
@@ -267,7 +268,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
     }
 
     private fun initPrinter(customerReceiptPrinters: PrinterResponse.Data.CustomerReceiptPrinters) {
-
+        Log.d("BIS-685", "initPrinter: Called")
 
         if (customerReceiptPrinters.name.startsWith(SUNMI_PRINTER, true)) {
 
@@ -416,6 +417,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
     }
 
     private fun createReportFormatEOD(customerReceiptPrinters: PrinterResponse.Data.CustomerReceiptPrinters) {
+        Log.d("BIS-685", "createReportFormatEOD: Called")
         var builder: Builder? = null
         try {
 
@@ -1693,6 +1695,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
     }
 
     private fun createReportFormatEODSunmi(customerReceiptPrinters: PrinterResponse.Data.CustomerReceiptPrinters) {
+        Log.d("BIS-685", "createReportFormatEODSunmi: Called")
         try {
 
 
@@ -2137,7 +2140,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     private fun createReportFormatEODSunmiInner(customerReceiptPrinters: PrinterResponse.Data.CustomerReceiptPrinters) {
         try {
-
+            Log.d("BIS-685", "createReportFormatEODSunmiInner: Called")
 
             if (prefProvider?.getValue(
                     Constants.VENUE_LOGO,

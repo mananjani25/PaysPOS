@@ -642,6 +642,7 @@
 
     <string name="cancel">Cancel</string>
     <string name="assign_customer">Assign Customer</string>
+    <string name="remove_guest">Remove Guest</string>
     <string name="tv_choose_photo">Choose Photo</string>
     <string name="_201_555_0123">Mobile Number<font color='#E90C0C'>*</font></string>
     <string name="mobile_number">Mobile Number</string>
@@ -849,8 +850,11 @@
     <string name="search_by_order_id_employee_customer_name">Search by Order id, employee, customer name</string>
     <string name="search_by_customer_name_order_id_receipt_id_amount">Search by employee name/customer name/order id/receipt id/$ amount</string>
     <string name="serving_efficiency">Serving Efficiency</string>
+    <string name="guests_having_order_items_cannot_be_removed">Guests having order items cannot be removed.</string>
+    <string name="minimum_one_guest_is_required">Minimum one guest is required</string>
     <string name="order_total">Order Total</string>
     <string name="cash">Cash</string>
+    <string name="minimum_guest_count_should_be_one">Minimum guest count should be 1</string>
     <string name="lbl_purchase_gift_card">Purchase Gift Card</string>
     <string name="lbl_select_gift_card">Select Gift Card:</string>
     <string name="lbl_digital_gift_card">Digital Gift Card</string>

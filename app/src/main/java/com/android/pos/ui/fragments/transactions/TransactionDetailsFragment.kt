@@ -492,7 +492,7 @@ class TransactionDetailsFragment : Fragment() {
                 Constants.TSYS_GATEWAY == magtekRequestUtils.gatewayName() -> {
 
                     jsonArray = model.transactionOutput.transactionID.let { it1 ->
-                        refundAmount.let {
+                        paymentDetailsResponse.data.amount.let {
                             magtekRequestUtils.processReferenceIDTSYSCapture(
                                 it,
                                 model.customerTransactionID ?: "",
@@ -622,7 +622,7 @@ class TransactionDetailsFragment : Fragment() {
 
 
                     jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
-                        refundAmount.let {
+                        paymentDetailsResponse.data.amount.let {
                             magtekRequestUtils.processReferenceIDTSYSCapture(
                                 it,
                                 model.customerTransactionID ?: "",

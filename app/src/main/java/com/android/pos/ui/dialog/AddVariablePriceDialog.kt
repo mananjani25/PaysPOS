@@ -1,39 +1,28 @@
 package com.android.pos.ui.dialog
 
-import android.annotation.SuppressLint
-import android.graphics.Color
 import android.graphics.Point
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.InsetDrawable
 import android.os.Bundle
-import android.text.Editable
 import android.text.TextUtils
-import android.text.TextWatcher
-import android.util.Log
-import android.view.*
+import android.view.Display
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.Window
+import android.view.WindowManager
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
-import com.android.pos.data.entities.TbDiscount
-import com.android.pos.data.entities.TbItem
 import com.android.pos.data.entities.VariationsAttribute
-import com.android.pos.data.remote.Constants.AMOUNT
 import com.android.pos.data.remote.Constants.DIALOG_KEY_VARIATION_DETAILS
-import com.android.pos.data.remote.Constants.PERCENTAGE
-import com.android.pos.databinding.DailogAddDiscountBinding
 import com.android.pos.databinding.DailogAddVariablePriceBinding
-import com.android.pos.ui.adapter.DialogDiscountListAdapter
-import com.android.pos.ui.fragments.settings.discount.DiscountListViewModel
 import com.android.pos.utils.AmountTextWatcher
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.extensions.setNavigationResult
-import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
-import java.text.NumberFormat
-import java.util.*
 
 @AndroidEntryPoint
 class AddVariablePriceDialog : DialogFragment() {
@@ -93,23 +82,23 @@ class AddVariablePriceDialog : DialogFragment() {
 
         }
 
-        binding.llKeypad.txt10.text = "10$"
-        binding.llKeypad.txt20.text = "20$"
-        binding.llKeypad.txt30.text = "30$"
+        binding.llKeypad.txt10.text = "$10"
+        binding.llKeypad.txt20.text = "$20"
+        binding.llKeypad.txt30.text = "$30"
 
         binding.llKeypad.txt10.setOnClickListener {
             val price = binding.llKeypad.txt10.text.toString().trim()
-                .substring(0, binding.llKeypad.txt10.text.toString().length - 1).toDouble()
+                .substring(1, binding.llKeypad.txt10.text.toString().length).toDouble()
             binding.edtAmount.setText(MethodUtils.roundOffAmountString(price))
         }
         binding.llKeypad.txt20.setOnClickListener {
             val price = binding.llKeypad.txt20.text.toString().trim()
-                .substring(0, binding.llKeypad.txt20.text.toString().length - 1).toDouble()
+                .substring(1, binding.llKeypad.txt20.text.toString().length ).toDouble()
             binding.edtAmount.setText(MethodUtils.roundOffAmountString(price))
         }
         binding.llKeypad.txt30.setOnClickListener {
             val price = binding.llKeypad.txt30.text.toString().trim()
-                .substring(0, binding.llKeypad.txt30.text.toString().length - 1).toDouble()
+                .substring(1, binding.llKeypad.txt30.text.toString().length ).toDouble()
             binding.edtAmount.setText(MethodUtils.roundOffAmountString(price))
         }
     }

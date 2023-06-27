@@ -3493,6 +3493,10 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     }
 
+    override fun onRemoveGuest(position: Int) {
+        TODO("Not yet implemented")
+    }
+
     override fun onTabSelected(pos: Int) {
 
         val listCategories = categoryItemAdapter1?.list
