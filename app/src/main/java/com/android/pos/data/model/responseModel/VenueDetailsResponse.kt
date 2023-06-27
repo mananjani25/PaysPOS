@@ -118,6 +118,8 @@ data class VenueDetailsResponse(
         val time_zone_options: List<TbTimeZones>,
         @SerializedName("customer_sign_required_on_cd")
         val customer_sign_required_on_cd: Boolean,
+        @SerializedName("show_cash_credit_price_on_customer_display")
+        val show_cash_credit_price_on_customer_display: Boolean
     ) {
         data class Printer(
             @SerializedName("customer_receipt_printers")

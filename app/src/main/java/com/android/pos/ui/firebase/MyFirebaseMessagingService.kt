@@ -33,7 +33,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     lateinit var prefProvider: PrefProvider
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
-        LogUtil.logEN(TAG, "From: ${remoteMessage.data}")
+        Log.e(TAG, "From: ${remoteMessage.data}")
 
         prefProvider = PrefProvider(this)
         if (remoteMessage.data.isNotEmpty()) {

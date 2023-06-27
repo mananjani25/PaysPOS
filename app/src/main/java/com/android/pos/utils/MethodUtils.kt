@@ -172,10 +172,10 @@ class MethodUtils {
              }*/
 
         fun roundOffAmountDouble(price: Double?): Double {
-            if (price != null)
-                return getTwoDecimal(price)
+            return if (price != null)
+                getTwoDecimal(price)
             else
-                return String.format("%.2f", price).toDouble()
+                String.format("%.2f", price).toDouble()
         }
 
         /* fun roundOffAmountString(price: Double): String {
@@ -434,7 +434,11 @@ class MethodUtils {
         }
 
         fun calculatePercentageFromAmount(amount: Double, total: Double): Double {
-            return (amount / total) * 100
+            return if(((amount / total) * 100).isNaN()) {
+                0.0
+            } else {
+                (amount / total) * 100
+            }
         }
 
         @SuppressLint("SetTextI18n")
@@ -601,17 +605,34 @@ class MethodUtils {
         fun getTwoDecimal(value: Double): Double {
 
             try {
-                var tmp = value.toString()
-                var tmpIndex = tmp.indexOf(".", 0, true)
-                if (tmp.length > tmpIndex + 3) {
-
-
-                    return String.format("%.2f", value).toDouble()
-
+                val tmp = value.toString()
+                val tmpIndex = tmp.indexOf(".", 0, true)
+                return if (tmp.length > tmpIndex + 3) {
+                    String.format("%.2f", value).toDouble()
                 } else {
+                    String.format("%.2f", value).toDouble()
+                }
+            } catch (e: java.lang.Exception) {
+                Log.e("CheckDecCrash", "checkData ${e.message}")
+                return value
+            }
 
-                    return String.format("%.2f", value).toDouble()
 
+        }
+
+        fun getTwoDecimalWithZero(value: Double): Double {
+
+            Log.e("getTwoDecimalWithZero",""+value)
+            try {
+                val tmp = value.toString()
+                val tmpIndex = tmp.indexOf(".", 0, true)
+                Log.e("getTwoDecimalWithZero",""+tmpIndex)
+                return if (tmp.length == tmpIndex+2) {
+                    Log.e("getTwoDecimalWithZero",""+value.toPrecision(2) as Double)
+                    value.toPrecision(2) as Double
+                    //String.format("%.2f", value).toDouble()
+                } else {
+                    String.format("%.2f", value).toDouble()
                 }
             } catch (e: java.lang.Exception) {
                 Log.e("CheckDecCrash", "checkData ${e.message}")

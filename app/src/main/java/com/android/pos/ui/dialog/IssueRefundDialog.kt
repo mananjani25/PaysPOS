@@ -29,6 +29,7 @@ import com.android.pos.ui.fragments.transactions.TransactionDetailsViewModel
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
+import com.android.pos.utils.MethodUtils.Companion.toPrecision
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.NumberFormat
 import java.util.*
@@ -217,6 +218,9 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                         getString(R.string.msg_amount_refund)
                     )
                 } else {
+
+                  //  val totalAmountRefund = binding.edtAmount.text.toString().toDouble()
+
                     subTotalPrice = binding.edtAmount.text.toString().toDouble()
                     refundData = RefundRequestModel().apply {
                         paymentRefund = RefundRequestModel.PaymentRefund().apply {
@@ -235,6 +239,8 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                             subtotal_refunded = paymentOrderDetailsResponse.data.sub_total
                         }
                     }
+
+
 
                     val bundle = Bundle().apply {
                         putParcelable("refundData", refundData)
@@ -382,7 +388,10 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                             val itemTaxPrice =
                                 (tax.rate * totalPrice) / 100
                             Log.e("itemTaxPrice", "" + itemTaxPrice)
-                            itemTaxPrice
+
+                            String.format("%.2f", itemTaxPrice)
+                                .toDouble()
+
                         }
 
                     } else {

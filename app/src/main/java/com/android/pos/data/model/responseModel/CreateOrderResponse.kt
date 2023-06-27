@@ -150,6 +150,7 @@ data class CreateOrderResponse(
                     @SerializedName("item_type") var itemType: String,
                     @SerializedName("timestamp") var timestamp: String,
                     @SerializedName("is_fired") var is_fired: Boolean,
+                    @SerializedName("sort") var sort: Int? = null,
 
 
                     ) : Parcelable

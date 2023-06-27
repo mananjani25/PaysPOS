@@ -9,10 +9,12 @@ import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.ViewItemCartCustomerDisplayBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.CartItemModifierAdapter
+import com.android.pos.ui.adapter.CartItemModifierAdapterForCustomerDisplay
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.callback.MyCallback
 import com.android.pos.utils.extensions.gone
+import com.android.pos.utils.extensions.strike
 import com.android.pos.utils.extensions.visible
 import com.google.gson.Gson
 
@@ -33,13 +35,14 @@ class CartAdapterCustomerDisplay : RecyclerView.Adapter<CartAdapterCustomerDispl
 
         fun bind(item: TbItem, pos: Int) {
             prefProvider = PrefProvider(itemView.context)
+            val showCashCreditPrice = prefProvider.getValueboolean(Constants.SHOW_CASH_CREDIT_PRICE_ON_CUSTOMER_DISPLAY, false)
             LogUtil.logE(TAG, "itemprice:  ${item.price}")
             binding.txtName.text = item.name
             binding.txtQuantity.text = "x" + item.itemQuantity
             binding.txtEachQntPrice.text = MethodUtils.roundOffAmount((item.price))
             MethodUtils.setPriceTextView(binding.txtEachQntPrice, totalEachPrice(item))
 
-            if (MethodUtils.isEnableCashDiscount(itemView.context)) {
+            if (MethodUtils.isEnableCashDiscount(itemView.context) && showCashCreditPrice) {
                 binding.txtTotalPrice.gone()
                 binding.txtCashAmount.visible()
                 binding.txtCardAmount.visible()
@@ -76,8 +79,7 @@ class CartAdapterCustomerDisplay : RecyclerView.Adapter<CartAdapterCustomerDispl
             }
 
             if (item.discountPrice != 0.0) {
-                binding.tvDiscountRate.visibility = View.VISIBLE
-                //binding.txtTotalPrice.strike = true
+
                 var dPrice = 0.0
                 var total_price_fordiscount = 0.0
                 total_price_fordiscount += item.price * item.itemQuantity
@@ -88,11 +90,49 @@ class CartAdapterCustomerDisplay : RecyclerView.Adapter<CartAdapterCustomerDispl
                 }
                 dPrice = total_price_fordiscount - (item.discountPrice * item.itemQuantity)
 
-                MethodUtils.setPriceTextView(binding.tvDiscountRate, dPrice)
+                binding.lnrDiscountRates?.visibility = View.VISIBLE
+                if (MethodUtils.isEnableCashDiscount(itemView.context) && showCashCreditPrice) {
+                    binding.txtCashAmount.strike = true
+                    binding.tvCashDiscountRate?.visible()
+                    binding.txtCardAmount.strike = true
+                    binding.tvCardDiscountRate?.visible()
+
+                    binding.tvDiscountRate.gone()
+
+                    val cashOrSurchargeAmount = MethodUtils.calculateCashDiscount(
+                        dPrice,
+                        prefProvider,
+                        itemView.context
+                    )
+
+                    if (prefProvider.getValue(
+                            Constants.OPTION_TYPE,
+                            "CashDiscount"
+                        ) == "CashDiscount"
+                    ) {
+                        MethodUtils.setPriceTextView(binding.tvCashDiscountRate!!, dPrice - cashOrSurchargeAmount)
+                        MethodUtils.setPriceTextView(binding.tvCardDiscountRate!!, dPrice)
+                    }else{
+                        MethodUtils.setPriceTextView(binding.tvCashDiscountRate!!, dPrice)
+                        MethodUtils.setPriceTextView(binding.tvCardDiscountRate!!, dPrice + cashOrSurchargeAmount)
+                    }
+
+                }else{
+                    binding.txtTotalPrice.strike = true
+                    binding.tvDiscountRate.visible()
+
+                    binding.tvCashDiscountRate?.gone()
+                    binding.tvCardDiscountRate?.gone()
+
+                    MethodUtils.setPriceTextView(binding.tvDiscountRate, dPrice)
+                }
+
+
+
+
+
             } else {
-                //binding.txtTotalPrice.strike = false
-                binding.tvDiscountRate.text = ""
-                binding.tvDiscountRate.visibility = View.GONE
+                binding.lnrDiscountRates?.visibility = View.GONE
 
             }
 
@@ -105,7 +145,7 @@ class CartAdapterCustomerDisplay : RecyclerView.Adapter<CartAdapterCustomerDispl
 
             if (item.modifiers.isNotEmpty()) {
                 binding.rvModifiers.visibility = View.VISIBLE
-                val adapter = CartItemModifierAdapter()
+                val adapter = CartItemModifierAdapterForCustomerDisplay()
                 binding.rvModifiers.adapter = adapter
                 LogUtil.logE(TAG, "dineinMod  ${Gson().toJson(item.modifiers)}")
                 adapter.addAll(item.modifiers)

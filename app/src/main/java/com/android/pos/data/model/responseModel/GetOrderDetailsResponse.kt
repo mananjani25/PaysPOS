@@ -299,6 +299,9 @@ data class GetOrderDetailsResponse(
             var isChecked: Boolean = false,
             @SerializedName("order_item_variation")
             val order_item_variation: OrderItemVariationAttribute?,
+            @SerializedName("sort")
+            val sort: Int = 0
+
         ) : Parcelable {
 
             @Parcelize

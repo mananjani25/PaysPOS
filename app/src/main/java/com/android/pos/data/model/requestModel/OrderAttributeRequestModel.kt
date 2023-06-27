@@ -48,6 +48,9 @@ class OrderAttributeRequestModel {
     @SerializedName("open_order_type")
     var openOrderType: String = ""
 
+    @SerializedName("order_type_name")
+    var orderTypeName: String = ""
+
     @SerializedName("order_items_attributes")
     var orderItemsAttributes: List<OrderItemsAttribute> = emptyList()
 
@@ -341,6 +344,9 @@ class OrderItemsAttribute {
 
     @SerializedName("is_fired")
     var isFired: Boolean = false
+
+    @SerializedName("sort")
+    var sort: Int? = null
 }
 
 class OrderItemTaxesAttribute {

@@ -72,6 +72,8 @@ class CreateCategory : Fragment() {
             viewModel.categoryData(categoryData!!)
             viewModel.isEditData(isEdit, categoryData!!.id)
 
+            // Disabled Default Category name edit
+            binding.etCategoryName.isEnabled = categoryData!!.name != "Default Category"
             //load image from edit
             viewProfile(categoryData!!.thumbImgUrl)
         } else {

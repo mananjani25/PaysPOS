@@ -27,6 +27,7 @@ import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
+import com.android.pos.data.remote.Constants.PHONE_ORDER
 import com.android.pos.data.remote.Constants.SHIPPING_ADDRESS
 import com.android.pos.data.remote.Constants.SUNMI_INNER_PRINTER
 import com.android.pos.data.remote.Constants.SUNMI_PRINTER
@@ -469,6 +470,7 @@ class TransactionDetailsFragment : Fragment() {
 
                     networkCall(jsonArray, 0)
                 }
+
                 Constants.HEARTLAND_GATEWAY == magtekRequestUtils.gatewayName() -> {
 
                     val amount = paymentDetailsResponse.data.amount.plus(refundAmount)
@@ -486,10 +488,11 @@ class TransactionDetailsFragment : Fragment() {
                     }
                     networkCall(jsonArray, 1)
                 }
+
                 Constants.TSYS_GATEWAY == magtekRequestUtils.gatewayName() -> {
 
                     jsonArray = model.transactionOutput.transactionID.let { it1 ->
-                        refundAmount.let {
+                        paymentDetailsResponse.data.amount.let {
                             magtekRequestUtils.processReferenceIDTSYSCapture(
                                 it,
                                 model.customerTransactionID ?: "",
@@ -596,6 +599,7 @@ class TransactionDetailsFragment : Fragment() {
 
                     networkCall(jsonArray, 0)
                 }
+
                 Constants.HEARTLAND_GATEWAY == magtekRequestUtils.gatewayName() -> {
 
                     val amount = paymentDetailsResponse.data.amount.plus(refundAmount)
@@ -613,11 +617,12 @@ class TransactionDetailsFragment : Fragment() {
                     }
                     networkCall(jsonArray, 1)
                 }
+
                 Constants.TSYS_GATEWAY == magtekRequestUtils.gatewayName() -> {
 
 
                     jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
-                        refundAmount.let {
+                        paymentDetailsResponse.data.amount.let {
                             magtekRequestUtils.processReferenceIDTSYSCapture(
                                 it,
                                 model.customerTransactionID ?: "",
@@ -1011,11 +1016,13 @@ class TransactionDetailsFragment : Fragment() {
                     Status.SUCCESS -> {
                         ProgressUtils.dismissProgressDialog()
                     }
+
                     Status.ERROR -> {
                         ProgressUtils.dismissProgressDialog()
                         binding.root.showAlert(resource.message)
 
                     }
+
                     Status.LOADING -> {
                         ProgressUtils.showProgressDialog(requireActivity())
                     }
@@ -1101,11 +1108,13 @@ class TransactionDetailsFragment : Fragment() {
                         }
                     }
                 }
+
                 Status.ERROR -> {
 
                     ProgressUtils.dismissProgressDialog()
 
                 }
+
                 Status.LOADING -> {
                     ProgressUtils.showProgressDialog(requireActivity())
 
@@ -1280,9 +1289,9 @@ class TransactionDetailsFragment : Fragment() {
                     Builder.COLOR_1
                 )
 
-                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE,false)){
+                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
                     builder.addText("OrderID:" + paymentDetailsResponse.data.custom_order_id)
-                }else{
+                } else {
                     builder.addText("OrderID:" + paymentDetailsResponse.data.order_id)
                 }
 
@@ -1335,7 +1344,7 @@ class TransactionDetailsFragment : Fragment() {
 
             addBuilderText(builder, prefProvider.getValue(Constants.BUSINESS_NAME, "").toString())
 
-            if(customerSettingModel.showVenueAddress) {
+            if (customerSettingModel.showVenueAddress) {
                 builder.addFeedLine(1)
                 builder.addTextFont(Builder.FONT_E)
                 builder.addTextAlign(Builder.ALIGN_CENTER)
@@ -1356,7 +1365,7 @@ class TransactionDetailsFragment : Fragment() {
                         .toString()
                 )
             }
-            if(customerSettingModel.showVenuePhone) {
+            if (customerSettingModel.showVenuePhone) {
                 builder.addFeedLine(1)
 
                 builder.addTextFont(Builder.FONT_E)
@@ -1379,7 +1388,7 @@ class TransactionDetailsFragment : Fragment() {
             }
 
 
-            if(customerSettingModel.showWebsiteAddress) {
+            if (customerSettingModel.showWebsiteAddress) {
                 paymentDetailsResponse?.data?.order?.venue_website?.let {
                     builder.addFeedLine(1)
 
@@ -1412,6 +1421,28 @@ class TransactionDetailsFragment : Fragment() {
                 builder.addTextAlign(Builder.ALIGN_CENTER)
 
                 builder.addText(paymentDetailsResponse.data.order.order_type_name + "\n")
+            }
+
+            if (paymentDetailsResponse.data?.order?.order_type.equals(PHONE_ORDER, true) ||
+                paymentDetailsResponse.data?.order?.order_type.equals("OnlineWebOrder", true) ||
+                paymentDetailsResponse.data?.order?.order_type.equals("Online Order", true) ||
+                paymentDetailsResponse.data?.order?.order_type.equals("OnlineOrder", true)
+            ) {
+                builder.addFeedLine(1)
+
+                builder.addTextFont(Builder.FONT_E)
+
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(2, 2)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+
+                builder.addText(paymentDetailsResponse.data.order.delivery_type + "\n")
             }
 
             if (customerSettingModel.fonts == Constants.LARGE) {
@@ -1809,7 +1840,8 @@ class TransactionDetailsFragment : Fragment() {
 
 
             if (paymentDetailsResponse.data?.cash_discount_or_surcharge != null && paymentDetailsResponse.data?.cash_discount_or_surcharge != 0.0
-                && customerSettingModel.showCashDisSurCharg) {
+                && customerSettingModel.showCashDisSurCharg
+            ) {
 
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
@@ -2491,9 +2523,9 @@ class TransactionDetailsFragment : Fragment() {
             SunmiPrinterApi.getInstance().printerInit()
 
             if (customerSettingModel.showOrderIdTop) {
-                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE,false)){
+                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
                     PrintSunmiUtils.orderIdLarge("OrderID:" + paymentDetailsResponse.data.custom_order_id)
-                }else{
+                } else {
                     PrintSunmiUtils.orderIdLarge("OrderID:" + paymentDetailsResponse.data.order_id)
                 }
                 SunmiPrinterApi.getInstance().lineWrap(1)
@@ -2528,8 +2560,17 @@ class TransactionDetailsFragment : Fragment() {
                 SunmiPrinterApi.getInstance().lineWrap(1)
             }
             SunmiPrinterApi.getInstance().lineWrap(1)
-            if(customerSettingModel.showOrderType) {
+            if (customerSettingModel.showOrderType) {
                 PrintSunmiUtils.printOrderType(paymentDetailsResponse.data.order.order_type_name.trim())
+                SunmiPrinterApi.getInstance().lineWrap(1)
+            }
+
+            if (paymentDetailsResponse.data.order.order_type.equals(PHONE_ORDER, true) ||
+                paymentDetailsResponse.data.order.order_type.equals("OnlineWebOrder", true) ||
+                paymentDetailsResponse.data.order.order_type.equals("Online Order", true) ||
+                paymentDetailsResponse.data.order.order_type.equals("OnlineOrder", true)
+            ){
+                PrintSunmiUtils.printOrderType(paymentDetailsResponse.data.order.delivery_type.trim())
                 SunmiPrinterApi.getInstance().lineWrap(1)
             }
 
@@ -2733,7 +2774,7 @@ class TransactionDetailsFragment : Fragment() {
                     PrintSunmiUtils.surCharge(surCharge)
 
 
-                } else if (paymentDetailsResponse?.data?.payment_type.lowercase() == "Cash".lowercase() && paymentDetailsResponse?.data?.cash_discount_type.lowercase() == "CashDiscount".lowercase()){
+                } else if (paymentDetailsResponse?.data?.payment_type.lowercase() == "Cash".lowercase() && paymentDetailsResponse?.data?.cash_discount_type.lowercase() == "CashDiscount".lowercase()) {
 
 
                     val cashDisc = padLine(
@@ -2971,9 +3012,9 @@ class TransactionDetailsFragment : Fragment() {
             SunmiPrintHelper.getInstance().initPrinter()
 
             if (customerSettingModel.showOrderIdTop) {
-                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE,false)){
+                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
                     PrintSunmiUtils.headerText("OrderID:" + paymentDetailsResponse.data.custom_order_id)
-                }else{
+                } else {
                     PrintSunmiUtils.headerText("OrderID:" + paymentDetailsResponse.data.order_id)
                 }
             }
@@ -3008,8 +3049,17 @@ class TransactionDetailsFragment : Fragment() {
                 SunmiPrintHelper.getInstance().lineWrap(1)
             }
 
-            if(customerSettingModel.showOrderType) {
+            if (customerSettingModel.showOrderType) {
                 PrintSunmiUtils.headerText(paymentDetailsResponse.data.order.order_type_name.trim())
+            }
+
+            if (paymentDetailsResponse.data.order.order_type.trim()
+                    .equals("Online Order", true) ||
+                paymentDetailsResponse.data.order.order_type.trim()
+                    .equals("OnlineWebOrder", true) ||
+                paymentDetailsResponse.data.order.order_type.trim().equals(PHONE_ORDER, true)
+            ) {
+                PrintSunmiUtils.headerText(paymentDetailsResponse.data.order.delivery_type)
             }
 
 

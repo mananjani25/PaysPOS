@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.core.os.bundleOf
 import androidx.fragment.app.*
 import androidx.navigation.fragment.findNavController
@@ -87,6 +88,17 @@ class PaymentBoldPosFragment : Fragment() {
     ): View? {
         binding = FragmentPaymentBoldPosBinding.inflate(inflater, container, false)
         prefProvider.setValueboolean(Constants.IS_PAYMENT_SCREEN, true)
+        val onBackPressedCallback: OnBackPressedCallback =
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    onBackPress()
+                }
+
+            }
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            onBackPressedCallback
+        )
         binding.layoutHeaderCheckout.rlRoot.visibility = View.VISIBLE
         binding.lifecycleOwner = this
         isFromActiveOrder = arguments?.getBoolean("isFromActiveOrder") ?: false
@@ -158,9 +170,11 @@ class PaymentBoldPosFragment : Fragment() {
                     )
                     guestRequestModel = requireArguments().getParcelable("model")
                     viewModel.setGuestPay(true)
-                    presentation.show()
-                    presentation.onDisplayChanged()
-                    presentation.setGuestPay(true, model)
+                    if(this::presentation.isInitialized){
+                        presentation.show()
+                        presentation.onDisplayChanged()
+                        presentation.setGuestPay(true, model)
+                    }
 
                     prefProvider.setValue(SPLIT_DINEIN_MODEL, Gson().toJson(model))
                     loadCartFragment(CartFragment(null, null, true, model, true))
@@ -289,21 +303,33 @@ class PaymentBoldPosFragment : Fragment() {
 
         }
         binding.layoutHeaderCheckout.imgDrawer.setOnClickListener {
-            Log.d(TAG, "onViewCreated: " + prefProvider.getValueboolean(SPLIT_ENABLE, false))
-            if (prefProvider.getValueboolean(Constants.SPLIT_ENABLE, false)) {
-                AlertUtils.showCustomAlert(requireContext(), "Please complete all payment.")
-            } else {
-                if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == OPEN_ORDER) {
-                    val navController = findNavController()
-                    var bundle: Bundle = Bundle()
-                    if (orderId != null) {
-                        bundle.putBoolean("update", true)
-                        bundle.putInt("orderId", orderId!!)
-                        bundle.putInt("paymentId", paymentId!!)
-                        bundle.putString("paymentOfflineId", paymentOfflineId)
-                        bundle.putString("orderOfflineId", orderOfflineId)
-                        var bundle1: Bundle = Bundle()
-                        bundle1.putBundle("updateBundle", bundle)
+            onBackPress()
+        }
+
+        listeners()
+        setFragmentResultListener(
+            "request_key_tips"
+        ) { requestKey: String, bundle: Bundle ->
+
+        }
+    }
+
+    private fun onBackPress(){
+        Log.d(TAG, "onViewCreated: " + prefProvider.getValueboolean(SPLIT_ENABLE, false))
+        if (prefProvider.getValueboolean(Constants.SPLIT_ENABLE, false)) {
+            AlertUtils.showCustomAlert(requireContext(), "Please complete all payment.")
+        } else {
+            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == OPEN_ORDER) {
+                val navController = findNavController()
+                var bundle: Bundle = Bundle()
+                if (orderId != null) {
+                    bundle.putBoolean("update", true)
+                    bundle.putInt("orderId", orderId!!)
+                    bundle.putInt("paymentId", paymentId!!)
+                    bundle.putString("paymentOfflineId", paymentOfflineId)
+                    bundle.putString("orderOfflineId", orderOfflineId)
+                    var bundle1: Bundle = Bundle()
+                    bundle1.putBundle("updateBundle", bundle)
 
                         navController.previousBackStackEntry?.savedStateHandle?.set(
                             "data", bundle1
@@ -322,14 +348,6 @@ class PaymentBoldPosFragment : Fragment() {
                         findNavController().popBackStack()
                     }
                 }
-
-            }
-        }
-
-        listeners()
-        setFragmentResultListener(
-            "request_key_tips"
-        ) { requestKey: String, bundle: Bundle ->
 
         }
     }
@@ -396,22 +414,26 @@ class PaymentBoldPosFragment : Fragment() {
     }
 
     private fun loadCategoryFragment(fragment: Fragment) {
-        val fm: FragmentManager = requireActivity().supportFragmentManager
+        try {
+            val fm: FragmentManager = requireActivity().supportFragmentManager
 
-        LogUtil.logE("orderId :: ", orderId.toString())
-        val bundle = Bundle().apply {
-            orderId?.let { putInt("orderId", it) }
-            putInt("paymentId", paymentId)
-            putString("orderOfflineId", orderOfflineId)
-            putString("paymentOfflineId", paymentOfflineId)
-            putString(REDIRECT_FROM, prefProvider.getValue(REDIRECT_FROM, ""))
+            LogUtil.logE("orderId :: ", orderId.toString())
+            val bundle = Bundle().apply {
+                orderId?.let { putInt("orderId", it) }
+                putInt("paymentId", paymentId)
+                putString("orderOfflineId", orderOfflineId)
+                putString("paymentOfflineId", paymentOfflineId)
+                putString(REDIRECT_FROM, prefProvider.getValue(REDIRECT_FROM, ""))
 
+            }
+            fragment.arguments = bundle
+            // fragment.arguments = arguments
+
+            fm.beginTransaction().replace(binding.frameLayout.id, fragment).commit()
+            // binding.frameLayout?.let { fm.beginTransaction().replace(it, fragment).commit() }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
-        fragment.arguments = bundle
-        // fragment.arguments = arguments
-
-        fm.beginTransaction().replace(binding.frameLayout.id, fragment).commit()
-        // binding.frameLayout?.let { fm.beginTransaction().replace(it, fragment).commit() }
     }
 
     fun removeCustomer() {

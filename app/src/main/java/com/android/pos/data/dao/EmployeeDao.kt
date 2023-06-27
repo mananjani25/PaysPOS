@@ -41,6 +41,6 @@ interface EmployeeDao {
     @Query("UPDATE TbEmployee SET isActive = :active WHERE  TbEmployee.id = :id")
     suspend fun activeEmployee(id: Int, active: Boolean?): Int
 
-    @Query("SELECT * FROM TbEmployee WHERE TbEmployee.email LIKE '%' || :query || '%' OR TbEmployee.name LIKE '%' || :query || '%' OR TbEmployee.phoneNumber LIKE '%' || :query || '%'")
+    @Query("SELECT * FROM TbEmployee WHERE TbEmployee.isDeleted = 0 and (TbEmployee.email LIKE '%' || :query || '%' OR TbEmployee.name LIKE '%' || :query || '%' OR TbEmployee.phoneNumber LIKE '%' || :query || '%')")
     fun getEmployeeSearchResults(query: String): LiveData<List<Employee>>
 }

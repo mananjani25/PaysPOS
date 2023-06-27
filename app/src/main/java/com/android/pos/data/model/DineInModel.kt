@@ -19,9 +19,11 @@ data class DineInModel(
     var customer: TbCustomer? = null,
     var isFired: Boolean = true,
     var isPaid: Boolean = false,
+    var isDestroy: Boolean = false,
     var guestDividedAmt: Double = 0.0,
     var wholeTableSubTotal: Double = 0.0,
     var orderDiscount: Double = 0.0,
+    var orderDiscountPercentage: Double = 0.0,
     var wholeTableSurTax: Double = 0.0,
     var wholeTableTax: Double = 0.0,
     var wholeTableDiscont: Double = 0.0,
@@ -37,7 +39,8 @@ data class DineInModel(
     var empName: String = "",
     var cashSurchargeDiscount: Double = 0.0,
     var orderTotalAmount: Double = 0.0,
-    var listOfItemsMoved: java.util.ArrayList<Int> = arrayListOf()
+    var listOfItemsMoved: java.util.ArrayList<Int> = arrayListOf(),
+    var itemsCount: Int = 0,
 
 ) : Parcelable {
 }

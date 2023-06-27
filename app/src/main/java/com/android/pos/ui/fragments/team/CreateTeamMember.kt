@@ -113,7 +113,7 @@ class CreateTeamMember : Fragment() {
             textView.textSize = 20f
             textView.setBackgroundColor(resources.getColor(R.color.btnColor))
             textView.setTextColor(Color.WHITE)
-            val builder = AlertDialog.Builder(requireContext(), R.style.CustomDialogTheme)
+            val builder = AlertDialog.Builder(requireContext(), R.style.CustomDialogTeamTheme)
             builder.setCustomTitle(textView)
             builder.setItems(
                 country_name.toArray(arrayOfNulls<String>(country_name.size))

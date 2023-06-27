@@ -52,6 +52,8 @@ class OnlineOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
             } else {
                 binding.tvOrderID.text = item.id.toString()
             }
+
+            binding.txtOrderType?.text = item.deliveryType
             if (item.futureDeliveryDate != null) {
                 val inputFormat = SimpleDateFormat("yyyy-MM-dd")
                 val outputFormat = SimpleDateFormat("MMM-dd-yyyy")
@@ -180,7 +182,7 @@ class OnlineOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
             }
             binding.root.setOnClickListener {
 
-                val item = filterList[bindingAdapterPosition]
+                val item = filterList[position]
 
                 if (item.isCheck) {
                     item.isCheck = false
