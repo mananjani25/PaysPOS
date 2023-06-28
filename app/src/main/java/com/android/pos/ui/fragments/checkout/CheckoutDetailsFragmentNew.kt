@@ -1940,13 +1940,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         binding.txtChargeGC.setOnSingleClickListener {
             val giftCardNumber = binding.edtGiftCardNumber.rawText.toString().trim()
-            val giftCardPin = binding.edtGiftCardPin.text.toString().trim()
 
             if (giftCardNumber.isEmpty() || giftCardNumber.length != 8) {
                 AlertUtils.showCustomAlert(requireContext(), "Please enter 8-digit gift card number")
-                return@setOnSingleClickListener
-            } else if(giftCardPin.isEmpty() || giftCardPin.length != 4){
-                AlertUtils.showCustomAlert(requireContext(), "Please enter 4-digit gift card PIN")
                 return@setOnSingleClickListener
             } else {
                 giftCardViewModel.giftCardCheckBalance(GiftCardCheckBalanceRequest(name = giftCardNumber))
@@ -2381,13 +2377,17 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     private fun setupTabDesign() {
 
         if(prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD){
+            PaymentBoldPosFragment.newInstance().addTipHideShow(true)
             binding.linearTab2.gone()
         } else {
+            PaymentBoldPosFragment.newInstance().addTipHideShow(false)
             binding.linearTab2.visible()
         }
 
         binding.linearTab1.setOnSingleClickListener {
-            PaymentBoldPosFragment.newInstance().addTipHideShow(false)
+            if(prefProvider.getValue(ORDER_TYPE, TAKEOUT) != GIFT_CARD) {
+                PaymentBoldPosFragment.newInstance().addTipHideShow(false)
+            }
             isSelectedCount = 1
             tipsetupGlobal(tipAmount, isSelectedCount)
             loadPaymentLayout()

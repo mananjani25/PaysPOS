@@ -892,6 +892,7 @@
                 android:layout_marginHorizontal="@dimen/_10sdp"
                 android:layout_marginTop="@dimen/_5sdp"
                 android:background="@drawable/background_square_border_grey"
+                android:visibility="gone"
                 android:orientation="horizontal"
                 android:padding="@dimen/_9sdp"
                 android:weightSum="4">
