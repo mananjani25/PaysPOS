@@ -129,6 +129,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     private var totalTax: Double = 0.0
     private var totalServiceCharge: Double = 0.0
     var totalGuestCount = 0
+    var eligibleGuestsForDivision = 0
     var divideCashDiscount = 0.0
     private var paymentAmount: Double = 0.0
     private var subTotalWT = 0.0
@@ -521,12 +522,13 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 prefProvider.setValue(Constants.ORDER_TYPE, DINE_IN)
 
                 var dividedOrderDiscount = 0.0
-                totalGuestCount = getOrderDetailsResponse?.guestAttributes?.size!! - 1
+                eligibleGuestsForDivision = dineInTableAdapter.getList()[0].eligibleGuestsForDivision
+                totalGuestCount = eligibleGuestsForDivision
                 var tmpOrderDis = 0.0
                 if (paidGuestAmount > 0 && globalOrderDiscount > 0.0) {
                 LogUtil.logE("globalOrderDiscount", "globalOrderDiscount  ${globalOrderDiscount}")
                     var eachGuestDiscount =
-                        MethodUtils.roundOffAmountDouble(globalOrderDiscount / (getOrderDetailsResponse?.guestAttributes?.size!! - 1))
+                        MethodUtils.roundOffAmountDouble(globalOrderDiscount / eligibleGuestsForDivision)
 
                 dividedOrderDiscount = globalOrderDiscount - (eachGuestDiscount * paidGuestAmount)
                     LogUtil.logE(TAG, "DividedOrwrs ${dividedOrderDiscount}")
@@ -535,7 +537,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
                     var wholeDisDivide =
-                        MethodUtils.roundOffAmountDouble(wholeTableDiscount / (getOrderDetailsResponse?.guestAttributes?.size!! - 1))
+                        MethodUtils.roundOffAmountDouble(wholeTableDiscount / eligibleGuestsForDivision)
                     if (wholeDisDivide > dividedOrderDiscount) {
                         dividedOrderDiscount = wholeDisDivide - dividedOrderDiscount
                     } else {
@@ -628,10 +630,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                         Log.d(TAG, "onClick: wholetable total tax $totaltaxtemp")
                         var found = -1
-                        totaltaxtemp /= (getOrderDetailsResponse?.guestAttributes?.size!! - 1)
+                        totaltaxtemp /= eligibleGuestsForDivision
                         var temp_remaining = totaltaxtemp * paidGuestAmount
                         var temp_subtotal =
-                            totalPrice / (getOrderDetailsResponse?.guestAttributes?.size!! - 1)
+                            totalPrice / eligibleGuestsForDivision
                         cartList?.taxlistDynamic?.forEachIndexed { indexcart, cartTaxtData ->
                             if (cartTaxtData.taxType == taxData.taxType) {
                                 found = indexcart
@@ -741,7 +743,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                 toFinalAmt,
                                 prefProvider,
                                 requireContext()
-                            ) / (getOrderDetailsResponse?.guestAttributes?.size!! - 1)
+                            ) / eligibleGuestsForDivision
                     }
                 } else {
                     divideCashDiscount = 0.0
@@ -1148,7 +1150,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             Log.d(TAG, "addGuestToOrder size: " + cartList!!.dineInList?.size)
             Log.d(TAG, "addGuestToOrder: " + Gson().toJson(cartList?.dineInList))
             prefProvider.setValueboolean(DINE_IN_UPDATE, true)
+            // RESET Data after coming back from checkout screen by clicking on guest pay (to resolve calculation issue for guest division)
             dashboardViewModel.totalDiscount = getOrderDetailsResponse?.totalDiscount ?: 0.0
+            dashboardViewModel.subTotalPrice = getOrderDetailsResponse?.subTotal ?: 0.0
+            // END RESET
             val request = dashboardViewModel.updateOrder(cartList!!)
             orderId?.let { viewModel.updateOrder(it, request) }
         } else {
@@ -1436,8 +1441,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         Log.e(TAG, "divideDiscount2:  ${divideDiscount2}")
         var divideDiscount = divideDiscount2
         LogUtil.logE("WholeTabDis", "Fasf  ${wholeTableDiscount}")
+        eligibleGuestsForDivision = dineInTableAdapter.getList()[0].eligibleGuestsForDivision
         var dividedWtDis: Double = MethodUtils.roundOffAmountDouble(
-            wholeTableDiscount / (getOrderDetailsResponse?.guestAttributes?.size?.minus(1)!!)
+            wholeTableDiscount / eligibleGuestsForDivision
         )
 
         divideDiscount += dividedWtDis
@@ -1480,7 +1486,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         subTotal += dineInTableAdapter.getList().get(0).guestDividedAmt
 
 
-        totalGuestCount = getOrderDetailsResponse?.guestAttributes?.size?.minus(1) ?: 1
+        totalGuestCount = eligibleGuestsForDivision ?: 1
         LogUtil.logE("TODAY", "totalGuestCount:  ${totalGuestCount}")
         LogUtil.logE("TODAY", "toFinalAmt:  ${toFinalAmt}")
 
@@ -1748,7 +1754,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         )
         LogUtil.logE(
             "FinalDetails",
-            "guestTotalServiceCharge:  ${MethodUtils.roundOffAmountDouble(serviceChargeGuest + serviceCharge)}"
+            "guestTotalServiceCharge:  ${MethodUtils.roundOffAmountDouble(serviceChargeGuest)}"
         )
 
         val newGuestModel = GuestDataModel(
@@ -1757,7 +1763,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             totalAmount = totalGuest,
             totalDiscount = MethodUtils.roundOffAmountDouble(divideDiscount),
             cashDiscount = MethodUtils.roundOffAmountDouble(divideCashDiscount),
-            totalServiceCharge = MethodUtils.roundOffAmountDouble(serviceChargeGuest + serviceCharge)
+            totalServiceCharge = MethodUtils.roundOffAmountDouble(serviceChargeGuest)
 
         )
         LogUtil.logE(TAG, "newGuestModel:  ${Gson().toJson(newGuestModel)}")
@@ -2686,6 +2692,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     val finalAmount =
                         totalSubTotal + totalTaxAmount + totalServiceChargeAmount - orderDiscount
 
+                    // Convert Order discount into percentage to divide in guest (To resolve minus guest amount issue)
                     dineInList[0].orderDiscountPercentage = MethodUtils.roundOffAmountDouble(
                         MethodUtils.calculatePercentageFromAmount(totalDiscountWO, (baseResponse.subTotal + totalDiscountWO)))
                     dineInList.get(0).guestDividedAmt =
@@ -3204,12 +3211,13 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             newList.get(0).wholeTableSurTax =
                 WTServiceCharge / (eligibleGuestsForDivision)
             newList.get(0).orderDiscount = getOrderDetailsResponse?.totalDiscount ?: 0.0
+            // Convert Order discount into percentage to divide in guest (To resolve minus guest amount issue)
             newList[0].orderDiscountPercentage = MethodUtils.roundOffAmountDouble(
                 MethodUtils.calculatePercentageFromAmount(totalDiscountWO ,
                     (getOrderDetailsResponse?.subTotal ?: 0.0) + totalDiscountWO
                 ))
             newList.get(0).orderTotalAmount = subTotalDInin
-            totalGuestCount = guestCount - 1
+            totalGuestCount = eligibleGuestsForDivision
 
             newList[0].listOfItemsMoved.addAll(listOfMoveItemIds.toCollection(arrayListOf()))
 
@@ -3224,6 +3232,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         cartList = getCartModel(dineInTableAdapter.getList().toCollection(arrayListOf()))
         cartList?.listOfItemRemoved = listOfMoveItemIds
         prefProvider.setValueboolean(DINE_IN_UPDATE, true)
+        // RESET Data after coming back from checkout screen by clicking on guest pay (to resolve calculation issue for guest division)
+        dashboardViewModel.totalDiscount = getOrderDetailsResponse?.totalDiscount ?: 0.0
+        dashboardViewModel.subTotalPrice = getOrderDetailsResponse?.subTotal ?: 0.0
+        // END RESET
         val orderRequestModel = dashboardViewModel.updateOrder(cartList!!)
         orderId?.let { viewModel.updateOrder(it, orderRequestModel, isFromReorder, message = "removed") }
         listOfMoveItemIds.clear()

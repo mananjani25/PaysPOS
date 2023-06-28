@@ -295,6 +295,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             var guestOrderDisShare = 0.0
             if (list.get(0).orderDiscount > 0) {
 
+                // Distributed order discount among guest based on discount percentage (To resolve minus guest amount issue)
                 guestOrderDisShare = MethodUtils.roundOffAmountDouble(
                    MethodUtils.percentageCalculation(MethodUtils.roundOffAmountDouble(guestSubTotalWithOutCharges +
                            list.get(0).wholeTableSubTotal), list[0].orderDiscountPercentage))
@@ -372,7 +373,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                         MethodUtils.roundOffAmountDouble(guestSubTotal),
                         MethodUtils.roundOffAmountDouble(finalAmt),
                         MethodUtils.roundOffAmountDouble(totalTaxAmt),
-                        MethodUtils.roundOffAmountDouble(totalServiceCharge),
+                        MethodUtils.roundOffAmountDouble(totalServiceCharge + list[0].wholeTableSurTax),
                         guestOrderDisShare,
                         list[0].guestDividedAmt,
                         listItemWT,
@@ -421,11 +422,11 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                         listItem,
                         guestName,
                         listItemWT,
-                        MethodUtils.roundOffAmountDouble(guestSubTotal + list.get(0).wholeTableSubTotal - (list[0].orderDiscount / list[0].eligibleGuestsForDivision)),
+                        MethodUtils.roundOffAmountDouble(guestSubTotal + list.get(0).wholeTableSubTotal - guestOrderDisShare),
                         MethodUtils.roundOffAmountDouble(finalAmt),
                         MethodUtils.roundOffAmountDouble(totalTaxAmt + list.get(0).wholeTableTax),
                         MethodUtils.roundOffAmountDouble(totalServiceCharge + list.get(0).wholeTableSurTax),
-                        (list[0].orderDiscount / list[0].eligibleGuestsForDivision) + guestDiscount + list[0].wholeTableDiscont
+                        guestOrderDisShare + guestDiscount + list[0].wholeTableDiscont
                     )
                 }
 
