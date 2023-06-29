@@ -49,6 +49,9 @@ class AddCustomerViewModel @Inject constructor(
 
     val _Basedata = MutableLiveData<Event<BaseResponse?>>()
 
+    private val _customerModel = MutableLiveData<Event<TbCustomer>>()
+    val customerModel: LiveData<Event<TbCustomer>> = _customerModel
+
     val addCustomerDetails = MutableLiveData(CreateCustomerRequestModel())
     var listAddress: ArrayList<CreateCustomerRequestModel.Customer.Addresses> = arrayListOf()
 
@@ -264,6 +267,7 @@ class AddCustomerViewModel @Inject constructor(
                                     posRepository.addCustomer(model)
 
                                     _Basedata.value = Event(customerListReposne)
+                                    _customerModel.value = Event(model)
 
                                 }
                             } else {

@@ -599,4 +599,37 @@ object AlertUtils {
         }
 
     }
+
+    fun showCustomAlertWithListenerWithOKCancelUpdated(
+        context: Context,
+        message: String?,
+        okayButtonText: String?,
+        listener: DialogInterface.OnClickListener?
+    ) {
+        val dialogView =
+            LayoutInflater.from(context).inflate(R.layout.view_custom_dialog_ok_cancel, null)
+        val customDialog = AlertDialog.Builder(context)
+            .setView(dialogView)
+            .setCancelable(false)
+            .show()
+        val tvTitle = dialogView.findViewById<AppCompatTextView>(R.id.tvTitle)
+        val tvSubTitle = dialogView.findViewById<AppCompatTextView>(R.id.tvMessage)
+
+        tvTitle.text = context.getString(R.string.app_name)
+        tvSubTitle.text = message
+
+        val btSave = dialogView.findViewById<AppCompatTextView>(R.id.tvSave)
+        btSave.text = okayButtonText
+        btSave.setBackgroundColor(ContextCompat.getColor(context, R.color.btnColorDark))
+        btSave.setOnClickListener {
+            customDialog.dismiss()
+            listener?.onClick(customDialog, 0)
+        }
+        val btDismiss = dialogView.findViewById<AppCompatTextView>(R.id.tvCancel)
+        btDismiss.text = context.getString(R.string.cancel)
+        btDismiss.setOnClickListener {
+            customDialog.dismiss()
+        }
+
+    }
 }

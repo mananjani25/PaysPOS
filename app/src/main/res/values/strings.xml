@@ -868,6 +868,7 @@
     <string name="hint_gift_card_pin">Enter Gift Card PIN</string>
     <string name="lbl_check_balance">Check Balance</string>
     <string name="msg_insufficient_gift_card_balance">You have insufficient gift card balance, please proceed to pay with cash or card.</string>
+    <string name="lbl_please_add_phone_or_email">Please add email address or phone number in your profile.</string>
 
 </resources>
 

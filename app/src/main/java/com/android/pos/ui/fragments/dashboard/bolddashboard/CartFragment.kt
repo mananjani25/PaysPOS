@@ -264,7 +264,7 @@ class CartFragment(
             binding.rlCartView.visible()
             binding.rvOrderType.gone()
 
-            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
+            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN || prefProvider.getValueboolean(Constants.IS_ADD_VALUE_IN_GIFT_CARD, false)) {
                 binding.txtAddCustomer.invisible()
             } else {
                 binding.txtAddCustomer.visible()
@@ -1537,7 +1537,7 @@ class CartFragment(
                         }
                     }
 
-                    if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
+                    if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN  || prefProvider.getValueboolean(Constants.IS_ADD_VALUE_IN_GIFT_CARD, false)) {
                         binding.txtAddCustomer.invisible()
                     } else {
                         binding.txtAddCustomer.visible()

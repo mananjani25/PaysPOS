@@ -6,6 +6,7 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -200,14 +201,7 @@ class AddCustomerToGiftCardFragment : Fragment(), ItemCallback {
         bundle.putBoolean("update", true)
         bundle.putDouble("totalPrice", totalPrice)
         bundle.putDouble("finalprice", totalPrice)
-        bundle.putDouble(
-            "cashDiscountSurcharge",
-            MethodUtils.calculateCashDiscount(
-                totalPrice,
-                prefProvider,
-                requireContext()
-            )
-        )
+        bundle.putDouble("cashDiscountSurcharge",0.0)
         bundle.putDouble("subTotalPrice", totalPrice)
         bundle.putDouble("totalTax", 0.0)
         bundle.putDouble("totalDiscount", 0.0)
@@ -272,7 +266,22 @@ class AddCustomerToGiftCardFragment : Fragment(), ItemCallback {
     override fun onItemClickListener(view: View?, pos: Int) {
         MethodUtils.hideSoftKeyboard(requireActivity())
         selectedPosition = pos
-        moveToCheckout()
+        val customer = adapter.getItem(selectedPosition)
+
+        if(customer.email?.isEmpty() == true && customer.phones.isEmpty()){
+            AlertUtils.showCustomAlertWithListenerWithOKCancelUpdated(
+                requireContext(),
+                getString(R.string.lbl_please_add_phone_or_email),"Edit",
+            )
+            { _, _ ->
+                val bundle: Bundle = bundleOf("isEdit" to true, "dataModel" to customer)
+                findNavController().navigate(R.id.action_addCustomerToGiftCard_to_addEditCustomer, bundle)
+            }
+        } else {
+            moveToCheckout()
+        }
+
+
     }
 
 }

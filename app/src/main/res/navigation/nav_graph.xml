@@ -682,6 +682,10 @@
             android:defaultValue="false"
             app:argType="boolean" />
 
+        <action
+            android:id="@+id/action_addEditCustomer_to_paymentBoldPosFragment"
+            app:destination="@id/paymentBoldPosFragment" />
+
     </fragment>
     <fragment
         android:id="@+id/teamMemberTimeSheetFragment"
@@ -1695,6 +1699,15 @@
     <fragment android:id="@+id/addCustomerToGiftCard"
         android:name="com.android.pos.ui.fragments.eGiftCard.AddCustomerToGiftCardFragment"
         android:label="@string/lbl_add_customer_to_gift_card">
+        <action
+            android:id="@+id/action_addCustomerToGiftCard_to_addEditCustomer"
+            app:destination="@id/addEditCustomer"
+            app:enterAnim="@anim/nav_default_enter_anim">
+
+            <argument
+                android:name="isEdit"
+                app:argType="boolean" />
+        </action>
         <action
             android:id="@+id/action_addCustomerToGiftCard_to_addNewCustomerForGiftCard"
             app:destination="@id/addNewCustomerForGiftCard" />

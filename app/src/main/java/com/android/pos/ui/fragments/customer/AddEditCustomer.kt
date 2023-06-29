@@ -16,12 +16,18 @@ import android.widget.ArrayAdapter
 import android.widget.DatePicker
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.TbCustomer
+import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.requestModel.CreateCustomerRequestModel
+import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentAddEditCustomerBinding
+import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.AddressListAdapter
+import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.settings.business.AutoCompleteAdapter
 import com.android.pos.utils.*
 import com.android.pos.utils.callback.AddressTextChangeListner
@@ -33,10 +39,16 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.*
+import javax.inject.Inject
 
 
 @AndroidEntryPoint
 class AddEditCustomer : Fragment(), AddressTextChangeListner {
+
+    @Inject
+    lateinit var prefProvider: PrefProvider
+    private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
+
     private lateinit var binding: FragmentAddEditCustomerBinding
     private var isEdit = false
     private val TAG = "AddEditCustomer"
@@ -104,15 +116,18 @@ class AddEditCustomer : Fragment(), AddressTextChangeListner {
                 position: Int,
                 id: Long
             ) {
-
                 if (Build.VERSION.SDK_INT < 23) {
                     (parent?.getChildAt(0) as TextView).setTextAppearance(
                         view?.context,
                         com.android.pos.R.style.SpinnerTheme1
                     )
                 } else {
-                    (parent?.getChildAt(0) as TextView).setTextAppearance(com.android.pos.R.style.SpinnerTheme1); }
-
+                    try {
+                        (parent?.getChildAt(0) as TextView).setTextAppearance(com.android.pos.R.style.SpinnerTheme1);
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
 
             }
 
@@ -415,8 +430,8 @@ class AddEditCustomer : Fragment(), AddressTextChangeListner {
         binding.header.imgBack.setOnClickListener {
             val navControll = findNavController()
             navControll.previousBackStackEntry?.savedStateHandle?.set(
-                com.android.pos.data.remote.Constants.KEY,
-                com.android.pos.data.remote.Constants.CUSTOMERDETAILS
+                Constants.KEY,
+                Constants.CUSTOMERDETAILS
             )
             navControll.popBackStack()
         }
@@ -942,7 +957,12 @@ class AddEditCustomer : Fragment(), AddressTextChangeListner {
                         com.android.pos.R.style.SpinnerTheme
                     )
                 } else {
-                    (parent?.getChildAt(0) as TextView).setTextAppearance(com.android.pos.R.style.SpinnerTheme); }
+                    try {
+                        (parent?.getChildAt(0) as TextView).setTextAppearance(com.android.pos.R.style.SpinnerTheme);
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
 
 
             }
@@ -978,7 +998,12 @@ class AddEditCustomer : Fragment(), AddressTextChangeListner {
                             com.android.pos.R.style.SpinnerTheme
                         )
                     } else {
-                        (parent?.getChildAt(0) as TextView).setTextAppearance(com.android.pos.R.style.SpinnerTheme); }
+                        try {
+                            (parent?.getChildAt(0) as TextView).setTextAppearance(com.android.pos.R.style.SpinnerTheme);
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                    }
 
 
                 }
@@ -1199,28 +1224,112 @@ class AddEditCustomer : Fragment(), AddressTextChangeListner {
     private fun navigate() {
 
         LogUtil.logE(TAG, "POPBACKCUSTOMER")
-        viewModel._Basedata.observe(viewLifecycleOwner) { event ->
-            event.getContentIfNotHandled()?.let { baseResponse ->
+        viewModel.customerModel.observe(viewLifecycleOwner) {
+            it.getContentIfNotHandled()?.let { updatedCustomerModel ->
                 activity?.let {
                     AlertUtils.showCustomAlertWithListenerWithOK(
                         it,
-                        baseResponse.message,
+                        "Your profile is updated.",
                     )
                     { _, _ ->
 
-                        val navControll = findNavController()
-                        navControll.previousBackStackEntry?.savedStateHandle?.set(
-                            com.android.pos.data.remote.Constants.KEY,
-                            com.android.pos.data.remote.Constants.CUSTOMERDETAILS
-                        )
-                        navControll.popBackStack()
+                        if(prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT)==Constants.GIFT_CARD){
+                            moveToCheckout(updatedCustomerModel)
+                        }
                     }
 
+                }
 
+            }
+        }
+
+        viewModel._Basedata.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let { baseResponse ->
+                if(prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT) != Constants.GIFT_CARD){
+                    activity?.let {
+                        AlertUtils.showCustomAlertWithListenerWithOK(
+                            it,
+                            baseResponse.message,
+                        )
+                        { _, _ ->
+
+                            val navControll = findNavController()
+                            navControll.previousBackStackEntry?.savedStateHandle?.set(
+                                com.android.pos.data.remote.Constants.KEY,
+                                com.android.pos.data.remote.Constants.CUSTOMERDETAILS
+                            )
+                            navControll.popBackStack()
+                        }
+                    }
                 }
             }
         }
 
+    }
+
+    private fun moveToCheckout(updatedCustomerModel: TbCustomer) {
+
+        prefProvider.setValue(
+            Constants.CUSTOMER_NAME,
+            updatedCustomerModel.first_name + " " + updatedCustomerModel.last_name
+        )
+
+        updatedCustomerModel.id?.let { prefProvider.setValueInt(Constants.CUSTOMER_ID, it) }
+
+        prefProvider.saveCustomerData(updatedCustomerModel)
+
+        prefProvider.setValue("PaidAmount", "")
+        prefProvider.setValue(Constants.WHOLE_AMOUNT, "")
+        prefProvider.setValueInt("cardCount", 0)
+        prefProvider.setValue(Constants.SUB_TOTAL, "")
+        prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
+        prefProvider.setValue(Constants.TOTAL_DISCOUNT, "")
+        prefProvider.setValue(Constants.TIP, "")
+        prefProvider.setValue(Constants.TAX_CHARGE, "")
+        prefProvider.setValue(Constants.SERVICE_CHARGE, "")
+
+        dashboardViewModel.deleteCart()
+
+        prefProvider.setValue(Constants.ORDER_TYPE, Constants.GIFT_CARD)
+        prefProvider.setValue(Constants.ORDER_TYPE_NAME, Constants.GIFT_CARD_NAME)
+        prefProvider.setValueboolean(Constants.IS_ADD_VALUE_IN_GIFT_CARD, false)
+
+        val cm = CartModel()
+        val tbItem = TbItem()
+        tbItem.name = "Digital Gift Card"
+        tbItem.quantity = 1
+        tbItem.itemQuantity = 1
+        val totalPrice =
+            prefProvider.getValue(Constants.GIFT_CARD_PURCHASE_AMOUNT, "0.0").toDouble()
+        tbItem.price = totalPrice
+
+        cm.apply {
+            items = listOf(tbItem)
+            employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1)
+            terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
+            isOpenOrder = false
+            orderTypeId = 0
+            orderType = Constants.GIFT_CARD
+            orderTypeName = Constants.GIFT_CARD
+        }
+
+        dashboardViewModel.addCart(cm)
+
+        val bundle = Bundle()
+        bundle.putBoolean("update", true)
+        bundle.putDouble("totalPrice", totalPrice)
+        bundle.putDouble("finalprice", totalPrice)
+        bundle.putDouble("cashDiscountSurcharge",0.0)
+        bundle.putDouble("subTotalPrice", totalPrice)
+        bundle.putDouble("totalTax", 0.0)
+        bundle.putDouble("totalDiscount", 0.0)
+        bundle.putDouble("totalServiceCharge", 0.0)
+        bundle.putParcelable("cartList", cm)
+
+        findNavController().navigate(
+            com.android.pos.R.id.action_addEditCustomer_to_paymentBoldPosFragment,
+            bundle
+        )
     }
 
     fun getDay(dat: String): String {
