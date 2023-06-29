@@ -1966,35 +1966,35 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             event.getContentIfNotHandled()?.let {
                 if(it.data!=null){
                     if(it.data.amount == 0.0){
-                        prefProvider.setValueboolean(Constants.IS_GIFT_CARD_REDEEM, false)
+                        prefProvider.setValueboolean(IS_GIFT_CARD_REDEEM, false)
                         AlertUtils.showCustomAlertWithListenerWithOK(
                             requireContext(),
-                            message = "You have insufficient gift card balance, please proceed to pay with cash or card."
+                            message = getString(R.string.msg_insufficient_gift_card_balance)
                         ) { _, _ ->
                         }
                     } else {
                         custom_paymentAmount = 0.0
 
-                        val giftCardNumber = binding.edtGiftCardNumber.rawText.toString().trim()
-                        val giftCardPin = binding.edtGiftCardPin.text.toString().trim()
-
-                        prefProvider.setValueboolean(Constants.IS_GIFT_CARD_REDEEM, true)
-                        prefProvider.setValue(Constants.GIFT_CARD_NUMBER, giftCardNumber)
-                        prefProvider.setValue(Constants.GIFT_CARD_PIN, giftCardPin)
-
-                        val actualTotalAmount = binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
+                        val actualTotalAmount = WholetotalPrice / isSelectedCount
                         val giftCardBalanceAmount = it.data.amount
 
-                        paymentAmount = if(actualTotalAmount < giftCardBalanceAmount){
+                        if(actualTotalAmount < giftCardBalanceAmount){
+                            val giftCardNumber = binding.edtGiftCardNumber.rawText.toString().trim()
+                            prefProvider.setValueboolean(IS_GIFT_CARD_REDEEM, true)
+                            prefProvider.setValue(GIFT_CARD_NUMBER, giftCardNumber)
+                            prefProvider.setValue(GIFT_CARD_PIN, "")
                             prefProvider.setValueboolean(IS_ORDER_REDEEMABLE_WITH_GIFT_CARD, true)
-                            actualTotalAmount
+                            paymentAmount = actualTotalAmount
+                            paymentviewModel.totalPayAmount(paymentAmount)
+                            redeemGiftCard()
                         }else{
                             prefProvider.setValueboolean(IS_ORDER_REDEEMABLE_WITH_GIFT_CARD, false)
-                            giftCardBalanceAmount
+                            AlertUtils.showCustomAlertWithListenerWithOK(
+                                requireContext(),
+                                message = "Your GiftCard Balance is $${giftCardBalanceAmount}. Please use split payment."
+                            ) { _, _ ->
+                            }
                         }
-
-                        paymentviewModel.totalPayAmount(paymentAmount)
-                        redeemGiftCard()
                     }
                 } else {
                     AlertUtils.showCustomAlertWithListenerWithOK(
@@ -2520,7 +2520,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     }
 
     private fun makeCashPayment() {
-        paymentType = if(prefProvider.getValueboolean(Constants.IS_GIFT_CARD_REDEEM, false)){
+        paymentType = if(prefProvider.getValueboolean(IS_GIFT_CARD_REDEEM, false)){
             "External"
         }else{
             "Cash"
@@ -2584,7 +2584,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         if (orderId == -1) {
             if (textToPay) {
                 myRequest.completed_all_payments = false
-            } else if(prefProvider.getValueboolean(Constants.IS_GIFT_CARD_REDEEM, false)){
+            } else if(prefProvider.getValueboolean(IS_GIFT_CARD_REDEEM, false)){
                 myRequest.completed_all_payments = prefProvider.getValueboolean(Constants.IS_ORDER_REDEEMABLE_WITH_GIFT_CARD, false)
             } else {
                 if (myRequest.order.totalAmount != 0.0) {
@@ -2609,7 +2609,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                 var giftCardRedeem: SpitByOrderRequestModel.GiftCardRedeem? = null
 
-                if(prefProvider.getValueboolean(Constants.IS_GIFT_CARD_REDEEM, false)){
+                if(prefProvider.getValueboolean(IS_GIFT_CARD_REDEEM, false)){
                     giftCardRedeem = SpitByOrderRequestModel.GiftCardRedeem(
                         prefProvider.getValue(
                             GIFT_CARD_NUMBER,
@@ -2623,7 +2623,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     orderId, isSelectedCount <= 1,
                     SpitByOrderPaymentModel(listOf(paymentReq) as List<PaymentAttributes>,
                     ),
-                    gift_card_redeem = prefProvider.getValueboolean(Constants.IS_GIFT_CARD_REDEEM, false),
+                    gift_card_redeem = prefProvider.getValueboolean(IS_GIFT_CARD_REDEEM, false),
                     gift_card = giftCardRedeem
                 )
 
