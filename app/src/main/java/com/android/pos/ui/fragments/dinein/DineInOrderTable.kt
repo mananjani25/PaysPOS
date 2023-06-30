@@ -4192,7 +4192,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 )
             }
 
-            if (guestServiceCharge != null) {
+            if (guestServiceCharge != null && (getOrderDetailsResponse?.serviceChargeEnabled == true) && prefProvider.getValueboolean(SERVICECHARGE_DINEIN_ORDER, false)) {
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
                 builder.addTextFont(Builder.FONT_E)
@@ -4994,7 +4994,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 )
             }
 
-            if (guestServiceCharge != null) {
+            if (guestServiceCharge != null && (getOrderDetailsResponse?.serviceChargeEnabled == true)  && prefProvider.getValueboolean(SERVICECHARGE_DINEIN_ORDER, false)) {
 
 
                 PrintSunmiUtils.serviceCharge(
@@ -5501,7 +5501,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 )
             }
 
-            if (guestServiceCharge != null) {
+            if (guestServiceCharge != null && (getOrderDetailsResponse?.serviceChargeEnabled == true) && prefProvider.getValueboolean(SERVICECHARGE_DINEIN_ORDER, false)) {
 
 
                 PrintSunmiUtils.normalText(
@@ -6247,7 +6247,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 )
             }
 
-            if (serviceCharge != null) {
+            if (serviceCharge != null && (getOrderDetailsResponse?.serviceChargeEnabled == true) && prefProvider.getValueboolean(SERVICECHARGE_DINEIN_ORDER, false)) {
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
                 builder.addTextFont(Builder.FONT_E)
@@ -6999,7 +6999,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 )
             }
 
-            if (serviceCharge != null) {
+            if (serviceCharge != null && (getOrderDetailsResponse?.serviceChargeEnabled == true) && prefProvider.getValueboolean(SERVICECHARGE_DINEIN_ORDER, false)) {
 
                 PrintSunmiUtils.serviceCharge(
                     padLine(
@@ -7438,7 +7438,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 )
             }
 
-            if (serviceCharge != null) {
+            if (serviceCharge != null && (getOrderDetailsResponse?.serviceChargeEnabled == true) && prefProvider.getValueboolean(SERVICECHARGE_DINEIN_ORDER, false)) {
 
                 PrintSunmiUtils.normalText(
                     padLine(
