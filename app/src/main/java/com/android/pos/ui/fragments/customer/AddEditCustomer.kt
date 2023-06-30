@@ -18,6 +18,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.TbCustomer
@@ -1326,9 +1327,13 @@ class AddEditCustomer : Fragment(), AddressTextChangeListner {
         bundle.putDouble("totalServiceCharge", 0.0)
         bundle.putParcelable("cartList", cm)
 
+        val navOptions = NavOptions.Builder()
+            .setPopUpTo(com.android.pos.R.id.addEditCustomer, true)
+            .build()
+
         findNavController().navigate(
             com.android.pos.R.id.action_addEditCustomer_to_paymentBoldPosFragment,
-            bundle
+            bundle, navOptions
         )
     }
 

@@ -274,6 +274,9 @@ class AddCustomerToGiftCardFragment : Fragment(), ItemCallback {
                 getString(R.string.lbl_please_add_phone_or_email),"Edit",
             )
             { _, _ ->
+                prefProvider.setValue(Constants.ORDER_TYPE, Constants.GIFT_CARD)
+                prefProvider.setValue(Constants.ORDER_TYPE_NAME, Constants.GIFT_CARD_NAME)
+                prefProvider.setValueboolean(Constants.IS_ADD_VALUE_IN_GIFT_CARD, false)
                 val bundle: Bundle = bundleOf("isEdit" to true, "dataModel" to customer)
                 findNavController().navigate(R.id.action_addCustomerToGiftCard_to_addEditCustomer, bundle)
             }

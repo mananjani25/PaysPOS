@@ -178,6 +178,7 @@ class AddValueInGiftCardFragment : Fragment() {
         prefProvider.setValue(Constants.SERVICE_CHARGE, "")
         prefProvider.setValue(Constants.ORDER_TYPE, "")
         prefProvider.setValue(Constants.ORDER_TYPE_NAME, "")
+        prefProvider.setValueboolean(Constants.IS_ADD_VALUE_IN_GIFT_CARD, false)
 
         dashboardViewModel.deleteCart()
     }
