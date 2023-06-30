@@ -306,7 +306,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             }
         })
 
-        if (prefProvider.getValueboolean(TIP_ADDED, false)) {
+        if (prefProvider.getValueboolean(TIP_ADDED, false) && prefProvider.getValue(ORDER_TYPE,
+                TAKEOUT) != GIFT_CARD) {
 
             val tip = prefProvider.getValue(TIP_ADDED_AMOUNT, "")
             if (tip.isNotEmpty()) {
