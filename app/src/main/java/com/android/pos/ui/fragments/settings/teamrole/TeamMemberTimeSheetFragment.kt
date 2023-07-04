@@ -438,14 +438,18 @@ class TeamMemberTimeSheetFragment : Fragment(), AdapterView.OnItemSelectedListen
 
         viewModel.employeeIdViewModel.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { employeeModel ->
-                val bundle = Bundle().apply {
-                    putParcelable("employeeModel", employeeModel)
+                try {
+                    val bundle = Bundle().apply {
+                        putParcelable("employeeModel", employeeModel)
+                    }
+                    activity?.let { MethodUtils.hideSoftKeyboard(it) }
+                    findNavController().navigate(
+                        R.id.action_teamMemberTimeSheetFragment_to_singleTeamMemberTimeSheetFragment,
+                        bundle
+                    )
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
-                activity?.let { MethodUtils.hideSoftKeyboard(it) }
-                findNavController().navigate(
-                    R.id.action_teamMemberTimeSheetFragment_to_singleTeamMemberTimeSheetFragment,
-                    bundle
-                )
             }
         }
 

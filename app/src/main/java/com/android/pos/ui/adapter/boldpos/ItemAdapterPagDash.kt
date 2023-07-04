@@ -110,7 +110,7 @@ class ItemAdapterPagDash(
                 } else {
                     if (getItemPriceIsValid(model.price).isNotEmpty()) {
                         binding.txtCategoryName.text =
-                            "" + model.name + "\n\n" + getItemPriceIsValid(model.price)
+                            "" + model.name + "\n" + getItemPriceIsValid(model.price)
                     } else {
                         binding.txtCategoryName.text = "" + model.name
                     }

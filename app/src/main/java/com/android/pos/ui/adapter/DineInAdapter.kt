@@ -139,6 +139,10 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>() {
                         }
 
                     }
+
+                    R.id.remove_guest -> {
+                        listner.onRemoveGuest(layoutPosition)
+                    }
                 }
                 true
             }
@@ -150,6 +154,7 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>() {
                 } else {
                     popupMenu.menu.get(0).setTitle("Remove Customer")
                 }
+                popupMenu.menu[1].isVisible = list[layoutPosition].items.size <= 0
 
                 popupMenu.show()
 
@@ -198,7 +203,15 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>() {
 
         }
         */
-        this.list = list
+
+        var filteredList: ArrayList<DineInModel> = arrayListOf()
+
+        list.forEach {
+            if(!it.isDestroy) {
+                filteredList.add(it)
+            }
+        }
+        this.list = filteredList
         notifyDataSetChanged()
     }
 
@@ -219,6 +232,7 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>() {
         fun onItemSelected(headerPosition: Int, position: Int, item: TbItem)
         fun onCustomerClicked(position: Int, isRemoved: Boolean)
         fun onItemDelete(position: Int, itemPosition: Int, data: TbItem)
+        fun onRemoveGuest(position: Int)
     }
 
     fun getHeaderPosition(): Int {

@@ -13,6 +13,7 @@ import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
+import com.android.pos.data.remote.Constants.ORDER_TYPE_ID
 import com.android.pos.data.remote.Constants.PAYMENT_ID
 import com.android.pos.data.remote.Constants.PHONE_ORDER
 import com.android.pos.data.remote.Constants.PAYMENT_ID_FOR_CUSTOMER_DISPLAY
@@ -198,12 +199,15 @@ open class PaymentViewModel @Inject constructor(
                                     _queueStart.value = Event(createOrderResponse)
 
                                 } else {
-                                    if (createOrderResponse.data.order.orderType != "Dine In" && createOrderResponse.data.order.orderType != PHONE_ORDER && response.data.order.payments[response.data.order.payments.size - 1].paymentType != "Card") {
-                                        cashLogApi(createOrderResponse, "in")
-                                        LogUtil.logE("QueueCheck", "CashLogAPI")
-                                    } else {
-                                        _data.value = Event(createOrderResponse)
-                                        LogUtil.logE("QueueCheck", "CreateOrderData")
+                                    //Added by Dharmesh Basapati to avoid crash due to empty payments array
+                                    if( response.data.order.payments.isNotEmpty()){
+                                        if (createOrderResponse.data.order.orderType != "Dine In" && response.data.order.payments[response.data.order.payments.size - 1].paymentType != "Card") {
+                                            cashLogApi(createOrderResponse, "in")
+                                            LogUtil.logE("QueueCheck", "CashLogAPI")
+                                        } else {
+                                            _data.value = Event(createOrderResponse)
+                                            LogUtil.logE("QueueCheck", "CreateOrderData")
+                                        }
                                     }
 
                                     if (createOrderResponse.data.order.orderType != "Dine In" && createOrderResponse.data.order.orderType != PHONE_ORDER) {
@@ -541,12 +545,11 @@ open class PaymentViewModel @Inject constructor(
             orderAttributeRequestModel.futureDeliveryTime = future_delivery_time
 
 
-        if (cartModel.openOrderType.isNotEmpty() && cartModel.openOrderType != null) {
-            orderAttributeRequestModel.deliveryType = cartModel.openOrderType
-        } else {
-            orderAttributeRequestModel.deliveryType = cartModel.deliveryType
-        }
-
+//        if (cartModel.openOrderType.isNotEmpty()) {
+//            orderAttributeRequestModel.deliveryType = cartModel.openOrderType
+//        } else {
+//            orderAttributeRequestModel.deliveryType = cartModel.deliveryType
+//        }
         if (cartModel.orderType == PHONE_ORDER){
             orderAttributeRequestModel.deliveryType = prefProvider.getValue(Constants.DELIVERY_TYPE, PICK_UP)
         }
@@ -819,6 +822,7 @@ open class PaymentViewModel @Inject constructor(
         LogUtil.logE(TAG, "openOrderType: " + cartModel.orderType)
         orderAttributeRequestModel.openOrderType = cartModel.orderType
         orderAttributeRequestModel.orderTypeId = cartModel.orderTypeId
+        orderAttributeRequestModel.orderTypeName = cartModel.orderTypeName
         orderAttributeRequestModel.paymentStatus = if (isPaid) 1 else 0
         orderAttributeRequestModel.serviceChargeEnabled = true
         orderAttributeRequestModel.taxEnabled = true

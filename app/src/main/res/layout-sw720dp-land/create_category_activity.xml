@@ -49,6 +49,7 @@
                 android:background="@drawable/background_square_border_grey">
 
                 <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/etCategoryName"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"

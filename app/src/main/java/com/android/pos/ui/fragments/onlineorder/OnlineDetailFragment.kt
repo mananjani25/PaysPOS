@@ -38,10 +38,25 @@ import com.android.pos.di.RolePermission
 import com.android.pos.ui.adapter.OnlineOrderAdapter
 import com.android.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
 import com.android.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
-import com.android.pos.utils.*
+import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.LogUtil
+import com.android.pos.utils.MethodUtils
+import com.android.pos.utils.PrintSunmiUtils
+import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.addBuilderText
+import com.android.pos.utils.addBuilderTextForU220
+import com.android.pos.utils.addHorizontalKitchenLine
+import com.android.pos.utils.addHorizontalKitchenLineForU220
+import com.android.pos.utils.addHorizontalLine
+import com.android.pos.utils.addOrdersForKitchenOnlineOrder
+import com.android.pos.utils.addOrdersForKitchenOnlineOrderSunmi
+import com.android.pos.utils.addOrdersForKitchenOnlineOrderSunmiInner
+import com.android.pos.utils.addOrdersForKitchenOnlineOrderU220
 import com.android.pos.utils.callback.OrderCallBack
+import com.android.pos.utils.checkItemsforPrinterOnlineOrder
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.showAlert
+import com.android.pos.utils.padLine
 import com.android.pos.utils.printer.PrinterClass
 import com.android.pos.utils.statusUtils.Status
 import com.epson.epos2.printer.Printer
@@ -56,7 +71,10 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
+import java.util.Random
 import javax.inject.Inject
 import kotlin.math.abs
 
@@ -121,18 +139,22 @@ class OnlineDetailFragment(
                 order_status = "Pending"
                 binding.txtOrderWillAppear?.text = "Pending order will appear here."
             }
+
             "1" -> {
                 order_status = "InProgress"
                 binding.txtOrderWillAppear?.text = "InProgress order will appear here."
             }
+
             "2" -> {
                 order_status = "Completed"
                 binding.txtOrderWillAppear?.text = "Completed order will appear here."
             }
+
             "3" -> {
                 order_status = "Rejected"
                 binding.txtOrderWillAppear?.text = "Rejected order will appear here."
             }
+
             "4" -> {
                 order_status = "UpComing"
                 binding.txtOrderWillAppear?.text = "UpComing order will appear here."
@@ -184,11 +206,13 @@ class OnlineDetailFragment(
 
                         }
                     }
+
                     Status.ERROR -> {
                         ProgressUtils.dismissProgressDialog()
                         binding.root.showAlert(resource.message)
 
                     }
+
                     Status.LOADING -> {
                         ProgressUtils.showProgressDialog(requireActivity())
                     }
@@ -211,11 +235,13 @@ class OnlineDetailFragment(
                             getOnlineOrders()
                         }
                     }
+
                     Status.ERROR -> {
                         ProgressUtils.dismissProgressDialog()
                         binding.root.showAlert(resource.message)
 
                     }
+
                     Status.LOADING -> {
                         ProgressUtils.showProgressDialog(requireActivity())
                     }
@@ -261,11 +287,13 @@ class OnlineDetailFragment(
                             requireContext().sendBroadcast(intent)
                         }
                     }
+
                     Status.ERROR -> {
                         ProgressUtils.dismissProgressDialog()
                         binding.root.showAlert(resource.message)
 
                     }
+
                     Status.LOADING -> {
                         ProgressUtils.showProgressDialog(requireActivity())
                     }
@@ -289,7 +317,16 @@ class OnlineDetailFragment(
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.setCurrentDate(Calendar.getInstance(), "", "", param1)
+        if (param1 == "4" || (endDateTime != null && SimpleDateFormat(
+                "MM/dd/yyyy", Locale.getDefault()
+            ).parse(endDateTime).after(Calendar.getInstance().time))
+        ) {
+            viewModel.setCurrentDate(Calendar.getInstance(), "", "", param1)
+        } else {
+            viewModel.setCurrentDate(
+                Calendar.getInstance(), startDateTime, endDateTime, param1
+            )
+        }
     }
 
     override fun onCreateView(
@@ -482,8 +519,8 @@ class OnlineDetailFragment(
         viewModel.startDateSelection.observe(requireActivity()) { event ->
             event.getContentIfNotHandled()?.let {
                 //currentPage = 1
-                myCalendar = Calendar.getInstance()
-                myCalendar.add(Calendar.DATE, 0)
+//                myCalendar = Calendar.getInstance()
+//                myCalendar.add(Calendar.DATE, 0)
                 Log.d(TAG, "startDatePickerObserver: " + myCalendar.get(Calendar.DAY_OF_MONTH))
                 Log.d(TAG, "startDatePickerObserver: " + myCalendar.get(Calendar.MONTH))
                 Log.d(
@@ -535,7 +572,7 @@ class OnlineDetailFragment(
 
                 )
                 if (param1 == "4") {
-                    datePickerDialog.datePicker.minDate =myCalendar1.timeInMillis
+                    datePickerDialog.datePicker.minDate = myCalendar1.timeInMillis
                 } else {
                     datePickerDialog.datePicker.maxDate = Date().time
                 }
@@ -554,7 +591,7 @@ class OnlineDetailFragment(
             )
         )
 
-        adapter = OnlineOrderAdapter(requireContext(),prefProvider)
+        adapter = OnlineOrderAdapter(requireContext(), prefProvider)
         adapter.setCallback(this)
         binding.rvOpenOrder?.adapter = adapter
     }
@@ -651,15 +688,15 @@ class OnlineDetailFragment(
                             adapter.orderList[pos].magensa_response_data
                         )
                     }
-                    bundle.putString("isFrom","rejectOnlineOrder")
-                    if (prefProvider.isAdmin()||prefProvider.isManager()){
+                    bundle.putString("isFrom", "rejectOnlineOrder")
+                    if (prefProvider.isAdmin() || prefProvider.isManager()) {
                         if (findNavController().currentDestination?.id == R.id.onlineOrderFragment) {
                             findNavController().navigate(
                                 R.id.action_onlineOrder_to_reasonForrefundonline,
                                 bundle
                             )
                         }
-                    }else{
+                    } else {
                         if (findNavController().currentDestination?.id == R.id.onlineOrderFragment) {
                             findNavController().navigate(
                                 R.id.action_onlineOrder_to_passcodeManager,
@@ -709,9 +746,11 @@ class OnlineDetailFragment(
 
 
                 }
+
                 Status.LOADING -> {
                     ProgressUtils.showProgressDialog(requireActivity())
                 }
+
                 Status.ERROR -> {
                     ProgressUtils.dismissProgressDialog()
                     findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
@@ -813,14 +852,14 @@ class OnlineDetailFragment(
                     )
                     mPrinter.startMonitor()
 
-                    generateKitchenReceiptU220(data, type, orderData,mPrinter)
+                    generateKitchenReceiptU220(data, type, orderData, mPrinter)
 
-                   // generateReceiptForU220(mPrinter, data, type)
+                    // generateReceiptForU220(mPrinter, data, type)
 
                 } catch (e: java.lang.Exception) {
                     e.printStackTrace()
                 }
-            }else{
+            } else {
                 PrinterClass.closePrinter()
                 if (PrinterClass.getPrinter() == null) {
                     //  printerDialog.show(requireContext())
@@ -869,51 +908,56 @@ class OnlineDetailFragment(
 
             }
 
-          /*  PrinterClass.closePrinter()
-            if (PrinterClass.getPrinter() == null) {
-                //  printerDialog.show(requireContext())
+            /*  PrinterClass.closePrinter()
+              if (PrinterClass.getPrinter() == null) {
+                  //  printerDialog.show(requireContext())
 
-                var printer: Print? = Print(requireContext())
-
-
-                val enabled = Print.FALSE
-
-                try {
-
-                    printer?.openPrinter(
-                        if (data.printer_type == Constants.BLUETOOTH) {
-                            Print.DEVTYPE_BLUETOOTH
-                        } else {
-                            Print.DEVTYPE_TCP
-                        },
-                        data.ipAddress,
-                        enabled,
-                        1000
-                    )
-
-                } catch (e: Exception) {
-                    //  printerDialog.dismiss()
-                    LogUtil.logE(TAG, "PrinterException: " + e.message)
-                    printer = null
-                    return
-                }
-
-                if (printer != null) {
-                    PrinterClass.setPrinter(printer)
+                  var printer: Print? = Print(requireContext())
 
 
-                    generateKitchenReceipt(data, type, orderData)
+                  val enabled = Print.FALSE
 
-                }
+                  try {
 
-            } else {
-                LogUtil.logE(TAG, "PrinterIsNotNull:")
-            }*/
+                      printer?.openPrinter(
+                          if (data.printer_type == Constants.BLUETOOTH) {
+                              Print.DEVTYPE_BLUETOOTH
+                          } else {
+                              Print.DEVTYPE_TCP
+                          },
+                          data.ipAddress,
+                          enabled,
+                          1000
+                      )
+
+                  } catch (e: Exception) {
+                      //  printerDialog.dismiss()
+                      LogUtil.logE(TAG, "PrinterException: " + e.message)
+                      printer = null
+                      return
+                  }
+
+                  if (printer != null) {
+                      PrinterClass.setPrinter(printer)
+
+
+                      generateKitchenReceipt(data, type, orderData)
+
+                  }
+
+              } else {
+                  LogUtil.logE(TAG, "PrinterIsNotNull:")
+              }*/
         }
 
     }
 
-    private fun generateKitchenReceiptU220(customerReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters, type: String, orderData: OnlineOrderStatusUpdateResponse, builder: Printer) {
+    private fun generateKitchenReceiptU220(
+        customerReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
+        type: String,
+        orderData: OnlineOrderStatusUpdateResponse,
+        builder: Printer
+    ) {
 
         try {
             val pname = if (customerReceiptPrinters.name.substring(0, 6).toString()
@@ -931,10 +975,12 @@ class OnlineDetailFragment(
                     fontSizeH = 1
                     fontSizeW = 1
                 }
+
                 Constants.MEDIUM -> {
                     fontSizeH = 1
                     fontSizeW = 2
                 }
+
                 Constants.LARGE -> {
                     fontSizeH = 2
                     fontSizeW = 2
@@ -959,10 +1005,10 @@ class OnlineDetailFragment(
                     Builder.TRUE,
                     Builder.COLOR_1
                 )
-                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE,false)){
+                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
                     builder.addText("OrderID:" + orderData?.data.custom_order_id)
-                }else
-                { builder.addText("OrderID:" + orderData?.data.id)
+                } else {
+                    builder.addText("OrderID:" + orderData?.data.id)
 
                 }
                 builder.addFeedUnit(30)
@@ -983,12 +1029,30 @@ class OnlineDetailFragment(
                     )
                     builder.addTextAlign(Builder.ALIGN_CENTER)
 
-                    addBuilderTextForU220(builder, "Online Order")
+                    addBuilderTextForU220(builder, orderData.data.orderTypeName)
                 }
-                var tmps = "Open Order".toString().trim()
-                    .toString().lowercase()
-                LogUtil.logE(TAG, "LowerCAse ${tmps.trimmedLength()}")
 
+                if (orderData.data.orderType.equals(Constants.PHONE_ORDER, true) ||
+                    orderData.data.orderType.equals("OnlineWebOrder", true) ||
+                    orderData.data.orderType.equals("Online Order", true) ||
+                    orderData.data.orderType.equals("OnlineOrder", true)
+                ) {
+
+
+                    builder.addFeedLine(0)
+                    builder.addTextFont(Builder.FONT_E)
+                    builder.addTextLang(Builder.LANG_EN)
+                    builder.addTextSize(fontSizeH, fontSizeW)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.TRUE,
+                        Builder.COLOR_1
+                    )
+                    builder.addTextAlign(Builder.ALIGN_CENTER)
+
+                    addBuilderTextForU220(builder, orderData.data.deliveryType)
+                }
 
                 if (kitchenSettingModel.showTeamMember) {
 
@@ -1093,7 +1157,7 @@ class OnlineDetailFragment(
                 }
 
 
-                if (kitchenSettingModel.showCustomerAddress != false or kitchenSettingModel.showCustomerPhone != false or kitchenSettingModel.showCustomerName != false) {
+                if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName != false) {
                     if (orderData?.data?.customer != null) {
 
                         builder.addFeedUnit(30)
@@ -1234,10 +1298,9 @@ class OnlineDetailFragment(
                     Builder.COLOR_1
                 )
 
-                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE,false))
-                {
+                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
                     builder.addText("OrderID:" + orderData?.data.custom_order_id)
-                }else{
+                } else {
                     builder.addText("OrderID:" + orderData?.data.id)
                 }
                 builder.addFeedUnit(30)
@@ -1364,7 +1427,7 @@ class OnlineDetailFragment(
                 }
 
 
-                if (kitchenSettingModel.showCustomerAddress != false or kitchenSettingModel.showCustomerPhone != false or kitchenSettingModel.showCustomerName != false) {
+                if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName != false) {
                     if (orderData?.data?.customer != null) {
 
                         builder.addFeedUnit(30)
@@ -1515,23 +1578,23 @@ class OnlineDetailFragment(
 
 
 */
-      /*  try {
-            PrinterClass.getPrinter()?.sendData(
-                builder,
-                timeOut, status, battery
-            )
+        /*  try {
+              PrinterClass.getPrinter()?.sendData(
+                  builder,
+                  timeOut, status, battery
+              )
 
-            //printerDialog.dismiss()
-            PrinterClass.closePrinter()
+              //printerDialog.dismiss()
+              PrinterClass.closePrinter()
 
-            //PrinterClass.getPrinter()?.sendData(builder, 0, status, battery)
-        } catch (e: Exception) {
-//                printerDialog.dismiss()
-            PrinterClass.closePrinter()
-            e.printStackTrace()
-            LogUtil.logE(TAG, "PrinterError: " + e.localizedMessage)
-        }
-*/
+              //PrinterClass.getPrinter()?.sendData(builder, 0, status, battery)
+          } catch (e: Exception) {
+  //                printerDialog.dismiss()
+              PrinterClass.closePrinter()
+              e.printStackTrace()
+              LogUtil.logE(TAG, "PrinterError: " + e.localizedMessage)
+          }
+  */
     }
 
     private fun generateKitchenReceipt(
@@ -1556,10 +1619,12 @@ class OnlineDetailFragment(
                     fontSizeH = 1
                     fontSizeW = 1
                 }
+
                 Constants.MEDIUM -> {
                     fontSizeH = 1
                     fontSizeW = 2
                 }
+
                 Constants.LARGE -> {
                     fontSizeH = 2
                     fontSizeW = 2
@@ -1585,10 +1650,10 @@ class OnlineDetailFragment(
                     Builder.TRUE,
                     Builder.COLOR_1
                 )
-                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE,false)){
+                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
                     builder.addText("OrderID:" + orderData?.data.custom_order_id)
-                }else
-                { builder.addText("OrderID:" + orderData?.data.id)
+                } else {
+                    builder.addText("OrderID:" + orderData?.data.id)
 
                 }
                 builder.addTextLineSpace(30)
@@ -1615,6 +1680,22 @@ class OnlineDetailFragment(
                 var tmps = "Open Order".toString().trim()
                     .toString().lowercase()
                 LogUtil.logE(TAG, "LowerCAse ${tmps.trimmedLength()}")
+
+
+                builder.addFeedLine(0)
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(fontSizeH, fontSizeW)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+
+                addBuilderText(builder, orderData?.data.deliveryType)
+
 
 
                 if (kitchenSettingModel.showTeamMember) {
@@ -1724,7 +1805,7 @@ class OnlineDetailFragment(
                 }
 
 
-                if (kitchenSettingModel.showCustomerAddress != false or kitchenSettingModel.showCustomerPhone != false or kitchenSettingModel.showCustomerName != false) {
+                if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName != false) {
                     if (orderData?.data?.customer != null) {
 
                         builder.addTextLineSpace(30)
@@ -1869,10 +1950,9 @@ class OnlineDetailFragment(
                     Builder.COLOR_1
                 )
 
-                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE,false))
-                {
+                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
                     builder.addText("OrderID:" + orderData?.data.custom_order_id)
-                }else{
+                } else {
                     builder.addText("OrderID:" + orderData?.data.id)
                 }
                 builder.addTextLineSpace(30)
@@ -1898,6 +1978,19 @@ class OnlineDetailFragment(
                 }
 
 
+                builder.addFeedLine(0)
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(fontSizeH, fontSizeW)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+
+                addBuilderText(builder, orderData?.data.deliveryType)
 
                 if (kitchenSettingModel.showTeamMember) {
 
@@ -2004,7 +2097,7 @@ class OnlineDetailFragment(
                 }
 
 
-                if (kitchenSettingModel.showCustomerAddress != false or kitchenSettingModel.showCustomerPhone != false or kitchenSettingModel.showCustomerName != false) {
+                if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName != false) {
                     if (orderData?.data?.customer != null) {
 
                         builder.addTextLineSpace(30)
@@ -2023,7 +2116,8 @@ class OnlineDetailFragment(
                         )
                         builder.addText("Customer Details" + "\n")
 
-                        builder.addFeedLine(1)
+                        // Commented below line to resolve BIS-389 issue
+                        //builder.addFeedLine(1)
                         addHorizontalLine(builder)
 
                         if (kitchenSettingModel.showCustomerName) {
@@ -2086,38 +2180,39 @@ class OnlineDetailFragment(
                      Builder.COLOR_1
                  )
                  builder.addText(receiptModel?.order?.customer?.email)*/
+                        if (kitchenSettingModel.showCustomerAddress) {
 
+                            if (orderData?.data?.customer?.addresses?.isNotEmpty() == true) {
 
-                        if (orderData?.data?.customer?.addresses?.isNotEmpty() == true) {
+                                builder.addTextLineSpace(30)
+                                builder.addFeedUnit(30)
+                                builder.addTextFont(Builder.FONT_E)
+                                builder.addTextAlign(Builder.ALIGN_LEFT)
+                                //builder.addTextLineSpace(20)
+                                builder.addTextLang(Builder.LANG_EN)
+                                builder.addTextSize(fontSizeH, fontSizeW)
+                                builder.addTextStyle(
+                                    Builder.FALSE,
+                                    Builder.FALSE,
+                                    Builder.TRUE,
+                                    Builder.COLOR_1
+                                )
 
-                            builder.addTextLineSpace(30)
-                            builder.addFeedUnit(30)
-                            builder.addTextFont(Builder.FONT_E)
-                            builder.addTextAlign(Builder.ALIGN_LEFT)
-                            //builder.addTextLineSpace(20)
-                            builder.addTextLang(Builder.LANG_EN)
-                            builder.addTextSize(fontSizeH, fontSizeW)
-                            builder.addTextStyle(
-                                Builder.FALSE,
-                                Builder.FALSE,
-                                Builder.TRUE,
-                                Builder.COLOR_1
-                            )
+                                orderData?.data?.customer?.addresses.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
+                                    .forEach {
 
-                            orderData?.data?.customer?.addresses.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
-                                .forEach {
-
-                                    if (it.typeOfAddress.equals(
-                                            Constants.BILLING_ADDRESS,
-                                            ignoreCase = true
-                                        )
-                                    ) {
-                                        builder.addText(
-                                            it.fullAddress
-                                        )
+                                        if (it.typeOfAddress.equals(
+                                                Constants.BILLING_ADDRESS,
+                                                ignoreCase = true
+                                            )
+                                        ) {
+                                            builder.addText(
+                                                it.fullAddress
+                                            )
+                                        }
                                     }
-                                }
 //                            builder.addText(orderData?.data?.customer?.addresses.get(orderData?.data?.customer?.addresses.size - 1).fullAddress)
+                            }
                         }
                     }
 
@@ -2145,7 +2240,7 @@ class OnlineDetailFragment(
                 .lowercase() == "TM-m30".lowercase() && customerReceiptPrinters.printer_type != Constants.BLUETOOTH
         ) {
 
-            timeOut = 1000
+            timeOut = 10000
         }
 
 
@@ -2181,11 +2276,11 @@ class OnlineDetailFragment(
 
             PrintSunmiUtils.fontSize(kitchenSettingModel.fonts)
             SunmiPrinterApi.getInstance().lineWrap(2)
-            if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE,false)){
+            if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
                 PrintSunmiUtils.orderIdSunmi(
                     "OrderID:" + orderData?.data.custom_order_id
                 )
-            }else{
+            } else {
                 PrintSunmiUtils.orderIdSunmi(
                     "OrderID:" + orderData?.data.id
                 )
@@ -2194,8 +2289,18 @@ class OnlineDetailFragment(
             SunmiPrinterApi.getInstance().lineWrap(1)
 
             if (kitchenSettingModel.showOrderType) {
-                PrintSunmiUtils.printOrderType("Online Order")
+                PrintSunmiUtils.printOrderType(orderData.data.orderTypeName)
             }
+
+            if (orderData.data.orderType.equals(Constants.PHONE_ORDER, true) ||
+                orderData.data.orderType.equals("OnlineWebOrder", true) ||
+                orderData.data.orderType.equals("Online Order", true) ||
+                orderData.data.orderType.equals("OnlineOrder", true)
+            ) {
+                SunmiPrinterApi.getInstance().lineWrap(1)
+                PrintSunmiUtils.printOrderType(orderData.data.deliveryType)
+            }
+
             SunmiPrinterApi.getInstance().lineWrap(1)
 
             if (kitchenSettingModel.showTeamMember) {
@@ -2246,7 +2351,7 @@ class OnlineDetailFragment(
             }
 
 
-            if (kitchenSettingModel.showCustomerAddress != false or kitchenSettingModel.showCustomerPhone != false or kitchenSettingModel.showCustomerName != false) {
+            if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName != false) {
                 if (orderData?.data?.customer != null) {
                     SunmiPrinterApi.getInstance().lineWrap(1)
                     PrintSunmiUtils.customerDetails()
@@ -2349,16 +2454,25 @@ class OnlineDetailFragment(
 
             SunmiPrintHelper.getInstance().initPrinter()
             SunmiPrintHelper.getInstance().lineWrap(2)
-            if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE,false)){
+            if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
                 PrintSunmiUtils.headerText("OrderID:" + orderData?.data.custom_order_id)
-            }else{
+            } else {
                 PrintSunmiUtils.headerText("OrderID:" + orderData?.data.id)
             }
             SunmiPrintHelper.getInstance().lineWrap(1)
 
 
             if (kitchenSettingModel.showOrderType) {
-                PrintSunmiUtils.headerText("Online Order")
+                PrintSunmiUtils.headerText(orderData.data.orderTypeName)
+            }
+
+            if (orderData.data.orderType.equals(Constants.PHONE_ORDER, true) ||
+                orderData.data.orderType.equals("OnlineWebOrder", true) ||
+                orderData.data.orderType.equals("Online Order", true) ||
+                orderData.data.orderType.equals("OnlineOrder", true)
+            ) {
+                SunmiPrintHelper.getInstance().lineWrap(1)
+                PrintSunmiUtils.headerText(orderData.data.deliveryType)
             }
 
             if (kitchenSettingModel.showTeamMember) {
@@ -2389,6 +2503,7 @@ class OnlineDetailFragment(
                 orderData.data.orderItems
             )
 
+            SunmiPrintHelper.getInstance().lineWrap(1)
 
             if (orderData?.data?.note.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
 
@@ -2396,7 +2511,7 @@ class OnlineDetailFragment(
             }
 
 
-            if (kitchenSettingModel.showCustomerAddress != false or kitchenSettingModel.showCustomerPhone != false or kitchenSettingModel.showCustomerName != false) {
+            if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName != false) {
                 if (orderData?.data?.customer != null) {
 
                     PrintSunmiUtils.customerDetailsInner()

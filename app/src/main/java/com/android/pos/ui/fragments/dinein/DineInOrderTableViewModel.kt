@@ -16,6 +16,9 @@ import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.DINE_IN
+import com.android.pos.data.remote.Constants.ORDER_TYPE_ID
+import com.android.pos.data.remote.Constants.ORDER_TYPE_NAME
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.data.repositories.TaxServiceChargeRepository
 import com.android.pos.data.repositories.TipDiscountRepository
@@ -64,6 +67,11 @@ class DineInOrderTableViewModel @Inject constructor(
     private val _queueCreateSuccess = MutableLiveData<Event<Boolean>>()
     val queueCreateSuccess: LiveData<Event<Boolean>> = _queueCreateSuccess
 
+    private val _reorderItemsSuccess = MutableLiveData<Event<CreateOrderResponse.Data?>>()
+    val reorderItemsSuccess: LiveData<Event<CreateOrderResponse.Data?>> = _reorderItemsSuccess
+
+    val _removeGuestSuccess = MutableLiveData<Event<String>>()
+    var removeGuestSuccess: LiveData<Event<String>> = _removeGuestSuccess
 
     val _guestPayment = MutableLiveData<Event<String>>()
     val onPayment: LiveData<Event<String>> = _guestPayment
@@ -250,7 +258,7 @@ class DineInOrderTableViewModel @Inject constructor(
         }
     }
 
-    fun updateOrder(orderId: Int, orderRequestModel: OrderRequestModel) {
+    fun updateOrder(orderId: Int, orderRequestModel: OrderRequestModel, fromReorder: Boolean = false, message: String = "added") {
         _showProgress.value = Event(true)
 
         viewModelScope.launch {
@@ -259,12 +267,17 @@ class DineInOrderTableViewModel @Inject constructor(
             when (resource.status) {
                 Status.SUCCESS -> {
                     _showProgress.value = Event(false)
-                    _updateOrder.value = Event("Guest added successfully.")
+                    if (!fromReorder) {
+                        _updateOrder.value = Event("Guest $message successfully.")
+                    } else {
+                        _reorderItemsSuccess.value = Event(resource.data?.data)
+                    }
 
                 }
                 Status.ERROR -> {
                     _snackbarText.value = Event(resource.message)
                     _showProgress.value = Event(false)
+                    prefProvider.setValueboolean(Constants.DINE_IN_UPDATE, false)
                 }
                 Status.LOADING -> {
                     _showProgress.value = Event(true)
@@ -276,6 +289,10 @@ class DineInOrderTableViewModel @Inject constructor(
 
         }
 
+    }
+
+    fun unableToRemoveGuest(message: String = "") {
+        _removeGuestSuccess.value = Event(message)
     }
 
     public fun discountCalculation(item: TbItem) {
@@ -407,7 +424,8 @@ class DineInOrderTableViewModel @Inject constructor(
             terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, 0)
             note = ""
             openOrderType = "DineIn"
-            orderTypeId = 2
+            orderTypeId = prefProvider.getValueInt(ORDER_TYPE_ID, 2)
+            orderTypeName = prefProvider.getValue(ORDER_TYPE_NAME, DINE_IN)
             paymentStatus = 0
             subTotal = 0.0
             totalAmount = 0.0

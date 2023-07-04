@@ -115,8 +115,17 @@
                 android:layout_height="@dimen/_10sdp"
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="@dimen/_15sdp"
-                android:layout_toStartOf="@+id/refViewLine"
+                android:layout_toStartOf="@+id/removeGuest"
                 android:src="@drawable/print" />
+
+            <ImageView
+                android:id="@+id/removeGuest"
+                android:layout_width="@dimen/_12sdp"
+                android:layout_height="@dimen/_12sdp"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="@dimen/_15sdp"
+                android:layout_toStartOf="@+id/refViewLine"
+                android:src="@drawable/ic_remove_circle_primary" />
 
             <View
                 android:id="@+id/refViewLine"

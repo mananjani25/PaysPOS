@@ -14,8 +14,10 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.pos.R
@@ -32,6 +34,7 @@ import com.android.pos.databinding.FragmentDineInBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
 import com.android.pos.ui.adapter.DineInFloorNameListAdapter
+import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
@@ -43,6 +46,7 @@ import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.statusUtils.Status
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -55,6 +59,8 @@ class DineInFragment : Fragment() {
     private var dineInFloorTablesList = ArrayList<GetFloorPlanResponse.Data.FloorPlanTable>()
     private val TAG = this.javaClass.name.toString()
     private var floorPlanSelectedPos = 0
+    private var dineInFloorTable : GetFloorPlanResponse.Data.FloorPlanTable? = null
+    private val dashBoardCategoryViewModel by activityViewModels<DashBoardCategoryViewModel>()
 
     @Inject
     lateinit var rolePermission: RolePermission
@@ -133,6 +139,9 @@ class DineInFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         onClick()
+        tableStatusCheck()
+        tableStatusSucess()
+        observeShowProgress()
         binding.layoutHeader.imgTransferTable?.visible()
         binding.layoutHeader.txtUserName.text = prefProvider.getValue(Constants.EMPLOYEE_NAME, "")
 
@@ -152,16 +161,24 @@ class DineInFragment : Fragment() {
         }
 
         binding.layoutHeader.linearSwitchUser.setOnClickListener {
-            var bundle = Bundle()
-            bundle.putBoolean("isSwap", true)
-            bundle.putBoolean("isDashboard", false)
-            findNavController().navigate(
-                R.id.action_dineInFragment_to_passcode,
-                bundle
-            )
+            try {
+                var bundle = Bundle()
+                bundle.putBoolean("isSwap", true)
+                bundle.putBoolean("isDashboard", false)
+                findNavController().navigate(
+                    R.id.action_dineInFragment_to_passcode,
+                    bundle
+                )
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
         binding.layoutHeader.ivLock.setOnClickListener {
-            findNavController().navigate(R.id.action_dineInFragment_to_reportEODFragmeent)
+            try {
+                findNavController().navigate(R.id.action_dineInFragment_to_reportEODFragmeent)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
         binding.layoutHeader.txtMerge.setOnClickListener {
             if (MethodUtils.isDoubleClick()) return@setOnClickListener
@@ -169,6 +186,7 @@ class DineInFragment : Fragment() {
         }
         binding.layoutHeader.txthome.setOnClickListener {
 
+            dashBoardCategoryViewModel.cartModel = null
             prefProvider.setValue(Constants.ORDER_TYPE, "")
             prefProvider.setValue(Constants.ORDER_TYPE_NAME, "")
             findNavController().popBackStack()
@@ -235,11 +253,13 @@ class DineInFragment : Fragment() {
                             floorPlanSelectedPos = 0
                         }
                     }
+
                     Status.ERROR -> {
                         ProgressUtils.dismissProgressDialog()
                         binding.root.showAlert(resource.message)
 
                     }
+
                     Status.LOADING -> {
                         ProgressUtils.showProgressDialog(requireActivity())
                     }
@@ -275,11 +295,13 @@ class DineInFragment : Fragment() {
                         }
 
                     }
+
                     Status.ERROR -> {
                         ProgressUtils.dismissProgressDialog()
                         binding.root.showAlert(it.message)
 
                     }
+
                     Status.LOADING -> {
                         ProgressUtils.showProgressDialog(requireActivity())
                     }
@@ -320,11 +342,13 @@ class DineInFragment : Fragment() {
                         }
 
                     }
+
                     Status.ERROR -> {
                         ProgressUtils.dismissProgressDialog()
                         binding.root.showAlert(resource.message)
 
                     }
+
                     Status.LOADING -> {
                         ProgressUtils.showProgressDialog(requireActivity())
                     }
@@ -622,8 +646,13 @@ class DineInFragment : Fragment() {
         return View.OnClickListener { v ->
             val dineInFloorTableModel = v.tag as GetFloorPlanResponse.Data.FloorPlanTable
             LogUtil.logE(TAG, "dineInFloorTableModel:  ${Gson().toJson(dineInFloorTableModel)}")
-            LogUtil.logE(TAG, "dineInFloorTableModelEmployeeId:  ${prefProvider.getValueInt(
-                EMPLOYEE_ID,0)}")
+            LogUtil.logE(
+                TAG, "dineInFloorTableModelEmployeeId:  ${
+                    prefProvider.getValueInt(
+                        EMPLOYEE_ID, 0
+                    )
+                }"
+            )
             if (dineInFloorTableModel.status == OCCUPIED) {
                 if (dineInFloorTableModel.lock_by_id == prefProvider.getValueInt(
                         EMPLOYEE_ID,
@@ -637,36 +666,44 @@ class DineInFragment : Fragment() {
                     Log.d(TAG, "clickInInflatedLayout: dynamic " + dineInFloorTableModel.lock_by_id)
                     Log.d(TAG, "clickInInflatedLayout: isadmin " + prefProvider.isAdmin())
                     if (dineInFloorTableModel.currentOrderDetails != null) {
-                        val bundle = Bundle()
-                        bundle.putBoolean("isFromFloor", true)
-                        bundle.putBoolean("isMerged", false)
-                        bundle.putParcelable("floorPlan", dineInFloorTableModel)
+                        try {
+                            val bundle = Bundle()
+                            bundle.putBoolean("isFromFloor", true)
+                            bundle.putBoolean("isMerged", false)
+                            bundle.putParcelable("floorPlan", dineInFloorTableModel)
 
 
-                        findNavController().navigate(
-                            R.id.action_dineInFragment_to_dineInOrderTable,
-                            bundle
-                        )
+                            findNavController().navigate(
+                                R.id.action_dineInFragment_to_dineInOrderTable,
+                                bundle
+                            )
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
                     } else if (dineInFloorTableModel.lock_by_id == prefProvider.getValueInt(
                             EMPLOYEE_ID, 0
                         )
                     ) {
                         prefProvider.setValue(Constants.ORDER_TYPE, Constants.DINE_IN)
                         prefProvider.setValue(Constants.ORDER_TYPE_NAME, Constants.DINE_IN)
-                        val bundle = bundleOf(
-                            "isFromDineIn" to true,
-                            "numberOfGuest" to dineInFloorTableModel.chairCount,
-                            "floorplan" to dineInFloorTableModel
-                        )
-                        prefProvider.setValueInt(
-                            Constants.DINE_IN_TABLE_ID,
-                            dineInFloorTableModel.id
-                        )
-                        prefProvider.setValueboolean(Constants.DINE_IN_STATUS, true)
-                        findNavController().navigate(
-                            R.id.action_dineInFragment_to_dashboardCategoryBoldPOS,
-                            bundle
-                        )
+                        try {
+                            val bundle = bundleOf(
+                                "isFromDineIn" to true,
+                                "numberOfGuest" to dineInFloorTableModel.chairCount,
+                                "floorplan" to dineInFloorTableModel
+                            )
+                            prefProvider.setValueInt(
+                                Constants.DINE_IN_TABLE_ID,
+                                dineInFloorTableModel.id
+                            )
+                            prefProvider.setValueboolean(Constants.DINE_IN_STATUS, true)
+                            findNavController().navigate(
+                                R.id.action_dineInFragment_to_dashboardCategoryBoldPOS,
+                                bundle
+                            )
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
                     } else {
                         var status = ""
                         if (dineInFloorTableModel.lock_by_name != null) {
@@ -730,25 +767,34 @@ class DineInFragment : Fragment() {
                 }
 
             } else if (dineInFloorTableModel.status == AVAILABLE) {
-
-                val bundle = Bundle()
-                bundle.putBoolean("isMerged", false)
-                bundle.putParcelable("dineInFloorTableObject", dineInFloorTableModel)
-                findNavController().navigate(
-                    R.id.action_dineInFragment_to_dineInGuestFragment,
-                    bundle
-                )
-
+                try {
+                    val bundle = Bundle()
+                    bundle.putBoolean("isMerged", false)
+                    bundle.putParcelable("dineInFloorTableObject", dineInFloorTableModel)
+                    dineInFloorTable = dineInFloorTableModel
+                    onTableSelected(dineInFloorTableModel)
+//                findNavController().navigate(
+                    //                    R.id.action_dineInFragment_to_dineInGuestFragment,
+                    //                    bundle
+                    //                )
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
             } else if (dineInFloorTableModel.status == MERGED) {
                 LogUtil.logE(TAG, "dineInFloorTableModel:  ${Gson().toJson(dineInFloorTableModel)}")
-
-                val bundle = Bundle()
-                bundle.putBoolean("isMerged", true)
-                bundle.putParcelable("dineInFloorTableObject", dineInFloorTableModel)
-                findNavController().navigate(
-                    R.id.action_dineInFragment_to_dineInGuestFragment,
-                    bundle
-                )
+                try {
+                    val bundle = Bundle()
+                    bundle.putBoolean("isMerged", true)
+                    bundle.putParcelable("dineInFloorTableObject", dineInFloorTableModel)
+                    dineInFloorTable = dineInFloorTableModel
+                    onTableSelected(dineInFloorTableModel)
+                    //findNavController().navigate(
+                    //                    R.id.action_dineInFragment_to_dineInGuestFragment,
+                    //                    bundle
+                    //                )
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
 
 
             } else if (dineInFloorTableModel.status == MERGEDANDOCCUPIED) {
@@ -762,16 +808,20 @@ class DineInFragment : Fragment() {
                         TAG,
                         "dineInFloorTableModelMErged:  ${Gson().toJson(dineInFloorTableModel)}"
                     )
-                    val bundle = Bundle()
-                    bundle.putBoolean("isFromFloor", true)
-                    bundle.putBoolean("isMerged", false)
-                    bundle.putParcelable("floorPlan", dineInFloorTableModel)
+                    try {
+                        val bundle = Bundle()
+                        bundle.putBoolean("isFromFloor", true)
+                        bundle.putBoolean("isMerged", false)
+                        bundle.putParcelable("floorPlan", dineInFloorTableModel)
 
 
-                    findNavController().navigate(
-                        R.id.action_dineInFragment_to_dineInOrderTable,
-                        bundle
-                    )
+                        findNavController().navigate(
+                            R.id.action_dineInFragment_to_dineInOrderTable,
+                            bundle
+                        )
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
                 } else {
                     var status = ""
                     if (dineInFloorTableModel.lock_by_name != null) {
@@ -796,4 +846,93 @@ class DineInFragment : Fragment() {
         }
     }
 
+    private fun onTableSelected(dineInFloorTableModel: GetFloorPlanResponse.Data.FloorPlanTable) {
+        if (dineInFloorTableModel.status == AVAILABLE) {
+            dashBoardCategoryViewModel.deleteCart()
+            prefProvider.setValue(Constants.CUSTOMER_NAME, "")
+            prefProvider.setValue(Constants.PREF_CUSTOMER, "")
+            prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
+        }
+        if (dineInFloorTableModel.status == MERGED) {
+            viewModel.getTableStatus(dineInFloorTableModel.id ?:0, MERGED)
+        } else {
+            viewModel.getTableStatus(dineInFloorTableModel.id ?:0, OCCUPIED)
+        }
+    }
+
+    private fun tableStatusCheck() {
+        viewModel.tableCheck.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let { status ->
+                AlertUtils.showCustomAlertWithListenerWithOK(
+                    requireContext(),
+                    status
+                ) { _, _ ->
+                }
+            }
+        }
+    }
+
+    private fun tableStatusSucess() {
+        viewModel.tableCheckSuccess.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let { status ->
+                viewLifecycleOwner.lifecycleScope.launch {
+                    viewModel.increaseOnGoingOrderCounter()
+                }
+            }
+        }
+    }
+
+    private fun observeShowProgress() {
+
+        viewModel.showProgress.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it) {
+                    ProgressUtils.showProgressDialog(requireActivity())
+                } else {
+                    ProgressUtils.dismissProgressDialog()
+                }
+            }
+        }
+
+        viewModel.snackbarText.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let {
+                AlertUtils.showCustomAlert(requireContext(), it)
+            }
+        }
+
+
+        dashBoardCategoryViewModel.showProgress.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it) {
+                    ProgressUtils.showProgressDialog(requireActivity())
+                } else {
+                    ProgressUtils.dismissProgressDialog()
+                }
+            }
+        }
+
+        viewModel.increaseCounter.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let {
+                gotoDashboard(dineInFloorTable!!)
+            }
+        }
+    }
+
+    private fun gotoDashboard(dineInFloorTableModel: GetFloorPlanResponse.Data.FloorPlanTable) {
+        prefProvider.setValue(Constants.ORDER_TYPE, Constants.DINE_IN)
+        prefProvider.setValue(Constants.ORDER_TYPE_NAME, Constants.DINE_IN)
+        val bundle = bundleOf(
+            "isFromDineIn" to true,
+            "numberOfGuest" to dineInFloorTableModel.chairCount,
+            "floorplan" to dineInFloorTableModel
+        )
+        prefProvider.setValueInt(Constants.DINE_IN_TABLE_ID, dineInFloorTableModel.id ?:0)
+        prefProvider.setValueboolean(Constants.DINE_IN_STATUS, true)
+        if (findNavController().currentDestination?.id == R.id.dineInFragment) {
+            findNavController().navigate(
+                R.id.action_dineInFragment_to_dashboardCategoryBoldPOS,
+                bundle
+            )
+        }
+    }
 }

@@ -1,6 +1,7 @@
 package com.android.pos.data.model.responseModel
 
 import android.os.Parcelable
+import com.android.pos.data.model.GetPaymentOrderDetailsResponse
 import com.android.pos.data.model.requestModel.OrderItemVariationAttribute
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
@@ -121,6 +122,7 @@ data class OnlineOrderResponseModel(
         var isCheck: Boolean = false,
         @SerializedName("magensa_response")
         val magensa_response_data: String,
+        //@SerializedName("order_type_name") val order_type_name: String,
     ) {
         data class OrderItem(
             @SerializedName("category_id")

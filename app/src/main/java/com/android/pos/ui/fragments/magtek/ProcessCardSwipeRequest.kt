@@ -42,7 +42,7 @@ data class ProcessCardSwipeRequest(
 
     data class TransactionInput(
         @SerializedName("Amount")
-        val amount: Double? = null,
+        val amount: String? = null,
         @SerializedName("ProcessorName")
         val processorName: String,
         @SerializedName("TransactionType")

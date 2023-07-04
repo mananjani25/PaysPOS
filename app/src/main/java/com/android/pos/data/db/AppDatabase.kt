@@ -7,15 +7,91 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.android.pos.data.dao.*
-import com.android.pos.data.entities.*
+import com.android.pos.data.dao.BusinessDetailsDao
+import com.android.pos.data.dao.CancelOrderReasonsDao
+import com.android.pos.data.dao.CartDao
+import com.android.pos.data.dao.CashDiscountsDao
+import com.android.pos.data.dao.CategoryDao
+import com.android.pos.data.dao.CountryListDao
+import com.android.pos.data.dao.CustomerDao
+import com.android.pos.data.dao.CustomerSettingsDao
+import com.android.pos.data.dao.DBItemDao
+import com.android.pos.data.dao.DiscountDao
+import com.android.pos.data.dao.EODReportDao
+import com.android.pos.data.dao.EmployeeDao
+import com.android.pos.data.dao.ItemModifierSetsDao
+import com.android.pos.data.dao.KitchenSettingsDao
+import com.android.pos.data.dao.LoyaltyProgramsDao
+import com.android.pos.data.dao.ModifierSetDao
+import com.android.pos.data.dao.ModuleDao
+import com.android.pos.data.dao.NotesDao
+import com.android.pos.data.dao.OptionSetDao
+import com.android.pos.data.dao.OrderTypeDao
+import com.android.pos.data.dao.PrinterDao
+import com.android.pos.data.dao.PrinterQueueDao
+import com.android.pos.data.dao.ServiceChargeDao
+import com.android.pos.data.dao.SplitListDao
+import com.android.pos.data.dao.TaxDao
+import com.android.pos.data.dao.TeamRoleDao
+import com.android.pos.data.dao.TerminalsDao
+import com.android.pos.data.dao.TimeZonesDao
+import com.android.pos.data.dao.TipsDao
+import com.android.pos.data.dao.cardReaderDao
+import com.android.pos.data.entities.CartModel
+import com.android.pos.data.entities.CashDiscountModel
+import com.android.pos.data.entities.DineInCartModel
+import com.android.pos.data.entities.Employee
+import com.android.pos.data.entities.ItemModifierSets
+import com.android.pos.data.entities.LoyaltyProgramsModel
+import com.android.pos.data.entities.ModifierSet
+import com.android.pos.data.entities.ModulePermission
+import com.android.pos.data.entities.OptionSet
+import com.android.pos.data.entities.TaxData
+import com.android.pos.data.entities.TbBusinessDetails
+import com.android.pos.data.entities.TbCardReader
+import com.android.pos.data.entities.TbCategory
+import com.android.pos.data.entities.TbCountryList
+import com.android.pos.data.entities.TbCustomer
+import com.android.pos.data.entities.TbDiscount
+import com.android.pos.data.entities.TbItem
+import com.android.pos.data.entities.TbOrderType
+import com.android.pos.data.entities.TbServiceCharge
+import com.android.pos.data.entities.TbTimeZones
+import com.android.pos.data.entities.TeamRole
 import com.android.pos.data.model.CharacterModel
 import com.android.pos.data.model.PrinterQueueModel
 import com.android.pos.data.model.ShiftRportConfiguration
 import com.android.pos.data.model.SplitDetailListModel
-import com.android.pos.data.model.responseModel.*
+import com.android.pos.data.model.responseModel.GetCustomerReceiptSettingsResponse
+import com.android.pos.data.model.responseModel.GetKitchenReceiptSettingsResponse
+import com.android.pos.data.model.responseModel.GetTipReponse
+import com.android.pos.data.model.responseModel.NoteResponse
+import com.android.pos.data.model.responseModel.PrinterResponse
+import com.android.pos.data.model.responseModel.VenueDetailsResponse
 import com.android.pos.data.remote.Constants.DATABASE_NAME
-import com.android.pos.data.typeconvert.*
+import com.android.pos.data.typeconvert.TCBusiness
+import com.android.pos.data.typeconvert.TCCustomer
+import com.android.pos.data.typeconvert.TCCustomerReceiptPrinters
+import com.android.pos.data.typeconvert.TCDineInList
+import com.android.pos.data.typeconvert.TCKitchenReceiptPrinters
+import com.android.pos.data.typeconvert.TCLoyaltyPrograms
+import com.android.pos.data.typeconvert.TCModifier
+import com.android.pos.data.typeconvert.TCOption
+import com.android.pos.data.typeconvert.TCOptionSets
+import com.android.pos.data.typeconvert.TCOrderItemsPrinter
+import com.android.pos.data.typeconvert.TCOrderTypes
+import com.android.pos.data.typeconvert.TCPrinter
+import com.android.pos.data.typeconvert.TCPrinterCategories
+import com.android.pos.data.typeconvert.TCPrinterQueueData
+import com.android.pos.data.typeconvert.TCPrinterQueueSuucessModel
+import com.android.pos.data.typeconvert.TCServiceCharge
+import com.android.pos.data.typeconvert.TCVariations
+import com.android.pos.data.typeconvert.TypeConvertersEmployee
+import com.android.pos.data.typeconvert.TypeConvertersIds
+import com.android.pos.data.typeconvert.TypeConvertersModule
+import com.android.pos.data.typeconvert.TypeConvertersTax
+import com.android.pos.data.typeconvert.TypeConvertorAddress
+import com.android.pos.data.typeconvert.TypeConvertorPhone
 
 
 @Database(
@@ -29,7 +105,7 @@ import com.android.pos.data.typeconvert.*
         GetCustomerReceiptSettingsResponse.Data::class, LoyaltyProgramsModel::class, SplitDetailListModel::class,
         CashDiscountModel::class, TbCountryList::class, TbCardReader::class, VenueDetailsResponse.Data.CancelOrderReason::class,
         DineInCartModel::class, ShiftRportConfiguration::class, TbBusinessDetails::class, TbTimeZones::class, PrinterQueueModel::class],
-    version = 4
+    version = 6
 )
 @TypeConverters(
     TypeConvertersIds::class,
@@ -149,9 +225,20 @@ abstract class AppDatabase : RoomDatabase() {
 
         }
 
+        val MIGRATION_5_6: Migration = object : Migration(5, 6) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                try {
+                    database.execSQL("ALTER TABLE TbItem ADD COLUMN dineInSort INTEGER DEFAULT 0 NOT NULL")
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+
+        }
+
         private fun buildDatabase(appContext: Context) =
             Room.databaseBuilder(appContext, AppDatabase::class.java, DATABASE_NAME)
-                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
+                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
                 .build()
     }
 
