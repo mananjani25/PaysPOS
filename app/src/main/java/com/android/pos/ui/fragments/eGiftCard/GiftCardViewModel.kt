@@ -389,15 +389,18 @@ class GiftCardViewModel @Inject constructor(
 
                             resource.data?.let { addValueInGiftCardResponse ->
 
-                                prefProvider.setValueInt(
-                                    Constants.PAYMENT_ID,
-                                    addValueInGiftCardResponse.data.gift_card.payments[0].id
-                                )
+                                addValueInGiftCardResponse.data?.let {
 
-                                prefProvider.setValueInt(
-                                    Constants.PAYMENT_ID_FOR_CUSTOMER_DISPLAY,
-                                    addValueInGiftCardResponse.data.gift_card.payments[0].id
-                                )
+                                    prefProvider.setValueInt(
+                                        Constants.PAYMENT_ID,
+                                        addValueInGiftCardResponse.data.gift_card.payments[0].id
+                                    )
+
+                                    prefProvider.setValueInt(
+                                        Constants.PAYMENT_ID_FOR_CUSTOMER_DISPLAY,
+                                        addValueInGiftCardResponse.data.gift_card.payments[0].id
+                                    )
+                                }
 
                                 posRepository.deleteCart(
                                     prefProvider.getValueInt(

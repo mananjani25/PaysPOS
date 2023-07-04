@@ -13,6 +13,7 @@ import com.android.pos.databinding.FragmentBalanceInquiryBinding
 import com.android.pos.ui.fragments.payment.PaymentViewModel
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.LogUtil
+import com.android.pos.utils.MethodUtils.Companion.toPrecision
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.gone
 import dagger.hilt.android.AndroidEntryPoint
@@ -52,7 +53,7 @@ class BalanceInquiryFragment : Fragment() {
                     AlertUtils.showCustomAlertWithTitleListenerWithOK(
                         requireContext(),
                         title = getString(R.string.msg_balance_inquiry_results),
-                        message = "$${it.data.amount}"
+                        message = "$${it.data.amount.toPrecision(2)}"
                     ) { _, _ ->
                     }
                 } else {
