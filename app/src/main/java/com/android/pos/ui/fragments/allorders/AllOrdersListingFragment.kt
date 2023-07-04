@@ -916,6 +916,8 @@ class AllOrdersListingFragment(
                     prefProvider.setValue(Constants.ORDER_TYPE_NAME, Constants.PHONE_ORDER)
                 }
 
+                prefProvider.setValueInt(Constants.ORDER_TYPE_ID, order.orderTypeId)
+
                 if (order.customer != null) {
                     prefProvider.setValue(
                         Constants.CUSTOMER_NAME,
