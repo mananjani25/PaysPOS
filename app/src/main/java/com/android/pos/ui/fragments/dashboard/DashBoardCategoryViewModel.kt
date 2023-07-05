@@ -16,7 +16,6 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.android.pos.BuildConfig
 import com.android.pos.MainApplication
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.entities.*
@@ -829,12 +828,30 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         list.add(item)
                                     }
                                 }
-                                else if ( prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN){
-                                    Log.e(TAG,"checkInsideSc  ${item?.isDestroy}")
+
+
+                                else if (prefProvider.getValue(
+                                        ORDER_TYPE,
+                                        TAKEOUT
+                                    ) == DINE_IN && prefProvider.getValueboolean(
+                                        DINE_IN_UPDATE, false
+                                    ) == true
+                                ) {
+                                    Log.e(
+                                        TAG,
+                                        "checkInsideSc  ${item?.isDestroy}  updateOrder ${isOrderUpdate}"
+                                    )
                                     item?.let { list.add(it) }
 
                                 }
                                 Log.e("GEtDineInData", "getList  ${Gson().toJson(list)}")
+                                Log.e(
+                                    TAG, "checkDinein  ${
+                                        prefProvider.getValueboolean(
+                                            DINE_IN_UPDATE, false
+                                        )
+                                    }"
+                                )
                                 cartList[0].items = list
                             }
 
@@ -3509,7 +3526,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                         //   MethodUtils.getTwoDecimal(tax.rate * item.itemQuantity)
                         /*String.format("%.2f", tax.rate * item.itemQuantity)
                             .toDouble()*/
-                        String.format("%.2f",  tax.rate * item.itemQuantity)
+                        String.format("%.2f", tax.rate * item.itemQuantity)
                             .toDouble()
 
                     }
@@ -4560,7 +4577,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 //        if (BuildConfig.DEBUG == false) {
 //            ttotalDiscount = cartModel.discountPrice + totalDiscount
 //        } else {
-            ttotalDiscount = totalDiscount
+        ttotalDiscount = totalDiscount
 //        }
 
         Log.e(TAG, "ttotalDiscount:  ${ttotalDiscount}")
