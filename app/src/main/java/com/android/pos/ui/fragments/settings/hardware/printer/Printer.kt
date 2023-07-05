@@ -82,6 +82,11 @@ import com.google.gson.Gson
 import com.sunmi.externalprinterlibrary.api.ConnectCallback
 import com.sunmi.externalprinterlibrary.api.SunmiPrinter
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
+import com.sunmi.externalprinterlibrary2.SearchCallback
+import com.sunmi.externalprinterlibrary2.SearchMethod
+import com.sunmi.externalprinterlibrary2.SunmiPrinterManager
+import com.sunmi.externalprinterlibrary2.exceptions.SearchException
+import com.sunmi.externalprinterlibrary2.printer.CloudPrinter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -94,18 +99,18 @@ import java.net.URLDecoder
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
-import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 
 
 //Original New
 @AndroidEntryPoint
 class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
-    StatusChangeEventListener, BatteryStatusChangeEventListener, ICallback {
+    StatusChangeEventListener, BatteryStatusChangeEventListener, ICallback,
+    SearchCallback {
+    private var cloudPrinter: CloudPrinter? = null
     private var woyouService: IWoyouService? = null
     private lateinit var binding: FragmentPrinterBinding
     var mBluetoothAdapter: BluetoothAdapter? = null
@@ -115,7 +120,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     var availablePrinterList: ArrayList<PrinterListModel> = arrayListOf()
     var orderTypeList: ArrayList<TbOrderType> = arrayListOf()
 
-    var isOneClick:Boolean = false
+    var isOneClick: Boolean = false
 
     //private var mFilterOption: FilterOption? = null
     private lateinit var customerAdapter: PrinterListAdapter
@@ -198,9 +203,11 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             Status.LOADING -> {
                 ProgressUtils.showProgressDialog(requireActivity())
             }
+
             Status.ERROR -> {
                 ProgressUtils.dismissProgressDialog()
             }
+
             Status.SUCCESS -> {
                 ProgressUtils.dismissProgressDialog()
                 if (it.data != null) {
@@ -216,10 +223,10 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     }
 
     private fun startFinder() {
-       /* scheduler = Executors.newSingleThreadScheduledExecutor()
-        if (scheduler == null) {
-            return
-        }*/
+        /* scheduler = Executors.newSingleThreadScheduledExecutor()
+         if (scheduler == null) {
+             return
+         }*/
 
         try {
             Finder.start(requireContext(), DevType.TCP, "255.255.255.255")
@@ -246,15 +253,21 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         super.onPause()
         PrinterClass.closePrinter()
         binding.unbind()
-       /* stopFinder()
+        /* stopFinder()
 
-        closeBT()*/
+         closeBT()*/
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Binding()
         hideLoaderAfterDelay()
+
+        try {
+            SunmiPrinterManager.getInstance().searchCloudPrinter(requireContext(), SearchMethod.LAN, this)
+        } catch (e: SearchException) {
+            e.printStackTrace()
+        }
 
         observeShowProgress()
 
@@ -385,7 +398,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         }
 
         binding.header.imgSync.setOnSingleClickListener {
-            if(!isOneClick) {
+            if (!isOneClick) {
                 isOneClick = true
                 binding.maskLayout?.visible()
                 availableNetworkAdapter.clearList()
@@ -719,49 +732,49 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
         if (mBluetoothAdapter?.isEnabled == true) {
 
-                val availableDevices: Set<BluetoothDevice> = mBluetoothAdapter!!.bondedDevices
+            val availableDevices: Set<BluetoothDevice> = mBluetoothAdapter!!.bondedDevices
 
-                for (i in availableDevices) {
+            for (i in availableDevices) {
 
-                    var isAdded: Boolean = false
-                    for (j in 0 until allPrinterlist.size) {
-                        if (allPrinterlist.get(j).deviceModel?.macAddress == i.address) {
-                            isAdded = true
-                            break
-                        } else {
-                            isAdded = false
-
-                        }
+                var isAdded: Boolean = false
+                for (j in 0 until allPrinterlist.size) {
+                    if (allPrinterlist.get(j).deviceModel?.macAddress == i.address) {
+                        isAdded = true
+                        break
+                    } else {
+                        isAdded = false
 
                     }
 
-                    if (isAdded == false) {
+                }
 
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                            LogUtil.logE(TAG, "BluetoothPrinteralias:  ${i.alias}")
-                        }
+                if (isAdded == false) {
 
-                        availableNetworkAdapter.addItem(
-                            PrinterListModel(
-                                printerName = i.name,
-                                connectionType = BLUETOOTH,
-                                deviceModel = DeviceInfo(
-                                    DevType.BLUETOOTH,
-                                    i.address,
-                                    i.name,
-                                    i.address,
-                                    i.address
-                                ),
-                                type = AVAILABLE,
-                                uuid = UUID.randomUUID(),
-                                modelName = i.name
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        LogUtil.logE(TAG, "BluetoothPrinteralias:  ${i.alias}")
+                    }
 
-                            )
+                    availableNetworkAdapter.addItem(
+                        PrinterListModel(
+                            printerName = i.name,
+                            connectionType = BLUETOOTH,
+                            deviceModel = DeviceInfo(
+                                DevType.BLUETOOTH,
+                                i.address,
+                                i.name,
+                                i.address,
+                                i.address
+                            ),
+                            type = AVAILABLE,
+                            uuid = UUID.randomUUID(),
+                            modelName = i.name
+
                         )
-                    }
-                    if (i.name == "TM-m30_030295") {
-                        mmDevice = i
-                    }
+                    )
+                }
+                if (i.name == "TM-m30_030295") {
+                    mmDevice = i
+                }
 
 
             }
@@ -773,8 +786,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         super.onStop()
         //stop find
         //  stopFinder()
-   /*     PrinterClass.closePrinter()
-        closeBT()*/
+        /*     PrinterClass.closePrinter()
+             closeBT()*/
 
 
     }
@@ -1001,7 +1014,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                                         modelName = deviceList!!.get(i).printerName
 
 
-                                        )
+                                    )
                                 )
                             }
                         } else {
@@ -1035,7 +1048,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                                     modelName = deviceList!!.get(i).printerName
 
 
-                                    )
+                                )
                             )
                         }
                     }
@@ -1076,7 +1089,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
     }
 
-    private fun printersLisFromFinder(){
+    private fun printersLisFromFinder() {
         viewModel.viewModelScope.launch {
             try {
                 deviceList = Finder.getDeviceInfoList(com.epson.epsonio.FilterOption.PARAM_DEFAULT)
@@ -1103,11 +1116,18 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
                         }
                         if (isAdded == false) {
-                            Log.e(TAG, "checkIsNotAdded ${deviceList!!.get(i).printerName.lowercase()}")
+                            Log.e(
+                                TAG,
+                                "checkIsNotAdded ${deviceList!!.get(i).printerName.lowercase()}"
+                            )
                             if (deviceList!!.get(i).printerName.lowercase() == "TM-U220".lowercase()
                             ) {
                                 Log.e(TAG, "checkInside 1")
-                                if (prefProvider.getValueboolean(IS_MASTER_TERMINAL, false) == true) {
+                                if (prefProvider.getValueboolean(
+                                        IS_MASTER_TERMINAL,
+                                        false
+                                    ) == true
+                                ) {
 
                                     Log.e(TAG, "checkInside 2")
 
@@ -1159,7 +1179,10 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
 
                                       ))*/
-                                Log.e(TAG, "availableNetworkAdapter item3 ${deviceList!!.get(i).printerName}")
+                                Log.e(
+                                    TAG,
+                                    "availableNetworkAdapter item3 ${deviceList!!.get(i).printerName}"
+                                )
                                 availableNetworkAdapter.addItem(
                                     PrinterListModel(
                                         printerName = deviceList!!.get(i).printerName,
@@ -1786,7 +1809,10 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             }
 
             var list: ArrayList<CreatePrinterRequestModel.PrinterSettingsAttributes> = arrayListOf()
-            if (printerListModel.printerName == "TM-U220" || printerListModel.printerName == "TM-U220B" && prefProvider.getValueboolean(
+            if (printerListModel.printerName == "TM-U220" || printerListModel.printerName == "TM-U220B" || printerListModel.printerName?.startsWith(
+                    "CloudPrint",
+                    true
+                ) == true && prefProvider.getValueboolean(
                     IS_MASTER_TERMINAL, false
                 ) == true
             ) {
@@ -2852,5 +2878,27 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
     private fun hideLoaderAfterDelay() {
         binding.maskLayout?.gone()
+    }
+
+    override fun onFound(p0: CloudPrinter?) {
+        Log.e(TAG, "onFound:  ${Gson().toJson(p0)}")
+        runOnUiThread(Runnable {
+        availableNetworkAdapter.addItem(PrinterListModel(
+            printerName = p0?.cloudPrinterInfo?.name,
+            connectionType = WIFI,
+            deviceModel = DeviceInfo(
+                DevType.TCP,
+                p0?.cloudPrinterInfo?.address,
+                p0?.cloudPrinterInfo?.name,
+                p0?.cloudPrinterInfo?.address,
+                p0?.cloudPrinterInfo?.address
+            ),
+            type = AVAILABLE,
+            uuid = UUID.randomUUID(),
+            modelName = p0?.cloudPrinterInfo?.name
+
+        ))
+        })
+
     }
 }
