@@ -827,10 +827,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         Log.e("checkISItemEdit", "isEdited  ${item.isEdited}")
                                         list.add(item)
                                     }
-                                }
-
-
-                                else if (prefProvider.getValue(
+                                } else if (prefProvider.getValue(
                                         ORDER_TYPE,
                                         TAKEOUT
                                     ) == DINE_IN && prefProvider.getValueboolean(
@@ -841,10 +838,24 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         TAG,
                                         "checkInsideSc  ${item?.isDestroy}  updateOrder ${isOrderUpdate}"
                                     )
-                                    item?.let { list.add(it) }
+
+                                    var flagD: Boolean = false
+                                    list.forEach {
+                                        if (item?.itemId == it.itemId && it.isDestroy == true) {
+
+                                            flagD = true
+
+                                        }
+
+                                    }
+
+                                    if (flagD) {
+                                        item?.let { list.add(it) }
+                                    }
 
                                 }
                                 Log.e("GEtDineInData", "getList  ${Gson().toJson(list)}")
+                                Log.e("GEtDineInData", "destroyTerer  ${item?.isDestroy}")
                                 Log.e(
                                     TAG, "checkDinein  ${
                                         prefProvider.getValueboolean(
