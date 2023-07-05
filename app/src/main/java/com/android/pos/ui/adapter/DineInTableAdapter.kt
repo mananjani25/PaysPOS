@@ -531,10 +531,11 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 binding.chkIsFired.isChecked = true
                 binding.chkIsFired.isPressed = true
                 binding.chkIsFired.isEnabled = false
+                binding.ivMenu.visibility = View.VISIBLE
             } else {
                 binding.chkIsFired.isChecked = false
                 binding.chkIsFired.isEnabled = true
-
+                binding.ivMenu.visibility = View.GONE
             }
 
             list[bindingAdapterPosition].item?.dineInSort = bindingAdapterPosition
@@ -580,14 +581,10 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             }
 
             val popupMenu = PopupMenu(itemView.context, binding.ivMenu)
-            if (list[bindingAdapterPosition].item?.isFired == true) {
                 popupMenu.menuInflater.inflate(
                     R.menu.dine_in_table_menu_with_wastage,
                     popupMenu.menu
                 )
-            } else {
-                popupMenu.menuInflater.inflate(R.menu.dine_in_table_menu, popupMenu.menu)
-            }
 
             popupMenu.setOnMenuItemClickListener { menuItem ->
                 when (menuItem.itemId) {
@@ -595,9 +592,6 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                         listner.onAddToWastage(layoutPosition, list[bindingAdapterPosition].item!!)
                     }
 
-                    R.id.removeGuest -> {
-
-                    }
                 }
                 true
             }
