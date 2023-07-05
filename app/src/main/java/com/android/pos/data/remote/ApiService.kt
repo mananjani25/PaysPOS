@@ -674,7 +674,7 @@ interface ApiService {
     suspend fun sellGiftCard(@Body sellGiftCardRequestModel: SellGiftCardRequestModel): SellGiftCardResponseModel
 
     @PUT(GIFT_CARD_ADD_BALANCE)
-    suspend fun addValueInGiftCard(@Body giftCardAddValueRequest: GiftCardAddValueRequest): GiftCardAddValueResponse
+    suspend fun addValueInGiftCard(@Body giftCardAddValueRequest: GiftCardAddValueRequest): SellGiftCardResponseModel
 
     @POST(GIFT_CARD_CHECK_BALANCE)
     suspend fun giftCardCheckBalance(@Body giftCardCheckBalanceRequest: GiftCardCheckBalanceRequest): GiftCardCheckBalanceResponse

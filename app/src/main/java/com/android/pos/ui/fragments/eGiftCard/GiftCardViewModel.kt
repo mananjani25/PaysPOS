@@ -40,8 +40,8 @@ class GiftCardViewModel @Inject constructor(
     private val _giftCardData = MutableLiveData<Event<SellGiftCardResponseModel?>>()
     val giftCardData: LiveData<Event<SellGiftCardResponseModel?>> = _giftCardData
 
-    private val _addValueInGiftCardData = MutableLiveData<Event<GiftCardAddValueResponse?>>()
-    val addValueInGiftCardData: LiveData<Event<GiftCardAddValueResponse?>> = _addValueInGiftCardData
+    private val _addValueInGiftCardData = MutableLiveData<Event<SellGiftCardResponseModel?>>()
+    val addValueInGiftCardData: LiveData<Event<SellGiftCardResponseModel?>> = _addValueInGiftCardData
 
     private val _giftCardCheckBalanceData = MutableLiveData<Event<GiftCardCheckBalanceResponse?>>()
     val giftCardCheckBalanceData: LiveData<Event<GiftCardCheckBalanceResponse?>> = _giftCardCheckBalanceData
@@ -80,6 +80,7 @@ class GiftCardViewModel @Inject constructor(
             )
 
         val giftCard = GiftCard(
+            gift_card_type = "Digital",//Physical
             name = "",
             amount = giftCardPurchaseAmount,
             customer_id = prefProvider.getValueInt(Constants.CUSTOMER_ID, 0),
@@ -166,6 +167,7 @@ class GiftCardViewModel @Inject constructor(
 
 
         val giftCard = GiftCard(
+            gift_card_type = "Digital",//Physical
             name = "",
             amount = giftCardPurchaseAmount,
             customer_id = prefProvider.getValueInt(Constants.CUSTOMER_ID, 0),
@@ -270,6 +272,7 @@ class GiftCardViewModel @Inject constructor(
             )
 
         val giftCard = GiftCardAddValueRequest.GiftCard(
+            gift_card_type = "Digital",//Physical
             name = giftCardNumber,
             added_amount = giftCardPurchaseAmount.toDouble(),
         )
@@ -358,6 +361,7 @@ class GiftCardViewModel @Inject constructor(
 
 
         val giftCard = GiftCardAddValueRequest.GiftCard(
+            gift_card_type = "Digital",//Physical
             name = giftCardNumber,
             added_amount = giftCardPurchaseAmount.toDouble(),
         )
@@ -378,7 +382,7 @@ class GiftCardViewModel @Inject constructor(
 
         viewModelScope.launch {
 
-            val resource: Resource<GiftCardAddValueResponse> =
+            val resource: Resource<SellGiftCardResponseModel> =
                 posRepository.addValueInGiftCard(giftCardAddValueRequest)
 
             when (resource.status) {

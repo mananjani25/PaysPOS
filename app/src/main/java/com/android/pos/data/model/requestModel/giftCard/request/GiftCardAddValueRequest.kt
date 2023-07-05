@@ -6,7 +6,8 @@ data class GiftCardAddValueRequest(
 ) {
     data class GiftCard(
         val added_amount: Double,
-        val name: String
+        val name: String,
+        val gift_card_type: String
     )
 
     data class GiftCardAmountTab(

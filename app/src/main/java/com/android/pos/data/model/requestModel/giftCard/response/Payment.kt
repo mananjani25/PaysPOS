@@ -3,6 +3,7 @@ package com.android.pos.data.model.requestModel.giftCard.response
 data class Payment(
     val id: Int,
     val amount: Double,
+    val card_type: String,
     val card_name: String,
     val card_number: String,
     val cash_discount_fee: Double,
@@ -26,5 +27,7 @@ data class Payment(
     val total_cash_discount: Double,
     val total_discount: Double,
     val transaction_id: String,
-    val used_reward_points: Int
+    val used_reward_points: Int,
+    val created_at: String,
+    val updated_at: String,
 )
