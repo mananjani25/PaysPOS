@@ -338,7 +338,7 @@ class Settings : Fragment() {
         list.add(BusinessSettingModel(0, "Business Information", false))
         list.add(BusinessSettingModel(0, "Tips", false))
         list.add(BusinessSettingModel(0, "Service Charges", false))
-        list.add(BusinessSettingModel(0, "Sales Taxes", false))
+        list.add(BusinessSettingModel(0, "Taxes", false))
         list.add(BusinessSettingModel(0, "Discounts", false))
         list.add(BusinessSettingModel(0, "Order Notes", false))
         list.add(BusinessSettingModel(0, "Loyalty Program", false))
@@ -385,7 +385,7 @@ class Settings : Fragment() {
                 loadFragment(service)
             }
             3 -> {
-                binding.commonToolbar.txtSubTitle.text = "Sales Taxes"
+                binding.commonToolbar.txtSubTitle.text = "Taxes"
                 val taxFrag: Fragment = TaxesList()
                 loadFragment(taxFrag)
             }

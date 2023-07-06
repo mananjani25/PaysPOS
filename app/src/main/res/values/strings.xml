@@ -221,7 +221,6 @@
     <string name="tv_new_tax_add">Add New Tax</string>
     <string name="tv_update_tax">Update Tax</string>
     <string name="tv_enable_default_tax">Enable Default Tax</string>
-    <string name="tv_sales_tax">Sales Tax</string>
     <string name="item_pricing">Item Pricing <font color='#E90C0C'>*</font></string>
     <string name="tv_apply_tax_to">APPLY TO ITEMS</string>
     <string name="tv_custom_amount">Custom Amount</string>
