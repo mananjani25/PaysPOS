@@ -2688,12 +2688,12 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
             timecalender.set(Calendar.HOUR_OF_DAY, hour)
             timecalender.set(Calendar.MINUTE, minute)
             viewModel.startDate.value = timeCalculateForStartEndTime(hour, minute, "isstart")
-            if (differnceTrue(viewModel.startDate.value!!, viewModel.endDate.value) <= 30) {
+            if (differnceTrue(viewModel.startDate.value!!, viewModel.endDate.value) <= 7) {
                 viewModel.getReportSummary("")
             } else {
                 AlertUtils.showCustomAlertWithListenerWithOK(
                     requireActivity(),
-                    "Please Select date in 30 Days."
+                    "Please Select date in 7 Days."
                 ) { _, _ ->
                 }
             }
@@ -2912,6 +2912,8 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
                     Log.d(TAG, "BEFORE JOB: CALLED")
                     ProgressUtils.showProgressDialog(requireActivity())
+
+                    delay(3000)
 
                     val job = async(Dispatchers.Main) {
                         updateData(it)
