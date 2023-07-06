@@ -11,7 +11,13 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.entities.TbServiceCharge
-import com.android.pos.data.model.responseModel.*
+import com.android.pos.data.model.responseModel.CreateOrderResponse
+import com.android.pos.data.model.responseModel.EodReportResponse
+import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
+import com.android.pos.data.model.responseModel.GetTipReponse
+import com.android.pos.data.model.responseModel.OnlineOrderResponseModel
+import com.android.pos.data.model.responseModel.OpenOrderResponse
+import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.model.responseModel.report.KeyValue
 import com.android.pos.data.remote.Constants
 import com.android.pos.di.PrefProvider
@@ -66,6 +72,25 @@ fun addPaymentDetailsHeader(builder: Builder): Builder {
     return builder
 }
 
+
+fun addPaymentDetailsHeaderEODP(builder: Printer): Printer {
+    builder.addFeedUnit(30)
+    builder.addTextFont(Builder.FONT_E)
+    // builder.addTextAlign(Builder.ALIGN_LEFT)
+    builder.addTextLang(Builder.LANG_EN)
+    addCustomerTextSizeEODP(builder, Constants.SMALL)
+    builder.addTextStyle(
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.TRUE,
+        Builder.COLOR_1
+    )
+    builder.addText("Details" + repeat(" ", 20) + "Refund" + repeat(" ", 9) + "Amount")
+
+
+    return builder
+}
+
 fun addPaymentDetailsHeader() {
 
     PrintSunmiUtils.orderTime("Details" + repeat(" ", 20) + "Refund" + repeat(" ", 9) + "Amount")
@@ -87,6 +112,56 @@ fun addPaymentDetailsThreeData(builder: Builder, keyValue: java.util.ArrayList<K
     // builder.addTextAlign(Builder.ALIGN_LEFT)
     builder.addTextLang(Builder.LANG_EN)
     addCustomerTextSize(builder, Constants.SMALL)
+    builder.addTextStyle(
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.COLOR_1
+    )
+    var title = ""
+    var refund = ""
+    var amount = ""
+
+
+    keyValue.forEach {
+
+
+        if (it.key.toString().toLowerCase().contains("Refund".toLowerCase())) {
+            refund = if (it.value?.isNotEmpty() == true) {
+                MethodUtils.roundOffAmount(it.value.toString().toDouble())
+            }else{
+                "$0.00"
+            }
+        } else {
+            title = it.key.toString()
+            amount = if (it.value?.isNotEmpty() == true) {
+                MethodUtils.roundOffAmount(it.value.toString().toDouble())
+            }else{
+                "$0.00"
+            }
+        }
+    }
+
+    var fPart = title + repeat(" ", 27 - title.length) + refund
+    var spaceLastPart = 48 - fPart.length
+    var spaceLast = 0
+    if (spaceLastPart > 1 && amount.length < spaceLastPart) {
+        spaceLast = spaceLastPart - amount.length
+    }
+
+    fPart += repeat(" ", spaceLast) + amount
+
+    builder.addText(fPart)
+
+    return builder
+}
+
+fun addPaymentDetailsThreeDataEODP(builder: Printer, keyValue: java.util.ArrayList<KeyValue>): Printer {
+    builder.addFeedUnit(30)
+    builder.addTextFont(Builder.FONT_E)
+    // builder.addTextAlign(Builder.ALIGN_LEFT)
+    builder.addTextLang(Builder.LANG_EN)
+    addCustomerTextSizeEODP(builder, Constants.SMALL)
     builder.addTextStyle(
         Builder.FALSE,
         Builder.FALSE,
@@ -231,6 +306,35 @@ fun employeeGuestDetailsData(builder: Builder, keyValue: KeyValue): Builder {
 
 }
 
+fun employeeGuestDetailsDataEODP(builder: Printer, keyValue: KeyValue): Printer {
+    builder.addFeedUnit(30)
+    builder.addTextFont(Builder.FONT_E)
+    // builder.addTextAlign(Builder.ALIGN_LEFT)
+    builder.addTextLang(Builder.LANG_EN)
+    addCustomerTextSizeEODP(builder, Constants.SMALL)
+    builder.addTextStyle(
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.COLOR_1
+    )
+    var sPart = if (keyValue.key?.contains("Served", true) == true) {
+        keyValue.value.toString()
+    } else {
+        MethodUtils.roundOffAmount(keyValue.value?.toDouble() ?: 0.0)
+    }
+    builder.addText(
+        padLine(
+            keyValue.key,
+            sPart,
+            48
+        )
+    )
+
+    return builder
+
+}
+
 fun employeeGuestDetailsData(keyValue: KeyValue) {
 
     var sPart = if (keyValue.key?.contains("Served", true) == true) {
@@ -291,6 +395,29 @@ fun addPaymentDetailsTwoData(builder: Builder, keyValue: KeyValue): Builder {
     return builder
 }
 
+fun addPaymentDetailsTwoDataEODP(builder: Printer, keyValue: KeyValue): Printer {
+    builder.addFeedUnit(30)
+    builder.addTextFont(Builder.FONT_E)
+    // builder.addTextAlign(Builder.ALIGN_LEFT)
+    builder.addTextLang(Builder.LANG_EN)
+    addCustomerTextSizeEODP(builder, Constants.SMALL)
+    builder.addTextStyle(
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.COLOR_1
+    )
+    builder.addText(
+        padLine(
+            keyValue.key,
+            MethodUtils.roundOffAmount(keyValue.value.toString().toDouble() ?: 0.0),
+            48
+        )
+    )
+
+    return builder
+}
+
 fun addPaymentDetailsTwoData(keyValue: KeyValue) {
 
     PrintSunmiUtils.orderTime(
@@ -325,6 +452,35 @@ fun addRefundVoidsMultiple(builder: Builder, keyValue: java.util.ArrayList<KeyVa
     // builder.addTextAlign(Builder.ALIGN_LEFT)
     builder.addTextLang(Builder.LANG_EN)
     addCustomerTextSize(builder, Constants.SMALL)
+    builder.addTextStyle(
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.COLOR_1
+    )
+    keyValue.forEach {
+        if (!it.key?.trim().equals("Item Count".trim(), true)) {
+            builder.addText(
+                padLine(
+                    it.key,
+                    MethodUtils.roundOffAmount(it.value.toString().toDouble() ?: 0.0),
+                    48
+                )
+            )
+        }
+    }
+
+
+    return builder
+
+}
+
+fun addRefundVoidsMultipleEODP(builder: Printer, keyValue: java.util.ArrayList<KeyValue>): Printer {
+    builder.addFeedUnit(30)
+    builder.addTextFont(Builder.FONT_E)
+    // builder.addTextAlign(Builder.ALIGN_LEFT)
+    builder.addTextLang(Builder.LANG_EN)
+    addCustomerTextSizeEODP(builder, Constants.SMALL)
     builder.addTextStyle(
         Builder.FALSE,
         Builder.FALSE,
@@ -403,6 +559,26 @@ fun addSixHeaderForOrderSaleDetails(builder: Builder): Builder {
     return builder
 }
 
+fun addSixHeaderForOrderSaleDetailsEODP(builder: Printer): Printer {
+
+
+    builder.addFeedUnit(30)
+    builder.addTextFont(Builder.FONT_E)
+    // builder.addTextAlign(Builder.ALIGN_LEFT)
+    builder.addTextLang(Builder.LANG_EN)
+    addCustomerTextSizeEODP(builder, Constants.SMALL)
+    builder.addTextStyle(
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.TRUE,
+        Builder.COLOR_1
+    )
+
+    builder.addText("OrderId    Tip      SC     PayType     Amount   ")
+
+    return builder
+}
+
 fun addSixHeaderForOrderSaleDetailsSunmi() {
     PrintSunmiUtils.orderTime("OrderId    Tip      SC     PayType     Amount   ")
 }
@@ -418,6 +594,30 @@ fun addCreditTipAuditHeader(builder: Builder): Builder {
     builder.addTextAlign(Builder.ALIGN_LEFT)
     builder.addTextLang(Builder.LANG_EN)
     addCustomerTextSize(builder, Constants.SMALL)
+    builder.addTextStyle(
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.COLOR_1
+    )
+
+    builder.addText(
+        "PaymentId" + repeat(" ", 4) + "SubTotal" + repeat(" ", 6) + "Tip" + repeat(
+            " ",
+            8
+        ) + "Total"
+    )
+
+    return builder
+
+}
+
+fun addCreditTipAuditHeaderEODP(builder: Printer): Printer {
+    builder.addFeedUnit(30)
+    builder.addTextFont(Builder.FONT_E)
+    builder.addTextAlign(Builder.ALIGN_LEFT)
+    builder.addTextLang(Builder.LANG_EN)
+    addCustomerTextSizeEODP(builder, Constants.SMALL)
     builder.addTextStyle(
         Builder.FALSE,
         Builder.FALSE,
@@ -494,6 +694,39 @@ fun addCreditTipAuditData(
     return builder
 }
 
+fun addCreditTipAuditDataEODP(
+    builder: Printer,
+    fPArt: String,
+    sPart: String,
+    TPArt: String,
+    lPart: String
+): Printer {
+    builder.addFeedUnit(30)
+    builder.addTextFont(Builder.FONT_E)
+    builder.addTextAlign(Builder.ALIGN_LEFT)
+    builder.addTextLang(Builder.LANG_EN)
+    addCustomerTextSizeEODP(builder, Constants.SMALL)
+    builder.addTextStyle(
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.COLOR_1
+    )
+
+
+    var pOne = TPArt + repeat(" ", 13 - TPArt.length) + fPArt
+
+    pOne += repeat(" ", 27 - pOne.length) + sPart
+    pOne += repeat(" ", 38 - pOne.length) + lPart
+
+
+
+
+    builder.addText(pOne)
+    return builder
+}
+
+
 fun addCreditTipAuditData(
     fPArt: String,
     sPart: String,
@@ -550,6 +783,24 @@ fun addCreditCardBreakDown(builder: Builder): Builder {
     return builder
 }
 
+fun addCreditCardBreakDownEODP(builder: Printer): Printer {
+    builder.addFeedUnit(30)
+    builder.addTextFont(Builder.FONT_E)
+    // builder.addTextAlign(Builder.ALIGN_LEFT)
+    builder.addTextLang(Builder.LANG_EN)
+    addCustomerTextSizeEODP(builder, Constants.SMALL)
+    builder.addTextStyle(
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.COLOR_1
+    )
+
+    builder.addText("CardName" + repeat(" ", 20) + "Tip" + repeat(" ", 11) + "Amount")
+
+    return builder
+}
+
 fun addCreditCardBreakDown() {
 
 
@@ -574,6 +825,38 @@ fun addCreditCardBreakDownData(
     // builder.addTextAlign(Builder.ALIGN_LEFT)
     builder.addTextLang(Builder.LANG_EN)
     addCustomerTextSize(builder, Constants.SMALL)
+    builder.addTextStyle(
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.COLOR_1
+    )
+    var pOne = creditCardBreakdown.key + repeat(
+        " ",
+        28 - creditCardBreakdown.key.length
+    ) + MethodUtils.roundOffAmount(creditCardBreakdown.tips)
+    var lastPart = 48 - pOne.length
+    var amount = MethodUtils.roundOffAmount(creditCardBreakdown.value)
+    var spaceLast = 0
+    if (lastPart > 1 && amount.length < lastPart) {
+        spaceLast = lastPart - amount.length
+    }
+    pOne += repeat(" ", spaceLast) + amount
+
+    builder.addText(pOne)
+    return builder
+}
+
+
+fun addCreditCardBreakDownDataEODP(
+    builder: Printer,
+    creditCardBreakdown: EodReportResponse.Data.CreditCardBreakdown
+): Printer {
+    builder.addFeedUnit(30)
+    builder.addTextFont(Builder.FONT_E)
+    // builder.addTextAlign(Builder.ALIGN_LEFT)
+    builder.addTextLang(Builder.LANG_EN)
+    addCustomerTextSizeEODP(builder, Constants.SMALL)
     builder.addTextStyle(
         Builder.FALSE,
         Builder.FALSE,
@@ -649,6 +932,34 @@ fun addItemsInOrderSalesDetails(
     builder.addTextAlign(Builder.ALIGN_LEFT)
     builder.addTextLang(Builder.LANG_EN)
     addCustomerTextSize(builder, Constants.SMALL)
+    builder.addTextStyle(
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.COLOR_1
+    )
+
+    var data = details.orderId
+    data += repeat(" ", 10 - details.orderId.length) + MethodUtils.roundOffAmount(details.tip)
+    data += repeat(" ", 18 - data.length) + MethodUtils.roundOffAmount(details.serviceCharge)
+    data += repeat(" ", 27 - data.length) + details.payType
+    data += repeat(" ", 39 - data.length) + MethodUtils.roundOffAmount(details.amount)
+
+    builder.addText(data)
+    return builder
+}
+
+fun addItemsInOrderSalesDetailsEODP(
+    builder: Printer,
+    details: EodReportResponse.Data.OrderSalesDetails.Details
+): Printer {
+
+
+    builder.addFeedUnit(30)
+    builder.addTextFont(Builder.FONT_E)
+    builder.addTextAlign(Builder.ALIGN_LEFT)
+    builder.addTextLang(Builder.LANG_EN)
+    addCustomerTextSizeEODP(builder, Constants.SMALL)
     builder.addTextStyle(
         Builder.FALSE,
         Builder.FALSE,
@@ -760,6 +1071,32 @@ fun addCustomerTextSize(builder: Builder, font: String): Builder {
 
 }
 
+
+
+
+fun addCustomerTextSizeEODP(builder: Printer, font: String): Printer {
+    when (font) {
+        Constants.SMALL -> {
+            builder.addTextSize(1, 1)
+        }
+        Constants.LARGE -> {
+            builder.addTextSize(2, 2)
+        }
+        Constants.MEDIUM -> {
+            builder.addTextSize(1, 2)
+
+        }
+        else -> {
+            builder.addTextSize(1, 1)
+
+        }
+
+    }
+    return builder
+
+}
+
+
 fun padLineForItem(
     @Nullable partOne: String?,
     @Nullable partTwo: String?,
@@ -862,6 +1199,14 @@ fun addBuilderText(
     return builder
 }
 
+fun addBuilderTextEODP(
+    builder: Printer,
+    text: String
+): Printer {
+    builder.addText(text)
+    return builder
+}
+
 fun addBuilderTextForU220(
     builder: Printer,
     text: String
@@ -883,6 +1228,19 @@ fun addHorizontalLargeLine(builder: Builder): Builder {
 }
 
 fun addHorizontalLine(builder: Builder): Builder {
+
+
+    var str: String = ""
+    for (i in 0 until 48) {
+        str += "-"
+    }
+    LogUtil.logE("strLine", "strLine  $str")
+    builder.addText(str)
+
+    return builder
+}
+
+fun addHorizontalLineEODP(builder: Printer): Printer {
 
 
     var str: String = ""
