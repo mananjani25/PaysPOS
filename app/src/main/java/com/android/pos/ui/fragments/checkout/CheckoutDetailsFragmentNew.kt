@@ -1628,7 +1628,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
 
                             bundle.putInt("orderID", it.data.gift_card.id ?: 0)
-                            bundle.putParcelable("giftCardAddValueReceiptModel", it.data)
+                            bundle.putParcelable("giftCardReceiptData", it.data)
                             bundle.putInt("splitValue", isSelectedCount)
                             bundle.putBoolean("isSplitByAmount", false)
                             bundle.putString("paymentType", "Card")
