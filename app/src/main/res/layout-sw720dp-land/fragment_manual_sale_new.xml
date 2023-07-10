@@ -427,6 +427,7 @@
                 android:id="@+id/llDetails"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@color/bg_color"
                 android:layout_alignParentBottom="true"
                 android:orientation="vertical">
 
