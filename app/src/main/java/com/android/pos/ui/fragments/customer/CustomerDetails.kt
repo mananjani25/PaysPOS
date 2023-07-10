@@ -15,6 +15,9 @@ import com.android.pos.data.entities.*
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.data.model.responseModel.orderhistory.Orders
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.ORDER_TYPE
+import com.android.pos.data.remote.Constants.ORDER_TYPE_ID
+import com.android.pos.data.remote.Constants.ORDER_TYPE_NAME
 import com.android.pos.databinding.FragmentCustomerDetailsBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.OrderHistoryAdapter
@@ -243,8 +246,11 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
         })
         viewModel.orderResponse.observe(viewLifecycleOwner, EventObserver { order ->
             //reorder
-            prefProvider.setValue(Constants.ORDER_TYPE, Constants.TAKEOUT)
+            //prefProvider.setValue(Constants.ORDER_TYPE, Constants.TAKEOUT)
             LogUtil.logE("!_@_", "customer details ${order.orderType}")
+            prefProvider.setValue(ORDER_TYPE,order.orderType)
+            prefProvider.setValueInt(ORDER_TYPE_ID, order.orderTypeId)
+            prefProvider.setValue(ORDER_TYPE_NAME, order.orderTypeName)
             if (order.orderItems.size == 1) {
                 if (listOfItemsId.contains(order.orderItems[0].itemId)) {
                     if (order.customer != null) {
@@ -254,7 +260,9 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
                         )
                         prefProvider.setValueInt(Constants.CUSTOMER_ID, order.customer.id)
                         prefProvider.saveCustomerData(TbCustomer.customerMapping(order.customer))
+
                     }
+
                     Log.e(TAG, "getOrderReOrder  ${Gson().toJson(order)}")
                     dashboardViewModel.addCart(
                         cartModel(order)
@@ -304,14 +312,14 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
             employeeID = prefProvider.employeeId()
             locationId = order.locationId
             orderTypeId = order.orderTypeId
-            orderType = Constants.TAKEOUT
-            orderTypeName = Constants.TAKEOUT
+            orderType = order.orderType
+            orderTypeName = order.orderTypeName
             futureDeliveryDate = order.date.toString()
             isOpenOrder = false
             serviceCharge = listOfServiceCharge
             customer = assignCustomer(order)
             items = inventoryList(order)
-            note = order.note
+            note = order.note ?: ""
             reorder = true
             var itemDiscount = 0.0
             items?.forEach {

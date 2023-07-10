@@ -4,7 +4,10 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.os.*
+import android.os.Build
+import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Base64
 import android.util.Log
 import android.view.LayoutInflater
@@ -35,14 +38,59 @@ import com.android.pos.data.remote.Constants.SUNMI_INNER_PRINTER
 import com.android.pos.data.remote.Constants.SUNMI_PRINTER
 import com.android.pos.databinding.FragmentReportEodBinding
 import com.android.pos.di.PrefProvider
-import com.android.pos.ui.adapter.*
+import com.android.pos.ui.adapter.ClockInClockOutAdapter
+import com.android.pos.ui.adapter.CreditCardBreakDownAdapter
+import com.android.pos.ui.adapter.CreditTipAuditAdapter
+import com.android.pos.ui.adapter.EmployeeGuestDetailsAdapter
+import com.android.pos.ui.adapter.PaymentDetailsAdapter
+import com.android.pos.ui.adapter.SalesOrderDetailsAdapter
+import com.android.pos.ui.adapter.SalesReportAdapter
+import com.android.pos.ui.adapter.ServiceChargeDetailsAdapter
+import com.android.pos.ui.adapter.TerminalAdapter
 import com.android.pos.ui.adapter.boldpos.SalesPerCategorySummary
 import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
 import com.android.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
-import com.android.pos.utils.*
-import com.android.pos.utils.extensions.*
+import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.EventObserver
+import com.android.pos.utils.LogUtil
+import com.android.pos.utils.MethodUtils
+import com.android.pos.utils.PrintSunmiUtils
+import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.addBuilderText
+import com.android.pos.utils.addCreditCardBreakDown
+import com.android.pos.utils.addCreditCardBreakDownData
+import com.android.pos.utils.addCreditCardBreakDownDataInner
+import com.android.pos.utils.addCreditCardBreakDownInner
+import com.android.pos.utils.addCreditTipAuditData
+import com.android.pos.utils.addCreditTipAuditDataInner
+import com.android.pos.utils.addCreditTipAuditHeader
+import com.android.pos.utils.addCreditTipAuditHeaderInner
+import com.android.pos.utils.addCustomerTextSize
+import com.android.pos.utils.addHorizontalLine
+import com.android.pos.utils.addItemsInOrderSalesDetails
+import com.android.pos.utils.addItemsInOrderSalesDetailsInner
+import com.android.pos.utils.addPaymentDetailsHeader
+import com.android.pos.utils.addPaymentDetailsHeaderInner
+import com.android.pos.utils.addPaymentDetailsThreeData
+import com.android.pos.utils.addPaymentDetailsThreeDataInner
+import com.android.pos.utils.addPaymentDetailsTwoData
+import com.android.pos.utils.addPaymentDetailsTwoDataInner
+import com.android.pos.utils.addRefundVoidsMultiple
+import com.android.pos.utils.addRefundVoidsMultipleInner
+import com.android.pos.utils.addSixHeaderForOrderSaleDetails
+import com.android.pos.utils.addSixHeaderForOrderSaleDetailsSunmi
+import com.android.pos.utils.addSixHeaderForOrderSaleDetailsSunmiInner
+import com.android.pos.utils.employeeGuestDetailsData
+import com.android.pos.utils.employeeGuestDetailsDataInner
+import com.android.pos.utils.extensions.alert
+import com.android.pos.utils.extensions.gone
+import com.android.pos.utils.extensions.liveSnackBar
+import com.android.pos.utils.extensions.showAlert
+import com.android.pos.utils.extensions.visible
+import com.android.pos.utils.padLine
 import com.android.pos.utils.printer.PrinterClass
+import com.android.pos.utils.repeat
 import com.android.pos.utils.statusUtils.Status
 import com.epson.eposprint.Builder
 import com.epson.eposprint.Print
@@ -52,15 +100,19 @@ import com.sunmi.externalprinterlibrary.api.ConnectCallback
 import com.sunmi.externalprinterlibrary.api.SunmiPrinter
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.*
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 import kotlin.math.abs
 
@@ -1672,7 +1724,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                             6
                         ).toString().lowercase() == "TM-m10".lowercase()
                     ) {
-                        PrinterClass.BLUETOOTH_TIMEOUT
+                        10 * 10000
                     } else {
                         PrinterClass.BLUETOOTH_TIMEOUT
 
@@ -2858,7 +2910,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 val uiScope = CoroutineScope(Dispatchers.Main)
                 uiScope.launch {
 
-                    Log.d(TAG, "INSIDE JOB: CALLED")
+                    Log.d(TAG, "BEFORE JOB: CALLED")
                     ProgressUtils.showProgressDialog(requireActivity())
 
                     delay(3000)
@@ -2868,42 +2920,9 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     }
                     job.await()
 
-                    Log.d(TAG, "AFTER JOB ENDS: CALLED")
+                    Log.d(TAG, "AFTER JOB: CALLED")
                     ProgressUtils.dismissProgressDialog()
-
                 }
-
-//                uiScope.executeAsyncTask(
-//                    onPostExecute = {
-//                        ProgressUtils.dismissProgressDialog()
-//                    },
-//                    onPreExecute = {
-//                        ProgressUtils.showProgressDialog(requireActivity())
-//                    },
-//                    doInBackground = {
-//                        updateData(it)
-//                    }
-//                )
-
-//                val executor: ExecutorService = Executors.newSingleThreadExecutor()
-//                val handler = Handler(Looper.getMainLooper())
-//                executor.execute {
-//
-//                    handler.post {
-//                        //UI Thread work here
-//                        ProgressUtils.showProgressDialog(requireActivity())
-//                    }
-//
-//                    //Background work here
-//                    runOnUiThread(){
-//                        updateData(it)
-//                    }
-//
-//                    handler.post {
-//                        //UI Thread work here
-//                        ProgressUtils.dismissProgressDialog()
-//                    }
-//                }
 
             }
         })
