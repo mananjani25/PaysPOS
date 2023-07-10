@@ -872,6 +872,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                         viewModel.deleteCart()
                         prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
                         binding.txtTotalAmount.text = "$0.00"
+                        refreshItemCalculation()
 
                     }
                     negativeButton(R.string.tv_cancel) {
