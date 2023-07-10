@@ -2630,7 +2630,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 myRequest.completed_all_payments = prefProvider.getValueboolean(
                     Constants.IS_ORDER_REDEEMABLE_WITH_GIFT_CARD,
                     false
-                )
+                ) && isSelectedCount <= 1
             } else {
                 if (myRequest.order.totalAmount != 0.0) {
                     myRequest.completed_all_payments = isSelectedCount <= 1
