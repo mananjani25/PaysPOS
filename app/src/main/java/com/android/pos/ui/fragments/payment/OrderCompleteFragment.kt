@@ -113,6 +113,7 @@ import com.android.pos.ui.fragments.transactions.TransactionViewModel
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
+import com.android.pos.utils.MethodUtils.Companion.toDoubleWithPrecision
 import com.android.pos.utils.MethodUtils.Companion.toPrecision
 import com.android.pos.utils.PrintSunmiUtils
 import com.android.pos.utils.PrinterDialog
@@ -7995,6 +7996,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         }
     }
 
+    /**
+     * This method is used to print the receipt for sell gift card or add value in gift card.
+     * This method prints from TM-m30 Printers
+     * */
     private fun generatePrintForGiftCard(
         customerReceiptPrinters: PrinterResponse.Data.CustomerReceiptPrinters,
         type: String
@@ -8402,10 +8407,18 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             val giftCardList: MutableList<CreateOrderResponse.Data.Order.OrderItem> =
                 mutableListOf()
 
+            var giftCardAmount = 0.00
+            if(giftCardReceiptModel?.gift_card?.payments != null && giftCardReceiptModel?.gift_card?.payments?.isNotEmpty()!!){
+                giftCardAmount = giftCardReceiptModel?.gift_card?.payments?.
+                get(giftCardReceiptModel?.gift_card?.payments?.size!! - 1)?.amount?.toPrecision(2)?.toDoubleWithPrecision(2)!!
+            }
+
+            Log.d(TAG, "generatePrintForGiftCard:  giftCardAmount = ${giftCardAmount.toPrecision(2)}")
+
             giftCardList.add(
                 0, CreateOrderResponse.Data.Order.OrderItem(
                     itemName = "${giftCardReceiptModel?.gift_card?.gift_card_type} Gift Card",
-                    price = giftCardReceiptModel?.gift_card?.amount?.toDouble()!!, quantity = 1
+                    price = giftCardAmount, quantity = 1
                 )
             )
 
@@ -8421,7 +8434,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             builder.addText(
                 padLine(
                     "Total Price",
-                    "$" + giftCardReceiptModel?.gift_card?.payments?.get(giftCardReceiptModel?.gift_card?.payments?.size!! - 1)?.amount,
+                    "$${giftCardAmount.toPrecision(2)}",
                     if (customerSettingModel.fonts == LARGE) {
                         24
                     } else {
@@ -8718,6 +8731,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 }
             }
+
+            builder.addFeedLine(2)
 
             //customer signature line.
             builder.addText(
@@ -10850,10 +10865,18 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         val giftCardList: MutableList<CreateOrderResponse.Data.Order.OrderItem> = mutableListOf()
 
+        var giftCardAmount = 0.00
+        if(giftCardReceiptModel?.gift_card?.payments != null && giftCardReceiptModel?.gift_card?.payments?.isNotEmpty()!!){
+            giftCardAmount = giftCardReceiptModel?.gift_card?.payments?.
+            get(giftCardReceiptModel?.gift_card?.payments?.size!! - 1)?.amount?.toPrecision(2)?.toDoubleWithPrecision(2)!!
+        }
+
+        Log.d(TAG, "sunmiCloudPrintForGiftCard: giftCardAmount = ${giftCardAmount.toPrecision(2)}")
+
         giftCardList.add(
             0, CreateOrderResponse.Data.Order.OrderItem(
                 itemName = "${giftCardReceiptModel?.gift_card?.gift_card_type} Gift Card",
-                price = giftCardReceiptModel?.gift_card?.amount?.toDouble()!!, quantity = 1
+                price = giftCardAmount, quantity = 1
             )
         )
 
@@ -10867,7 +10890,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         val str5 = padLine(
             "Total Price",
-            "$" + giftCardReceiptModel?.gift_card?.payments?.get(giftCardReceiptModel?.gift_card?.payments?.size!! - 1)?.amount,
+            "$${giftCardAmount.toPrecision(2)}",
             if (customerSettingModel.fonts == LARGE) 23 else 48
         ).toString()
         PrintSunmiUtils.totalPrice(str5)
@@ -12396,6 +12419,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     }
 
+    /**
+     * This method is used to print the receipt for sell gift card or add value in gift card.
+     * This method prints from Sunmi Inner Printer
+     * */
     private fun sunmiInnerPrintForGiftCard() {
 
         try {
@@ -12548,10 +12575,18 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             val giftCardList: MutableList<CreateOrderResponse.Data.Order.OrderItem> =
                 mutableListOf()
 
+            var giftCardAmount = 0.00
+            if(giftCardReceiptModel?.gift_card?.payments != null && giftCardReceiptModel?.gift_card?.payments?.isNotEmpty()!!){
+                giftCardAmount = giftCardReceiptModel?.gift_card?.payments?.
+                get(giftCardReceiptModel?.gift_card?.payments?.size!! - 1)?.amount?.toPrecision(2)?.toDoubleWithPrecision(2)!!
+            }
+
+            Log.d(TAG, "sunmiInnerPrintForGiftCard:  giftCardAmount = ${giftCardAmount.toPrecision(2)}")
+
             giftCardList.add(
                 0, CreateOrderResponse.Data.Order.OrderItem(
                     itemName = "${giftCardReceiptModel?.gift_card?.gift_card_type} Gift Card",
-                    price = giftCardReceiptModel?.gift_card?.amount?.toDouble()!!, quantity = 1
+                    price = giftCardAmount, quantity = 1
                 )
             )
 
@@ -12564,7 +12599,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             val str5 = padLine(
                 "Total Price",
-                "$" + giftCardReceiptModel?.gift_card?.payments?.get(giftCardReceiptModel?.gift_card?.payments?.size!! - 1)?.amount,
+                "$${giftCardAmount.toPrecision(2)}",
                 if (customerSettingModel.fonts == LARGE) 23 else 48
             ).toString()
             PrintSunmiUtils.boldText(str5)

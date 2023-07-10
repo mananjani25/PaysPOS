@@ -655,6 +655,10 @@ class MethodUtils {
                 "$s${i.toInt()}.$f"
             }
 
+        fun String.toDoubleWithPrecision(precision: Int): Double{
+            return this.toDouble().toPrecision(precision).toDouble()
+        }
+
         /**
          * An extension function to generate N-digit random numbers
          * Example: 6.generateRandomNumbers() or 12.generateRandomNumbers()

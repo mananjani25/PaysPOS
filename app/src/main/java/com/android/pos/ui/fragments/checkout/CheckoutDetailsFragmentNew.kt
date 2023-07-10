@@ -1986,7 +1986,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         giftCardViewModel.giftCardCheckBalanceData.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it.data != null) {
+
                     if (it.data.amount == 0.0) {
+                        binding.edtGiftCardNumber.setText("")
                         prefProvider.setValueboolean(IS_GIFT_CARD_REDEEM, false)
                         AlertUtils.showCustomAlertWithListenerWithOK(
                             requireContext(),
@@ -2023,8 +2025,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             ) { _, _ ->
                             }
                         }
+                        binding.edtGiftCardNumber.setText("")
                     }
                 } else {
+                    binding.edtGiftCardNumber.setText("")
                     AlertUtils.showCustomAlertWithListenerWithOK(
                         requireContext(),
                         message = it.message
