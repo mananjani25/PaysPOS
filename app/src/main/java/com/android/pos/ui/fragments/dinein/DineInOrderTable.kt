@@ -2955,45 +2955,47 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             oldList.get(dragTo).item?.guestItemId?.let { listOfMoveItemIds.add(it) }
             oldList.get(dragTo).item?.guestItemId = null
 
-            // To Check if similar item exist below moved item in current guest list, if exist then merge item
-            for (k in dragTo + 1 until oldList.size) {
-                if (oldList[k].isHeader == 0) {
-                    break
-                }
-                if (oldList[k].isHeader == 1) {
-                    if (oldList[dragTo].item?.itemId == oldList[k].item?.itemId) {
-                        if (checkVariation(oldList[dragTo].item!!, oldList[dragTo].item!!) &&
-                            checkModifierNewLogic(oldList[k].item!!, oldList[dragTo].item!!)
-                        ) {
-                            var updatedQuantity: Int =
-                                oldList[dragTo].item?.itemQuantity!! + oldList[k].item?.itemQuantity!!
-                            oldList[dragTo].item = oldList[k].item
-                            oldList[dragTo].item?.itemQuantity = updatedQuantity
-                            oldList[dragTo].item?.sort = dragTo
-                            oldList.remove(oldList[k])
-                            break
+            if (oldList[dragTo].item?.itemId != 1) {
+                // To Check if similar item exist below moved item in current guest list, if exist then merge item
+                for (k in dragTo + 1 until oldList.size) {
+                    if (oldList[k].isHeader == 0) {
+                        break
+                    }
+                    if (oldList[k].isHeader == 1) {
+                        if (oldList[dragTo].item?.itemId == oldList[k].item?.itemId) {
+                            if (checkVariation(oldList[dragTo].item!!, oldList[dragTo].item!!) &&
+                                checkModifierNewLogic(oldList[k].item!!, oldList[dragTo].item!!)
+                            ) {
+                                var updatedQuantity: Int =
+                                    oldList[dragTo].item?.itemQuantity!! + oldList[k].item?.itemQuantity!!
+                                oldList[dragTo].item = oldList[k].item
+                                oldList[dragTo].item?.itemQuantity = updatedQuantity
+                                oldList[dragTo].item?.sort = dragTo
+                                oldList.remove(oldList[k])
+                                break
+                            }
                         }
                     }
                 }
-            }
 
-            // To Check if similar item exist above moved item in current guest list, if exist then merge item
-            for (l in dragTo - 1 downTo 0) {
-                if (oldList[l].isHeader == 0) {
-                    break
-                }
-                if (oldList[l].isHeader == 1) {
-                    if (oldList[dragTo].item?.itemId == oldList[l].item?.itemId) {
-                        if (checkVariation(oldList[l].item!!, oldList[dragTo].item!!) &&
-                            checkModifierNewLogic(oldList[l].item!!, oldList[dragTo].item!!)
-                        ) {
-                            var updatedQuantity: Int =
-                                oldList[dragTo].item?.itemQuantity!! + oldList[l].item?.itemQuantity!!
-                            oldList[dragTo].item = oldList[l].item
-                            oldList[dragTo].item?.itemQuantity = updatedQuantity
-                            oldList[dragTo].item?.sort = dragTo
-                            oldList.remove(oldList[l])
-                            break
+                // To Check if similar item exist above moved item in current guest list, if exist then merge item
+                for (l in dragTo - 1 downTo 0) {
+                    if (oldList[l].isHeader == 0) {
+                        break
+                    }
+                    if (oldList[l].isHeader == 1) {
+                        if (oldList[dragTo].item?.itemId == oldList[l].item?.itemId) {
+                            if (checkVariation(oldList[l].item!!, oldList[dragTo].item!!) &&
+                                checkModifierNewLogic(oldList[l].item!!, oldList[dragTo].item!!)
+                            ) {
+                                var updatedQuantity: Int =
+                                    oldList[dragTo].item?.itemQuantity!! + oldList[l].item?.itemQuantity!!
+                                oldList[dragTo].item = oldList[l].item
+                                oldList[dragTo].item?.itemQuantity = updatedQuantity
+                                oldList[dragTo].item?.sort = dragTo
+                                oldList.remove(oldList[l])
+                                break
+                            }
                         }
                     }
                 }

@@ -889,7 +889,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                             Log.d(TAG, "cartLogic: " + i)
                                             index = i
                                             break
-                                        } else if (list[i].itemId == item.itemId && checkVariation(
+                                        } else if (list[i].itemId == item.itemId && (item.modifiers.isNotEmpty() || item.variationsAttributes.isNotEmpty()) && checkVariation(
                                                 list[i],
                                                 item
                                             ) && checkModifierNewLogic(list[i], item)
@@ -2691,7 +2691,8 @@ class DashBoardCategoryViewModel @Inject constructor(
     fun itemCalculation(
         cartList: List<CartModel>?,
         txtTotalAmount: AppCompatTextView,
-        context: Context
+        context: Context,
+        isFromManualSales: Boolean = false
     ) {
 
         if (cartList != null && cartList.isNotEmpty()) {
@@ -2708,6 +2709,34 @@ class DashBoardCategoryViewModel @Inject constructor(
             if (cartList[0].orderType == DINE_IN) {
 
                 var dineInItems = 0
+                if(isFromManualSales) {
+
+                    dineInItems = cartList[0].items?.size ?: 0
+                    cartList[0].items?.forEach { item ->
+                            totalCount += item.itemQuantity
+
+                            subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
+
+
+                            taxCalculation(item, cartList[0].discountPrice / dineInItems)
+
+                            item.modifiers.forEach {
+                                subTotalPrice += (it.price * it.itemQuantity)
+                            }
+                        }
+                    calculateDineInServiceCharge(cartList[0])
+                    subTotalPrice -= (cartList[0].discountPrice)
+
+                    if (subTotalPrice < 0) {
+                        subTotalPrice = 0.0
+                    }
+
+                    totalDiscount += cartList[0].discountPrice
+                    cartList[0].items?.forEach {
+                        totalDiscount += (it.discountPrice * it.itemQuantity)
+                    }
+
+                } else {
 
                 cartList[0].dineInList?.forEach { dine ->
                     dineInItems += dine.items.size
@@ -2739,7 +2768,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     subTotalPrice = 0.0
                 }
 
-
+                    totalDiscount += cartList[0].discountPrice
 
                 cartList[0].dineInList?.forEach {
                     it.items.forEach {
@@ -2747,7 +2776,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     }
                 }
 
-
+                }
                 totalPrice = (subTotalPrice + totalTax + totalServiceCharge)
                 amountToBePaid = totalPrice - totalDiscount
                 Log.e("ManualSale", "amountToBePaid:   ${amountToBePaid}")

@@ -820,6 +820,13 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 )
                 var bundle: Bundle = Bundle()
                 bundle.putParcelableArrayList("carttlist", cartList)
+                if(prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
+                    if ((cartList[0].dineInList?.size ?: 0) > 0) {
+                        cartList[0].dineInList?.get(0)?.selectedPosition =
+                            viewModel.dineInHeaderPosition
+                    }
+                    bundle.putInt("selectedHeaderPosition", viewModel.dineInHeaderPosition)
+                }
                 findNavController().navigate(
                     R.id.action_dashboardCategoryBoldPOS_to_manualSalesNew,
                     bundle
@@ -1214,16 +1221,12 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 }
             }
 
-            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
-
-                binding.layoutHeader.txtKeypad.visibility = View.GONE
-            } else {
                 if (prefProvider.getValue(ORDER_TYPE, "").trim().isEmpty()) {
                     binding.layoutHeader.txtKeypad.gone()
                 } else {
                     binding.layoutHeader.txtKeypad.visible()
                 }
-            }
+
 
         }
 
