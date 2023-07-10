@@ -2862,6 +2862,14 @@ class DashBoardCategoryViewModel @Inject constructor(
                     amountToBePaid = 0.0
                 }
             }
+        } else {
+            nonCashAdj = 0.0
+            totalPrice = 0.0
+            totalCount = 0
+            subTotalPrice = 0.0
+            totalDiscount = 0.0
+            totalTax = 0.0
+            totalServiceCharge = 0.0
         }
         //totalAmmount = totalPrice-cartList[0].discountPrice
 
