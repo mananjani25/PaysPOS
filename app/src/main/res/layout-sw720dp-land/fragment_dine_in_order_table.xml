@@ -109,7 +109,7 @@
             android:id="@+id/linearHeaderNew"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/btnColor"
+            android:background="@drawable/button_action_hover"
             android:orientation="horizontal"
             android:paddingVertical="@dimen/_3sdp"
             android:weightSum="5"
