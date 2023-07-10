@@ -1488,6 +1488,11 @@
             app:enterAnim="@anim/nav_default_enter_anim"
             app:popUpToInclusive="true" />
         <action
+            android:id="@+id/action_menuFragment_to_allOrders"
+            app:destination="@id/allOrdersFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:popUpToInclusive="true" />
+        <action
             android:id="@+id/action_menuFragment_to_teamList"
             app:destination="@id/teamList"
             app:enterAnim="@anim/nav_default_enter_anim"

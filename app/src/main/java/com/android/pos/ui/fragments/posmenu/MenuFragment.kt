@@ -184,7 +184,7 @@ class MenuFragment : DialogFragment() {
         }
 
         binding.linearOrders.setOnClickListener {
-            findNavController().navigate(R.id.action_menuFragment_to_orders)
+            findNavController().navigate(R.id.action_menuFragment_to_allOrders)
         }
         binding.linearTeam.setOnClickListener {
             if (rolePermission.hasEmployeePermission(binding.root)) {
