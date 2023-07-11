@@ -685,10 +685,10 @@ class AllOrdersListingFragment(
                 )
                 datePickerDialog.show()
                 if (orderStatus == "4") {
-                    datePickerDialog.datePicker.minDate = myCalendar.timeInMillis
-                    var temp_calender = Calendar.getInstance()
-                    temp_calender.add(Calendar.DATE, 7)
-                    datePickerDialog.datePicker.maxDate = temp_calender.timeInMillis
+//                    datePickerDialog.datePicker.minDate = myCalendar.timeInMillis
+//                    var temp_calender = Calendar.getInstance()
+//                    temp_calender.add(Calendar.DATE, 7)
+//                    datePickerDialog.datePicker.maxDate = temp_calender.timeInMillis
                 } else {
                     datePickerDialog.datePicker.maxDate = Date().time
                 }
@@ -717,7 +717,7 @@ class AllOrdersListingFragment(
 
                 )
                 if (orderStatus == "4") {
-                    datePickerDialog.datePicker.minDate = myCalendar1.timeInMillis
+//                    datePickerDialog.datePicker.minDate = Date().time
                 } else {
                     datePickerDialog.datePicker.maxDate = Date().time
                 }
