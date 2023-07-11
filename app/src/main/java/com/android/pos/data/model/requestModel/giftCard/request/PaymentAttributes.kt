@@ -4,6 +4,7 @@ data class PaymentAttributes(
     val amount: Double? = 0.0,
     val card_name: String? = "",
     val card_number: String? = "",
+    val card_type: Int? = 0,
     val cash_discount_fee: Double? = 0.0,
     val cash_discount_or_surcharge: Double? = 0.0,
     val cash_discount_type: String? = "",
