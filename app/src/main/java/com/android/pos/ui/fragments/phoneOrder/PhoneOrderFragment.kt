@@ -210,6 +210,9 @@ class PhoneOrderFragment : Fragment() {
                 )
             } else if (isDelivey && binding.edtStreet.text.toString().trim().isEmpty()) {
                 AlertUtils.showCustomAlert(requireContext(), "Please enter address")
+            }
+            else if (isDelivey && binding.edtZip.text.toString().trim().isEmpty()) {
+                AlertUtils.showCustomAlert(requireContext(), "Please enter zipcode")
             } else {
 
                 val phonesList: ArrayList<TbPhones> =
