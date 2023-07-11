@@ -1543,7 +1543,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             model.price = String.format("%.2f", (itemCost)).toDouble()
 
             viewModel.setPosition(position)
-            LogUtil.logE(TAG, "Itemmodel: ${Gson().toJson(model)}")
+//            LogUtil.logE(TAG, "Itemmodel: ${Gson().toJson(model)}")
 
             LogUtil.logE(TAG, "ItemPosition: $position")
             cartList?.get(0)?.taxlistDynamic = arrayListOf()
