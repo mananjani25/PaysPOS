@@ -101,6 +101,8 @@
                             android:layout_height="match_parent"
                             android:layout_weight="1"
                             android:gravity="center"
+                            android:background="@drawable/button_action_hover"
+
                             android:padding="@dimen/_5sdp"
                             android:text="@string/open_orders"
                             android:textColor="@color/white"
@@ -112,7 +114,7 @@
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
                             android:layout_weight="1"
-                            android:visibility="gone"
+                            android:visibility="visible"
                             android:background="@drawable/background_square_border_grey"
                             android:gravity="center"
                             android:padding="@dimen/_5sdp"

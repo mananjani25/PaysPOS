@@ -520,6 +520,7 @@
     <string name="reports">Reports</string>
     <string name="customer_details">Customer Details</string>
     <string name="delivery_address">Delivery Address</string>
+    <string name="delivery_address_">Delivery Address<font color='#E90C0C'>*</font></string>
     <string name="billing_address">Billing Address</string>
     <string name="shipping_address">Shipping Address</string>
     <string name="search_existing_customer_details">Search existing customer details</string>
@@ -537,6 +538,7 @@
     <string name="zip">Zip</string>
     <string name="clear">Clear</string>
     <string name="street">Street</string>
+    <string name="street_">Street<font color='#E90C0C'>*</font></string>
 
     <string name="printer">Printer</string>
     <string name="customer_receipt_printer">Customer receipt Printer</string>

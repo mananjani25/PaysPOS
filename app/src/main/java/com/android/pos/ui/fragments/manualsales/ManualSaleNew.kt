@@ -1486,6 +1486,11 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         }
 
         txtSave.setOnClickListener {
+
+            if (edtItemName.text.toString().trim().isEmpty()){
+                AlertUtils.showCustomAlert(requireContext(),"Please enter custom item name")
+                return@setOnClickListener
+            }
             dialog.dismiss()
             val itemCost = model.price
 
