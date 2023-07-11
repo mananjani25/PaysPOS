@@ -215,6 +215,9 @@ class AllOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
             if (orderedTab == OPEN_ORDER_TAB) {
                 binding.txtDeliveryOrPickup.gone()
             } else {
+                if (item.deliveryType != null && item.deliveryType.isNotEmpty()) {
+                    binding.txtDeliveryOrPickup.text = item.deliveryType
+                }
                 binding.txtDeliveryOrPickup.visible()
             }
 
