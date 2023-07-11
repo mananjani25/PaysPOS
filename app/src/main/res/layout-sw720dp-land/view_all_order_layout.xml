@@ -1,0 +1,414 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingDefaultResource">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.android.pos.data.model.responseModel.OnlineOrderResponseModel.Data" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/llMainLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/backgroundColor"
+            android:orientation="horizontal"
+            android:paddingVertical="@dimen/_5sdp"
+            android:paddingHorizontal="@dimen/_10sdp">
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="start"
+                android:orientation="horizontal">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvOrderID"
+                    style="@style/CustomFontMediumStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_5mdpi"
+                    tools:text="offlineId" />
+
+                <ImageView
+                    android:id="@+id/imgIndicator"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    app:srcCompat="@drawable/ic_arrow_down"
+                    app:tint="@color/drawable_ic_color" />
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                android:layout_weight="1.2"
+                android:orientation="vertical">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvDate"
+                    style="@style/CustomFontMediumStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_6mdpi"
+                    tools:text="@string/tv_date_time" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvtime"
+                    style="@style/CustomFontMediumStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/gray_color"
+                    android:textSize="@dimen/_4mdpi"
+                    android:visibility="visible"
+                    tools:text="@string/tv_date_time" />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtEmployeeName"
+                style="@style/CustomFontMediumStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.2"
+                android:gravity="start"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_6mdpi"
+                android:text="Bill Clinton" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvTotalAmount"
+                style="@style/CustomFontMediumStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="start"
+                android:text="@{@string/symbole +``+String.format(@string/format,viewModel.totalAmount)}"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_6mdpi"
+                tools:text="Amount" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtCustomerName"
+                style="@style/CustomFontMediumStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="start"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_6mdpi"
+                android:text="John Smith" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtDeliveryOrPickup"
+                style="@style/CustomFontMediumStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="start"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_6mdpi"
+                android:text="Pick Up" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtOrderType"
+                style="@style/CustomFontMediumStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="start"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_6mdpi"
+                tools:text="Phone" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtStationName"
+                style="@style/CustomFontMediumStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="start"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_6mdpi"
+                android:text="Station 1" />
+
+            <LinearLayout
+                android:id="@+id/viewOrderStatus"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.3"
+                android:gravity="center"
+                android:visibility="visible"
+                android:orientation="horizontal">
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/CustomFontMediumStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_6mdpi"
+                    android:text="-" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/order_Inprogress_button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.3"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:visibility="gone"
+                android:orientation="horizontal">
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/completed_img"
+                    android:layout_width="wrap_content"
+                    android:paddingHorizontal="@dimen/_5sdp"
+                    android:paddingVertical="@dimen/_5sdp"
+                    android:text="Complete"
+                    android:fontFamily="@font/sf_pro_display_bold"
+                    android:layout_marginEnd="@dimen/_15sdp"
+                    android:gravity="center"
+                    android:layout_gravity="center_vertical"
+                    android:textSize="@dimen/_4sdp"
+                    android:textColor="@color/green_pay_total"
+                    android:background="@drawable/whiteborder_with_transparent"
+                    android:layout_height="wrap_content"
+                    />
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/order_completed_button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.3"
+                android:layout_gravity="start"
+                android:gravity="start|top"
+                android:visibility="gone"
+                android:orientation="horizontal">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/CustomFontBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/tv_completed"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_6sdp"
+                    app:textAllCaps="true" />
+
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/order_cancelled_button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.3"
+                android:layout_gravity="start"
+                android:gravity="start|top"
+                android:visibility="gone"
+                android:orientation="horizontal">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/CustomFontBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/tv_cancelled"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_6sdp"
+                    app:textAllCaps="true" />
+
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/order_upcoming_button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_gravity="start"
+                android:gravity="start|top"
+                android:visibility="gone"
+                android:orientation="horizontal">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/CustomFontBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/tv_upcoming"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_6sdp"
+                    app:textAllCaps="true" />
+
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/order_status_linear"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.3"
+                android:layout_gravity="left|center"
+                android:gravity="left"
+                android:visibility="gone"
+                android:orientation="horizontal">
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/accept_img"
+                    android:layout_width="wrap_content"
+                    android:paddingHorizontal="@dimen/_2sdp"
+                    android:paddingVertical="@dimen/_5sdp"
+                    android:text="Accept"
+                    android:gravity="center"
+                    android:fontFamily="@font/sf_pro_display_bold"
+                    android:layout_gravity="center_vertical"
+                    android:textColor="@color/green_pay_total"
+                    android:background="@drawable/whiteborder_with_transparent"
+                    android:textSize="@dimen/_4sdp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/_3sdp"
+                    />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/decline_img"
+                    android:paddingHorizontal="@dimen/_2sdp"
+                    android:paddingVertical="@dimen/_5sdp"
+                    android:layout_width="wrap_content"
+                    android:text="Reject"
+                    android:gravity="center"
+                    android:textSize="@dimen/_4sdp"
+                    android:layout_gravity="center_vertical"
+                    android:textColor="@color/colorRed"
+                    android:fontFamily="@font/sf_pro_display_bold"
+                    android:background="@drawable/whiteborder_with_transparent"
+                    android:layout_height="wrap_content"
+                    />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llShowLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="visible">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvOpenOrder"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:itemCount="2"
+                tools:listitem="@layout/view_open_order_items" />
+
+            <LinearLayout
+                android:id="@+id/lnrPhoneAndOnlineButtons"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:visibility="gone"
+                android:padding="@dimen/_5sdp">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtCancelOrder"
+                    style="@style/CustomFontBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="@dimen/_5sdp"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:layout_marginRight="@dimen/_5sdp"
+                    android:layout_marginBottom="@dimen/_10sdp"
+                    android:layout_weight="1"
+                    android:background="@drawable/background_txt_selector"
+                    android:gravity="center"
+                    android:padding="@dimen/_10sdp"
+                    android:text="@string/tv_cancel_order"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_7mdpi"
+                    app:textAllCaps="false" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtEditOrder"
+                    style="@style/CustomFontBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="@dimen/_5sdp"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:layout_marginRight="@dimen/_5sdp"
+                    android:layout_marginBottom="@dimen/_10sdp"
+                    android:layout_weight="1"
+                    android:background="@drawable/background_square_border_grey"
+                    android:gravity="center"
+                    android:padding="@dimen/_10sdp"
+                    android:text="@string/tv_edit_order"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_7mdpi"
+                    app:textAllCaps="false" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtCustomerReceipt"
+                    style="@style/CustomFontBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="@dimen/_5sdp"
+                    android:layout_marginRight="@dimen/_5sdp"
+                    android:layout_weight="1"
+                    android:background="@drawable/background_txt_selector"
+                    android:gravity="center"
+                    android:padding="@dimen/_10sdp"
+                    android:text="@string/tv_customer_receipt"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_7mdpi"
+                    app:textAllCaps="false" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtRePrintKitchenReceipt"
+                    style="@style/CustomFontBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="@dimen/_5sdp"
+                    android:layout_marginRight="@dimen/_5sdp"
+                    android:layout_weight="1"
+                    android:background="@drawable/background_txt_selector"
+                    android:gravity="center"
+                    android:visibility="gone"
+                    android:padding="@dimen/_10sdp"
+                    android:text="@string/tv_reprint_kitchen_receipt"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_7mdpi"
+                    app:textAllCaps="false" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtPayNow"
+                    style="@style/CustomFontBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="@dimen/_5sdp"
+                    android:layout_marginRight="@dimen/_5sdp"
+                    android:layout_weight="1"
+                    android:background="@drawable/background_square_border_grey"
+                    android:gravity="center"
+                    android:padding="@dimen/_10sdp"
+                    android:text="@string/tv_pay_now"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_7mdpi"
+                    app:textAllCaps="false" />
+
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </LinearLayout>
+</layout>

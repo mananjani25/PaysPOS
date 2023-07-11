@@ -6,6 +6,7 @@ import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.android.pos.data.model.CustomerSearchList
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
+import com.android.pos.data.model.responseModel.OnlineOrderResponseModel
 import com.android.pos.data.model.responseModel.OpenOrderResponse
 import com.android.pos.data.typeconvert.TypeConvertorAddress
 import com.android.pos.data.typeconvert.TypeConvertorPhone
@@ -72,6 +73,19 @@ data class TbCustomer(
                 company = customer.company,
                 phones = customer.phones,
                 addresses = customer.addresses
+            )
+        }
+
+        fun customerMapping(customer: OnlineOrderResponseModel.Data.Customer): TbCustomer? {
+            return TbCustomer(
+                id = customer.id,
+                first_name = customer.firstName,
+                last_name = customer.lastName,
+                birth_date = customer.birthDate,
+                email = customer.email,
+                enroll_to_loyalty = customer.enroll_to_loyalty,
+                final_reward = customer.final_reward,
+                company = customer.company,
             )
         }
     }

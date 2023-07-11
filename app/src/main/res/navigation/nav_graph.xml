@@ -149,7 +149,40 @@
             android:id="@+id/action_onlineOrder_to_addOnlneTime"
             app:destination="@id/addOnlineTimeDialog" />
     </fragment>
-
+    <fragment
+        android:id="@+id/allOrdersFragment"
+        android:name="com.android.pos.ui.fragments.allorders.AllOrdersFragment"
+        android:label="allOrders">
+        <action
+            android:id="@+id/action_allOrder_to_menuposbold"
+            app:destination="@id/menuFragment"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_allOrder_to_dashboarCategorynew"
+            app:destination="@id/dashboardCategoryBoldPOS"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_allOrders_to_addOnlneTime"
+            app:destination="@id/addOnlineTimeDialog" />
+        <action
+            android:id="@+id/action_allOrder_to_dashboardCategoryBoldPOS"
+            app:destination="@id/dashboardCategoryBoldPOS"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_allOrder_to_paymentBoldPosFragment"
+            app:destination="@id/paymentBoldPosFragment" />
+        <action
+            android:id="@+id/action_allOrder_to_reason_for_cancel_order_dialog"
+            app:destination="@id/reasonForCancleOrderDialog" />
+        <action
+            android:id="@+id/action_allOrder_to_reasonForrefundonline"
+            app:destination="@id/reasonForRefundDialogonline"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_allOrder_to_passcodeManager"
+            app:destination="@id/pascodeManagerDailog"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+    </fragment>
     <fragment
         android:id="@+id/createItem"
         android:name="com.android.pos.ui.fragments.createitem.CreateItem"
@@ -1455,6 +1488,11 @@
             app:enterAnim="@anim/nav_default_enter_anim"
             app:popUpToInclusive="true" />
         <action
+            android:id="@+id/action_menuFragment_to_allOrders"
+            app:destination="@id/allOrdersFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:popUpToInclusive="true" />
+        <action
             android:id="@+id/action_menuFragment_to_teamList"
             app:destination="@id/teamList"
             app:enterAnim="@anim/nav_default_enter_anim"
@@ -1525,6 +1563,10 @@
         <action
             android:id="@+id/action_dashboardCategoryBoldPOS_to_onlineOrderFragment"
             app:destination="@id/onlineOrderFragment"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_dashboardCategoryBoldPOS_to_allOrdersFragment"
+            app:destination="@id/allOrdersFragment"
             app:enterAnim="@anim/nav_default_enter_anim" />
         <action
             android:id="@+id/action_dashboardCategoryBoldPOS_to_transactionFragment"
@@ -1625,7 +1667,9 @@
             android:id="@+id/action_paymentBoldPosFragment_to_assignCustomerOrderFragment"
             app:destination="@id/assignCustomerOrderFragment"
             app:enterAnim="@anim/nav_default_enter_anim" />
-
+        <action
+            android:id="@+id/action_paymentBoldPosFragment_to_allOrdersFragment"
+            app:destination="@id/allOrdersFragment" />
     </fragment>
     <fragment
         android:id="@+id/magtekFragment"

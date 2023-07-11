@@ -194,7 +194,7 @@
                         android:layout_weight="1"
                         android:background="@drawable/background_square_border_grey"
                         android:digits="@string/character_String"
-                        android:hint="@string/first_name_normal"
+                        android:hint="@string/first_name"
                         android:imeOptions="actionNext"
                         android:inputType="textCapWords|textVisiblePassword"
                         android:maxLength="60"
@@ -239,10 +239,11 @@
                         android:layout_marginEnd="@dimen/_5sdp"
                         android:layout_weight="1"
                         android:background="@drawable/background_square_border_grey"
-                        android:hint="(201) 555-0123"
+                        android:hint="@string/phone"
                         android:imeOptions="actionNext"
                         android:inputType="number"
-                        android:maxLength="60"
+                        android:maxLength="20"
+                        app:met_mask="(###) ###-####"
                         android:padding="@dimen/_9sdp"
                         android:textColor="@color/txtColor"
                         android:textColorHint="@color/hintColor"
@@ -268,16 +269,38 @@
                 </LinearLayout>
 
 
-                <androidx.appcompat.widget.AppCompatTextView
-                    style="@style/CustomFontSemiBold"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:gravity="start"
-                    android:paddingVertical="@dimen/_10sdp"
-                    android:text="@string/delivery_address"
-                    android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_8mdpi" />
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/CustomFontSemiBold"
+
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:gravity="start"
+                        android:paddingVertical="@dimen/_10sdp"
+                        android:text="@string/delivery_address"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_8mdpi" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/CustomFontSemiBold"
+                        android:id="@+id/txtAddress"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:gravity="start"
+                        android:paddingVertical="@dimen/_10sdp"
+                        android:text="*"
+                        android:visibility="gone"
+                        android:textColor="@color/colorRed"
+                        android:textSize="@dimen/_8mdpi" />
+
+
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
 
 
                 <androidx.appcompat.widget.LinearLayoutCompat

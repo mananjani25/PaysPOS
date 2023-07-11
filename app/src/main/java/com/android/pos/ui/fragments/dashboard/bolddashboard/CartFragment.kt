@@ -41,6 +41,7 @@ import com.android.pos.data.remote.Constants.DINE_IN_LIST_EDIT
 import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
 import com.android.pos.data.remote.Constants.DINE_IN_UPDATE_LIST
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
+import com.android.pos.data.remote.Constants.IS_FROM_ALL_ORDER
 import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER
 import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER
 import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER_ID
@@ -2214,6 +2215,7 @@ class CartFragment(
                     bundle.putString("paymentOfflineId", paymentOfflineId)
                     bundle.putString("orderOfflineId", orderOfflineId)
                     if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                        prefProvider.setValueboolean(IS_FROM_ALL_ORDER,false)
                         findNavController().navigate(
                             R.id.action_dashboardCategoryBoldPOS_to_paymentBoldPosFragment,
                             bundle
@@ -2221,6 +2223,7 @@ class CartFragment(
                     }
                 } else {
                     if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                        prefProvider.setValueboolean(IS_FROM_ALL_ORDER,false)
                         findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_paymentBoldPosFragment)
                     }
                 }

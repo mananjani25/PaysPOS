@@ -25,6 +25,7 @@ import com.android.pos.data.entities.*
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ADD
 import com.android.pos.data.remote.Constants.CUSTOMER_NAME
+import com.android.pos.data.remote.Constants.IS_FROM_ALL_ORDER
 import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER
 import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.data.remote.Constants.LOYALTY_ADDED
@@ -704,6 +705,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 prefProvider.setValue(Constants.TIP, "")
                 prefProvider.setValue(Constants.TAX_CHARGE, "")
                 prefProvider.setValue(Constants.SERVICE_CHARGE, "")
+                prefProvider.setValueboolean(IS_FROM_ALL_ORDER,false)
                 findNavController().navigate(
                     R.id.action_manualSaleCart_to_paymentBoldPosFragment
                 )
@@ -1484,6 +1486,11 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         }
 
         txtSave.setOnClickListener {
+
+            if (edtItemName.text.toString().trim().isEmpty()){
+                AlertUtils.showCustomAlert(requireContext(),"Please enter custom item name")
+                return@setOnClickListener
+            }
             dialog.dismiss()
             val itemCost = model.price
 

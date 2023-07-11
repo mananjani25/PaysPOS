@@ -63,6 +63,7 @@
                 style="@style/CustomFontRegularStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 android:layout_gravity="center"
                 android:background="?attr/selectableItemBackground"
                 android:padding="@dimen/_5sdp"
@@ -88,7 +89,7 @@
                     android:background="?attr/selectableItemBackground"
                     android:gravity="end"
                     android:paddingVertical="@dimen/_5sdp"
-                    android:text="@string/online_orders"
+                    android:text="@string/all_orders"
                     android:textAllCaps="true"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi" />

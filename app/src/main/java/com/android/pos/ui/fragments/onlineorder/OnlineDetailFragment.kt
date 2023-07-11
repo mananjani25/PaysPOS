@@ -1029,7 +1029,7 @@ class OnlineDetailFragment(
                     )
                     builder.addTextAlign(Builder.ALIGN_CENTER)
 
-                    addBuilderTextForU220(builder, orderData.data.order_type_name)
+                    addBuilderTextForU220(builder, orderData.data.orderTypeName)
                 }
 
                 if (orderData.data.orderType.equals(Constants.PHONE_ORDER, true) ||
@@ -2289,7 +2289,7 @@ class OnlineDetailFragment(
             SunmiPrinterApi.getInstance().lineWrap(1)
 
             if (kitchenSettingModel.showOrderType) {
-                PrintSunmiUtils.printOrderType(orderData.data.order_type_name)
+                PrintSunmiUtils.printOrderType(orderData.data.orderTypeName)
             }
 
             if (orderData.data.orderType.equals(Constants.PHONE_ORDER, true) ||
@@ -2463,7 +2463,7 @@ class OnlineDetailFragment(
 
 
             if (kitchenSettingModel.showOrderType) {
-                PrintSunmiUtils.headerText(orderData.data.order_type_name)
+                PrintSunmiUtils.headerText(orderData.data.orderTypeName)
             }
 
             if (orderData.data.orderType.equals(Constants.PHONE_ORDER, true) ||

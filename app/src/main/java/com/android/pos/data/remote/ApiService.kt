@@ -8,6 +8,7 @@ import com.android.pos.data.model.CustomerSearchList
 import com.android.pos.data.model.GetPaymentOrderDetailsResponse
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.*
+import com.android.pos.data.model.responseModel.allOrders.AllOrdersCountResponse
 import com.android.pos.data.model.responseModel.category.CategoriesResponse
 import com.android.pos.data.model.responseModel.category.CreateCategoryResponse
 import com.android.pos.data.model.responseModel.item.ItemResponseNew
@@ -15,6 +16,8 @@ import com.android.pos.data.model.responseModel.item.ItemsResponse
 import com.android.pos.data.model.responseModel.orderhistory.OrderHistoryResponse
 import com.android.pos.data.model.responseModel.report.ReportSummaryResponse
 import com.android.pos.data.remote.Constants.ACCEPTED_DECLINE_ONLINEORDER
+import com.android.pos.data.remote.Constants.ALL_ORDERS
+import com.android.pos.data.remote.Constants.ALL_ORDER_COUNTS
 import com.android.pos.data.remote.Constants.BUSINESS_UPDATE
 import com.android.pos.data.remote.Constants.CASH_EVENTS
 import com.android.pos.data.remote.Constants.CATEGORY
@@ -753,6 +756,15 @@ interface ApiService {
         @Query("order_status") order_status: String
     ): OnlineOrderResponseModel
 
+    @GET(ALL_ORDERS)
+    suspend fun getAllOrders(
+        @Query("start_date") starDate: String,
+        @Query("end_date") endDate: String,
+        @Query("order_status") order_status: String,
+        @Query("payment_status") payment_status: String,
+        @Query("order_type_id") order_type_id: String,
+    ): OnlineOrderResponseModel
+
     @GET(EMAIL_REPORT_SUMMARY)
     suspend fun sendEmailReportSummary(
         @Query("start_date") starDate: String,
@@ -930,6 +942,12 @@ interface ApiService {
         @Query("start_date") startDate: String?,
         @Query("end_date") endDate: String?
     ): OnlineOrderCountResponse
+
+    @GET(ALL_ORDER_COUNTS)
+    suspend fun allOrderCounts(
+        @Query("start_date") startDate: String?,
+        @Query("end_date") endDate: String?
+    ): AllOrdersCountResponse
 
     @GET(INVENTORY_COUNTS)
     suspend fun inventoryCounts(): InventoryCountsResponse

@@ -2639,6 +2639,116 @@ fun addOrderItemOpenOrder(
 
 }
 
+/**
+ * This method is created by Dharmesh Basapati.
+ * It is created for printing order items of an open order from all orders screen in TM-m30 Printer.
+ * Note: As we are getting the response model of an online order in "all orders" api,
+ * we are using OnlineOrderResponseModel for printing open order customer receipts.
+ */
+fun addOrderItemOnlineOrder(
+    builder: Builder,
+    list: List<OnlineOrderResponseModel.Data.OrderItem>,
+    font: String,
+    showModifiers: Boolean
+): Builder {
+    for (i in 0 until list.size) {
+        val obj = list.get(i)
+        builder.addTextLineSpace(30)
+        builder.addFeedUnit(30)
+        builder.addTextFont(Builder.FONT_E)
+        // builder.addTextAlign(Builder.ALIGN_LEFT)
+        builder.addTextLang(Builder.LANG_EN)
+        addCustomerTextSize(builder, font)
+        builder.addTextStyle(
+            Builder.FALSE,
+            Builder.FALSE,
+            Builder.FALSE,
+            Builder.COLOR_1
+        )
+
+
+
+        builder.addText(
+            padLineCustomerItem(
+                obj.quantity.toString() + "  " + getItemNameToShow(obj.itemName),
+                getItemPriceToShow(totalPriceOnlineOrder(obj)),
+                if (font == Constants.LARGE) {
+                    24
+                } else {
+                    48
+                }
+            )
+        )
+
+
+        if (obj.orderItemModifiers.isNotEmpty() && showModifiers) {
+            for (j in 0 until obj.orderItemModifiers.size) {
+                val modifierObj = obj.orderItemModifiers.get(j)
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addTextFont(Builder.FONT_E)
+                //builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, font)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+                // builder.addTextPosition(4)
+
+                builder.addText(
+                    padLineCustomerItem(
+                        "   " + if (modifierObj.modifier_quantity == 1) {
+                            "   "
+                        } else {
+                            "" + modifierObj.modifier_quantity + "x "
+                        } + getItemNameToShow(modifierObj.name),
+                        getModifierItemPriceToShow(modifierObj.price,modifierObj.quantity),
+                        if (font == Constants.LARGE) {
+                            23
+                        } else {
+                            47
+                        }
+                    )
+                )
+
+
+            }
+
+        }
+
+        if (obj.note.isNotEmpty()) {
+            builder.addTextLineSpace(30)
+            builder.addFeedUnit(30)
+            builder.addTextFont(Builder.FONT_E)
+            builder.addTextAlign(Builder.ALIGN_LEFT)
+            builder.addTextLang(Builder.LANG_EN)
+            addCustomerTextSize(builder, font)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.COLOR_1
+            )
+            builder.addText("   Note: " + obj.note)
+            builder.addFeedLine(1)
+
+
+        }
+    }
+
+
+    return builder
+
+
+}
+
+fun totalPriceOnlineOrder(model: OnlineOrderResponseModel.Data.OrderItem): Double {
+    return model.price * model.quantity
+}
+
 fun addOrderItemOpenOrderSunmi(
     list: List<OpenOrderResponse.Data.Order.OrderItem>,
     font: String,
@@ -2701,6 +2811,74 @@ fun addOrderItemOpenOrderSunmi(
 
 }
 
+/**
+ * This method is created by Dharmesh Basapati.
+ * It is created for printing order items of an open order from all orders screen in Sunmi Cloud Printer.
+ * Note: As we are getting the response model of an online order in "all orders" api,
+ * we are using OnlineOrderResponseModel for printing open order customer receipts.
+ */
+fun addOrderItemOnlineOrderSunmi(
+    list: List<OnlineOrderResponseModel.Data.OrderItem>,
+    font: String,
+    showModifiers: Boolean
+) {
+    for (i in 0 until list.size) {
+        val obj = list.get(i)
+
+        PrintSunmiUtils.orderTime(
+            padLineCustomerItem(
+                obj.quantity.toString() + "  " + getItemNameToShow(obj.itemName),
+                getItemPriceToShow(totalPriceOnlineOrder(obj)),
+                if (font == Constants.LARGE) {
+                    23
+                } else {
+                    48
+                }
+            ).toString()
+        )
+
+
+
+        if (obj.orderItemModifiers.isNotEmpty() && showModifiers) {
+            for (j in 0 until obj.orderItemModifiers.size) {
+                val modifierObj = obj.orderItemModifiers.get(j)
+                var part1 = "   " + if (modifierObj.modifier_quantity == 1) {
+                    "   "
+                } else {
+                    "" + modifierObj.modifier_quantity + "x "
+                } + getItemNameToShow(modifierObj.name)
+                var part2 =
+                    getModifierItemPriceToShow(modifierObj.price,modifierObj.quantity)
+
+                Log.e("CheckPartFM", "part1 ${part1.length}")
+                Log.e("CheckPartFM", "part2 ${part2.length}")
+
+                PrintSunmiUtils.orderTime(
+                    padLineCustomerItem(
+                        part1,
+                        part2,
+                        if (font == Constants.LARGE) {
+                            23
+                        } else {
+                            48
+                        }
+                    ).toString()
+                )
+
+            }
+
+        }
+
+        if (obj.note.isNotEmpty()) {
+
+            PrintSunmiUtils.orderTime("   Note: " + obj.note)
+
+        }
+    }
+
+
+}
+
 fun addOrderItemOpenOrderSunmiInner(
     list: List<OpenOrderResponse.Data.Order.OrderItem>,
     font: String,
@@ -2713,6 +2891,75 @@ fun addOrderItemOpenOrderSunmiInner(
             padLineCustomerItem(
                 obj.quantity.toString() + "  " + getItemNameToShow(obj.itemName),
                 getItemPriceToShow(totalPriceOpenOrder(obj)),
+                if (font == Constants.LARGE) {
+                    23
+                } else {
+                    48
+                }
+            ).toString()
+        )
+
+
+
+        if (obj.orderItemModifiers.isNotEmpty() && showModifiers) {
+            for (j in 0 until obj.orderItemModifiers.size) {
+                val modifierObj = obj.orderItemModifiers.get(j)
+
+                var part1 = "   " + if (modifierObj.modifier_quantity == 1) {
+                    "   "
+                } else {
+                    "" + modifierObj.modifier_quantity + "x "
+                } + getItemNameToShow(modifierObj.name)
+
+                var part2 =
+                    getModifierItemPriceToShow(modifierObj.price, modifierObj.quantity)
+                Log.e("CheckPartF", "part1 ${part1.length}")
+                Log.e("CheckPartF", "part2 ${part2.length}")
+
+                PrintSunmiUtils.normalText(
+                    padLineCustomerItem(
+                        part1,
+                        part2,
+                        if (font == Constants.LARGE) {
+                            23
+                        } else {
+                            48
+                        }
+                    ).toString()
+                )
+
+            }
+
+        }
+
+        if (obj.note.isNotEmpty()) {
+
+            PrintSunmiUtils.normalText("   Note: " + obj.note)
+
+        }
+    }
+
+
+}
+
+/**
+ * This method is created by Dharmesh Basapati.
+ * It is created for printing order items of an open order from all orders screen in Inner Printer.
+ * Note: As we are getting the response model of an online order in "all orders" api,
+ * we are using OnlineOrderResponseModel for printing open order customer receipts.
+ */
+fun addOrderItemOnlineOrderSunmiInner(
+    list: List<OnlineOrderResponseModel.Data.OrderItem>,
+    font: String,
+    showModifiers: Boolean
+) {
+    for (i in 0 until list.size) {
+        val obj = list.get(i)
+
+        PrintSunmiUtils.normalText(
+            padLineCustomerItem(
+                obj.quantity.toString() + "x " + getItemNameToShow(obj.itemName),
+                getItemPriceToShow(totalPriceOnlineOrder(obj)),
                 if (font == Constants.LARGE) {
                     23
                 } else {
