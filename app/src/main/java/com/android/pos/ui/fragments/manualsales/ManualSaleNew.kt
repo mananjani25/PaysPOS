@@ -147,6 +147,11 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
 
+        if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
+            binding.btnPay.gone()
+        } else {
+            binding.btnPay.visible()
+        }
 
         getManualCategoryId()
         onConfig()
