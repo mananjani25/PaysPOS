@@ -5622,7 +5622,7 @@ class AllOrdersListingFragment(
                         48
                     }
                 ).toString()
-                PrintSunmiUtils.totalPrice(str5)
+                PrintSunmiUtils.boldText(str5)
 
                 val totalAmt1 = MethodUtils.roundOffAmountDouble(totalAmt)
                 val str51 = padLine(
@@ -5655,7 +5655,7 @@ class AllOrdersListingFragment(
                         48
                     }
                 ).toString()
-                PrintSunmiUtils.totalPrice(str5)
+                PrintSunmiUtils.boldText(str5)
 
                 val totalAmt1 = MethodUtils.roundOffAmountDouble(totalAmt + cashdiscountAmount)
                 val str51 = padLine(
