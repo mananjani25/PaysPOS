@@ -22,7 +22,6 @@ import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.*
 import androidx.lifecycle.Observer
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.android.pos.MainApplication
 import com.android.pos.R
@@ -60,6 +59,7 @@ import com.android.pos.databinding.FragmentDashboardCategoryBoldPosBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
 import com.android.pos.ui.activities.MainActivity
+import com.android.pos.ui.fragments.allorders.AllOrdersViewModel
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
@@ -108,6 +108,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     private var cartList: ArrayList<CartModel> = arrayListOf()
     private val viewModelServiceCharge by viewModels<ServiceChargeListViewModel>()
     private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
+    private val allOrdersViewModel by activityViewModels<AllOrdersViewModel>()
     private val viewModelPayment by activityViewModels<PaymentViewModel>()
     private val passcodeViewModel by activityViewModels<PasscodeViewModel>()
     private val printerViewModel by viewModels<PrinterViewModel>()
@@ -219,12 +220,12 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
-        if (prefProvider.getValueboolean(ONLINE_ORDER_ENABLE, false)) {
-            binding.layoutHeader.linearOnlineorder?.visible()
-            viewModel.getOnlineOrderCount()
-        } else {
-            binding.layoutHeader.linearOnlineorder?.gone()
-        }
+//        if (prefProvider.getValueboolean(ONLINE_ORDER_ENABLE, false)) {
+//            binding.layoutHeader.linearOnlineorder?.visible()
+//            viewModel.getOnlineOrderCount()
+//        } else {
+//            binding.layoutHeader.linearOnlineorder?.gone()
+//        }
         getOrderTypes()
         observeSaveOrder()
         getKitchenReceiptSettings()
@@ -239,7 +240,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         checkDineInEditOrder()
         printerProgress()
         observeShowProgress()
-        getwebOrderingCountObserver()
+        allOrdersPendingCountObserver()
         getDineInData()
         checkSearch()
         observeServiceChargeUpdate()
@@ -345,6 +346,30 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                     Log.d(TAG, "getwebOrderingCount: " + it.count)
                     onlineOrderBadgeDisplay(it.count)
+                }
+            }
+        }
+    }
+
+    private fun allOrdersPendingCountObserver() {
+        allOrdersViewModel.allOrderCounts("","").observe(viewLifecycleOwner) {
+            it?.let { resource ->
+                when (resource.status) {
+                    Status.SUCCESS -> {
+                        Log.d(TAG, "getAllOrderCounts: ${it.data?.data}")
+
+                        val allOrdersPendingCount = it.data?.data?.all_orders?.pending ?: 0
+                        onlineOrderBadgeDisplay(allOrdersPendingCount)
+
+                    }
+
+                    Status.ERROR -> {
+                        Log.e(TAG, "getAllOrderCounts: ERROR - ${it.message}")
+                    }
+
+                    Status.LOADING -> {
+                        Log.d(TAG, "getAllOrderCounts: LOADING")
+                    }
                 }
             }
         }
@@ -638,7 +663,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             prefProvider.getValue(EMPLOYEE_NAME, "")
 
 
-        getOnlineOrderIsEnableOrNot()
+        //getOnlineOrderIsEnableOrNot()
+        //allOrdersPendingCountObserver()
 
         initScanner()
 
@@ -669,7 +695,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 }
             }
         } else {
-            viewModel.getOnlineOrderCount()
+            //viewModel.getOnlineOrderCount()
+            allOrdersPendingCountObserver()
         }
     }
 
@@ -1176,7 +1203,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                 cashDiscountType = ""
                             }
                         }
-                    viewModel.getOnlineOrderCount()
+                    //viewModel.getOnlineOrderCount()
+                    allOrdersPendingCountObserver()
                     Log.d(TAG, "addObserver: " + Gson().toJson(viewModel.cartModel))
                     Log.d(TAG, "addObserver: " + Gson().toJson(cartList))
 
