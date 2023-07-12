@@ -284,20 +284,18 @@ class AllOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
 
             binding.root.setOnClickListener {
 
-                if(bindingAdapterPosition != -1){
-                    val item = filterList[bindingAdapterPosition]
+                val item = filterList[bindingAdapterPosition]
 
-                    if (item.isCheck) {
-                        item.isCheck = false
-                    } else {
-                        filterList.forEach {
-                            it.isCheck = false
-                        }
-                        item.isCheck = true
-
+                if (item.isCheck) {
+                    item.isCheck = false
+                } else {
+                    filterList.forEach {
+                        it.isCheck = false
                     }
-                    notifyDataSetChanged()
+                    item.isCheck = true
+
                 }
+                notifyDataSetChanged()
 
             }
 
