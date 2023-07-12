@@ -860,6 +860,10 @@
     <string name="tv_type">Type</string>
     <string name="tv_station">Station</string>
     <string name="tv_reprint_kitchen_receipt">Re-Print Kitchen Receipt</string>
+    <string name="add_phone_in_profile">Please add phone number in your profile.</string>
+    <string name="add_address_in_profile">Please add address in your profile</string>
+    <string name="please_enter_address">Please enter address</string>
+    <string name="please_enter_zipcode">Please enter zipcode</string>
 
 </resources>
 

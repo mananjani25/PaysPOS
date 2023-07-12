@@ -536,6 +536,7 @@ object AlertUtils {
     fun showCustomAlertWithListenerWithOKCancel(
         context: Context,
         message: String?,
+        okayButtonText: String? = null,
         listener: DialogInterface.OnClickListener?
     ) {
         val dialogView =
@@ -551,7 +552,7 @@ object AlertUtils {
         tvSubTitle.text = message
 
         val btSave = dialogView.findViewById<AppCompatTextView>(R.id.tvSave)
-        btSave.text = context.getString(android.R.string.ok)
+        btSave.text = okayButtonText ?: context.getString(android.R.string.ok)
         btSave.setBackgroundColor(ContextCompat.getColor(context, R.color.btnColorDark))
         btSave.setOnClickListener {
             customDialog.dismiss()

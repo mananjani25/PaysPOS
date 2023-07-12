@@ -20,7 +20,9 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.data.entities.TbCustomer
 import com.android.pos.data.model.requestModel.CreateCustomerRequestModel
+import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentAddEditCustomerBinding
+import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.AddressListAdapter
 import com.android.pos.ui.fragments.settings.business.AutoCompleteAdapter
 import com.android.pos.utils.*
@@ -33,12 +35,14 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.*
+import javax.inject.Inject
 
 
 @AndroidEntryPoint
 class AddEditCustomer : Fragment(), AddressTextChangeListner {
     private lateinit var binding: FragmentAddEditCustomerBinding
     private var isEdit = false
+    private var isFromPhoneOrderEdit = false
     private val TAG = "AddEditCustomer"
     private val viewModel by viewModels<AddCustomerViewModel>()
     private var currentSelectedDate: Long? = null
@@ -54,6 +58,8 @@ class AddEditCustomer : Fragment(), AddressTextChangeListner {
     var adapter1: AutoCompleteAdapter? = null
     var adapter2: AutoCompleteAdapter? = null
     var changeField: Boolean = false
+    @Inject
+    lateinit var prefProvider: PrefProvider
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(
@@ -161,6 +167,7 @@ class AddEditCustomer : Fragment(), AddressTextChangeListner {
         onClick()
         setPlaceApi()
         isEdit = requireArguments().getBoolean("isEdit", false)
+        isFromPhoneOrderEdit = requireArguments().getBoolean("isFromPhoneOrderEdit", false)
         LogUtil.logE(TAG, "isEdit  $isEdit")
 
         binding.chkIsLoyalty.setOnClickListener {
@@ -1115,7 +1122,7 @@ class AddEditCustomer : Fragment(), AddressTextChangeListner {
                     )
             }
 
-            viewModel.submit(listAddress)
+            viewModel.submit(listAddress, isFromPhoneOrderEdit)
         }
         binding.chksameasbilling.setOnClickListener {
             if (binding.edtStreet.text.toString().isNotEmpty()) {
@@ -1216,12 +1223,12 @@ class AddEditCustomer : Fragment(), AddressTextChangeListner {
                     )
                     { _, _ ->
 
-                        val navControll = findNavController()
-                        navControll.previousBackStackEntry?.savedStateHandle?.set(
-                            com.android.pos.data.remote.Constants.KEY,
-                            com.android.pos.data.remote.Constants.CUSTOMERDETAILS
-                        )
-                        navControll.popBackStack()
+                            val navControll = findNavController()
+                            navControll.previousBackStackEntry?.savedStateHandle?.set(
+                                com.android.pos.data.remote.Constants.KEY,
+                                com.android.pos.data.remote.Constants.CUSTOMERDETAILS
+                            )
+                            navControll.popBackStack()
                     }
 
 
@@ -1229,6 +1236,24 @@ class AddEditCustomer : Fragment(), AddressTextChangeListner {
             }
         }
 
+        viewModel.updatedCustomer.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let { customer ->
+                onUpdatingCustomer(customer)
+            }
+        }
+    }
+
+    // if redirected from phone order then, after adding required details navigate back to phone order cart
+    private fun onUpdatingCustomer(customer: TbCustomer){
+        prefProvider.setValue(
+            Constants.CUSTOMER_NAME,
+            customer.first_name + " " + customer.last_name
+        )
+        prefProvider.setValueboolean(Constants.LOYALTY_ADDED, false)
+        prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED, false)
+        customer.id?.let { prefProvider.setValueInt(Constants.CUSTOMER_ID, it) }
+        prefProvider.saveCustomerData(customer)
+        findNavController().popBackStack()
     }
 
     fun getDay(dat: String): String {
