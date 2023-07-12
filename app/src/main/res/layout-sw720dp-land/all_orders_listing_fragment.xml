@@ -206,7 +206,7 @@
                 style="@style/CustomFontMediumStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight="0.8"
                 android:gravity="start"
                 android:text="@string/tv_order_id"
                 android:textAllCaps="true"
@@ -217,7 +217,7 @@
                 style="@style/CustomFontMediumStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1.2"
+                android:layout_weight="0.9"
                 android:gravity="start"
                 android:text="@string/tv_date_time"
                 android:textAllCaps="true"
@@ -228,7 +228,7 @@
                 android:id="@+id/lnrEmployeeSort"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1.2"
+                android:layout_weight="1"
                 android:gravity="start|center_horizontal">
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -244,7 +244,7 @@
                     android:id="@+id/imgIndicatorEmployee"
                     android:layout_width="@dimen/_10sdp"
                     android:layout_height="@dimen/_10sdp"
-                    android:layout_marginStart="@dimen/_5sdp"
+                    android:layout_marginStart="@dimen/_2sdp"
                     app:srcCompat="@drawable/ic_solid_up_arrow"
                     app:tint="@color/drawable_ic_color" />
 
@@ -254,7 +254,7 @@
                 style="@style/CustomFontMediumStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight="0.8"
                 android:gravity="start"
                 android:text="@string/tv_amount"
                 android:textAllCaps="true"
@@ -277,7 +277,7 @@
                 style="@style/CustomFontMediumStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight="0.8"
                 android:gravity="start"
                 android:text="@string/tv_delivery"
                 android:textAllCaps="true"
@@ -301,7 +301,7 @@
                 android:id="@+id/lnrStationSort"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight="0.8"
                 android:gravity="start|center_horizontal">
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -317,7 +317,7 @@
                     android:id="@+id/imgIndicatorStation"
                     android:layout_width="@dimen/_10sdp"
                     android:layout_height="@dimen/_10sdp"
-                    android:layout_marginStart="@dimen/_5sdp"
+                    android:layout_marginStart="@dimen/_2sdp"
                     app:srcCompat="@drawable/ic_solid_up_arrow"
                     app:tint="@color/drawable_ic_color" />
 
