@@ -578,9 +578,10 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 }
             }
-            if (cartModel != null) {
+            // commented addCart to fix BIS-840
+            /*if (cartModel != null) {
                 addCart(cartModel!!)
-            }
+            }*/
 
 
         } else {
