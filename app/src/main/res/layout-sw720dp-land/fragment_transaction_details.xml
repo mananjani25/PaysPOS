@@ -101,7 +101,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="@dimen/_7sdp"
-                    android:text="@{`Order List ( `+orderDetails.data.order.order_items.size()+` Items )`}"
+                    android:text="@{orderDetails.data.order.order_items.size > 1 ? `Order List ( `+orderDetails.data.order.order_items.size()+` Items )` : `Order List ( `+orderDetails.data.order.order_items.size()+` Item )` }"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi" />
 
