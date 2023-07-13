@@ -1779,7 +1779,7 @@ class TransactionDetailsFragment : Fragment() {
                 )
             }
 
-            if (paymentDetailsResponse.data?.service_charge_amount != null) {
+            if (paymentDetailsResponse.data?.service_charge_amount != null && paymentDetailsResponse.data.order.service_charge_enabled) {
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
                 builder.addTextFont(Builder.FONT_E)
@@ -2730,7 +2730,7 @@ class TransactionDetailsFragment : Fragment() {
                 )
             }
 
-            if (paymentDetailsResponse.data?.service_charge_amount != null) {
+            if (paymentDetailsResponse.data?.service_charge_amount != null && paymentDetailsResponse.data.order.service_charge_enabled) {
 
                 PrintSunmiUtils.serviceCharge(
                     padLine(
@@ -3209,7 +3209,7 @@ class TransactionDetailsFragment : Fragment() {
                 )
             }
 
-            if (paymentDetailsResponse.data?.service_charge_amount != null) {
+            if (paymentDetailsResponse.data?.service_charge_amount != null && paymentDetailsResponse.data.order.service_charge_enabled) {
 
                 PrintSunmiUtils.normalText(
                     padLine(

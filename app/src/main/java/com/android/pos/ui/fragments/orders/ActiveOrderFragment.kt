@@ -37,6 +37,7 @@ import com.android.pos.data.remote.Constants.OPEN_ORDER_
 import com.android.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
 import com.android.pos.data.remote.Constants.PRINT_PAID
 import com.android.pos.data.remote.Constants.PRINT_UNPAID
+import com.android.pos.data.remote.Constants.SERVICECHARGE_TAKEOUT_OPENORDER
 import com.android.pos.data.remote.Constants.SHIPPING_ADDRESS
 import com.android.pos.data.remote.Constants.SUNMI_INNER_PRINTER
 import com.android.pos.data.remote.Constants.SUNMI_PRINTER
@@ -1688,7 +1689,8 @@ class ActiveOrderFragment(
                 )
             }
 
-            if (receiptModel.totalServiceCharges != null) {
+            if (receiptModel.totalServiceCharges != null && receiptModel.serviceChargeEnabled && prefProvider.getValueboolean(
+                    SERVICECHARGE_TAKEOUT_OPENORDER, false)) {
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
                 builder.addTextFont(Builder.FONT_E)
@@ -2686,7 +2688,8 @@ class ActiveOrderFragment(
                 PrintSunmiUtils.tax(str3)
             }
 
-            if (receiptModel.totalServiceCharges != null) {
+            if (receiptModel.totalServiceCharges != null && receiptModel.serviceChargeEnabled && prefProvider.getValueboolean(
+                    SERVICECHARGE_TAKEOUT_OPENORDER, false)) {
 
 
                 val str4 = padLine(
@@ -3301,7 +3304,8 @@ class ActiveOrderFragment(
                 PrintSunmiUtils.normalText(str3)
             }
 
-            if (receiptModel.totalServiceCharges != null) {
+            if (receiptModel.totalServiceCharges != null && receiptModel.serviceChargeEnabled && prefProvider.getValueboolean(
+                    SERVICECHARGE_TAKEOUT_OPENORDER, false)) {
 
 
                 val str4 = padLine(

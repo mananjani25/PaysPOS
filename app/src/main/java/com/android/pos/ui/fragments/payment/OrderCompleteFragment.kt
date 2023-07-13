@@ -1960,32 +1960,33 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     )
                 }
 
-
-                builder.addTextLineSpace(30)
-                builder.addFeedUnit(30)
-                builder.addTextFont(Builder.FONT_E)
-                // builder.addTextAlign(Builder.ALIGN_LEFT)
-                builder.addTextLang(Builder.LANG_EN)
-                addCustomerTextSize(builder, customerSettingModel.fonts)
-                builder.addTextStyle(
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.COLOR_1
-                )
-
-
-                builder.addText(
-                    padLine(
-                        "Service Charge",
-                        "$" + MethodUtils.roundOffAmountString(checkOutDineInModel?.totalServiceCharge!!),
-                        if (customerSettingModel.fonts == LARGE) {
-                            24
-                        } else {
-                            48
-                        }
+                if ((getDineInOrderDetails?.serviceChargeEnabled == true) && prefProvider.getValueboolean(Constants.SERVICECHARGE_DINEIN_ORDER, false)) {
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+                    builder.addTextFont(Builder.FONT_E)
+                    // builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextLang(Builder.LANG_EN)
+                    addCustomerTextSize(builder, customerSettingModel.fonts)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.COLOR_1
                     )
-                )
+
+
+                    builder.addText(
+                        padLine(
+                            "Service Charge",
+                            "$" + MethodUtils.roundOffAmountString(checkOutDineInModel?.totalServiceCharge!!),
+                            if (customerSettingModel.fonts == LARGE) {
+                                24
+                            } else {
+                                48
+                            }
+                        )
+                    )
+                }
 
                 if (tipAmount != 0.0) {
 
@@ -2828,15 +2829,16 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 PrintSunmiUtils.tax(str3)
             }
 
+            if ((getDineInOrderDetails?.serviceChargeEnabled == true) && prefProvider.getValueboolean(Constants.SERVICECHARGE_DINEIN_ORDER, false)) {
+                val str4 = padLine(
+                    "Service Charge",
+                    "$" + MethodUtils.roundOffAmountString(checkOutDineInModel?.totalServiceCharge!!),
+                    if (customerSettingModel.fonts == LARGE) 23 else 48
+                ).toString()
 
-            val str4 = padLine(
-                "Service Charge",
-                "$" + MethodUtils.roundOffAmountString(checkOutDineInModel?.totalServiceCharge!!),
-                if (customerSettingModel.fonts == LARGE) 23 else 48
-            ).toString()
-
-            PrintSunmiUtils.serviceCharge(str4)
-            SunmiPrinterApi.getInstance().lineWrap(1)
+                PrintSunmiUtils.serviceCharge(str4)
+                SunmiPrinterApi.getInstance().lineWrap(1)
+            }
 
             if (tipAmount != 0.0) {
 
@@ -3277,15 +3279,16 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 PrintSunmiUtils.normalText(str3)
             }
 
+            if (getDineInOrderDetails?.serviceChargeEnabled == true && prefProvider.getValueboolean(Constants.SERVICECHARGE_DINEIN_ORDER, false)) {
+                val str4 = padLine(
+                    "Service Charge",
+                    "$" + MethodUtils.roundOffAmountString(checkOutDineInModel?.totalServiceCharge!!),
+                    if (customerSettingModel.fonts == LARGE) 23 else 48
+                ).toString()
 
-            val str4 = padLine(
-                "Service Charge",
-                "$" + MethodUtils.roundOffAmountString(checkOutDineInModel?.totalServiceCharge!!),
-                if (customerSettingModel.fonts == LARGE) 23 else 48
-            ).toString()
-
-            PrintSunmiUtils.normalText(str4)
-            SunmiPrintHelper.getInstance().lineWrap(1)
+                PrintSunmiUtils.normalText(str4)
+                SunmiPrintHelper.getInstance().lineWrap(1)
+            }
 
             if (tipAmount != 0.0) {
 
@@ -4125,33 +4128,34 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     )
                 }
 
-
-                builder.addTextLineSpace(30)
-                builder.addFeedUnit(30)
-                builder.addTextFont(Builder.FONT_E)
-                // builder.addTextAlign(Builder.ALIGN_LEFT)
-                builder.addTextLang(Builder.LANG_EN)
-                addCustomerTextSize(builder, customerSettingModel.fonts)
-                builder.addTextStyle(
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.COLOR_1
-                )
-
-                builder.addText(
-                    padLine(
-                        "Service Charge",
-                        "$" + MethodUtils.roundOffAmountString(
-                            getDineInOrderDetails?.totalServiceCharges ?: 0.0
-                        ),
-                        if (customerSettingModel.fonts == LARGE) {
-                            24
-                        } else {
-                            48
-                        }
+                if ((getDineInOrderDetails?.serviceChargeEnabled == true) && prefProvider.getValueboolean(Constants.SERVICECHARGE_DINEIN_ORDER, false)) {
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+                    builder.addTextFont(Builder.FONT_E)
+                    // builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextLang(Builder.LANG_EN)
+                    addCustomerTextSize(builder, customerSettingModel.fonts)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.COLOR_1
                     )
-                )
+
+                    builder.addText(
+                        padLine(
+                            "Service Charge",
+                            "$" + MethodUtils.roundOffAmountString(
+                                getDineInOrderDetails?.totalServiceCharges ?: 0.0
+                            ),
+                            if (customerSettingModel.fonts == LARGE) {
+                                24
+                            } else {
+                                48
+                            }
+                        )
+                    )
+                }
 
 
                 if (tipAmount != 0.0) {
@@ -5073,20 +5077,20 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 PrintSunmiUtils.tax(str3)
             }
 
-
-            val str4 = padLine(
-                "Service Charge",
-                "$" + MethodUtils.roundOffAmountString(
-                    getDineInOrderDetails?.totalServiceCharges ?: 0.0
-                ),
-                if (customerSettingModel.fonts == LARGE) {
-                    23
-                } else {
-                    48
-                }
-            ).toString()
-            PrintSunmiUtils.serviceCharge(str4)
-
+            if ((getDineInOrderDetails?.serviceChargeEnabled == true) && prefProvider.getValueboolean(Constants.SERVICECHARGE_DINEIN_ORDER, false)) {
+                val str4 = padLine(
+                    "Service Charge",
+                    "$" + MethodUtils.roundOffAmountString(
+                        getDineInOrderDetails?.totalServiceCharges ?: 0.0
+                    ),
+                    if (customerSettingModel.fonts == LARGE) {
+                        23
+                    } else {
+                        48
+                    }
+                ).toString()
+                PrintSunmiUtils.serviceCharge(str4)
+            }
 
 
             if (tipAmount != 0.0) {
@@ -5617,20 +5621,20 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 PrintSunmiUtils.normalText(str3)
             }
 
-
-            val str4 = padLine(
-                "Service Charge",
-                "$" + MethodUtils.roundOffAmountString(
-                    getDineInOrderDetails?.totalServiceCharges ?: 0.0
-                ),
-                if (customerSettingModel.fonts == LARGE) {
-                    23
-                } else {
-                    48
-                }
-            ).toString()
-            PrintSunmiUtils.normalText(str4)
-
+            if ((getDineInOrderDetails?.serviceChargeEnabled == true) && prefProvider.getValueboolean(Constants.SERVICECHARGE_DINEIN_ORDER, false)) {
+                val str4 = padLine(
+                    "Service Charge",
+                    "$" + MethodUtils.roundOffAmountString(
+                        getDineInOrderDetails?.totalServiceCharges ?: 0.0
+                    ),
+                    if (customerSettingModel.fonts == LARGE) {
+                        23
+                    } else {
+                        48
+                    }
+                ).toString()
+                PrintSunmiUtils.normalText(str4)
+            }
 
 
             if (tipAmount != 0.0) {
@@ -7024,7 +7028,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 )
             }
 
-            if (receiptModel?.order?.totalServiceCharges != null) {
+            if (receiptModel?.order?.totalServiceCharges != null && (receiptModel?.order?.serviceChargeEnabled == true) && prefProvider.getValueboolean(
+                    Constants.SERVICECHARGE_TAKEOUT_OPENORDER, false)) {
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
                 builder.addTextFont(Builder.FONT_E)
@@ -10113,7 +10118,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             }
 
-            if (receiptModel?.order?.totalServiceCharges != null) {
+            if (receiptModel?.order?.totalServiceCharges != null && (receiptModel?.order?.serviceChargeEnabled == true) && prefProvider.getValueboolean(
+                    Constants.SERVICECHARGE_TAKEOUT_OPENORDER, false)) {
 
 
                 val str4 = padLine(
@@ -10791,7 +10797,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             }
 
-            if (receiptModel?.order?.totalServiceCharges != null) {
+            if (receiptModel?.order?.totalServiceCharges != null && (receiptModel?.order?.serviceChargeEnabled == true) && prefProvider.getValueboolean(
+                    Constants.SERVICECHARGE_TAKEOUT_OPENORDER, false)) {
 
 
                 val str4 = padLine(

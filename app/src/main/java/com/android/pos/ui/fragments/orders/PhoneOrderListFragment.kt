@@ -1648,7 +1648,8 @@ class PhoneOrderListFragment(
                 )
             }
 
-            if (receiptModel.totalServiceCharges != null) {
+            if (receiptModel.totalServiceCharges != null && receiptModel.serviceChargeEnabled && prefProvider.getValueboolean(
+                    Constants.SERVICECHARGE_TAKEOUT_OPENORDER, false)) {
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
                 builder.addTextFont(Builder.FONT_E)
@@ -2493,7 +2494,8 @@ class PhoneOrderListFragment(
                 PrintSunmiUtils.tax(str3)
             }
 
-            if (receiptModel.totalServiceCharges != null) {
+            if (receiptModel.totalServiceCharges != null && receiptModel.serviceChargeEnabled && prefProvider.getValueboolean(
+                    Constants.SERVICECHARGE_TAKEOUT_OPENORDER, false)) {
 
 
                 val str4 = padLine(
@@ -3013,7 +3015,8 @@ class PhoneOrderListFragment(
                 PrintSunmiUtils.normalText(str3)
             }
 
-            if (receiptModel.totalServiceCharges != null) {
+            if (receiptModel.totalServiceCharges != null && receiptModel.serviceChargeEnabled && prefProvider.getValueboolean(
+                    Constants.SERVICECHARGE_TAKEOUT_OPENORDER, false)) {
 
 
                 val str4 = padLine(
