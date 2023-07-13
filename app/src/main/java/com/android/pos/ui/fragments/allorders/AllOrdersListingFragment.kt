@@ -455,7 +455,17 @@ class AllOrdersListingFragment(
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.setCurrentDate(Calendar.getInstance(), "", "", orderStatus)
+        if (orderStatus == "4" || (endDateTime != null && SimpleDateFormat(
+                "MM/dd/yyyy", Locale.getDefault()
+            ).parse(endDateTime).after(Calendar.getInstance().time))
+        ) {
+            viewModel.setCurrentDate(Calendar.getInstance(), "", "", orderStatus)
+        } else {
+            viewModel.setCurrentDate(
+                Calendar.getInstance(), startDateTime, endDateTime, orderStatus
+            )
+        }
+//        viewModel.setCurrentDate(Calendar.getInstance(), "", "", orderStatus)
     }
 
     override fun onCreateView(
