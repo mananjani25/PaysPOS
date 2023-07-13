@@ -263,15 +263,28 @@
                         android:layout_marginTop="@dimen/_3sdp"
                         android:orientation="vertical">
 
-
-                        <Spinner
-                            android:id="@+id/edtAddress"
+                        <RelativeLayout
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/_5sdp"
-                            android:background="@drawable/background_square_border_grey"
-                            android:padding="@dimen/_9sdp"
-                            android:theme="@style/SpinnerTheme" />
+                            android:layout_height="wrap_content">
+
+                            <Spinner
+                                android:id="@+id/edtAddress"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/border_spiner"
+                                android:padding="@dimen/_9sdp"
+                                android:textColor="@color/txt_color_blue"
+                                android:textSize="@dimen/_5mdpi"
+                                android:theme="@style/SpinnerTheme1" />
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:paddingEnd="@dimen/_3sdp"
+                                android:layout_alignParentEnd="true"
+                                android:layout_centerVertical="true"
+                                android:src="@drawable/ic_arrow_drop_down" />
+                        </RelativeLayout>
 
                         <androidx.appcompat.widget.AppCompatAutoCompleteTextView
                             android:id="@+id/edtStreet"
@@ -406,15 +419,28 @@
                         android:layout_marginTop="@dimen/_3sdp"
                         android:orientation="vertical">
 
-
-                        <Spinner
-                            android:id="@+id/edtAddress_del"
+                        <RelativeLayout
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/_5sdp"
-                            android:background="@drawable/background_square_border_grey"
-                            android:padding="@dimen/_9sdp"
-                            android:theme="@style/SpinnerTheme" />
+                            android:layout_height="wrap_content">
+
+                            <Spinner
+                                android:id="@+id/edtAddress_del"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/border_spiner"
+                                android:padding="@dimen/_9sdp"
+                                android:textColor="@color/txt_color_blue"
+                                android:textSize="@dimen/_5mdpi"
+                                android:theme="@style/SpinnerTheme1" />
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:paddingEnd="@dimen/_3sdp"
+                                android:layout_alignParentEnd="true"
+                                android:layout_centerVertical="true"
+                                android:src="@drawable/ic_arrow_drop_down" />
+                        </RelativeLayout>
 
                         <androidx.appcompat.widget.AppCompatAutoCompleteTextView
                             android:id="@+id/edtStreet_del"
