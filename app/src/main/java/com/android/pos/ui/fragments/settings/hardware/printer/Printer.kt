@@ -1964,7 +1964,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                 Constants.SUNMIBRAND
             } else {
                 EPSONBRAND
-            }
+            },
+            portNo = if (printerListModel.portNo != null && printerListModel.portNo != 0) printerListModel.portNo else 0
 
         )
 
@@ -3024,7 +3025,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                             ),
                             type = AVAILABLE,
                             uuid = UUID.randomUUID(),
-                            modelName = p0?.cloudPrinterInfo?.name
+                            modelName = p0?.cloudPrinterInfo?.name,
+                            portNo = p0?.cloudPrinterInfo?.port
 
                         )
                     )

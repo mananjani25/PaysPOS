@@ -19,7 +19,8 @@ data class PrinterListModel(
     var uuid: UUID? = null,
     var printerModel: List<PrinterResponse.Data.OrderTypes>? = null,
     var currentPrinterType: String? = null,
-    var printerCategories: List<PrinterResponse.Data.PrinterCategories>? = null
+    var printerCategories: List<PrinterResponse.Data.PrinterCategories>? = null,
+    var portNo:Int?=null
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readValue(Int::class.java.classLoader) as? Int,

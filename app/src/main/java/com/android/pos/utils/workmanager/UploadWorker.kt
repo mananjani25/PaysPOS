@@ -52,7 +52,9 @@ import com.hosopy.actioncable.Subscription
 import com.sunmi.externalprinterlibrary2.ConnectCallback
 import com.sunmi.externalprinterlibrary2.ResultCallback
 import com.sunmi.externalprinterlibrary2.printer.CloudPrinter
+import com.sunmi.externalprinterlibrary2.style.AlignStyle
 import com.sunmi.externalprinterlibrary2.style.CloudPrinterStatus
+import com.sunmi.externalprinterlibrary2.style.UnderlineStyle
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -132,7 +134,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                     ) == true
                 ) {
 
-                    Log.e(TAG,"checkContainU330")
+                    Log.e(TAG, "checkContainU330")
                     for (i in 0 until kitchenPrinterList.size) {
                         var printer1: Printer =
                             Printer(Printer.TM_U220, Printer.MODEL_ANK, mContext)
@@ -517,7 +519,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
             if (dataList.size() != 0) {
                 if (printerObjList.size != dataList.size()) {
-                    Log.e(TAG,"sizeNotEquall")
+                    Log.e(TAG, "sizeNotEquall")
                     //printerObjList.clear()
                     for (i in 0 until dataList.size()) {
 
@@ -531,14 +533,22 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                         )
 
                         if (printerObjList.get(dataList.get(i).asJsonObject.get("mac_address").asString) == null) {
-                            if (dataList.get(i).asJsonObject.get("printer_brand").asString.equals(Constants.SUNMIBRAND)){
-                                var cloudPrinter: CloudPrinter = CloudPrinter(dataList.get(i).asJsonObject.get("printer_name").asString,dataList.get(i).asJsonObject.get("mac_address").asString,9100)
-                                cloudPrinter.connect(mContext,object : ConnectCallback{
+                            if (dataList.get(i).asJsonObject.get("printer_brand").asString.equals(
+                                    Constants.SUNMIBRAND
+                                )
+                            ) {
+                                var cloudPrinter: CloudPrinter = CloudPrinter(
+                                    dataList.get(i).asJsonObject.get("printer_name").asString,
+                                    dataList.get(i).asJsonObject.get("mac_address").asString,
+                                    9100
+                                )
+                                cloudPrinter.connect(mContext, object : ConnectCallback {
                                     override fun onConnect() {
 
 
                                         printerObjList.set(
-                                            dataList.get(i).asJsonObject.get("mac_address").asString ?: "",
+                                            dataList.get(i).asJsonObject.get("mac_address").asString
+                                                ?: "",
                                             cloudPrinter
                                         )
                                     }
@@ -547,7 +557,8 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
 
                                         printerObjList.set(
-                                            dataList.get(i).asJsonObject.get("mac_address").asString ?: "",
+                                            dataList.get(i).asJsonObject.get("mac_address").asString
+                                                ?: "",
                                             cloudPrinter
                                         )
                                     }
@@ -555,7 +566,8 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                                     override fun onDisConnect() {
 
                                         printerObjList.set(
-                                            dataList.get(i).asJsonObject.get("mac_address").asString ?: "",
+                                            dataList.get(i).asJsonObject.get("mac_address").asString
+                                                ?: "",
                                             cloudPrinter
                                         )
 
@@ -564,7 +576,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                                 })
 
 
-                            }else {
+                            } else {
 
                                 var printer1: Printer =
                                     Printer(Printer.TM_U220, Printer.MODEL_ANK, mContext)
@@ -888,7 +900,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                     currentOrderIndex = 0
                     currentPrinterIndex = 0
 
-                    if (listOfPrintersData.get(0).printerName.contains("Printer",true)){
+                    if (listOfPrintersData.get(0).printerName.contains("Printer", true)) {
 
                         if (listOfPrintersData.get(0).printerQueueModelList.size != 0) {
                             Log.e(TAG, "sendData1st:  ")
@@ -953,8 +965,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                             )
                             subscription?.perform("received", params)
                         }
-                    }
-                    else {
+                    } else {
 
                         if (listOfPrintersData.get(0).printerQueueModelList.size != 0) {
                             Log.e(TAG, "sendData1st:  ")
@@ -1019,7 +1030,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                             )
                             subscription?.perform("received", params)
                         }
-                                }
+                    }
 
 
                 } else {
@@ -1277,7 +1288,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                     currentOrderIndex = 0
                     currentPrinterIndex = 0
                     if (listOfPrintersData.get(0).printerName.contains("Printer")) {
-                        Log.e(TAG,"ActionCableContainSunmi")
+                        Log.e(TAG, "ActionCableContainSunmi")
                         if (orderSize != 0) {
 
                             sendDataToPrintToSunmi(
@@ -1651,16 +1662,20 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
         macAddress: String,
         currentOrderIndex: Int
     ) {
-        Log.e(TAG,"checkSunmi Called  ${cloudPrinter?.isConnected}")
+        Log.e(TAG, "checkSunmi Called  ${cloudPrinter?.isConnected}")
         if (isQueueRunning == false) {
             isQueueRunning = true
             if (cloudPrinter?.isConnected == false) {
                 cloudPrinter?.connect(mContext, object : ConnectCallback {
                     override fun onConnect() {
-                        cloudPrinter?.printText("Test Print")
-                        cloudPrinter?.lineFeed(2)
-                        cloudPrinter?.cutPaper(true)
-                        cloudPrinter?.commitTransBuffer(this@UploadWorker)
+                        sendDataToCloudPrint(
+                            listOfPrintersData,
+                            currentPrinterIndex,
+                            cloudPrinter,
+                            printerQueueModelList,
+                            macAddress,
+                            currentOrderIndex
+                        )
 
                     }
 
@@ -1672,12 +1687,73 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
                 })
             } else {
-                cloudPrinter?.printText("Test Print")
-                cloudPrinter?.lineFeed(2)
-                cloudPrinter?.cutPaper(true)
-                cloudPrinter?.commitTransBuffer(this@UploadWorker)
+
+                sendDataToCloudPrint(
+                    listOfPrintersData,
+                    currentPrinterIndex,
+                    cloudPrinter,
+                    printerQueueModelList,
+                    macAddress,
+                    currentOrderIndex
+                )
+                /* cloudPrinter?.printText("Test Print")
+                 cloudPrinter?.lineFeed(2)
+                 cloudPrinter?.cutPaper(true)
+                 cloudPrinter?.commitTransBuffer(this@UploadWorker)*/
             }
         }
+
+    }
+
+    private fun sendDataToCloudPrint(
+        listOfPrintersData: ArrayList<PrinterJSONElementData>,
+        currentPrinterIndex: Int,
+        cloudPrinter: CloudPrinter?,
+        printerQueueModelList: ArrayList<PrinterQueueModel>,
+        macAddress: String,
+        currentOrderIndex: Int
+    ) {
+        var obj = printerQueueModelList.get(currentOrderIndex)
+        cloudPrinter?.lineFeed(1)
+        cloudPrinter?.setUnderlineMode(UnderlineStyle.EMPTY)
+        cloudPrinter?.setAlignment(AlignStyle.CENTER)
+        cloudPrinter?.setCharacterSize(2, 2)
+        cloudPrinter?.printText("Order ID:" +obj.orderID)
+
+        cloudPrinter?.lineFeed(1)
+
+        cloudPrinter?.setAlignment(AlignStyle.CENTER)
+        cloudPrinter?.printText(obj.orderType)
+
+        cloudPrinter?.lineFeed(1)
+        cloudPrinter?.setCharacterSize(1, 1)
+        cloudPrinter?.setAlignment(AlignStyle.LEFT)
+        cloudPrinter?.printText("Employee:"+obj.employeeName)
+
+        cloudPrinter?.setCharacterSize(1, 1)
+        cloudPrinter?.setAlignment(AlignStyle.LEFT)
+        cloudPrinter?.printText(obj.dateAndTime)
+        if (obj.orderType == DINE_IN){
+
+        }
+        else{
+
+            for (i in 0 until obj.orderItems.size){
+
+                cloudPrinter?.setCharacterSize(1, 1)
+                cloudPrinter?.setAlignment(AlignStyle.LEFT)
+
+
+
+            }
+        }
+
+
+        cloudPrinter?.lineFeed(3)
+        cloudPrinter?.cutPaper(true)
+
+        cloudPrinter?.commitTransBuffer(this)
+
 
     }
 
