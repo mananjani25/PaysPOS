@@ -15,12 +15,14 @@ import android.widget.AdapterView
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.*
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import com.android.pos.BuildConfig
 import com.android.pos.R
 import com.android.pos.data.entities.TbAddress
 import com.android.pos.data.entities.TbCustomer
 import com.android.pos.data.entities.TbPhones
+import com.android.pos.data.model.requestModel.CreateCustomerRequestModel
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.AUTH_TOKEN
 import com.android.pos.data.remote.Constants.DELIVERY
@@ -36,6 +38,7 @@ import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.fragments.loginscreen.LoginViewModel
 import com.android.pos.ui.fragments.settings.business.AutoCompleteAdapter
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.Event
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
@@ -43,6 +46,7 @@ import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.liveSnackBar
 import com.android.pos.utils.extensions.setOnSingleClickListener
 import com.android.pos.utils.extensions.visible
+import com.android.pos.utils.statusUtils.Status
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
@@ -51,6 +55,7 @@ import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import java.util.ArrayList
 import javax.inject.Inject
 
@@ -59,6 +64,7 @@ import javax.inject.Inject
 class PhoneOrderFragment : Fragment() {
 
 
+    private lateinit var customer: TbCustomer
     private var orderType: String = PICK_UP
     private var isDelivey = false
     private var customerID: Int? = null
@@ -98,7 +104,7 @@ class PhoneOrderFragment : Fragment() {
 
     private fun resultListener() {
 
-        setFragmentResultListener("request_key_customer") { requestKey: String, bundle: Bundle ->
+        setFragmentResultListener("request_key_customer_phone_order") { requestKey: String, bundle: Bundle ->
             val result = bundle.getParcelable<TbCustomer>("data")
             if (result != null) {
 
@@ -113,6 +119,12 @@ class PhoneOrderFragment : Fragment() {
 
         binding.edtFName.setText(customer.first_name)
         binding.edtLName.setText(customer.last_name)
+
+        prefProvider?.setValue(
+            Constants.CUSTOMER_NAME,
+            customer.first_name + " " + customer.last_name
+        )
+
         if (customer.phones.isNotEmpty())
             binding.edtPhoneNo.setText(AlertUtils.usNumberFormat(customer.phones[0].phone_number))
         binding.edtEmail.setText(customer.email)
@@ -176,11 +188,22 @@ class PhoneOrderFragment : Fragment() {
 
         binding.llSearch.setOnSingleClickListener {
 
-            findNavController().navigate(R.id.action_phoneOrderFragment_to_assignCustomerOrderFragment)
+            val bundle = Bundle().apply {
+                putBoolean("PhoneOrder", true)
+            }
+            findNavController().navigate(
+                R.id.action_phoneOrderFragment_to_assignCustomerOrderFragment,
+                bundle
+            )
         }
         binding.etSearch.setOnSingleClickListener {
-
-            findNavController().navigate(R.id.action_phoneOrderFragment_to_assignCustomerOrderFragment)
+            val bundle = Bundle().apply {
+                putBoolean("PhoneOrder", true)
+            }
+            findNavController().navigate(
+                R.id.action_phoneOrderFragment_to_assignCustomerOrderFragment,
+                bundle
+            )
         }
 
         binding.txtNext.setOnSingleClickListener {
@@ -210,10 +233,8 @@ class PhoneOrderFragment : Fragment() {
                 )
             } else if (isDelivey && binding.edtStreet.text.toString().trim().isEmpty()) {
                 AlertUtils.showCustomAlert(requireContext(), "Please enter address")
-            }
-            else if (isDelivey && binding.edtZip.text.toString().trim().isEmpty()) {
-                AlertUtils.showCustomAlert(requireContext(), "Please enter zipcode")
             } else {
+
 
                 val phonesList: ArrayList<TbPhones> =
                     arrayListOf()
@@ -253,7 +274,7 @@ class PhoneOrderFragment : Fragment() {
                 }
 
 
-                val customer = TbCustomer(
+                customer = TbCustomer(
                     customerID,
                     MethodUtils.getText(binding.edtFName),
                     MethodUtils.getText(binding.edtLName),
@@ -268,18 +289,81 @@ class PhoneOrderFragment : Fragment() {
                 )
 
 
-                val result = Bundle().apply {
-                    putParcelable("data", customer)
-                    putBoolean("OPEN_ORDER", true)
-                    putString("TYPE", orderType)
-                }
-                prefProvider?.setValue(Constants.ORDER_TYPE, Constants.PHONE_ORDER)
-                prefProvider?.setValue(Constants.DELIVERY_TYPE, orderType)
-                setFragmentResult("request_key_customer", result)
+                if (customerID == null) {
 
-                findNavController().navigateUp()
+                    var listAddress: ArrayList<CreateCustomerRequestModel.Customer.Addresses> =
+                        arrayListOf()
+
+                    val phoneId: Int? = null
+                    val addCustomerData = CreateCustomerRequestModel().apply {
+                        data?.first_name = MethodUtils.getText(binding.edtFName)
+                        data?.last_name = MethodUtils.getText(binding.edtLName)
+                        data?.email = MethodUtils.getText(binding.edtEmail)
+
+                        val phone = CreateCustomerRequestModel.Customer.Phone(
+                            id = phoneId,
+                            phone_number = binding.edtPhoneNo.text.toString().trim().replace(
+                                ("[\\D]").toRegex(),
+                                ""
+                            )
+                        )
+
+                        data?.phones_attributes?.add(
+                            0, phone
+                        )
+
+                        listAddress = arrayListOf()
+                        if (binding.edtStreet.text.toString().trim().isNotEmpty()) {
+                            listAddress.add(
+                                CreateCustomerRequestModel.Customer.Addresses(
+                                    null,
+                                    binding.edtStreet.text.toString(),
+                                    binding.edtSuite.text.toString(),
+                                    binding.edtCity.text.toString(),
+                                    binding.edtState.text.toString(),
+                                    "United States",
+                                    binding.edtZip.text.toString(),
+                                    "Shipping",
+                                    0.0,
+                                    0.0,
+                                    "false"
+                                )
+                            )
+                        }
+
+                        data?.addresses_attributes = listAddress
+                    }
+
+
+                    viewModel.createCustomer(addCustomerData)
+
+
+
+
+                } else {
+                    redirectToMain(customer)
+                }
             }
         }
+    }
+
+    private fun redirectToMain(customer: TbCustomer) {
+
+        prefProvider?.setValue(
+            Constants.CUSTOMER_NAME,
+            customer.first_name + " " + customer.last_name
+        )
+
+        val result = Bundle().apply {
+            putParcelable("data", customer)
+            putBoolean("OPEN_ORDER", true)
+            putString("TYPE", orderType)
+        }
+        prefProvider?.setValue(Constants.ORDER_TYPE, Constants.PHONE_ORDER)
+        prefProvider?.setValue(Constants.DELIVERY_TYPE, orderType)
+        setFragmentResult("request_key_customer", result)
+
+        findNavController().navigateUp()
     }
 
 
@@ -291,6 +375,16 @@ class PhoneOrderFragment : Fragment() {
                     ProgressUtils.showProgressDialog(requireActivity())
                 } else {
                     ProgressUtils.dismissProgressDialog()
+                }
+            }
+        }
+
+
+        viewModel.dataCustomer.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it) {
+
+                    redirectToMain(customer)
                 }
             }
         }
