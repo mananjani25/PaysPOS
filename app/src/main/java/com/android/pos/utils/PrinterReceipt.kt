@@ -983,10 +983,12 @@ fun printGuestByItemForSunmiQueue(guestAttributes: List<GuestAttrQueue>, printer
     guestAttributes.forEach {
         printer.lineFeed(1)
         printer.setCharacterSize(2,2)
+        printer.setBoldMode(true)
 
         printer.printText(it.name)
 
 
+        printer.setBoldMode(false)
         it.listOfItems.forEach { obj ->
 
            // printer.lineFeed(1)
