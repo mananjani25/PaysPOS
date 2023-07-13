@@ -255,6 +255,20 @@ class TransactionDetailsFragment : Fragment() {
         }
         setFragmentResultListener("request_key_tips") { requestKey: String, bundle: Bundle ->
             tipAmount = bundle.getDouble("tipAmount")
+            if (tipAmount > 0) {
+                val percentageTip = MethodUtils.calculatePercentageFromAmount(
+                    tipAmount,
+                    paymentDetailsResponse.data.amount
+                )
+                binding.tvTipLabel.text = "Tip (${
+                    String.format(
+                        if (percentageTip > 1) "%.0f" else "%.2f",
+                        percentageTip
+                    )
+                }%)"
+            } else {
+                binding.tvTipLabel.text = "Tip (0%)"
+            }
 
             if (paymentDetailsResponse.data?.payment_type == "Card") {
                 magtekCall(tipAmount)
@@ -786,6 +800,21 @@ class TransactionDetailsFragment : Fragment() {
 
                 } else {
                     serviceChargesList = arrayListOf()
+                }
+
+                if (paymentDetailsResponse.data.tips > 0) {
+                    val percentageTip = MethodUtils.calculatePercentageFromAmount(
+                        paymentDetailsResponse.data.tips,
+                        paymentDetailsResponse.data.amount
+                    )
+                    binding.tvTipLabel.text = "Tip (${
+                        String.format(
+                            if (percentageTip > 1) "%.0f" else "%.2f",
+                            percentageTip
+                        )
+                    }%)"
+                } else {
+                    binding.tvTipLabel.text = "Tip (0%)"
                 }
 
                 if (it.data.order.customer != null) {
