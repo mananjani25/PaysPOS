@@ -28,8 +28,8 @@
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="start"
+                android:layout_weight="0.8"
+                android:gravity="center_vertical"
                 android:orientation="horizontal">
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -55,7 +55,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:gravity="start"
-                android:layout_weight="1.2"
+                android:layout_weight="0.9"
                 android:orientation="vertical">
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -84,7 +84,7 @@
                 style="@style/CustomFontMediumStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1.2"
+                android:layout_weight="1"
                 android:gravity="start"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi"
@@ -95,7 +95,7 @@
                 style="@style/CustomFontMediumStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight="0.8"
                 android:gravity="start"
                 android:text="@{@string/symbole +``+String.format(@string/format,viewModel.totalAmount)}"
                 android:textColor="@color/txtColor"
@@ -118,7 +118,7 @@
                 style="@style/CustomFontMediumStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight="0.8"
                 android:gravity="start"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi"
@@ -129,7 +129,7 @@
                 style="@style/CustomFontMediumStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight="1.1"
                 android:gravity="start"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi"
@@ -140,7 +140,7 @@
                 style="@style/CustomFontMediumStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight="0.8"
                 android:gravity="start"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi"
@@ -260,11 +260,11 @@
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/accept_img"
-                    android:layout_width="wrap_content"
-                    android:paddingHorizontal="@dimen/_2sdp"
+                    android:layout_width="0dp"
                     android:paddingVertical="@dimen/_5sdp"
                     android:text="Accept"
                     android:gravity="center"
+                    android:layout_weight="1"
                     android:fontFamily="@font/sf_pro_display_bold"
                     android:layout_gravity="center_vertical"
                     android:textColor="@color/green_pay_total"
@@ -276,9 +276,9 @@
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/decline_img"
-                    android:paddingHorizontal="@dimen/_2sdp"
                     android:paddingVertical="@dimen/_5sdp"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:text="Reject"
                     android:gravity="center"
                     android:textSize="@dimen/_4sdp"

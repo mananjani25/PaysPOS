@@ -197,11 +197,18 @@ class AllOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
                 }
             }
 
+            if(item.customer != null){
+                binding.txtCustomerName.text = (item.customer.firstName) + " " + (item.customer.lastName)
+            }else{
+                binding.txtCustomerName.text = "-"
+            }
 
-            binding.txtCustomerName.text =
-                (item.customer?.firstName ?: "-") + " " + (item.customer?.lastName ?: "-")
-            binding.txtEmployeeName.text =
-                (item.employee?.firstName ?: "-") + " " + (item.employee?.lastName ?: "-")
+            if(item.employee != null){
+                binding.txtEmployeeName.text = (item.employee.firstName) + " " + (item.employee.lastName)
+            }else{
+                binding.txtEmployeeName.text = "-"
+            }
+
             if (item.orderItems.isNotEmpty()) {
                 binding.rvOpenOrder.visible()
                 adapter = OnlineOrderItemsAdapter()
@@ -219,6 +226,11 @@ class AllOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
                     binding.txtDeliveryOrPickup.text = item.deliveryType
                 }
                 binding.txtDeliveryOrPickup.visible()
+                if (item.orderType == OPEN_ORDER_TAB) {
+                    binding.txtDeliveryOrPickup.text = "-"
+                }else{
+                    binding.txtDeliveryOrPickup.text = item.deliveryType
+                }
             }
 
             if (!item.isCheck) {
