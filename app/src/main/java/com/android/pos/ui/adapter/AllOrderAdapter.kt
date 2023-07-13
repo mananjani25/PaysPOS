@@ -8,12 +8,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.model.responseModel.OnlineOrderResponseModel
-import com.android.pos.data.model.responseModel.OpenOrderResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ALL_ORDER_TAB
 import com.android.pos.data.remote.Constants.ONLINE_ORDER_TAB
@@ -321,17 +321,17 @@ class AllOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
 
             binding.txtEditOrder.setOnClickListener {
                 binding.txtEditOrder.background =
-                    itemView.context.getDrawable(R.drawable.button_selected)
+                    AppCompatResources.getDrawable(itemView.context,R.drawable.button_selected)
                 binding.txtPayNow.background =
-                    itemView.context.getDrawable(R.drawable.background_square_border_grey)
+                    AppCompatResources.getDrawable(itemView.context,R.drawable.background_square_border_grey)
                 mCallback?.onItemClickListener(it, bindingAdapterPosition, "UPDATE")
             }
 
             binding.txtPayNow.setOnClickListener {
                 binding.txtEditOrder.background =
-                    itemView.context.getDrawable(R.drawable.background_square_border_grey)
+                    AppCompatResources.getDrawable(itemView.context,R.drawable.background_square_border_grey)
                 binding.txtPayNow.background =
-                    itemView.context.getDrawable(R.drawable.button_selected)
+                    AppCompatResources.getDrawable(itemView.context,R.drawable.button_selected)
                 mCallback?.onItemClickListener(it, bindingAdapterPosition, "PAY")
             }
 
