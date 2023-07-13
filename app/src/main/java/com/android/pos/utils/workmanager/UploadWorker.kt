@@ -24,6 +24,7 @@ import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.IS_MASTER_TERMINAL
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.addBuilderText
+import com.android.pos.utils.addDotLineForSunmiQueue
 import com.android.pos.utils.addHorizontalLine
 import com.android.pos.utils.addHorizontalLineNew
 import com.android.pos.utils.addHorizontalLineNewU220
@@ -31,6 +32,7 @@ import com.android.pos.utils.addOrdersForKitchenCustomer
 import com.android.pos.utils.addOrdersForKitchenCustomerNewPrinter
 import com.android.pos.utils.padLine
 import com.android.pos.utils.printGuestByItemForQueue
+import com.android.pos.utils.printGuestByItemForSunmiQueue
 import com.android.pos.utils.printer.PrinterClass
 import com.epson.epos2.ConnectionListener
 import com.epson.epos2.Epos2Exception
@@ -1680,9 +1682,11 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                     }
 
                     override fun onFailed(p0: String?) {
+                        Log.e(TAG,"checkFailed")
                     }
 
                     override fun onDisConnect() {
+                        Log.e(TAG,"checkDisconnect")
                     }
 
                 })
@@ -1716,9 +1720,10 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
         var obj = printerQueueModelList.get(currentOrderIndex)
         cloudPrinter?.lineFeed(1)
         cloudPrinter?.setUnderlineMode(UnderlineStyle.EMPTY)
+        cloudPrinter?.setBoldMode(true)
         cloudPrinter?.setAlignment(AlignStyle.CENTER)
         cloudPrinter?.setCharacterSize(2, 2)
-        cloudPrinter?.printText("Order ID:" +obj.orderID)
+        cloudPrinter?.printText("Order ID:" + obj.orderID)
 
         cloudPrinter?.lineFeed(1)
 
@@ -1726,26 +1731,64 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
         cloudPrinter?.printText(obj.orderType)
 
         cloudPrinter?.lineFeed(1)
+        cloudPrinter?.setBoldMode(false)
         cloudPrinter?.setCharacterSize(1, 1)
         cloudPrinter?.setAlignment(AlignStyle.LEFT)
-        cloudPrinter?.printText("Employee:"+obj.employeeName)
+        cloudPrinter?.printText("Employee:" + obj.employeeName)
 
         cloudPrinter?.setCharacterSize(1, 1)
+
         cloudPrinter?.setAlignment(AlignStyle.LEFT)
         cloudPrinter?.printText(obj.dateAndTime)
-        if (obj.orderType == DINE_IN){
 
-        }
-        else{
 
-            for (i in 0 until obj.orderItems.size){
+        cloudPrinter?.let { addDotLineForSunmiQueue(it) }
 
-                cloudPrinter?.setCharacterSize(1, 1)
+        if (obj.orderType == DINE_IN) {
+
+            cloudPrinter?.let { printGuestByItemForSunmiQueue(obj.guestAttributes, it) }
+
+
+        } else {
+
+            for (i in 0 until obj.orderItems.size) {
+
+                cloudPrinter?.setBoldMode(false)
+                cloudPrinter?.setCharacterSize(2, 2)
                 cloudPrinter?.setAlignment(AlignStyle.LEFT)
 
+                if (obj.orderItems[i].timestamp.isNotEmpty()) {
+                    var msg = "(" + obj.orderItems[i].timestamp + ")"
+                    cloudPrinter?.printText("" + obj.orderItems[i].quantity + " " + obj.orderItems[i].itemName + "  " + msg)
+
+                } else {
+
+                    cloudPrinter?.printText("" + obj.orderItems[i].quantity + " " + obj.orderItems[i].itemName)
+                }
+
+                if (obj.orderItems[i].orderItemModifiers.isNotEmpty()) {
+                    obj.orderItems[i].orderItemModifiers.forEach { mod ->
 
 
+                        cloudPrinter?.printText(
+                            "  " + if (mod.modifierQuantity == 1) {
+                                "   "
+                            } else {
+                                "" + mod.modifierQuantity + "x "
+                            } + mod.name
+                        )
+
+
+                    }
+
+
+                }
             }
+        }
+
+        if (obj.orderType != DINE_IN && obj.customerName != null && obj.customerName.isNotEmpty()){
+
+
         }
 
 
@@ -3636,6 +3679,13 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
     override fun onFailed(p0: CloudPrinterStatus?) {
         isQueueRunning = false
         Log.e(TAG, "check failed  ${Gson().toJson(p0)}")
+        if (p0?.name.equals("UNKNOWN",true)){
+            sendNotification("Printer - ${listOfPrintersData[currentPrinterIndex].modelName} is Offline.")
+
+        }
+
+
+
     }
 
 }

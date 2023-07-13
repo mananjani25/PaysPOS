@@ -25,6 +25,7 @@ import com.android.pos.di.PrefProvider
 import com.epson.epos2.printer.Printer
 import com.epson.eposprint.Builder
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
+import com.sunmi.externalprinterlibrary2.printer.CloudPrinter
 
 val TAG = "PrinterReceipt"
 
@@ -897,6 +898,7 @@ fun addHorizontalLineNew(printer: Printer): Printer {
     return printer
 }
 
+
 fun printGuestByItemForQueue(guestAttributes: List<GuestAttrQueue>, printer: Printer): Printer {
 
     guestAttributes.forEach {
@@ -974,6 +976,71 @@ fun printGuestByItemForQueue(guestAttributes: List<GuestAttrQueue>, printer: Pri
     return  printer
 
 
+}
+
+fun printGuestByItemForSunmiQueue(guestAttributes: List<GuestAttrQueue>, printer: CloudPrinter): CloudPrinter {
+
+    guestAttributes.forEach {
+        printer.lineFeed(1)
+        printer.setCharacterSize(2,2)
+
+        printer.printText(it.name)
+
+
+        it.listOfItems.forEach { obj ->
+
+           // printer.lineFeed(1)
+            printer.setCharacterSize(2,2)
+
+            if (obj.timestamp.isNotEmpty()) {
+                var msg = "(" + obj.timestamp + ")"
+                printer.printText("" + obj.quantity + " " + obj.itemName + "  " + msg)
+
+            } else {
+
+                printer.printText("" + obj.quantity + " " + obj.itemName)
+            }
+
+            if (obj.orderItemModifiers.isNotEmpty()) {
+                obj.orderItemModifiers.forEach { mod ->
+
+                    //printer.lineFeed(1)
+                    printer.setCharacterSize(2,2)
+
+
+                    printer.printText(
+                        "  " + if (mod.modifierQuantity == 1) {
+                            "   "
+                        } else {
+                            "" + mod.modifierQuantity + "x "
+                        } + mod.name
+                    )
+
+
+                }
+
+
+            }
+
+
+        }
+
+    }
+
+    return  printer
+
+
+}
+
+fun addDotLineForSunmiQueue(cloudPrinter: CloudPrinter):CloudPrinter{
+    cloudPrinter.setCharacterSize(1,1)
+    cloudPrinter.setBoldMode(true)
+    var str:String=""
+    for (i in 0 until 48){
+        str+= "-"
+    }
+    cloudPrinter.printText(str)
+    return cloudPrinter
 }
 
 
