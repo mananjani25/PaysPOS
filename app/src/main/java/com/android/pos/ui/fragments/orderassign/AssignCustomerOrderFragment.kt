@@ -7,7 +7,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
@@ -18,18 +17,12 @@ import com.android.pos.R
 import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.TbCustomer
 import com.android.pos.data.remote.Constants
-import com.android.pos.data.remote.Constants.DELIVERY
-import com.android.pos.data.remote.Constants.DELIVERY_TYPE
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.ORDER_TYPE
-import com.android.pos.data.remote.Constants.PHONE_ORDER
-import com.android.pos.data.remote.Constants.PICK_UP
-import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.databinding.FragmentAssignCustomerOrderBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.AssignCustomerToOrderAdapter
 import com.android.pos.ui.fragments.customer.CustomerListViewModel
-import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.callback.PaginationScrollListener
@@ -40,6 +33,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class AssignCustomerOrderFragment : Fragment(), ItemCallback {
+    private var isPhoneOrder: Boolean? = false
     private val TAG = "AssignCustomerOrderFr"
 
     companion object {
@@ -86,6 +80,7 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
         loadCustomerLocalList(currentpage)
         if (arguments != null) {
             isFromDineIn = arguments?.getBoolean("DINE_IN", false)
+            isPhoneOrder = arguments?.getBoolean("PhoneOrder", false)
             isFromCompletePayment = arguments?.getBoolean("fromPayment") ?: false
             dineInPosition = arguments?.getInt("position")
             selectedDate = arguments?.getString("SELECTED_DATE")
@@ -241,33 +236,7 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
     }
 
     override fun onItemClickListener(view: View?, pos: Int) {
-        // if adding customer to phone order, verify if customer has necessary details
-        if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == PHONE_ORDER) {
-            val customer = adapter.getItem(pos)
-            if ((prefProvider.getValue(DELIVERY_TYPE, PICK_UP) == PICK_UP
-                        || prefProvider.getValue(DELIVERY_TYPE, PICK_UP) == DELIVERY)
-                && customer.phones.isEmpty()
-            ) {
-                navigateToEditCustomer(
-                    getString(R.string.add_phone_in_profile),
-                    customer = customer
-                )
-            } else if (prefProvider.getValue(DELIVERY_TYPE, PICK_UP) == DELIVERY
-                && customer.addresses.isEmpty()
-            ) {
-                navigateToEditCustomer(
-                    getString(R.string.add_address_in_profile),
-                    customer = customer
-                )
-            } else {
-                onSelectingCustomer(pos)
-            }
-        } else {
-            onSelectingCustomer(pos)
-        }
-    }
 
-    private fun onSelectingCustomer(pos: Int){
         val customer = adapter.getItem(pos)
         prefProvider.setValue(
             Constants.CUSTOMER_NAME,
@@ -297,25 +266,16 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
             LogUtil.logE(TAG, "isFromDineIn:  ${isFromDineIn}")
             setFragmentResult("request_key_customer_dine_in", result)
         } else {
+            if (isPhoneOrder == true){
+                setFragmentResult("request_key_customer_phone_order", result)
+            }else
             setFragmentResult("request_key_customer", result)
         }
 
 //        val navController =
 //        navController.previousBackStackEntry?.savedStateHandle?.set("data",result)
         findNavController().popBackStack()
-    }
 
-    private fun navigateToEditCustomer(message: String, customer: TbCustomer) {
-        AlertUtils.showCustomAlertWithListenerWithOKCancel(
-            requireContext(),
-            message, getString(R.string.edit),
-        )
-        { _, _ ->
-            val bundle: Bundle = bundleOf("isEdit" to true, "dataModel" to customer, "isFromPhoneOrderEdit" to true)
-            findNavController().navigate(
-                R.id.action_assignCustomerOrderFragment_to_addEditCustomer_,
-                bundle
-            )
-        }
+
     }
 }
