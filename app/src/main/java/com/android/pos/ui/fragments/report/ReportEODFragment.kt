@@ -2699,7 +2699,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
             } else {
                 AlertUtils.showCustomAlertWithListenerWithOK(
                     requireActivity(),
-                    "Please Select date in 7 Days."
+                    "Please Select date in 30 Days."
                 ) { _, _ ->
                 }
             }
@@ -2717,7 +2717,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
             } else {
                 AlertUtils.showCustomAlertWithListenerWithOK(
                     requireActivity(),
-                    "Please Select date in 7 Days."
+                    "Please Select date in 30 Days."
                 ) { _, _ ->
                 }
             }
