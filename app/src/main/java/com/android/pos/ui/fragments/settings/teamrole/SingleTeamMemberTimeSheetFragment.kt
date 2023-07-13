@@ -79,21 +79,25 @@ class SingleTeamMemberTimeSheetFragment : Fragment() {
         binding.includeView.txtPrint.visibility = View.GONE
 
         binding.includeView.txtEmail.setOnClickListener {
-            if (MethodUtils.isDoubleClick()) return@setOnClickListener
-            viewModel.getEmployeeEmail(employeeModel.teamId)
-                .observe(viewLifecycleOwner) {
+            try {
+                if (MethodUtils.isDoubleClick()) return@setOnClickListener
+                viewModel.getEmployeeEmail(employeeModel.teamId)
+                    .observe(viewLifecycleOwner) {
 
-                    if (it.status == Status.SUCCESS) {
-                        val bundle = Bundle()
-                        bundle.putBoolean("isFromTimeSheet", true)
-                        bundle.putInt("type", 2)
-                        bundle.putString("email", it.data?.email)
-                        findNavController().navigate(
-                            R.id.action_singleteamMemberTimeSheetFragment_to_sendReceiptFragment,
-                            bundle
-                        )
+                        if (it.status == Status.SUCCESS) {
+                            val bundle = Bundle()
+                            bundle.putBoolean("isFromTimeSheet", true)
+                            bundle.putInt("type", 2)
+                            bundle.putString("email", it.data?.email)
+                            findNavController().navigate(
+                                R.id.action_singleteamMemberTimeSheetFragment_to_sendReceiptFragment,
+                                bundle
+                            )
+                        }
                     }
-                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
 
         }
         setFragmentResultListener("request_key_timesheet") { _: String, bundle: Bundle ->
@@ -102,10 +106,13 @@ class SingleTeamMemberTimeSheetFragment : Fragment() {
         }
 
         binding.includeView.txtHome.setOnClickListener {
-
-            findNavController().navigate(
-                R.id.action_singleTeamMemberTimeSheetFragment_to_dashboardCategoryNew
-            )
+            try {
+                findNavController().navigate(
+                    R.id.action_singleTeamMemberTimeSheetFragment_to_dashboardCategoryNew
+                )
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
 
 
