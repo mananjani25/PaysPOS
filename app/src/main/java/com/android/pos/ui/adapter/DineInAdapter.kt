@@ -17,6 +17,7 @@ import com.android.pos.ui.activities.SwipeHelper
 import com.android.pos.ui.adapter.boldpos.CartAdapter
 import com.android.pos.utils.callback.MyCallback
 import com.android.pos.utils.extensions.gone
+import com.android.pos.utils.extensions.setOnSingleClickListener
 
 class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>() {
     private var list: ArrayList<DineInModel> = arrayListOf()
@@ -147,7 +148,7 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>() {
                 true
             }
 
-            binding.imgOrderMenu.setOnClickListener {
+            binding.imgOrderMenu.setOnSingleClickListener {
 
                 if (list[layoutPosition].customer == null) {
                     popupMenu.menu.get(0).setTitle("Assign Customer")

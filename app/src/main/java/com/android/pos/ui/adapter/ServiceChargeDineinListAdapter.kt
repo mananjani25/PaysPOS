@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.databinding.ViewServiceChargeItemBinding
 import com.android.pos.ui.fragments.settings.servicecharge.ServiceChargeListViewModel
+import com.android.pos.utils.extensions.setOnSingleClickListener
 import com.android.pos.utils.extensions.visible
 
 
@@ -44,7 +45,7 @@ class ServiceChargeDineinListAdapter(val viewModel: ServiceChargeListViewModel) 
             "Min Guest (" + serviceChargeList[position].min_guest_count.toString() + ")"
         itemBinding.maxGuest?.text =
             "Max Guest (" + serviceChargeList[position].max_guest_count.toString() + ")"
-        itemBinding.layoutMenu.imgOrderMenu.setOnClickListener {
+        itemBinding.layoutMenu.imgOrderMenu.setOnSingleClickListener {
             mCallback?.onItemClickDineinListener(
                 it,
                 position,

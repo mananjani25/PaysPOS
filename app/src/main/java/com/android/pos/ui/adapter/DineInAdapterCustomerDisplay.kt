@@ -18,6 +18,7 @@ import com.android.pos.ui.adapter.boldpos.CartAdapter
 import com.android.pos.ui.adapter.boldpos.CartAdapterCustomerDisplay
 import com.android.pos.utils.callback.MyCallback
 import com.android.pos.utils.extensions.gone
+import com.android.pos.utils.extensions.setOnSingleClickListener
 
 class DineInAdapterCustomerDisplay : RecyclerView.Adapter<DineInAdapterCustomerDisplay.MyViewHolder>() {
     private var list: ArrayList<DineInModel> = arrayListOf()
@@ -122,7 +123,7 @@ class DineInAdapterCustomerDisplay : RecyclerView.Adapter<DineInAdapterCustomerD
 
             }
 
-            binding.imgOrderMenu.setOnClickListener {
+            binding.imgOrderMenu.setOnSingleClickListener {
                 val popupMenu = PopupMenu(itemView.context, it)
                 popupMenu.menuInflater.inflate(R.menu.assign_customer_menu, popupMenu.menu)
                 if (list[layoutPosition].customer == null) {

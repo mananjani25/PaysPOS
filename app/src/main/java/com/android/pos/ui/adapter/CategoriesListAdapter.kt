@@ -12,6 +12,7 @@ import com.android.pos.data.entities.TbCategory
 import com.android.pos.databinding.ViewCategoryBinding
 import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.extensions.gone
+import com.android.pos.utils.extensions.setOnSingleClickListener
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -59,7 +60,7 @@ class CategoriesListAdapter(private val isChoose: Boolean) :
             }
 
 
-            binding.layoutMenu.imgOrderMenu.setOnClickListener {
+            binding.layoutMenu.imgOrderMenu.setOnSingleClickListener {
                 mCallback?.onItemClickListener(it, bindingAdapterPosition)
             }
 

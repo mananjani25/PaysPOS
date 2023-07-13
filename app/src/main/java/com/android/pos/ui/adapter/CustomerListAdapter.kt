@@ -13,6 +13,7 @@ import com.android.pos.databinding.ViewCustomerListBinding
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.extensions.getColorCompat
+import com.android.pos.utils.extensions.setOnSingleClickListener
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -118,7 +119,7 @@ class CustomerListAdapter(
                 notifyDataSetChanged()
                 listner.onCustomerSelect(layoutPosition, filterList[layoutPosition])
             }
-            binding.layoutMenu.imgOrderMenu.setOnClickListener {
+            binding.layoutMenu.imgOrderMenu.setOnSingleClickListener {
                 mCallback?.onItemClickListener(it,layoutPosition)
             }
 

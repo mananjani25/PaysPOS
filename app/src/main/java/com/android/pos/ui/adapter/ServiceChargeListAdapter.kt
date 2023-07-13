@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.databinding.ViewServiceChargeItemBinding
 import com.android.pos.ui.fragments.settings.servicecharge.ServiceChargeListViewModel
+import com.android.pos.utils.extensions.setOnSingleClickListener
 
 class ServiceChargeListAdapter(val viewModel: ServiceChargeListViewModel) :
     RecyclerView.Adapter<ServiceChargeListAdapter.MyViewHolder>() {
@@ -32,7 +33,7 @@ class ServiceChargeListAdapter(val viewModel: ServiceChargeListViewModel) :
         val itemBinding = holder.discountItemBinding
         itemBinding.serviceChargeModel = serviceChargeList[position]
         itemBinding.viewModel = viewModel
-        itemBinding.layoutMenu.imgOrderMenu.setOnClickListener {
+        itemBinding.layoutMenu.imgOrderMenu.setOnSingleClickListener {
             mCallback?.onItemClickListener(it, position, serviceChargeList[position].order_type)
         }
         itemBinding.executePendingBindings()

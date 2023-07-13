@@ -10,6 +10,7 @@ import com.android.pos.data.entities.TbItem
 import com.android.pos.databinding.ViewItemBinding
 import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.extensions.gone
+import com.android.pos.utils.extensions.setOnSingleClickListener
 import com.android.pos.utils.extensions.visible
 import java.util.*
 
@@ -63,7 +64,7 @@ class ItemListAdapter(private val isChoose: Boolean, private val where: String) 
 
             }
 
-            binding.layoutMenu.imgOrderMenu.setOnClickListener {
+            binding.layoutMenu.imgOrderMenu.setOnSingleClickListener {
                 mCallback?.onItemClickListener(it, bindingAdapterPosition)
             }
 

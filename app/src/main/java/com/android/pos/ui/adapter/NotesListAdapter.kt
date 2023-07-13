@@ -9,6 +9,7 @@ import com.android.pos.data.model.responseModel.NoteResponse
 import com.android.pos.databinding.ViewNoteItemBinding
 import com.android.pos.ui.fragments.settings.notes.NoteListViewModel
 import com.android.pos.utils.callback.ItemCallback
+import com.android.pos.utils.extensions.setOnSingleClickListener
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -79,7 +80,7 @@ class NotesListAdapter(val viewModel: NoteListViewModel, val isAdd: Boolean) :
                     mCallback?.onItemClickListener(it, bindingAdapterPosition)
                 }
             } else {
-                noteItemBinding.layoutMenu.imgOrderMenu.setOnClickListener {
+                noteItemBinding.layoutMenu.imgOrderMenu.setOnSingleClickListener {
                     mCallback?.onItemClickListener(it, bindingAdapterPosition)
                 }
 

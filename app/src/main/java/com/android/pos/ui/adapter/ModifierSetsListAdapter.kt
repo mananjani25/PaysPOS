@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.entities.ModifierSet
 import com.android.pos.databinding.ViewModifierSetsBinding
 import com.android.pos.utils.callback.ItemCallback
+import com.android.pos.utils.extensions.setOnSingleClickListener
 import java.util.*
 
 class ModifierSetsListAdapter(val isCreateItem: Boolean) :
@@ -83,7 +84,7 @@ class ModifierSetsListAdapter(val isCreateItem: Boolean) :
                 }
                 notifyDataSetChanged()
             }
-            binding.layoutMenu.imgOrderMenu.setOnClickListener {
+            binding.layoutMenu.imgOrderMenu.setOnSingleClickListener {
                 mCallback?.onItemClickListener(it, bindingAdapterPosition)
             }
 

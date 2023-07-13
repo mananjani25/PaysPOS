@@ -9,6 +9,7 @@ import com.android.pos.data.entities.LoyaltyProgramsModel
 import com.android.pos.databinding.ViewLoyaltyPointItemBinding
 import com.android.pos.ui.fragments.settings.loyaltypoints.LoyaltyPointViewModel
 import com.android.pos.utils.callback.ItemCallback
+import com.android.pos.utils.extensions.setOnSingleClickListener
 
 class LoyaltyPointAdapter(val viewModel: LoyaltyPointViewModel) :
     RecyclerView.Adapter<LoyaltyPointAdapter.MyViewHolder>() {
@@ -85,7 +86,7 @@ class LoyaltyPointAdapter(val viewModel: LoyaltyPointViewModel) :
     inner class MyViewHolder(val discountItemBinding: ViewLoyaltyPointItemBinding) :
         RecyclerView.ViewHolder(discountItemBinding.root) {
         init {
-            discountItemBinding.layoutMenu.imgOrderMenu.setOnClickListener {
+            discountItemBinding.layoutMenu.imgOrderMenu.setOnSingleClickListener {
                 mCallback?.onItemClickListener(it, bindingAdapterPosition)
             }
 

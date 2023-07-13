@@ -8,6 +8,7 @@ import com.android.pos.data.entities.TeamRole
 import com.android.pos.data.model.responseModel.GetUserPermissionListResponse
 import com.android.pos.databinding.ViewUserPermissionItemBinding
 import com.android.pos.utils.callback.ItemCallback
+import com.android.pos.utils.extensions.setOnSingleClickListener
 
 class UserPermissionListAdapter : RecyclerView.Adapter<UserPermissionListAdapter.MyViewHolder>() {
 
@@ -52,7 +53,7 @@ class UserPermissionListAdapter : RecyclerView.Adapter<UserPermissionListAdapter
     inner class MyViewHolder(val tipItemBinding: ViewUserPermissionItemBinding) :
         RecyclerView.ViewHolder(tipItemBinding.root){
             init {
-                tipItemBinding.layoutMenu.imgOrderMenu.setOnClickListener {
+                tipItemBinding.layoutMenu.imgOrderMenu.setOnSingleClickListener {
                     mCallback?.onItemClickListener(it, bindingAdapterPosition)
                 }
             }
