@@ -1152,5 +1152,9 @@ class PosRepository @Inject constructor(
     suspend fun updateModifiersForItem(modifierSetIds: List<Int>, itemId: Int?) {
         appDatabase.itemDao().updateItemModifiers(itemId!!, modifierSetIds)
     }
+
+    suspend fun fetchAllItemsList(): List<TbItem?>? {
+        return appDatabase.itemDao().allItemsList()
+    }
 }
 
