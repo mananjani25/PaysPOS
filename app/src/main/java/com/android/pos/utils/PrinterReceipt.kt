@@ -982,6 +982,7 @@ fun printGuestByItemForSunmiQueue(guestAttributes: List<GuestAttrQueue>, printer
 
     guestAttributes.forEach {
         printer.lineFeed(1)
+        addDotLineForSunmiQueue(printer)
         printer.setCharacterSize(2,2)
         printer.setBoldMode(true)
 
@@ -994,6 +995,7 @@ fun printGuestByItemForSunmiQueue(guestAttributes: List<GuestAttrQueue>, printer
 
            // printer.lineFeed(1)
             printer.setCharacterSize(2,2)
+            printer.setBoldMode(false)
 
             if (obj.timestamp.isNotEmpty()) {
                 var msg = "(" + obj.timestamp + ")"

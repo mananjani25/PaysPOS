@@ -1681,11 +1681,11 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                     }
 
                     override fun onFailed(p0: String?) {
-                        Log.e(TAG,"checkFailed")
+                        Log.e(TAG, "checkFailed")
                     }
 
                     override fun onDisConnect() {
-                        Log.e(TAG,"checkDisconnect")
+                        Log.e(TAG, "checkDisconnect")
                     }
 
                 })
@@ -1785,7 +1785,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
             }
         }
 
-        if (obj.orderType != DINE_IN && obj.customerName != null && obj.customerName.isNotEmpty()){
+        if (obj.orderType != DINE_IN && obj.customerName != null && obj.customerName.isNotEmpty()) {
 
 
         }
@@ -3678,11 +3678,18 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
     override fun onFailed(p0: CloudPrinterStatus?) {
         isQueueRunning = false
         Log.e(TAG, "check failed  ${Gson().toJson(p0)}")
-        if (p0?.name.equals("UNKNOWN",true)){
+        if (p0?.name.equals("UNKNOWN", true)) {
             sendNotification("Printer - ${listOfPrintersData[currentPrinterIndex].modelName} is Offline.")
 
+        } else if (p0?.name.equals("OUT_PAPER", true)) {
+            sendNotification(
+                "Please fill the Paper in ${
+                    listOfPrintersData.get(
+                        currentPrinterIndex
+                    ).modelName
+                }."
+            )
         }
-
 
 
     }
