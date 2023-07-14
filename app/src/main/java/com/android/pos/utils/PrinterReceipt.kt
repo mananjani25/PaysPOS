@@ -989,6 +989,7 @@ fun printGuestByItemForSunmiQueue(guestAttributes: List<GuestAttrQueue>, printer
 
 
         printer.setBoldMode(false)
+        addDotLineForSunmiQueue(printer)
         it.listOfItems.forEach { obj ->
 
            // printer.lineFeed(1)
@@ -1036,6 +1037,17 @@ fun printGuestByItemForSunmiQueue(guestAttributes: List<GuestAttrQueue>, printer
 
 fun addDotLineForSunmiQueue(cloudPrinter: CloudPrinter):CloudPrinter{
     cloudPrinter.setCharacterSize(1,1)
+    cloudPrinter.setBoldMode(true)
+    var str:String=""
+    for (i in 0 until 48){
+        str+= "-"
+    }
+    cloudPrinter.printText(str)
+    return cloudPrinter
+}
+
+fun addDoubleDotLineForSunmiQueue(cloudPrinter: CloudPrinter):CloudPrinter{
+    cloudPrinter.setCharacterSize(2,1)
     cloudPrinter.setBoldMode(true)
     var str:String=""
     for (i in 0 until 48){

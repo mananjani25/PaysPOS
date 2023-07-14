@@ -24,7 +24,7 @@ import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.IS_MASTER_TERMINAL
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.addBuilderText
-import com.android.pos.utils.addDotLineForSunmiQueue
+import com.android.pos.utils.addDoubleDotLineForSunmiQueue
 import com.android.pos.utils.addHorizontalLine
 import com.android.pos.utils.addHorizontalLineNew
 import com.android.pos.utils.addHorizontalLineNewU220
@@ -57,7 +57,6 @@ import com.sunmi.externalprinterlibrary2.printer.CloudPrinter
 import com.sunmi.externalprinterlibrary2.style.AlignStyle
 import com.sunmi.externalprinterlibrary2.style.CloudPrinterStatus
 import com.sunmi.externalprinterlibrary2.style.UnderlineStyle
-
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
@@ -1742,7 +1741,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
         cloudPrinter?.printText(obj.dateAndTime)
 
 
-        cloudPrinter?.let { addDotLineForSunmiQueue(it) }
+        cloudPrinter?.let { addDoubleDotLineForSunmiQueue(it) }
 
         if (obj.orderType == DINE_IN) {
 
