@@ -20,7 +20,7 @@ data class GetFloorPlanResponse(
     @Parcelize
     data class Data(
         @SerializedName("floor_plan_tables")
-        val floorPlanTables: List<FloorPlanTable>,
+        var floorPlanTables: List<FloorPlanTable>?,
         @SerializedName("id")
         val id: Int,
         @SerializedName("name")
@@ -70,18 +70,19 @@ data class GetFloorPlanResponse(
             @SerializedName("parent_table")
             val parentTable: Boolean,
             @SerializedName("merged_floor_plan_table_id")
-            val mergedFloorPlanTable_id: Int,
+            val mergedFloorPlanTable_id: Int?,
             @SerializedName("current_order_details")
-            var currentOrderDetails: CurrentOrderDetails,
-            @SerializedName("merged_child_table_details") val merged_child_table_details: List<MergedChildTableDetails>,
+            var currentOrderDetails: CurrentOrderDetails?,
+            @SerializedName("merged_child_table_details")
+            val merged_child_table_details: List<MergedChildTableDetails>?,
         ) : Parcelable {
             @Parcelize
             data class CurrentOrderDetails(
                 @SerializedName("no_of_guests") var noOfGuests: Int,
                 @SerializedName("employee_id") var employeeId: Int,
                 @SerializedName("employee_name") var employeeName: String,
-                @SerializedName("customer_id") var customerId: String,
-                @SerializedName("customer_name") var customerName: String,
+                @SerializedName("customer_id") var customerId: String?,
+                @SerializedName("customer_name") var customerName: String?,
                 @SerializedName("order_id") var orderId: Int,
                 @SerializedName("total_amount") var totalAmount: Double
 

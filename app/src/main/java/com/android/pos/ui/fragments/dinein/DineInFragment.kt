@@ -248,7 +248,11 @@ class DineInFragment : Fragment() {
                                 it.data!!.data as ArrayList<GetFloorPlanResponse.Data>
                             dineInFloorNameListAdapter.addFloorName(dineInFloorNameList)
 
-                            setFloorPlan(dineInFloorNameList[floorPlanSelectedPos].floorPlanTables)
+                            dineInFloorNameList[floorPlanSelectedPos].floorPlanTables?.let { it1 ->
+                                setFloorPlan(
+                                    it1
+                                )
+                            }
 
                             floorPlanSelectedPos = 0
                         }
@@ -402,7 +406,7 @@ class DineInFragment : Fragment() {
                             var tableNo: String =
                                 dineInFloorTablesList[i].tableNumber.toString()
                             var chairCount = dineInFloorTablesList[i].chairCount
-                            dineInFloorTablesList[i].merged_child_table_details.forEach {
+                            dineInFloorTablesList[i].merged_child_table_details?.forEach {
                                 tableNo = tableNo + "," + it.table_number
                                 chairCount += it.chair_count
                             }
@@ -540,7 +544,7 @@ class DineInFragment : Fragment() {
                             var tableNo: String =
                                 dineInFloorTablesList[i].tableNumber.toString()
                             var chairCount = dineInFloorTablesList[i].chairCount
-                            dineInFloorTablesList[i].merged_child_table_details.forEach {
+                            dineInFloorTablesList[i].merged_child_table_details?.forEach {
                                 tableNo = tableNo + "," + it.table_number
                                 chairCount += it.chair_count
                             }
@@ -712,7 +716,7 @@ class DineInFragment : Fragment() {
                         } else {
                             if (dineInFloorTableModel.currentOrderDetails != null) {
                                 status =
-                                    "This table is locked by " + dineInFloorTableModel.currentOrderDetails.employeeName + "."
+                                    "This table is locked by " + dineInFloorTableModel.currentOrderDetails?.employeeName + "."
                             } else {
                                 status =
                                     "This table is locked by " + dineInFloorTableModel.lock_by_name + "."
@@ -748,7 +752,7 @@ class DineInFragment : Fragment() {
                     } else {
                         if (dineInFloorTableModel.currentOrderDetails != null) {
                             status =
-                                "This table is locked by " + dineInFloorTableModel.currentOrderDetails.employeeName + "."
+                                "This table is locked by " + dineInFloorTableModel.currentOrderDetails?.employeeName + "."
                         } else {
                             status =
                                 "This table is locked by " + dineInFloorTableModel.lock_by_name + "."
@@ -829,7 +833,7 @@ class DineInFragment : Fragment() {
                             "This table is locked by " + dineInFloorTableModel.lock_by_name + "."
                     } else {
                         status =
-                            "This table is locked by " + dineInFloorTableModel.currentOrderDetails.employeeName + "."
+                            "This table is locked by " + dineInFloorTableModel.currentOrderDetails?.employeeName + "."
                     }
 
 
