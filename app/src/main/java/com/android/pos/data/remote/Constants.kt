@@ -374,6 +374,12 @@ object Constants {
     const val ONLINE_ORDER_TAB = "OnlineWebOrder"
     const val THIRD_PARTY_ORDER_TAB = "OnlineOrder"
 
+    //PAX
+    const val TRANSACTION_SUCCESSED = 100 //transaction success
+    const val TRANSACTION_FAILURE = 101 //transaction failure
+    const val TRANSACTION_TIMEOOUT = 102 //transaction timeout
+    const val TRANSACTION_STATUS = 103 //transaction timeout
+    const val MERCHANT_ID = "merchant_id"
 
     fun createRequestModelForUpdatePritnerType(
         oldList: ArrayList<PrinterResponse.Data.OrderTypes>?,
