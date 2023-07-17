@@ -1200,8 +1200,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             LogUtil.logE("ordertypelist", Gson().toJson(viewModel.ordertypelist))
 
             viewModel.ordertypelist.forEach {
-                if (it.orderType.equals(
-                        prefProvider.getValue(Constants.ORDER_TYPE, "TakeOut"),
+                if (it.name.equals(
+                        prefProvider.getValue(Constants.ORDER_TYPE_NAME, "TakeOut"),
                         ignoreCase = true
                     )
                 ) {
