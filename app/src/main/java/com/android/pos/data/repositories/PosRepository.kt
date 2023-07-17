@@ -822,6 +822,12 @@ class PosRepository @Inject constructor(
     suspend fun phoneReceipt(data: HashMap<String, String>) =
         apiHelperNew.phoneReceipt(data)
 
+    suspend fun giftCardEmailReceipt(data: HashMap<String, String>) =
+        apiHelperNew.giftCardEmailReceipt(data)
+
+    suspend fun giftCardPhoneReceipt(data: HashMap<String, String>) =
+        apiHelperNew.giftCardPhoneReceipt(data)
+
     suspend fun assignCustomerOrder(
         orderId: Int,
         customerId: Int,

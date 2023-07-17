@@ -301,6 +301,8 @@ object Constants {
     const val PAYMENT_DETAILS = "payments/{id}"
     const val ORDER_EMAIL_RECEIPT = "orders/send_order_email_receipt"
     const val ORDER_PHONE_RECEIPT = "orders/sms_order_detail"
+    const val GIFT_CARD_EMAIL_RECEIPT = "gift_cards/send_gift_card_email_receipt"
+    const val GIFT_CARD_PHONE_RECEIPT = "gift_cards/sms_gift_card_detail"
     const val ORDER_ASSIGN_CUSTOMER = "orders/{id}/assign_customer_into_order"
     const val ORDER_PAY_AMOUNT_WISE = "payments/pay_amount_wise"
     const val ORDER_COUNTS = "orders/open_orders_show_count"

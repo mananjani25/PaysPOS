@@ -56,6 +56,8 @@ import com.android.pos.data.remote.Constants.GET_TEAM_MODULE
 import com.android.pos.data.remote.Constants.GIFT_CARDS
 import com.android.pos.data.remote.Constants.GIFT_CARD_ADD_BALANCE
 import com.android.pos.data.remote.Constants.GIFT_CARD_CHECK_BALANCE
+import com.android.pos.data.remote.Constants.GIFT_CARD_EMAIL_RECEIPT
+import com.android.pos.data.remote.Constants.GIFT_CARD_PHONE_RECEIPT
 import com.android.pos.data.remote.Constants.HIDE_CATEGORY
 import com.android.pos.data.remote.Constants.HIDE_ITEM
 import com.android.pos.data.remote.Constants.INCREASE_ONGOING_ORDER_COUNTER
@@ -733,6 +735,12 @@ interface ApiService {
 
     @POST(ORDER_PHONE_RECEIPT)
     suspend fun phoneReceipt(@QueryMap options: HashMap<String, String>): BaseResponse
+
+    @POST(GIFT_CARD_EMAIL_RECEIPT)
+    suspend fun giftCardEmailReceipt(@QueryMap options: HashMap<String, String>): BaseResponse
+
+    @POST(GIFT_CARD_PHONE_RECEIPT)
+    suspend fun giftCardPhoneReceipt(@QueryMap options: HashMap<String, String>): BaseResponse
 
 
     @PUT(ORDER_ASSIGN_CUSTOMER)

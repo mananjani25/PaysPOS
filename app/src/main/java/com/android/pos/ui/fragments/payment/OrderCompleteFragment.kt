@@ -46,7 +46,6 @@ import com.android.pos.data.model.SplitBundleModel
 import com.android.pos.data.model.SplitDetailListModel
 import com.android.pos.data.model.requestModel.giftCard.response.GiftCardAddValueResponse
 import com.android.pos.data.model.requestModel.giftCard.response.SellGiftCardResponseModel
-import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.model.responseModel.GetCustomerReceiptSettingsResponse
 import com.android.pos.data.model.responseModel.GetKitchenReceiptSettingsResponse
@@ -1002,12 +1001,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             R.id.txtSend -> {
 
                 MethodUtils.hideKeyboard(requireActivity())
-                viewModel.submit(
-                    type,
-                    binding.edtEmail.text.toString().trim(),
-                    binding.edtPhoneNo.text.toString().trim(),
-                    orderID
-                )
+                    viewModel.submit(
+                        type,
+                        binding.edtEmail.text.toString().trim(),
+                        binding.edtPhoneNo.text.toString().trim(),
+                        orderID,
+                        IS_GIFT_CARD_TYPE
+                    )
 
 
             }

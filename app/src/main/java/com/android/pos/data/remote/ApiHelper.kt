@@ -500,6 +500,12 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun phoneReceipt(data: HashMap<String, String>) =
         getResult { apiService.phoneReceipt(data) }
 
+    suspend fun giftCardEmailReceipt(data: HashMap<String, String>) =
+        getResult { apiService.giftCardEmailReceipt(data) }
+
+    suspend fun giftCardPhoneReceipt(data: HashMap<String, String>) =
+        getResult { apiService.giftCardPhoneReceipt(data) }
+
     suspend fun assignCustomerOrder(
         orderId: Int,
         customerId: Int,
