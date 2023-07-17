@@ -112,6 +112,10 @@ class TransactionDetailsViewModel @Inject constructor(
         return posRepository.getCashDisDetail(active)
     }
 
+    fun showProgressDialog(isShow: Boolean) {
+        _showProgress.value = Event(isShow)
+    }
+
     val serviceCharges = posRepository.serviceChargeList()
     fun refundPaymentApiCall(
         refundAmount: Double,
@@ -127,14 +131,17 @@ class TransactionDetailsViewModel @Inject constructor(
             refundData.paymentRefund?.employeeId = prefProvider.employeeId()
         }
 
-        _showProgress.value = Event(true)
+        // If payment type is card then progress bar is already enabled from networkCall method
+        if (paymentType != "Card") {
+            _showProgress.value = Event(true)
+        }
 
         viewModelScope.launch {
 
             val resource = taxServiceChargeRepository.refundPayment(refundData)
             when (resource.status) {
                 Status.SUCCESS -> {
-                    _showProgress.value = Event(false)
+//                    _showProgress.value = Event(false)
                     resource.data.let { logInResponse ->
                         if (logInResponse?.status == 200) {
 
@@ -142,7 +149,7 @@ class TransactionDetailsViewModel @Inject constructor(
 
 
                                 if (paymentType == "Card") {
-
+                                    _showProgress.value = Event(false)
                                     _dataRefundDone.value = Event(createTaxResponse)
 
                                 } else {
@@ -160,6 +167,7 @@ class TransactionDetailsViewModel @Inject constructor(
 
                         } else {
                             _snackbarText.value = Event(resource.message)
+                            _showProgress.value = Event(false)
                         }
                     }
                 }
@@ -256,7 +264,7 @@ class TransactionDetailsViewModel @Inject constructor(
         refundReason: String
     ) {
 
-        _showProgress.value = Event(true)
+//        _showProgress.value = Event(true)
 
         val order = refundRequestModel.paymentRefund
 
