@@ -2248,7 +2248,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                         var listTableMerge: ArrayList<String> = arrayListOf()
                         listTableMerge.add(baseResponse.floorPlanTable.tableNumber.toString())
-                        baseResponse.floorPlanTable?.merged_child_table_details.forEach {
+                        baseResponse.floorPlanTable.merged_child_table_details?.forEach {
                             listTableMerge.add(it.table_number.toString())
 
                         }
