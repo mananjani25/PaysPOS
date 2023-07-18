@@ -356,6 +356,7 @@ class PhoneOrderFragment : Fragment() {
             Constants.CUSTOMER_NAME,
             customer.first_name + " " + customer.last_name
         )
+        prefProvider?.saveCustomerData(customer)
 
         val result = Bundle().apply {
             putParcelable("data", customer)
