@@ -45,6 +45,7 @@ import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.callback.ManualSaleOptionsCustomCallback
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.gone
+import com.android.pos.utils.extensions.setOnSingleClickListener
 import com.android.pos.utils.extensions.visible
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
@@ -732,7 +733,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         }
 
 
-        binding.imgOrderMenu.setOnClickListener {
+        binding.imgOrderMenu.setOnSingleClickListener {
 
             val popupMenu = PopupMenu(requireContext(), it)
             popupMenu.menuInflater.inflate(R.menu.manual_sale_menu, popupMenu.menu)
@@ -883,7 +884,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 hideClearCart()
             }
         }
-        binding.txtAddCustomer.setOnClickListener {
+        binding.txtAddCustomer.setOnSingleClickListener {
             findNavController().navigate(R.id.action_manualSaleNew_to_assignCustomerOrderFragment)
         }
 

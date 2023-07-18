@@ -70,8 +70,12 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
         binding.layoutTool.txtTimeSheet.visible()
 
         binding.layoutTool.txtTimeSheet.setOnClickListener {
-            if (rolePermission.hasEmployeeTimesheetPermission(binding.root)) {
-                findNavController().navigate(R.id.action_teamList_to_teamMemberTimeSheetFragment)
+            try {
+                if (rolePermission.hasEmployeeTimesheetPermission(binding.root)) {
+                    findNavController().navigate(R.id.action_teamList_to_teamMemberTimeSheetFragment)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
     }
@@ -83,13 +87,20 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
         LogUtil.logE("Calling", "onViewCreated")
 
         binding.layoutTool.imgOptionMenu.setOnClickListener {
-
-            findNavController().navigate(R.id.action_global_createTeamMember)
+            try {
+                findNavController().navigate(R.id.action_global_createTeamMember)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
 
         binding.layoutTool.txtHome.setOnClickListener {
 
-            findNavController().navigate(R.id.action_teamList_to_dashboardCategoryNew)
+            try {
+                findNavController().navigate(R.id.action_teamList_to_dashboardCategoryNew)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
         searchQuery()
 

@@ -87,6 +87,7 @@ import com.android.pos.utils.extensions.getColor
 import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.invisible
 import com.android.pos.utils.extensions.isVisible
+import com.android.pos.utils.extensions.setOnSingleClickListener
 import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.getCustomerDisplay
 import com.google.gson.Gson
