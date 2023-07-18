@@ -5,5 +5,6 @@ data class PrinterJSONElementData(
     var macAddress: String,
     var ipAddress: String,
     var modelName:String,
+    var portNo:Int,
     var printerQueueModelList: ArrayList<PrinterQueueModel>
 )

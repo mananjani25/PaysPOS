@@ -129,6 +129,8 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
 
                 }
+
+                Log.e(TAG,"checkKit:  ${kitchenPrinterList.size}")
                 if (kitchenPrinterList.isNotEmpty() && kitchenPrinterList.get(0).name.contains(
                         "U220",
                         true
@@ -541,7 +543,8 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                                 var cloudPrinter: CloudPrinter = CloudPrinter(
                                     dataList.get(i).asJsonObject.get("printer_name").asString,
                                     dataList.get(i).asJsonObject.get("mac_address").asString,
-                                    9100
+                                    dataList.get(i).asJsonObject.get("port_no").asInt
+
                                 )
                                 cloudPrinter.connect(mContext, object : ConnectCallback {
                                     override fun onConnect() {
@@ -881,7 +884,8 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                             macAddress = it.asJsonObject.get("mac_address").asString,
                             ipAddress = it.asJsonObject.get("ip_address").asString,
                             modelName = it.asJsonObject.get("modal_name").asString,
-                            printerQueueModelList = listofPrinterOrders
+                            printerQueueModelList = listofPrinterOrders,
+                            portNo = it.asJsonObject.get("port_no").asInt
 
                         )
 
@@ -1269,7 +1273,8 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                             macAddress = it.asJsonObject.get("mac_address").asString,
                             ipAddress = it.asJsonObject.get("ip_address").asString,
                             modelName = it.asJsonObject.get("modal_name").asString,
-                            printerQueueModelList = listofPrinterOrders
+                            printerQueueModelList = listofPrinterOrders,
+                            portNo = it.asJsonObject.get("port_no").asInt
 
                         )
 
@@ -1286,8 +1291,22 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                     printerSize = listOfPrintersData.size
                     orderSize = listOfPrintersData.get(0).printerQueueModelList.size
 
-                    currentOrderIndex = 0
-                    currentPrinterIndex = 0
+                    if (orderSize == 0){
+                        listOfPrintersData.forEachIndexed { index, it ->
+                            if (it.printerQueueModelList.isNotEmpty()){
+                                orderSize = it.printerQueueModelList.size
+                                currentOrderIndex = 0
+                                currentPrinterIndex = index
+                                return@forEachIndexed
+                            }
+
+                        }
+                    }
+                    else {
+
+                        currentOrderIndex = 0
+                        currentPrinterIndex = 0
+                    }
                     if (listOfPrintersData.get(0).printerName.contains("Printer")) {
                         Log.e(TAG, "ActionCableContainSunmi")
                         if (orderSize != 0) {
@@ -1295,9 +1314,9 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                             sendDataToPrintToSunmi(
                                 listOfPrintersData,
                                 currentPrinterIndex,
-                                printerObjList.get(listOfPrintersData[0].macAddress) as CloudPrinter?,
-                                listOfPrintersData.get(0).printerQueueModelList,
-                                listOfPrintersData[0].macAddress,
+                                printerObjList.get(listOfPrintersData[currentPrinterIndex].macAddress) as CloudPrinter?,
+                                listOfPrintersData.get(currentPrinterIndex).printerQueueModelList,
+                                listOfPrintersData[currentPrinterIndex].macAddress,
                                 currentOrderIndex
 
                             )
@@ -1657,47 +1676,591 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
     private fun sendDataToPrintToSunmi(
         listOfPrintersData: ArrayList<PrinterJSONElementData>,
-        currentPrinterIndex: Int,
+        currentPrinterIndexF: Int,
         cloudPrinter: CloudPrinter?,
         printerQueueModelList: ArrayList<PrinterQueueModel>,
         macAddress: String,
-        currentOrderIndex: Int
+        currentOrderIndexF: Int
     ) {
-        Log.e(TAG, "checkSunmi Called  ${cloudPrinter?.isConnected}")
+        Log.e(TAG, "checkSunmi Called  ${cloudPrinter?.isConnected}  check Name  ${listOfPrintersData.get(currentPrinterIndexF).printerName} checkQueueRunning  ${isQueueRunning}")
         if (isQueueRunning == false) {
             isQueueRunning = true
-            if (cloudPrinter?.isConnected == false) {
+            if (cloudPrinter?.isConnected == false || cloudPrinter == null) {
                 cloudPrinter?.connect(mContext, object : ConnectCallback {
                     override fun onConnect() {
                         sendDataToCloudPrint(
                             listOfPrintersData,
-                            currentPrinterIndex,
+                            currentPrinterIndexF,
                             cloudPrinter,
                             printerQueueModelList,
                             macAddress,
-                            currentOrderIndex
+                            currentOrderIndexF
                         )
 
                     }
 
                     override fun onFailed(p0: String?) {
                         Log.e(TAG, "checkFailed")
+                        if (listOfPrintersData.size - 1 == currentPrinterIndex) {
+                            /*  Log.e(
+                                  TAG,
+                                  "listOfPrinerData:   ${listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size}"
+                              )
+                              Log.e(TAG, "listOfcurrentOrderIndex:   ${currentOrderIndex}")
+                  */
+
+
+                            if (listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size - 1 == currentOrderIndex) {
+                                // Log.e(TAG, "checkLastORderPRint  ")
+                                runBlocking {
+                                    delay(3000)
+
+                                    val params = JsonObject()
+                                    params.addProperty("id", locationId)
+                                    params.addProperty("url", baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3)
+                                    Log.e(
+                                        TAG,
+                                        "checkReuestURL: ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}  locationID: ${locationId}"
+                                    )
+                                    subscription?.perform("received", params)
+                                }
+
+                            } else {
+
+                                runBlocking {
+                                    currentOrderIndex = currentOrderIndex + 1
+                                    if (listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.isNotEmpty()) {
+
+                                        sendDataToPrintToSunmi(
+                                            listOfPrintersData,
+                                            currentPrinterIndex,
+                                            printerObjList.get(listOfPrintersData.get(currentPrinterIndex).macAddress) as CloudPrinter?,
+                                            listOfPrintersData.get(currentPrinterIndex).printerQueueModelList,
+                                            listOfPrintersData.get(currentPrinterIndex).macAddress,
+                                            currentOrderIndex
+
+                                        )
+                                    } else {
+                                        runBlocking {
+                                            delay(3000)
+                                            val params = JsonObject()
+                                            params.addProperty("id", locationId)
+                                            params.addProperty("url", baseUrl + CREATE_QUEUE_PRINTER_PHASE3)
+                                            Log.e(
+                                                TAG,
+                                                "checkReuestURL: ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}  locationID: ${locationId}"
+                                            )
+                                            subscription?.perform("received", params)
+                                        }
+
+
+                                    }
+                                }
+                            }
+
+                        } else if (listOfPrintersData.size - 1 != currentPrinterIndex) {
+                            /* Log.e(
+                                 TAG,
+                                 "checkLog: ${currentPrinterIndex}  orderIndex: ${
+                                     listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size - 1
+                                 }  currentOrderInd: ${currentOrderIndex}"
+                             )*/
+                            if (listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size - 1 == currentOrderIndex) {
+
+
+                                currentOrderIndex = 0
+                                currentPrinterIndex = currentPrinterIndex + 1
+                                if (listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.isNotEmpty()) {
+                                    runBlocking {
+                                        sendDataToPrintToSunmi(
+                                            listOfPrintersData,
+                                            currentPrinterIndex,
+                                            printerObjList.get(listOfPrintersData.get(currentPrinterIndex).macAddress) as CloudPrinter?,
+                                            listOfPrintersData.get(currentPrinterIndex).printerQueueModelList,
+                                            listOfPrintersData.get(currentPrinterIndex).macAddress,
+                                            currentOrderIndex
+
+                                        )
+                                    }
+                                } else {
+                                    runBlocking {
+                                        delay(3000)
+                                        val params = JsonObject()
+                                        params.addProperty("id", locationId)
+                                        params.addProperty("url", baseUrl + CREATE_QUEUE_PRINTER_PHASE3)
+                                        Log.e(
+                                            TAG,
+                                            "checkReuestURL: ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}  locationID: ${locationId}"
+                                        )
+                                        subscription?.perform("received", params)
+                                    }
+                                }
+
+                            } else {
+
+                                currentOrderIndex = currentOrderIndex + 1
+                                runBlocking {
+                                    sendDataToPrintToSunmi(
+                                        listOfPrintersData,
+                                        currentPrinterIndex,
+                                        printerObjList.get(listOfPrintersData.get(currentPrinterIndex).macAddress) as CloudPrinter?,
+                                        listOfPrintersData.get(currentPrinterIndex).printerQueueModelList,
+                                        listOfPrintersData.get(currentPrinterIndex).macAddress,
+                                        currentOrderIndex
+
+                                    )
+                                }
+
+                            }
+
+                        } else {
+                            runBlocking {
+                                delay(3000)
+                                val params = JsonObject()
+                                params.addProperty("id", locationId)
+                                params.addProperty("url", baseUrl + CREATE_QUEUE_PRINTER_PHASE3)
+                                Log.e(
+                                    TAG,
+                                    "checkReuestURL: ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}  locationID: ${locationId}"
+                                )
+                                subscription?.perform("received", params)
+                            }
+
+                        }
+
                     }
 
                     override fun onDisConnect() {
                         Log.e(TAG, "checkDisconnect")
+                        if (listOfPrintersData.size - 1 == currentPrinterIndex) {
+                            /*  Log.e(
+                                  TAG,
+                                  "listOfPrinerData:   ${listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size}"
+                              )
+                              Log.e(TAG, "listOfcurrentOrderIndex:   ${currentOrderIndex}")
+                  */
+
+
+                            if (listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size - 1 == currentOrderIndex) {
+                                // Log.e(TAG, "checkLastORderPRint  ")
+                                runBlocking {
+                                    delay(3000)
+
+                                    val params = JsonObject()
+                                    params.addProperty("id", locationId)
+                                    params.addProperty("url", baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3)
+                                    Log.e(
+                                        TAG,
+                                        "checkReuestURL: ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}  locationID: ${locationId}"
+                                    )
+                                    subscription?.perform("received", params)
+                                }
+
+                            } else {
+
+                                runBlocking {
+                                    currentOrderIndex = currentOrderIndex + 1
+                                    if (listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.isNotEmpty()) {
+
+                                        sendDataToPrintToSunmi(
+                                            listOfPrintersData,
+                                            currentPrinterIndex,
+                                            printerObjList.get(listOfPrintersData.get(currentPrinterIndex).macAddress) as CloudPrinter?,
+                                            listOfPrintersData.get(currentPrinterIndex).printerQueueModelList,
+                                            listOfPrintersData.get(currentPrinterIndex).macAddress,
+                                            currentOrderIndex
+
+                                        )
+                                    } else {
+                                        runBlocking {
+                                            delay(3000)
+                                            val params = JsonObject()
+                                            params.addProperty("id", locationId)
+                                            params.addProperty("url", baseUrl + CREATE_QUEUE_PRINTER_PHASE3)
+                                            Log.e(
+                                                TAG,
+                                                "checkReuestURL: ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}  locationID: ${locationId}"
+                                            )
+                                            subscription?.perform("received", params)
+                                        }
+
+
+                                    }
+                                }
+                            }
+
+                        } else if (listOfPrintersData.size - 1 != currentPrinterIndex) {
+                            /* Log.e(
+                                 TAG,
+                                 "checkLog: ${currentPrinterIndex}  orderIndex: ${
+                                     listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size - 1
+                                 }  currentOrderInd: ${currentOrderIndex}"
+                             )*/
+                            if (listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size - 1 == currentOrderIndex) {
+
+
+                                currentOrderIndex = 0
+                                currentPrinterIndex = currentPrinterIndex + 1
+                                if (listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.isNotEmpty()) {
+                                    runBlocking {
+                                        sendDataToPrintToSunmi(
+                                            listOfPrintersData,
+                                            currentPrinterIndex,
+                                            printerObjList.get(listOfPrintersData.get(currentPrinterIndex).macAddress) as CloudPrinter?,
+                                            listOfPrintersData.get(currentPrinterIndex).printerQueueModelList,
+                                            listOfPrintersData.get(currentPrinterIndex).macAddress,
+                                            currentOrderIndex
+
+                                        )
+                                    }
+                                } else {
+                                    runBlocking {
+                                        delay(3000)
+                                        val params = JsonObject()
+                                        params.addProperty("id", locationId)
+                                        params.addProperty("url", baseUrl + CREATE_QUEUE_PRINTER_PHASE3)
+                                        Log.e(
+                                            TAG,
+                                            "checkReuestURL: ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}  locationID: ${locationId}"
+                                        )
+                                        subscription?.perform("received", params)
+                                    }
+                                }
+
+                            } else {
+
+                                currentOrderIndex = currentOrderIndex + 1
+                                runBlocking {
+                                    sendDataToPrintToSunmi(
+                                        listOfPrintersData,
+                                        currentPrinterIndex,
+                                        printerObjList.get(listOfPrintersData.get(currentPrinterIndex).macAddress) as CloudPrinter?,
+                                        listOfPrintersData.get(currentPrinterIndex).printerQueueModelList,
+                                        listOfPrintersData.get(currentPrinterIndex).macAddress,
+                                        currentOrderIndex
+
+                                    )
+                                }
+
+                            }
+
+                        } else {
+                            runBlocking {
+                                delay(3000)
+                                val params = JsonObject()
+                                params.addProperty("id", locationId)
+                                params.addProperty("url", baseUrl + CREATE_QUEUE_PRINTER_PHASE3)
+                                Log.e(
+                                    TAG,
+                                    "checkReuestURL: ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}  locationID: ${locationId}"
+                                )
+                                subscription?.perform("received", params)
+                            }
+
+                        }
                     }
 
                 })
-            } else {
+            }
+            else if (cloudPrinter == null){
+
+                Log.e(TAG,"checkCLoudObjNull")
+                var cloudPrinter: CloudPrinter = CloudPrinter(
+                    listOfPrintersData.get(currentPrinterIndexF).printerName,
+                    macAddress,
+                    listOfPrintersData.get(currentPrinterIndexF).portNo
+                )
+
+
+                cloudPrinter.connect(mContext, object : ConnectCallback {
+                    override fun onConnect() {
+                        Log.e(TAG,"CheckConnectDone 2nd")
+                        printerObjList.put(listOfPrintersData.get(currentPrinterIndexF).macAddress,cloudPrinter)
+
+                        sendDataToCloudPrint(
+                            listOfPrintersData,
+                            currentPrinterIndexF,
+                            cloudPrinter,
+                            printerQueueModelList,
+                            macAddress,
+                            currentOrderIndexF
+                        )
+
+                    }
+
+                    override fun onFailed(p0: String?) {
+                        Log.e(TAG, "checkFailed")
+                        if (listOfPrintersData.size - 1 == currentPrinterIndex) {
+                            /*  Log.e(
+                                  TAG,
+                                  "listOfPrinerData:   ${listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size}"
+                              )
+                              Log.e(TAG, "listOfcurrentOrderIndex:   ${currentOrderIndex}")
+                  */
+
+
+                            if (listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size - 1 == currentOrderIndex) {
+                                // Log.e(TAG, "checkLastORderPRint  ")
+                                runBlocking {
+                                    delay(3000)
+
+                                    val params = JsonObject()
+                                    params.addProperty("id", locationId)
+                                    params.addProperty("url", baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3)
+                                    Log.e(
+                                        TAG,
+                                        "checkReuestURL: ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}  locationID: ${locationId}"
+                                    )
+                                    subscription?.perform("received", params)
+                                }
+
+                            } else {
+
+                                runBlocking {
+                                    currentOrderIndex = currentOrderIndex + 1
+                                    if (listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.isNotEmpty()) {
+
+                                        sendDataToPrintToSunmi(
+                                            listOfPrintersData,
+                                            currentPrinterIndex,
+                                            printerObjList.get(listOfPrintersData.get(currentPrinterIndex).macAddress) as CloudPrinter?,
+                                            listOfPrintersData.get(currentPrinterIndex).printerQueueModelList,
+                                            listOfPrintersData.get(currentPrinterIndex).macAddress,
+                                            currentOrderIndex
+
+                                        )
+                                    } else {
+                                        runBlocking {
+                                            delay(3000)
+                                            val params = JsonObject()
+                                            params.addProperty("id", locationId)
+                                            params.addProperty("url", baseUrl + CREATE_QUEUE_PRINTER_PHASE3)
+                                            Log.e(
+                                                TAG,
+                                                "checkReuestURL: ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}  locationID: ${locationId}"
+                                            )
+                                            subscription?.perform("received", params)
+                                        }
+
+
+                                    }
+                                }
+                            }
+
+                        } else if (listOfPrintersData.size - 1 != currentPrinterIndex) {
+                            /* Log.e(
+                                 TAG,
+                                 "checkLog: ${currentPrinterIndex}  orderIndex: ${
+                                     listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size - 1
+                                 }  currentOrderInd: ${currentOrderIndex}"
+                             )*/
+                            if (listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size - 1 == currentOrderIndex) {
+
+
+                                currentOrderIndex = 0
+                                currentPrinterIndex = currentPrinterIndex + 1
+                                if (listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.isNotEmpty()) {
+                                    runBlocking {
+                                        sendDataToPrintToSunmi(
+                                            listOfPrintersData,
+                                            currentPrinterIndex,
+                                            printerObjList.get(listOfPrintersData.get(currentPrinterIndex).macAddress) as CloudPrinter?,
+                                            listOfPrintersData.get(currentPrinterIndex).printerQueueModelList,
+                                            listOfPrintersData.get(currentPrinterIndex).macAddress,
+                                            currentOrderIndex
+
+                                        )
+                                    }
+                                } else {
+                                    runBlocking {
+                                        delay(3000)
+                                        val params = JsonObject()
+                                        params.addProperty("id", locationId)
+                                        params.addProperty("url", baseUrl + CREATE_QUEUE_PRINTER_PHASE3)
+                                        Log.e(
+                                            TAG,
+                                            "checkReuestURL: ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}  locationID: ${locationId}"
+                                        )
+                                        subscription?.perform("received", params)
+                                    }
+                                }
+
+                            } else {
+
+                                currentOrderIndex = currentOrderIndex + 1
+                                runBlocking {
+                                    sendDataToPrintToSunmi(
+                                        listOfPrintersData,
+                                        currentPrinterIndex,
+                                        printerObjList.get(listOfPrintersData.get(currentPrinterIndex).macAddress) as CloudPrinter?,
+                                        listOfPrintersData.get(currentPrinterIndex).printerQueueModelList,
+                                        listOfPrintersData.get(currentPrinterIndex).macAddress,
+                                        currentOrderIndex
+
+                                    )
+                                }
+
+                            }
+
+                        } else {
+                            runBlocking {
+                                delay(3000)
+                                val params = JsonObject()
+                                params.addProperty("id", locationId)
+                                params.addProperty("url", baseUrl + CREATE_QUEUE_PRINTER_PHASE3)
+                                Log.e(
+                                    TAG,
+                                    "checkReuestURL: ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}  locationID: ${locationId}"
+                                )
+                                subscription?.perform("received", params)
+                            }
+
+                        }
+
+                    }
+
+                    override fun onDisConnect() {
+                        Log.e(TAG, "checkDisconnect")
+                        if (listOfPrintersData.size - 1 == currentPrinterIndex) {
+                            /*  Log.e(
+                                  TAG,
+                                  "listOfPrinerData:   ${listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size}"
+                              )
+                              Log.e(TAG, "listOfcurrentOrderIndex:   ${currentOrderIndex}")
+                  */
+
+
+                            if (listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size - 1 == currentOrderIndex) {
+                                // Log.e(TAG, "checkLastORderPRint  ")
+                                runBlocking {
+                                    delay(3000)
+
+                                    val params = JsonObject()
+                                    params.addProperty("id", locationId)
+                                    params.addProperty("url", baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3)
+                                    Log.e(
+                                        TAG,
+                                        "checkReuestURL: ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}  locationID: ${locationId}"
+                                    )
+                                    subscription?.perform("received", params)
+                                }
+
+                            } else {
+
+                                runBlocking {
+                                    currentOrderIndex = currentOrderIndex + 1
+                                    if (listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.isNotEmpty()) {
+
+                                        sendDataToPrintToSunmi(
+                                            listOfPrintersData,
+                                            currentPrinterIndex,
+                                            printerObjList.get(listOfPrintersData.get(currentPrinterIndex).macAddress) as CloudPrinter?,
+                                            listOfPrintersData.get(currentPrinterIndex).printerQueueModelList,
+                                            listOfPrintersData.get(currentPrinterIndex).macAddress,
+                                            currentOrderIndex
+
+                                        )
+                                    } else {
+                                        runBlocking {
+                                            delay(3000)
+                                            val params = JsonObject()
+                                            params.addProperty("id", locationId)
+                                            params.addProperty("url", baseUrl + CREATE_QUEUE_PRINTER_PHASE3)
+                                            Log.e(
+                                                TAG,
+                                                "checkReuestURL: ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}  locationID: ${locationId}"
+                                            )
+                                            subscription?.perform("received", params)
+                                        }
+
+
+                                    }
+                                }
+                            }
+
+                        } else if (listOfPrintersData.size - 1 != currentPrinterIndex) {
+                            /* Log.e(
+                                 TAG,
+                                 "checkLog: ${currentPrinterIndex}  orderIndex: ${
+                                     listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size - 1
+                                 }  currentOrderInd: ${currentOrderIndex}"
+                             )*/
+                            if (listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size - 1 == currentOrderIndex) {
+
+
+                                currentOrderIndex = 0
+                                currentPrinterIndex = currentPrinterIndex + 1
+                                if (listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.isNotEmpty()) {
+                                    runBlocking {
+                                        sendDataToPrintToSunmi(
+                                            listOfPrintersData,
+                                            currentPrinterIndex,
+                                            printerObjList.get(listOfPrintersData.get(currentPrinterIndex).macAddress) as CloudPrinter?,
+                                            listOfPrintersData.get(currentPrinterIndex).printerQueueModelList,
+                                            listOfPrintersData.get(currentPrinterIndex).macAddress,
+                                            currentOrderIndex
+
+                                        )
+                                    }
+                                } else {
+                                    runBlocking {
+                                        delay(3000)
+                                        val params = JsonObject()
+                                        params.addProperty("id", locationId)
+                                        params.addProperty("url", baseUrl + CREATE_QUEUE_PRINTER_PHASE3)
+                                        Log.e(
+                                            TAG,
+                                            "checkReuestURL: ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}  locationID: ${locationId}"
+                                        )
+                                        subscription?.perform("received", params)
+                                    }
+                                }
+
+                            } else {
+
+                                currentOrderIndex = currentOrderIndex + 1
+                                runBlocking {
+                                    sendDataToPrintToSunmi(
+                                        listOfPrintersData,
+                                        currentPrinterIndex,
+                                        printerObjList.get(listOfPrintersData.get(currentPrinterIndex).macAddress) as CloudPrinter?,
+                                        listOfPrintersData.get(currentPrinterIndex).printerQueueModelList,
+                                        listOfPrintersData.get(currentPrinterIndex).macAddress,
+                                        currentOrderIndex
+
+                                    )
+                                }
+
+                            }
+
+                        } else {
+                            runBlocking {
+                                delay(3000)
+                                val params = JsonObject()
+                                params.addProperty("id", locationId)
+                                params.addProperty("url", baseUrl + CREATE_QUEUE_PRINTER_PHASE3)
+                                Log.e(
+                                    TAG,
+                                    "checkReuestURL: ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}  locationID: ${locationId}"
+                                )
+                                subscription?.perform("received", params)
+                            }
+
+                        }
+                    }
+
+                })
+
+            }else {
+                Log.e(TAG,"checkLastElse ")
 
                 sendDataToCloudPrint(
                     listOfPrintersData,
-                    currentPrinterIndex,
+                    currentPrinterIndexF,
                     cloudPrinter,
                     printerQueueModelList,
                     macAddress,
-                    currentOrderIndex
+                    currentOrderIndexF
                 )
                 /* cloudPrinter?.printText("Test Print")
                  cloudPrinter?.lineFeed(2)
@@ -1793,6 +2356,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
         cloudPrinter?.lineFeed(3)
         cloudPrinter?.cutPaper(true)
+          Log.e(TAG,""+Gson().toJson(cloudPrinter?.cloudPrinterInfo))
 
         cloudPrinter?.commitTransBuffer(this)
 
@@ -3521,6 +4085,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
     override fun onComplete() {
         isQueueRunning = false
+        Log.e(TAG,"checkListData  ${listOfPrintersData.size}  currentPrinter  ${currentPrinterIndex}")
         if (listOfPrintersData.size - 1 >= currentPrinterIndex) {
 
             try {
@@ -3533,9 +4098,10 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                     ).id
                 LogUtil.logE(TAG, "DeleteUrl ${deleteUrl}")
                 params.addProperty("url", deleteUrl)
+                Log.e(TAG,"checkDeleteSunmi  ${listOfPrintersData.get(currentPrinterIndex).printerName}")
                 params.addProperty(
-                    "mac_address",
-                    listOfPrintersData.get(currentPrinterIndex).macAddress
+                    "name",
+                    listOfPrintersData.get(currentPrinterIndex).printerName
                 )
 
                 subscription?.perform("delete_order", params)
@@ -3565,7 +4131,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                     params.addProperty("url", baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3)
                     Log.e(
                         TAG,
-                        "checkReuestURL: ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}  locationID: ${locationId}"
+                        "checkReuestURLREquestews: ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}  locationID: ${locationId}"
                     )
                     subscription?.perform("received", params)
                 }
@@ -3610,6 +4176,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                      listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size - 1
                  }  currentOrderInd: ${currentOrderIndex}"
              )*/
+            Log.e(TAG,"cehckereCurrent  ${listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size}")
             if (listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size - 1 == currentOrderIndex) {
 
 
@@ -3680,6 +4247,133 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
         Log.e(TAG, "check failed  ${Gson().toJson(p0)}")
         if (p0?.name.equals("UNKNOWN", true)) {
             sendNotification("Printer - ${listOfPrintersData[currentPrinterIndex].modelName} is Offline.")
+            if (listOfPrintersData.size - 1 == currentPrinterIndex) {
+                /*  Log.e(
+                      TAG,
+                      "listOfPrinerData:   ${listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size}"
+                  )
+                  Log.e(TAG, "listOfcurrentOrderIndex:   ${currentOrderIndex}")
+      */
+
+
+                if (listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size - 1 == currentOrderIndex) {
+                    // Log.e(TAG, "checkLastORderPRint  ")
+                    runBlocking {
+                        delay(3000)
+
+                        val params = JsonObject()
+                        params.addProperty("id", locationId)
+                        params.addProperty("url", baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3)
+                        Log.e(
+                            TAG,
+                            "checkReuestURLREquestews: ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}  locationID: ${locationId}"
+                        )
+                        subscription?.perform("received", params)
+                    }
+
+                } else {
+
+                    runBlocking {
+                        currentOrderIndex = currentOrderIndex + 1
+                        if (listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.isNotEmpty()) {
+
+                            sendDataToPrintToSunmi(
+                                listOfPrintersData,
+                                currentPrinterIndex,
+                                printerObjList.get(listOfPrintersData.get(currentPrinterIndex).macAddress) as CloudPrinter?,
+                                listOfPrintersData.get(currentPrinterIndex).printerQueueModelList,
+                                listOfPrintersData.get(currentPrinterIndex).macAddress,
+                                currentOrderIndex
+
+                            )
+                        } else {
+                            runBlocking {
+                                delay(3000)
+                                val params = JsonObject()
+                                params.addProperty("id", locationId)
+                                params.addProperty("url", baseUrl + CREATE_QUEUE_PRINTER_PHASE3)
+                                Log.e(
+                                    TAG,
+                                    "checkReuestURL: ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}  locationID: ${locationId}"
+                                )
+                                subscription?.perform("received", params)
+                            }
+
+
+                        }
+                    }
+                }
+
+            } else if (listOfPrintersData.size - 1 != currentPrinterIndex) {
+                /* Log.e(
+                     TAG,
+                     "checkLog: ${currentPrinterIndex}  orderIndex: ${
+                         listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size - 1
+                     }  currentOrderInd: ${currentOrderIndex}"
+                 )*/
+                Log.e(TAG,"cehckereCurrent  ${listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size}")
+                if (listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size - 1 == currentOrderIndex) {
+
+
+                    currentOrderIndex = 0
+                    currentPrinterIndex = currentPrinterIndex + 1
+                    if (listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.isNotEmpty()) {
+                        runBlocking {
+                            sendDataToPrintToSunmi(
+                                listOfPrintersData,
+                                currentPrinterIndex,
+                                printerObjList.get(listOfPrintersData.get(currentPrinterIndex).macAddress) as CloudPrinter?,
+                                listOfPrintersData.get(currentPrinterIndex).printerQueueModelList,
+                                listOfPrintersData.get(currentPrinterIndex).macAddress,
+                                currentOrderIndex
+
+                            )
+                        }
+                    } else {
+                        runBlocking {
+                            delay(3000)
+                            val params = JsonObject()
+                            params.addProperty("id", locationId)
+                            params.addProperty("url", baseUrl + CREATE_QUEUE_PRINTER_PHASE3)
+                            Log.e(
+                                TAG,
+                                "checkReuestURL: ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}  locationID: ${locationId}"
+                            )
+                            subscription?.perform("received", params)
+                        }
+                    }
+
+                } else {
+
+                    currentOrderIndex = currentOrderIndex + 1
+                    runBlocking {
+                        sendDataToPrintToSunmi(
+                            listOfPrintersData,
+                            currentPrinterIndex,
+                            printerObjList.get(listOfPrintersData.get(currentPrinterIndex).macAddress) as CloudPrinter?,
+                            listOfPrintersData.get(currentPrinterIndex).printerQueueModelList,
+                            listOfPrintersData.get(currentPrinterIndex).macAddress,
+                            currentOrderIndex
+
+                        )
+                    }
+
+                }
+
+            } else {
+                runBlocking {
+                    delay(3000)
+                    val params = JsonObject()
+                    params.addProperty("id", locationId)
+                    params.addProperty("url", baseUrl + CREATE_QUEUE_PRINTER_PHASE3)
+                    Log.e(
+                        TAG,
+                        "checkReuestURL: ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}  locationID: ${locationId}"
+                    )
+                    subscription?.perform("received", params)
+                }
+
+            }
 
         } else if (p0?.name.equals("OUT_PAPER", true)) {
             sendNotification(

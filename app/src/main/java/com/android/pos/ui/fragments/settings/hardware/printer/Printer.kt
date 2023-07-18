@@ -2991,6 +2991,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             delay(2000)
 
 
+            Log.e(TAG,"sunmiCheckMasterTeminal  ${prefProvider.getValueboolean(IS_MASTER_TERMINAL, false)}")
             if (prefProvider.getValueboolean(IS_MASTER_TERMINAL, false) == true) {
 
                 var contains: Boolean = false
