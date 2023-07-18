@@ -2193,80 +2193,86 @@ class TransactionDetailsFragment : Fragment() {
                     )
                 )
 
-
-                builder.addTextLineSpace(30)
-                builder.addFeedUnit(30)
-                builder.addTextFont(Builder.FONT_E)
-                // builder.addTextAlign(Builder.ALIGN_LEFT)
-                builder.addTextLang(Builder.LANG_EN)
-                addCustomerTextSize(builder, customerSettingModel.fonts)
-                builder.addTextStyle(
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.TRUE,
-                    Builder.COLOR_1
-                )
-
-                builder.addText(
-                    padLine(
-                        "",
-                        paymentDetailsResponse.data.card_name,
-                        if (customerSettingModel.fonts == Constants.LARGE) {
-                            24
-                        } else {
-                            48
-                        }
+                if(!(paymentDetailsResponse.data.card_name).isNullOrBlank()) {
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+                    builder.addTextFont(Builder.FONT_E)
+                    // builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextLang(Builder.LANG_EN)
+                    addCustomerTextSize(builder, customerSettingModel.fonts)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.TRUE,
+                        Builder.COLOR_1
                     )
-                )
 
-                builder.addTextLineSpace(30)
-                builder.addFeedUnit(30)
-                builder.addTextFont(Builder.FONT_E)
-                // builder.addTextAlign(Builder.ALIGN_LEFT)
-                builder.addTextLang(Builder.LANG_EN)
-                addCustomerTextSize(builder, customerSettingModel.fonts)
-                builder.addTextStyle(
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.TRUE,
-                    Builder.COLOR_1
-                )
-
-                builder.addText(
-                    padLine(
-                        "",
-                        paymentDetailsResponse.data.card_type,
-                        if (customerSettingModel.fonts == Constants.LARGE) {
-                            24
-                        } else {
-                            48
-                        }
+                    builder.addText(
+                        padLine(
+                            "",
+                            paymentDetailsResponse.data.card_name,
+                            if (customerSettingModel.fonts == Constants.LARGE) {
+                                24
+                            } else {
+                                48
+                            }
+                        )
                     )
-                )
-                builder.addTextLineSpace(30)
-                builder.addFeedUnit(30)
-                builder.addTextFont(Builder.FONT_E)
-                // builder.addTextAlign(Builder.ALIGN_LEFT)
-                builder.addTextLang(Builder.LANG_EN)
-                addCustomerTextSize(builder, customerSettingModel.fonts)
-                builder.addTextStyle(
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.TRUE,
-                    Builder.COLOR_1
-                )
+                }
 
-                builder.addText(
-                    padLine(
-                        "",
-                        paymentDetailsResponse.data.card_number,
-                        if (customerSettingModel.fonts == Constants.LARGE) {
-                            24
-                        } else {
-                            48
-                        }
+                if(!(paymentDetailsResponse.data.card_type).isNullOrBlank()) {
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+                    builder.addTextFont(Builder.FONT_E)
+                    // builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextLang(Builder.LANG_EN)
+                    addCustomerTextSize(builder, customerSettingModel.fonts)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.TRUE,
+                        Builder.COLOR_1
                     )
-                )
+
+                    builder.addText(
+                        padLine(
+                            "",
+                            paymentDetailsResponse.data.card_type,
+                            if (customerSettingModel.fonts == Constants.LARGE) {
+                                24
+                            } else {
+                                48
+                            }
+                        )
+                    )
+                }
+
+                if(!(paymentDetailsResponse.data.card_number).isNullOrBlank()) {
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+                    builder.addTextFont(Builder.FONT_E)
+                    // builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextLang(Builder.LANG_EN)
+                    addCustomerTextSize(builder, customerSettingModel.fonts)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.TRUE,
+                        Builder.COLOR_1
+                    )
+
+                    builder.addText(
+                        padLine(
+                            "",
+                            paymentDetailsResponse.data.card_number,
+                            if (customerSettingModel.fonts == Constants.LARGE) {
+                                24
+                            } else {
+                                48
+                            }
+                        )
+                    )
+                }
 
             } else {
 
@@ -3393,8 +3399,6 @@ class TransactionDetailsFragment : Fragment() {
 
             PrintSunmiUtils.normalText(tranId)
 
-
-
             if (paymentDetailsResponse.data.payment_type.lowercase() == "Card".lowercase()) {
 
                 val tranType = padLine(
@@ -3402,13 +3406,13 @@ class TransactionDetailsFragment : Fragment() {
                     "Card", PrintSunmiUtils.lineChar()
                 ).toString()
 
-                PrintSunmiUtils.normalText(tranType)
+                PrintSunmiUtils.normalTextTest(tranType)
 
 
                 PrintSunmiUtils.cardDetailsInner(
                     paymentDetailsResponse.data.card_name,
                     paymentDetailsResponse.data.card_type,
-                    paymentDetailsResponse.data.card_number
+                    paymentDetailsResponse.data.card_number,customerSettingModel.fonts
                 )
 
 
