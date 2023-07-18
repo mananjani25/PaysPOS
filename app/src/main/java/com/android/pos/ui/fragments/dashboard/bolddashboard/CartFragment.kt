@@ -2058,7 +2058,7 @@ class CartFragment(
             }
         }
 
-        binding.txtAddCustomer.setOnClickListener {
+        binding.txtAddCustomer.setOnSingleClickListener {
             if (isFromPayment) {
                 if (prefProvider.getValueboolean(
                         Constants.LOYALTY_ADDED,
@@ -2100,7 +2100,7 @@ class CartFragment(
             }
         }
 
-        binding.imgOrderMenu.setOnClickListener {
+        binding.imgOrderMenu.setOnSingleClickListener {
 
 
             val popupMenu = PopupMenu(requireContext(), it)
@@ -2123,13 +2123,13 @@ class CartFragment(
                 popupMenu.menu.findItem(R.id.menu_remove_customer).isVisible = false
             }
             popupMenu.setOnMenuItemClickListener { menuItem ->
-                when (menuItem.itemId) {
-                    R.id.menu_clear_cart -> {
-                        popupMenu.dismiss() //For resolving BIS-273
-                        clearCart()
-                    }
-
-                    R.id.menu_remove_customer -> {
+                try {
+                    when (menuItem.itemId) {
+                        R.id.menu_clear_cart -> {
+                            popupMenu.dismiss() //For resolving BIS-273
+                            clearCart()
+                        }
+                        R.id.menu_remove_customer -> {
 
                         if (cartlist.isNotEmpty() && cartlist[0].customer != null) {
                             cartlist[0].customer = null
@@ -2153,33 +2153,36 @@ class CartFragment(
                         )
                     }
 
-                    R.id.menu_discount -> {
-                        val bundle = Bundle()
-                        bundle.putBoolean("isOrderDiscount", true)
-                        bundle.putDouble("totalPrice", viewModel.subTotalPrice)
-                        if (cartlist.isNotEmpty()) {
-                            bundle.putDouble("orderDiscountPrice", cartlist[0].discountPrice)
-                            bundle.putString("orderDiscountType", cartlist[0].discountType)
-                            bundle.putDouble("selectedvalue", cartlist[0].discountSelectdValue)
+                        R.id.menu_discount -> {
+                            val bundle = Bundle()
+                            bundle.putBoolean("isOrderDiscount", true)
+                            bundle.putDouble("totalPrice", viewModel.subTotalPrice)
+                            if (cartlist.isNotEmpty()) {
+                                bundle.putDouble("orderDiscountPrice", cartlist[0].discountPrice)
+                                bundle.putString("orderDiscountType", cartlist[0].discountType)
+                                bundle.putDouble("selectedvalue", cartlist[0].discountSelectdValue)
+                            }
+                            bundle.putString("isFrom", "orderDiscount")
+                            if (prefProvider.isAdmin() || prefProvider.isManager()) {
+
+                                findNavController().navigate(
+                                    R.id.action_dashboardCategoryBoldPOS_to_addDiscountDialog,
+                                    bundle
+                                )
+                            } else {
+                                findNavController().navigate(
+                                    R.id.actionboldpos_to_pascodeManagerDailog, bundle
+                                )
+                            }
+
+
                         }
-                        bundle.putString("isFrom", "orderDiscount")
-                        if (prefProvider.isAdmin() || prefProvider.isManager()) {
+                        /*R.id.menu_note -> {
 
-                            findNavController().navigate(
-                                R.id.action_dashboardCategoryBoldPOS_to_addDiscountDialog,
-                                bundle
-                            )
-                        } else {
-                            findNavController().navigate(
-                                R.id.actionboldpos_to_pascodeManagerDailog, bundle
-                            )
-                        }
-
-
+                        }*/
                     }
-                    /*R.id.menu_note -> {
-
-                    }*/
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
                 true
             }
