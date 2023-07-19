@@ -715,6 +715,10 @@
             android:defaultValue="false"
             app:argType="boolean" />
 
+        <action
+            android:id="@+id/action_addEditCustomer_to_paymentBoldPosFragment"
+            app:destination="@id/paymentBoldPosFragment" />
+
     </fragment>
     <fragment
         android:id="@+id/teamMemberTimeSheetFragment"
@@ -1027,6 +1031,14 @@
             android:id="@+id/action_orderCompleteFragment_to_dineInOrderTable"
             app:destination="@id/dineInOrderTable"
             app:popUpTo="@id/orderCompleteFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/purchaseGiftCard"
+        android:name="com.android.pos.ui.fragments.eGiftCard.PurchaseGiftCardFragment"
+        android:label="@string/lbl_purchase_gift_card">
+        <action
+            android:id="@+id/action_purchaseGiftCard_to_addCustomerToGiftCard"
+            app:destination="@id/addCustomerToGiftCard" />
     </fragment>
     <fragment
         android:id="@+id/orders"
@@ -1580,6 +1592,18 @@
             android:id="@+id/action_dashboardCategoryBoldPOS_to_orders"
             app:destination="@id/orders"
             app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_dashboardCategoryBoldPOS_to_purchaseGiftCard"
+            app:destination="@id/purchaseGiftCard"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_dashboardCategoryBoldPOS_to_addValueInGiftCard"
+            app:destination="@id/addValueInGiftCard"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_dashboardCategoryBoldPOS_to_balanceInquiry"
+            app:destination="@id/balanceInquiry"
+            app:enterAnim="@anim/nav_default_enter_anim" />
 
         <action
             android:id="@+id/action_dashboardCategoryBoldPOS_to_passcode"
@@ -1720,6 +1744,43 @@
             android:id="@+id/action_phoneOrderFragment_to_assignCustomerOrderFragment"
             app:destination="@id/assignCustomerOrderFragment" />
     </fragment>
+    <fragment android:id="@+id/addCustomerToGiftCard"
+        android:name="com.android.pos.ui.fragments.eGiftCard.AddCustomerToGiftCardFragment"
+        android:label="@string/lbl_add_customer_to_gift_card">
+        <action
+            android:id="@+id/action_addCustomerToGiftCard_to_addEditCustomer"
+            app:destination="@id/addEditCustomer"
+            app:enterAnim="@anim/nav_default_enter_anim">
 
+            <argument
+                android:name="isEdit"
+                app:argType="boolean" />
+        </action>
+        <action
+            android:id="@+id/action_addCustomerToGiftCard_to_addNewCustomerForGiftCard"
+            app:destination="@id/addNewCustomerForGiftCard" />
+        <action
+            android:id="@+id/action_addCustomerToGiftCard_to_dashboard_category_new"
+            app:destination="@id/dashboardCategoryBoldPOS" />
+        <action
+            android:id="@+id/action_addCustomerToGiftCard_to_paymentBoldPosFragment"
+            app:destination="@id/paymentBoldPosFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addNewCustomerForGiftCard"
+        android:name="com.android.pos.ui.fragments.eGiftCard.AddNewCustomerForGiftCardFragment"
+        android:label="@string/lbl_add_customer_to_gift_card"/>
+    <fragment
+        android:id="@+id/addValueInGiftCard"
+        android:name="com.android.pos.ui.fragments.eGiftCard.AddValueInGiftCardFragment"
+        android:label="@string/lbl_add_value">
+        <action
+            android:id="@+id/action_addValueInGiftCard_to_paymentBoldPosFragment"
+            app:destination="@id/paymentBoldPosFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/balanceInquiry"
+        android:name="com.android.pos.ui.fragments.eGiftCard.BalanceInquiryFragment"
+        android:label="@string/lbl_balance_inquiry"/>
 
 </navigation>

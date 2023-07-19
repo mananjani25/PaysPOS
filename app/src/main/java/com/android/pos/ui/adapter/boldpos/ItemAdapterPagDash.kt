@@ -152,6 +152,8 @@ class ItemAdapterPagDash(
                 if (model?.hide_status == "HideForToday" || model?.hide_status == "HideForIndefinitely") {
                     AlertUtils.showCustomAlert(binding.root.context, model.name + " is sold out.")
                     return@setOnClickListener
+                } else if(model.name == "Sell Card" || model.name == "Add Value" || model.name == "Balance Inquiry"){
+                    listener.onItemSelected(model)
                 } else {
                     try {
                         getItem(position)?.let {

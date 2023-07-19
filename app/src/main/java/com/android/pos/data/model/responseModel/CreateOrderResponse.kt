@@ -199,43 +199,43 @@ data class CreateOrderResponse(
             @Parcelize
             data class OrderItem(
                 @SerializedName("category_id")
-                val categoryId: Int,
+                val categoryId: Int = 0,
                 @SerializedName("completed_in_kitchen")
-                val completedInKitchen: Boolean,
+                val completedInKitchen: Boolean = false,
                 @SerializedName("discount_amount")
-                val discountAmount: Double,
+                val discountAmount: Double = 0.0,
                 @SerializedName("discount_id")
-                val discountId: Int,
+                val discountId: Int = 0,
                 @SerializedName("discount_type")
-                val discountType: String,
+                val discountType: String = "",
                 @SerializedName("employee_id")
-                val employeeId: Int,
+                val employeeId: Int = 0,
                 @SerializedName("float")
-                val float: Double,
+                val float: Double = 0.0,
                 @SerializedName("id")
-                val id: Int,
+                val id: Int = 0,
                 @SerializedName("is_paid")
-                val isPaid: Boolean,
+                val isPaid: Boolean = false,
                 @SerializedName("is_printed")
-                val isPrinted: Boolean,
+                val isPrinted: Boolean = false,
                 @SerializedName("item_id")
-                val itemId: Int,
+                val itemId: Int = 0,
                 @SerializedName("item_name")
-                val itemName: String,
+                var itemName: String = "",
                 @SerializedName("note")
-                val note: String,
+                val note: String = "",
                 @SerializedName("order_id")
-                val orderId: Int,
+                val orderId: Int = 0,
                 @SerializedName("order_item_modifiers")
-                val orderItemModifiers: List<OrderItemModifiers>,
+                val orderItemModifiers: List<OrderItemModifiers> = listOf(),
                 @SerializedName("price")
-                val price: Double,
+                var price: Double = 0.0,
                 @SerializedName("quantity")
-                var quantity: Int,
+                var quantity: Int = 0,
                 @SerializedName("timestamp")
-                val timestamp: String,
+                val timestamp: String = "",
                 @SerializedName("total_price")
-                val totalPrice: Double
+                val totalPrice: Double = 0.0
             ) : Parcelable {
                 @Parcelize
                 data class OrderItemModifiers(

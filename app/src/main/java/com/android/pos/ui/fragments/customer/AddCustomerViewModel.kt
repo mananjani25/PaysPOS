@@ -55,6 +55,9 @@ class AddCustomerViewModel @Inject constructor(
     private val _updatedCustomer = MutableLiveData<Event<TbCustomer>>()
     val updatedCustomer: LiveData<Event<TbCustomer>> = _updatedCustomer
 
+    private val _customerModel = MutableLiveData<Event<TbCustomer>>()
+    val customerModel: LiveData<Event<TbCustomer>> = _customerModel
+
     val addCustomerDetails = MutableLiveData(CreateCustomerRequestModel())
     var listAddress: ArrayList<CreateCustomerRequestModel.Customer.Addresses> = arrayListOf()
 

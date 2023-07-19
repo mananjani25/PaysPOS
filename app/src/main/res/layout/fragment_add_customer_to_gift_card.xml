@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_color"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/imgBack"
+            android:layout_width="@dimen/_20sdp"
+            android:layout_height="@dimen/_20sdp"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            android:padding="@dimen/_6sdp"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:tint="@color/drawable_ic_color"
+            app:srcCompat="@mipmap/ic_left_arrow" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            style="@style/CustomFontSemiBold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="@string/lbl_add_customer_to_gift_card"
+            android:textColor="@color/txtColor"
+            android:textSize="@dimen/_7mdpi" />
+
+
+        <TextView
+            android:id="@+id/txtNext"
+            style="@style/CustomFontBold"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/_23sdp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/button_action_hover"
+            android:gravity="center"
+            android:paddingHorizontal="@dimen/padding_home_button"
+            android:text="@string/tv_next"
+            android:textAllCaps="true"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_7mdpi"
+            android:visibility="invisible" />
+
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/view" />
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/etSearch"
+            style="@style/CustomFontBold"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:drawableStart="@drawable/ic_search"
+            android:drawablePadding="@dimen/_10sdp"
+            android:hint="@string/search_customer"
+            android:imeOptions="actionDone"
+            android:inputType="textVisiblePassword"
+            android:padding="@dimen/_10sdp"
+            android:textColor="@color/txtColor"
+            android:layout_marginHorizontal="@dimen/_100sdp"
+            android:textColorHint="@color/hintColor"
+            android:textSize="@dimen/_6mdpi" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/view" />
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginHorizontal="@dimen/_110sdp"
+            android:layout_marginVertical="@dimen/_10sdp"
+            android:orientation="vertical">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtCreateCustomer"
+                style="@style/CustomFontBold"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="@dimen/_10sdp"
+                android:background="@drawable/button_action_hover"
+                android:gravity="center"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:padding="@dimen/_8sdp"
+                android:text="@string/add_new_customer_"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_7sdp"
+                app:textAllCaps="false" />
+
+            <ProgressBar
+                android:id="@+id/progress_circular"
+                style="@style/Widget.AppCompat.ProgressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:visibility="gone" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/CustomFontSemiBold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:text="@string/recently_created"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_5sdp"
+                android:layout_marginStart="@dimen/_3sdp"
+                android:layout_marginTop="@dimen/_10sdp"
+                app:textAllCaps="true" />
+
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvCustomerList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone"
+                android:layout_marginTop="@dimen/_5sdp"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:itemCount="5"
+                tools:listitem="@layout/view_category" />
+
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+</androidx.appcompat.widget.LinearLayoutCompat>

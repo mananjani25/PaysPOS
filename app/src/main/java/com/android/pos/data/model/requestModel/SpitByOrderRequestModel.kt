@@ -1,13 +1,16 @@
 package com.android.pos.data.model.requestModel
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
-
-@Parcelize
 data class SpitByOrderRequestModel(
 
     var id: Int? = null,
     var completed_all_payments: Boolean = false,
-    var amount_tab: SpitByOrderPaymentModel
+    var amount_tab: SpitByOrderPaymentModel,
+    var gift_card_redeem: Boolean? = false,
+    var gift_card: GiftCardRedeem? = null
     /*var order: SpitByOrderPaymentModel*/
-): Parcelable
+) {
+    class GiftCardRedeem(
+        var name: String = "",
+        var pin: String = ""
+    )
+}
