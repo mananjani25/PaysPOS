@@ -350,9 +350,9 @@ class AllOrdersListingFragment(
             paymentStatus = ""
         }
 
-        if (orderTab == OPEN_ORDER_TAB || orderTab == PHONE_ORDER_TAB) {
-            orderStatusLabel = ""
-        }
+//        if (orderTab == OPEN_ORDER_TAB || orderTab == PHONE_ORDER_TAB) {
+//            orderStatusLabel = ""
+//        }
 
         viewModel.getAllOrders(
             viewModel.startDate.value.toString(),
