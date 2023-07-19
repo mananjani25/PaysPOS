@@ -257,8 +257,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         printerDialog = PrinterDialog()
         progressDialog()
 
-
-
         if (requireArguments().getBoolean("isSpilt")) {
             observeSplitList()
         } else {
@@ -360,6 +358,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private fun getCustomerReceiptSettings() {
         viewModel.getCustomerReceiptSettings().observe(viewLifecycleOwner) {
             if (it != null) {
+                customerSettingModel = GetCustomerReceiptSettingsResponse.Data()
                 customerSettingModel = it
 
 
@@ -6393,53 +6392,41 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                 }
 
                             }
-
-
                         } else {
                             customerList.forEach {
-                                initPrinter(it, CUSTOMER,autoPrintCheck)
-
+                                if (it.status) {
+                                    initPrinter(it, CUSTOMER, autoPrintCheck)
+                                }
 
                             }
                         }
-
                         isPrint = false
-
-
                     }
-
-
                 }
 
                 Status.ERROR -> {
-
                     ProgressUtils.dismissProgressDialog()
-
                 }
 
                 Status.LOADING -> {
                     ProgressUtils.showProgressDialog(requireActivity())
-
                 }
-
             }
-
         }
-
     }
 
     private fun initPrinter(
         customerReceiptPrinters: PrinterResponse.Data.CustomerReceiptPrinters,
         type: String,
-        isAutoPrint:Boolean
+        isAutoPrint: Boolean
     ) {
-        Log.e(TAG,"checkAutoPrint  ${isAutoPrint}")
+        Log.e(TAG, "checkAutoPrint  ${isAutoPrint}")
         pd.show()
 
 
         if (customerReceiptPrinters.name.startsWith(SUNMI_PRINTER, true)) {
 
-            customerReceiptPrinters.ipAddress?.let { sunmiPrinterInit(it,isAutoPrint) }
+            customerReceiptPrinters.ipAddress?.let { sunmiPrinterInit(it, isAutoPrint) }
 
         } else if (customerReceiptPrinters.name.startsWith(SUNMI_INNER_PRINTER, true)) {
 
@@ -6493,7 +6480,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     if (printer != null) {
                         PrinterClass.setPrinter(printer)
 
-                        generatePrint(customerReceiptPrinters, type,isAutoPrint)
+                        generatePrint(customerReceiptPrinters, type, isAutoPrint)
 
                     }
 
