@@ -178,7 +178,7 @@ class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
             startDate = intent?.getStringExtra("start_date")
             endDate = intent?.getStringExtra("end_date")
 
-            getAllOrderCounts(startDate, endDate)
+//            getAllOrderCounts(startDate, endDate)
 
             var position = intent?.getIntExtra("position", 0) ?: 0
             if(tabPosition == ALL_ORDER_TAB_POS){
