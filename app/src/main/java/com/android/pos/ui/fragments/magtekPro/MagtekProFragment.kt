@@ -1,6 +1,7 @@
 package com.android.pos.ui.fragments.magtekPro
 
 import android.Manifest
+import android.app.Dialog
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
@@ -9,8 +10,12 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.widget.AppCompatEditText
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -28,12 +33,11 @@ import com.android.pos.utils.LogUtil
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.extensions.runOnUiThread
-import com.magtek.mobile.android.mtusdk.*
-import com.pax.poslink.*
 import com.android.pos.utils.paxUtils.AppThreadPool
-import com.android.pos.utils.paxUtils.Convenience
 import com.android.pos.utils.paxUtils.POSLinkCreatorWrapper
 import com.android.pos.utils.paxUtils.SettingINI
+import com.magtek.mobile.android.mtusdk.*
+import com.pax.poslink.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -82,9 +86,7 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
         binding.tvPax.setOnClickListener {
-            initPOSLink()
-            setCommSetting()
-            getMerchantDetails()
+            openConnectDialog()
         }
 
         mSessionManager.setDevicesFragment(this)
@@ -96,17 +98,38 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
         return binding.root
     }
 
+    private fun openConnectDialog(){
+        val dialog = Dialog(requireActivity())
+        dialog.setContentView(R.layout.dialog_pax_connection);
+        dialog.setCancelable(true)
+
+        val edtIP: EditText = dialog.findViewById<EditText>(R.id.edtIP)
+        val edtPort: EditText = dialog.findViewById<EditText>(R.id.edtPort)
+        val btnConnect: TextView = dialog.findViewById<TextView>(R.id.txtSave)
+
+        btnConnect.setOnClickListener {
+            val port = edtPort.text.toString()
+            val IP = edtIP.text.toString()
+            Log.d("Connect Parameters: ","IP $IP Port $port")
+            initPOSLink()
+            setCommSetting(IP, port)
+            getMerchantDetails()
+        }
+        dialog.show()
+    }
+
     private fun initPOSLink() {
         POSLinkCreatorWrapper.createSync(
             context!!,
             object : AppThreadPool.FinishInMainThreadCallback<PosLink?> {
                 override fun onFinish(result: PosLink?) {
                     posLink = result!!
+                    Log.d("initPOSLink: ","onFinish")
                 }
             })
     }
 
-    private fun setCommSetting() {
+    private fun setCommSetting(edtIP: String, edtPort: String) {
         //create commsetting object
         val iniFile =
             activity!!.applicationContext.filesDir.absolutePath + "/" + SettingINI.FILENAME
@@ -117,10 +140,10 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
         commset.timeOut = "3000"
         commset.baudRate = "9600"
         commset.isEnableProxy = false
-        commset.destPort = "10009"
-        commset.destIP = "192.168.7.160"
-        val selectedHost = "UNKNOWN"
-        Convenience.setHost(context, commset, selectedHost)
+        commset.destPort = edtPort
+        commset.destIP = edtIP
+        /*val selectedHost = "UNKNOWN"
+        Convenience.setHost(context, commset, selectedHost)*/
         Log.i(
             "TAG", "coms.CommType = " + commset.type + "; coms.TimeOut=" + commset.timeOut
                     + "; SerialPort=" + commset.serialPort + "; coms.BaudRate=" + commset.baudRate
@@ -132,22 +155,22 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
         // set the folder to save the "comsetting.ini" file
         posLink.appDataFolder = context!!.filesDir.absolutePath
         posLink.SetCommSetting(commset)
+        Log.d("SetCommSetting: ", "saved successfully")
     }
 
     // Get merchant details from pax
     private fun getMerchantDetails() {
         GlobalScope.launch {
+            Log.d("manageRequest ","Start")
             val manageRequest = ManageRequest()
-            manageRequest.TransType = manageRequest.ParseTransType("GETVAR")
+            manageRequest.TransType = manageRequest.ParseTransType("INIT")
+            /*manageRequest.TransType = manageRequest.ParseTransType("GETVAR")
             manageRequest.EDCType = manageRequest.ParseEDCType("CREDIT")
             manageRequest.VarName = "MID"
-            manageRequest.ContactlessEntryFlag = "1"
+            manageRequest.ContactlessEntryFlag = "1"*/
 
             posLink.ManageRequest = manageRequest
             val result = posLink.ProcessTrans()
-            CoroutineScope(Dispatchers.Main).launch {
-                Toast.makeText(requireContext(), "result: ${result.Code} ${result.Msg}", Toast.LENGTH_SHORT).show()
-            }
             Log.d("result: ", result.Code.toString() + " " + result.Msg)
             if (result.Code === ProcessTransResult.ProcessTransResultCode.OK) {
                 val msg = Message()
@@ -166,9 +189,9 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
                     Toast.makeText(requireContext(), "Merchant ID: $mID", Toast.LENGTH_SHORT).show()
                 }
                 Log.d("Merchant Details: ", mID + " " + resultCode + "  " + status)
-            }else{
+            } else {
                 CoroutineScope(Dispatchers.Main).launch {
-                    Toast.makeText(requireContext(), "getMerchantDetails Failed ${result.Code} ${result.Msg}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "getMerchantDetails Failed ${result.Code} ${result.Msg}", Toast.LENGTH_LONG).show()
                 }
             }
         }
