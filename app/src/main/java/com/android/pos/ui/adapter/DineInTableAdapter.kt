@@ -97,12 +97,12 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             }
 
             if (list[position].title?.trim()?.lowercase() == "Whole Table".trim().lowercase() || isAnyPaymentDone) {
-                binding.removeGuest.visibility = View.INVISIBLE
+                binding.llRemoveGuest.visibility = View.INVISIBLE
             } else {
                 if(list[position].itemsCount == 0 && !list[position].isPaid) {
-                    binding.removeGuest.visibility = View.VISIBLE
+                    binding.llRemoveGuest.visibility = View.VISIBLE
                 } else {
-                    binding.removeGuest.visibility = View.INVISIBLE
+                    binding.llRemoveGuest.visibility = View.INVISIBLE
                 }
             }
             var guestDiscount = 0.0
@@ -433,7 +433,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
             }
 
-            binding.removeGuest.setOnClickListener {
+            binding.llRemoveGuest.setOnClickListener {
                 listner.onRemoveGuest(layoutPosition)
             }
         }

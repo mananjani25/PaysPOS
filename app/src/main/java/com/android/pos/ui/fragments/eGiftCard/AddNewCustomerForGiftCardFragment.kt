@@ -380,7 +380,7 @@ class AddNewCustomerForGiftCardFragment : Fragment(), AddressTextChangeListner {
                         "false"
                     )
                 )
-            viewModel.submit(listAddress)
+            viewModel.submit(listAddress, false)
         }
     }
 
