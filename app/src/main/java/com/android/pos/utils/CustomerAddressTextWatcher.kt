@@ -3,11 +3,13 @@ package com.android.pos.utils
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.widget.CheckBox
 import android.widget.EditText
 
 import com.android.pos.utils.callback.AddressTextChangeListner
 
 class CustomerAddressTextWatcher(
+    var checkBox: CheckBox,
     var edittext: EditText,
     var changeField: Boolean,
     var listner: AddressTextChangeListner,
