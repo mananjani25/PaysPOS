@@ -2152,7 +2152,7 @@ fun addOrdersForKitchen(
 }
 
 
-fun addOrdersForKitchenInnerShalu(
+fun addOrdersForKitchenInner(
     list: List<CreateOrderResponse.Data.Order.OrderItem>,
     printerCat: ArrayList<PrinterResponse.Data.PrinterCategories>? = null
 ) {
@@ -2179,35 +2179,6 @@ fun addOrdersForKitchenInnerShalu(
                 SunmiPrintHelper.getInstance().lineWrap(1)
             }
         }
-    }
-
-}
-
-fun addOrdersForKitchenInner(
-    list: List<CreateOrderResponse.Data.Order.OrderItem>
-) {
-    for (i in 0 until list.size) {
-        val obj = list.get(i)
-
-
-        PrintSunmiUtils.normalTextLarge(obj.quantity.toString() + " " + obj.itemName.uppercase())
-
-        if (obj.orderItemModifiers.isNotEmpty()) {
-            for (j in 0 until obj.orderItemModifiers.size) {
-                val modifierObj = obj.orderItemModifiers.get(j)
-
-
-
-                PrintSunmiUtils.normalTextLarge(if (modifierObj.modifierQuantity == 1){"     " + modifierObj.name.uppercase()} else{"  "+modifierObj.modifierQuantity+"x " + modifierObj.name.uppercase()})
-
-
-            }
-        }
-        if (obj.note.isNotEmpty()) {
-            PrintSunmiUtils.normalTextLarge("  Note:" + obj.note)
-        }
-
-
     }
 
 }
