@@ -492,6 +492,7 @@ object Constants {
     const val ACCEPTED_DECLINE_ONLINEORDER = "online_ordering_orders/{id}/accept_order"
     const val UPDATE_ONLINE_ORDER = "online_ordering_orders/{id}"
     const val CASH_EVENTS = "cash_events"
+    const val WASTAGE_ITEM = "orders/wastage_item"
 
     const val UTC_SERVER_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
 

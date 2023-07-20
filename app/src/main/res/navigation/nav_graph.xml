@@ -1162,6 +1162,10 @@
         android:name="com.android.pos.ui.dialog.ReasonForCancelOrderDialog"
         android:label="ReasonForCancelOrderDialog"></dialog>
 
+    <dialog
+        android:id="@+id/addItemToWastageDialog"
+        android:name="com.android.pos.ui.dialog.AddItemToWastageDialog"
+        android:label="AddItemToWastageDialog"/>
 
     <dialog
         android:id="@+id/editVariationDialog"
@@ -1348,6 +1352,9 @@
             app:destination="@id/dineInFragment"
             app:popUpTo="@id/dineInOrderTable"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_dineInOrderTable_to_addItemToWastageDialog"
+            app:destination="@id/addItemToWastageDialog" />
     </fragment>
     <fragment
         android:id="@+id/payByGuestDialog"

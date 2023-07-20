@@ -433,7 +433,8 @@ class OrderModifierTaxesAttribute {
 
 }
 
-class OrderItemModifierAttribute {
+@Parcelize
+class OrderItemModifierAttribute : Parcelable {
     @SerializedName("id")
     var id: Int? = null
 

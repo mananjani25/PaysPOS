@@ -91,6 +91,13 @@ class PosRepository @Inject constructor(
         appDatabase.cancelOrderReasonDao().addAllCancelOrderReasonsSuspend(cancelOrderReason)
     }
 
+    suspend fun addWastageReasonInDb(wastageReasonsList: List<VenueDetailsResponse.Data.WastageReason>) {
+        appDatabase.wastageReasonsDao().addAllWastageReasons(wastageReasonsList)
+    }
+
+    fun getWastageReasonsListFromDb() =
+        performGetOperationDatabase(databaseQuery = { appDatabase.wastageReasonsDao().allWastageReasons })
+
     fun getKitchenPrinters() =
         performGetOperationDatabase { appDatabase.printerDao().kitchenPrintList }
 
@@ -968,6 +975,7 @@ class PosRepository @Inject constructor(
 
     suspend fun cashInOut(data: CashLogRequest) = apiHelperNew.cashInOut(data)
 
+    suspend fun addItemToWastage(data: WastageItemRequest) = apiHelperNew.addItemToWastage(data)
 
     suspend fun getCashLog(
         startDate: String,

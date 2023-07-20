@@ -880,6 +880,10 @@
     <string name="lbl_check_balance">Check Balance</string>
     <string name="msg_insufficient_gift_card_balance">You have insufficient gift card balance, please proceed to pay with cash or card.</string>
     <string name="lbl_please_add_phone_or_email">Please add email address or phone number in your profile.</string>
+    <string name="add_to_wastage">Add To Wastage</string>
+    <string name="wastage_notes">Wastage Notes</string>
+    <string name="wastage_item_confirmation_message">Are you sure, you want to add this item wastage?</string>
+    <string name="wastage_item_reason_message">Please provide reason for adding this item to wastage</string>
 
 </resources>
 

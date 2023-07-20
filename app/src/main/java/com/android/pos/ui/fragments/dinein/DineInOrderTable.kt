@@ -159,6 +159,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     var optionType = ""
     private lateinit var pd: Dialog
     private var totalDiscountWO = 0.0
+    private var clickedPosition: Int = -1
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -211,6 +212,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         navigateDineInOrderNew()
         reorderedItemObserver()
         removeGuestObserver()
+        wastageItemObserver()
         observeUnMergeTable()
         requireActivity().supportFragmentManager.setFragmentResultListener(
             "request_for_guestcount",
@@ -436,7 +438,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
         }
         onClick()
-
+        addItemToWastageResultListener()
 
     }
 
@@ -2219,7 +2221,19 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         }
     }
 
-    private fun navigateDineInOrderNew() {
+    private fun wastageItemObserver() {
+        viewModel.wastageItemsSuccess.observe(viewLifecycleOwner) { event ->
+            AlertUtils.showCustomAlertWithListenerWithOK(
+                requireContext(), event.getContentIfNotHandled().toString()
+            ) { _, _ ->
+                viewModel.Basedata.removeObservers(viewLifecycleOwner)
+                navigateDineInOrderNew(true)
+                orderId?.let { viewModel.apiCallOrderDetails(it) }
+            }
+        }
+    }
+
+    private fun navigateDineInOrderNew(isFromWastage: Boolean = false) {
 
         viewModel.Basedata.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { baseResponse ->
@@ -2304,7 +2318,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                     .lowercase() != "Whole Table".trim().lowercase()
                             ) {
                                 totalGuestCount++
-                                println("total guest count >>: $totalGuestCount")
                             }
 
                         }
@@ -2828,8 +2841,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                             presentation.onDisplayChanged()
                             presentation.showTableDetails(baseResponse)
                         }
-                        checkForAutoFire(true)
-
+                        if(!isFromWastage) {
+                            checkForAutoFire(true)
+                        }
 
                         //  binding.txtTotalAmountNew.setText("${MethodUtils.roundOffAmount(totalAmtnew)}")
 
@@ -3196,6 +3210,49 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         listOfMoveItemIds.clear()
     }
 
+    // Navigate to Add Item to Wastage dialog
+    override fun onAddToWastage(position: Int, item: TbItem) {
+        val bundle = Bundle().apply {
+            putInt("itemQuantity", item.itemQuantity)
+        }
+        clickedPosition = position
+        findNavController().navigate(
+            R.id.action_dineInOrderTable_to_addItemToWastageDialog,
+            bundle
+        )
+    }
+
+    // Handle wastage item quantity and send data to server
+    private fun addItemToWastageResultListener() {
+        requireActivity().supportFragmentManager.setFragmentResultListener(
+            "request_for_add_to_wastage", viewLifecycleOwner
+        ) { _: String, bundle: Bundle ->
+            val itemQuantity: Int = bundle.getInt("itemQuantity", 1)
+            val wastageReason: VenueDetailsResponse.Data.WastageReason =
+                bundle.getParcelable<VenueDetailsResponse.Data.WastageReason>("wastageReason") as VenueDetailsResponse.Data.WastageReason
+            val wastageNote: String = bundle.getString("wastageNote", "")
+            if (clickedPosition != -1 && dineInTableAdapter.getList()[clickedPosition].item != null) {
+                prefProvider.setValueboolean(DINE_IN_UPDATE, true)
+                val wastageRequest = WastageItemRequest.WastageItem(
+                    orderId = orderId ?: -1,
+                    tableNo = getOrderDetailsResponse?.floorPlanTable?.tableNumber,
+                    employeeId = prefProvider.getValueInt(EMPLOYEE_ID, 0),
+                    itemQuantity = itemQuantity,
+                    itemName = dineInTableAdapter.getList()[clickedPosition].item?.name,
+                    wastageReasonId = wastageReason.id,
+                    terminalId = prefProvider.getValueInt(TERMINAL_ID, -1),
+                    wastageNote = wastageNote,
+                    orderItemId = dineInTableAdapter.getList()[clickedPosition].item?.orderItemId,
+                    wastageItemModifiersAttributes = dashboardViewModel.orderItemModifierAttributes(
+                        dineInTableAdapter.getList()[clickedPosition].item!!,
+                        prefProvider.getValueInt(TERMINAL_ID, -1)
+                    )
+                )
+                val wastageItemRequest = WastageItemRequest(wastageRequest)
+                viewModel.wastageItemApiCall(wastageItemRequest)
+            }
+        }
+    }
 
     val touchHelper =
         ItemTouchHelper(object :
@@ -5443,9 +5500,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                             (tax.rate * totalPrice) / 100
 
                         MethodUtils.getTwoDecimal(itemTaxPrice)
-/*
-                        String.format("%.2f", itemTaxPrice)
-                            .toDouble()*/
+                        /*
+                                                String.format("%.2f", itemTaxPrice)
+                                                    .toDouble()*/
                     } else {
 
                         MethodUtils.getTwoDecimal(tax.rate * it.itemQuantity)

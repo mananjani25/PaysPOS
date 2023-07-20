@@ -1,11 +1,13 @@
 package com.android.pos.data.model.responseModel
 
 
+import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.android.pos.data.entities.*
 import com.android.pos.data.model.ShiftRportConfiguration
 import com.google.gson.annotations.SerializedName
+import kotlinx.parcelize.Parcelize
 
 data class VenueDetailsResponse(
     @SerializedName("data")
@@ -76,6 +78,8 @@ data class VenueDetailsResponse(
         val business_address: BusinessAddress,
         @SerializedName("tip_settings")
         val tip_settings: List<GetTipReponse.Data>,
+        @SerializedName("wastage_reasons")
+        val wastageReasons: List<WastageReason>,
         @SerializedName("time_zone")
         val timeZone: String,
         @SerializedName("user_id")
@@ -146,6 +150,28 @@ data class VenueDetailsResponse(
             @SerializedName("is_deleted")
             val isDeleted: Boolean
         )
+
+        @Parcelize
+        @Entity(tableName = "TbWastageReason")
+        data class WastageReason (
+            @PrimaryKey
+            @SerializedName("id")
+            val id: Int,
+            @SerializedName("is_active")
+            val isActive: Boolean,
+            @SerializedName("name")
+            val name: String,
+            @SerializedName("sort")
+            val sort: Int,
+            @SerializedName("location_id")
+            val locationID: Int,
+            @SerializedName("created_at")
+            val createdAt: String,
+            @SerializedName("updated_at")
+            val updatedAt: String,
+            @SerializedName("deleted_at")
+            val deletedAt: String? = null
+        ) : Parcelable
 
         data class MagensaSettings(
             @SerializedName("created_at")

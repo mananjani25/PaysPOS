@@ -701,4 +701,6 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun timeDetails() =
         getResult { apiService.getTimeDetails() }
 
+    suspend fun addItemToWastage(data: WastageItemRequest) =
+        getResult { apiService.addItemToWastage(data) }
 }

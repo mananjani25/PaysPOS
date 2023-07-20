@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.entities.TbItem
@@ -211,7 +212,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 }
             } else if (noItem && guestAmt == 0.0) {
                 Log.e(TAG, "NoItemGuestAmt")
-                binding.btnPay.visibility = View.GONE
+                binding.btnPay.visibility = View.INVISIBLE
             } else {
                 binding.btnPay.visibility = View.VISIBLE
 
@@ -322,7 +323,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     binding.btnPay.setBackgroundColor(binding.root.context.getColor(R.color.btnColorDark))
                 }
-                binding.txtPay.text = "Pay " + MethodUtils.roundOffAmount(finalAmt)
+                binding.txtPay.text = "Pay : " + MethodUtils.roundOffAmount(finalAmt)
             }
 
             binding.btnPay.setOnClickListener {
@@ -550,10 +551,11 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 binding.chkIsFired.isChecked = true
                 binding.chkIsFired.isPressed = true
                 binding.chkIsFired.isEnabled = false
+                binding.ivMenu.visibility = View.VISIBLE
             } else {
                 binding.chkIsFired.isChecked = false
                 binding.chkIsFired.isEnabled = true
-
+                binding.ivMenu.visibility = View.GONE
             }
 
             list[bindingAdapterPosition].item?.dineInSort = bindingAdapterPosition
@@ -598,6 +600,25 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 }
             }
 
+            val popupMenu = PopupMenu(itemView.context, binding.ivMenu)
+                popupMenu.menuInflater.inflate(
+                    R.menu.dine_in_table_menu_with_wastage,
+                    popupMenu.menu
+                )
+
+            popupMenu.setOnMenuItemClickListener { menuItem ->
+                when (menuItem.itemId) {
+                    R.id.addToWastage -> {
+                        listner.onAddToWastage(layoutPosition, list[bindingAdapterPosition].item!!)
+                    }
+
+                }
+                true
+            }
+
+            binding.ivMenu.setOnClickListener {
+                popupMenu.show()
+            }
 
             /* itemAdapter = DineInTableItemAdapter()
              binding.rvItems.adapter = itemAdapter
@@ -762,6 +783,8 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             serviceChargeGuest: Double,
             divideDiscount: Double
         )
+
+        fun onAddToWastage(position: Int, item: TbItem)
         fun onRemoveGuest(position: Int)
     }
 
@@ -801,7 +824,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                         list[i].item?.dineInSort = order2
                         list[i - 1].item?.sort = order1
                         list[i - 1].item?.dineInSort = order1
-                       }
+                    }
                 }
                 notifyItemMoved(fromPosition, toPosition)
                 return true
