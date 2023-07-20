@@ -631,6 +631,7 @@ class PrintSunmiUtils {
         fun normalText(value: String) {
             SunmiPrintHelper.getInstance().setAlign(0)
             if (fontSizeInner == LARGE) {
+                SunmiPrinterApi.getInstance().setLeftSpace(-1)
                 SunmiPrintHelper.getInstance()
                     .printText(value, 36f, false, false, fontName)
             } else

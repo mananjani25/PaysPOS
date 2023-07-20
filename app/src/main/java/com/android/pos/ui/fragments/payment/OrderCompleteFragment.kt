@@ -17,6 +17,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
+import android.os.RemoteException
 import android.util.Base64
 import android.util.Log
 import android.view.Display
@@ -124,7 +125,7 @@ import com.android.pos.utils.addOrderItemForDineInInner
 import com.android.pos.utils.addOrderItems
 import com.android.pos.utils.addOrderItemsInner
 import com.android.pos.utils.addOrdersForKitchen
-import com.android.pos.utils.addOrdersForKitchenInner
+import com.android.pos.utils.addOrdersForKitchenInnerShalu
 import com.android.pos.utils.addOrdersForKitchenU220
 import com.android.pos.utils.addTipsList
 import com.android.pos.utils.addTipsListInner
@@ -150,6 +151,7 @@ import com.google.gson.reflect.TypeToken
 import com.sunmi.externalprinterlibrary.api.ConnectCallback
 import com.sunmi.externalprinterlibrary.api.SunmiPrinter
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
+import com.sunmi.peripheral.printer.SunmiPrinterService
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -8034,7 +8036,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
             viewLifecycleOwner.lifecycleScope.launch {
                 delay(200)
-                setService2()
+                setService2(data, type)
             }
 
         } else {
@@ -9504,9 +9506,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     }
 
 
-    private fun generateKitchenReceiptSunmiInner(
-
-    ) {
+    private fun generateKitchenReceiptSunmiInner(customerReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
+                                                 type: String) {
         try {
             // PrintSunmiUtils.fontSizeInner(LARGE)
             SunmiPrintHelper.getInstance().initPrinter()
@@ -9546,13 +9547,21 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             PrintSunmiUtils.addHorizontalInner()
             SunmiPrintHelper.getInstance().lineWrap(1)
 
+//            receiptModel?.order?.orderItems?.let {
+//                addOrdersForKitchenInner(
+//                    it
+//                )
+//            }
+
             receiptModel?.order?.orderItems?.let {
-                addOrdersForKitchenInner(
-                    it
+
+                addOrdersForKitchenInnerShalu(
+                    it,
+                    customerReceiptPrinters.printerCategories.toCollection(arrayListOf())
                 )
             }
 
-            SunmiPrintHelper.getInstance().lineWrap(1)
+
             if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
 
                 PrintSunmiUtils.orderNoteInnerLarge(receiptModel?.order?.note.toString())
@@ -9625,7 +9634,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }
             }
 
-            SunmiPrintHelper.getInstance().lineWrap(2)
+            SunmiPrintHelper.getInstance().lineWrap(1)
             PrintSunmiUtils.cutPaperInner()
 
             //  SunmiPrinterApi.getInstance().disconnectPrinter(requireContext())
@@ -10736,9 +10745,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }
             }
 
-
             PrintSunmiUtils.addHorizontalInner()
-
 
             receiptModel?.order?.orderItems?.let {
                 addOrderItemsInner(
@@ -11350,7 +11357,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         }
     }
 
-    private fun setService2() {
+    private fun setService2(  customerReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
+                              type: String) {
 
         if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.FoundSunmiPrinter) {
 
@@ -11360,14 +11368,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 LogUtil.logE("SunmiPrintHelpe1r", "isBlueToothPrinter")
 
-                generateKitchenReceiptSunmiInner()
+                generateKitchenReceiptSunmiInner(customerReceiptPrinters,type)
 
 
             }
 
         } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.CheckSunmiPrinter) {
             Handler(Looper.getMainLooper()).postDelayed({
-                setService2()
+                setService2(customerReceiptPrinters,type)
             }, 2000)
             LogUtil.logE("SunmiPrintHelper", "CheckSunmiPrinter")
         } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.LostSunmiPrinter) {

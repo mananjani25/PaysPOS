@@ -15,6 +15,7 @@ import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.model.responseModel.report.KeyValue
 import com.android.pos.data.remote.Constants
 import com.android.pos.di.PrefProvider
+import com.android.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.epson.epos2.printer.Printer
 import com.epson.eposprint.Builder
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
@@ -969,8 +970,6 @@ fun addHorizontalKitchenLineSunmi(fontSize: String): String {
     for (i in 0 until int) {
         str += "-"
     }
-
-
 
     return str
 }
@@ -2146,6 +2145,38 @@ fun addOrdersForKitchen(
 
                 SunmiPrinterApi.getInstance().lineWrap(1)
 
+            }
+        }
+    }
+
+}
+
+
+fun addOrdersForKitchenInnerShalu(
+    list: List<CreateOrderResponse.Data.Order.OrderItem>,
+    printerCat: ArrayList<PrinterResponse.Data.PrinterCategories>? = null
+) {
+    for (i in 0 until list.size) {
+
+        printerCat?.forEach {
+            if (it.id == list[i].categoryId && it.categoryActive && it.printerEnable) {
+
+                val obj = list.get(i)
+
+                PrintSunmiUtils.normalTextLarge(obj.quantity.toString() + " " + obj.itemName.uppercase())
+
+                if (obj.orderItemModifiers.isNotEmpty()) {
+                    for (j in 0 until obj.orderItemModifiers.size) {
+                        val modifierObj = obj.orderItemModifiers.get(j)
+                        PrintSunmiUtils.normalTextLarge(if (modifierObj.modifierQuantity == 1){"     " + modifierObj.name.uppercase()} else{"  "+modifierObj.modifierQuantity+"x " + modifierObj.name.uppercase()})
+
+                    }
+                }
+                if (obj.note.isNotEmpty()) {
+                    PrintSunmiUtils.normalTextLarge("  Note:" + obj.note)
+                }
+
+                SunmiPrintHelper.getInstance().lineWrap(1)
             }
         }
     }
