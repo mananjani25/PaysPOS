@@ -86,6 +86,7 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
         binding.tvPax.setOnClickListener {
+            initPOSLink()
             openConnectDialog()
         }
 
@@ -106,14 +107,15 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
         val edtIP: EditText = dialog.findViewById<EditText>(R.id.edtIP)
         val edtPort: EditText = dialog.findViewById<EditText>(R.id.edtPort)
         val btnConnect: TextView = dialog.findViewById<TextView>(R.id.txtSave)
+        edtIP.setText("192.168.7.160")
 
         btnConnect.setOnClickListener {
             val port = edtPort.text.toString()
             val IP = edtIP.text.toString()
             Log.d("Connect Parameters: ","IP $IP Port $port")
-            initPOSLink()
             setCommSetting(IP, port)
             getMerchantDetails()
+            dialog.dismiss()
         }
         dialog.show()
     }
@@ -163,11 +165,11 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
         GlobalScope.launch {
             Log.d("manageRequest ","Start")
             val manageRequest = ManageRequest()
-            manageRequest.TransType = manageRequest.ParseTransType("INIT")
-            /*manageRequest.TransType = manageRequest.ParseTransType("GETVAR")
+//            manageRequest.TransType = manageRequest.ParseTransType("INIT")
+            manageRequest.TransType = manageRequest.ParseTransType("GETVAR")
             manageRequest.EDCType = manageRequest.ParseEDCType("CREDIT")
             manageRequest.VarName = "MID"
-            manageRequest.ContactlessEntryFlag = "1"*/
+            manageRequest.ContactlessEntryFlag = "1"
 
             posLink.ManageRequest = manageRequest
             val result = posLink.ProcessTrans()
