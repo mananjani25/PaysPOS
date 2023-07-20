@@ -286,13 +286,6 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             findNavController().navigate(R.id.action_manualSalesNew_to_menuFragment)
 
         }
-        binding.layoutHeader.txtOpenOrder.setOnClickListener {
-            try {
-                findNavController().navigate(R.id.action_manualSalesNew_to_orders)
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
 
         binding.layoutHeader.linearSwitchUser.setOnClickListener {
             val bundle = Bundle()
