@@ -849,26 +849,33 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
      }*/
         binding.layoutHeader.txtKeypad.setOnClickListener {
             try {
-                if (rolePermission.hasManualSalesPermission(binding.root)) {
-                    prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
-                    viewModel.deleteManualSaleCart()
-                    binding.layoutHeader.txtKeypad.setTextColor(resources.getColor(R.color.btnColor))
-                    binding.layoutHeader.txtKeypad.setTypeface(
-                        binding.layoutHeader.txtKeypad.typeface,
-                        Typeface.BOLD
-                    )
-                    binding.layoutHeader.txtOpenOrder.setTextColor(resources.getColor(R.color.txtColor))
-                    binding.layoutHeader.txtOpenOrder.setTypeface(
-                        binding.layoutHeader.txtOpenOrder.typeface,
-                        Typeface.NORMAL
-                    )
-                    var bundle: Bundle = Bundle()
-                    bundle.putParcelableArrayList("carttlist", cartList)
-                    findNavController().navigate(
-                        R.id.action_dashboardCategoryBoldPOS_to_manualSalesNew,
-                        bundle
-                    )
+            if (rolePermission.hasManualSalesPermission(binding.root)) {
+                prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
+                viewModel.deleteManualSaleCart()
+                binding.layoutHeader.txtKeypad.setTextColor(resources.getColor(R.color.btnColor))
+                binding.layoutHeader.txtKeypad.setTypeface(
+                    binding.layoutHeader.txtKeypad.typeface,
+                    Typeface.BOLD
+                )
+                binding.layoutHeader.txtOpenOrder.setTextColor(resources.getColor(R.color.txtColor))
+                binding.layoutHeader.txtOpenOrder.setTypeface(
+                    binding.layoutHeader.txtOpenOrder.typeface,
+                    Typeface.NORMAL
+                )
+                var bundle: Bundle = Bundle()
+                bundle.putParcelableArrayList("carttlist", cartList)
+                if(prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
+                    if ((cartList[0].dineInList?.size ?: 0) > 0) {
+                        cartList[0].dineInList?.get(0)?.selectedPosition =
+                            viewModel.dineInHeaderPosition
+                    }
+                    bundle.putInt("selectedHeaderPosition", viewModel.dineInHeaderPosition)
                 }
+                findNavController().navigate(
+                    R.id.action_dashboardCategoryBoldPOS_to_manualSalesNew,
+                    bundle
+                )
+            }
             } catch (e: Exception) {
                 e.printStackTrace()
             }

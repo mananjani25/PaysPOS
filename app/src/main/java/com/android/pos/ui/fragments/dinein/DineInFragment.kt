@@ -924,7 +924,6 @@ class DineInFragment : Fragment() {
 
     private fun gotoDashboard(dineInFloorTableModel: GetFloorPlanResponse.Data.FloorPlanTable) {
         prefProvider.setValue(Constants.ORDER_TYPE, Constants.DINE_IN)
-        prefProvider.setValue(Constants.ORDER_TYPE_NAME, Constants.DINE_IN)
         val bundle = bundleOf(
             "isFromDineIn" to true,
             "numberOfGuest" to dineInFloorTableModel.chairCount,
