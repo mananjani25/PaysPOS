@@ -1292,16 +1292,12 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 }
             }
 
-            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
 
-                binding.layoutHeader.txtKeypad.visibility = View.GONE
-            } else {
                 if (prefProvider.getValue(ORDER_TYPE, "").trim().isEmpty()) {
                     binding.layoutHeader.txtKeypad.gone()
                 } else {
                     binding.layoutHeader.txtKeypad.visible()
                 }
-            }
 
         }
 

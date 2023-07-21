@@ -1442,7 +1442,6 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
     @SuppressLint("SetTextI18n")
     override fun onItemClicked(model: TbItem, position: Int) {
-        LogUtil.logE(TAG, "Itemmodel: ${Gson().toJson(model)}")
         LogUtil.logE(TAG, "ItemPosition: $position")
         viewModel.setPosition(position)
         val dialog = Dialog(requireContext())
@@ -1555,7 +1554,6 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             model.price = String.format("%.2f", (itemCost)).toDouble()
 
             viewModel.setPosition(position)
-            LogUtil.logE(TAG, "Itemmodel: ${Gson().toJson(model)}")
 
             LogUtil.logE(TAG, "ItemPosition: $position")
             cartList?.get(0)?.taxlistDynamic = arrayListOf()
