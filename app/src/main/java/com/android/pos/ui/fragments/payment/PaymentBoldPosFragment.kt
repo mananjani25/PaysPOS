@@ -347,7 +347,6 @@ class PaymentBoldPosFragment : Fragment() {
                         findNavController().navigate(R.id.action_paymentBoldPosFragment_to_allOrdersFragment)
                     }else{
                         if(prefProvider.getValue(REDIRECT_FROM, "") == MANUAL_SALE) {
-                            prefProvider.setValue(REDIRECT_FROM, "")
                             viewModel.cartModel = null
                         }
                         findNavController().popBackStack()
