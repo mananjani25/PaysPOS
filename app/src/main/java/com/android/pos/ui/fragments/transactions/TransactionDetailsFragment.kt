@@ -1139,20 +1139,14 @@ class TransactionDetailsFragment : Fragment() {
                 }
 
                 Status.ERROR -> {
-
                     ProgressUtils.dismissProgressDialog()
-
                 }
 
                 Status.LOADING -> {
                     ProgressUtils.showProgressDialog(requireActivity())
-
                 }
-
             }
-
         }
-
     }
 
     private fun initPrinter(
@@ -2598,7 +2592,7 @@ class TransactionDetailsFragment : Fragment() {
                 paymentDetailsResponse.data.order.order_type.equals("OnlineWebOrder", true) ||
                 paymentDetailsResponse.data.order.order_type.equals("Online Order", true) ||
                 paymentDetailsResponse.data.order.order_type.equals("OnlineOrder", true)
-            ){
+            ) {
                 PrintSunmiUtils.printOrderType(paymentDetailsResponse.data.order.delivery_type.trim())
                 SunmiPrinterApi.getInstance().lineWrap(1)
             }
@@ -3403,7 +3397,6 @@ class TransactionDetailsFragment : Fragment() {
                 ).toString()
 
                 PrintSunmiUtils.normalText(tranType)
-
 
                 PrintSunmiUtils.cardDetailsInner(
                     paymentDetailsResponse.data.card_name,

@@ -57,9 +57,13 @@ class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>
             binding.swtOrderId.setOnCheckedChangeListener { buttonView, isChecked ->
                 if (buttonView.isPressed) {
                     if (list[layoutPosition].type != AVAILABLE) {
-                        buttonView.isChecked = isChecked
-                        listner.onUpdatePrinterStatus(list[layoutPosition], isChecked)
-
+                        if(isChecked){
+                            buttonView.isChecked = false
+                            listner.onUpdatePrinterStatus(list[layoutPosition], isChecked)
+                        }else{
+                            buttonView.isChecked = true
+                            listner.onUpdatePrinterStatus(list[layoutPosition], isChecked)
+                        }
                     } else if (isChecked && !(list.get(layoutPosition).isActive)) {
                         buttonView.isChecked = false
                         listner.onPrinterActive(list.get(layoutPosition), layoutPosition)

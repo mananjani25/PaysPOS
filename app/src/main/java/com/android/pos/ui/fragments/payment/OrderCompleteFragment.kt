@@ -90,7 +90,6 @@ import com.android.pos.data.remote.Constants.SUB_TOTAL
 import com.android.pos.data.remote.Constants.SUB_TOTAL_DINEIN
 import com.android.pos.data.remote.Constants.SUNMI_INNER_PRINTER
 import com.android.pos.data.remote.Constants.SUNMI_PRINTER
-import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.remote.Constants.TOTAL_PRICE_DINEIN
 import com.android.pos.data.remote.Constants.VENUE_LOGO
 import com.android.pos.data.remote.Constants.WHOLE_AMOUNT
@@ -370,6 +369,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private fun getCustomerReceiptSettings() {
         viewModel.getCustomerReceiptSettings().observe(viewLifecycleOwner) {
             if (it != null) {
+                customerSettingModel = GetCustomerReceiptSettingsResponse.Data()
                 customerSettingModel = it
 
 
@@ -6396,30 +6396,31 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                                             if (it.orderTypeId == receiptModel?.order?.orderTypeId) {
 
-                                            it.printerSettings.forEach {
-                                                if (it.printType.lowercase()
-                                                        .equals(CUSTOMER.lowercase()) && it.autoPrinting
-                                                ) {
+                                                it.printerSettings.forEach {
+                                                    if (it.printType.lowercase()
+                                                            .equals(CUSTOMER.lowercase()) && it.autoPrinting
+                                                    ) {
 
 
-                                                    initPrinter(cus, CUSTOMER,autoPrintCheck)
+                                                        initPrinter(cus, CUSTOMER, autoPrintCheck)
 
 
+                                                    }
                                                 }
                                             }
                                         }
                                     }
-                                }
 
                                 }
-
                             } else {
                                 customerList.forEach {
-                                    initPrinter(it, CUSTOMER,autoPrintCheck)
+                                    if (it.status) {
+                                        initPrinter(it, CUSTOMER, autoPrintCheck)
+                                    }
+
                                 }
                             }
                         }
-
                         isPrint = false
 
                     }
@@ -6433,24 +6434,22 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 Status.LOADING -> {
                     ProgressUtils.showProgressDialog(requireActivity())
                 }
-
             }
-
         }
-
     }
 
     private fun initPrinter(
         customerReceiptPrinters: PrinterResponse.Data.CustomerReceiptPrinters,
         type: String,
-        isAutoPrint:Boolean
+        isAutoPrint: Boolean
     ) {
+        Log.e(TAG,"checkAutoPrint  ${isAutoPrint}")
         pd.show()
 
 
         if (customerReceiptPrinters.name.startsWith(SUNMI_PRINTER, true)) {
 
-            customerReceiptPrinters.ipAddress?.let { sunmiPrinterInit(it,isAutoPrint) }
+            customerReceiptPrinters.ipAddress?.let { sunmiPrinterInit(it, isAutoPrint) }
 
         } else if (customerReceiptPrinters.name.startsWith(SUNMI_INNER_PRINTER, true)) {
 
