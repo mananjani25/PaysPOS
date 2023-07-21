@@ -106,7 +106,7 @@ import com.android.pos.data.typeconvert.TypeConvertorPhone
         GetCustomerReceiptSettingsResponse.Data::class, LoyaltyProgramsModel::class, SplitDetailListModel::class,
         CashDiscountModel::class, TbCountryList::class, TbCardReader::class, VenueDetailsResponse.Data.CancelOrderReason::class,
         DineInCartModel::class, ShiftRportConfiguration::class, TbBusinessDetails::class, TbTimeZones::class, PrinterQueueModel::class, VenueDetailsResponse.Data.WastageReason::class],
-    version = 6
+    version = 7
 )
 @TypeConverters(
     TypeConvertersIds::class,
@@ -242,7 +242,16 @@ abstract class AppDatabase : RoomDatabase() {
             override fun migrate(database: SupportSQLiteDatabase) {
                 try {
                     database.execSQL("ALTER TABLE EodShiftReport ADD COLUMN clockInOut INTEGER DEFAULT 0 NOT NULL")
-                    database.execSQL("CREATE TABLE IF NOT EXISTS `TbWastageReason` (`id` INTEGER, PRIMARY KEY(`id`))")
+                    database.execSQL("CREATE TABLE IF NOT EXISTS `TbWastageReason` " +
+                            "(`id` INTEGER PRIMARY KEY NOT NULL, " +
+                            "`isActive` INTEGER NOT NULL, " +
+                            "`name` TEXT NOT NULL, " +
+                            "`sort` INTEGER NOT NULL, " +
+                            "`locationID` INTEGER NOT NULL, " +
+                            "`createdAt` TEXT NOT NULL, " +
+                            "`updatedAt` TEXT NOT NULL, " +
+                            "`deletedAt` TEXT)")
+                //database.execSQL("CREATE TABLE IF NOT EXISTS `TbWastageReason` (`id` INTEGER, PRIMARY KEY(`id`), `name` TEXT NOT NULL)")
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }

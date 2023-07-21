@@ -392,7 +392,7 @@ class PrintSunmiUtils {
         }
 
         fun cardDetails(cardName: String, cardType: String, cardNumber: String) {
-            SunmiPrinterApi.getInstance().printText("cardName")
+            //SunmiPrinterApi.getInstance().printText("cardName")
             for (i in 1..3) {
 
                 SunmiPrinterApi.getInstance().setAlignMode(2)
@@ -402,16 +402,19 @@ class PrintSunmiUtils {
                     1 -> {
                         if(!cardName.isNullOrBlank()){
                             SunmiPrinterApi.getInstance().printText(cardName)
+                            SunmiPrinterApi.getInstance().lineWrap(1)
                         }
                     }
                     2 -> {
                         if(!cardType.isNullOrBlank()){
                             SunmiPrinterApi.getInstance().printText(cardType)
+                            SunmiPrinterApi.getInstance().lineWrap(1)
                         }
                     }
                     3 -> {
                         if(!cardNumber.isNullOrBlank()){
                             SunmiPrinterApi.getInstance().printText(cardNumber)
+                            SunmiPrinterApi.getInstance().lineWrap(1)
                         }
                     }
                 }
