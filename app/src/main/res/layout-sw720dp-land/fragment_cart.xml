@@ -471,11 +471,14 @@
                                 <CheckBox
                                     android:id="@+id/checkloylaty"
                                     style="@style/CustomFontMediumStyle"
-                                    android:layout_width="wrap_content"
+                                    android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_marginStart="@dimen/_4sdp"
                                     android:layoutDirection="rtl"
-                                    android:text="@string/loyalty_rewards"
+                                    android:gravity="start|center"
+                                    android:layout_toStartOf="@+id/txtLoyaltyAmount"
+                                    android:layout_marginEnd="@dimen/_2sdp"
+                                    android:text="@string/used_loyalty_amount"
                                     android:textColor="@color/dark_gray"
                                     android:textSize="@dimen/_6mdpi"
                                     android:visibility="visible" />
@@ -484,10 +487,13 @@
                                 <androidx.appcompat.widget.AppCompatTextView
                                     android:id="@+id/txt_label_loyaltyAmounts"
                                     style="@style/CustomFontMediumStyle"
-                                    android:layout_width="wrap_content"
+                                    android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_marginStart="@dimen/_4sdp"
-                                    android:text="@string/loyalty_rewards"
+                                    android:gravity="start"
+                                    android:layout_toStartOf="@+id/txtLoyaltyAmount"
+                                    android:layout_marginEnd="@dimen/_2sdp"
+                                    android:text="@string/used_loyalty_amount"
                                     android:textColor="@color/dark_gray"
                                     android:textSize="@dimen/_6mdpi"
                                     android:visibility="gone" />
@@ -527,6 +533,38 @@
 
                                 <androidx.appcompat.widget.AppCompatTextView
                                     android:id="@+id/txtLoyaltyPoints"
+                                    style="@style/CustomFontSemiBold"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_marginEnd="@dimen/_5sdp"
+                                    android:gravity="end"
+                                    android:text="@string/_0_00"
+                                    android:textColor="@color/btnColorDark"
+                                    android:textSize="@dimen/text_size_medium" />
+                            </RelativeLayout>
+
+                            <RelativeLayout
+                                android:id="@+id/lblLoyaltyBalance"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/_1sdp"
+                                android:orientation="horizontal"
+                                android:padding="@dimen/_1sdp"
+                                android:visibility="gone">
+
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    style="@style/CustomFontMediumStyle"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentStart="true"
+                                    android:layout_marginStart="@dimen/_3sdp"
+                                    android:text="@string/loyalty_balance"
+                                    android:textColor="@color/dark_gray"
+                                    android:textSize="@dimen/_6mdpi" />
+
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    android:id="@+id/txtLoyaltyBalance"
                                     style="@style/CustomFontSemiBold"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"

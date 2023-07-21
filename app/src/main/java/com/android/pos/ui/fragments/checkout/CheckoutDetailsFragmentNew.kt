@@ -771,12 +771,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                 TAG,
                                 "observeData: " + wholePrice + " " + String.format(
                                     "%.2f",
-                                    paymentAmount - cashDiscountSurcharge
+                                    paymentAmount - (cashDiscountSurcharge/isSelectedCount)
                                 ).toDouble()
                             )
                             wholePrice - String.format(
                                 "%.2f",
-                                paymentAmount - cashDiscountSurcharge
+                                paymentAmount - (cashDiscountSurcharge/isSelectedCount)
                             ).toDouble()
                         } else {
                             wholePrice - paymentAmount
@@ -1908,14 +1908,14 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 String.format("%.2f", totalServiceCharge / isSelectedCount).toDouble()
             totalTax = String.format("%.2f", totalTax / isSelectedCount).toDouble()
             totalDiscount = String.format("%.2f", totalDiscount / isSelectedCount).toDouble()
-            cashDiscountSurcharge =
-                String.format("%.2f", cashDiscountSurcharge / isSelectedCount).toDouble()
+            cashDiscountSurcharge = String.format("%.2f", cashDiscountSurcharge).toDouble()
             paymentAmount = String.format("%.2f", WholetotalPrice / isSelectedCount).toDouble()
             Log.d(TAG, "paymentClick: cashDiscountSurcharge " + cashDiscountSurcharge)
             Log.d(TAG, "paymentClick: paymentAmount  " + paymentAmount)
             if (cashDiscountType == "SurCharge") {
                 paymentAmount =
-                    String.format("%.2f", paymentAmount + cashDiscountSurcharge).toDouble()
+                    String.format("%.2f", paymentAmount + (cashDiscountSurcharge / isSelectedCount))
+                        .toDouble()
             }
             paymentAmount += tipAmount
 
@@ -2082,8 +2082,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 "%.2f",
                 viewModel.totalServiceCharge
             ).toDouble()
-
-            viewModel.totalPrice = WholetotalPrice
+            if (redeemLoyaltyInfo?.needToApplyLoyalty == true ) {
+                WholetotalPrice -= redeemLoyaltyInfo?.usedLoyaltyAmount!!
+                viewModel.totalPrice = WholetotalPrice
+            } else {
+                viewModel.totalPrice = WholetotalPrice
+            }
             Log.e("checkWhole", "WholetotalPrice:  ${WholetotalPrice}")
             Log.e("checkWhole", "subTotalPrice:  ${viewModel.subTotalPrice}")
             Log.e("checkWhole", "totalServiceCharge:  ${viewModel.totalServiceCharge}")
@@ -2098,6 +2102,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             )
         } else {
             WholetotalPrice = prefProvider.getValue(Constants.WHOLE_AMOUNT, "").toDouble()
+            viewModel.totalPrice = WholetotalPrice
         }
 
         WholetotalPrice = getTwoDecimal(WholetotalPrice)
@@ -2187,7 +2192,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 .isEmpty() || prefProvider.getValue(
                 Constants.CASH_DISCOUNT_SURCHARGE,
                 ""
-            ) == "0.0"
+            ) == "0.00"
         ) {
             cashDiscountSurcharge = viewModel.cashdiscountAmount
             prefProvider.setValue(

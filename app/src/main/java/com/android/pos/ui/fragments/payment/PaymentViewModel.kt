@@ -568,16 +568,16 @@ open class PaymentViewModel @Inject constructor(
             if (cashdiscountType == "SurCharge") {
                 orderAttributeRequestModel.cash_discount_type = cashdiscountType
                 orderAttributeRequestModel.cash_discount_or_surcharge = 0.0
-                orderAttributeRequestModel.totalAmount = actual_Total
+                orderAttributeRequestModel.totalAmount = totalPrice
             } else if (cashdiscountType == "CashDiscount") {
                 orderAttributeRequestModel.cash_discount_or_surcharge = actual_CashDiscountSurCharge
                 orderAttributeRequestModel.cash_discount_type = cashdiscountType
 
-                orderAttributeRequestModel.totalAmount = actual_Total - actual_CashDiscountSurCharge
+                orderAttributeRequestModel.totalAmount = totalPrice - actual_CashDiscountSurCharge
             } else {
                 orderAttributeRequestModel.cash_discount_or_surcharge = 0.0
                 orderAttributeRequestModel.cash_discount_type = ""
-                orderAttributeRequestModel.totalAmount = actual_Total
+                orderAttributeRequestModel.totalAmount = totalPrice
             }
         } /*else if (paymentType == "Card") {
             if (cashdiscountType == "SurCharge") {
@@ -677,7 +677,7 @@ open class PaymentViewModel @Inject constructor(
         orderAttributeRequestModel.paymentAttributes = if (needPaymentAttributes == true) {
             paymentAttributes(
                 cartModel,
-                totalPrice,
+                totalPayAmounts,
                 subTotalPrice,
                 totalServiceCharge,
                 totalTax,

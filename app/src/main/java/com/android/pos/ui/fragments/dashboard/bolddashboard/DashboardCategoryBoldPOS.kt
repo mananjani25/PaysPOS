@@ -400,6 +400,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 LogUtil.logE("Loyalty", "getLoyaltyPrograms fetched..")
                 prefProvider.saveActiveLoyaltyData(it.data)
                 viewModel.activeLoyaltyProgram = it.data
+            } else {
+                prefProvider.saveActiveLoyaltyData(it.data)
+                viewModel.activeLoyaltyProgram = it.data
             }
         }
     }

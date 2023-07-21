@@ -50,6 +50,7 @@ import com.android.pos.data.remote.Constants.IS_SYNC_MARKUP
 import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER
 import com.android.pos.data.remote.Constants.LOCK_SCREEN_TRANSACTION
 import com.android.pos.data.remote.Constants.MAX_ITEM_QUANTITY
+import com.android.pos.data.remote.Constants.LOYALTY_ADDED
 import com.android.pos.data.remote.Constants.ONLINE_ORDER_ENABLE
 import com.android.pos.data.remote.Constants.ONLY_SHOW_PRICE_GREATER_THAN_ZERO
 import com.android.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
@@ -195,8 +196,18 @@ class DashBoardCategoryViewModel @Inject constructor(
         taxDynamicList.clear()
     }
 
-    fun setcheckedLoyaltyApply(isapply: Boolean) {
+    fun setcheckedLoyaltyApply(isapply: Boolean, txtTotalAmount: AppCompatTextView? = null) {
         redeemLoyaltyInfo.needToApplyLoyalty = isapply
+        if(txtTotalAmount != null) {
+                redeemLoyaltyInfo.getAmountToBePaid()?.let {
+                    totalPrice = it
+
+                    MethodUtils.setPriceTextView(
+                        txtTotalAmount,
+                        it
+                    )
+                }
+            }
         Log.d(TAG, "setcheckedLoyaltyApply: " + redeemLoyaltyInfo.needToApplyLoyalty)
     }
 
@@ -3119,6 +3130,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                     var finalTotal = 0.0
                     finalTotal = (subTotalPrice + totalTax + totalServiceCharge)
 
+                    redeemLoyaltyInfo.needToApplyLoyalty = prefProvider.getValueboolean(
+                        LOYALTY_ADDED, false)
                     totalPrice = finalTotal
 
 
@@ -3188,7 +3201,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     ) {
 
         redeemLoyaltyInfo.total = total
-        val availablePoints = customer?.final_reward ?: 0
+        val availablePoints1 = customer?.final_reward ?: 0
 
         if (customer == null) {
             //loyalty cant be applied if customer is not selected.
@@ -3197,6 +3210,8 @@ class DashBoardCategoryViewModel @Inject constructor(
             activeLoyaltyProgram?.let {
                 redeemLoyaltyInfo.loyaltyProgramsModel = activeLoyaltyProgram
 
+                val availablePoints = it.rewardPoint.times((customer.final_reward?.floorDiv(it.rewardPoint)!!))
+                    ?:0
                 //if customer has more points than required(minimum limit)
                 var availableLoyaltyAmount = 0.0
                 if (it.rewardPoint == 0) {
@@ -3206,6 +3221,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     availablePoints * it.amount / it.rewardPoint
                 if (availableLoyaltyAmount > redeemLoyaltyInfo.total) {
                     var pointDouble = (redeemLoyaltyInfo.total * it.rewardPoint) / it.amount
+                    pointDouble = (it.rewardPoint * (pointDouble.div(it.rewardPoint)).toInt()).toDouble()
                     redeemLoyaltyInfo.usedLoyaltyPoints = ceil(pointDouble).toInt()
                     redeemLoyaltyInfo.usedLoyaltyAmount =
                         pointDouble * it.amount / it.rewardPoint
@@ -3235,7 +3251,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             }
         } else {
             redeemLoyaltyInfo.remainingAmount = redeemLoyaltyInfo.total
-            redeemLoyaltyInfo.remainingLoyaltyPoints = availablePoints
+            redeemLoyaltyInfo.remainingLoyaltyPoints = availablePoints1
             redeemLoyaltyInfo.usedLoyaltyPoints = 0
             redeemLoyaltyInfo.usedLoyaltyAmount = 0.0
             //redeemLoyaltyInfo.isLoyaltyApplied = false

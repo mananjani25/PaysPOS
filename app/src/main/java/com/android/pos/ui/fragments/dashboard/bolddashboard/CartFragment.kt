@@ -175,7 +175,7 @@ class CartFragment(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
+    ): View? {
         binding = FragmentCartBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
         LogUtil.logE("bundleData", arguments.toString())
@@ -507,11 +507,12 @@ class CartFragment(
 
     private fun setupLoyalytyPoints() {
         binding.checkloylaty.setOnCheckedChangeListener { _, p1 ->
-            viewModel.setcheckedLoyaltyApply(p1)
+            viewModel.setcheckedLoyaltyApply(p1, binding.txtTotal)
 //            viewModel.redeemLoyaltyInfo.needToApplyLoyalty = p1
             prefProvider.setValueboolean(Constants.LOYALTY_ADDED, p1)
             prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED, p1)
-            addObserver()
+            binding.tvPayNow.text = "Pay ${binding.txtTotal.text}"
+//            addObserver()
             if (this::presentation.isInitialized) {
                 presentation.show()
                 presentation.onDisplayChanged()
@@ -898,7 +899,7 @@ class CartFragment(
                     binding.txtTax.text = MethodUtils.roundOffAmount(viewModel.totalTax)
                     binding.txtServiceCharge.text =
                         MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
-                    binding.tvPayNow.text = "Pay " + binding.txtTotal.text.toString()
+                    binding.tvPayNow.text = "Pay " + MethodUtils.roundOffAmount(viewModel.totalPrice)
                     Log.e("totalDiscount", viewModel.totalDiscount.toString())
                     binding.txtDiscount.text = "-" +
                             MethodUtils.roundOffAmount(viewModel.totalDiscount)
@@ -921,11 +922,13 @@ class CartFragment(
                                     resources.getDimension(R.dimen._50sdp).toInt()
                                 binding.relativeLoylatyPoints.visibility = View.GONE
                                 binding.lblLoyaltyPoints.visibility = View.GONE
+                                binding.lblLoyaltyBalance.visibility = View.GONE
                             } else {
                                 binding.liinearInfoLayout.layoutParams.height =
                                     resources.getDimension(R.dimen._70sdp).toInt()
                                 binding.relativeLoylatyPoints.visibility = View.VISIBLE
                                 binding.lblLoyaltyPoints.visibility = View.VISIBLE
+                                binding.lblLoyaltyBalance.visibility = View.VISIBLE
                                 LogUtil.logE(TAG, "InsideLoyalty")
                                 LogUtil.logE(TAG, Gson().toJson(viewModel.redeemLoyaltyInfo))
                                 binding.txtLoyaltyAmount.text =
@@ -937,6 +940,8 @@ class CartFragment(
                                     }"
                                 binding.txtLoyaltyPoints.text =
                                     "${viewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
+                                binding.txtLoyaltyBalance.text =
+                                    "${viewModel.selectedCustomer?.final_reward}"
                                 binding.checkloylaty.isChecked =
                                     viewModel.redeemLoyaltyInfo.needToApplyLoyalty
                             }
@@ -946,6 +951,7 @@ class CartFragment(
                             resources.getDimension(R.dimen._50sdp).toInt()
                         binding.relativeLoylatyPoints.visibility = View.GONE
                         binding.lblLoyaltyPoints.visibility = View.GONE
+                        binding.lblLoyaltyBalance.visibility = View.GONE
                     }
 
                     viewModel.itemCalculation(it, binding.txtTotal, requireContext())
@@ -983,11 +989,13 @@ class CartFragment(
                                 resources.getDimension(R.dimen._70sdp).toInt()
                             binding.relativeLoylatyPoints.visibility = View.VISIBLE
                             binding.lblLoyaltyPoints.visibility = View.VISIBLE
+                            binding.lblLoyaltyBalance.visibility = View.VISIBLE
                         } else {
                             binding.liinearInfoLayout.layoutParams.height =
                                 resources.getDimension(R.dimen._50sdp).toInt()
                             binding.relativeLoylatyPoints.visibility = View.GONE
                             binding.lblLoyaltyPoints.visibility = View.GONE
+                            binding.lblLoyaltyBalance.visibility = View.GONE
                         }
                     }
 
@@ -1243,6 +1251,7 @@ class CartFragment(
 
                             binding.relativeLoylatyPoints.visibility = View.GONE
                             binding.lblLoyaltyPoints.visibility = View.GONE
+                            binding.lblLoyaltyBalance.visibility = View.GONE
 
                         } else {
                             cartlist = arrayListOf()
@@ -1289,6 +1298,7 @@ class CartFragment(
                                 resources.getDimension(R.dimen._50sdp).toInt()
                             binding.relativeLoylatyPoints.visibility = View.GONE
                             binding.lblLoyaltyPoints.visibility = View.GONE
+                            binding.lblLoyaltyBalance.visibility = View.GONE
 
 
                         }
@@ -1398,15 +1408,17 @@ class CartFragment(
                                         viewModel.setcheckedLoyaltyApply(
                                             prefProvider.getValueboolean(
                                                 IS_UPDATE_ORDER_LOYALTY_APPLIED,
-                                                false
-                                            )
+                                                false,
+                                            ),
+                                            binding.txtTotal
                                         )
                                     } else {
                                         viewModel.setcheckedLoyaltyApply(
                                             prefProvider.getValueboolean(
                                                 LOYALTY_ADDED,
                                                 false
-                                            )
+                                            ),
+                                            binding.txtTotal
                                         )
                                     }
                                     if (isFromPayment) {
@@ -1415,6 +1427,7 @@ class CartFragment(
                                                 resources.getDimension(R.dimen._70sdp).toInt()
                                             binding.relativeLoylatyPoints.visibility = View.VISIBLE
                                             binding.lblLoyaltyPoints.visibility = View.VISIBLE
+                                            binding.lblLoyaltyBalance.visibility = View.VISIBLE
                                             binding.txtLabelLoyaltyAmounts.visibility = View.VISIBLE
                                             binding.checkloylaty.visibility = View.GONE
                                             binding.txtLoyaltyAmount.text =
@@ -1426,18 +1439,22 @@ class CartFragment(
                                                 }"
                                             binding.txtLoyaltyPoints.text =
                                                 "${viewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
+                                            binding.txtLoyaltyBalance.text =
+                                                "${viewModel.selectedCustomer?.final_reward}"
 
                                         } else {
                                             binding.liinearInfoLayout.layoutParams.height =
                                                 resources.getDimension(R.dimen._50sdp).toInt()
                                             binding.relativeLoylatyPoints.visibility = View.GONE
                                             binding.lblLoyaltyPoints.visibility = View.GONE
+                                            binding.lblLoyaltyBalance.visibility = View.GONE
                                         }
                                     } else {
                                         binding.liinearInfoLayout.layoutParams.height =
                                             resources.getDimension(R.dimen._70sdp).toInt()
                                         binding.relativeLoylatyPoints.visibility = View.VISIBLE
                                         binding.lblLoyaltyPoints.visibility = View.VISIBLE
+                                        binding.lblLoyaltyBalance.visibility = View.VISIBLE
                                         Log.e(TAG, "InsideLoyalty")
                                         Log.e(TAG, Gson().toJson(viewModel.redeemLoyaltyInfo))
                                         binding.txtLoyaltyAmount.text =
@@ -1449,6 +1466,8 @@ class CartFragment(
                                             }"
                                         binding.txtLoyaltyPoints.text =
                                             "${viewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
+                                        binding.txtLoyaltyBalance.text =
+                                            "${viewModel.selectedCustomer?.final_reward}"
                                         binding.checkloylaty.isChecked =
                                             viewModel.redeemLoyaltyInfo.needToApplyLoyalty
                                         Log.d(
@@ -1464,6 +1483,7 @@ class CartFragment(
                             } else {
                                 binding.relativeLoylatyPoints.visibility = View.GONE
                                 binding.lblLoyaltyPoints.visibility = View.GONE
+                                binding.lblLoyaltyBalance.visibility = View.GONE
                             }
 
 
@@ -1505,23 +1525,26 @@ class CartFragment(
                                         resources.getDimension(R.dimen._70sdp).toInt()
                                     binding.relativeLoylatyPoints.visibility = View.VISIBLE
                                     binding.lblLoyaltyPoints.visibility = View.VISIBLE
+                                    binding.lblLoyaltyBalance.visibility = View.VISIBLE
 
                                     binding.txtLoyaltyAmount.text =
                                         "$0.00"
                                     binding.txtLoyaltyPoints.text =
                                         "$0.00"
-
+                                    binding.txtLoyaltyBalance.text = "0"
                                 } else {
                                     binding.liinearInfoLayout.layoutParams.height =
                                         resources.getDimension(R.dimen._50sdp).toInt()
                                     binding.relativeLoylatyPoints.visibility = View.GONE
                                     binding.lblLoyaltyPoints.visibility = View.GONE
+                                    binding.lblLoyaltyBalance.visibility = View.GONE
                                 }
                             } else {
                                 binding.liinearInfoLayout.layoutParams.height =
                                     resources.getDimension(R.dimen._50sdp).toInt()
                                 binding.relativeLoylatyPoints.visibility = View.GONE
                                 binding.lblLoyaltyPoints.visibility = View.GONE
+                                binding.lblLoyaltyBalance.visibility = View.GONE
                             }
 
 
@@ -1967,6 +1990,7 @@ class CartFragment(
             resources.getDimension(R.dimen._50sdp).toInt()
         binding.relativeLoylatyPoints.visibility = View.GONE
         binding.lblLoyaltyPoints.visibility = View.GONE
+        binding.lblLoyaltyBalance.visibility = View.GONE
         displayCustomer()
         refreshItemCalculation()
         prefProvider.setValueboolean(IS_UPDATE_ORDER_LOYALTY_APPLIED, false)
