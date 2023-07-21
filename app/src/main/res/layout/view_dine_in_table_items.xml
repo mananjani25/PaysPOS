@@ -199,7 +199,7 @@
                     android:paddingStart="@dimen/_2sdp">
 
                     <ImageView
-                        android:id="@+id/ivMenu"
+                        android:id="@+id/ivWastage"
                         android:layout_width="@dimen/_14sdp"
                         android:layout_height="@dimen/_14sdp"
                         android:padding="@dimen/_4sdp"

@@ -24,7 +24,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:orientation="horizontal"
-            android:paddingVertical="@dimen/_5sdp">
+            android:paddingVertical="@dimen/_4sdp">
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
@@ -206,11 +206,12 @@
                     android:paddingStart="@dimen/_2sdp">
 
                     <ImageView
-                        android:id="@+id/ivMenu"
+                        android:id="@+id/ivWastage"
                         android:layout_width="@dimen/_18sdp"
                         android:layout_height="@dimen/_18sdp"
-                        android:padding="@dimen/_4sdp"
-                        android:src="@drawable/ic_dot_menu"/>
+                        android:padding="@dimen/_3sdp"
+                        android:src="@drawable/food_wastage"
+                        app:tint="@color/txtColor" />
                 </LinearLayout>
 
             </androidx.appcompat.widget.LinearLayoutCompat>
