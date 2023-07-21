@@ -217,11 +217,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 binding.btnPay.visibility = View.VISIBLE
 
             }
-            if (noItem) {
-                binding.chkIsFired.isEnabled = false
-            } else {
-                binding.chkIsFired.isEnabled = true
-            }
+            binding.chkIsFired.isEnabled = !noItem
 
             if (list[layoutPosition].title?.lowercase() == "Whole Table".lowercase() || list.get(0).totalGuestCount == 1) {
                 Log.e(TAG, "TxtPayTitelTotal")
