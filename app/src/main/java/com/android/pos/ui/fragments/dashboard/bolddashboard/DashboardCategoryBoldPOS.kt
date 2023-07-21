@@ -199,6 +199,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     ): View? {
         checkCashDrawerObserver()
         Binding()
+        prefProvider.setValue(Constants.REDIRECT_FROM, "")
 
 //        hideSystemUI()
 
