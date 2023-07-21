@@ -53,6 +53,19 @@
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true">
 
+            <ImageView
+                android:id="@+id/imgRefreshTables"
+                android:layout_width="@dimen/_18sdp"
+                android:layout_height="@dimen/_18sdp"
+                android:layout_gravity="center"
+                android:visibility="gone"
+                android:background="?attr/selectableItemBackground"
+                android:padding="@dimen/_3sdp"
+                android:src="@drawable/ic_sync"
+                android:layout_marginEnd="@dimen/_8sdp"
+                android:tint="@color/txtColor"
+                tools:ignore="UseAppTint" />
+
             <TextView
                 android:id="@+id/txt_Dineinordere"
                 style="@style/CustomFontSemiBold"
