@@ -9,10 +9,12 @@ import android.widget.Filterable
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.entities.TbCategory
+import com.android.pos.data.remote.Constants.GIFT_CARD_CATEGORY
 import com.android.pos.databinding.ViewCategoryBinding
 import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.setOnSingleClickListener
+import com.android.pos.utils.extensions.visible
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -46,6 +48,12 @@ class CategoriesListAdapter(private val isChoose: Boolean) :
                 }
             } else {
                 binding.imageCheck.setImageResource(R.drawable.ic_baseline_menu)
+            }
+
+            if(item.name == GIFT_CARD_CATEGORY) {
+                binding.layoutMenu.imgOrderMenu.gone()
+            } else {
+                binding.layoutMenu.imgOrderMenu.visible()
             }
         }
 

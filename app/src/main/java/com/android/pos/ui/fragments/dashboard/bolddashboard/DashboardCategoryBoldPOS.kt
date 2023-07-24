@@ -36,6 +36,8 @@ import com.android.pos.data.model.requestModel.OrderAttributeRequestModel
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.ADD_VALUE
+import com.android.pos.data.remote.Constants.BALANCE_INQUIRY
 import com.android.pos.data.remote.Constants.CUSTOMER
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
@@ -52,6 +54,7 @@ import com.android.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.ORDER_TYPE_ID
 import com.android.pos.data.remote.Constants.ORDER_TYPE_NAME
+import com.android.pos.data.remote.Constants.SELL_CARD
 import com.android.pos.data.remote.Constants.SMALL
 import com.android.pos.data.remote.Constants.SPLIT_ENABLE
 import com.android.pos.data.remote.Constants.SUNMI_INNER_PRINTER
@@ -1062,17 +1065,17 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     override fun onItemSelected(item: TbItem) {
 
         when (item.name) {
-            "Sell Card" -> {
+            SELL_CARD -> {
                 if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
                     findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_purchaseGiftCard)
                 }
             }
-            "Add Value" -> {
+            ADD_VALUE -> {
                 if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
                     findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_addValueInGiftCard)
                 }
             }
-            "Balance Inquiry" -> {
+            BALANCE_INQUIRY -> {
                 if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
                     findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_balanceInquiry)
                 }

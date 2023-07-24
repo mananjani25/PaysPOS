@@ -741,4 +741,8 @@ object Constants {
     const val GIFT_CARD_PIN = "gift_card_pin"
     const val IS_ADD_VALUE_IN_GIFT_CARD = "is_add_value_in_gift_card"
 
+    const val SELL_CARD = "Sell Card"
+    const val ADD_VALUE = "Add Value"
+    const val BALANCE_INQUIRY = "Balance Inquiry"
+    const val GIFT_CARD_CATEGORY = "GIFT CARD"
 }
