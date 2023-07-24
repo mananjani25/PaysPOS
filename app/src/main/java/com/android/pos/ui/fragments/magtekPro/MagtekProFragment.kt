@@ -149,8 +149,7 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
         Log.i(
             "TAG", "coms.CommType = " + commset.type + "; coms.TimeOut=" + commset.timeOut
                     + "; SerialPort=" + commset.serialPort + "; coms.BaudRate=" + commset.baudRate
-                    + "; coms.DestIP=" + commset.destIP + "; coms.DestPort=" + commset.destPort
-                    + "; coms.MacAddr=" + commset.macAddr + "; coms.EnableProxy=" + commset.isEnableProxy
+                    + "; coms.DestIP=" + commset.destIP + "; coms.DestPort=" + commset.destPort + "; coms.MacAddr=" + commset.macAddr + "; coms.EnableProxy=" + commset.isEnableProxy
         )
         POSLinkAndroid.initPOSListener(context, commset)
         SettingINI.saveCommSettingToFile(iniFile, commset)
@@ -165,11 +164,11 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
         GlobalScope.launch {
             Log.d("manageRequest ","Start")
             val manageRequest = ManageRequest()
-//            manageRequest.TransType = manageRequest.ParseTransType("INIT")
-            manageRequest.TransType = manageRequest.ParseTransType("GETVAR")
+            manageRequest.TransType = manageRequest.ParseTransType("INIT")
+            /*manageRequest.TransType = manageRequest.ParseTransType("GETVAR")
             manageRequest.EDCType = manageRequest.ParseEDCType("CREDIT")
             manageRequest.VarName = "MID"
-            manageRequest.ContactlessEntryFlag = "1"
+            manageRequest.ContactlessEntryFlag = "1"*/
 
             posLink.ManageRequest = manageRequest
             val result = posLink.ProcessTrans()
@@ -188,7 +187,7 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
                     mID
                 )
                 CoroutineScope(Dispatchers.Main).launch {
-                    Toast.makeText(requireContext(), "Merchant ID: $mID", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Merchant connected successfully", Toast.LENGTH_SHORT).show()
                 }
                 Log.d("Merchant Details: ", mID + " " + resultCode + "  " + status)
             } else {
