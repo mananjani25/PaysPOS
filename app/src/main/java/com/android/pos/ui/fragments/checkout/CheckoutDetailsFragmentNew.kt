@@ -49,6 +49,7 @@ import com.android.pos.ui.fragments.magtekPro.SessionManager
 import com.android.pos.ui.fragments.payment.PaymentBoldPosFragment
 import com.android.pos.ui.fragments.payment.PaymentViewModel
 import com.android.pos.ui.fragments.settings.tip.TipListViewModel
+import com.android.pos.ui.fragments.transactions.TransactionViewModel
 import com.android.pos.utils.*
 import com.android.pos.utils.MethodUtils.Companion.toPrecision
 import com.android.pos.utils.callback.DeleteOptionCallback
@@ -199,6 +200,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     }
 
     private val tipListViewModel by activityViewModels<TipListViewModel>()
+    private val transactionViewModel by viewModels<TransactionViewModel>()
+    private val paymentViewModel by activityViewModels<PaymentViewModel>()
 
     override fun onResume() {
         super.onResume()
@@ -213,6 +216,27 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 presentation.showSurcharge(true)
             }
             //presentation.showWouldYouLikeToAddTipScreen(tipListViewModel,WholetotalPrice)
+            val showTipCollectionBeforePay = false
+            if(cashDiscountType == "SurCharge" && showTipCollectionBeforePay){
+
+                val actualAmount = getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectedCount
+
+                val paymentIdForCustomerDisplay = prefProvider.getValueInt(
+                    Constants.PAYMENT_ID_FOR_CUSTOMER_DISPLAY, 0
+                )
+
+                presentation.showWouldYouLikeToAddTipScreen(
+                    tipListViewModel,
+                    transactionViewModel,
+                    actualAmount, paymentIdForCustomerDisplay,
+                    paymentType == "Card",
+                    paymentViewModel = paymentViewModel,
+                    magRequestUtils = magtekRequestUtils,
+                    apiModule1 = apiModule1,
+                    true
+                )
+            }
+
         }
     }
 
@@ -571,7 +595,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         bundle.putBoolean("isDineIn", false)
 
                         if (remainingAmount == 0.0) {
-                            if (custom_paymentAmount != 0.0) {
+                            if (custom_paymentAmount != 0.0)
+
+
+
+                            {
                                 bundle.putDouble("PaidAmount", custom_paymentAmount)
                             } else {
                                 bundle.putDouble("PaidAmount", paymentAmount)
