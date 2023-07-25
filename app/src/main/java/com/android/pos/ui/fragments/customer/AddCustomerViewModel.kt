@@ -294,6 +294,7 @@ class AddCustomerViewModel @Inject constructor(
                                         _updatedCustomer.value = Event(model)
                                     }else {
                                         _Basedata.value = Event(customerListReposne)
+                                        _customerModel.value = Event(model)
                                     }
 
                                 }

@@ -241,6 +241,7 @@ class AddValueInGiftCardFragment : Fragment() {
         bundle.putDouble("totalDiscount", 0.0)
         bundle.putDouble("totalServiceCharge", 0.0)
         bundle.putParcelable("cartList", cm)
+        bundle.putBoolean("isFromPayment", true)
 
         findNavController().navigate(
             R.id.action_addValueInGiftCard_to_paymentBoldPosFragment,

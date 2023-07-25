@@ -12,6 +12,8 @@ import android.widget.Filterable
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.model.responseModel.GetTransactionListResponse
+import com.android.pos.data.remote.Constants.DEFAULT_ORDER
+import com.android.pos.data.remote.Constants.GIFT_CARD
 import com.android.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
 import com.android.pos.databinding.ViewPaginationBinding
 import com.android.pos.databinding.ViewTransactionItemBinding
@@ -88,10 +90,18 @@ class TransactionAdapter(val viewModel: TransactionViewModel, val prefProvider: 
                 if (model.orderDetails != null && model.orderDetails.orderTypeName != null) {
                     itemBinding.tvOrderType?.text = model.orderDetails.orderTypeName.toString()
                 } else {
-                    itemBinding.tvOrderType?.text = "-"
+                    if(model.payableType == GIFT_CARD) {
+                        itemBinding.tvOrderType?.text = DEFAULT_ORDER
+                    } else {
+                        itemBinding.tvOrderType?.text = "-"
+                    }
                 }
             } catch (e: Exception) {
-                itemBinding.tvOrderType?.text = "-"
+                if(model.payableType == GIFT_CARD) {
+                    itemBinding.tvOrderType?.text = DEFAULT_ORDER
+                } else {
+                    itemBinding.tvOrderType?.text = "-"
+                }
             }
 
             itemBinding.txtCustomerName.text = (model.customer?.firstName
@@ -124,10 +134,18 @@ class TransactionAdapter(val viewModel: TransactionViewModel, val prefProvider: 
                     if (model.custom_order_id != 0) {
                         itemBinding.txtTransactionId.text = model.custom_order_id.toString()
                     } else {
-                        itemBinding.txtTransactionId.text = "-"
+                        if(model.payableType == GIFT_CARD) {
+                            itemBinding.txtTransactionId.text = model.payableId.toString()
+                        } else {
+                            itemBinding.txtTransactionId.text = "-"
+                        }
                     }
                 } else {
-                    itemBinding.txtTransactionId.text = "-"
+                    if(model.payableType == GIFT_CARD) {
+                        itemBinding.txtTransactionId.text = model.payableId.toString()
+                    } else {
+                        itemBinding.txtTransactionId.text = "-"
+                    }
                 }
             } else {
                 if (model.orderId != null) {
