@@ -7,13 +7,22 @@ import android.graphics.Color
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
-import android.view.*
+import android.view.Display
+import android.view.Gravity
+import android.view.View
+import android.view.Window
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.pos.R
-import com.android.pos.data.entities.*
+import com.android.pos.data.entities.CartModel
+import com.android.pos.data.entities.Modifier
+import com.android.pos.data.entities.TaxData
+import com.android.pos.data.entities.TbCustomer
+import com.android.pos.data.entities.TbItem
+import com.android.pos.data.entities.TbServiceCharge
+import com.android.pos.data.entities.VariationsAttribute
 import com.android.pos.data.model.DineInModel
 import com.android.pos.data.model.GuestPaymentCalculationModel
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
@@ -44,15 +53,24 @@ import com.android.pos.ui.fragments.magtek.PaymentResponse
 import com.android.pos.ui.fragments.payment.PaymentViewModel
 import com.android.pos.ui.fragments.settings.tip.TipListViewModel
 import com.android.pos.ui.fragments.transactions.TransactionViewModel
-import com.android.pos.utils.*
+import com.android.pos.utils.AmountTextWatcher
+import com.android.pos.utils.LogUtil
+import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.MethodUtils.Companion.toPrecision
 import com.android.pos.utils.callback.MyCallback
-import com.android.pos.utils.extensions.*
+import com.android.pos.utils.extensions.gone
+import com.android.pos.utils.extensions.invisible
+import com.android.pos.utils.extensions.isVisible
+import com.android.pos.utils.extensions.setOnSingleClickListener
+import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.statusUtils.Status
 import com.github.gcacace.signaturepad.views.SignaturePad.OnSignedListener
 import com.google.gson.Gson
 import com.google.gson.JsonArray
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.greenrobot.eventbus.EventBus
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -1425,29 +1443,40 @@ class CustomDisplay(
             setKeyPad()
 
             edtAmount.setText(MethodUtils.roundOffAmountString(0.00))
-
+            val coroutineScope = CoroutineScope(Dispatchers.Main)
+            coroutineScope.launch {
+//                delay(1000)
+//                edtAmount.setText(MethodUtils.roundOffAmountString(10.00))
+//                delay(2000)
+//                binding.txtContinue.performClick()
+            }
             txtContinue.setOnClickListener {
 
                 tippedAmount = edtAmount.text.toString().replace("$", "").trim().toDouble()
-
-                if (mIsCardPayment) {
-                    if (mIsSignatureRequired) {
-                        showWouldYouLikeToAddTipScreen(
-                            tipsListViewModel,
-                            mTransactionViewModel,
-                            mWholeTotalPrice,
-                            mOrderID,
-                            mIsCardPayment,
-                            mPaymentViewModel,
-                            magtekRequestUtils,
-                            apiModule1,
-                            true
-                        )
+                val showTipCollectionBeforePay = false
+                if(showTipCollectionBeforePay){
+                    EventBus.getDefault().post(TipAdded(tippedAmount))
+                    showMainCart()
+                }else{
+                    if (mIsCardPayment) {
+                        if (mIsSignatureRequired) {
+                            showWouldYouLikeToAddTipScreen(
+                                tipsListViewModel,
+                                mTransactionViewModel,
+                                mWholeTotalPrice,
+                                mOrderID,
+                                mIsCardPayment,
+                                mPaymentViewModel,
+                                magtekRequestUtils,
+                                apiModule1,
+                                true
+                            )
+                        } else {
+                            magtekCall(wholeTotalPrice)
+                        }
                     } else {
-                        magtekCall(wholeTotalPrice)
+                        callUpdateTip()
                     }
-                } else {
-                    callUpdateTip()
                 }
             }
 
@@ -1603,8 +1632,17 @@ class CustomDisplay(
         this.apiModule1 = apiModule1
         mWholeTotalPrice = wholeTotalPrice
 
+        val showTipCollectionBeforePay = false
+
         binding.apply {
             askForTipLayout.visible()
+
+            if(showTipCollectionBeforePay){
+                wouldYouLikeToAddTipLabel.text = "Would you like to add a Tip?"
+            } else {
+                wouldYouLikeToAddTipLabel.text = "Add Tip"
+            }
+
             setupActiveTipsList(mTipListViewModel)
             observeActiveTipsList(wholeTotalPrice)
 
@@ -1642,9 +1680,20 @@ class CustomDisplay(
             binding.otherRootLayout.setOnClickListener {
                 showTipKeypad(wholeTotalPrice)
             }
-
+            val coroutineScope = CoroutineScope(Dispatchers.Main)
+            coroutineScope.launch {
+                //delay(3000)
+                //binding.otherRootLayout.performClick()
+                //binding.otherRootLayout.performClick()
+            }
             binding.noTipRootLayout.setOnClickListener {
-                showThankYou(mWholeTotalPrice)
+                if(showTipCollectionBeforePay) {
+                    //Update main screen with 0.00 tip in bracket
+                    EventBus.getDefault().post(TipAdded(0.00))
+                    showMainCart()
+                }else{
+                    showThankYou(mWholeTotalPrice)
+                }
             }
 
             binding.tvContinue.setOnSingleClickListener {
@@ -1730,12 +1779,20 @@ class CustomDisplay(
     override fun selectedItem(model: GetTipReponse.Data, pos: Int, wholeTotalPrice: Double) {
         tipRate = model.rate
         tippedAmount = MethodUtils.percentageCalculation(wholeTotalPrice, model.rate)
-        if ((mIsCardPayment && !mIsSignatureRequired) || (!mIsCardPayment)) {
-            callUpdateTip()
+        val showTipCollectionBeforePay = false
+        if(showTipCollectionBeforePay){
+            //Update main screen with tipAmount added and updated card amount
+            EventBus.getDefault().post(TipAdded(tippedAmount))
+            showMainCart()
+        }else{
+            if ((mIsCardPayment && !mIsSignatureRequired) || (!mIsCardPayment)) {
+                callUpdateTip()
+            }
+            if (!binding.signaturePad.isEmpty) {
+                enableConfirmButton()
+            }
         }
-        if (!binding.signaturePad.isEmpty) {
-            enableConfirmButton()
-        }
+
     }
 
     private fun enableConfirmButton() {

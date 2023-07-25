@@ -39,6 +39,7 @@ import com.android.pos.di.MagtekModule
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
+import com.android.pos.ui.fragments.dashboard.bolddashboard.TipAdded
 import com.android.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.android.pos.ui.fragments.eGiftCard.GiftCardViewModel
 import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
@@ -62,6 +63,8 @@ import com.magtek.mobile.android.mtlib.IMTCardData
 import com.magtek.mobile.android.mtlib.MTConnectionState
 import com.magtek.mobile.android.mtusdk.*
 import dagger.hilt.android.AndroidEntryPoint
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -215,9 +218,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             if (!showCashCreditPrice) {
                 presentation.showSurcharge(true)
             }
-            //presentation.showWouldYouLikeToAddTipScreen(tipListViewModel,WholetotalPrice)
             val showTipCollectionBeforePay = false
-            if(cashDiscountType == "SurCharge" && showTipCollectionBeforePay){
+            if(cashDiscountType == "SurCharge" && showTipCollectionBeforePay && prefProvider.getValue(
+                    ORDER_TYPE, TAKEOUT)!= GIFT_CARD){
 
                 val actualAmount = getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectedCount
 
@@ -349,6 +352,30 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             tipAmountCalculation()
         }
 
+    }
+
+    override fun onStart() {
+        super.onStart()
+        org.greenrobot.eventbus.EventBus.getDefault().register(this)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        org.greenrobot.eventbus.EventBus.getDefault().unregister(this)
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onMessageEvent(tipAdded: TipAdded) {
+        Log.d(TAG, "onMessageEvent: TIP ADDED = $tipAdded")
+        tipAmount = tipAdded.tipAmount
+        viewModel.setTipAmount(tipAmount)
+
+        prefProvider.setValueboolean(Constants.TIP_ADDED, true)
+        prefProvider.setValue(Constants.TIP_ADDED_AMOUNT, tipAmount.toString())
+
+        tipAmountCalculation()
+        loadPaymentLayout()
+        org.greenrobot.eventbus.EventBus.getDefault().unregister(this)
     }
 
     @SuppressLint("SetTextI18n")
