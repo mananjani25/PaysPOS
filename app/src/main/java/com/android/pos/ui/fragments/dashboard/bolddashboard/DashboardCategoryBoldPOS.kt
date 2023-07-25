@@ -1713,7 +1713,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
 
             SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
-            setService(createOrderResponse.data)
+            setService(data,createOrderResponse.data)
 
 
         } else {
@@ -2208,7 +2208,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
     }
 
-    private fun setService(data: CreateOrderResponse.Data) {
+    private fun setService( kitchenReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,data: CreateOrderResponse.Data) {
         if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.FoundSunmiPrinter) {
 
             LogUtil.logE("SunmiPrintHelper1", "FoundSunmiPrinter")
@@ -2217,14 +2217,14 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                 LogUtil.logE("SunmiPrintHelpe1r", "isBlueToothPrinter")
 
-                generateKitchenReceiptSunmiInner(data)
+                generateKitchenReceiptSunmiInner(kitchenReceiptPrinters,data)
 
 
             }
 
         } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.CheckSunmiPrinter) {
             Handler(Looper.getMainLooper()).postDelayed({
-                setService(data)
+                setService(kitchenReceiptPrinters,data)
             }, 2000)
             LogUtil.logE("SunmiPrintHelper", "CheckSunmiPrinter")
         } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.LostSunmiPrinter) {
@@ -3329,7 +3329,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     }
 
     private fun generateKitchenReceiptSunmiInner(
-
+        kitchenReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
         receiptModel: CreateOrderResponse.Data
     ) {
         try {
@@ -3369,6 +3369,14 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             receiptModel?.order?.orderItems?.let {
                 addOrdersForKitchenInner(
                     it
+                )
+            }
+
+            receiptModel?.order?.orderItems?.let {
+
+                addOrdersForKitchenInner(
+                    it,
+                    kitchenReceiptPrinters.printerCategories.toCollection(arrayListOf())
                 )
             }
 
