@@ -11,6 +11,7 @@ import android.util.Log
 import android.view.*
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
+import androidx.core.text.trimmedLength
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
@@ -39,6 +40,7 @@ import com.android.pos.ui.adapter.OrderDetailsItemListAdapter
 import com.android.pos.ui.adapter.boldpos.TaxBirfurcationAdapter
 import com.android.pos.ui.fragments.magtek.MagtekRequestUtils
 import com.android.pos.ui.fragments.magtek.PaymentResponse
+import com.android.pos.ui.fragments.payment.OrderCompleteViewModel
 import com.android.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
 import com.android.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.android.pos.utils.*
@@ -50,11 +52,14 @@ import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.printer.PrinterClass
 import com.android.pos.utils.statusUtils.Status
+import com.epson.epos2.printer.Printer
 import com.epson.eposprint.Builder
 import com.epson.eposprint.Print
+import com.epson.eposprint.StatusChangeEventListener
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.google.gson.JsonArray
+import com.google.gson.reflect.TypeToken
 import com.sunmi.externalprinterlibrary.api.ConnectCallback
 import com.sunmi.externalprinterlibrary.api.SunmiPrinter
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
@@ -69,11 +74,11 @@ import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class TransactionDetailsFragment : Fragment() {
+class TransactionDetailsFragment : Fragment() , StatusChangeEventListener {
 
     private lateinit var binding: FragmentTransactionDetailsBinding
     private val viewModel by viewModels<TransactionDetailsViewModel>()
-
+    private var isPrint: Boolean = false
     private lateinit var orderDetailsItemAdapter: OrderDetailsItemListAdapter
     private lateinit var taxBirfurcationAdapter: TaxBirfurcationAdapter
     private var orderIDglobal = 0
@@ -82,14 +87,14 @@ class TransactionDetailsFragment : Fragment() {
     @Inject
     lateinit var apiModule1: ApiModule1
 
-
     @Inject
     lateinit var magtekRequestUtils: MagtekRequestUtils
 
     private var tipAmount: Double = 0.0
-
+    private var kitchenPrinterList: List<PrinterResponse.Data.KitchenReceiptPrinters> = listOf()
     //    private lateinit var orderDetailsResponse: GetOrderDetailsResponse
     private var customerSettingModel = GetCustomerReceiptSettingsResponse.Data()
+    private var kitchenSettingModel = GetKitchenReceiptSettingsResponse.Data()
     private lateinit var paymentDetailsResponse: GetPaymentOrderDetailsResponse
     private var orderId: Int = -1
     var mLastClickTime: Long = 0
@@ -100,8 +105,8 @@ class TransactionDetailsFragment : Fragment() {
     private var isFromOnlineOrderRefund: Boolean = false
     private var serviceChargesList: ArrayList<TbServiceCharge>? = arrayListOf()
     private var taxlistbirfurcation: ArrayList<TaxData>? = arrayListOf()
+    private var receiptModel: CreateOrderResponse.Data? = null
     private var isSplitPayment = false
-
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -136,6 +141,8 @@ class TransactionDetailsFragment : Fragment() {
         observeShowProgress()
         setUpRecyclerView()
         navigate()
+
+        getKitchenReceiptSettings()
         getCustomerReceiptSettings()
         orderUpdateTips()
         if (isFromOnlineOrderRefund) {
@@ -214,7 +221,7 @@ class TransactionDetailsFragment : Fragment() {
 
         }
         binding.txtPrintKitchenReceipt.setOnClickListener {
-            //getCustomerPrinters()
+            getKitchenPrinters()
 
         }
         binding.linearTaxDetail.setOnClickListener {
@@ -387,6 +394,8 @@ class TransactionDetailsFragment : Fragment() {
 
         }
     }
+
+
 
     private fun tipCall(isCard: Boolean) {
         paymentDetailsResponse.data.let { viewModel.orderUpdateTip(it.id, tipAmount, isCard) }
@@ -1121,6 +1130,15 @@ class TransactionDetailsFragment : Fragment() {
 
     }
 
+    private fun getKitchenReceiptSettings() {
+        viewModel.getKitchenReceiptSettings().observe(viewLifecycleOwner) {
+
+            if (it != null) {
+                kitchenSettingModel = it
+            }
+        }
+    }
+
     private fun getCustomerPrinters() {
 
         viewModel.getCustomerPrinterList().observe(viewLifecycleOwner) {
@@ -1144,6 +1162,161 @@ class TransactionDetailsFragment : Fragment() {
 
                 Status.LOADING -> {
                     ProgressUtils.showProgressDialog(requireActivity())
+                }
+            }
+        }
+    }
+
+    private fun getKitchenPrinters() {
+        viewModel.getKitchenPrinterList().observe(viewLifecycleOwner) { it ->
+            when (it.status) {
+                Status.SUCCESS -> {
+                    Log.e(TAG, "status ${it.status.toString()}")
+                    ProgressUtils.dismissProgressDialog()
+                    if (it.data != null && isPrint == true) {
+
+                        Log.e(TAG, "CheckORderRypoe ${prefProvider.getValue(Constants.ORDER_TYPE, "")}")
+                        kitchenPrinterList = it.data
+                        val remain = requireArguments().getDouble("remainingAmount")
+
+                        if (!prefProvider.getValueboolean(Constants.IS_PRINTER_QUEUE_ENABLE, false)) {
+                            if (!requireArguments().getBoolean("isSpilt")) {
+                                if (!requireArguments().getBoolean("isDineIn") && !requireArguments().getBoolean(
+                                        "isFromActiveOrder"
+                                    )
+                                ) {
+                                    if (receiptModel?.order?.orderType == Constants.OPEN_ORDER
+                                    ) {
+
+                                        var noItem: Boolean = false
+                                        Log.e(
+                                            TAG,
+                                            "checkUpdateORder  ${
+                                                prefProvider.getValueboolean(
+                                                    Constants.OPEN_ORDER_UPDATE_FOR_PRINT,
+                                                    false
+                                                )
+                                            }"
+                                        )
+                                        if (prefProvider.getValueboolean(
+                                                Constants.OPEN_ORDER_UPDATE_FOR_PRINT,
+                                                false
+                                            ) == true
+                                        ) {
+                                            var list = checkOrderItemsForOpenORderUpdate()
+                                            Log.e(TAG, "checkEmpy:  ${list.size}")
+                                            if (list.isEmpty()) {
+                                                noItem = true
+                                            }
+                                        }
+                                        Log.e(
+                                            TAG,
+                                            "checkOrderType  ${
+                                                prefProvider.getValue(
+                                                    Constants.ORDER_TYPE,
+                                                    ""
+                                                )
+                                            }"
+                                        )
+                                        if (kitchenPrinterList.isNotEmpty() && noItem == false) {
+                                            for (i in 0 until kitchenPrinterList.size) {
+                                                if (kitchenPrinterList[i].status) {
+                                                    kitchenPrinterList[i].orderTypes.forEach {
+
+                                                        if (it.orderTypeId == receiptModel?.order?.orderTypeId
+
+                                                        ) {
+
+                                                            it.printerSettings.forEach {
+                                                                if (it.printType.lowercase()
+                                                                        .equals(Constants.KITCHEN.lowercase()) && it.autoPrinting
+                                                                ) {
+
+
+                                                                    if (checkItemsforPrinter(
+                                                                            receiptModel?.order?.orderItems
+                                                                                ?: arrayListOf(),
+                                                                            kitchenPrinterList[i].printerCategories.toCollection(
+                                                                                arrayListOf()
+                                                                            )
+                                                                        )
+                                                                    ) {
+
+                                                                        initKitchenPrinter(
+                                                                            kitchenPrinterList.get(i),
+                                                                            Constants.KITCHEN
+                                                                        )
+                                                                    }
+
+                                                                }
+                                                            }
+
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    } else if (prefProvider.getValue(
+                                            Constants.ORDER_TYPE,
+                                            ""
+                                        ) != Constants.OPEN_ORDER
+                                    ) {
+                                        if (kitchenPrinterList.isNotEmpty()) {
+                                            for (i in 0 until kitchenPrinterList.size) {
+                                                if (kitchenPrinterList[i].status) {
+                                                    kitchenPrinterList[i].orderTypes.forEach {
+
+                                                        if (it.orderTypeId == receiptModel?.order?.orderTypeId
+
+                                                        ) {
+
+                                                            it.printerSettings.forEach {
+                                                                if (it.printType.lowercase()
+                                                                        .equals(Constants.KITCHEN.lowercase()) && it.autoPrinting
+                                                                ) {
+
+                                                                    if (checkItemsforPrinter(
+                                                                            receiptModel?.order?.orderItems
+                                                                                ?: arrayListOf(),
+                                                                            kitchenPrinterList[i].printerCategories.toCollection(
+                                                                                arrayListOf()
+                                                                            )
+                                                                        )
+                                                                    ) {
+
+                                                                        initKitchenPrinter(
+                                                                            kitchenPrinterList.get(i),
+                                                                            Constants.KITCHEN
+                                                                        )
+                                                                    }
+
+                                                                }
+                                                            }
+
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+
+
+                                }
+                            }
+                        }
+                    }
+
+
+                }
+
+                Status.LOADING -> {
+                    Log.e(TAG, "status ${it.status.toString()}")
+                    ProgressUtils.showProgressDialog(requireActivity())
+                }
+
+                Status.ERROR -> {
+                    Log.e(TAG, "status ${it.status.toString()}")
+                    ProgressUtils.dismissProgressDialog()
                 }
             }
         }
@@ -1249,6 +1422,1732 @@ class TransactionDetailsFragment : Fragment() {
             }
         }
 
+    }
+
+    private fun initKitchenPrinter(
+        data: PrinterResponse.Data.KitchenReceiptPrinters,
+        type: String
+    ) {
+
+        if (data.name.startsWith(SUNMI_PRINTER, true)) {
+
+            SunmiPrinterApi.getInstance()
+                .setPrinter(SunmiPrinter.SunmiBlueToothPrinter, data.ipAddress)
+
+            if (!SunmiPrinterApi.getInstance().isConnected) {
+                SunmiPrinterApi.getInstance()
+                    .connectPrinter(requireContext(), object : ConnectCallback {
+
+                        override fun onFound() {
+                            println("onFound")
+                        }
+
+                        override fun onUnfound() {
+                            println("onUnfound")
+                        }
+
+                        override fun onConnect() {
+                            println("onConnect")
+
+                            viewLifecycleOwner.lifecycleScope.launch {
+                                delay(200)
+                                generateKitchenReceiptSunmi(data, type)
+                            }
+
+
+                        }
+
+                        override fun onDisconnect() {
+                            println("onDisconnect")
+                        }
+
+                    })
+            } else {
+                viewLifecycleOwner.lifecycleScope.launch {
+                    delay(200)
+                    generateKitchenReceiptSunmi(data, type)
+                }
+            }
+
+        } else if (data.name.startsWith(SUNMI_INNER_PRINTER, true)) {
+
+            SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
+            viewLifecycleOwner.lifecycleScope.launch {
+                delay(200)
+                setService2(data, type)
+            }
+
+        } else {
+
+            if (!data.name.substring(0, 6).toString().lowercase().contains("TM-m".lowercase())) {
+                Log.e(TAG, "YesInsideU220")
+
+                var mPrinter = if (data.name.substring(0, 6).toString().lowercase()
+                        .contains("TM-m".lowercase())
+                ) {
+                    Log.e(TAG, "YesContains")
+                    Printer(
+                        Printer.TM_M30,
+                        Printer.MODEL_ANK, requireContext()
+                    )
+                } else {
+                    Printer(
+                        Printer.TM_U220,
+                        Printer.MODEL_ANK, requireContext()
+                    )
+
+
+                }
+
+                mPrinter.setReceiveEventListener { printer, i, printerStatusInfo, s ->
+
+                    Log.e(
+                        TAG,
+                        "PrinterEvent  ${Gson().toJson(printerStatusInfo)} other1 ${s}  other2 ${i}"
+                    )
+                    if (printerStatusInfo.connection == 1) {
+                        try {
+                            printer.disconnect()
+
+                        } catch (e: java.lang.Exception) {
+                            e.printStackTrace()
+                        }
+                    }
+                }
+                try {
+                    Log.e(TAG, "printerDataType:  ${data.printer_type}")
+
+                    var printerAdd =
+                        if (data.printer_type == Constants.BLUETOOTH) "BT:" + data.macAddress else "TCP:" + data.ipAddress
+                    if (mPrinter.status.connection == 0) {
+
+                        mPrinter.connect(
+                            printerAdd,
+                            Printer.PARAM_DEFAULT
+                        )
+                        // mPrinter.disconnect()
+                    }
+
+                    //  mPrinter.startMonitor()
+
+                    generateReceiptForU220(mPrinter, data, type)
+
+                } catch (e: java.lang.Exception) {
+                    e.printStackTrace()
+                }
+
+
+            } else {
+
+
+                PrinterClass.closePrinter()
+                if (PrinterClass.getPrinter() == null) {
+                    //  printerDialog.show(requireContext())
+
+                    var printer: Print? = Print(requireContext())
+                    /*if (printer != null) {
+                   printer.setStatusChangeEventCallback(this)
+                   printer.setBatteryStatusChangeEventCallback(this)
+               }*/
+
+
+                    val enabled = Print.FALSE
+
+                    try {
+
+                        printer?.openPrinter(
+                            if (data.printer_type == Constants.BLUETOOTH) {
+                                Print.DEVTYPE_BLUETOOTH
+                            } else {
+                                Print.DEVTYPE_TCP
+                            },
+                            data.ipAddress,
+                            enabled,
+                            1000
+                        )
+                        printer?.setStatusChangeEventCallback(this)
+
+                    } catch (e: Exception) {
+                        //  printerDialog.dismiss()
+                        LogUtil.logE(TAG, "PrinterException: " + e.message)
+                        printer = null
+                        return
+                    }
+
+                    if (printer != null) {
+                        PrinterClass.setPrinter(printer)
+
+
+                        generateKitchenReceipt(data, type)
+
+                    }
+
+                } else {
+                    LogUtil.logE(TAG, "PrinterIsNotNull:")
+                }
+            }
+        }
+    }
+
+    private fun generateKitchenReceipt(
+        customerReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
+        type: String
+    ) {
+        var builder: Builder? = null
+        try {
+            LogUtil.logE(TAG, "KitchenPrinterName ${customerReceiptPrinters.name}")
+            val pname = if (customerReceiptPrinters.name.substring(0, 6).toString()
+                    .lowercase() == "TM-m30".lowercase()
+            ) {
+                "TM-m30"
+            } else {
+                customerReceiptPrinters.name
+            }
+
+            if (customerReceiptPrinters.name.substring(0, 4)
+                    .equals("TM-U", true) || customerReceiptPrinters.name.contains("U")
+            ) {
+                var fontSizeH = 1
+                var fontSizeW = 1
+                when (kitchenSettingModel.fonts) {
+                    Constants.SMALL -> {
+                        fontSizeH = 1
+                        fontSizeW = 1
+                    }
+
+                    Constants.MEDIUM -> {
+                        fontSizeH = 1
+                        fontSizeW = 2
+                    }
+
+                    Constants.LARGE -> {
+                        fontSizeH = 2
+                        fontSizeW = 2
+                    }
+                }
+
+                builder = Builder(pname, PrinterClass.language, requireActivity())
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addFeedLine(4)
+
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(2, 2)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+
+                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
+                    builder.addText("OrderID:" + receiptModel?.order?.custom_order_id)
+                } else {
+                    builder.addText("OrderID:" + receiptModel?.order?.id)
+                }
+
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addFeedLine(1)
+
+                if (kitchenSettingModel.showOrderType) {
+
+
+                    builder.addFeedLine(1)
+                    builder.addTextFont(Builder.FONT_E)
+                    builder.addTextLang(Builder.LANG_EN)
+                    builder.addTextSize(fontSizeH, fontSizeW)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.TRUE,
+                        Builder.COLOR_1
+                    )
+                    builder.addTextAlign(Builder.ALIGN_CENTER)
+
+                    addBuilderText(builder, receiptModel?.order?.orderTypeName.toString())
+                }
+                var tmps = "Open Order".toString().trim()
+                    .toString().lowercase()
+                LogUtil.logE(TAG, "LowerCAse ${tmps.trimmedLength()}")
+
+                if (receiptModel?.order?.orderType.equals(PHONE_ORDER, true) ||
+                    receiptModel?.order?.orderType.equals("OnlineWebOrder", true) ||
+                    receiptModel?.order?.orderType.equals("Online Order", true) ||
+                    receiptModel?.order?.orderType.equals("OnlineOrder", true)
+                ) {
+                    builder.addFeedLine(1)
+                    builder.addTextFont(Builder.FONT_E)
+                    builder.addTextLang(Builder.LANG_EN)
+                    builder.addTextSize(fontSizeH, fontSizeW)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.TRUE,
+                        Builder.COLOR_1
+                    )
+                    builder.addTextAlign(Builder.ALIGN_CENTER)
+
+                    addBuilderText(builder, receiptModel?.order?.deliveryType.toString())
+                }
+
+//
+//                builder.addTextLineSpace(30)
+//                builder.addFeedUnit(30)
+//                builder.addTextFont(Builder.FONT_E)
+//                //  builder.addTextAlign(Builder.ALIGN_LEFT)
+//                builder.addTextLang(Builder.LANG_EN)
+//                builder.addTextSize(fontSizeH, fontSizeW)
+//                builder.addTextStyle(
+//                    Builder.FALSE,
+//                    Builder.FALSE,
+//                    Builder.FALSE,
+//                    Builder.COLOR_1
+//                )
+//
+//
+//                builder.addText(
+//                    padLine(
+//                        "ReceiptID:" + receiptModel?.order?.offlineId,
+//                        "",
+//                        33
+//                    )
+//                )
+                if (kitchenSettingModel.showTeamMember) {
+
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+                    builder.addTextFont(Builder.FONT_E)
+                    //  builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextLang(Builder.LANG_EN)
+                    builder.addTextSize(fontSizeH, fontSizeW)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.COLOR_1
+                    )
+                    builder.addText(
+                        padLine(
+                            "Employee:" + receiptModel?.order?.employee?.name, "",
+                            33
+                        )
+                    )
+
+                }
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addTextFont(Builder.FONT_E)
+                //  builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(fontSizeH, fontSizeW)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+
+                builder.addText(
+                    padLine(
+                        Constants.getReceiptFormatDateFromUTCServer(
+                            requireContext(),
+                            receiptModel?.order?.createdAt.toString()
+                        ),
+                        "",
+                        33
+                    )
+                )
+
+                builder.addFeedLine(1)
+
+                builder.addTextFont(Builder.FONT_B)
+                //builder.addTextLineSpace(20)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(fontSizeH, fontSizeW)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+
+                addHorizontalKitchenLine(builder)
+
+
+                receiptModel?.order?.orderItems?.let {
+                    addOrdersForKitchen(
+                        builder!!,
+                        it,
+                        fontSizeH,
+                        fontSizeW,
+                        customerReceiptPrinters.printerCategories.toCollection(arrayListOf())
+                    )
+                }
+
+                if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+                    builder.addFeedLine(1)
+                    builder.addTextFont(Builder.FONT_E)
+                    builder.addTextAlign(Builder.ALIGN_LEFT)
+                    //builder.addTextLineSpace(20)
+                    builder.addTextLang(Builder.LANG_EN)
+                    builder.addTextSize(fontSizeH, fontSizeW)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.TRUE,
+                        Builder.COLOR_1
+                    )
+                    builder.addText("Order Note")
+
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+
+                    builder.addTextFont(Builder.FONT_E)
+                    builder.addTextAlign(Builder.ALIGN_CENTER)
+                    builder.addTextLang(Builder.LANG_EN)
+                    builder.addTextSize(fontSizeH, fontSizeW)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.COLOR_1
+                    )
+
+
+                    builder.addText(receiptModel?.order?.note.toString())
+                }
+
+                addHorizontalKitchenLine(builder)
+                if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName != false) {
+                    if (receiptModel?.order?.customer != null) {
+
+                        builder.addTextLineSpace(30)
+                        builder.addFeedUnit(30)
+                        builder.addFeedLine(1)
+                        builder.addTextFont(Builder.FONT_E)
+                        //builder.addTextLineSpace(20)
+                        builder.addTextAlign(Builder.ALIGN_LEFT)
+                        builder.addTextLang(Builder.LANG_EN)
+                        builder.addTextSize(fontSizeH, fontSizeW)
+                        builder.addTextStyle(
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.TRUE,
+                            Builder.COLOR_1
+                        )
+                        builder.addText("Customer Details" + "\n")
+
+                        builder.addTextFont(Builder.FONT_B)
+                        //builder.addTextLineSpace(20)
+                        builder.addTextLang(Builder.LANG_EN)
+                        builder.addTextSize(fontSizeH, fontSizeW)
+                        builder.addTextStyle(
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.COLOR_1
+                        )
+                        addHorizontalKitchenLine(builder)
+
+                        if (kitchenSettingModel.showCustomerName) {
+
+                            builder.addTextLineSpace(30)
+                            builder.addFeedUnit(30)
+                            builder.addTextFont(Builder.FONT_E)
+                            builder.addTextAlign(Builder.ALIGN_LEFT)
+                            //builder.addTextLineSpace(20)
+                            builder.addTextLang(Builder.LANG_EN)
+                            builder.addTextSize(fontSizeH, fontSizeW)
+                            builder.addTextStyle(
+                                Builder.FALSE,
+                                Builder.FALSE,
+                                Builder.TRUE,
+                                Builder.COLOR_1
+                            )
+                            builder.addText(receiptModel?.order?.customer?.firstName + " " + receiptModel?.order?.customer?.lastName)
+
+                        }
+
+
+                        if (kitchenSettingModel.showCustomerPhone) {
+
+                            if (receiptModel?.order?.customer?.phones?.isNotEmpty() == true) {
+                                builder.addTextLineSpace(30)
+                                builder.addFeedUnit(30)
+                                builder.addTextFont(Builder.FONT_E)
+                                builder.addTextAlign(Builder.ALIGN_LEFT)
+                                //builder.addTextLineSpace(20)
+                                builder.addTextLang(Builder.LANG_EN)
+                                builder.addTextSize(fontSizeH, fontSizeW)
+                                builder.addTextStyle(
+                                    Builder.FALSE,
+                                    Builder.FALSE,
+                                    Builder.TRUE,
+                                    Builder.COLOR_1
+                                )
+                                builder.addText(
+                                    MethodUtils.getUSFormatNumber(
+                                        receiptModel?.order?.customer?.phones?.get(
+                                            0
+                                        )?.phoneNumber.toString()
+                                    )
+                                )
+                            }
+
+                        }
+                        /* builder.addTextLineSpace(30)
+                     builder.addFeedUnit(30)
+                     builder.addTextFont(Builder.FONT_E)
+                     builder.addTextAlign(Builder.ALIGN_LEFT)
+                     //builder.addTextLineSpace(20)
+                     builder.addTextLang(Builder.LANG_EN)
+                     builder.addTextSize(1, 1)
+                     builder.addTextStyle(
+                         Builder.FALSE,
+                         Builder.FALSE,
+                         Builder.TRUE,
+                         Builder.COLOR_1
+                     )
+                     builder.addText(receiptModel?.order?.customer?.email)*/
+
+                        if (kitchenSettingModel.showCustomerAddress) {
+                            if (receiptModel?.order?.orderType?.trim().toString()
+                                    .lowercase() == "Open Order".trim()
+                                    .toString().lowercase()
+                                && receiptModel?.order?.deliveryType?.trim().toString()
+                                    .lowercase() == "Pickup".trim().lowercase()
+                            ) {
+
+                            } else {
+
+                                if (receiptModel?.order?.customer?.addresses?.isNotEmpty() == true) {
+
+                                    builder.addTextLineSpace(30)
+                                    builder.addFeedUnit(30)
+                                    builder.addTextFont(Builder.FONT_E)
+                                    builder.addTextAlign(Builder.ALIGN_LEFT)
+                                    //builder.addTextLineSpace(20)
+                                    builder.addTextLang(Builder.LANG_EN)
+                                    builder.addTextSize(fontSizeH, fontSizeW)
+                                    builder.addTextStyle(
+                                        Builder.FALSE,
+                                        Builder.FALSE,
+                                        Builder.TRUE,
+                                        Builder.COLOR_1
+                                    )
+                                    receiptModel?.order?.customer?.addresses?.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
+                                        ?.forEach {
+
+                                            if (it.typeOfAddress.equals(
+                                                    Constants.BILLING_ADDRESS,
+                                                    ignoreCase = true
+                                                )
+                                            ) {
+                                                builder!!.addText(
+                                                    it.fullAddress
+                                                )
+                                            }
+                                        }
+
+                                    //  builder.addText(receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress)
+                                }
+                            }
+                        }
+
+                    }
+                }
+            } else {
+
+                var fontSizeH = 1
+                var fontSizeW = 1
+                when (kitchenSettingModel.fonts) {
+                    Constants.SMALL -> {
+                        fontSizeH = 1
+                        fontSizeW = 1
+                    }
+
+                    Constants.MEDIUM -> {
+                        fontSizeH = 1
+                        fontSizeW = 2
+                    }
+
+                    Constants.LARGE -> {
+                        fontSizeH = 2
+                        fontSizeW = 2
+                    }
+
+
+                }
+
+                builder = Builder(pname, PrinterClass.language, requireActivity())
+
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addFeedLine(2)
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(2, 2)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
+                    builder.addText(
+                        "OrderID:" + receiptModel?.order?.custom_order_id
+                    )
+                } else {
+                    builder.addText(
+                        "OrderID:" + receiptModel?.order?.id
+                    )
+                }
+
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addFeedLine(1)
+
+                if (kitchenSettingModel.showOrderType) {
+
+
+                    builder.addFeedLine(1)
+                    builder.addTextFont(Builder.FONT_E)
+                    builder.addTextLang(Builder.LANG_EN)
+                    builder.addTextSize(fontSizeH, fontSizeW)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.TRUE,
+                        Builder.COLOR_1
+                    )
+                    builder.addTextAlign(Builder.ALIGN_CENTER)
+
+                    addBuilderText(builder, receiptModel?.order?.orderTypeName.toString())
+                }
+                var tmps = "Open Order".toString().trim()
+                    .toString().lowercase()
+                LogUtil.logE(TAG, "LowerCAse ${tmps.trimmedLength()}")
+
+
+
+                if (receiptModel?.order?.orderType.equals(PHONE_ORDER, true) ||
+                    receiptModel?.order?.orderType.equals("OnlineWebOrder", true) ||
+                    receiptModel?.order?.orderType.equals("Online Order", true) ||
+                    receiptModel?.order?.orderType.equals("OnlineOrder", true)
+                ) {
+                    builder.addFeedLine(1)
+                    builder.addTextFont(Builder.FONT_E)
+                    builder.addTextLang(Builder.LANG_EN)
+                    builder.addTextSize(fontSizeH, fontSizeW)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.TRUE,
+                        Builder.COLOR_1
+                    )
+                    builder.addTextAlign(Builder.ALIGN_CENTER)
+
+                    addBuilderText(builder, receiptModel?.order?.deliveryType.toString())
+                }
+
+
+//                builder.addTextLineSpace(30)
+//                builder.addFeedUnit(30)
+//                builder.addTextFont(Builder.FONT_E)
+//                //  builder.addTextAlign(Builder.ALIGN_LEFT)
+//                builder.addTextLang(Builder.LANG_EN)
+//                builder.addTextSize(fontSizeH, fontSizeW)
+//                builder.addTextStyle(
+//                    Builder.FALSE,
+//                    Builder.FALSE,
+//                    Builder.FALSE,
+//                    Builder.COLOR_1
+//                )
+//
+//
+//                builder.addText(
+//                    padLine(
+//                        "ReceiptID:" + receiptModel?.order?.offlineId,
+//                        "",
+//                        if (kitchenSettingModel.fonts == LARGE) {
+//                            24
+//                        } else {
+//                            48
+//                        }
+//                    )
+//                )
+                if (kitchenSettingModel.showTeamMember) {
+
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+                    builder.addTextFont(Builder.FONT_E)
+                    //  builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextLang(Builder.LANG_EN)
+                    builder.addTextSize(fontSizeH, fontSizeW)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.COLOR_1
+                    )
+                    builder.addText(
+                        padLine(
+                            "Employee:" + receiptModel?.order?.employee?.name, "",
+                            if (kitchenSettingModel.fonts == Constants.LARGE) {
+                                24
+                            } else {
+                                48
+                            }
+                        )
+                    )
+
+                }
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addTextFont(Builder.FONT_E)
+                //  builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(fontSizeH, fontSizeW)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+
+                builder.addText(
+                    padLine(
+                        Constants.getReceiptFormatDateFromUTCServer(
+                            requireContext(),
+                            receiptModel?.order?.createdAt.toString()
+                        ),
+                        "",
+                        if (kitchenSettingModel.fonts == Constants.LARGE) {
+                            24
+                        } else {
+                            48
+                        }
+                    )
+                )
+
+                builder.addFeedLine(1)
+
+
+
+                addHorizontalLine(builder)
+
+                receiptModel?.order?.orderItems?.let {
+                    addOrdersForKitchen(
+                        builder,
+                        it,
+                        fontSizeH,
+                        fontSizeW,
+                        customerReceiptPrinters.printerCategories.toCollection(arrayListOf())
+                    )
+                }
+
+                if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+                    builder.addFeedLine(1)
+                    builder.addTextFont(Builder.FONT_E)
+                    builder.addTextAlign(Builder.ALIGN_LEFT)
+                    //builder.addTextLineSpace(20)
+                    builder.addTextLang(Builder.LANG_EN)
+                    builder.addTextSize(fontSizeH, fontSizeW)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.COLOR_1
+                    )
+                    builder.addText("Order Note")
+
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+
+                    builder.addTextFont(Builder.FONT_E)
+                    builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextLang(Builder.LANG_EN)
+                    builder.addTextSize(fontSizeH, fontSizeW)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.COLOR_1
+                    )
+
+
+                    builder.addText(receiptModel?.order?.note.toString())
+                }
+
+
+                if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName != false) {
+                    if (receiptModel?.order?.customer != null) {
+
+                        builder.addTextLineSpace(30)
+                        builder.addFeedUnit(30)
+                        builder.addFeedLine(1)
+                        builder.addTextFont(Builder.FONT_E)
+                        //builder.addTextLineSpace(20)
+                        builder.addTextAlign(Builder.ALIGN_LEFT)
+                        builder.addTextLang(Builder.LANG_EN)
+                        builder.addTextSize(fontSizeH, fontSizeW)
+                        builder.addTextStyle(
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.TRUE,
+                            Builder.COLOR_1
+                        )
+                        builder.addText("Customer Details" + "\n")
+
+                        builder.addTextFont(Builder.FONT_B)
+                        //builder.addTextLineSpace(20)
+                        builder.addTextLang(Builder.LANG_EN)
+                        builder.addTextSize(fontSizeH, fontSizeW)
+                        builder.addTextStyle(
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.COLOR_1
+                        )
+                        addHorizontalLine(builder)
+
+                        if (kitchenSettingModel.showCustomerName) {
+
+                            builder.addTextLineSpace(30)
+                            builder.addFeedUnit(30)
+                            builder.addTextFont(Builder.FONT_E)
+                            builder.addTextAlign(Builder.ALIGN_LEFT)
+                            //builder.addTextLineSpace(20)
+                            builder.addTextLang(Builder.LANG_EN)
+                            builder.addTextSize(fontSizeH, fontSizeW)
+                            builder.addTextStyle(
+                                Builder.FALSE,
+                                Builder.FALSE,
+                                Builder.TRUE,
+                                Builder.COLOR_1
+                            )
+                            builder.addText(receiptModel?.order?.customer?.firstName + " " + receiptModel?.order?.customer?.lastName)
+
+                        }
+
+
+                        if (kitchenSettingModel.showCustomerPhone) {
+
+                            if (receiptModel?.order?.customer?.phones?.isNotEmpty() == true) {
+                                builder.addTextLineSpace(30)
+                                builder.addFeedUnit(30)
+                                builder.addTextFont(Builder.FONT_E)
+                                builder.addTextAlign(Builder.ALIGN_LEFT)
+                                //builder.addTextLineSpace(20)
+                                builder.addTextLang(Builder.LANG_EN)
+                                builder.addTextSize(fontSizeH, fontSizeW)
+                                builder.addTextStyle(
+                                    Builder.FALSE,
+                                    Builder.FALSE,
+                                    Builder.TRUE,
+                                    Builder.COLOR_1
+                                )
+                                builder.addText(
+                                    MethodUtils.getUSFormatNumber(
+                                        receiptModel?.order?.customer?.phones?.get(
+                                            0
+                                        )?.phoneNumber.toString()
+                                    )
+                                )
+                            }
+
+                        }
+                        /* builder.addTextLineSpace(30)
+                 builder.addFeedUnit(30)
+                 builder.addTextFont(Builder.FONT_E)
+                 builder.addTextAlign(Builder.ALIGN_LEFT)
+                 //builder.addTextLineSpace(20)
+                 builder.addTextLang(Builder.LANG_EN)
+                 builder.addTextSize(1, 1)
+                 builder.addTextStyle(
+                     Builder.FALSE,
+                     Builder.FALSE,
+                     Builder.TRUE,
+                     Builder.COLOR_1
+                 )
+                 builder.addText(receiptModel?.order?.customer?.email)*/
+
+                        if (kitchenSettingModel.showCustomerAddress) {
+                            if (receiptModel?.order?.orderType?.trim().toString()
+                                    .lowercase() == "Open Order".trim()
+                                    .toString().lowercase()
+                                && receiptModel?.order?.deliveryType?.trim().toString()
+                                    .lowercase() == "Pickup".trim().lowercase()
+                            ) {
+
+                            } else {
+
+                                if (receiptModel?.order?.customer?.addresses?.isNotEmpty() == true) {
+
+                                    builder.addTextLineSpace(30)
+                                    builder.addFeedUnit(30)
+                                    builder.addTextFont(Builder.FONT_E)
+                                    builder.addTextAlign(Builder.ALIGN_LEFT)
+                                    //builder.addTextLineSpace(20)
+                                    builder.addTextLang(Builder.LANG_EN)
+                                    builder.addTextSize(fontSizeH, fontSizeW)
+                                    builder.addTextStyle(
+                                        Builder.FALSE,
+                                        Builder.FALSE,
+                                        Builder.TRUE,
+                                        Builder.COLOR_1
+                                    )
+
+                                    receiptModel?.order?.customer?.addresses?.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
+                                        ?.forEach {
+
+                                            if (it.typeOfAddress.equals(
+                                                    Constants.BILLING_ADDRESS,
+                                                    ignoreCase = true
+                                                )
+                                            ) {
+                                                builder.addText(
+                                                    it.fullAddress
+                                                )
+                                            }
+                                        }
+                                    // builder.addText(receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress)
+                                }
+                            }
+                        }
+
+                    }
+                }
+
+            }
+
+            builder.addFeedLine(5)
+
+            builder.addCut(Builder.CUT_FEED)
+
+            val status = IntArray(1)
+            val battery = IntArray(1)
+
+            var timeOut = PrinterClass.SEND_TIMEOUT
+            if (customerReceiptPrinters.printer_type == Constants.BLUETOOTH) {
+                timeOut = PrinterClass.BLUETOOTH_TIMEOUT
+            }
+
+            if (customerReceiptPrinters.name.substring(0, 6).toString()
+                    .lowercase() == "TM-m30".lowercase() && customerReceiptPrinters.printer_type != Constants.BLUETOOTH
+            ) {
+
+                timeOut = 10000
+            }
+
+            try {
+                PrinterClass.getPrinter()?.sendData(
+                    builder,
+                    timeOut, status, battery
+                )
+
+                Handler(Looper.getMainLooper()).postDelayed(Runnable {
+
+                }, 100)
+                //printerDialog.dismiss()
+                PrinterClass.closePrinter()
+
+                //PrinterClass.getPrinter()?.sendData(builder, 0, status, battery)
+            } catch (e: Exception) {
+//                printerDialog.dismiss()
+                PrinterClass.closePrinter()
+                e.printStackTrace()
+                LogUtil.logE(TAG, "PrinterError: " + e.localizedMessage)
+            }
+
+
+        } catch (e: Exception) {
+            // printerDialog.dismiss()
+            e.printStackTrace()
+        }
+
+    }
+
+    private fun generateKitchenReceiptSunmi(
+        kitchenReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
+        type: String
+    ) {
+        try {
+            PrintSunmiUtils.fontSize(kitchenSettingModel.fonts)
+            SunmiPrinterApi.getInstance().printerInit()
+            SunmiPrinterApi.getInstance().lineWrap(4)
+            if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
+                PrintSunmiUtils.orderIdLarge("OrderID:" + receiptModel?.order?.custom_order_id)
+            } else {
+                PrintSunmiUtils.orderIdLarge("OrderID:" + receiptModel?.order?.id)
+            }
+            SunmiPrinterApi.getInstance().lineWrap(1)
+
+            if (kitchenSettingModel.showOrderType) {
+                PrintSunmiUtils.printOrderType(receiptModel?.order?.orderTypeName.toString())
+                SunmiPrinterApi.getInstance().lineWrap(1)
+            }
+
+            if (receiptModel?.order?.orderType.equals(PHONE_ORDER, true) ||
+                receiptModel?.order?.orderType.equals("OnlineWebOrder", true) ||
+                receiptModel?.order?.orderType.equals("Online Order", true) ||
+                receiptModel?.order?.orderType.equals("OnlineOrder", true)
+            ) {
+                PrintSunmiUtils.printOrderType(receiptModel?.order?.deliveryType.toString())
+                SunmiPrinterApi.getInstance().lineWrap(1)
+            }
+
+
+            /*  if (receiptModel?.order?.orderType.toString().lowercase() == "OpenOrder".trim()
+                      .toString().lowercase() || receiptModel?.order?.orderType.toString()
+                      .lowercase() == "Open Order".trim()
+                      .toString().lowercase()
+              ) {
+
+                  PrintSunmiUtils.printOrderType(receiptModel?.order?.deliveryType.toString())
+                  SunmiPrinterApi.getInstance().lineWrap(1)
+              }*/
+
+
+            if (kitchenSettingModel.showTeamMember) {
+                PrintSunmiUtils.employee(
+                    padLine(
+                        "Employee:" + receiptModel?.order?.employee?.name, "",
+                        if (kitchenSettingModel.fonts == Constants.LARGE) 23 else 48
+                    ).toString()
+                )
+            }
+            SunmiPrinterApi.getInstance().lineWrap(1)
+            PrintSunmiUtils.orderTime(
+                padLine(
+                    Constants.getReceiptFormatDateFromUTCServer(
+                        requireContext(),
+                        receiptModel?.order?.createdAt.toString()
+                    ),
+                    "",
+                    if (kitchenSettingModel.fonts == Constants.LARGE) 23 else 48
+                ).toString()
+            )
+
+            PrintSunmiUtils.addHorizontal()
+            SunmiPrinterApi.getInstance().lineWrap(1)
+
+            Log.e(
+                TAG,
+                "getValueUpdate:  ${
+                    prefProvider.getValueboolean(
+                        Constants.OPEN_ORDER_UPDATE_FOR_PRINT,
+                        false
+                    )
+                }"
+            )
+            if (prefProvider.getValueboolean(Constants.OPEN_ORDER_UPDATE_FOR_PRINT, false) == true) {
+                receiptModel?.order?.orderItems?.let {
+                    var printOrderItems = checkOrderItemsForOpenORderUpdate()
+
+                    Log.e(TAG, "printeOrderItems  ${Gson().toJson(printOrderItems)}")
+
+
+                    addOrdersForKitchen(
+                        if (printOrderItems.isNotEmpty()) printOrderItems else it,
+                        kitchenReceiptPrinters.printerCategories.toCollection(arrayListOf())
+                    )
+                }
+
+
+            } else {
+
+                receiptModel?.order?.orderItems?.let {
+
+                    addOrdersForKitchen(
+                        it,
+                        kitchenReceiptPrinters.printerCategories.toCollection(arrayListOf())
+                    )
+                }
+            }
+
+            SunmiPrinterApi.getInstance().lineWrap(1)
+            if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
+
+                PrintSunmiUtils.orderNote(receiptModel?.order?.note.toString())
+
+            }
+
+            SunmiPrinterApi.getInstance().lineWrap(1)
+            if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName != false) {
+                if (receiptModel?.order?.customer != null) {
+
+                    PrintSunmiUtils.customerDetails()
+
+                    if (kitchenSettingModel.showCustomerName) {
+
+                        PrintSunmiUtils.customerName(receiptModel?.order?.customer?.firstName + " " + receiptModel?.order?.customer?.lastName)
+
+                    }
+
+
+                    if (kitchenSettingModel.showCustomerPhone) {
+
+                        if (receiptModel?.order?.customer?.phones?.isNotEmpty() == true) {
+
+                            receiptModel?.order?.customer?.phones?.get(0)?.phoneNumber?.let {
+                                PrintSunmiUtils.customerPhone(
+                                    MethodUtils.getUSFormatNumber(it)
+                                )
+                            }
+                        }
+
+                    }
+
+                    if (kitchenSettingModel.showCustomerAddress) {
+                        if (receiptModel?.order?.orderType?.trim().toString()
+                                .lowercase() == "Open Order".trim()
+                                .toString().lowercase()
+                            && receiptModel?.order?.deliveryType?.trim().toString()
+                                .lowercase() == "Pickup".trim().lowercase()
+                        ) {
+
+                        } else {
+
+                            if (receiptModel?.order?.customer?.addresses?.isNotEmpty() == true) {
+
+                                receiptModel?.order?.customer?.addresses?.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
+                                    ?.forEach {
+
+                                        if (it.typeOfAddress.equals(
+                                                Constants.BILLING_ADDRESS,
+                                                ignoreCase = true
+                                            )
+                                        ) {
+                                            PrintSunmiUtils.customerAddress(
+                                                it.fullAddress
+                                            )
+                                        }
+                                    }
+                            }
+                        }
+                    }
+
+                }
+            }
+
+            SunmiPrinterApi.getInstance().lineWrap(2)
+            PrintSunmiUtils.cutPaper()
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+    }
+
+    private fun generateReceiptForU220(
+        mPrinter: Printer,
+        data: PrinterResponse.Data.KitchenReceiptPrinters,
+        type: String
+    ) {
+
+        var fontSizeH = 1
+        var fontSizeW = 1
+        when (kitchenSettingModel.fonts) {
+            Constants.SMALL -> {
+                fontSizeH = 1
+                fontSizeW = 1
+            }
+
+            Constants.MEDIUM -> {
+                fontSizeH = 1
+                fontSizeW = 2
+            }
+
+            Constants.LARGE -> {
+                fontSizeH = 2
+                fontSizeW = 2
+            }
+        }
+
+        mPrinter.addFeedUnit(30)
+        mPrinter.addFeedLine(2)
+        mPrinter.addTextFont(Builder.FONT_E)
+        mPrinter.addTextAlign(Builder.ALIGN_CENTER)
+        mPrinter.addTextLang(Builder.LANG_EN)
+        mPrinter.addTextSize(2, 2)
+        mPrinter.addTextStyle(
+            Builder.FALSE,
+            Builder.FALSE,
+            Builder.TRUE,
+            Builder.COLOR_1
+        )
+
+        mPrinter.addText("OrderID:" + receiptModel?.order?.id)
+        mPrinter.addFeedLine(1)
+        mPrinter.addFeedUnit(30)
+        mPrinter.addFeedLine(1)
+
+        if (kitchenSettingModel.showOrderType) {
+            mPrinter.addFeedLine(1)
+            mPrinter.addTextFont(Builder.FONT_E)
+            mPrinter.addTextLang(Builder.LANG_EN)
+            mPrinter.addTextSize(fontSizeH, fontSizeW)
+            mPrinter.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.TRUE,
+                Builder.COLOR_1
+            )
+            mPrinter.addTextAlign(Builder.ALIGN_CENTER)
+            addBuilderTextForU220(mPrinter, receiptModel?.order?.orderTypeName.toString())
+        }
+        var tmps = "Open Order".toString().trim()
+            .toString().lowercase()
+        LogUtil.logE(TAG, "LowerCAse ${tmps.trimmedLength()}")
+
+        if (receiptModel?.order?.orderType.equals(PHONE_ORDER, true) ||
+            receiptModel?.order?.orderType.equals("OnlineWebOrder", true) ||
+            receiptModel?.order?.orderType.equals("Online Order", true) ||
+            receiptModel?.order?.orderType.equals("OnlineOrder", true)
+        ) {
+            mPrinter.addFeedLine(1)
+            mPrinter.addTextFont(Builder.FONT_E)
+            mPrinter.addTextLang(Builder.LANG_EN)
+            mPrinter.addTextSize(fontSizeH, fontSizeW)
+            mPrinter.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.TRUE,
+                Builder.COLOR_1
+            )
+            mPrinter.addTextAlign(Builder.ALIGN_CENTER)
+            addBuilderTextForU220(mPrinter, receiptModel?.order?.deliveryType.toString())
+        }
+
+        if (kitchenSettingModel.showTeamMember) {
+            mPrinter.addFeedLine(1)
+            mPrinter.addFeedUnit(30)
+            mPrinter.addTextFont(Builder.FONT_E)
+            //  builder.addTextAlign(Builder.ALIGN_LEFT)
+            mPrinter.addTextLang(Builder.LANG_EN)
+            mPrinter.addTextSize(fontSizeH, fontSizeW)
+            mPrinter.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.COLOR_1
+            )
+            mPrinter.addText(
+                padLine(
+                    "Employee:" + receiptModel?.order?.employee?.name, "",
+                    33
+                )
+            )
+        }
+        mPrinter.addFeedLine(1)
+        mPrinter.addFeedUnit(30)
+        mPrinter.addTextFont(Builder.FONT_E)
+        //  builder.addTextAlign(Builder.ALIGN_LEFT)
+        mPrinter.addTextLang(Builder.LANG_EN)
+        mPrinter.addTextSize(fontSizeH, fontSizeW)
+        mPrinter.addTextStyle(
+            Builder.FALSE,
+            Builder.FALSE,
+            Builder.FALSE,
+            Builder.COLOR_1
+        )
+
+        mPrinter.addText(
+            padLine(
+                Constants.getReceiptFormatDateFromUTCServer(
+                    requireContext(),
+                    receiptModel?.order?.createdAt.toString()
+                ),
+                "",
+                33
+            )
+        )
+
+        mPrinter.addFeedLine(1)
+        mPrinter.addTextFont(Builder.FONT_B)
+        //builder.addTextLineSpace(20)
+        mPrinter.addTextLang(Builder.LANG_EN)
+        mPrinter.addTextSize(fontSizeH, fontSizeW)
+        mPrinter.addTextStyle(
+            Builder.FALSE,
+            Builder.FALSE,
+            Builder.FALSE,
+            Builder.COLOR_1
+        )
+
+        addHorizontalKitchenLineForU220(mPrinter)
+        receiptModel?.order?.orderItems?.let {
+            addOrdersForKitchenU220(
+                mPrinter,
+                it,
+                fontSizeH,
+                fontSizeW,
+                data.printerCategories.toCollection(arrayListOf())
+            )
+        }
+        mPrinter.addFeedLine(1)
+
+        if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
+            mPrinter.addFeedUnit(30)
+            mPrinter.addFeedLine(1)
+            mPrinter.addTextFont(Builder.FONT_E)
+            mPrinter.addTextAlign(Builder.ALIGN_LEFT)
+            //builder.addTextLineSpace(20)
+            mPrinter.addTextLang(Builder.LANG_EN)
+            mPrinter.addTextSize(fontSizeH, fontSizeW)
+            mPrinter.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.TRUE,
+                Builder.COLOR_1
+            )
+            mPrinter.addText("Order Note")
+            mPrinter.addFeedLine(1)
+            mPrinter.addFeedUnit(30)
+            mPrinter.addTextFont(Builder.FONT_E)
+            mPrinter.addTextAlign(Builder.ALIGN_LEFT)
+            mPrinter.addTextLang(Builder.LANG_EN)
+            mPrinter.addTextSize(fontSizeH, fontSizeW)
+            mPrinter.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.COLOR_1
+            )
+            mPrinter.addText(receiptModel?.order?.note.toString())
+        }
+
+        mPrinter.addFeedLine(1)
+        if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName != false) {
+            mPrinter.addTextFont(Builder.FONT_B)
+            //builder.addTextLineSpace(20)
+            mPrinter.addTextLang(Builder.LANG_EN)
+            mPrinter.addTextSize(fontSizeH, fontSizeW)
+            mPrinter.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.COLOR_1
+            )
+            addHorizontalKitchenLineForU220(mPrinter)
+            if (receiptModel?.order?.customer != null) {
+
+                mPrinter.addFeedLine(1)
+                mPrinter.addFeedUnit(30)
+                mPrinter.addFeedLine(1)
+                mPrinter.addTextFont(Builder.FONT_E)
+                //builder.addTextLineSpace(20)
+                mPrinter.addTextAlign(Builder.ALIGN_LEFT)
+                mPrinter.addTextLang(Builder.LANG_EN)
+                mPrinter.addTextSize(fontSizeH, fontSizeW)
+                mPrinter.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+                mPrinter.addText("Customer Details" + "\n")
+
+                mPrinter.addTextFont(Builder.FONT_B)
+                //builder.addTextLineSpace(20)
+                mPrinter.addTextLang(Builder.LANG_EN)
+                mPrinter.addTextSize(fontSizeH, fontSizeW)
+                mPrinter.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+                addHorizontalKitchenLineForU220(mPrinter)
+
+                if (kitchenSettingModel.showCustomerName) {
+
+                    mPrinter.addFeedLine(1)
+                    mPrinter.addFeedUnit(30)
+                    mPrinter.addTextFont(Builder.FONT_E)
+                    mPrinter.addTextAlign(Builder.ALIGN_LEFT)
+                    //builder.addTextLineSpace(20)
+                    mPrinter.addTextLang(Builder.LANG_EN)
+                    mPrinter.addTextSize(fontSizeH, fontSizeW)
+                    mPrinter.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.TRUE,
+                        Builder.COLOR_1
+                    )
+                    mPrinter.addText(receiptModel?.order?.customer?.firstName + " " + receiptModel?.order?.customer?.lastName)
+
+                }
+
+
+                if (kitchenSettingModel.showCustomerPhone) {
+
+                    if (receiptModel?.order?.customer?.phones?.isNotEmpty() == true) {
+                        mPrinter.addFeedLine(1)
+                        mPrinter.addFeedUnit(30)
+                        mPrinter.addTextFont(Builder.FONT_E)
+                        mPrinter.addTextAlign(Builder.ALIGN_LEFT)
+                        //builder.addTextLineSpace(20)
+                        mPrinter.addTextLang(Builder.LANG_EN)
+                        mPrinter.addTextSize(fontSizeH, fontSizeW)
+                        mPrinter.addTextStyle(
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.TRUE,
+                            Builder.COLOR_1
+                        )
+                        mPrinter.addText(
+                            MethodUtils.getUSFormatNumber(
+                                receiptModel?.order?.customer?.phones?.get(
+                                    0
+                                )?.phoneNumber.toString()
+                            )
+                        )
+                    }
+
+                }
+                /* builder.addTextLineSpace(30)
+             builder.addFeedUnit(30)
+             builder.addTextFont(Builder.FONT_E)
+             builder.addTextAlign(Builder.ALIGN_LEFT)
+             //builder.addTextLineSpace(20)
+             builder.addTextLang(Builder.LANG_EN)
+             builder.addTextSize(1, 1)
+             builder.addTextStyle(
+                 Builder.FALSE,
+                 Builder.FALSE,
+                 Builder.TRUE,
+                 Builder.COLOR_1
+             )
+             builder.addText(receiptModel?.order?.customer?.email)*/
+
+                if (kitchenSettingModel.showCustomerAddress) {
+                    if (receiptModel?.order?.orderType?.trim().toString()
+                            .lowercase() == "Open Order".trim()
+                            .toString().lowercase()
+                        && receiptModel?.order?.deliveryType?.trim().toString()
+                            .lowercase() == "Pickup".trim().lowercase()
+                    ) {
+
+                    } else {
+
+                        if (receiptModel?.order?.customer?.addresses?.isNotEmpty() == true) {
+
+                            mPrinter.addFeedLine(1)
+                            mPrinter.addFeedUnit(30)
+                            mPrinter.addTextFont(Builder.FONT_E)
+                            mPrinter.addTextAlign(Builder.ALIGN_LEFT)
+                            //builder.addTextLineSpace(20)
+                            mPrinter.addTextLang(Builder.LANG_EN)
+                            mPrinter.addTextSize(fontSizeH, fontSizeW)
+                            mPrinter.addTextStyle(
+                                Builder.FALSE,
+                                Builder.FALSE,
+                                Builder.TRUE,
+                                Builder.COLOR_1
+                            )
+                            receiptModel?.order?.customer?.addresses?.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
+                                ?.forEach {
+
+                                    if (it.typeOfAddress.equals(
+                                            Constants.BILLING_ADDRESS,
+                                            ignoreCase = true
+                                        )
+                                    ) {
+                                        mPrinter.addText(
+                                            it.fullAddress
+                                        )
+                                    }
+                                }
+
+                            //  builder.addText(receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress)
+                        }
+                    }
+                }
+
+            }
+        }
+        mPrinter.addFeedLine(4)
+        mPrinter.addCut(Builder.CUT_FEED)
+        try {
+            mPrinter.sendData(Printer.PARAM_DEFAULT)
+            mPrinter.clearCommandBuffer()
+            mPrinter.endTransaction()
+            /*  try {
+                  mPrinter.disconnect()
+              } catch (e: java.lang.Exception) {
+                  e.printStackTrace()
+              }*/
+
+        } catch (e: java.lang.Exception) {
+            /* try {
+                 mPrinter.disconnect()
+             } catch (e: Exception) {
+                 e.printStackTrace()
+             }*/
+            e.printStackTrace()
+        }
+    }
+
+    private fun checkOrderItemsForOpenORderUpdate(): ArrayList<CreateOrderResponse.Data.Order.OrderItem> {
+        var printOrderItems: ArrayList<CreateOrderResponse.Data.Order.OrderItem> =
+            arrayListOf()
+        var orderItemsToPrint: ArrayList<CreateOrderResponse.Data.Order.OrderItem> = arrayListOf()
+        receiptModel?.order?.orderItems?.let { orderItemsToPrint.addAll(it) }
+
+        val serializedObject: String =
+            prefProvider.getValue(
+                Constants.OPEN_ORDER_ITEMS,
+                ""
+            )
+
+        Log.e(
+            TAG, "getserializedObject:  ${
+                prefProvider.getValue(
+                    Constants.OPEN_ORDER_ITEMS,
+                    ""
+                )
+            }"
+        )
+        if (serializedObject.isNotEmpty()) {
+            val gson = Gson()
+            val type = object :
+                TypeToken<List<CreateOrderResponse.Data.Order.OrderItem?>?>() {}.type
+            var arrayItems: ArrayList<CreateOrderResponse.Data.Order.OrderItem> =
+                gson.fromJson<Any>(
+                    serializedObject,
+                    type
+                ) as ArrayList<CreateOrderResponse.Data.Order.OrderItem>
+
+            LogUtil.logE(
+                TAG,
+                "arrayItems:  ${
+                    Gson().toJson(
+                        arrayItems
+                    )
+                }"
+            )
+
+            Log.e(
+                TAG,
+                "updafwwewe  ${Gson().toJson(Gson().toJson(receiptModel?.order?.orderItems))}"
+            )
+            var itemIds: ArrayList<Int> =
+                arrayListOf()
+            arrayItems.forEach {
+                itemIds.add(it.itemId)
+            }
+
+
+            orderItemsToPrint?.forEachIndexed { index, orderItem ->
+
+                if (itemIds.contains(
+                        orderItem.itemId
+                    )
+                ) {
+
+                    arrayItems.forEachIndexed { index, orderItemJ ->
+
+                        if (orderItemJ.itemId == orderItem.itemId) {
+                            if (orderItemJ.quantity != orderItem.quantity) {
+                                if (orderItem.quantity > orderItemJ.quantity) {
+                                    orderItem.quantity =
+                                        orderItem.quantity - orderItemJ.quantity
+
+                                    Log.e(TAG, "ItemColdQty ${orderItemJ.quantity}")
+                                    Log.e(TAG, "ItemCnewQty ${orderItem.quantity}")
+                                    Log.e(TAG, "FinalOrderItemQty  ${orderItem.quantity}")
+                                    if (!printOrderItems.contains(
+                                            orderItem
+                                        )
+                                    ) {
+                                        printOrderItems.add(
+                                            orderItem
+                                        )
+                                        return@forEachIndexed
+
+                                    }
+                                }
+                            }
+
+
+                        }
+                    }
+
+
+                } else {
+                    printOrderItems.add(
+                        orderItem
+                    )
+                }
+
+
+            }
+        }
+        /*  prefProvider.setValue(
+              Constants.OPEN_ORDER_ITEMS,
+              ""
+          )*/
+
+        Log.e(TAG, "ReturnListForPrint  ${Gson().toJson(printOrderItems)}")
+
+        return printOrderItems
+
+
+    }
+    private fun generateKitchenReceiptSunmiInner(kitchenReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
+                                                 type: String) {
+        try {
+            // PrintSunmiUtils.fontSizeInner(LARGE)
+            SunmiPrintHelper.getInstance().initPrinter()
+            SunmiPrintHelper.getInstance().lineWrap(4)
+            if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
+                PrintSunmiUtils.headerText("OrderID:" + receiptModel?.order?.custom_order_id)
+            } else {
+                PrintSunmiUtils.headerText("OrderID:" + receiptModel?.order?.id)
+            }
+            SunmiPrintHelper.getInstance().lineWrap(1)
+
+            if (kitchenSettingModel.showOrderType) {
+                PrintSunmiUtils.headerText(receiptModel?.order?.orderTypeName.toString())
+                SunmiPrintHelper.getInstance().lineWrap(1)
+            }
+
+            if (receiptModel?.order?.orderType.equals("Online Order", true) ||
+                receiptModel?.order?.orderType.equals("OnlineWebOrder", true) ||
+                receiptModel?.order?.orderType.equals(PHONE_ORDER, true)
+            ) {
+                PrintSunmiUtils.headerText(receiptModel?.order?.deliveryType.toString())
+                SunmiPrintHelper.getInstance().lineWrap(1)
+            }
+
+            if (kitchenSettingModel.showTeamMember) {
+                PrintSunmiUtils.normalTextLarge("Employee:" + receiptModel?.order?.employee?.name)
+            }
+            PrintSunmiUtils.normalTextLarge(
+                Constants.getReceiptFormatDateFromUTCServer(
+                    requireContext(),
+                    receiptModel?.order?.createdAt.toString()
+                )
+            )
+            SunmiPrintHelper.getInstance().lineWrap(1)
+
+
+            PrintSunmiUtils.addHorizontalInner()
+            SunmiPrintHelper.getInstance().lineWrap(1)
+
+            receiptModel?.order?.orderItems?.let {
+                addOrdersForKitchenInner(
+                    it,
+                    kitchenReceiptPrinters.printerCategories.toCollection(arrayListOf())
+                )
+            }
+
+
+            if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
+                PrintSunmiUtils.orderNoteInnerLarge(receiptModel?.order?.note.toString())
+            }
+
+            SunmiPrintHelper.getInstance().lineWrap(1)
+            if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName != false) {
+                if (receiptModel?.order?.customer != null) {
+                    PrintSunmiUtils.customerDetailsInner()
+                    if (kitchenSettingModel.showCustomerName) {
+                        PrintSunmiUtils.normalTextLarge(receiptModel?.order?.customer?.firstName + " " + receiptModel?.order?.customer?.lastName)
+                    }
+
+                    if (kitchenSettingModel.showCustomerPhone) {
+                        if (receiptModel?.order?.customer?.phones?.isNotEmpty() == true) {
+                            receiptModel?.order?.customer?.phones?.get(0)?.phoneNumber?.let {
+                                PrintSunmiUtils.normalTextLarge(
+                                    MethodUtils.getUSFormatNumber(it)
+                                )
+                            }
+                        }
+                    }
+
+                    if (kitchenSettingModel.showCustomerAddress) {
+                        if (receiptModel?.order?.orderType?.trim().toString()
+                                .lowercase() == "Open Order".trim()
+                                .toString().lowercase()
+                            && receiptModel?.order?.deliveryType?.trim().toString()
+                                .lowercase() == "Pickup".trim().lowercase()
+                        ) {
+                        } else {
+                            if (receiptModel?.order?.customer?.addresses?.isNotEmpty() == true) {
+//                                receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
+//                                    PrintSunmiUtils.normalTextLarge(
+//                                        it
+//                                    )
+//                                }
+                                receiptModel?.order?.customer?.addresses?.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
+                                    ?.forEach {
+
+                                        if (it.typeOfAddress.equals(
+                                                Constants.BILLING_ADDRESS,
+                                                ignoreCase = true
+                                            )
+                                        ) {
+                                            PrintSunmiUtils.normalTextLarge(
+                                                it.fullAddress
+                                            )
+                                        }
+                                    }
+                            }
+                        }
+                    }
+
+                }
+            }
+
+            SunmiPrintHelper.getInstance().lineWrap(1)
+            PrintSunmiUtils.cutPaperInner()
+
+            //  SunmiPrinterApi.getInstance().disconnectPrinter(requireContext())
+
+        } catch (e: Exception) {
+            // printerDialog.dismiss()
+            e.printStackTrace()
+        }
+
+    }
+
+    private fun setService2(  kitchenReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
+                              type: String) {
+
+        if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.FoundSunmiPrinter) {
+
+            LogUtil.logE("SunmiPrintHelper1", "FoundSunmiPrinter")
+
+            if (!BluetoothUtil.isBlueToothPrinter) {
+
+                LogUtil.logE("SunmiPrintHelpe1r", "isBlueToothPrinter")
+
+                generateKitchenReceiptSunmiInner(kitchenReceiptPrinters,type)
+
+
+            }
+
+        } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.CheckSunmiPrinter) {
+            Handler(Looper.getMainLooper()).postDelayed({
+                setService2(kitchenReceiptPrinters,type)
+            }, 2000)
+            LogUtil.logE("SunmiPrintHelper", "CheckSunmiPrinter")
+        } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.LostSunmiPrinter) {
+
+            LogUtil.logE("SunmiPrintHelper", "LostSunmiPrinter")
+        } else {
+            LogUtil.logE("SunmiPrintHelper", "ELSE")
+        }
     }
 
     private fun setService(
@@ -3542,4 +5441,10 @@ class TransactionDetailsFragment : Fragment() {
         PrintSunmiUtils.printLogo(newBitmap)
 
     }
+
+    override fun onStatusChangeEvent(p0: String?, p1: Int) {
+        LogUtil.logE(TAG, "onStatusChangePrinter:  $p0")
+
+    }
+
 }
