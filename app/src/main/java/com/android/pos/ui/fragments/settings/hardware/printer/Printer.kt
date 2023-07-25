@@ -81,6 +81,8 @@ import com.epson.eposprint.Print
 import com.epson.eposprint.StatusChangeEventListener
 import com.epson.epsonio.*
 import com.google.gson.Gson
+import com.stealthcopter.networktools.SubnetDevices
+import com.stealthcopter.networktools.subnet.Device
 import com.sunmi.externalprinterlibrary.api.ConnectCallback
 import com.sunmi.externalprinterlibrary.api.SunmiPrinter
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
@@ -435,6 +437,23 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
     }
 
+    private fun getWifiInfo() {
+        SubnetDevices.fromLocalAddress().findDevices(object :
+            SubnetDevices.OnSubnetDeviceFound {
+            override fun onDeviceFound(device: Device?) {
+                Log.e(TAG, "onSingleDevice:  ${Gson().toJson(device)}")
+
+            }
+
+            override fun onFinished(devicesFound: ArrayList<Device>?) {
+                Log.e(TAG, "devicesFound:  ${Gson().toJson(devicesFound)}")
+            }
+
+        })
+
+
+    }
+
     private fun onCreatePrinterObserve() {
         viewModel.printerCreatedSucces.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { data ->
@@ -628,6 +647,10 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
         }
         getAllKitchenPrintersListFromDB()
+        lifecycleScope.launch {
+            delay(1500)
+            getAllKitchenPrintersListFromDB()
+        }
     }
 
     private fun getAllKitchenPrintersListFromDB() {
@@ -2991,8 +3014,20 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             delay(2000)
 
 
-            Log.e(TAG,"sunmiCheckMasterTeminal  ${prefProvider.getValueboolean(IS_MASTER_TERMINAL, false)}")
-            if (prefProvider.getValueboolean(IS_MASTER_TERMINAL, false) == true) {
+            Log.e(
+                TAG,
+                "sunmiCheckMasterTeminal  ${
+                    prefProvider.getValueboolean(
+                        IS_MASTER_TERMINAL,
+                        false
+                    )
+                }"
+            )
+            if (prefProvider.getValueboolean(
+                    IS_MASTER_TERMINAL,
+                    false
+                ) == true && checkIsU220() == false
+            ) {
 
                 var contains: Boolean = false
                 kitchenAdapter.getList().forEach {
@@ -3039,8 +3074,16 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
     }
 
-    fun checkU220OrNot(): Boolean {
-
-        return false
+    fun checkIsU220(): Boolean {
+        if (kitchenPrintList.isNotEmpty() && kitchenPrintList.get(0).printerName.equals(
+                "TM-U220",
+                true
+            )
+        ) {
+            return true
+        } else {
+            return false
+        }
     }
+
 }

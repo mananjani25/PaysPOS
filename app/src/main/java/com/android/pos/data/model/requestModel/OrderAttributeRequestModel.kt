@@ -15,6 +15,7 @@ class OrderAttributeRequestModel {
     @SerializedName("date")
     var date: String = ""
 
+
     @SerializedName("delivery_type")
     var deliveryType: String = ""
 

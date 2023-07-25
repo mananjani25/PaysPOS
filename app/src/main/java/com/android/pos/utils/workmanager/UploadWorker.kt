@@ -53,6 +53,7 @@ import com.hosopy.actioncable.Consumer
 import com.hosopy.actioncable.Subscription
 import com.sunmi.externalprinterlibrary2.ConnectCallback
 import com.sunmi.externalprinterlibrary2.ResultCallback
+import com.sunmi.externalprinterlibrary2.StatusCallback
 import com.sunmi.externalprinterlibrary2.printer.CloudPrinter
 import com.sunmi.externalprinterlibrary2.style.AlignStyle
 import com.sunmi.externalprinterlibrary2.style.CloudPrinterStatus
@@ -130,7 +131,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
                 }
 
-                Log.e(TAG,"checkKit:  ${kitchenPrinterList.size}")
+                Log.e(TAG, "checkKit:  ${kitchenPrinterList.size}")
                 if (kitchenPrinterList.isNotEmpty() && kitchenPrinterList.get(0).name.contains(
                         "U220",
                         true
@@ -352,8 +353,12 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                         ).getBoolean(IS_MASTER_TERMINAL, false) == true
                     ) {
                         runBlocking {
-                            delay(5000)
-                            consumer?.connect()
+                            delay(10000)
+                            subscription = consumer?.subscriptions?.create(appearanceChannel)
+                            val params = JsonObject()
+                            params.addProperty("id", locationId)
+                            subscription?.perform("received", params)
+
                         }
                     }
 
@@ -546,7 +551,12 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                                     dataList.get(i).asJsonObject.get("port_no").asInt
 
                                 )
-                                cloudPrinter.connect(mContext, object : ConnectCallback {
+                                printerObjList.set(
+                                    dataList.get(i).asJsonObject.get("mac_address").asString
+                                        ?: "",
+                                    cloudPrinter
+                                )
+                                /*cloudPrinter.connect(mContext, object : ConnectCallback {
                                     override fun onConnect() {
 
 
@@ -577,7 +587,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
                                     }
 
-                                })
+                                })*/
 
 
                             } else {
@@ -1291,9 +1301,9 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                     printerSize = listOfPrintersData.size
                     orderSize = listOfPrintersData.get(0).printerQueueModelList.size
 
-                    if (orderSize == 0){
+                    if (orderSize == 0) {
                         listOfPrintersData.forEachIndexed { index, it ->
-                            if (it.printerQueueModelList.isNotEmpty()){
+                            if (it.printerQueueModelList.isNotEmpty()) {
                                 orderSize = it.printerQueueModelList.size
                                 currentOrderIndex = 0
                                 currentPrinterIndex = index
@@ -1301,8 +1311,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                             }
 
                         }
-                    }
-                    else {
+                    } else {
 
                         currentOrderIndex = 0
                         currentPrinterIndex = 0
@@ -1682,11 +1691,17 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
         macAddress: String,
         currentOrderIndexF: Int
     ) {
-        Log.e(TAG, "checkSunmi Called  ${cloudPrinter?.isConnected}  check Name  ${listOfPrintersData.get(currentPrinterIndexF).printerName} checkQueueRunning  ${isQueueRunning}")
+        Log.e(
+            TAG,
+            "checkSunmi Called  ${cloudPrinter?.isConnected}  check Name  ${
+                listOfPrintersData.get(currentPrinterIndexF).printerName
+            } checkQueueRunning  ${isQueueRunning}"
+        )
         if (isQueueRunning == false) {
-            isQueueRunning = true
-            if (cloudPrinter?.isConnected == false || cloudPrinter == null) {
-                cloudPrinter?.connect(mContext, object : ConnectCallback {
+
+            if (cloudPrinter?.isConnected == false) {
+
+                cloudPrinter.connect(mContext, object : ConnectCallback {
                     override fun onConnect() {
                         sendDataToCloudPrint(
                             listOfPrintersData,
@@ -1701,6 +1716,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
                     override fun onFailed(p0: String?) {
                         Log.e(TAG, "checkFailed")
+                        isQueueRunning = false
                         if (listOfPrintersData.size - 1 == currentPrinterIndex) {
                             /*  Log.e(
                                   TAG,
@@ -1717,7 +1733,10 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
                                     val params = JsonObject()
                                     params.addProperty("id", locationId)
-                                    params.addProperty("url", baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3)
+                                    params.addProperty(
+                                        "url",
+                                        baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3
+                                    )
                                     Log.e(
                                         TAG,
                                         "checkReuestURL: ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}  locationID: ${locationId}"
@@ -1734,7 +1753,11 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                                         sendDataToPrintToSunmi(
                                             listOfPrintersData,
                                             currentPrinterIndex,
-                                            printerObjList.get(listOfPrintersData.get(currentPrinterIndex).macAddress) as CloudPrinter?,
+                                            printerObjList.get(
+                                                listOfPrintersData.get(
+                                                    currentPrinterIndex
+                                                ).macAddress
+                                            ) as CloudPrinter?,
                                             listOfPrintersData.get(currentPrinterIndex).printerQueueModelList,
                                             listOfPrintersData.get(currentPrinterIndex).macAddress,
                                             currentOrderIndex
@@ -1745,7 +1768,10 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                                             delay(3000)
                                             val params = JsonObject()
                                             params.addProperty("id", locationId)
-                                            params.addProperty("url", baseUrl + CREATE_QUEUE_PRINTER_PHASE3)
+                                            params.addProperty(
+                                                "url",
+                                                baseUrl + CREATE_QUEUE_PRINTER_PHASE3
+                                            )
                                             Log.e(
                                                 TAG,
                                                 "checkReuestURL: ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}  locationID: ${locationId}"
@@ -1758,7 +1784,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                                 }
                             }
 
-                        } else if (listOfPrintersData.size - 1 != currentPrinterIndex) {
+                        } else if (listOfPrintersData.size - 1 > currentPrinterIndex) {
                             /* Log.e(
                                  TAG,
                                  "checkLog: ${currentPrinterIndex}  orderIndex: ${
@@ -1775,7 +1801,11 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                                         sendDataToPrintToSunmi(
                                             listOfPrintersData,
                                             currentPrinterIndex,
-                                            printerObjList.get(listOfPrintersData.get(currentPrinterIndex).macAddress) as CloudPrinter?,
+                                            printerObjList.get(
+                                                listOfPrintersData.get(
+                                                    currentPrinterIndex
+                                                ).macAddress
+                                            ) as CloudPrinter?,
                                             listOfPrintersData.get(currentPrinterIndex).printerQueueModelList,
                                             listOfPrintersData.get(currentPrinterIndex).macAddress,
                                             currentOrderIndex
@@ -1787,7 +1817,10 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                                         delay(3000)
                                         val params = JsonObject()
                                         params.addProperty("id", locationId)
-                                        params.addProperty("url", baseUrl + CREATE_QUEUE_PRINTER_PHASE3)
+                                        params.addProperty(
+                                            "url",
+                                            baseUrl + CREATE_QUEUE_PRINTER_PHASE3
+                                        )
                                         Log.e(
                                             TAG,
                                             "checkReuestURL: ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}  locationID: ${locationId}"
@@ -1803,7 +1836,11 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                                     sendDataToPrintToSunmi(
                                         listOfPrintersData,
                                         currentPrinterIndex,
-                                        printerObjList.get(listOfPrintersData.get(currentPrinterIndex).macAddress) as CloudPrinter?,
+                                        printerObjList.get(
+                                            listOfPrintersData.get(
+                                                currentPrinterIndex
+                                            ).macAddress
+                                        ) as CloudPrinter?,
                                         listOfPrintersData.get(currentPrinterIndex).printerQueueModelList,
                                         listOfPrintersData.get(currentPrinterIndex).macAddress,
                                         currentOrderIndex
@@ -1832,6 +1869,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
                     override fun onDisConnect() {
                         Log.e(TAG, "checkDisconnect")
+                        isQueueRunning = false
                         if (listOfPrintersData.size - 1 == currentPrinterIndex) {
                             /*  Log.e(
                                   TAG,
@@ -1843,53 +1881,61 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
                             if (listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size - 1 == currentOrderIndex) {
                                 // Log.e(TAG, "checkLastORderPRint  ")
-                                runBlocking {
-                                    delay(3000)
 
-                                    val params = JsonObject()
-                                    params.addProperty("id", locationId)
-                                    params.addProperty("url", baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3)
-                                    Log.e(
-                                        TAG,
-                                        "checkReuestURL: ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}  locationID: ${locationId}"
-                                    )
-                                    subscription?.perform("received", params)
-                                }
+                                val params = JsonObject()
+                                params.addProperty("id", locationId)
+                                params.addProperty(
+                                    "url",
+                                    baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3
+                                )
+                                Log.e(
+                                    TAG,
+                                    "checkReuestURL: ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}  locationID: ${locationId}"
+                                )
+                                subscription?.perform("received", params)
+
 
                             } else {
 
-                                runBlocking {
-                                    currentOrderIndex = currentOrderIndex + 1
-                                    if (listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.isNotEmpty()) {
 
-                                        sendDataToPrintToSunmi(
-                                            listOfPrintersData,
-                                            currentPrinterIndex,
-                                            printerObjList.get(listOfPrintersData.get(currentPrinterIndex).macAddress) as CloudPrinter?,
-                                            listOfPrintersData.get(currentPrinterIndex).printerQueueModelList,
-                                            listOfPrintersData.get(currentPrinterIndex).macAddress,
-                                            currentOrderIndex
+                                currentOrderIndex = currentOrderIndex + 1
+                                if (listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.isNotEmpty()) {
 
+                                    sendDataToPrintToSunmi(
+                                        listOfPrintersData,
+                                        currentPrinterIndex,
+                                        printerObjList.get(
+                                            listOfPrintersData.get(
+                                                currentPrinterIndex
+                                            ).macAddress
+                                        ) as CloudPrinter?,
+                                        listOfPrintersData.get(currentPrinterIndex).printerQueueModelList,
+                                        listOfPrintersData.get(currentPrinterIndex).macAddress,
+                                        currentOrderIndex
+
+                                    )
+                                } else {
+                                    runBlocking {
+                                        delay(3000)
+                                        val params = JsonObject()
+                                        params.addProperty("id", locationId)
+                                        params.addProperty(
+                                            "url",
+                                            baseUrl + CREATE_QUEUE_PRINTER_PHASE3
                                         )
-                                    } else {
-                                        runBlocking {
-                                            delay(3000)
-                                            val params = JsonObject()
-                                            params.addProperty("id", locationId)
-                                            params.addProperty("url", baseUrl + CREATE_QUEUE_PRINTER_PHASE3)
-                                            Log.e(
-                                                TAG,
-                                                "checkReuestURL: ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}  locationID: ${locationId}"
-                                            )
-                                            subscription?.perform("received", params)
-                                        }
-
-
+                                        Log.e(
+                                            TAG,
+                                            "checkReuestURL: ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}  locationID: ${locationId}"
+                                        )
+                                        subscription?.perform("received", params)
                                     }
+
+
                                 }
+
                             }
 
-                        } else if (listOfPrintersData.size - 1 != currentPrinterIndex) {
+                        } else if (listOfPrintersData.size - 1 > currentPrinterIndex) {
                             /* Log.e(
                                  TAG,
                                  "checkLog: ${currentPrinterIndex}  orderIndex: ${
@@ -1902,69 +1948,79 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                                 currentOrderIndex = 0
                                 currentPrinterIndex = currentPrinterIndex + 1
                                 if (listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.isNotEmpty()) {
-                                    runBlocking {
-                                        sendDataToPrintToSunmi(
-                                            listOfPrintersData,
-                                            currentPrinterIndex,
-                                            printerObjList.get(listOfPrintersData.get(currentPrinterIndex).macAddress) as CloudPrinter?,
-                                            listOfPrintersData.get(currentPrinterIndex).printerQueueModelList,
-                                            listOfPrintersData.get(currentPrinterIndex).macAddress,
-                                            currentOrderIndex
 
-                                        )
-                                    }
+                                    sendDataToPrintToSunmi(
+                                        listOfPrintersData,
+                                        currentPrinterIndex,
+                                        printerObjList.get(
+                                            listOfPrintersData.get(
+                                                currentPrinterIndex
+                                            ).macAddress
+                                        ) as CloudPrinter?,
+                                        listOfPrintersData.get(currentPrinterIndex).printerQueueModelList,
+                                        listOfPrintersData.get(currentPrinterIndex).macAddress,
+                                        currentOrderIndex
+
+                                    )
+
                                 } else {
-                                    runBlocking {
-                                        delay(3000)
+
+                                     //   delay(3000)
                                         val params = JsonObject()
                                         params.addProperty("id", locationId)
-                                        params.addProperty("url", baseUrl + CREATE_QUEUE_PRINTER_PHASE3)
+                                        params.addProperty(
+                                            "url",
+                                            baseUrl + CREATE_QUEUE_PRINTER_PHASE3
+                                        )
                                         Log.e(
                                             TAG,
                                             "checkReuestURL: ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}  locationID: ${locationId}"
                                         )
                                         subscription?.perform("received", params)
                                     }
-                                }
+
 
                             } else {
 
                                 currentOrderIndex = currentOrderIndex + 1
-                                runBlocking {
+
                                     sendDataToPrintToSunmi(
                                         listOfPrintersData,
                                         currentPrinterIndex,
-                                        printerObjList.get(listOfPrintersData.get(currentPrinterIndex).macAddress) as CloudPrinter?,
+                                        printerObjList.get(
+                                            listOfPrintersData.get(
+                                                currentPrinterIndex
+                                            ).macAddress
+                                        ) as CloudPrinter?,
                                         listOfPrintersData.get(currentPrinterIndex).printerQueueModelList,
                                         listOfPrintersData.get(currentPrinterIndex).macAddress,
                                         currentOrderIndex
 
                                     )
-                                }
+
 
                             }
 
                         } else {
-                            runBlocking {
-                                delay(3000)
-                                val params = JsonObject()
-                                params.addProperty("id", locationId)
-                                params.addProperty("url", baseUrl + CREATE_QUEUE_PRINTER_PHASE3)
-                                Log.e(
-                                    TAG,
-                                    "checkReuestURL: ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}  locationID: ${locationId}"
-                                )
-                                subscription?.perform("received", params)
-                            }
 
+
+                            val params = JsonObject()
+                            params.addProperty("id", locationId)
+                            params.addProperty("url", baseUrl + CREATE_QUEUE_PRINTER_PHASE3)
+                            Log.e(
+                                TAG,
+                                "checkReuestURL: ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}  locationID: ${locationId}"
+                            )
+                            subscription?.perform("received", params)
                         }
+
+
                     }
 
                 })
-            }
-            else if (cloudPrinter == null){
+            } else if (cloudPrinter == null) {
 
-                Log.e(TAG,"checkCLoudObjNull")
+                Log.e(TAG, "checkCLoudObjNull")
                 var cloudPrinter: CloudPrinter = CloudPrinter(
                     listOfPrintersData.get(currentPrinterIndexF).printerName,
                     macAddress,
@@ -1974,8 +2030,11 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
                 cloudPrinter.connect(mContext, object : ConnectCallback {
                     override fun onConnect() {
-                        Log.e(TAG,"CheckConnectDone 2nd")
-                        printerObjList.put(listOfPrintersData.get(currentPrinterIndexF).macAddress,cloudPrinter)
+                        Log.e(TAG, "CheckConnectDone 2nd")
+                        printerObjList.put(
+                            listOfPrintersData.get(currentPrinterIndexF).macAddress,
+                            cloudPrinter
+                        )
 
                         sendDataToCloudPrint(
                             listOfPrintersData,
@@ -2006,7 +2065,10 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
                                     val params = JsonObject()
                                     params.addProperty("id", locationId)
-                                    params.addProperty("url", baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3)
+                                    params.addProperty(
+                                        "url",
+                                        baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3
+                                    )
                                     Log.e(
                                         TAG,
                                         "checkReuestURL: ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}  locationID: ${locationId}"
@@ -2023,7 +2085,11 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                                         sendDataToPrintToSunmi(
                                             listOfPrintersData,
                                             currentPrinterIndex,
-                                            printerObjList.get(listOfPrintersData.get(currentPrinterIndex).macAddress) as CloudPrinter?,
+                                            printerObjList.get(
+                                                listOfPrintersData.get(
+                                                    currentPrinterIndex
+                                                ).macAddress
+                                            ) as CloudPrinter?,
                                             listOfPrintersData.get(currentPrinterIndex).printerQueueModelList,
                                             listOfPrintersData.get(currentPrinterIndex).macAddress,
                                             currentOrderIndex
@@ -2034,7 +2100,10 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                                             delay(3000)
                                             val params = JsonObject()
                                             params.addProperty("id", locationId)
-                                            params.addProperty("url", baseUrl + CREATE_QUEUE_PRINTER_PHASE3)
+                                            params.addProperty(
+                                                "url",
+                                                baseUrl + CREATE_QUEUE_PRINTER_PHASE3
+                                            )
                                             Log.e(
                                                 TAG,
                                                 "checkReuestURL: ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}  locationID: ${locationId}"
@@ -2047,7 +2116,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                                 }
                             }
 
-                        } else if (listOfPrintersData.size - 1 != currentPrinterIndex) {
+                        } else if (listOfPrintersData.size - 1 > currentPrinterIndex) {
                             /* Log.e(
                                  TAG,
                                  "checkLog: ${currentPrinterIndex}  orderIndex: ${
@@ -2064,7 +2133,11 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                                         sendDataToPrintToSunmi(
                                             listOfPrintersData,
                                             currentPrinterIndex,
-                                            printerObjList.get(listOfPrintersData.get(currentPrinterIndex).macAddress) as CloudPrinter?,
+                                            printerObjList.get(
+                                                listOfPrintersData.get(
+                                                    currentPrinterIndex
+                                                ).macAddress
+                                            ) as CloudPrinter?,
                                             listOfPrintersData.get(currentPrinterIndex).printerQueueModelList,
                                             listOfPrintersData.get(currentPrinterIndex).macAddress,
                                             currentOrderIndex
@@ -2076,7 +2149,10 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                                         delay(3000)
                                         val params = JsonObject()
                                         params.addProperty("id", locationId)
-                                        params.addProperty("url", baseUrl + CREATE_QUEUE_PRINTER_PHASE3)
+                                        params.addProperty(
+                                            "url",
+                                            baseUrl + CREATE_QUEUE_PRINTER_PHASE3
+                                        )
                                         Log.e(
                                             TAG,
                                             "checkReuestURL: ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}  locationID: ${locationId}"
@@ -2092,7 +2168,11 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                                     sendDataToPrintToSunmi(
                                         listOfPrintersData,
                                         currentPrinterIndex,
-                                        printerObjList.get(listOfPrintersData.get(currentPrinterIndex).macAddress) as CloudPrinter?,
+                                        printerObjList.get(
+                                            listOfPrintersData.get(
+                                                currentPrinterIndex
+                                            ).macAddress
+                                        ) as CloudPrinter?,
                                         listOfPrintersData.get(currentPrinterIndex).printerQueueModelList,
                                         listOfPrintersData.get(currentPrinterIndex).macAddress,
                                         currentOrderIndex
@@ -2137,7 +2217,10 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
                                     val params = JsonObject()
                                     params.addProperty("id", locationId)
-                                    params.addProperty("url", baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3)
+                                    params.addProperty(
+                                        "url",
+                                        baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3
+                                    )
                                     Log.e(
                                         TAG,
                                         "checkReuestURL: ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}  locationID: ${locationId}"
@@ -2154,7 +2237,11 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                                         sendDataToPrintToSunmi(
                                             listOfPrintersData,
                                             currentPrinterIndex,
-                                            printerObjList.get(listOfPrintersData.get(currentPrinterIndex).macAddress) as CloudPrinter?,
+                                            printerObjList.get(
+                                                listOfPrintersData.get(
+                                                    currentPrinterIndex
+                                                ).macAddress
+                                            ) as CloudPrinter?,
                                             listOfPrintersData.get(currentPrinterIndex).printerQueueModelList,
                                             listOfPrintersData.get(currentPrinterIndex).macAddress,
                                             currentOrderIndex
@@ -2165,7 +2252,10 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                                             delay(3000)
                                             val params = JsonObject()
                                             params.addProperty("id", locationId)
-                                            params.addProperty("url", baseUrl + CREATE_QUEUE_PRINTER_PHASE3)
+                                            params.addProperty(
+                                                "url",
+                                                baseUrl + CREATE_QUEUE_PRINTER_PHASE3
+                                            )
                                             Log.e(
                                                 TAG,
                                                 "checkReuestURL: ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}  locationID: ${locationId}"
@@ -2178,7 +2268,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                                 }
                             }
 
-                        } else if (listOfPrintersData.size - 1 != currentPrinterIndex) {
+                        } else if (listOfPrintersData.size - 1 > currentPrinterIndex) {
                             /* Log.e(
                                  TAG,
                                  "checkLog: ${currentPrinterIndex}  orderIndex: ${
@@ -2195,7 +2285,11 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                                         sendDataToPrintToSunmi(
                                             listOfPrintersData,
                                             currentPrinterIndex,
-                                            printerObjList.get(listOfPrintersData.get(currentPrinterIndex).macAddress) as CloudPrinter?,
+                                            printerObjList.get(
+                                                listOfPrintersData.get(
+                                                    currentPrinterIndex
+                                                ).macAddress
+                                            ) as CloudPrinter?,
                                             listOfPrintersData.get(currentPrinterIndex).printerQueueModelList,
                                             listOfPrintersData.get(currentPrinterIndex).macAddress,
                                             currentOrderIndex
@@ -2207,7 +2301,10 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                                         delay(3000)
                                         val params = JsonObject()
                                         params.addProperty("id", locationId)
-                                        params.addProperty("url", baseUrl + CREATE_QUEUE_PRINTER_PHASE3)
+                                        params.addProperty(
+                                            "url",
+                                            baseUrl + CREATE_QUEUE_PRINTER_PHASE3
+                                        )
                                         Log.e(
                                             TAG,
                                             "checkReuestURL: ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}  locationID: ${locationId}"
@@ -2223,7 +2320,11 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                                     sendDataToPrintToSunmi(
                                         listOfPrintersData,
                                         currentPrinterIndex,
-                                        printerObjList.get(listOfPrintersData.get(currentPrinterIndex).macAddress) as CloudPrinter?,
+                                        printerObjList.get(
+                                            listOfPrintersData.get(
+                                                currentPrinterIndex
+                                            ).macAddress
+                                        ) as CloudPrinter?,
                                         listOfPrintersData.get(currentPrinterIndex).printerQueueModelList,
                                         listOfPrintersData.get(currentPrinterIndex).macAddress,
                                         currentOrderIndex
@@ -2251,8 +2352,8 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
                 })
 
-            }else {
-                Log.e(TAG,"checkLastElse ")
+            } else {
+                Log.e(TAG, "checkLastElse ")
 
                 sendDataToCloudPrint(
                     listOfPrintersData,
@@ -2267,6 +2368,19 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                  cloudPrinter?.cutPaper(true)
                  cloudPrinter?.commitTransBuffer(this@UploadWorker)*/
             }
+        } else {
+
+
+            //delay(3000)
+            val params = JsonObject()
+            params.addProperty("id", locationId)
+            params.addProperty("url", baseUrl + CREATE_QUEUE_PRINTER_PHASE3)
+            Log.e(
+                TAG,
+                "checkReuestURL: ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}  locationID: ${locationId}"
+            )
+            subscription?.perform("received", params)
+
         }
 
     }
@@ -2279,6 +2393,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
         macAddress: String,
         currentOrderIndex: Int
     ) {
+        isQueueRunning = true
         var obj = printerQueueModelList.get(currentOrderIndex)
         cloudPrinter?.lineFeed(1)
         cloudPrinter?.setUnderlineMode(UnderlineStyle.EMPTY)
@@ -2356,9 +2471,31 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
         cloudPrinter?.lineFeed(3)
         cloudPrinter?.cutPaper(true)
-          Log.e(TAG,""+Gson().toJson(cloudPrinter?.cloudPrinterInfo))
 
-        cloudPrinter?.commitTransBuffer(this)
+        Log.e(
+            TAG,
+            "getTransaction  " + Gson().toJson(cloudPrinter?.cloudPrinterInfo) + "isCloudConnected:  ${cloudPrinter?.isConnected}"
+        )
+        cloudPrinter?.getDeviceState(object : StatusCallback {
+            override fun onResult(p0: CloudPrinterStatus?) {
+                Log.e(TAG, "cloudPrinterStatus:   ${Gson().toJson(p0)}")
+                if (p0?.name.equals("OUT_PAPER", true) || p0?.name.equals(
+                        "UNKNOWN",
+                        true
+                    ) || p0?.name.equals("COVER", true)
+                ) {
+                    cloudPrinter.clearTransBuffer()
+                    cloudPrinter.release(mContext)
+                    isQueueRunning = false
+                } else {
+                    cloudPrinter.commitTransBuffer(
+                        this@UploadWorker
+                    )
+                }
+
+            }
+
+        })
 
 
     }
@@ -4085,7 +4222,10 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
     override fun onComplete() {
         isQueueRunning = false
-        Log.e(TAG,"checkListData  ${listOfPrintersData.size}  currentPrinter  ${currentPrinterIndex}")
+        Log.e(
+            TAG,
+            "checkListData  ${listOfPrintersData.size}  currentPrinter  ${currentPrinterIndex}"
+        )
         if (listOfPrintersData.size - 1 >= currentPrinterIndex) {
 
             try {
@@ -4098,7 +4238,10 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                     ).id
                 LogUtil.logE(TAG, "DeleteUrl ${deleteUrl}")
                 params.addProperty("url", deleteUrl)
-                Log.e(TAG,"checkDeleteSunmi  ${listOfPrintersData.get(currentPrinterIndex).printerName}")
+                Log.e(
+                    TAG,
+                    "checkDeleteSunmi  ${listOfPrintersData.get(currentPrinterIndex).printerName}"
+                )
                 params.addProperty(
                     "name",
                     listOfPrintersData.get(currentPrinterIndex).printerName
@@ -4176,7 +4319,10 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                      listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size - 1
                  }  currentOrderInd: ${currentOrderIndex}"
              )*/
-            Log.e(TAG,"cehckereCurrent  ${listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size}")
+            Log.e(
+                TAG,
+                "cehckereCurrent  ${listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size}"
+            )
             if (listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size - 1 == currentOrderIndex) {
 
 
@@ -4243,146 +4389,121 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
     }
 
     override fun onFailed(p0: CloudPrinterStatus?) {
-        isQueueRunning = false
         Log.e(TAG, "check failed  ${Gson().toJson(p0)}")
-        if (p0?.name.equals("UNKNOWN", true)) {
-            sendNotification("Printer - ${listOfPrintersData[currentPrinterIndex].modelName} is Offline.")
-            if (listOfPrintersData.size - 1 == currentPrinterIndex) {
-                /*  Log.e(
-                      TAG,
-                      "listOfPrinerData:   ${listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size}"
-                  )
-                  Log.e(TAG, "listOfcurrentOrderIndex:   ${currentOrderIndex}")
-      */
 
+        (printerObjList.get(listOfPrintersData.get(currentPrinterIndex).macAddress) as CloudPrinter).clearTransBuffer()
+        (printerObjList.get(listOfPrintersData.get(currentPrinterIndex).macAddress) as CloudPrinter).release(
+            mContext
+        )
+        isQueueRunning = false
+        if (p0?.name.equals("RUNNING", true) == false) {
 
-                if (listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size - 1 == currentOrderIndex) {
-                    // Log.e(TAG, "checkLastORderPRint  ")
-                    runBlocking {
-                        delay(3000)
+            if (isPrinterRunning == false) {
 
-                        val params = JsonObject()
-                        params.addProperty("id", locationId)
-                        params.addProperty("url", baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3)
-                        Log.e(
-                            TAG,
-                            "checkReuestURLREquestews: ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}  locationID: ${locationId}"
-                        )
-                        subscription?.perform("received", params)
-                    }
-
-                } else {
-
-                    runBlocking {
-                        currentOrderIndex = currentOrderIndex + 1
-                        if (listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.isNotEmpty()) {
-
-                            sendDataToPrintToSunmi(
-                                listOfPrintersData,
-                                currentPrinterIndex,
-                                printerObjList.get(listOfPrintersData.get(currentPrinterIndex).macAddress) as CloudPrinter?,
-                                listOfPrintersData.get(currentPrinterIndex).printerQueueModelList,
-                                listOfPrintersData.get(currentPrinterIndex).macAddress,
-                                currentOrderIndex
-
-                            )
-                        } else {
-                            runBlocking {
-                                delay(3000)
-                                val params = JsonObject()
-                                params.addProperty("id", locationId)
-                                params.addProperty("url", baseUrl + CREATE_QUEUE_PRINTER_PHASE3)
-                                Log.e(
-                                    TAG,
-                                    "checkReuestURL: ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}  locationID: ${locationId}"
-                                )
-                                subscription?.perform("received", params)
-                            }
-
-
-                        }
-                    }
-                }
-
-            } else if (listOfPrintersData.size - 1 != currentPrinterIndex) {
-                /* Log.e(
-                     TAG,
-                     "checkLog: ${currentPrinterIndex}  orderIndex: ${
-                         listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size - 1
-                     }  currentOrderInd: ${currentOrderIndex}"
-                 )*/
-                Log.e(TAG,"cehckereCurrent  ${listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size}")
-                if (listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size - 1 == currentOrderIndex) {
-
-
-                    currentOrderIndex = 0
-                    currentPrinterIndex = currentPrinterIndex + 1
-                    if (listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.isNotEmpty()) {
-                        runBlocking {
-                            sendDataToPrintToSunmi(
-                                listOfPrintersData,
-                                currentPrinterIndex,
-                                printerObjList.get(listOfPrintersData.get(currentPrinterIndex).macAddress) as CloudPrinter?,
-                                listOfPrintersData.get(currentPrinterIndex).printerQueueModelList,
-                                listOfPrintersData.get(currentPrinterIndex).macAddress,
-                                currentOrderIndex
-
-                            )
-                        }
-                    } else {
-                        runBlocking {
-                            delay(3000)
-                            val params = JsonObject()
-                            params.addProperty("id", locationId)
-                            params.addProperty("url", baseUrl + CREATE_QUEUE_PRINTER_PHASE3)
-                            Log.e(
-                                TAG,
-                                "checkReuestURL: ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}  locationID: ${locationId}"
-                            )
-                            subscription?.perform("received", params)
-                        }
-                    }
-
-                } else {
-
-                    currentOrderIndex = currentOrderIndex + 1
-                    runBlocking {
-                        sendDataToPrintToSunmi(
-                            listOfPrintersData,
-                            currentPrinterIndex,
-                            printerObjList.get(listOfPrintersData.get(currentPrinterIndex).macAddress) as CloudPrinter?,
-                            listOfPrintersData.get(currentPrinterIndex).printerQueueModelList,
-                            listOfPrintersData.get(currentPrinterIndex).macAddress,
-                            currentOrderIndex
-
-                        )
-                    }
-
-                }
-
-            } else {
-                runBlocking {
-                    delay(3000)
-                    val params = JsonObject()
-                    params.addProperty("id", locationId)
-                    params.addProperty("url", baseUrl + CREATE_QUEUE_PRINTER_PHASE3)
-                    Log.e(
-                        TAG,
-                        "checkReuestURL: ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}  locationID: ${locationId}"
-                    )
-                    subscription?.perform("received", params)
-                }
-
+                val params = JsonObject()
+                params.addProperty("id", locationId)
+                params.addProperty(
+                    "url",
+                    baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3
+                )
+                Log.e(
+                    TAG,
+                    "checkReuestURLREquestews: ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}  locationID: ${locationId}"
+                )
+                // subscription?.perform("received", params)
             }
 
-        } else if (p0?.name.equals("OUT_PAPER", true)) {
-            sendNotification(
-                "Please fill the Paper in ${
-                    listOfPrintersData.get(
-                        currentPrinterIndex
-                    ).modelName
-                }."
-            )
+
+            if (p0?.name.equals("UNKNOWN", true)) {
+                sendNotification("Printer - ${listOfPrintersData[currentPrinterIndex].modelName} is Offline.")
+
+
+            } else if (p0?.name.equals("OUT_PAPER", true)) {
+
+
+                sendNotification(
+                    "Please fill the Paper in ${
+                        listOfPrintersData.get(
+                            currentPrinterIndex
+                        ).modelName
+                    }."
+                )
+
+
+            } else if (p0?.name.equals("COVER", true)) {
+                sendNotification(
+                    "Please close the cover of ${
+                        listOfPrintersData.get(
+                            currentPrinterIndex
+                        ).modelName
+                    }."
+                )
+            }
+
+
+            /*   if (listOfPrintersData.size - 1 < currentPrinterIndex) {
+
+                   var getOrders = false
+                   for (l in currentPrinterIndex until listOfPrintersData.size) {
+
+                       if (listOfPrintersData.get(l).printerQueueModelList.isNotEmpty()) {
+                           getOrders = true
+                           currentPrinterIndex = l
+                           currentOrderIndex = 0
+                           break
+                       }
+                   }
+
+                   if (getOrders == true) {
+                       sendDataToPrintToSunmi(
+                           listOfPrintersData,
+                           currentPrinterIndex,
+                           printerObjList.get(listOfPrintersData.get(currentPrinterIndex).macAddress) as CloudPrinter?,
+                           listOfPrintersData.get(currentPrinterIndex).printerQueueModelList,
+                           listOfPrintersData.get(currentPrinterIndex).macAddress,
+                           currentOrderIndex
+
+                       )
+
+                   } else {
+                       runBlocking {
+                           delay(3000)
+
+                           val params = JsonObject()
+                           params.addProperty("id", locationId)
+                           params.addProperty(
+                               "url",
+                               baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3
+                           )
+                           Log.e(
+                               TAG,
+                               "checkReuestURLREquestews: ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}  locationID: ${locationId}"
+                           )
+                           subscription?.perform("received", params)
+                       }
+
+                   }
+
+               } else {
+
+
+
+                       val params = JsonObject()
+                       params.addProperty("id", locationId)
+                       params.addProperty(
+                           "url",
+                           baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3
+                       )
+                       Log.e(
+                           TAG,
+                           "checkReuestURLREquestews: ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}  locationID: ${locationId}"
+                       )
+                       subscription?.perform("received", params)
+                   }*/
+
+
+        } else {
+            Log.e(TAG, "check failed 2 in else")
         }
 
 
