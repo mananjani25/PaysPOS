@@ -16,6 +16,7 @@ import com.android.pos.databinding.DialogAddToWastageBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.WastageItemReasonsAdapter
 import com.android.pos.ui.fragments.dinein.DineInOrderTableViewModel
+import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.statusUtils.Status
@@ -36,7 +37,7 @@ class AddItemToWastageDialog : DialogFragment() {
     @Inject
     lateinit var prefProvider: PrefProvider
     var itemQuantity: Int = 1
-    var quantity: Int = 1
+    var quantity: Int = 0
 
     companion object {
         fun newInstance() = AddItemToWastageDialog()
@@ -76,7 +77,7 @@ class AddItemToWastageDialog : DialogFragment() {
                             binding.txtQty.setText(enteredString.substring(1))
                         } else {
                             binding.txtQty.setText("")
-                            quantity = 1
+                            quantity = 0
                         }
                     } else if (s.toString().trim().isNotEmpty() && s.toString()
                             .toInt() > itemQuantity
@@ -86,6 +87,7 @@ class AddItemToWastageDialog : DialogFragment() {
                     binding.txtQty.setSelection(binding.txtQty.length())
                     quantity = binding.txtQty.text.toString().toInt()
                 } catch (e: Exception) {
+                    quantity = 0
                     e.printStackTrace()
                 }
             }
@@ -117,18 +119,24 @@ class AddItemToWastageDialog : DialogFragment() {
         }
 
         binding.txtDone.setOnClickListener {
-            val bundle = Bundle().apply {
-                putInt("itemQuantity", quantity)
-                if (selectedWastageReason != null) {
-                    putParcelable("wastageReason", selectedWastageReason)
+            if (quantity == 0) {
+                AlertUtils.showCustomAlertWithListenerWithOK(
+                    requireContext(), getString(R.string.wastage_item_quantity_message)
+                ) { _, _ -> }
+            } else {
+                val bundle = Bundle().apply {
+                    putInt("itemQuantity", quantity)
+                    if (selectedWastageReason != null) {
+                        putParcelable("wastageReason", selectedWastageReason)
+                    }
+                    putString("wastageNote", wastageNote)
                 }
-                putString("wastageNote", wastageNote)
+                requireActivity().supportFragmentManager.setFragmentResult(
+                    "request_for_add_to_wastage",
+                    bundle
+                )
+                findNavController().navigateUp()
             }
-            requireActivity().supportFragmentManager.setFragmentResult(
-                "request_for_add_to_wastage",
-                bundle
-            )
-            findNavController().navigateUp()
         }
     }
 
