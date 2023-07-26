@@ -1782,7 +1782,7 @@ open class PaymentViewModel @Inject constructor(
                     prefProvider.getValueInt(Constants.LOCATION_ID, -1).toString()
                 )
             payableType = if(prefProvider.getValueboolean(Constants.IS_GIFT_CARD_REDEEM, false)){
-                gift_card_redeemed_amount = totalAM
+                gift_card_redeemed_amount = MethodUtils.roundOffAmountDouble(totalAM + tipAmount)
                 "GiftCardRedeem"
             }else{
                 gift_card_redeemed_amount = 0.0
