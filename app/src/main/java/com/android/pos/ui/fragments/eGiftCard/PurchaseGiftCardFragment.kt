@@ -135,7 +135,7 @@ class PurchaseGiftCardFragment : Fragment() {
 
         binding.imgBack.setOnClickListener {
 
-            clearCartOnBackPress()
+            dashboardViewModel.clearGiftCardCart()
 
             findNavController().popBackStack()
         }

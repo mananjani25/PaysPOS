@@ -41,6 +41,7 @@ import com.android.pos.data.remote.Constants.BALANCE_INQUIRY
 import com.android.pos.data.remote.Constants.CUSTOMER
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
+import com.android.pos.data.remote.Constants.GIFT_CARD
 import com.android.pos.data.remote.Constants.IS_FROM_ALL_ORDER
 import com.android.pos.data.remote.Constants.IS_PAYMENT_SCREEN
 import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
@@ -203,6 +204,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         checkCashDrawerObserver()
         Binding()
         prefProvider.setValue(Constants.REDIRECT_FROM, "")
+        if(prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD){
+            viewModel.clearGiftCardCart()
+        }
 
 //        hideSystemUI()
 
@@ -1066,6 +1070,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
         when (item.name) {
             SELL_CARD -> {
+                // clear customer if added any for previous order type
+                viewModel.clearCustomer()
                 if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
                     findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_purchaseGiftCard)
                 }
