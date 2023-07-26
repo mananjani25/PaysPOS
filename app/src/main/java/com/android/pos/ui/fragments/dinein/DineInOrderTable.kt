@@ -3319,9 +3319,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         requireActivity().supportFragmentManager.setFragmentResultListener(
             "request_for_add_to_wastage", viewLifecycleOwner
         ) { _: String, bundle: Bundle ->
-            val itemQuantity: Int = bundle.getInt("itemQuantity", 1)
-            val wastageReason: VenueDetailsResponse.Data.WastageReason =
-                bundle.getParcelable<VenueDetailsResponse.Data.WastageReason>("wastageReason") as VenueDetailsResponse.Data.WastageReason
+            val itemQuantity: Int = bundle.getInt("itemQuantity", 0)
+            var wastageReason: VenueDetailsResponse.Data.WastageReason? = null
+            if(bundle.containsKey("wastageReason")) {
+                wastageReason =
+                    bundle.getParcelable<VenueDetailsResponse.Data.WastageReason>("wastageReason") as VenueDetailsResponse.Data.WastageReason
+            }
             val wastageNote: String = bundle.getString("wastageNote", "")
             if (clickedPosition != -1 && dineInTableAdapter.getList()[clickedPosition].item != null) {
                 prefProvider.setValueboolean(DINE_IN_UPDATE, true)
@@ -3331,7 +3334,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     employeeId = prefProvider.getValueInt(EMPLOYEE_ID, 0),
                     itemQuantity = itemQuantity,
                     itemName = dineInTableAdapter.getList()[clickedPosition].item?.name,
-                    wastageReasonId = wastageReason.id,
+                    wastageReasonId = if (wastageReason == null) { null} else { wastageReason.id},
                     terminalId = prefProvider.getValueInt(TERMINAL_ID, -1),
                     wastageNote = wastageNote,
                     orderItemId = dineInTableAdapter.getList()[clickedPosition].item?.orderItemId,

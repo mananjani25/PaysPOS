@@ -119,7 +119,9 @@ class AddItemToWastageDialog : DialogFragment() {
         binding.txtDone.setOnClickListener {
             val bundle = Bundle().apply {
                 putInt("itemQuantity", quantity)
-                putParcelable("wastageReason", selectedWastageReason)
+                if (selectedWastageReason != null) {
+                    putParcelable("wastageReason", selectedWastageReason)
+                }
                 putString("wastageNote", wastageNote)
             }
             requireActivity().supportFragmentManager.setFragmentResult(
