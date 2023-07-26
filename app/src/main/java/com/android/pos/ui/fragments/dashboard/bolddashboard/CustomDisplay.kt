@@ -69,6 +69,7 @@ import com.google.gson.Gson
 import com.google.gson.JsonArray
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import retrofit2.Call
@@ -1453,9 +1454,9 @@ class CustomDisplay(
             txtContinue.setOnClickListener {
 
                 tippedAmount = edtAmount.text.toString().replace("$", "").trim().toDouble()
-                val showTipCollectionBeforePay = false
+                val showTipCollectionBeforePay = true
                 if(showTipCollectionBeforePay){
-                    EventBus.getDefault().post(TipAdded(tippedAmount))
+                    EventBus.getDefault().post(TipAdded(tippedAmount, tippedAmount))
                     showMainCart()
                 }else{
                     if (mIsCardPayment) {
@@ -1632,7 +1633,7 @@ class CustomDisplay(
         this.apiModule1 = apiModule1
         mWholeTotalPrice = wholeTotalPrice
 
-        val showTipCollectionBeforePay = false
+        val showTipCollectionBeforePay = true
 
         binding.apply {
             askForTipLayout.visible()
@@ -1689,7 +1690,7 @@ class CustomDisplay(
             binding.noTipRootLayout.setOnClickListener {
                 if(showTipCollectionBeforePay) {
                     //Update main screen with 0.00 tip in bracket
-                    EventBus.getDefault().post(TipAdded(0.00))
+                    EventBus.getDefault().post(TipAdded(0.00,0.00))
                     showMainCart()
                 }else{
                     showThankYou(mWholeTotalPrice)
@@ -1779,10 +1780,11 @@ class CustomDisplay(
     override fun selectedItem(model: GetTipReponse.Data, pos: Int, wholeTotalPrice: Double) {
         tipRate = model.rate
         tippedAmount = MethodUtils.percentageCalculation(wholeTotalPrice, model.rate)
-        val showTipCollectionBeforePay = false
+        val tippedAmountWithoutSurCharge = MethodUtils.percentageCalculation(wholeTotalPrice - dashBoardCategoryViewModel.cashdiscountAmount, model.rate)
+        val showTipCollectionBeforePay = true
         if(showTipCollectionBeforePay){
             //Update main screen with tipAmount added and updated card amount
-            EventBus.getDefault().post(TipAdded(tippedAmount))
+            EventBus.getDefault().post(TipAdded(tippedAmount,tippedAmountWithoutSurCharge))
             showMainCart()
         }else{
             if ((mIsCardPayment && !mIsSignatureRequired) || (!mIsCardPayment)) {

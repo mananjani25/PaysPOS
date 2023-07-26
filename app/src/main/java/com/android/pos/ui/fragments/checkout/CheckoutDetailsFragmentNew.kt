@@ -163,10 +163,6 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 passcodeViewModel,
                 dineInViewModel
             )
-//            {
-//                tipAmount = it
-//                tipAmountCalculation()
-//            }
         }
 
         val device = prefProvider.getValueInt(Constants.MAGTEK_HARDWARE, 0)
@@ -218,7 +214,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             if (!showCashCreditPrice) {
                 presentation.showSurcharge(true)
             }
-            val showTipCollectionBeforePay = false
+            val showTipCollectionBeforePay = true
             if(cashDiscountType == "SurCharge" && showTipCollectionBeforePay && prefProvider.getValue(
                     ORDER_TYPE, TAKEOUT)!= GIFT_CARD){
 
@@ -372,8 +368,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         prefProvider.setValueboolean(Constants.TIP_ADDED, true)
         prefProvider.setValue(Constants.TIP_ADDED_AMOUNT, tipAmount.toString())
-
-        tipAmountCalculation()
+        val tippedAmountWithoutSurCharge = tipAdded.tippedAmountWithoutSurCharge
+        tipAmountCalculation(tippedAmountWithoutSurCharge)
         loadPaymentLayout()
         org.greenrobot.eventbus.EventBus.getDefault().unregister(this)
     }
@@ -2338,7 +2334,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         binding.tvCard.text = "Card (" + binding.tvCard.text + ")"
     }
 
-    private fun tipAmountCalculation() {
+    private fun tipAmountCalculation(tipAmountWithoutSurcharge: Double = 0.00) {
         if (tipAmount == 0.00) {
             binding.tvsplittip?.gone()
             binding.tvtipcard?.gone()
@@ -2371,19 +2367,31 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 )
             )
         } else {
+            val showTipCollectionBeforePay = true
             if (this::presentation.isInitialized) {
                 presentation.show()
                 presentation.showTipsAdded(tipAmount, WholetotalPrice)
             }
+            if(showTipCollectionBeforePay){
+                MethodUtils.setPriceTextView(
+                    binding.tvCash,
+                    (getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectedCount) + tipAmountWithoutSurcharge
+                )
+                MethodUtils.setPriceTextView(
+                    binding.tvCash0,
+                    (getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectedCount) + tipAmountWithoutSurcharge
+                )
+            }else{
+                MethodUtils.setPriceTextView(
+                    binding.tvCash,
+                    (getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectedCount) + tipAmount
+                )
+                MethodUtils.setPriceTextView(
+                    binding.tvCash0,
+                    (getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectedCount) + tipAmount
+                )
+            }
 
-            MethodUtils.setPriceTextView(
-                binding.tvCash,
-                (getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectedCount) + tipAmount
-            )
-            MethodUtils.setPriceTextView(
-                binding.tvCash0,
-                (getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectedCount) + tipAmount
-            )
             MethodUtils.setPriceTextView(
                 binding.tvCard,
                 (getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectedCount) + tipAmount
@@ -2398,8 +2406,15 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             binding.tvCash.text =
                 "Cash (" + binding.tvCash.text + ")"
             binding.tvtipcash?.visible()
-            binding.tvtipcash?.text =
-                "(" + MethodUtils.roundOffAmount(tipAmount) + " Tip Added)"
+
+            if(showTipCollectionBeforePay){
+                binding.tvtipcash?.text =
+                    "(" + MethodUtils.roundOffAmount(tipAmountWithoutSurcharge) + " Tip Added)"
+            }else{
+                binding.tvtipcash?.text =
+                    "(" + MethodUtils.roundOffAmount(tipAmount) + " Tip Added)"
+            }
+
             binding.tvCard.text =
                 "Card (" + binding.tvCard.text + ")"
             binding.tvtipcard?.visible()
