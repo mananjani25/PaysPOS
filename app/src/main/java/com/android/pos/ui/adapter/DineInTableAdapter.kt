@@ -90,7 +90,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             var guestSubTotalWithOutCharges = 0.0
             var totalTaxAmt: Double = 0.0
 
-            if (list[position].title?.trim()?.lowercase() == "Whole Table".trim().lowercase()) {
+            if (list[position].title?.trim()?.lowercase() == "Whole Table".trim().lowercase() || list[position].itemsCount == 0) {
                 binding.imgPrint.visibility = View.INVISIBLE
             } else {
                 binding.imgPrint.visibility = View.VISIBLE
