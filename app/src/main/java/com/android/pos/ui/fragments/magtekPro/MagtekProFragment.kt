@@ -5,6 +5,7 @@ import android.app.Dialog
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.os.Message
 import android.util.Log
 import android.view.LayoutInflater
@@ -14,8 +15,6 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.widget.AppCompatEditText
-import androidx.appcompat.widget.AppCompatTextView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -43,6 +42,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import java.io.File
 import javax.inject.Inject
 
 
@@ -133,14 +133,20 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
 
     private fun setCommSetting(edtIP: String, edtPort: String) {
         //create commsetting object
-        val iniFile =
-            activity!!.applicationContext.filesDir.absolutePath + "/" + SettingINI.FILENAME
+
+        var file = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+
+        val iniFile = "/storage/emulated/0/Download/"+ SettingINI.FILENAME
+        /*val iniFile =
+            activity!!.applicationContext.filesDir.absolutePath + "/" + SettingINI.FILENAME*/
+        Log.d("iniFile: ","iniFile $iniFile ${file.absolutePath}")
         val commset: CommSetting = SettingINI.getCommSettingFromFile(iniFile)
 
         //initialization value  for comsetting's attribute
         commset.type = CommSetting.TCP
-        commset.timeOut = "3000"
+        commset.timeOut = "6000"
         commset.baudRate = "9600"
+//        commset.serialPort = "COM1"
         commset.isEnableProxy = false
         commset.destPort = edtPort
         commset.destIP = edtIP
