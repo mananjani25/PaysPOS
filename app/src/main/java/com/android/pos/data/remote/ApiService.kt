@@ -17,6 +17,7 @@ import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.model.responseModel.allOrders.AllOrdersCountResponse
 import com.android.pos.data.model.responseModel.category.CategoriesResponse
 import com.android.pos.data.model.responseModel.category.CreateCategoryResponse
+import com.android.pos.data.model.responseModel.employeeTipSummary.EmployeeTipSummaryResponse
 import com.android.pos.data.model.responseModel.item.ItemResponseNew
 import com.android.pos.data.model.responseModel.item.ItemsResponse
 import com.android.pos.data.model.responseModel.orderhistory.OrderHistoryResponse
@@ -106,6 +107,7 @@ import com.android.pos.data.remote.Constants.REORDER_MODIFIER
 import com.android.pos.data.remote.Constants.REORDER_NOTE
 import com.android.pos.data.remote.Constants.REORDER_OPTION_SET
 import com.android.pos.data.remote.Constants.REORDER_TIP
+import com.android.pos.data.remote.Constants.REPORT_EMPLOYEE_TIP_SUMMARY
 import com.android.pos.data.remote.Constants.REPORT_EOD_SUMMARY
 import com.android.pos.data.remote.Constants.REPORT_SUMMARY
 import com.android.pos.data.remote.Constants.SERVICE_CHARGE
@@ -933,6 +935,12 @@ interface ApiService {
         @Query("employee_id") employee_id: String,
         @Query("email") email: String
     ): EodReportResponse
+
+    @GET(REPORT_EMPLOYEE_TIP_SUMMARY)
+    suspend fun getEmployeeTipSummary(
+        @Query("start_date") startDate: String,
+        @Query("end_date") endDate: String
+    ): EmployeeTipSummaryResponse
 
 
     @GET(ORDER_HISTORY)

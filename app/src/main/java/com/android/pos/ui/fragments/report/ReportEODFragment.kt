@@ -3322,6 +3322,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
             }
 
 
+        itemWiseSalesAdapter.add(it.itemWiseSales)
 
             showHide(
                 rvMedia = binding.rvTipsDetails,
@@ -3654,11 +3655,6 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                                     roleName as ArrayList<String>,
                                     defaultEmployeePos
                                 )
-
-
-
-
-
 
                             viewModel.setCurrentDate(myCalendar)
                         }

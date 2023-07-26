@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingDefaultResource">
+
+    <data>
+
+        <variable
+            name="model"
+            type="com.android.pos.data.model.responseModel.employeeTipSummary.EmployeeTipSummaryResponse.Data" />
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="@dimen/_5sdp">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/txtItemName"
+            style="@style/ReportItemText"
+            android:gravity="start"
+            android:text="@{model.employee_name}"
+            />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/txtItemPrice"
+            style="@style/ReportItemText"
+            android:gravity="end"
+            android:text="@{@string/symbole +``+String.format(@string/format,model.total_cash_tips)}"
+            />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/txtQuantity"
+            style="@style/ReportItemText"
+            android:gravity="end"
+            android:text="@{@string/symbole +``+String.format(@string/format,model.total_card_tips)}" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/txtTotalPrice"
+            style="@style/ReportItemText"
+            android:gravity="end"
+            android:text="@{@string/symbole +``+String.format(@string/format,model.total_tips)}"
+            />
+
+
+    </LinearLayout>
+</layout>

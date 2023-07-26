@@ -1075,6 +1075,11 @@ class PosRepository @Inject constructor(
         email: String
     ) =
         apiHelperNew.getReportEOD(startDate, endDate, terminalId, employee_id, email)
+   suspend fun getEmployeeTip(
+        startDate: String,
+        endDate: String
+    ) =
+        apiHelperNew.getEmployeeTip(startDate, endDate)
 
     suspend fun sendEmailReportSummary(
         startDate: String,
