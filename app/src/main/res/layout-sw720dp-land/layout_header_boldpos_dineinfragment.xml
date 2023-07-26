@@ -14,6 +14,7 @@
             android:id="@+id/linearFirst"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
             android:paddingVertical="@dimen/_2sdp">
 
             <ImageView
@@ -132,7 +133,8 @@
                 style="@style/CustomFontMediumStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
+                android:gravity="center"
+                android:layout_gravity="center_vertical"
                 android:layout_marginHorizontal="@dimen/_5sdp"
                 android:background="?attr/selectableItemBackground"
                 android:padding="@dimen/_5sdp"
@@ -150,6 +152,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/_18sdp"
                 android:contentDescription="@string/clock"
+                android:layout_gravity="center_vertical"
                 android:orientation="horizontal">
 
                 <ImageView
