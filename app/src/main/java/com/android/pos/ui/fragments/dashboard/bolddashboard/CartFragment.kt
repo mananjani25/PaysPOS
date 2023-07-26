@@ -2205,11 +2205,17 @@ class CartFragment(
 
                         R.id.menu_remove_customer -> {
 
-                            if (cartlist.isNotEmpty() && cartlist[0].customer != null) {
-                                cartlist[0].customer = null
-                                viewModel.addCart(cartlist[0])
+                            if(prefProvider.getValue(ORDER_TYPE, TAKEOUT) == PHONE_ORDER) {
+                                AlertUtils.showCustomAlertWithListenerWithOK(
+                                    requireContext(), getString(R.string.customer_cannot_be_remove_at_the_moment)
+                                ) {_, _ ->}
+                            } else {
+                                if (cartlist.isNotEmpty() && cartlist[0].customer != null) {
+                                    cartlist[0].customer = null
+                                    viewModel.addCart(cartlist[0])
+                                }
+                                clearCustomer()
                             }
-                            clearCustomer()
 
 
                         }
