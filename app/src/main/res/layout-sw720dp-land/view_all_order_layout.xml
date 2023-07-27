@@ -72,7 +72,7 @@
                     style="@style/CustomFontMediumStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/gray_color"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_4mdpi"
                     android:visibility="visible"
                     tools:text="@string/tv_date_time" />
@@ -382,7 +382,7 @@
                     android:layout_weight="1"
                     android:background="@drawable/background_txt_selector"
                     android:gravity="center"
-                    android:visibility="gone"
+                    android:visibility="visible"
                     android:padding="@dimen/_10sdp"
                     android:text="@string/tv_reprint_kitchen_receipt"
                     android:textColor="@color/txtColor"
