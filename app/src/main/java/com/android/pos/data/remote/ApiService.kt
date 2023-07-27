@@ -823,7 +823,11 @@ interface ApiService {
 
     @FormUrlEncoded
     @PUT(UPDATE_TIP_WITH_SIGNATURE)
-    suspend fun updateTipWithSignature(@Field("id") id: Int, @Field("signature") signature: String, @Field("tips") tip: Double): BaseResponse
+    suspend fun updateTipWithSignature(
+        @Field("id") id: Int,
+        @Field("signature") signature: String,
+        @Field("tips") tip: Double
+    ): BaseResponse
 
     @PUT(FIRE_ITEM_TO_KITCHEN)
     suspend fun updateKitchenFireStatus(
@@ -887,7 +891,7 @@ interface ApiService {
     suspend fun getFloorPlanTableDetails(): GetFloorPlanDetailResponse
 
     @GET(Constants.AVAILABLE_TRANSFER_TABLE_LIST)
-    suspend fun getAvailableTransferTableList(@Query("employee_id")employeeId:Int): AvailableTransferTableList
+    suspend fun getAvailableTransferTableList(@Query("employee_id") employeeId: Int): AvailableTransferTableList
 
 
     @GET(REPORT_SUMMARY)

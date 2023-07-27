@@ -134,6 +134,7 @@ object Constants {
     const val CLOCK_OUT = "employee_activities/clock_out"
     const val LOGOUT = "users/log_out"
     const val FORGOT_PASSWORD = "users/forgot_password"
+    const val PAX_DETAILS = "GetDeviceLocalIP"
 
     const val EMPLOYEES = "employees"
     const val CUSTOMERS = "customers"
