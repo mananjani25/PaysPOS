@@ -101,6 +101,7 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/lnrAmount"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_18sdp"
                 android:layout_gravity="center_vertical"
@@ -119,7 +120,7 @@
                     android:gravity="center"
                     android:maxLength="8"
                     android:editable="true"
-                    android:enabled="false"
+                    android:enabled="true"
                     android:text="$0.00"
                     android:hint="@string/hint_enter_your_gift_card_amount"
                     android:textColor="@color/btnColor"
