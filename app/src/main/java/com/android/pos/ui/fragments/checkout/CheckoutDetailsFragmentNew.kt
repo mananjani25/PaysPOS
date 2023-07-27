@@ -204,39 +204,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     override fun onResume() {
         super.onResume()
-        if (this::presentation.isInitialized) {
-            presentation.show()
-            presentation.onDisplayChanged()
-            val showCashCreditPrice = prefProvider.getValueboolean(
-                Constants.SHOW_CASH_CREDIT_PRICE_ON_CUSTOMER_DISPLAY,
-                false
-            )
-            if (!showCashCreditPrice) {
-                presentation.showSurcharge(true)
-            }
-            val showTipCollectionBeforePay = true
-            if(cashDiscountType == "SurCharge" && showTipCollectionBeforePay && prefProvider.getValue(
-                    ORDER_TYPE, TAKEOUT)!= GIFT_CARD){
-
-                val actualAmount = getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectedCount
-
-                val paymentIdForCustomerDisplay = prefProvider.getValueInt(
-                    Constants.PAYMENT_ID_FOR_CUSTOMER_DISPLAY, 0
-                )
-
-                presentation.showWouldYouLikeToAddTipScreen(
-                    tipListViewModel,
-                    transactionViewModel,
-                    actualAmount, paymentIdForCustomerDisplay,
-                    paymentType == "Card",
-                    paymentViewModel = paymentViewModel,
-                    magRequestUtils = magtekRequestUtils,
-                    apiModule1 = apiModule1,
-                    true
-                )
-            }
-
-        }
+        updateCustomerDisplay()
     }
 
     @Inject
@@ -428,6 +396,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             viewModel.setSplitCount(isSelectedCount)
             loadPaymentLayout()
             tipAmountCalculation()
+            updateCustomerDisplay()
         }
         binding.tvFullAmount.setOnClickListener {
             binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.button_action_hover))
@@ -590,6 +559,45 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             bundle.putInt("splitValue", isSelectedCount)
 
             findNavController().navigate(R.id.action_splitFragment_to_splitdialog)
+        }
+    }
+
+    private fun updateCustomerDisplay() {
+        if (this::presentation.isInitialized) {
+            presentation.show()
+            presentation.onDisplayChanged()
+            val showCashCreditPrice = prefProvider.getValueboolean(
+                Constants.SHOW_CASH_CREDIT_PRICE_ON_CUSTOMER_DISPLAY,
+                false
+            )
+            if (!showCashCreditPrice) {
+                presentation.showSurcharge(true)
+            }
+            val showTipCollectionBeforePay = prefProvider.getValueboolean(
+                Constants.SHOW_TIP_SCREEN_BEFORE_PAYMENT,
+                false
+            )
+            if(cashDiscountType == "SurCharge" && showTipCollectionBeforePay && prefProvider.getValue(
+                    ORDER_TYPE, TAKEOUT)!= GIFT_CARD){
+
+                val actualAmount = getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectedCount
+
+                val paymentIdForCustomerDisplay = prefProvider.getValueInt(
+                    Constants.PAYMENT_ID_FOR_CUSTOMER_DISPLAY, 0
+                )
+
+                presentation.showWouldYouLikeToAddTipScreen(
+                    tipListViewModel,
+                    transactionViewModel,
+                    actualAmount, paymentIdForCustomerDisplay,
+                    paymentType == "Card",
+                    paymentViewModel = paymentViewModel,
+                    magRequestUtils = magtekRequestUtils,
+                    apiModule1 = apiModule1,
+                    true
+                )
+            }
+
         }
     }
 
@@ -2367,12 +2375,15 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 )
             )
         } else {
-            val showTipCollectionBeforePay = true
+            val showTipCollectionBeforePay = prefProvider.getValueboolean(
+                Constants.SHOW_TIP_SCREEN_BEFORE_PAYMENT,
+                false
+            )
             if (this::presentation.isInitialized) {
                 presentation.show()
                 presentation.showTipsAdded(tipAmount, WholetotalPrice)
             }
-            if(showTipCollectionBeforePay){
+            if(showTipCollectionBeforePay && tipAmountWithoutSurcharge > 0.00){
                 MethodUtils.setPriceTextView(
                     binding.tvCash,
                     (getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectedCount) + tipAmountWithoutSurcharge
@@ -2407,7 +2418,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 "Cash (" + binding.tvCash.text + ")"
             binding.tvtipcash?.visible()
 
-            if(showTipCollectionBeforePay){
+            if(showTipCollectionBeforePay && tipAmountWithoutSurcharge > 0.00){
                 binding.tvtipcash?.text =
                     "(" + MethodUtils.roundOffAmount(tipAmountWithoutSurcharge) + " Tip Added)"
             }else{

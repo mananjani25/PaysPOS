@@ -1454,10 +1454,24 @@ class CustomDisplay(
             txtContinue.setOnClickListener {
 
                 tippedAmount = edtAmount.text.toString().replace("$", "").trim().toDouble()
-                val showTipCollectionBeforePay = true
+                val showTipCollectionBeforePay = prefProvider.getValueboolean(
+                    Constants.SHOW_TIP_SCREEN_BEFORE_PAYMENT,
+                    false
+                )
                 if(showTipCollectionBeforePay){
                     EventBus.getDefault().post(TipAdded(tippedAmount, tippedAmount))
-                    showMainCart()
+                    //showMainCart()
+                    showWouldYouLikeToAddTipScreen(
+                        tipsListViewModel,
+                        mTransactionViewModel,
+                        mWholeTotalPrice,
+                        mOrderID,
+                        mIsCardPayment,
+                        mPaymentViewModel,
+                        magtekRequestUtils,
+                        apiModule1,
+                        true
+                    )
                 }else{
                     if (mIsCardPayment) {
                         if (mIsSignatureRequired) {
@@ -1633,16 +1647,15 @@ class CustomDisplay(
         this.apiModule1 = apiModule1
         mWholeTotalPrice = wholeTotalPrice
 
-        val showTipCollectionBeforePay = true
+        val showTipCollectionBeforePay = prefProvider.getValueboolean(
+            Constants.SHOW_TIP_SCREEN_BEFORE_PAYMENT,
+            false
+        )
 
         binding.apply {
             askForTipLayout.visible()
 
-            if(showTipCollectionBeforePay){
-                wouldYouLikeToAddTipLabel.text = "Would you like to add a Tip?"
-            } else {
-                wouldYouLikeToAddTipLabel.text = "Add Tip"
-            }
+            wouldYouLikeToAddTipLabel.text = "Would you like to add a Tip?"
 
             setupActiveTipsList(mTipListViewModel)
             observeActiveTipsList(wholeTotalPrice)
@@ -1653,13 +1666,11 @@ class CustomDisplay(
             addTipKeypadLayout.gone()
 
             if (fromKeypad && tippedAmount > 0.0) {
-                binding.otherRootLayout.setBackgroundColor(Color.parseColor("#ED5950"))
-                binding.txtOtherLabel.setTextColor(Color.parseColor("#FFFFFF"))
-                binding.txtOtherLabel.text = "Other ($tippedAmount)"
-
+                shouldHighlightOtherTipLayout(true)
+                shouldHighlightNoTipLayout(false)
+                binding.txtOtherLabel.text = "Other ($${tippedAmount.toPrecision(2)})"
             } else {
-                binding.otherRootLayout.setBackgroundColor(Color.parseColor("#363636"))
-                binding.txtOtherLabel.setTextColor(Color.parseColor("#ED5950"))
+                shouldHighlightOtherTipLayout(false)
                 binding.txtOtherLabel.text = "Other"
             }
 
@@ -1684,14 +1695,15 @@ class CustomDisplay(
             val coroutineScope = CoroutineScope(Dispatchers.Main)
             coroutineScope.launch {
                 //delay(3000)
-                //binding.otherRootLayout.performClick()
+                //binding.noTipRootLayout.performClick()
                 //binding.otherRootLayout.performClick()
             }
             binding.noTipRootLayout.setOnClickListener {
                 if(showTipCollectionBeforePay) {
+                    shouldHighlightNoTipLayout(true)
+                    shouldHighlightOtherTipLayout(false)
                     //Update main screen with 0.00 tip in bracket
                     EventBus.getDefault().post(TipAdded(0.00,0.00))
-                    showMainCart()
                 }else{
                     showThankYou(mWholeTotalPrice)
                 }
@@ -1731,6 +1743,28 @@ class CustomDisplay(
             })
 
         }
+    }
+
+    private fun shouldHighlightNoTipLayout(isHighlight: Boolean){
+        if(isHighlight){
+            binding.noTipRootLayout.setBackgroundColor(Color.parseColor("#ED5950"))
+            binding.txtNoTipLabel.setTextColor(Color.parseColor("#FFFFFF"))
+        }else{
+            binding.noTipRootLayout.setBackgroundColor(Color.parseColor("#363636"))
+            binding.txtNoTipLabel.setTextColor(Color.parseColor("#ED5950"))
+        }
+
+    }
+
+    private fun shouldHighlightOtherTipLayout(isHighlight: Boolean){
+        if(isHighlight){
+            binding.otherRootLayout.setBackgroundColor(Color.parseColor("#ED5950"))
+            binding.txtOtherLabel.setTextColor(Color.parseColor("#FFFFFF"))
+        }else{
+            binding.otherRootLayout.setBackgroundColor(Color.parseColor("#363636"))
+            binding.txtOtherLabel.setTextColor(Color.parseColor("#ED5950"))
+        }
+
     }
 
     private fun bitmapToBase64(bitmap: Bitmap): String {
@@ -1781,11 +1815,15 @@ class CustomDisplay(
         tipRate = model.rate
         tippedAmount = MethodUtils.percentageCalculation(wholeTotalPrice, model.rate)
         val tippedAmountWithoutSurCharge = MethodUtils.percentageCalculation(wholeTotalPrice - dashBoardCategoryViewModel.cashdiscountAmount, model.rate)
-        val showTipCollectionBeforePay = true
+        val showTipCollectionBeforePay = prefProvider.getValueboolean(
+            Constants.SHOW_TIP_SCREEN_BEFORE_PAYMENT,
+            false
+        )
         if(showTipCollectionBeforePay){
+            shouldHighlightNoTipLayout(false)
+            shouldHighlightOtherTipLayout(false)
             //Update main screen with tipAmount added and updated card amount
             EventBus.getDefault().post(TipAdded(tippedAmount,tippedAmountWithoutSurCharge))
-            showMainCart()
         }else{
             if ((mIsCardPayment && !mIsSignatureRequired) || (!mIsCardPayment)) {
                 callUpdateTip()

@@ -25,6 +25,7 @@ import com.android.pos.ui.fragments.magtek.PaymentResponse
 import com.android.pos.utils.Event
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
+import com.android.pos.utils.MethodUtils.Companion.percentageCalculation
 import com.android.pos.utils.TimeFormatUtils
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
@@ -1922,7 +1923,22 @@ open class PaymentViewModel @Inject constructor(
             subTotal = subTotalPrice
             taxAmount = totalTax
             terminalId = cartModel.terminalId
-            tips = MethodUtils.roundOffAmountDouble(tipAmount)
+
+            //Deduct the SurCharge % amount from tipAmount and then go ahead
+            //As discussed with Rohan - we have to avoid loss of merchant on
+            // processing fees of any order while card payment
+            //This is done by Dharmesh Basapati in BIS-957 task
+            val showTipCollectionBeforePay = prefProvider.getValueboolean(
+                Constants.SHOW_TIP_SCREEN_BEFORE_PAYMENT,
+                false
+            )
+            tips = if(tipAmount > 0.00 && showTipCollectionBeforePay){
+                val rateOrAmount = prefProvider.getValue(Constants.RATE_OR_AMOUNT, "0")
+                val newTipAmountAfterSurChargeDeduction = tipAmount - percentageCalculation(tipAmount,rateOrAmount.toDouble())
+                MethodUtils.roundOffAmountDouble(newTipAmountAfterSurChargeDeduction)
+            }else{
+                MethodUtils.roundOffAmountDouble(tipAmount)
+            }
 
             tipsAdjusted = false
             totalDiscount = totalDis

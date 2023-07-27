@@ -322,7 +322,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 //                    .replace("$", "").toDouble()
             Log.d("###RCB", "onResume TOTAL AMOUNT: ${receiptModel?.order?.totalAmount}")
             val finalPaidAmount = receiptModel?.order?.totalAmount ?: 0.0
-            val showTipCollectionBeforePay = true
+            val showTipCollectionBeforePay = prefProvider.getValueboolean(
+                Constants.SHOW_TIP_SCREEN_BEFORE_PAYMENT,
+                false
+            )
             if (prefProvider.getValueboolean(Constants.TIP_ADDED, false) || showTipCollectionBeforePay) {
                 prefProvider.setValueboolean(Constants.TIP_ADDED, false)
                 presentation.showThankYou(finalPaidAmount)

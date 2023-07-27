@@ -62,6 +62,7 @@ import com.android.pos.data.remote.Constants.REPORT_START_TIME
 import com.android.pos.data.remote.Constants.SERVICECHARGE_DINEIN_ORDER
 import com.android.pos.data.remote.Constants.SERVICECHARGE_TAKEOUT_OPENORDER
 import com.android.pos.data.remote.Constants.SHOW_CASH_CREDIT_PRICE_ON_CUSTOMER_DISPLAY
+import com.android.pos.data.remote.Constants.SHOW_TIP_SCREEN_BEFORE_PAYMENT
 import com.android.pos.data.remote.Constants.SYNC_SETTING_TIME_STAMP
 import com.android.pos.data.remote.Constants.SYNC_TIME_STAMP
 import com.android.pos.data.remote.Constants.SYSTEM_TIMEZONE
@@ -5186,6 +5187,12 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 prefProvider.setValueboolean(
                                     SHOW_CASH_CREDIT_PRICE_ON_CUSTOMER_DISPLAY,
                                     it.settingData.data.show_cash_credit_price_on_customer_display
+                                )
+
+                                //TO-DO
+                                prefProvider.setValueboolean(
+                                    SHOW_TIP_SCREEN_BEFORE_PAYMENT,
+                                    true
                                 )
 
                                 prefProvider.setValue(
