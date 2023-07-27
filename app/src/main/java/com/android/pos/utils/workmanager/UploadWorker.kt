@@ -352,14 +352,10 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                             Context.MODE_PRIVATE
                         ).getBoolean(IS_MASTER_TERMINAL, false) == true
                     ) {
-                        runBlocking {
-                            delay(10000)
-                            subscription = consumer?.subscriptions?.create(appearanceChannel)
-                            val params = JsonObject()
-                            params.addProperty("id", locationId)
-                            subscription?.perform("received", params)
 
-                        }
+                            consumer?.connect()
+
+
                     }
 
                 } catch (e: java.lang.Exception) {
