@@ -1033,7 +1033,21 @@ open class PaymentViewModel @Inject constructor(
         orderAttributeRequestModel.totalDiscount = actual_TotalDiscount
         orderAttributeRequestModel.totalServiceCharges = actual_TotalServiceCharge
         orderAttributeRequestModel.totalTaxAmount = actual_TotalTax
-        orderAttributeRequestModel.totalTips = tipAmount
+        //Deduct the SurCharge % amount from tipAmount and then go ahead
+        //As discussed with Rohan - we have to avoid loss of merchant on
+        // processing fees of any order while card payment
+        //This is done by Dharmesh Basapati in BIS-957 task
+        val showTipCollectionBeforePay = prefProvider.getValueboolean(
+            Constants.SHOW_TIP_SCREEN_BEFORE_PAYMENT,
+            false
+        )
+        orderAttributeRequestModel.totalTips = if(tipAmount > 0.00 && showTipCollectionBeforePay){
+            val rateOrAmount = prefProvider.getValue(Constants.RATE_OR_AMOUNT, "0")
+            val newTipAmountAfterSurChargeDeduction = tipAmount - percentageCalculation(tipAmount,rateOrAmount.toDouble())
+            MethodUtils.roundOffAmountDouble(newTipAmountAfterSurChargeDeduction)
+        }else{
+            MethodUtils.roundOffAmountDouble(tipAmount)
+        }
 
         orderAttributeRequestModel.is_loyalty_applied = redeemLoyaltyInfo?.needToApplyLoyalty
         if (orderAttributeRequestModel.is_loyalty_applied == true) {

@@ -317,11 +317,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         if (this::presentation.isInitialized) {
             presentation.show()
             presentation.onDisplayChanged()
-//            val finalPaidAmount =
-//                binding.txtPaymentAmount.text.toString().replace(" payment successful", "")
-//                    .replace("$", "").toDouble()
-            Log.d("###RCB", "onResume TOTAL AMOUNT: ${receiptModel?.order?.totalAmount}")
-            val finalPaidAmount = receiptModel?.order?.totalAmount ?: 0.0
+            val finalPaidAmount = MethodUtils.roundOffAmountDown(paidAmount + tipAmount)
             val showTipCollectionBeforePay = prefProvider.getValueboolean(
                 Constants.SHOW_TIP_SCREEN_BEFORE_PAYMENT,
                 false

@@ -5189,10 +5189,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     it.settingData.data.show_cash_credit_price_on_customer_display
                                 )
 
-                                //TO-DO
                                 prefProvider.setValueboolean(
                                     SHOW_TIP_SCREEN_BEFORE_PAYMENT,
-                                    true
+                                    it.settingData.data.show_tip_screen_before_payment
                                 )
 
                                 prefProvider.setValue(
