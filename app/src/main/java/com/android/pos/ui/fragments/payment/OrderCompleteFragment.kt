@@ -17,7 +17,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
-import android.os.RemoteException
 import android.util.Base64
 import android.util.Log
 import android.view.Display
@@ -156,7 +155,6 @@ import com.google.gson.reflect.TypeToken
 import com.sunmi.externalprinterlibrary.api.ConnectCallback
 import com.sunmi.externalprinterlibrary.api.SunmiPrinter
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
-import com.sunmi.peripheral.printer.SunmiPrinterService
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -6291,7 +6289,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
 
 
-            orderItemsToPrint?.forEachIndexed { index, orderItem ->
+            orderItemsToPrint.forEachIndexed { index, orderItem ->
 
                 if (itemIds.contains(
                         orderItem.itemId
@@ -6300,7 +6298,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                     arrayItems.forEachIndexed { index, orderItemJ ->
 
-                        if (orderItemJ.itemId == orderItem.itemId) {
+                        if (orderItemJ.itemId == orderItem.itemId && orderItemJ.timestamp == orderItem.timestamp) {
                             if (orderItemJ.quantity != orderItem.quantity) {
                                 if (orderItem.quantity > orderItemJ.quantity) {
                                     orderItem.quantity =
@@ -6385,6 +6383,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     if (it.data != null && isPrint == true) {
                         val customerList = it.data
 
+                        Log.e(TAG,"IS_GIFT_CARD_TYPE:  ${IS_GIFT_CARD_TYPE}")
                         if (IS_GIFT_CARD_TYPE) {
                             customerList.forEach {
                                 if (it.status) {
@@ -10666,6 +10665,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         if (pd != null && pd.isShowing) {
             pd.dismiss()
         }
+        prefProvider.setValue(Constants.OPEN_ORDER_ITEMS,"")
         if (this::presentation.isInitialized) {
             presentation.hide()
         }
@@ -11221,6 +11221,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             PrintSunmiUtils.addHorizontal()
 
 
+            Log.e(TAG,"orderItemsGetD:  ${Gson().toJson(receiptModel?.order?.orderItems)}")
             receiptModel?.order?.orderItems?.let {
                 addOrderItems(
                     it,
