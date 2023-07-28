@@ -75,6 +75,7 @@ class PhoneOrderFragment : Fragment() {
 
     var placesClient: PlacesClient? = null
     var adapter1: AutoCompleteAdapter? = null
+    var selectedCustomer: TbCustomer? = null
 
 
     @set:Inject
@@ -107,7 +108,7 @@ class PhoneOrderFragment : Fragment() {
         setFragmentResultListener("request_key_customer_phone_order") { requestKey: String, bundle: Bundle ->
             val result = bundle.getParcelable<TbCustomer>("data")
             if (result != null) {
-
+                selectedCustomer = result
                 setupCustomer(result)
             }
         }
@@ -283,9 +284,9 @@ class PhoneOrderFragment : Fragment() {
                     MethodUtils.getText(binding.edtLName),
                     "",
                     MethodUtils.getText(binding.edtEmail),
+                    selectedCustomer?.enroll_to_loyalty ?: false,
                     false,
-                    false,
-                    0,
+                    selectedCustomer?.final_reward ?: 0,
                     "",
                     phonesList,
                     list
