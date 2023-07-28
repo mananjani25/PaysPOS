@@ -27,6 +27,7 @@ import com.google.gson.Gson
 import java.util.*
 
 class OpenOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
+
     RecyclerView.Adapter<OpenOrderAdapter.MyViewHolder>(), Filterable {
 
     var orderList = ArrayList<OpenOrderResponse.Data.Order>()
@@ -169,20 +170,22 @@ class OpenOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
 
         init {
             binding.root.setOnClickListener {
+                try {
+                    val item = filterList[bindingAdapterPosition]
 
-                val item = filterList[bindingAdapterPosition]
+                    if (item.isCheck) {
+                        item.isCheck = false
+                    } else {
+                        filterList.forEach {
+                            it.isCheck = false
+                        }
+                        item.isCheck = true
 
-                if (item.isCheck) {
-                    item.isCheck = false
-                } else {
-                    filterList.forEach {
-                        it.isCheck = false
                     }
-                    item.isCheck = true
-
+                    notifyDataSetChanged()
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
-                notifyDataSetChanged()
-
             }
 
             binding.txtCancelOrder.setOnClickListener {

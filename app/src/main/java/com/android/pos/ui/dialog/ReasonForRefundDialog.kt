@@ -241,7 +241,8 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
 
     private fun networkCall(jsonArray1: JsonArray?, i: Int) {
 
-        ProgressUtils.showProgressDialog(requireActivity())
+//        ProgressUtils.showProgressDialog(requireActivity())
+        viewModel.showProgressDialog(true)
 
         val call = if (i == 1) {
             jsonArray1?.let { apiModule1.getRetrofit1().processReferenceID(it) }
@@ -256,7 +257,7 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                 call: Call<PaymentResponse>,
                 response: Response<PaymentResponse>
             ) {
-                ProgressUtils.dismissProgressDialog()
+//                ProgressUtils.dismissProgressDialog()
                 if (response.isSuccessful) {
                     LogUtil.logE("onResponse", Gson().toJson(response.body()))
                     if (response.body() != null && response.body()!![0].transactionOutput != null) {
@@ -266,6 +267,7 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                             refundCall()
 
                         } else {
+                            viewModel.showProgressDialog(false)
                             AlertUtils.showCustomAlert(
                                 requireContext(),
                                 response.body()!![0].transactionOutput?.transactionMessage
@@ -273,6 +275,7 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                         }
 
                     } else {
+                        viewModel.showProgressDialog(false)
                         if (response.body()!![0].mPPGv4WSFault != null) {
                             AlertUtils.showCustomAlert(
                                 requireContext(),
@@ -281,12 +284,16 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                             )
                         }
                     }
+                } else {
+//                    ProgressUtils.dismissProgressDialog()
+                    viewModel.showProgressDialog(false)
                 }
             }
 
             override fun onFailure(call: Call<PaymentResponse>, t: Throwable) {
 
-                ProgressUtils.dismissProgressDialog()
+//                ProgressUtils.dismissProgressDialog()
+                viewModel.showProgressDialog(false)
             }
         })
     }
@@ -440,72 +447,43 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                                     }
 
                                 } else {
-                                    var mPrinter =
-                                        Printer(
-                                            Printer.TM_M30,
-                                            Printer.MODEL_ANK,
-                                            (activity as MainActivity).applicationContext
-                                        )
+                                   try {
+                                       var mPrinter =
+                                           Printer(
+                                               Printer.TM_M30,
+                                               Printer.MODEL_ANK,
+                                               (activity as MainActivity).applicationContext
+                                           )
 
 
-                                    var printerAdd =
-                                        if (data[i].printer_type == Constants.BLUETOOTH) "BT:" + data[i].macAddress else "TCP:" + data[i].ipAddress
-                                    mPrinter.connect(
-                                        printerAdd,
-                                        Printer.PARAM_DEFAULT
-                                    )
+                                       var printerAdd =
+                                           if (data[i].printer_type == Constants.BLUETOOTH) "BT:" + data[i].macAddress else "TCP:" + data[i].ipAddress
+                                       mPrinter.connect(
+                                           printerAdd,
+                                           Printer.PARAM_DEFAULT
+                                       )
 
-                                    mPrinter.addPulse(
-                                        com.epson.epos2.printer.Printer.DRAWER_HIGH,
-                                        com.epson.epos2.printer.Printer.PULSE_100
-                                    )
+                                       mPrinter.addPulse(
+                                           com.epson.epos2.printer.Printer.DRAWER_HIGH,
+                                           com.epson.epos2.printer.Printer.PULSE_100
+                                       )
 
-                                    try {
-
-                                        mPrinter.sendData(Printer.PARAM_DEFAULT)
-                                        mPrinter.disconnect()
-                                        sendToTransaction()
-                                    } catch (e: java.lang.Exception) {
-                                        e.printStackTrace()
-                                        try{
-                                        mPrinter.disconnect()}
-                                        catch (e:Exception){
-
-                                        }
-                                        sendToTransaction()
-                                    }
-
-
-                                    /* var builder: Builder = Builder(
-                                         if (data[i].name.substring(0, 6).toString()
-                                                 .lowercase() == "TM-m30".lowercase()
-                                         ) {
-                                             "TM-m30"
-                                         } else {
-                                             data[i].name
-                                         }, PrinterClass.language, requireActivity()
-                                     )
-
-
-                                     builder.addPulse(
-                                         com.epson.epos2.printer.Printer.DRAWER_HIGH,
-                                         com.epson.epos2.printer.Printer.PULSE_100
-                                     )
-
-                                     val status = IntArray(1)
-                                     val battery = IntArray(1)
-                                     try {
-
-                                         PrinterClass.getPrinter()?.sendData(
-                                             builder,
-                                             PrinterClass.BLUETOOTH_TIMEOUT, status, battery
-                                         )
-                                         sendToTransaction()
-                                     } catch (e: java.lang.Exception) {
-                                         e.printStackTrace()
-                                         sendToTransaction()
-                                     }*/
-
+                                       try {
+                                           mPrinter.sendData(Printer.PARAM_DEFAULT)
+                                           mPrinter.disconnect()
+                                           sendToTransaction()
+                                       } catch (e: java.lang.Exception) {
+                                           e.printStackTrace()
+                                           try{
+                                               mPrinter.disconnect()}
+                                           catch (e:Exception){
+                                               e.printStackTrace()
+                                           }
+                                           sendToTransaction()
+                                       }
+                                   } catch (e: Exception){
+                                       e.printStackTrace()
+                                   }
 
                                 }
                             }

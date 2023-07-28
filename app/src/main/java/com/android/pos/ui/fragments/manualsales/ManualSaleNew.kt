@@ -25,6 +25,7 @@ import com.android.pos.data.entities.*
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ADD
 import com.android.pos.data.remote.Constants.CUSTOMER_NAME
+import com.android.pos.data.remote.Constants.IS_FROM_ALL_ORDER
 import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER
 import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.data.remote.Constants.LOYALTY_ADDED
@@ -44,6 +45,7 @@ import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.callback.ManualSaleOptionsCustomCallback
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.gone
+import com.android.pos.utils.extensions.setOnSingleClickListener
 import com.android.pos.utils.extensions.visible
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
@@ -136,6 +138,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
                     prefProvider.setValue(Constants.REDIRECT_FROM, "")
+                    viewModel.cartModel = null
                     findNavController().popBackStack()
                 }
             }
@@ -277,14 +280,18 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
         }
         binding.layoutHeader.imgSync.setOnClickListener {
-          //  viewModel.syncInventoryModule(requireActivity())
+            //  viewModel.syncInventoryModule(requireActivity())
         }
         binding.layoutHeader.imgDrawer.setOnClickListener {
             findNavController().navigate(R.id.action_manualSalesNew_to_menuFragment)
 
         }
         binding.layoutHeader.txtOpenOrder.setOnClickListener {
-            findNavController().navigate(R.id.action_manualSalesNew_to_orders)
+            try {
+                findNavController().navigate(R.id.action_manualSalesNew_to_orders)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
 
         binding.layoutHeader.linearSwitchUser.setOnClickListener {
@@ -304,12 +311,20 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             findNavController().navigate(R.id.action_manualSalesNew_to_reportEODFragment)
         }
         binding.layoutHeader.txtDineIn.setOnClickListener {
-            prefProvider.setValue(Constants.REDIRECT_FROM, "")
-            findNavController().navigate(R.id.action_manualSalesNew_to_dineInFragment)
+            try {
+                prefProvider.setValue(Constants.REDIRECT_FROM, "")
+                findNavController().navigate(R.id.action_manualSalesNew_to_dineInFragment)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
         binding.layoutHeader.txtHome.setOnClickListener {
-            prefProvider.setValue(Constants.REDIRECT_FROM, "")
-            findNavController().navigateUp()
+            try {
+                prefProvider.setValue(Constants.REDIRECT_FROM, "")
+                viewModel.cartModel = null
+                findNavController().navigateUp()} catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
 
     }
@@ -350,15 +365,15 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             ).observe(requireActivity()) {
                 cartList = it
                 LogUtil.logE(TAG, "cartListBeforeTax  ${Gson().toJson(cartList)}")
-               /* if (prefProvider.getValue(ORDER_TYPE,"") == OPEN_ORDER){
-                    binding.btnPay.gone()
-                    binding.txtSave.visible()
+                /* if (prefProvider.getValue(ORDER_TYPE,"") == OPEN_ORDER){
+                     binding.btnPay.gone()
+                     binding.txtSave.visible()
 
-                }
-                else{
-                    binding.btnPay.visible()
-                    binding.txtSave.visible()
-                }*/
+                 }
+                 else{
+                     binding.btnPay.visible()
+                     binding.txtSave.visible()
+                 }*/
 
                 if (cartList?.isNotEmpty()!!) {
 
@@ -633,12 +648,12 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                         navControll.previousBackStackEntry?.savedStateHandle?.set(KEY, bundle)
                         navControll.popBackStack()
 
-/*                        val navControll = findNavController()
-                        navControll.previousBackStackEntry?.savedStateHandle?.set(
-                            KEY,
-                            MANUALSALE
-                        )
-                        navControll.popBackStack()*/
+                        /*                        val navControll = findNavController()
+                                                navControll.previousBackStackEntry?.savedStateHandle?.set(
+                                                    KEY,
+                                                    MANUALSALE
+                                                )
+                                                navControll.popBackStack()*/
                     }
 
                 }
@@ -702,6 +717,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 prefProvider.setValue(Constants.TIP, "")
                 prefProvider.setValue(Constants.TAX_CHARGE, "")
                 prefProvider.setValue(Constants.SERVICE_CHARGE, "")
+                prefProvider.setValueboolean(IS_FROM_ALL_ORDER,false)
                 findNavController().navigate(
                     R.id.action_manualSaleCart_to_paymentBoldPosFragment
                 )
@@ -717,7 +733,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         }
 
 
-        binding.imgOrderMenu.setOnClickListener {
+        binding.imgOrderMenu.setOnSingleClickListener {
 
             val popupMenu = PopupMenu(requireContext(), it)
             popupMenu.menuInflater.inflate(R.menu.manual_sale_menu, popupMenu.menu)
@@ -758,12 +774,14 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                         }
 
                     }
+
                     R.id.menu_order_note -> {
                         findNavController().navigate(
                             R.id.action_manualSaleNew_to_addNoteDialog,
                             bundleOf("isOrderNote" to true, "cartList" to cartList)
                         )
                     }
+
                     R.id.menu_remove_customer -> {
 
                         if (cartList?.isNotEmpty() == true && cartList!![0].customer != null) {
@@ -773,6 +791,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                         clearCustomer()
 
                     }
+
                     R.id.menu_order_discount -> {
 
 
@@ -820,14 +839,17 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                             bundle.putDouble("itemOrderDiscount", perItemDiscount)
                             bundle.putInt("totalquantity", totalItemswithQuantity)
                         }
-                        bundle.putString("isFrom","orderDiscountManual")
-                        if (prefProvider.isAdmin() || prefProvider.isManager()){
+                        bundle.putString("isFrom", "orderDiscountManual")
+                        if (prefProvider.isAdmin() || prefProvider.isManager()) {
                             if (findNavController().currentDestination?.id != R.id.addDiscountDialog) {
-                                findNavController().navigate(R.id.action_manualSaleNew__to_addDiscountDialog, bundle)
+                                findNavController().navigate(
+                                    R.id.action_manualSaleNew__to_addDiscountDialog,
+                                    bundle
+                                )
                             }
-                        }else{
+                        } else {
                             findNavController().navigate(
-                                R.id.action_manualSaleNew_to_pascodeManagerDailog,bundle
+                                R.id.action_manualSaleNew_to_pascodeManagerDailog, bundle
                             )
                         }
                     }
@@ -862,7 +884,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 hideClearCart()
             }
         }
-        binding.relAddCustomer.setOnClickListener {
+        binding.txtAddCustomer.setOnSingleClickListener {
             findNavController().navigate(R.id.action_manualSaleNew_to_assignCustomerOrderFragment)
         }
 
@@ -1138,7 +1160,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             tabItemMOdel.customItemCount = count
             tabItemMOdel.name = "Custom Item ${count}"
             if (binding.llKeypad.edtItemName.text?.trim()?.isNotEmpty() == true) {
-                tabItemMOdel.name = binding.llKeypad.edtItemName.text!!.toString().trim().replace("\\s+".toRegex(), " ")
+                tabItemMOdel.name = binding.llKeypad.edtItemName.text!!.toString().trim()
+                    .replace("\\s+".toRegex(), " ")
                 count--
                 tabItemMOdel.customItemCount = count
             }
@@ -1181,7 +1204,10 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 }
             }
 
-            LogUtil.logE("orderTypeId", prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1).toString())
+            LogUtil.logE(
+                "orderTypeId",
+                prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1).toString()
+            )
 
             viewModel.manualSalecartLogic(cartList, tabItemMOdel, ADD)
             binding.llKeypad.edtItemName.text?.clear()
@@ -1392,6 +1418,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
     override fun onItemClicked(model: TbItem, position: Int) {
         LogUtil.logE(TAG, "Itemmodel: ${Gson().toJson(model)}")
         LogUtil.logE(TAG, "ItemPosition: $position")
+        viewModel.setPosition(position)
         val dialog = Dialog(requireContext())
         dialog.window?.requestFeature(Window.FEATURE_NO_TITLE)
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -1425,7 +1452,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 s: CharSequence, start: Int, before: Int,
                 count: Int
             ) {
-                if(s.toString().isNotEmpty()) {
+                if (s.toString().isNotEmpty()) {
                     val enteredString = s.toString()
                     totalquantity = s.toString().toInt()
                     if (enteredString.startsWith("0")) {
@@ -1457,7 +1484,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         if (model.discountPrice != 0.0) {
             txtTitle.text = model.name + "  $" + String.format(
                 "%.2f",
-                ((model.price * model.itemQuantity) - (model.discountPrice* model.itemQuantity))
+                ((model.price * model.itemQuantity) - (model.discountPrice * model.itemQuantity))
             )
         } else {
             txtTitle.text = model.name /*+ "  $" + String.format(
@@ -1471,11 +1498,16 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         }
 
         txtSave.setOnClickListener {
+
+            if (edtItemName.text.toString().trim().isEmpty()){
+                AlertUtils.showCustomAlert(requireContext(),"Please enter custom item name")
+                return@setOnClickListener
+            }
             dialog.dismiss()
             val itemCost = model.price
 
             if (model.discountPrice != 0.0) {
-                val dis = (model.discountPrice*model.itemQuantity) / model.itemQuantity
+                val dis = (model.discountPrice * model.itemQuantity) / model.itemQuantity
 
                 model.discountPrice =
                     String.format("%.2f", (dis)).toDouble()
@@ -1490,7 +1522,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 model.itemQuantity = 1
             }
 
-            cartList?.get(0)?.items?.get(position)?.name = edtItemName.text.toString().trim().replace("\\s+".toRegex(), " ")
+            cartList?.get(0)?.items?.get(position)?.name =
+                edtItemName.text.toString().trim().replace("\\s+".toRegex(), " ")
             Log.d(TAG, "onItemClicked: name  " + edtItemName.text.toString())
 
             model.price = String.format("%.2f", (itemCost)).toDouble()
@@ -1553,7 +1586,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                         viewModel.manualSalecartLogic(cartList, model, Constants.UPDATE)
                         txtTitle.text = model.name + "  $" + String.format(
                             "%.2f",
-                            ((model.price * totalquantity) - model.discountPrice*totalquantity)
+                            ((model.price * totalquantity) - model.discountPrice * totalquantity)
                         )
 
                     } else if (result.discountType == "Amount") {
@@ -1573,7 +1606,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                         viewModel.manualSalecartLogic(cartList, model, Constants.UPDATE)
                         txtTitle.text = model.name + "  $" + String.format(
                             "%.2f",
-                            ((model.price * totalquantity) - model.discountPrice*totalquantity)
+                            ((model.price * totalquantity) - model.discountPrice * totalquantity)
                         )
                     } else {
                         model.discountPrice = 0.0
@@ -1651,15 +1684,18 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 }
                 putParcelable("model", model)
             }
-            bundle.putString("isFrom","itemDiscountManual")
-            if (prefProvider.isAdmin() || prefProvider.isManager()){
+            bundle.putString("isFrom", "itemDiscountManual")
+            if (prefProvider.isAdmin() || prefProvider.isManager()) {
 
                 if (findNavController().currentDestination?.id != R.id.addDiscountDialog) {
-                    findNavController().navigate(R.id.action_manualSaleNew_to_addDiscountDialog, bundle)
+                    findNavController().navigate(
+                        R.id.action_manualSaleNew_to_addDiscountDialog,
+                        bundle
+                    )
                 }
-            }else{
+            } else {
                 findNavController().navigate(
-                    R.id.action_manualSaleNew_to_pascodeManagerDailog,bundle
+                    R.id.action_manualSaleNew_to_pascodeManagerDailog, bundle
                 )
             }
 
@@ -1969,44 +2005,44 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                     bundle
                 )
             }
-/*            R.id.txt_delete -> {
-                cartAdapter.viewBinderHelper.closeLayout(pos.toString())
-                alert(
-                    getString(R.string.app_name),
-                    getString(R.string.delete_item_message)
-                ) {
-                    positiveButton(getString(R.string.tv_delete)) {
-                        // Do positive stuff here
-                        val item = cartAdapter.getItem(pos)
-                        LogUtil.logE(TAG, "item ${Gson().toJson(item)}")
-                        viewModel.manualSalecartLogic(cartList, item, Constants.DELETE)
-                    }
-                    negativeButton(R.string.tv_cancel) {
-                        // Do negative stuff here
-                    }
-                }
-            }
-            R.id.txt_note -> {
-                cartItemModel = cartAdapter.getItem(pos)
-                val bundle = Bundle().apply {
-                    putString("note", cartItemModel.note)
-                }
-                cartAdapter.viewBinderHelper.closeLayout(pos.toString())
-                findNavController().navigate(
-                    R.id.action_manualSaleNew_to_addNoteDialog,
-                    bundle
-                )
-            }
-            R.id.txt_rename -> {
-                LogUtil.logE(TAG, "pospospos  ${pos}")
-                cartItemModel = cartAdapter.getItem(pos)
-                val bundle: Bundle = bundleOf("item_name" to cartItemModel.name)
-                cartAdapter.viewBinderHelper.closeLayout(pos.toString())
-                findNavController().navigate(
-                    R.id.action_manualSaleNew_to_itemRenameDialog,
-                    bundle
-                )
-            }*/
+            /*            R.id.txt_delete -> {
+                            cartAdapter.viewBinderHelper.closeLayout(pos.toString())
+                            alert(
+                                getString(R.string.app_name),
+                                getString(R.string.delete_item_message)
+                            ) {
+                                positiveButton(getString(R.string.tv_delete)) {
+                                    // Do positive stuff here
+                                    val item = cartAdapter.getItem(pos)
+                                    LogUtil.logE(TAG, "item ${Gson().toJson(item)}")
+                                    viewModel.manualSalecartLogic(cartList, item, Constants.DELETE)
+                                }
+                                negativeButton(R.string.tv_cancel) {
+                                    // Do negative stuff here
+                                }
+                            }
+                        }
+                        R.id.txt_note -> {
+                            cartItemModel = cartAdapter.getItem(pos)
+                            val bundle = Bundle().apply {
+                                putString("note", cartItemModel.note)
+                            }
+                            cartAdapter.viewBinderHelper.closeLayout(pos.toString())
+                            findNavController().navigate(
+                                R.id.action_manualSaleNew_to_addNoteDialog,
+                                bundle
+                            )
+                        }
+                        R.id.txt_rename -> {
+                            LogUtil.logE(TAG, "pospospos  ${pos}")
+                            cartItemModel = cartAdapter.getItem(pos)
+                            val bundle: Bundle = bundleOf("item_name" to cartItemModel.name)
+                            cartAdapter.viewBinderHelper.closeLayout(pos.toString())
+                            findNavController().navigate(
+                                R.id.action_manualSaleNew_to_itemRenameDialog,
+                                bundle
+                            )
+                        }*/
         }
     }
 }

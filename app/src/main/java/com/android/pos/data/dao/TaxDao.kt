@@ -30,7 +30,7 @@ interface TaxDao {
     fun allTaxList(): List<TaxData>
 
     @Query("SELECT * from TbTax where TbTax.id  = :id LIMIT 1")
-    suspend fun taxById(id: Int?): TaxData
+    suspend fun taxById(id: Int?): TaxData?
 
     @Query("DELETE FROM TbTax")
     suspend fun delete()

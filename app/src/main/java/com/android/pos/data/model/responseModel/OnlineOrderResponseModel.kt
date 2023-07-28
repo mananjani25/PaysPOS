@@ -1,6 +1,7 @@
 package com.android.pos.data.model.responseModel
 
 import android.os.Parcelable
+import com.android.pos.data.model.GetPaymentOrderDetailsResponse
 import com.android.pos.data.model.requestModel.OrderItemVariationAttribute
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
@@ -41,7 +42,7 @@ data class OnlineOrderResponseModel(
         @SerializedName("edited_order_timestamp")
         val editedOrderTimestamp: Any,
         @SerializedName("employee")
-        val employee: Employee,
+        val employee: Employee?,
         @SerializedName("employee_id")
         val employeeId: Int,
         @SerializedName("future_delivery_date")
@@ -74,6 +75,8 @@ data class OnlineOrderResponseModel(
         val orderServiceCharges: List<OrderServiceCharge>,
         @SerializedName("order_type")
         val orderType: String,
+        @SerializedName("order_type_name")
+        val orderTypeName: String,
         @SerializedName("order_type_id")
         val orderTypeId: Int,
         @SerializedName("payment_status")
@@ -119,10 +122,15 @@ data class OnlineOrderResponseModel(
         var isCheck: Boolean = false,
         @SerializedName("magensa_response")
         val magensa_response_data: String,
+        //@SerializedName("order_type_name") val order_type_name: String,
     ) {
         data class OrderItem(
             @SerializedName("category_id")
             val categoryId: Int,
+            @SerializedName("custom_item_id")
+            val custom_item_id: Int,
+            @SerializedName("is_edited")
+            val isEdited: Boolean,
             @SerializedName("completed_in_kitchen")
             val completedInKitchen: Boolean,
             @SerializedName("discount_amount")
@@ -234,7 +242,7 @@ data class OnlineOrderResponseModel(
             @SerializedName("amount")
             val amount: Double,
             @SerializedName("created_at")
-            val createdAt: String,
+            val createdAt: String?,
             @SerializedName("id")
             val id: Int,
             @SerializedName("name")
@@ -246,7 +254,13 @@ data class OnlineOrderResponseModel(
             @SerializedName("service_charge_id")
             val serviceChargeId: Int,
             @SerializedName("updated_at")
-            val updatedAt: String
+            val updatedAt: String?,
+            @SerializedName("min_guest_count")
+            val min_guest_count: Int? = null,
+            @SerializedName("max_guest_count")
+            val max_guest_count: Int? = null,
+            @SerializedName("order_type")
+            val order_type: String
         )
 
         data class Payment(

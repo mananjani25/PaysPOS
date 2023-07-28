@@ -57,6 +57,7 @@ import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.ui.fragments.payment.OrderCompleteViewModel
 import com.android.pos.ui.fragments.settings.hardware.Hardware
 import com.android.pos.utils.*
+import com.android.pos.utils.MethodUtils.Companion.toPrecision
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.statusUtils.Status
 import com.android.pos.utils.workmanager.ThreadPoolManager
@@ -211,9 +212,9 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     private var syncFloorPlan = object : BroadcastReceiver() {
         override fun onReceive(p0: Context?, p1: Intent?) {
             Log.e("SyncFloorPlan", "onReceiveSync")
-            if (findNavController(R.id.navHostFrag).currentDestination?.id == R.id.dineInFragment) {
+            if (findNavController(R.id.navHostFrag).currentDestination?.id == R.id.dineInFragment){
 
-                navController?.popBackStack(R.id.dineInFragment, true)
+                navController?.popBackStack(R.id.dineInFragment,true)
                 navController?.navigate(R.id.dineInFragment)
 
             }
@@ -519,7 +520,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                                         )
                                     }
 
-                                    if (kitchenSettingModel.showCustomerAddress != false or kitchenSettingModel.showCustomerPhone != false or kitchenSettingModel.showCustomerName != false) {
+                                    if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName != false) {
                                         if (printerQueueModel.customerName.isNotEmpty()) {
 
                                             mPrinter?.addFeedUnit(30)
@@ -858,6 +859,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         if (prefProvider?.getValueboolean(IS_PRINTER_QUEUE_STARTS, false) == true) {
             getKitOne()
         }
+
 
         // connectionActionCable()
         val intentFilter = IntentFilter("PrinterQueue")

@@ -8,6 +8,7 @@ import com.android.pos.data.entities.TaxData
 import com.android.pos.databinding.ViewTaxItemBinding
 import com.android.pos.ui.fragments.settings.tax.TaxListViewModel
 import com.android.pos.utils.callback.ItemCallback
+import com.android.pos.utils.extensions.setOnSingleClickListener
 
 
 class TaxListAdapter(val viewModel: TaxListViewModel) :
@@ -60,7 +61,7 @@ class TaxListAdapter(val viewModel: TaxListViewModel) :
     inner class MyViewHolder(val taxItemBinding: ViewTaxItemBinding) :
         RecyclerView.ViewHolder(taxItemBinding.root) {
             init {
-                taxItemBinding.layoutMenu.imgOrderMenu.setOnClickListener {
+                taxItemBinding.layoutMenu.imgOrderMenu.setOnSingleClickListener {
                     mCallback?.onItemClickListener(it, bindingAdapterPosition)
                 }
             }

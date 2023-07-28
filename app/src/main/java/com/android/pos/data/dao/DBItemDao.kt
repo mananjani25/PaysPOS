@@ -27,7 +27,7 @@ interface DBItemDao {
     @get:Query("select * from TbItem where (TbItem.hide_status = 'UnHide' and TbItem.isDeleted = 0) GROUP by TbItem.itemId ORDER BY TbItem.sort DESC")
     val allItemsWithManualFromPos: LiveData<List<TbItem?>>?
 
-    @Query("select * from TbItem where TbItem.isDeleted = 0 and (TbItem.website_hide_status ='UnHideOnWebsite' or TbItem.hide_status ='UnHide') and TbItem.name != 'Manual Item' GROUP by TbItem.itemId ORDER BY TbItem.sort ASC")
+    @Query("select * from TbItem where TbItem.isDeleted = 0 and TbItem.hide_status ='UnHide' and TbItem.name != 'Manual Item' GROUP by TbItem.itemId ORDER BY TbItem.sort ASC")
     fun getPaginationList(): PagingSource<Int, TbItem>
 
     /*@get:Query("select * from TbItem whe  re TbItem.isManualSales = 1")
@@ -108,4 +108,7 @@ interface DBItemDao {
 
     @Query("UPDATE TbItem SET modifier_set_ids = :modifierSetIds WHERE TbItem.itemId = :id")
     suspend fun updateItemModifiers(id: Int, modifierSetIds: List<Int>)
+
+    @Query("select * from TbItem where TbItem.isDeleted = 0 and TbItem.name != 'Manual Item'")
+    suspend fun allItemsList(): List<TbItem?>?
 }

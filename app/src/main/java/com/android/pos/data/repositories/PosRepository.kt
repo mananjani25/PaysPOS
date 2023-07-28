@@ -173,6 +173,9 @@ class PosRepository @Inject constructor(
     suspend fun deletePrinter(id: Int, status: String? = null) =
         apiHelperNew.deletePrinter(id, status)
 
+  suspend fun textPaySplit(id: Int) =
+        apiHelperNew.textPaySplit(id)
+
     suspend fun deleteQueuePrinter(id: Int) = apiHelperNew.deleteQueuePrinter(id)
 
     suspend fun deleteAllQueuePrinter(id: Array<Int>) = apiHelperNew.deleteAllQueuePrinter(id)
@@ -193,7 +196,8 @@ class PosRepository @Inject constructor(
     suspend fun syncVenueDetails() = apiHelperNew.syncVenueDetails(
         prefProvider.getValueInt(
             TERMINAL_ID, 0
-        ), prefProvider.getValue(SYNC_SETTING_TIME_STAMP, "")
+        ),
+        prefProvider.getValue(SYNC_SETTING_TIME_STAMP, "")
     )
 
     suspend fun getOnlineOrderNotificationCount() = apiHelperNew.getOnlineOrderCountNoti()
@@ -282,27 +286,29 @@ class PosRepository @Inject constructor(
         appDatabase.categoryDao().allCatWithoutItem()
     })
 
-    fun getCategoryList() = performGetOperation(databaseQuery = { appDatabase.categoryDao().all() },
-        networkCall = { apiHelperNew.getCategories() },
-        saveCallResult = {
-            val categoryModelList = ArrayList<TbCategory>()
-            it.data.forEach { category ->
-                val model = TbCategory().apply {
-                    createdAt = category.createdAt.toString()
-                    id = category.id
-                    active = category.active
-                    name = category.name ?: ""
-                    sort = category.sort
-                    updatedAt = category.updatedAt.toString()
-                    locationId = category.locationId
-                    item_ids = category.itemIds
-                    thumbImgUrl = category.thumbImgUrl
-                    originalImgUrl = category.originalImgUrl
+    fun getCategoryList() =
+        performGetOperation(databaseQuery = { appDatabase.categoryDao().all() },
+            networkCall = { apiHelperNew.getCategories() },
+            saveCallResult = {
+                val categoryModelList = ArrayList<TbCategory>()
+                it.data.forEach { category ->
+                    val model = TbCategory().apply {
+                        createdAt = category.createdAt.toString()
+                        id = category.id
+                        active = category.active
+                        name = category.name ?: ""
+                        sort = category.sort
+                        updatedAt = category.updatedAt.toString()
+                        locationId = category.locationId
+                        item_ids = category.itemIds
+                        thumbImgUrl = category.thumbImgUrl
+                        originalImgUrl = category.originalImgUrl
+                    }
+                    categoryModelList.add(model)
                 }
-                categoryModelList.add(model)
+                appDatabase.categoryDao().addAll(categoryModelList)
             }
-            appDatabase.categoryDao().addAll(categoryModelList)
-        })
+        )
 
     suspend fun deleteCategory(catId: Int) = appDatabase.categoryDao().deleteCategoryById(catId)
 
@@ -335,17 +341,19 @@ class PosRepository @Inject constructor(
         appDatabase.itemDao().updateItemTaxes(itemId!!, taxes)
     }
 
-    fun getItemByProductCode(productCode: String) = performGetOperationDatabase(databaseQuery = {
-        appDatabase.itemDao().itemByProductCode(productCode)!!
-    })
+    fun getItemByProductCode(productCode: String) =
+        performGetOperationDatabase(databaseQuery = {
+            appDatabase.itemDao().itemByProductCode(productCode)!!
+        })
 
     fun checkCategoryHideOrNot(id: Int) = performGetOperationDatabase(databaseQuery = {
         appDatabase.categoryDao().getCategory(id)
     })
 
-    fun getItemByCategoryId(id: Int) = performGetOperationDatabase(databaseQuery = {
-        appDatabase.itemDao().getItemList(id)
-    })
+    fun getItemByCategoryId(id: Int) =
+        performGetOperationDatabase(databaseQuery = {
+            appDatabase.itemDao().getItemList(id)
+        })
 
     fun getSingleItem(id: Int) = appDatabase.itemDao().itemOne(id)
 
@@ -363,15 +371,18 @@ class PosRepository @Inject constructor(
 
     fun getAllCountryList() = appDatabase.countryListDao().all
 
-    fun modifierSets() = performGetOperation(databaseQuery = { appDatabase.modifierSetDao().all },
-        networkCall = { apiHelperNew.getModifierSetCall() },
-        saveCallResult = {
-            appDatabase.modifierSetDao().addAll(it.data)
-        })
+    fun modifierSets() =
+        performGetOperation(databaseQuery = { appDatabase.modifierSetDao().all },
+            networkCall = { apiHelperNew.getModifierSetCall() },
+            saveCallResult = {
+                appDatabase.modifierSetDao().addAll(it.data)
+            })
 
 
     fun getInventory() =
-        performGetOperationDatabase(databaseQuery = { appDatabase.itemDao().allItem!! })
+        performGetOperationDatabase(
+            databaseQuery = { appDatabase.itemDao().allItem!! }
+        )
 
 
     fun getNoteList() = performGetOperationDatabase(
@@ -383,7 +394,8 @@ class PosRepository @Inject constructor(
     )
 
 
-    suspend fun deleteNotesFromDb() = appDatabase.notesDao().delete()
+    suspend fun deleteNotesFromDb() =
+        appDatabase.notesDao().delete()
 
     suspend fun deleteEODReportSettings() =
         appDatabase.eodReportSettings().deleteEODReportSettings()
@@ -481,12 +493,14 @@ class PosRepository @Inject constructor(
 
     suspend fun createNote(data: CreateNoteRequest) = apiHelperNew.createNote(data)
 
-    suspend fun createNoteDatabase(data: NoteResponse.Data) = appDatabase.notesDao().addNotes(data)
+    suspend fun createNoteDatabase(data: NoteResponse.Data) =
+        appDatabase.notesDao().addNotes(data)
 
     suspend fun updateNote(taxId: Int, data: CreateNoteRequest) =
         apiHelperNew.updateNote(taxId, data)
 
-    suspend fun noteActive(id: Int, active: Boolean) = apiHelperNew.noteActive(id, active)
+    suspend fun noteActive(id: Int, active: Boolean) =
+        apiHelperNew.noteActive(id, active)
 
     suspend fun noteActiveDatabase(noteId: Int, active: Boolean) =
         appDatabase.notesDao().activeNote(noteId, active)
@@ -498,10 +512,10 @@ class PosRepository @Inject constructor(
     /*fun employeesList(locationId: Int) =
         performGetOperationNew(networkCall = { apiHelperNew.employeesList(locationId) })*/
 
-    fun employeesList(locationId: Int) =
-        performGetOperation(databaseQuery = { appDatabase.employeeDao().allEmployee },
-            networkCall = { apiHelperNew.employeesList(locationId) },
-            saveCallResult = { appDatabase.employeeDao().addAllEmployee(it.data.employees) })
+    fun employeesList(locationId: Int) = performGetOperation(
+        databaseQuery = { appDatabase.employeeDao().allEmployee },
+        networkCall = { apiHelperNew.employeesList(locationId) },
+        saveCallResult = { appDatabase.employeeDao().addAllEmployee(it.data.employees) })
 
     fun getEmployeeListDatabse() =
         performGetOperationDatabase(databaseQuery = { appDatabase.employeeDao().allEmployee })
@@ -515,8 +529,8 @@ class PosRepository @Inject constructor(
         performGetOperationDatabase(databaseQuery = { appDatabase.orderTypeDao().orderTypes })
 
 
-    /*fun employeesTimeSheet(startDate: String, endDate: String, teamRoleId: String) =
-        performGetOperationNew(networkCall = { apiHelperNew.employeesTimeSheet(startDate, endDate, teamRoleId) })*/
+/*fun employeesTimeSheet(startDate: String, endDate: String, teamRoleId: String) =
+    performGetOperationNew(networkCall = { apiHelperNew.employeesTimeSheet(startDate, endDate, teamRoleId) })*/
 
     suspend fun employeesTimeSheet(startDate: String, endDate: String, teamRoleId: String) =
         apiHelperNew.employeesTimeSheet(startDate, endDate, teamRoleId)
@@ -524,40 +538,46 @@ class PosRepository @Inject constructor(
     suspend fun employeesTimeSheetDetails(startDate: String, endDate: String, teamRoleId: String) =
         apiHelperNew.employeesTimeSheetDetails(startDate, endDate, teamRoleId)
 
-    /*fun employeesTimeSheetDetails(startDate: String, endDate: String, teamId: String) =
-        performGetOperationNew(networkCall = { apiHelperNew.employeesTimeSheetDetails(startDate, endDate, teamId) })*/
+/*fun employeesTimeSheetDetails(startDate: String, endDate: String, teamId: String) =
+    performGetOperationNew(networkCall = { apiHelperNew.employeesTimeSheetDetails(startDate, endDate, teamId) })*/
 
 
-    fun customerList() =
-        performGetOperation(databaseQuery = { appDatabase.customerDao().allCustomer },
-            networkCall = { apiHelperNew.customerList() },
-            saveCallResult = { appDatabase.customerDao().addAllCustomer(it.data) })
+    fun customerList() = performGetOperation(
+        databaseQuery = { appDatabase.customerDao().allCustomer },
+        networkCall = { apiHelperNew.customerList() },
+        saveCallResult = { appDatabase.customerDao().addAllCustomer(it.data) })
 
-    fun customerListPagination(data: HashMap<String, String>) =
-        performGetOperation(databaseQuery = { appDatabase.customerDao().allCustomer },
-            networkCall = { apiHelperNew.customerListPagination(data) },
-            saveCallResult = { appDatabase.customerDao().addAllCustomer(it.data) })
+    fun customerListPagination(data: HashMap<String, String>) = performGetOperation(
+        databaseQuery = { appDatabase.customerDao().allCustomer },
+        networkCall = { apiHelperNew.customerListPagination(data) },
+        saveCallResult = { appDatabase.customerDao().addAllCustomer(it.data) })
 
 
-    fun orderTypes() = performGetOperation(databaseQuery = {
-        appDatabase.orderTypeDao().orderTypes
-    },
+    fun orderTypes() = performGetOperation(
+        databaseQuery = {
+            appDatabase.orderTypeDao().orderTypes
+        },
         networkCall = { apiHelperNew.orderTypes() },
         saveCallResult = { appDatabase.orderTypeDao().addAll(it.data) })
 
-    fun orderTypesDb() = performGetOperationDatabase(databaseQuery = {
-        appDatabase.orderTypeDao().orderTypes
-    })
+    fun orderTypesDb() = performGetOperationDatabase(
+        databaseQuery = {
+            appDatabase.orderTypeDao().orderTypes
+        })
 
-    fun orderTypesfromDatabase() = performGetOperationDatabase(databaseQuery = {
-        appDatabase.orderTypeDao().orderTypes
-    })
+    fun orderTypesfromDatabase() = performGetOperationDatabase(
+        databaseQuery = {
+            appDatabase.orderTypeDao().orderTypes
+        }
+    )
 
     suspend fun createEmployee(data: CreateEmployeeRequestModel) = apiHelperNew.createEmployee(data)
 
-    suspend fun createEmployeeDatabase(data: Employee) = appDatabase.employeeDao().addEmployee(data)
+    suspend fun createEmployeeDatabase(data: Employee) =
+        appDatabase.employeeDao().addEmployee(data)
 
-    suspend fun addCustomer(data: TbCustomer) = appDatabase.customerDao().addCustomer(data)
+    suspend fun addCustomer(data: TbCustomer) =
+        appDatabase.customerDao().addCustomer(data)
 
     suspend fun updateFinalRewards(finalrewards: Int, customerId: Int) =
         appDatabase.customerDao().updateLoyaltyRewards(finalrewards, customerId)
@@ -568,10 +588,12 @@ class PosRepository @Inject constructor(
     }
 
 
-    suspend fun deleteCustomerDataBase(id: Int?) = appDatabase.customerDao().deleteCustomerByID(id)
+    suspend fun deleteCustomerDataBase(id: Int?) =
+        appDatabase.customerDao().deleteCustomerByID(id)
 
 
-    suspend fun createCustomer(data: CreateCustomerRequestModel) = apiHelperNew.createCustomer(data)
+    suspend fun createCustomer(data: CreateCustomerRequestModel) =
+        apiHelperNew.createCustomer(data)
 
     suspend fun updateCustomer(id: Int, data: CreateCustomerRequestModel) =
         apiHelperNew.updateCustomer(id, data)
@@ -582,19 +604,23 @@ class PosRepository @Inject constructor(
     suspend fun deleteCustomer(id: Int?) = apiHelperNew.deleteCustomer(id)
 
     suspend fun updateEmployee(
-        taxId: Int, data: CreateEmployeeRequestModel
-    ) = apiHelperNew.updateEmployee(taxId, data)
+        taxId: Int,
+        data: CreateEmployeeRequestModel
+    ) =
+        apiHelperNew.updateEmployee(taxId, data)
 
-    suspend fun deleteEmployee(data: Int) = apiHelperNew.deleteEmployee(data)
+    suspend fun deleteEmployee(data: Int) =
+        apiHelperNew.deleteEmployee(data)
 
 
-    suspend fun deleteAllEmployee() = appDatabase.employeeDao().delete()
+    suspend fun deleteAllEmployee() =
+        appDatabase.employeeDao().delete()
 
-    suspend fun searchCustomer(query: String) = apiHelperNew.searchCustomers(query)
+    suspend fun searchCustomer(query: String) =
+        apiHelperNew.searchCustomers(query)
 
-    fun searchEmployeesDatabase(query: String) = performGetOperationDatabase(databaseQuery = {
-        appDatabase.employeeDao().getEmployeeSearchResults(query)
-    })
+    fun searchEmployeesDatabase(query: String) =
+        performGetOperationDatabase(databaseQuery = { appDatabase.employeeDao().getEmployeeSearchResults(query) })
 
     suspend fun deleteEmployeeDatabase(employeeId: Int) =
         appDatabase.employeeDao().deleteEmployeeById(employeeId)
@@ -626,14 +652,17 @@ class PosRepository @Inject constructor(
     fun unhideItemListWebsite() =
         performGetOperationDatabase(databaseQuery = { appDatabase.itemDao().unhideItemWebsite!! })
 
-    suspend fun createItem(item: TbItem) = appDatabase.itemDao().add(item)
+    suspend fun createItem(item: TbItem) =
+        appDatabase.itemDao().add(item)
 
-    suspend fun createItemApiCall(data: CreateItemRequestModel) = apiHelperNew.createItem(data)
+    suspend fun createItemApiCall(data: CreateItemRequestModel) =
+        apiHelperNew.createItem(data)
 
     suspend fun updateItemApiCall(id: Int, data: CreateItemRequestModel) =
         apiHelperNew.updateItem(id, data)
 
-    suspend fun deleteCategoryCall(data: Int) = apiHelperNew.deleteCategoryCall(data)
+    suspend fun deleteCategoryCall(data: Int) =
+        apiHelperNew.deleteCategoryCall(data)
 
     suspend fun hideCategoryCall(id: Int, active: Boolean) =
         apiHelperNew.hideCategoryCall(id, active)
@@ -651,10 +680,13 @@ class PosRepository @Inject constructor(
     suspend fun updateCategoryItems(id: Int, itemIdsList: List<Int>) =
         appDatabase.categoryDao().updateCategoryList(id, itemIdsList)
 
-    suspend fun createCategory(category: TbCategory) = appDatabase.categoryDao().add(category)
+    suspend fun createCategory(category: TbCategory) =
+        appDatabase.categoryDao().add(category)
 
     suspend fun updateItemCategory(
-        catId: Int, catName: String, itemId: Int?
+        catId: Int,
+        catName: String,
+        itemId: Int?
     ) {
 
         appDatabase.itemDao().updateItem(catId, catName, itemId)
@@ -752,9 +784,10 @@ class PosRepository @Inject constructor(
 
     fun taxList() = performGetOperationDatabase(databaseQuery = { appDatabase.taxDao().allTax })
 
-    fun modifierSetList(ids: IntArray) = performGetOperationDatabase(databaseQuery = {
-        appDatabase.modifierSetDao().modifierSetByItem(ids)
-    })
+    fun modifierSetList(ids: IntArray) =
+        performGetOperationDatabase(databaseQuery = {
+            appDatabase.modifierSetDao().modifierSetByItem(ids)
+        })
 
     suspend fun createModifierSet(data: CreateModifierRequest) =
         apiHelperNew.createModifierSet(data)
@@ -770,16 +803,18 @@ class PosRepository @Inject constructor(
         apiHelperNew.reOrderModifierCall(id, oldPos, newPos)
 
 
-    fun getOptionSet() = performGetOperation(databaseQuery = { appDatabase.optionSetDao().all },
-        networkCall = { apiHelperNew.getOptionSet() },
-        saveCallResult = {
-            appDatabase.optionSetDao().addAll(it.data)
-        })
+    fun getOptionSet() =
+        performGetOperation(databaseQuery = { appDatabase.optionSetDao().all },
+            networkCall = { apiHelperNew.getOptionSet() },
+            saveCallResult = {
+                appDatabase.optionSetDao().addAll(it.data)
+            })
 
     fun getOptionListData() =
         performGetOperationDatabase(databaseQuery = { appDatabase.optionSetDao().all })
 
-    suspend fun createOptionSet(data: CreateOptionRequestModel) = apiHelperNew.createOptionSet(data)
+    suspend fun createOptionSet(data: CreateOptionRequestModel) =
+        apiHelperNew.createOptionSet(data)
 
 
     suspend fun addOptionSetsDatabase(data: List<OptionSet>) =
@@ -788,63 +823,92 @@ class PosRepository @Inject constructor(
     suspend fun updateOptionSet(mId: Int, data: CreateOptionRequestModel) =
         apiHelperNew.updateOptionSet(mId, data)
 
-    suspend fun deleteOptionSet(id: Int) = apiHelperNew.deleteOptionSet(id)
+    suspend fun deleteOptionSet(id: Int) =
+        apiHelperNew.deleteOptionSet(id)
 
-    suspend fun deleteOptionSetDatabase(id: Int) = appDatabase.optionSetDao().delete(id)
+    suspend fun deleteOptionSetDatabase(id: Int) =
+        appDatabase.optionSetDao().delete(id)
 
     suspend fun reOrderOptionSet(
-        id: Int, oldPos: Int, newPos: Int
-    ) = apiHelperNew.reOrderOptionSet(id, oldPos, newPos)
+        id: Int,
+        oldPos: Int,
+        newPos: Int
+    ) =
+        apiHelperNew.reOrderOptionSet(id, oldPos, newPos)
 
     suspend fun updateOptionSort(allCategories: ArrayList<OptionSet>) {
         appDatabase.optionSetDao().addAll(allCategories)
     }
 
-    suspend fun createOrder(data: OrderRequestModel) = apiHelperNew.createOrder(data)
+    suspend fun createOrder(data: OrderRequestModel) =
+        apiHelperNew.createOrder(data)
 
-    suspend fun splitByOrder(data: SpitByOrderRequestModel) = apiHelperNew.splitByOrder(data)
+    suspend fun splitByOrder(data: SpitByOrderRequestModel) =
+        apiHelperNew.splitByOrder(data)
 
     suspend fun updateOrder(
-        orderId: Int?, data: OrderRequestModel
-    ) = apiHelperNew.updateOrder(orderId, data)
+        orderId: Int?,
+        data: OrderRequestModel
+    ) =
+        apiHelperNew.updateOrder(orderId, data)
 
-    suspend fun orderDetailsById(orderId: Int) = apiHelperNew.orderDetailsById(orderId)
+    suspend fun orderDetailsById(orderId: Int) =
+        apiHelperNew.orderDetailsById(orderId)
 
 
-    suspend fun paymentDetailsById(paymentId: Int) = apiHelperNew.paymentDetailsById(paymentId)
+    suspend fun paymentDetailsById(paymentId: Int) =
+        apiHelperNew.paymentDetailsById(paymentId)
 
 
-    suspend fun orderDetailsId(orderId: Int) = apiHelperNew.orderDetailsId(orderId)
+    suspend fun orderDetailsId(orderId: Int) =
+        apiHelperNew.orderDetailsId(orderId)
 
-    suspend fun emailReceipt(data: HashMap<String, String>) = apiHelperNew.emailReceipt(data)
+    suspend fun emailReceipt(data: HashMap<String, String>) =
+        apiHelperNew.emailReceipt(data)
 
-    suspend fun phoneReceipt(data: HashMap<String, String>) = apiHelperNew.phoneReceipt(data)
+    suspend fun phoneReceipt(data: HashMap<String, String>) =
+        apiHelperNew.phoneReceipt(data)
 
     suspend fun assignCustomerOrder(
-        orderId: Int, customerId: Int, newPos: Int, paymentId: Int, finalrewards: Int
-    ) = apiHelperNew.assignCustomerOrder(
-        orderId, customerId, newPos, paymentId, finalrewards
-    )
+        orderId: Int,
+        customerId: Int,
+        newPos: Int,
+        paymentId: Int,
+        finalrewards: Int
+    ) =
+        apiHelperNew.assignCustomerOrder(
+            orderId,
+            customerId,
+            newPos,
+            paymentId,
+            finalrewards
+        )
 
-    suspend fun deleteTerminalsFromDb() = appDatabase.terminalDao().delete()
+    suspend fun deleteTerminalsFromDb() =
+        appDatabase.terminalDao().delete()
 
     suspend fun addTerminalsDatabase(
         data: List<VenueDetailsResponse.Data.Terminal>
-    ) = appDatabase.terminalDao().addAllTerminalSuspend(
-        data
-    )
+    ) =
+        appDatabase.terminalDao()
+            .addAllTerminalSuspend(
+                data
+            )
 
 
-    fun getEmployeeEmail(selectedTerminalId: Int) = performGetOperationDatabase(databaseQuery = {
-        appDatabase.employeeDao().employeeById(selectedTerminalId)
-    })
+    fun getEmployeeEmail(selectedTerminalId: Int) =
+        performGetOperationDatabase(databaseQuery = {
+            appDatabase.employeeDao()
+                .employeeById(selectedTerminalId)
+        })
 
     fun getTerminalListDatabse() =
         performGetOperationDatabase(databaseQuery = { appDatabase.terminalDao().allTerminal })
 
     fun getMinMax(_itemId: Int, modifierSetId: Int?): LiveData<ItemModifierSets?>? {
         if (modifierSetId != null) {
-            return appDatabase.itemModifierSetsDao().minMaxByItemModifier(_itemId, modifierSetId)
+            return appDatabase.itemModifierSetsDao()
+                .minMaxByItemModifier(_itemId, modifierSetId)
         }
         return null
     }
@@ -855,66 +919,135 @@ class PosRepository @Inject constructor(
 
 
     fun getOpenOrders(
-        paymentStatus: String, startDate: String, endDate: String
-    ): LiveData<Resource<OpenOrderResponse>> = performGetOperationNew(networkCall = {
-        if (paymentStatus == "Upcoming") apiHelperNew.getUpcomingOpenOrders() else apiHelperNew.getOpenOrders(
-            paymentStatus, startDate, endDate
-        )
-    })
+        paymentStatus: String,
+        startDate: String,
+        endDate: String
+    ): LiveData<Resource<OpenOrderResponse>> =
+        performGetOperationNew(networkCall = {
+            if (paymentStatus == "Upcoming") apiHelperNew.getUpcomingOpenOrders() else apiHelperNew.getOpenOrders(
+                paymentStatus,
+                startDate,
+                endDate
+            )
+        })
+
+    fun getPhoneOrders(
+        paymentStatus: String,
+        startDate: String,
+        endDate: String
+    ): LiveData<Resource<OpenOrderResponse>> =
+        performGetOperationNew(networkCall = {
+            if (paymentStatus == "Upcoming") apiHelperNew.getUpcomingOpenOrders() else apiHelperNew.getPhoneOrders(
+                paymentStatus,
+                startDate,
+                endDate
+            )
+        })
 
 
     suspend fun refundPaymentOnline(data: RefundRequestModelOnlineOrder) =
         apiHelperNew.refundPaymentOnline(data)
 
     fun getOnlineOrders(
-        startDate: String, endDate: String, order_status: String
-    ): LiveData<Resource<OnlineOrderResponseModel>> = performGetOperationNew(networkCall = {
-        apiHelperNew.getOnlineOrders(
-            startDate, endDate, order_status
-        )
-    })
+        startDate: String,
+        endDate: String,
+        order_status: String
+    ): LiveData<Resource<OnlineOrderResponseModel>> =
+        performGetOperationNew(networkCall = {
+            apiHelperNew.getOnlineOrders(
+                startDate,
+                endDate,
+                order_status
+            )
+        })
+
+    fun getAllOrders(
+        startDate: String,
+        endDate: String,
+        order_status: String,
+        payment_status: String,
+        order_type_id: String
+    ): LiveData<Resource<OnlineOrderResponseModel>> =
+        performGetOperationNew(networkCall = {
+            apiHelperNew.getAllOrders(
+                startDate,
+                endDate,
+                order_status,
+                payment_status,
+                order_type_id
+            )
+        })
 
     fun acceptedAndDeclineOrders(
-        time: Int, order_id: Int, isaccepted: Boolean, employee_id: Int, terminalid: Int
-    ): LiveData<Resource<OnlineOrderStatusUpdateResponse>> = performGetOperationNew(networkCall = {
-        apiHelperNew.setAcceptedAndDeclineorder(
-            time, order_id, isaccepted, employee_id, terminalid
-        )
-    })
+        time: Int,
+        order_id: Int,
+        isaccepted: Boolean,
+        employee_id: Int,
+        terminalid: Int
+    ): LiveData<Resource<OnlineOrderStatusUpdateResponse>> =
+        performGetOperationNew(networkCall = {
+            apiHelperNew.setAcceptedAndDeclineorder(
+                time,
+                order_id,
+                isaccepted,
+                employee_id,
+                terminalid
+            )
+        })
 
     fun updateOnlineOrders(
-        order_id: Int, order_status: String
-    ): LiveData<Resource<BaseResponse>> = performGetOperationNew(networkCall = {
-        apiHelperNew.updateOnlineOrder(
-            order_id, order_status
-        )
-    })
+        order_id: Int,
+        order_status: String
+    ): LiveData<Resource<BaseResponse>> =
+        performGetOperationNew(networkCall = {
+            apiHelperNew.updateOnlineOrder(
+                order_id,
+                order_status
+            )
+        })
 
 
     suspend fun cashInOut(data: CashLogRequest) = apiHelperNew.cashInOut(data)
 
 
     suspend fun getCashLog(
-        startDate: String, endDate: String, terminalId: String, s: String, s1: String
-    ) = apiHelperNew.getCashInOut(startDate, endDate, terminalId, s, s1)
+        startDate: String,
+        endDate: String,
+        terminalId: String,
+        s: String,
+        s1: String
+    ) =
+        apiHelperNew.getCashInOut(startDate, endDate, terminalId, s, s1)
 
     suspend fun orderUpdateTip(
-        orderId: Int, customerId: Double, is_captured: Boolean, data: CashInOutModel
-    ) = apiHelperNew.orderUpdateTip(orderId, customerId, is_captured, data)
+        orderId: Int,
+        customerId: Double,
+        is_captured: Boolean,
+        data: CashInOutModel
+    ) =
+        apiHelperNew.orderUpdateTip(orderId, customerId, is_captured, data)
 
-    suspend fun updateTipWithSignature(orderId: Int, signatureInBase64: String, tip: Double) =
+    suspend fun updateTipWithSignature(orderId: Int, signatureInBase64: String, tip: Double)=
         apiHelperNew.updateTipWithSignature(orderId, signatureInBase64, tip)
 
-    suspend fun updateTipWithSignatureFM(option: HashMap<String, Any>) =
+    suspend fun updateTipWithSignatureFM(option: HashMap<String, Any>)=
         apiHelperNew.updateTipWithSignatureFM(option)
 
     suspend fun updateKitchenFireStatus(
-        id: Int, isFired: Boolean, items: String
-    ) = apiHelperNew.updateKitchenFireStatus(id, isFired, items)
+        id: Int,
+        isFired: Boolean,
+        items: String
+    ) =
+        apiHelperNew.updateKitchenFireStatus(id, isFired, items)
 
     suspend fun getTableStatus(
-        tableId: Int, empId: Int, terminalId: Int, status: String, clearTable: Boolean
-    ) = apiHelperNew.getTableStatus(tableId, empId, terminalId, status, clearTable)
+        tableId: Int,
+        empId: Int,
+        terminalId: Int,
+        status: String,
+        clearTable: Boolean
+    ) =
+        apiHelperNew.getTableStatus(tableId, empId, terminalId, status, clearTable)
 
     suspend fun mergeFloorTable(
         parentTableId: Int,
@@ -922,18 +1055,26 @@ class PosRepository @Inject constructor(
         orderModel: MergeTableRequest?,
         childOrderIds: String?,
         orderId: Int? = null
-    ) = apiHelperNew.mergeFloorTable(parentTableId, childIds, orderModel, childOrderIds, orderId)
+    ) =
+        apiHelperNew.mergeFloorTable(parentTableId, childIds, orderModel, childOrderIds, orderId)
 
     suspend fun transferTable(
-        orderId: Int, floorPlanId: Int, floorPlanTableId: Int, oldFloorPlanTableId: Int
-    ) = apiHelperNew.transferTable(orderId, floorPlanId, floorPlanTableId, oldFloorPlanTableId)
+        orderId: Int,
+        floorPlanId: Int,
+        floorPlanTableId: Int,
+        oldFloorPlanTableId: Int
+    ) =
+        apiHelperNew.transferTable(orderId, floorPlanId, floorPlanTableId, oldFloorPlanTableId)
 
     suspend fun unMergeTable(id: Int) = apiHelperNew.unMergeTable(id)
     suspend fun payByGuest(
-        id: Int, isAllComplete: Boolean, model: GuestPaymentRequest
+        id: Int,
+        isAllComplete: Boolean,
+        model: GuestPaymentRequest
     ) = apiHelperNew.payByGuest(id, isAllComplete, model)
 
-    suspend fun orderCancel(id: Int, data: OrderCancelRequest) = apiHelperNew.orderCancel(id, data)
+    suspend fun orderCancel(id: Int, data: OrderCancelRequest) =
+        apiHelperNew.orderCancel(id, data)
 
     fun getFloorPlan(locationId: Int) =
         performGetOperationNew(networkCall = { apiHelperNew.getFloorPlan(locationId) })
@@ -941,30 +1082,43 @@ class PosRepository @Inject constructor(
     fun getFloorPlanTableDetails() =
         performGetOperationNew(networkCall = { apiHelperNew.getFloorPlanTableDetails() })
 
-    fun getAvailableTransferTableList() = performGetOperationNew(networkCall = {
-        apiHelperNew.getAvailableTransferTableList(
-            prefProvider.getValueInt(
-                EMPLOYEE_ID, 0
+    fun getAvailableTransferTableList() =
+        performGetOperationNew(networkCall = {
+            apiHelperNew.getAvailableTransferTableList(
+                prefProvider.getValueInt(
+                    EMPLOYEE_ID, 0
+                )
             )
-        )
-    })
+        })
 
     suspend fun employeeClockOut(data: HashMap<String, String>) =
         apiHelperNew.employeeClockOut(data)
 
     suspend fun getReportSummary(
-        startDate: String, endDate: String, terminalId: String
+        startDate: String,
+        endDate: String,
+        terminalId: String
     ) = apiHelperNew.getReportSummary(startDate, endDate, terminalId)
 
     suspend fun getReportEOD(
-        startDate: String, endDate: String, terminalId: String, employee_id: String, email: String
-    ) = apiHelperNew.getReportEOD(startDate, endDate, terminalId, employee_id, email)
+        startDate: String,
+        endDate: String,
+        terminalId: String,
+        employee_id: String,
+        email: String
+    ) =
+        apiHelperNew.getReportEOD(startDate, endDate, terminalId, employee_id, email)
 
     suspend fun sendEmailReportSummary(
-        startDate: String, endDate: String, email: String, employee_id: String
-    ) = apiHelperNew.sendEmailTimeSheet(startDate, endDate, email, employee_id)
+        startDate: String,
+        endDate: String,
+        email: String,
+        employee_id: String
+    ) =
+        apiHelperNew.sendEmailTimeSheet(startDate, endDate, email, employee_id)
 
-    suspend fun getOrderHistory(id: String) = apiHelperNew.getOrderHistory(id)
+    suspend fun getOrderHistory(id: String) =
+        apiHelperNew.getOrderHistory(id)
 
     suspend fun clearTableManually() {
         appDatabase.clearAllTables()
@@ -999,13 +1153,17 @@ class PosRepository @Inject constructor(
 
     }
 
-    fun orderCounts(startDate: String?, endDate: String?) =
-        performGetOperationNew(networkCall = { apiHelperNew.orderCounts(startDate, endDate) })
+    fun orderCounts(startDate: String?, endDate: String?, isOpenOrder: Boolean) =
+        performGetOperationNew(networkCall = { apiHelperNew.orderCounts(startDate, endDate,isOpenOrder) })
 
     fun onlineOrderCounts(startDate: String?, endDate: String?) =
         performGetOperationNew(networkCall = { apiHelperNew.onlineOrderCounts(startDate, endDate) })
 
-    fun inventoryCounts() = performGetOperationNew(networkCall = { apiHelperNew.inventoryCounts() })
+    fun allOrderCounts(startDate: String?, endDate: String?) =
+        performGetOperationNew(networkCall = { apiHelperNew.allOrderCounts(startDate, endDate) })
+
+    fun inventoryCounts() =
+        performGetOperationNew(networkCall = { apiHelperNew.inventoryCounts() })
 
     suspend fun addCardReader(tbCardReader: TbCardReader) {
         appDatabase.cardReaderDao().add(tbCardReader)
@@ -1022,14 +1180,16 @@ class PosRepository @Inject constructor(
     fun getCardReaderList(id: String) =
         performGetOperationDatabase { appDatabase.cardReaderDao().cardReaderById(id) }
 
-    fun getCardReaderList() = performGetOperationDatabase { appDatabase.cardReaderDao().allList() }
+    fun getCardReaderList() =
+        performGetOperationDatabase { appDatabase.cardReaderDao().allList() }
 
     fun cardReaderActiveList() =
         performGetOperationDatabase { appDatabase.cardReaderDao().cardReaderActiveList() }
 
     suspend fun deleteDineInCart() = appDatabase.cartDao().deleteDineInCart()
 
-    fun timeDetails() = performGetOperationNew(networkCall = { apiHelperNew.timeDetails() })
+    fun timeDetails() =
+        performGetOperationNew(networkCall = { apiHelperNew.timeDetails() })
 
     suspend fun deleteCustomerPrinters() {
         appDatabase.printerDao().deleteCustomerPrinters()
@@ -1050,6 +1210,10 @@ class PosRepository @Inject constructor(
 
     suspend fun updateModifiersForItem(modifierSetIds: List<Int>, itemId: Int?) {
         appDatabase.itemDao().updateItemModifiers(itemId!!, modifierSetIds)
+    }
+
+    suspend fun fetchAllItemsList(): List<TbItem?>? {
+        return appDatabase.itemDao().allItemsList()
     }
 }
 

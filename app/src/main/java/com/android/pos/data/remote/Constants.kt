@@ -115,6 +115,7 @@ object Constants {
 
     const val TAKEOUT = "TakeOut"
     const val DINE_IN = "DineIn"
+    const val PHONE_ORDER = "PhoneOrder"
     const val DINE_IN_UPDATE = "DineInUpdate"
     const val DINE_IN_ITEM = "DineInItem"
     const val OPEN_ORDER = "OpenOrder"
@@ -130,6 +131,8 @@ object Constants {
 
     const val PICK_UP = "Pickup"
     const val DELIVERY = "Delivery"
+
+    const val DELIVERY_TYPE = "Delivery_Type"
     const val OPEN_ORDER_ITEMS = "Open_Order_Items"
 
     //Api End Points
@@ -190,6 +193,8 @@ object Constants {
 
     const val DISCOUNTS = "discounts"
     const val DISCOUNTS_UPDATE_DELETE = "discounts/{id}"
+
+    const val TEXT_TO_PAY_SPIT = "sms_order_payment_link/{id}"
 
     const val DISCOUNTS_ACTIVE = "discounts/{id}/active"
 
@@ -308,7 +313,9 @@ object Constants {
     const val ORDER_ASSIGN_CUSTOMER = "orders/{id}/assign_customer_into_order"
     const val ORDER_PAY_AMOUNT_WISE = "payments/pay_amount_wise"
     const val ORDER_COUNTS = "orders/open_orders_show_count"
+    const val PHONE_ORDER_COUNTS = "orders/phone_orders_show_count"
     const val ONLINE_ORDER_COUNTS = "online_ordering_orders/web_orders_count"
+    const val ALL_ORDER_COUNTS = "orders/all_orders_count"
     const val ONLINE_ORDER_NOTIFICATION_COUNT = "locations/web_ordering_count"
     const val UPDATE_LOCK_SCREEN_PERMISSION = "locations/update_lock_screen_permission"
 
@@ -367,6 +374,19 @@ object Constants {
     const val TIME_DETAILS = "time_details"
 
     const val CUSTOMER_SIGN_REQUIRED_ON_CD = "customer_sign_required_on_cd"
+    const val SHOW_CASH_CREDIT_PRICE_ON_CUSTOMER_DISPLAY = "show_cash_credit_price_on_customer_display"
+
+    const val ALL_ORDER_TAB_POS = 0
+    const val OPEN_ORDER_TAB_POS = 1
+    const val PHONE_ORDER_TAB_POS = 2
+    const val ONLINE_ORDER_TAB_POS = 3
+    const val THIRD_PARTY_ORDER_TAB_POS = 4
+
+    const val ALL_ORDER_TAB = "ALL"
+    const val OPEN_ORDER_TAB = "OpenOrder"
+    const val PHONE_ORDER_TAB = "PhoneOrder"
+    const val ONLINE_ORDER_TAB = "OnlineWebOrder"
+    const val THIRD_PARTY_ORDER_TAB = "OnlineOrder"
 
 
     fun createRequestModelForUpdatePritnerType(
@@ -474,12 +494,15 @@ object Constants {
 
 
     const val OPEN_ORDERS = "orders/open_orders"
+    const val PHONE_ORDERS = "orders/phone_orders"
     const val ONLINE_ORDERING = "online_ordering_orders/web_orders"
     const val ACCEPTED_DECLINE_ONLINEORDER = "online_ordering_orders/{id}/accept_order"
     const val UPDATE_ONLINE_ORDER = "online_ordering_orders/{id}"
     const val CASH_EVENTS = "cash_events"
 
     const val UTC_SERVER_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+
+    const val ALL_ORDERS = "orders/all_orders"
 
     fun getCurrentTimeFromTimeZone(context: Context, mdate: String): String {
         try {
@@ -713,5 +736,7 @@ object Constants {
 
     const val OPEN_ORDER_DIRECT_PAY = "open_order_direct_pay"
     const val DEFAULT_ORDER = "Take Out"
+
+    const val IS_FROM_ALL_ORDER="IS_FROM_ALL_ORDER"
 
 }

@@ -19,6 +19,13 @@ import com.android.pos.data.model.responseModel.GetTipReponse
 import com.android.pos.data.model.responseModel.OnlineOrderResponseModel
 import com.android.pos.data.model.responseModel.OpenOrderResponse
 import com.android.pos.data.model.responseModel.PrinterResponse
+import com.android.pos.data.model.responseModel.CreateOrderResponse
+import com.android.pos.data.model.responseModel.EodReportResponse
+import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
+import com.android.pos.data.model.responseModel.GetTipReponse
+import com.android.pos.data.model.responseModel.OnlineOrderResponseModel
+import com.android.pos.data.model.responseModel.OpenOrderResponse
+import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.model.responseModel.report.KeyValue
 import com.android.pos.data.remote.Constants
 import com.android.pos.di.PrefProvider
@@ -74,6 +81,25 @@ fun addPaymentDetailsHeader(builder: Builder): Builder {
     return builder
 }
 
+
+fun addPaymentDetailsHeaderEODP(builder: Printer): Printer {
+    builder.addFeedUnit(30)
+    builder.addTextFont(Builder.FONT_E)
+    // builder.addTextAlign(Builder.ALIGN_LEFT)
+    builder.addTextLang(Builder.LANG_EN)
+    addCustomerTextSizeEODP(builder, Constants.SMALL)
+    builder.addTextStyle(
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.TRUE,
+        Builder.COLOR_1
+    )
+    builder.addText("Details" + repeat(" ", 20) + "Refund" + repeat(" ", 9) + "Amount")
+
+
+    return builder
+}
+
 fun addPaymentDetailsHeader() {
 
     PrintSunmiUtils.orderTime("Details" + repeat(" ", 20) + "Refund" + repeat(" ", 9) + "Amount")
@@ -110,10 +136,71 @@ fun addPaymentDetailsThreeData(builder: Builder, keyValue: java.util.ArrayList<K
 
 
         if (it.key.toString().toLowerCase().contains("Refund".toLowerCase())) {
-            refund = MethodUtils.roundOffAmount(it.value.toString().toDouble() ?: 0.0)
+            refund = if (it.value?.isNotEmpty() == true) {
+                MethodUtils.roundOffAmount(it.value.toString().toDouble())
+            } else {
+                "$0.00"
+            }
         } else {
             title = it.key.toString()
-            amount = MethodUtils.roundOffAmount(it.value.toString().toDouble())
+            amount = if (it.value?.isNotEmpty() == true) {
+                MethodUtils.roundOffAmount(it.value.toString().toDouble())
+            } else {
+                "$0.00"
+            }
+        }
+    }
+
+    var fPart = title + repeat(" ", 27 - title.length) + refund
+    var spaceLastPart = 48 - fPart.length
+    var spaceLast = 0
+    if (spaceLastPart > 1 && amount.length < spaceLastPart) {
+        spaceLast = spaceLastPart - amount.length
+    }
+
+    fPart += repeat(" ", spaceLast) + amount
+
+    builder.addText(fPart)
+
+    return builder
+}
+
+fun addPaymentDetailsThreeDataEODP(
+    builder: Printer,
+    keyValue: java.util.ArrayList<KeyValue>
+): Printer {
+    builder.addFeedUnit(30)
+    builder.addTextFont(Builder.FONT_E)
+    // builder.addTextAlign(Builder.ALIGN_LEFT)
+    builder.addTextLang(Builder.LANG_EN)
+    addCustomerTextSizeEODP(builder, Constants.SMALL)
+    builder.addTextStyle(
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.COLOR_1
+    )
+    var title = ""
+    var refund = ""
+    var amount = ""
+
+
+    keyValue.forEach {
+
+
+        if (it.key.toString().toLowerCase().contains("Refund".toLowerCase())) {
+            refund = if (it.value?.isNotEmpty() == true) {
+                MethodUtils.roundOffAmount(it.value.toString().toDouble())
+            } else {
+                "$0.00"
+            }
+        } else {
+            title = it.key.toString()
+            amount = if (it.value?.isNotEmpty() == true) {
+                MethodUtils.roundOffAmount(it.value.toString().toDouble())
+            } else {
+                "$0.00"
+            }
         }
     }
 
@@ -145,7 +232,11 @@ fun addPaymentDetailsThreeData(keyValue: java.util.ArrayList<KeyValue>) {
             refund = MethodUtils.roundOffAmount(it.value?.toDouble() ?: 0.0)
         } else {
             title = it.key.toString()
-            amount = MethodUtils.roundOffAmount(it.value.toString().toDouble())
+            amount = if (it.value?.isNotEmpty() == true) {
+                MethodUtils.roundOffAmount(it.value.toString().toDouble())
+            } else {
+                "$0.00"
+            }
         }
     }
 
@@ -176,7 +267,11 @@ fun addPaymentDetailsThreeDataInner(keyValue: java.util.ArrayList<KeyValue>) {
             refund = "$" + it.value
         } else {
             title = it.key.toString()
-            amount = MethodUtils.roundOffAmount(it.value.toString().toDouble())
+            amount = if (it.value?.isNotEmpty() == true) {
+                MethodUtils.roundOffAmount(it.value.toString().toDouble())
+            } else {
+                "$0.00"
+            }
         }
     }
 
@@ -200,6 +295,35 @@ fun employeeGuestDetailsData(builder: Builder, keyValue: KeyValue): Builder {
     // builder.addTextAlign(Builder.ALIGN_LEFT)
     builder.addTextLang(Builder.LANG_EN)
     addCustomerTextSize(builder, Constants.SMALL)
+    builder.addTextStyle(
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.COLOR_1
+    )
+    var sPart = if (keyValue.key?.contains("Served", true) == true) {
+        keyValue.value.toString()
+    } else {
+        MethodUtils.roundOffAmount(keyValue.value?.toDouble() ?: 0.0)
+    }
+    builder.addText(
+        padLine(
+            keyValue.key,
+            sPart,
+            48
+        )
+    )
+
+    return builder
+
+}
+
+fun employeeGuestDetailsDataEODP(builder: Printer, keyValue: KeyValue): Printer {
+    builder.addFeedUnit(30)
+    builder.addTextFont(Builder.FONT_E)
+    // builder.addTextAlign(Builder.ALIGN_LEFT)
+    builder.addTextLang(Builder.LANG_EN)
+    addCustomerTextSizeEODP(builder, Constants.SMALL)
     builder.addTextStyle(
         Builder.FALSE,
         Builder.FALSE,
@@ -283,6 +407,29 @@ fun addPaymentDetailsTwoData(builder: Builder, keyValue: KeyValue): Builder {
     return builder
 }
 
+fun addPaymentDetailsTwoDataEODP(builder: Printer, keyValue: KeyValue): Printer {
+    builder.addFeedUnit(30)
+    builder.addTextFont(Builder.FONT_E)
+    // builder.addTextAlign(Builder.ALIGN_LEFT)
+    builder.addTextLang(Builder.LANG_EN)
+    addCustomerTextSizeEODP(builder, Constants.SMALL)
+    builder.addTextStyle(
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.COLOR_1
+    )
+    builder.addText(
+        padLine(
+            keyValue.key,
+            MethodUtils.roundOffAmount(keyValue.value.toString().toDouble() ?: 0.0),
+            48
+        )
+    )
+
+    return builder
+}
+
 fun addPaymentDetailsTwoData(keyValue: KeyValue) {
 
     PrintSunmiUtils.orderTime(
@@ -302,7 +449,9 @@ fun addPaymentDetailsTwoDataInner(keyValue: KeyValue) {
     PrintSunmiUtils.normalText(
         padLine(
             keyValue.key,
-            MethodUtils.roundOffAmount(keyValue.value.toString().toDouble() ?: 0.0),
+            if (keyValue.value?.isNotEmpty() == true) MethodUtils.roundOffAmount(
+                keyValue.value.toString().toDouble() ?: 0.0
+            ) else "$0.00",
             48
         ).toString()
     )
@@ -317,6 +466,35 @@ fun addRefundVoidsMultiple(builder: Builder, keyValue: java.util.ArrayList<KeyVa
     // builder.addTextAlign(Builder.ALIGN_LEFT)
     builder.addTextLang(Builder.LANG_EN)
     addCustomerTextSize(builder, Constants.SMALL)
+    builder.addTextStyle(
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.COLOR_1
+    )
+    keyValue.forEach {
+        if (!it.key?.trim().equals("Item Count".trim(), true)) {
+            builder.addText(
+                padLine(
+                    it.key,
+                    MethodUtils.roundOffAmount(it.value.toString().toDouble() ?: 0.0),
+                    48
+                )
+            )
+        }
+    }
+
+
+    return builder
+
+}
+
+fun addRefundVoidsMultipleEODP(builder: Printer, keyValue: java.util.ArrayList<KeyValue>): Printer {
+    builder.addFeedUnit(30)
+    builder.addTextFont(Builder.FONT_E)
+    // builder.addTextAlign(Builder.ALIGN_LEFT)
+    builder.addTextLang(Builder.LANG_EN)
+    addCustomerTextSizeEODP(builder, Constants.SMALL)
     builder.addTextStyle(
         Builder.FALSE,
         Builder.FALSE,
@@ -395,6 +573,26 @@ fun addSixHeaderForOrderSaleDetails(builder: Builder): Builder {
     return builder
 }
 
+fun addSixHeaderForOrderSaleDetailsEODP(builder: Printer): Printer {
+
+
+    builder.addFeedUnit(30)
+    builder.addTextFont(Builder.FONT_E)
+    // builder.addTextAlign(Builder.ALIGN_LEFT)
+    builder.addTextLang(Builder.LANG_EN)
+    addCustomerTextSizeEODP(builder, Constants.SMALL)
+    builder.addTextStyle(
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.TRUE,
+        Builder.COLOR_1
+    )
+
+    builder.addText("OrderId    Tip      SC     PayType     Amount   ")
+
+    return builder
+}
+
 fun addSixHeaderForOrderSaleDetailsSunmi() {
     PrintSunmiUtils.orderTime("OrderId    Tip      SC     PayType     Amount   ")
 }
@@ -410,6 +608,30 @@ fun addCreditTipAuditHeader(builder: Builder): Builder {
     builder.addTextAlign(Builder.ALIGN_LEFT)
     builder.addTextLang(Builder.LANG_EN)
     addCustomerTextSize(builder, Constants.SMALL)
+    builder.addTextStyle(
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.COLOR_1
+    )
+
+    builder.addText(
+        "PaymentId" + repeat(" ", 4) + "SubTotal" + repeat(" ", 6) + "Tip" + repeat(
+            " ",
+            8
+        ) + "Total"
+    )
+
+    return builder
+
+}
+
+fun addCreditTipAuditHeaderEODP(builder: Printer): Printer {
+    builder.addFeedUnit(30)
+    builder.addTextFont(Builder.FONT_E)
+    builder.addTextAlign(Builder.ALIGN_LEFT)
+    builder.addTextLang(Builder.LANG_EN)
+    addCustomerTextSizeEODP(builder, Constants.SMALL)
     builder.addTextStyle(
         Builder.FALSE,
         Builder.FALSE,
@@ -486,6 +708,39 @@ fun addCreditTipAuditData(
     return builder
 }
 
+fun addCreditTipAuditDataEODP(
+    builder: Printer,
+    fPArt: String,
+    sPart: String,
+    TPArt: String,
+    lPart: String
+): Printer {
+    builder.addFeedUnit(30)
+    builder.addTextFont(Builder.FONT_E)
+    builder.addTextAlign(Builder.ALIGN_LEFT)
+    builder.addTextLang(Builder.LANG_EN)
+    addCustomerTextSizeEODP(builder, Constants.SMALL)
+    builder.addTextStyle(
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.COLOR_1
+    )
+
+
+    var pOne = TPArt + repeat(" ", 13 - TPArt.length) + fPArt
+
+    pOne += repeat(" ", 27 - pOne.length) + sPart
+    pOne += repeat(" ", 38 - pOne.length) + lPart
+
+
+
+
+    builder.addText(pOne)
+    return builder
+}
+
+
 fun addCreditTipAuditData(
     fPArt: String,
     sPart: String,
@@ -542,6 +797,24 @@ fun addCreditCardBreakDown(builder: Builder): Builder {
     return builder
 }
 
+fun addCreditCardBreakDownEODP(builder: Printer): Printer {
+    builder.addFeedUnit(30)
+    builder.addTextFont(Builder.FONT_E)
+    // builder.addTextAlign(Builder.ALIGN_LEFT)
+    builder.addTextLang(Builder.LANG_EN)
+    addCustomerTextSizeEODP(builder, Constants.SMALL)
+    builder.addTextStyle(
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.COLOR_1
+    )
+
+    builder.addText("CardName" + repeat(" ", 20) + "Tip" + repeat(" ", 11) + "Amount")
+
+    return builder
+}
+
 fun addCreditCardBreakDown() {
 
 
@@ -566,6 +839,38 @@ fun addCreditCardBreakDownData(
     // builder.addTextAlign(Builder.ALIGN_LEFT)
     builder.addTextLang(Builder.LANG_EN)
     addCustomerTextSize(builder, Constants.SMALL)
+    builder.addTextStyle(
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.COLOR_1
+    )
+    var pOne = creditCardBreakdown.key + repeat(
+        " ",
+        28 - creditCardBreakdown.key.length
+    ) + MethodUtils.roundOffAmount(creditCardBreakdown.tips)
+    var lastPart = 48 - pOne.length
+    var amount = MethodUtils.roundOffAmount(creditCardBreakdown.value)
+    var spaceLast = 0
+    if (lastPart > 1 && amount.length < lastPart) {
+        spaceLast = lastPart - amount.length
+    }
+    pOne += repeat(" ", spaceLast) + amount
+
+    builder.addText(pOne)
+    return builder
+}
+
+
+fun addCreditCardBreakDownDataEODP(
+    builder: Printer,
+    creditCardBreakdown: EodReportResponse.Data.CreditCardBreakdown
+): Printer {
+    builder.addFeedUnit(30)
+    builder.addTextFont(Builder.FONT_E)
+    // builder.addTextAlign(Builder.ALIGN_LEFT)
+    builder.addTextLang(Builder.LANG_EN)
+    addCustomerTextSizeEODP(builder, Constants.SMALL)
     builder.addTextStyle(
         Builder.FALSE,
         Builder.FALSE,
@@ -641,6 +946,34 @@ fun addItemsInOrderSalesDetails(
     builder.addTextAlign(Builder.ALIGN_LEFT)
     builder.addTextLang(Builder.LANG_EN)
     addCustomerTextSize(builder, Constants.SMALL)
+    builder.addTextStyle(
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.COLOR_1
+    )
+
+    var data = details.orderId
+    data += repeat(" ", 10 - details.orderId.length) + MethodUtils.roundOffAmount(details.tip)
+    data += repeat(" ", 18 - data.length) + MethodUtils.roundOffAmount(details.serviceCharge)
+    data += repeat(" ", 27 - data.length) + details.payType
+    data += repeat(" ", 39 - data.length) + MethodUtils.roundOffAmount(details.amount)
+
+    builder.addText(data)
+    return builder
+}
+
+fun addItemsInOrderSalesDetailsEODP(
+    builder: Printer,
+    details: EodReportResponse.Data.OrderSalesDetails.Details
+): Printer {
+
+
+    builder.addFeedUnit(30)
+    builder.addTextFont(Builder.FONT_E)
+    builder.addTextAlign(Builder.ALIGN_LEFT)
+    builder.addTextLang(Builder.LANG_EN)
+    addCustomerTextSizeEODP(builder, Constants.SMALL)
     builder.addTextStyle(
         Builder.FALSE,
         Builder.FALSE,
@@ -755,6 +1088,33 @@ fun addCustomerTextSize(builder: Builder, font: String): Builder {
 
 }
 
+
+fun addCustomerTextSizeEODP(builder: Printer, font: String): Printer {
+    when (font) {
+        Constants.SMALL -> {
+            builder.addTextSize(1, 1)
+        }
+
+        Constants.LARGE -> {
+            builder.addTextSize(2, 2)
+        }
+
+        Constants.MEDIUM -> {
+            builder.addTextSize(1, 2)
+
+        }
+
+        else -> {
+            builder.addTextSize(1, 1)
+
+        }
+
+    }
+    return builder
+
+}
+
+
 fun padLineForItem(
     @Nullable partOne: String?,
     @Nullable partTwo: String?,
@@ -824,7 +1184,10 @@ fun padLineForItem(
 
 /** utility: string repeat  */
 fun repeat(str: String?, i: Int): String? {
-    return String(CharArray(i)).replace("\u0000", str!!)
+    if (i > -1)
+        return String(CharArray(i)).replace("\u0000", str!!)
+
+    return ""
 }
 
 fun getBitmapFromVectorDrawable(context: Context?, drawableId: Int): Bitmap {
@@ -854,6 +1217,14 @@ fun addBuilderText(
     return builder
 }
 
+fun addBuilderTextEODP(
+    builder: Printer,
+    text: String
+): Printer {
+    builder.addText(text)
+    return builder
+}
+
 fun addBuilderTextForU220(
     builder: Printer,
     text: String
@@ -875,6 +1246,19 @@ fun addHorizontalLargeLine(builder: Builder): Builder {
 }
 
 fun addHorizontalLine(builder: Builder): Builder {
+
+
+    var str: String = ""
+    for (i in 0 until 48) {
+        str += "-"
+    }
+    LogUtil.logE("strLine", "strLine  $str")
+    builder.addText(str)
+
+    return builder
+}
+
+fun addHorizontalLineEODP(builder: Printer): Printer {
 
 
     var str: String = ""
@@ -2124,7 +2508,7 @@ fun addOrdersForKitchen(
                     )
 
                     builder.addText(obj.quantity.toString() + " " + obj.itemName.uppercase())
-
+                    builder.addFeedLine(1)
                     if (obj.orderItemModifiers.isNotEmpty()) {
                         for (j in 0 until obj.orderItemModifiers.size) {
                             val modifierObj = obj.orderItemModifiers.get(j)
@@ -2152,9 +2536,11 @@ fun addOrdersForKitchen(
                                 } + modifierObj.name.uppercase()
                             )
 
-
+                            builder.addFeedLine(1)
                         }
+                        builder.addFeedLine(1)
                     }
+
                     if (obj.note.isNotEmpty()) {
                         builder.addTextLineSpace(30)
                         builder.addFeedUnit(30)
@@ -2171,6 +2557,7 @@ fun addOrdersForKitchen(
                         )
                         builder.addText("  Note:" + obj.note)
 
+                        builder.addFeedLine(1)
                     }
 
 
@@ -2415,6 +2802,112 @@ fun addOrderItemOpenOrder(
                         if (font == Constants.LARGE) {
                             23
                         } else {
+                            48
+                        }
+                    )
+                )
+
+
+            }
+
+        }
+
+        if (obj.note.isNotEmpty()) {
+            builder.addTextLineSpace(30)
+            builder.addFeedUnit(30)
+            builder.addTextFont(Builder.FONT_E)
+            builder.addTextAlign(Builder.ALIGN_LEFT)
+            builder.addTextLang(Builder.LANG_EN)
+            addCustomerTextSize(builder, font)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.COLOR_1
+            )
+            builder.addText("   Note: " + obj.note)
+            builder.addFeedLine(1)
+
+
+        }
+    }
+
+
+    return builder
+
+
+}
+
+/**
+ * This method is created by Dharmesh Basapati.
+ * It is created for printing order items of an open order from all orders screen in TM-m30 Printer.
+ * Note: As we are getting the response model of an online order in "all orders" api,
+ * we are using OnlineOrderResponseModel for printing open order customer receipts.
+ */
+fun addOrderItemOnlineOrder(
+    builder: Builder,
+    list: List<OnlineOrderResponseModel.Data.OrderItem>,
+    font: String,
+    showModifiers: Boolean
+): Builder {
+    for (i in 0 until list.size) {
+        val obj = list.get(i)
+        builder.addTextLineSpace(30)
+        builder.addFeedUnit(30)
+        builder.addTextFont(Builder.FONT_E)
+        // builder.addTextAlign(Builder.ALIGN_LEFT)
+        builder.addTextLang(Builder.LANG_EN)
+        addCustomerTextSize(builder, font)
+        builder.addTextStyle(
+            Builder.FALSE,
+            Builder.FALSE,
+            Builder.FALSE,
+            Builder.COLOR_1
+        )
+
+
+
+        builder.addText(
+            padLineCustomerItem(
+                obj.quantity.toString() + "  " + getItemNameToShow(obj.itemName),
+                getItemPriceToShow(totalPriceOnlineOrder(obj)),
+                if (font == Constants.LARGE) {
+                    24
+                } else {
+                    48
+                }
+            )
+        )
+
+
+        if (obj.orderItemModifiers.isNotEmpty() && showModifiers) {
+            for (j in 0 until obj.orderItemModifiers.size) {
+                val modifierObj = obj.orderItemModifiers.get(j)
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addTextFont(Builder.FONT_E)
+                //builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, font)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+                // builder.addTextPosition(4)
+
+                builder.addText(
+                    padLineCustomerItem(
+                        "   " + if (modifierObj.modifier_quantity == 1) {
+                            "   "
+                        } else {
+                            "" + modifierObj.modifier_quantity + "x "
+                        } + getItemNameToShow(modifierObj.name),
+                        getModifierItemPriceToShow(modifierObj.price, modifierObj.quantity),
+                        if (font == Constants.LARGE) {
+                            23
+                        } else {
                             47
                         }
                     )
@@ -2449,6 +2942,10 @@ fun addOrderItemOpenOrder(
     return builder
 
 
+}
+
+fun totalPriceOnlineOrder(model: OnlineOrderResponseModel.Data.OrderItem): Double {
+    return model.price * model.quantity
 }
 
 fun addOrderItemOpenOrderSunmi(
@@ -2513,6 +3010,74 @@ fun addOrderItemOpenOrderSunmi(
 
 }
 
+/**
+ * This method is created by Dharmesh Basapati.
+ * It is created for printing order items of an open order from all orders screen in Sunmi Cloud Printer.
+ * Note: As we are getting the response model of an online order in "all orders" api,
+ * we are using OnlineOrderResponseModel for printing open order customer receipts.
+ */
+fun addOrderItemOnlineOrderSunmi(
+    list: List<OnlineOrderResponseModel.Data.OrderItem>,
+    font: String,
+    showModifiers: Boolean
+) {
+    for (i in 0 until list.size) {
+        val obj = list.get(i)
+
+        PrintSunmiUtils.orderTime(
+            padLineCustomerItem(
+                obj.quantity.toString() + "  " + getItemNameToShow(obj.itemName),
+                getItemPriceToShow(totalPriceOnlineOrder(obj)),
+                if (font == Constants.LARGE) {
+                    23
+                } else {
+                    48
+                }
+            ).toString()
+        )
+
+
+
+        if (obj.orderItemModifiers.isNotEmpty() && showModifiers) {
+            for (j in 0 until obj.orderItemModifiers.size) {
+                val modifierObj = obj.orderItemModifiers.get(j)
+                var part1 = "   " + if (modifierObj.modifier_quantity == 1) {
+                    "   "
+                } else {
+                    "" + modifierObj.modifier_quantity + "x "
+                } + getItemNameToShow(modifierObj.name)
+                var part2 =
+                    getModifierItemPriceToShow(modifierObj.price, modifierObj.quantity)
+
+                Log.e("CheckPartFM", "part1 ${part1.length}")
+                Log.e("CheckPartFM", "part2 ${part2.length}")
+
+                PrintSunmiUtils.orderTime(
+                    padLineCustomerItem(
+                        part1,
+                        part2,
+                        if (font == Constants.LARGE) {
+                            23
+                        } else {
+                            48
+                        }
+                    ).toString()
+                )
+
+            }
+
+        }
+
+        if (obj.note.isNotEmpty()) {
+
+            PrintSunmiUtils.orderTime("   Note: " + obj.note)
+
+        }
+    }
+
+
+}
+
 fun addOrderItemOpenOrderSunmiInner(
     list: List<OpenOrderResponse.Data.Order.OrderItem>,
     font: String,
@@ -2523,8 +3088,77 @@ fun addOrderItemOpenOrderSunmiInner(
 
         PrintSunmiUtils.normalText(
             padLineCustomerItem(
-                obj.quantity.toString() + "x " + getItemNameToShow(obj.itemName),
+                obj.quantity.toString() + "  " + getItemNameToShow(obj.itemName),
                 getItemPriceToShow(totalPriceOpenOrder(obj)),
+                if (font == Constants.LARGE) {
+                    23
+                } else {
+                    48
+                }
+            ).toString()
+        )
+
+
+
+        if (obj.orderItemModifiers.isNotEmpty() && showModifiers) {
+            for (j in 0 until obj.orderItemModifiers.size) {
+                val modifierObj = obj.orderItemModifiers.get(j)
+
+                var part1 = "   " + if (modifierObj.modifier_quantity == 1) {
+                    "   "
+                } else {
+                    "" + modifierObj.modifier_quantity + "x "
+                } + getItemNameToShow(modifierObj.name)
+
+                var part2 =
+                    getModifierItemPriceToShow(modifierObj.price, modifierObj.quantity)
+                Log.e("CheckPartF", "part1 ${part1.length}")
+                Log.e("CheckPartF", "part2 ${part2.length}")
+
+                PrintSunmiUtils.normalText(
+                    padLineCustomerItem(
+                        part1,
+                        part2,
+                        if (font == Constants.LARGE) {
+                            23
+                        } else {
+                            48
+                        }
+                    ).toString()
+                )
+
+            }
+
+        }
+
+        if (obj.note.isNotEmpty()) {
+
+            PrintSunmiUtils.normalText("   Note: " + obj.note)
+
+        }
+    }
+
+
+}
+
+/**
+ * This method is created by Dharmesh Basapati.
+ * It is created for printing order items of an open order from all orders screen in Inner Printer.
+ * Note: As we are getting the response model of an online order in "all orders" api,
+ * we are using OnlineOrderResponseModel for printing open order customer receipts.
+ */
+fun addOrderItemOnlineOrderSunmiInner(
+    list: List<OnlineOrderResponseModel.Data.OrderItem>,
+    font: String,
+    showModifiers: Boolean
+) {
+    for (i in 0 until list.size) {
+        val obj = list.get(i)
+
+        PrintSunmiUtils.normalText(
+            padLineCustomerItem(
+                obj.quantity.toString() + "x " + getItemNameToShow(obj.itemName),
+                getItemPriceToShow(totalPriceOnlineOrder(obj)),
                 if (font == Constants.LARGE) {
                     23
                 } else {
@@ -2767,7 +3401,7 @@ fun addWholeTbItemToGuest(
 
     PrintSunmiUtils.orderTime(
         padLineCustomerItem(
-            obj.itemQuantity.toString() + "x " + getItemNameToShow(obj.name),
+            obj.itemQuantity.toString() + "  " + getItemNameToShow(obj.name),
             "" + priceToShow,
             if (font == Constants.LARGE) 23 else 48
         ).toString()
@@ -2920,7 +3554,7 @@ fun addOrderItemForDineIn(
 
     builder.addText(
         padLineCustomerItem(
-            obj.itemQuantity.toString() + "x " + getItemNameToShow(obj.name),
+            obj.itemQuantity.toString() + "  " + getItemNameToShow(obj.name),
             getItemPriceToShow(totalPriceDineInItem(obj)),
             if (font == Constants.LARGE) {
                 24
@@ -2946,7 +3580,7 @@ fun addOrderItemForDineIn(
                 Builder.FALSE,
                 Builder.COLOR_1
             )
-            builder.addTextPosition(4)
+            //builder.addTextPosition(4)
             builder.addText(
                 padLineCustomerItem(
                     "   " + getItemNameToShow(modifierObj.name),
@@ -2954,7 +3588,7 @@ fun addOrderItemForDineIn(
                     if (font == Constants.LARGE) {
                         23
                     } else {
-                        47
+                        48
                     }
                 )
             )
@@ -3161,7 +3795,7 @@ fun addOrderItems(
 
                 /*builder.addText(
                     padLineCustomerItem(
-                         modifierObj.quantity.toString() + "x" + "    " + modifierObj.name + " x" + modifierObj.modifierQuantity ,
+                         modifierObj.quantity.toString() + " " + "    " + modifierObj.name + " x" + modifierObj.modifierQuantity ,
                         "$" + MethodUtils.roundOffAmountString(modifierObj.price.toDouble() * modifierObj.quantity),
                         if (font == Constants.LARGE) {
                             24
@@ -3266,7 +3900,7 @@ fun addOrderItemsInner(
 
 
         val item = padLineCustomerItem(
-            obj.quantity.toString() + "x " + getItemNameToShow(obj.itemName),
+            obj.quantity.toString() + "  " + getItemNameToShow(obj.itemName),
             getItemPriceToShow(totalPrice(obj)),
             if (font == Constants.LARGE) 23 else 48
         )
@@ -3342,7 +3976,7 @@ fun addOrderItemsTransaction(
 
         builder.addText(
             padLineCustomerItem(
-                obj.quantity.toString() + "x " + getItemNameToShow(obj.itemName),
+                obj.quantity.toString() + "  " + getItemNameToShow(obj.itemName),
                 getItemPriceToShow(totalPriceTransaction(obj)),
                 if (font == Constants.LARGE) {
                     24
@@ -3368,15 +4002,22 @@ fun addOrderItemsTransaction(
                     Builder.FALSE,
                     Builder.COLOR_1
                 )
-                builder.addTextPosition(4)
+                //builder.addTextPosition(4)
+                var part1 = if (modifierObj.modifier_quantity == 1) {
+                    "       " + getItemNameToShow(modifierObj.name)
+                } else {
+                    "   " + modifierObj.modifier_quantity + "x" + "  " + getItemNameToShow(
+                        modifierObj.name
+                    )
+                }
                 builder.addText(
                     padLineCustomerItem(
-                        "   " + getItemNameToShow(modifierObj.name),
+                        part1,
                         getModifierItemPriceToShow(modifierObj.price, modifierObj.quantity),
                         if (font == Constants.LARGE) {
                             23
                         } else {
-                            47
+                            48
                         }
                     )
                 )
@@ -3401,7 +4042,7 @@ fun addOrderItemsTransaction(
         val obj = list.get(i)
 
         val item = padLineCustomerItem(
-            obj.quantity.toString() + "x " + getItemNameToShow(obj.itemName),
+            obj.quantity.toString() + "  " + getItemNameToShow(obj.itemName),
             getItemPriceToShow(totalPriceTransaction(obj)),
             if (font == Constants.LARGE) 23 else 48
         )
@@ -3415,8 +4056,17 @@ fun addOrderItemsTransaction(
                 val modifierObj = obj.orderItemModifiers.get(j)
 
 
+                var part1 =
+                    if (modifierObj.modifier_quantity == 1) {
+                        "       " + getItemNameToShow(modifierObj.name)
+                    } else {
+                        "   " + modifierObj.modifier_quantity.toString() + "x" + "  " + getItemNameToShow(
+                            modifierObj.name
+                        )
+
+                    }
                 val modifier = padLineCustomerItem(
-                    "   " + getItemNameToShow(modifierObj.name),
+                    part1,
                     getModifierItemPriceToShow(modifierObj.price, modifierObj.quantity),
                     if (font == Constants.LARGE) 23 else 48
                 )
@@ -3438,7 +4088,7 @@ fun addOrderItemsTransactionInner(
         val obj = list.get(i)
 
         val item = padLineCustomerItem(
-            obj.quantity.toString() + "x " + getItemNameToShow(obj.itemName),
+            obj.quantity.toString() + "  " + getItemNameToShow(obj.itemName),
             getItemPriceToShow(totalPriceTransaction(obj)),
             if (font == Constants.LARGE) 23 else 48
         )
@@ -3451,9 +4101,17 @@ fun addOrderItemsTransactionInner(
             for (j in 0 until obj.orderItemModifiers.size) {
                 val modifierObj = obj.orderItemModifiers.get(j)
 
+                var part1 = if (modifierObj.modifier_quantity == 1) {
+                    "       " + getItemNameToShow(modifierObj.name)
+                } else {
+                    "   " + modifierObj.modifier_quantity.toString() + "x" + "  " + getItemNameToShow(
+                        modifierObj.name
+                    )
+                }
+
 
                 val modifier = padLineCustomerItem(
-                    "   " + getItemNameToShow(modifierObj.name),
+                    part1,
                     getModifierItemPriceToShow(modifierObj.price, modifierObj.quantity),
                     if (font == Constants.LARGE) 23 else 48
                 )
@@ -3508,9 +4166,9 @@ fun getModifierItemPriceToShow(modifierPrice: Double, modifierQty: Int): String 
 
 fun getItemNameToShow(itemName: String): String {
 //    Commented below code to hide 15 char limit for item/modifier names to prevent receipt disruption with big names.
-//    var updatedItemName = itemName
-//    if(updatedItemName.length > 15){
-//        updatedItemName = updatedItemName.substring(0, 15) + "..."
-//    }
-    return itemName
+    var updatedItemName = itemName
+    if (updatedItemName.length > 15) {
+        updatedItemName = updatedItemName.substring(0, 15) + "..."
+    }
+    return updatedItemName
 }

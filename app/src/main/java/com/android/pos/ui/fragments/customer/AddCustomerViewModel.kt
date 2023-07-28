@@ -13,6 +13,9 @@ import com.android.pos.data.model.requestModel.CreateCustomerRequestModel
 import com.android.pos.data.model.responseModel.BaseResponse
 import com.android.pos.data.model.responseModel.CreateCustomerReponse
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.DELIVERY
+import com.android.pos.data.remote.Constants.DELIVERY_TYPE
+import com.android.pos.data.remote.Constants.PICK_UP
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
@@ -48,6 +51,9 @@ class AddCustomerViewModel @Inject constructor(
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
     val _Basedata = MutableLiveData<Event<BaseResponse?>>()
+
+    private val _updatedCustomer = MutableLiveData<Event<TbCustomer>>()
+    val updatedCustomer: LiveData<Event<TbCustomer>> = _updatedCustomer
 
     val addCustomerDetails = MutableLiveData(CreateCustomerRequestModel())
     var listAddress: ArrayList<CreateCustomerRequestModel.Customer.Addresses> = arrayListOf()
@@ -105,7 +111,7 @@ class AddCustomerViewModel @Inject constructor(
         this.customerID = id
     }
 
-    fun submit(listAddress: ArrayList<CreateCustomerRequestModel.Customer.Addresses>) {
+    fun submit(listAddress: ArrayList<CreateCustomerRequestModel.Customer.Addresses>, isFromPhoneOrderEdit: Boolean) {
         if (phoneNo.value != null) {
             addCustomerDetails.value?.data?.phones_attributes?.add(
                 0,
@@ -163,6 +169,24 @@ class AddCustomerViewModel @Inject constructor(
                 .matches()
         ) {
             _snackbarText.value = Event(R.string.valid_email_validate)
+        } else if (isFromPhoneOrderEdit && (prefProvider.getValue(DELIVERY_TYPE, PICK_UP) == PICK_UP
+                    || prefProvider.getValue(DELIVERY_TYPE, PICK_UP) == DELIVERY)
+            && value.data?.phones_attributes?.size == 0
+        ) {
+            _snackbarText.value = Event(R.string.phone_no_validate)
+        } else if (isFromPhoneOrderEdit && (prefProvider.getValue(DELIVERY_TYPE, PICK_UP) == PICK_UP
+                    || prefProvider.getValue(DELIVERY_TYPE, PICK_UP) == DELIVERY)
+            && value.data?.phones_attributes?.get(0)?.phone_number?.length!! < 10
+        ) {
+            _snackbarText.value = Event(R.string.valid_phone_no_validate)
+        } else if (isFromPhoneOrderEdit && prefProvider.getValue(DELIVERY_TYPE, PICK_UP) == DELIVERY
+            && value.data?.addresses_attributes?.size == 0
+        ) {
+            _snackbarText.value = Event(R.string.please_enter_address)
+        } else if (isFromPhoneOrderEdit && prefProvider.getValue(DELIVERY_TYPE, PICK_UP) == DELIVERY
+            && value.data?.addresses_attributes?.get(0)?.postcode?.isEmpty() == true
+        ) {
+            _snackbarText.value = Event(R.string.please_enter_zipcode)
         }
 
         /*else if (TextUtils.isEmpty(value?.data?.last_name?.trim())) {
@@ -263,7 +287,11 @@ class AddCustomerViewModel @Inject constructor(
 
                                     posRepository.addCustomer(model)
 
-                                    _Basedata.value = Event(customerListReposne)
+                                    if(isFromPhoneOrderEdit) {
+                                        _updatedCustomer.value = Event(model)
+                                    }else {
+                                        _Basedata.value = Event(customerListReposne)
+                                    }
 
                                 }
                             } else {

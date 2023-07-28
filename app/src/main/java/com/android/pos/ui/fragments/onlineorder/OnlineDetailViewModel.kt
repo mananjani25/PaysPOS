@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.data.model.requestModel.RefundRequestModelOnlineOrder
 import com.android.pos.data.model.responseModel.*
+import com.android.pos.data.model.responseModel.allOrders.AllOrdersCountResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
@@ -66,6 +67,9 @@ class OnlineDetailViewModel @Inject constructor(
     fun onLineorderCounts(startDate: String?, endDate: String?): LiveData<Resource<OnlineOrderCountResponse>> =
         posRepository.onlineOrderCounts(startDate, endDate)
 
+    fun allOrderCounts(startDate: String?, endDate: String?): LiveData<Resource<AllOrdersCountResponse>> =
+        posRepository.allOrderCounts(startDate, endDate)
+
 
     fun onlineOrders(
         startDate: String,
@@ -73,6 +77,15 @@ class OnlineDetailViewModel @Inject constructor(
         order_status: String
     ): LiveData<Resource<OnlineOrderResponseModel>> =
         posRepository.getOnlineOrders(startDate, endDate, order_status)
+
+    fun getAllOrders(
+        startDate: String,
+        endDate: String,
+        order_status: String,
+        payment_status: String,
+        order_type_id: String
+    ): LiveData<Resource<OnlineOrderResponseModel>> =
+        posRepository.getAllOrders(startDate, endDate, order_status, payment_status, order_type_id)
 
     fun acceptedAndDeclineOrder(
         time: Int,

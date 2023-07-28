@@ -436,7 +436,7 @@ class DineInViewModel @Inject constructor(
         primaryOrder.guest_attributes.forEach {
             var guestModel = GuestsAttributes()
             guestModel.customerAttributes?.id = it.customerId
-            guestModel.customerId = it.id
+            guestModel.customerId = it.customerId
             guestModel.name = it.name
             guestModel.cashDiscount = it.cashDiscount
             guestModel.orderId = it.orderId
@@ -718,7 +718,7 @@ class DineInViewModel @Inject constructor(
                 if (it.name.trim().lowercase() != "Whole Table".trim().lowercase()) {
                     var guestModel = GuestsAttributes()
                     guestModel.customerAttributes?.id = it.customerId
-                    //   guestModel.customerId = it.id
+                       guestModel.customerId = it.customerId
                     if (listGuestAttr.isNotEmpty()) {
 
                         guestModel.name =
@@ -995,7 +995,7 @@ class DineInViewModel @Inject constructor(
         orderDetails.guest_attributes.forEach {
             var guestModel = GuestsAttributes()
             guestModel.customerAttributes?.id = it.customerId
-            guestModel.customerId = it.id
+            guestModel.customerId = it.customerId
             guestModel.name = it.name
             guestModel.cashDiscount = it.cashDiscount
             guestModel.orderId = it.orderId

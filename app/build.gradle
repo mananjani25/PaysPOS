@@ -16,8 +16,8 @@ android {
         applicationId "com.internetsoft.pos_5"
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 33
-        versionName "3.12"
+        versionCode 42
+        versionName "3.21"
 
 
         sourceSets { main { jniLibs.srcDirs = ['src/main/jniLibs/'] } }

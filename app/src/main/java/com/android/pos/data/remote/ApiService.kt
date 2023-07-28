@@ -8,6 +8,7 @@ import com.android.pos.data.model.CustomerSearchList
 import com.android.pos.data.model.GetPaymentOrderDetailsResponse
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.*
+import com.android.pos.data.model.responseModel.allOrders.AllOrdersCountResponse
 import com.android.pos.data.model.responseModel.category.CategoriesResponse
 import com.android.pos.data.model.responseModel.category.CreateCategoryResponse
 import com.android.pos.data.model.responseModel.item.ItemResponseNew
@@ -15,6 +16,8 @@ import com.android.pos.data.model.responseModel.item.ItemsResponse
 import com.android.pos.data.model.responseModel.orderhistory.OrderHistoryResponse
 import com.android.pos.data.model.responseModel.report.ReportSummaryResponse
 import com.android.pos.data.remote.Constants.ACCEPTED_DECLINE_ONLINEORDER
+import com.android.pos.data.remote.Constants.ALL_ORDERS
+import com.android.pos.data.remote.Constants.ALL_ORDER_COUNTS
 import com.android.pos.data.remote.Constants.BUSINESS_UPDATE
 import com.android.pos.data.remote.Constants.CASH_EVENTS
 import com.android.pos.data.remote.Constants.CATEGORY
@@ -84,6 +87,8 @@ import com.android.pos.data.remote.Constants.ORDER_PHONE_RECEIPT
 import com.android.pos.data.remote.Constants.ORDER_TYPES
 import com.android.pos.data.remote.Constants.PAYMENT_DETAILS
 import com.android.pos.data.remote.Constants.PAY_BY_GUEST
+import com.android.pos.data.remote.Constants.PHONE_ORDERS
+import com.android.pos.data.remote.Constants.PHONE_ORDER_COUNTS
 import com.android.pos.data.remote.Constants.REFUND_PAYMENT
 import com.android.pos.data.remote.Constants.REORDER_CATEGORY
 import com.android.pos.data.remote.Constants.REORDER_ITEM
@@ -104,6 +109,7 @@ import com.android.pos.data.remote.Constants.TAX_ACTIVE
 import com.android.pos.data.remote.Constants.TAX_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.TEAM_ROLES
 import com.android.pos.data.remote.Constants.TEAM_ROLES_UPDATE_DELETE
+import com.android.pos.data.remote.Constants.TEXT_TO_PAY_SPIT
 import com.android.pos.data.remote.Constants.TIME_DETAILS
 import com.android.pos.data.remote.Constants.TIPS
 import com.android.pos.data.remote.Constants.TIPS_ACTIVE
@@ -187,6 +193,12 @@ interface ApiService {
         @Path("id") Id: Int,
         @Query("change_receipt_type") type: String? = null
     ): DeletePrinterResponseModel
+
+
+    @PUT(TEXT_TO_PAY_SPIT)
+    suspend fun textPaySplit(
+        @Path("id") Id: Int,
+    ): BaseResponse
 
 
     @DELETE(DELETE_QUEUE_PRINTER)
@@ -734,11 +746,27 @@ interface ApiService {
         @Query("end_date") endDate: String
     ): OpenOrderResponse
 
+    @GET(PHONE_ORDERS)
+    suspend fun getPhoneOrders(
+        @Query("payment_status") paymentStatus: String,
+        @Query("start_date") startDate: String,
+        @Query("end_date") endDate: String
+    ): OpenOrderResponse
+
     @GET(ONLINE_ORDERING)
     suspend fun getOnlineOrders(
         @Query("start_date") starDate: String,
         @Query("end_date") endDate: String,
         @Query("order_status") order_status: String
+    ): OnlineOrderResponseModel
+
+    @GET(ALL_ORDERS)
+    suspend fun getAllOrders(
+        @Query("start_date") starDate: String,
+        @Query("end_date") endDate: String,
+        @Query("order_status") order_status: String,
+        @Query("payment_status") payment_status: String,
+        @Query("order_type_id") order_type_id: String,
     ): OnlineOrderResponseModel
 
     @GET(EMAIL_REPORT_SUMMARY)
@@ -911,11 +939,23 @@ interface ApiService {
         @Query("end_date") endDate: String?
     ): OrderCountsResponse
 
+    @GET(PHONE_ORDER_COUNTS)
+    suspend fun phoneOrderCounts(
+        @Query("start_date") startDate: String?,
+        @Query("end_date") endDate: String?
+    ): OrderCountsResponse
+
     @GET(ONLINE_ORDER_COUNTS)
     suspend fun onlineOrderCounts(
         @Query("start_date") startDate: String?,
         @Query("end_date") endDate: String?
     ): OnlineOrderCountResponse
+
+    @GET(ALL_ORDER_COUNTS)
+    suspend fun allOrderCounts(
+        @Query("start_date") startDate: String?,
+        @Query("end_date") endDate: String?
+    ): AllOrdersCountResponse
 
     @GET(INVENTORY_COUNTS)
     suspend fun inventoryCounts(): InventoryCountsResponse

@@ -234,7 +234,7 @@ data class GetOrderDetailsResponse(
             @SerializedName("lock_by_id") var lockById: Int? = null,
             @SerializedName("lock_by_name") var lockByName: String? = null,
             @SerializedName("terminal_id") var terminalId: Int? = null,
-            @SerializedName("merged_child_table_details") val merged_child_table_details: List<GetFloorPlanResponse.Data.FloorPlanTable.MergedChildTableDetails> = listOf()
+            @SerializedName("merged_child_table_details") val merged_child_table_details: List<GetFloorPlanResponse.Data.FloorPlanTable.MergedChildTableDetails>? = null
 
         ) : Parcelable
 
@@ -299,6 +299,9 @@ data class GetOrderDetailsResponse(
             var isChecked: Boolean = false,
             @SerializedName("order_item_variation")
             val order_item_variation: OrderItemVariationAttribute?,
+            @SerializedName("sort")
+            val sort: Int = 0
+
         ) : Parcelable {
 
             @Parcelize

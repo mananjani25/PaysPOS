@@ -58,7 +58,6 @@ import com.android.pos.data.entities.TbOrderType
 import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.data.entities.TbTimeZones
 import com.android.pos.data.entities.TeamRole
-import com.android.pos.data.entities.TypeConvertersQueueDineIn
 import com.android.pos.data.model.CharacterModel
 import com.android.pos.data.model.GuestAttrQueue
 import com.android.pos.data.model.PrinterQueueModel
@@ -106,7 +105,7 @@ import com.android.pos.data.typeconvert.TypeConvertorPhone
         PrinterResponse.Data.KitchenReceiptPrinters::class, GetKitchenReceiptSettingsResponse.Data::class,
         GetCustomerReceiptSettingsResponse.Data::class, LoyaltyProgramsModel::class, SplitDetailListModel::class,
         CashDiscountModel::class, TbCountryList::class, TbCardReader::class, VenueDetailsResponse.Data.CancelOrderReason::class,
-        DineInCartModel::class, ShiftRportConfiguration::class, TbBusinessDetails::class, TbTimeZones::class, PrinterQueueModel::class, GuestAttrQueue::class],
+        DineInCartModel::class, ShiftRportConfiguration::class, TbBusinessDetails::class, TbTimeZones::class, PrinterQueueModel::class],
     version = 6
 )
 @TypeConverters(
@@ -214,12 +213,11 @@ abstract class AppDatabase : RoomDatabase() {
 
         }
 
-        val MIGRATION_4_5: Migration = object : Migration(4, 5) {
+        val MIGRATION_4_5: Migration = object : Migration(3, 4) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 try {
 
-                    database.execSQL("ALTER TABLE PrinterQueue ADD COLUMN dateAndTime String")
-                    database.execSQL("ALTER TABLE PrinterQueue ADD COLUMN employeeName String")
+                    database.execSQL("ALTER TABLE TbItem ADD COLUMN price_without_markup DOUBLE DEFAULT 0.0 NOT NULL")
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
@@ -229,9 +227,20 @@ abstract class AppDatabase : RoomDatabase() {
 
         }
 
+        val MIGRATION_5_6: Migration = object : Migration(5, 6) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                try {
+                    database.execSQL("ALTER TABLE TbItem ADD COLUMN dineInSort INTEGER DEFAULT 0 NOT NULL")
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+
+        }
+
         private fun buildDatabase(appContext: Context) =
             Room.databaseBuilder(appContext, AppDatabase::class.java, DATABASE_NAME)
-                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4,MIGRATION_4_5)
+                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
                 .build()
     }
 

@@ -69,6 +69,9 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun deletePrinter(id: Int, type: String? = null) =
         getResult { apiService.deletePrinter(id, type) }
 
+    suspend fun textPaySplit(id: Int) =
+        getResult { apiService.textPaySplit(id) }
+
     suspend fun deleteQueuePrinter(id: Int) = getResult { apiService.deletePrinterQueue(id) }
 
     suspend fun deleteAllQueuePrinter(id: Array<Int>) =
@@ -532,8 +535,14 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun getOpenOrders(paymentStatus: String, startDate: String, endDate: String) =
         getResult { apiService.getOpenOrders(paymentStatus, startDate, endDate) }
 
+    suspend fun getPhoneOrders(paymentStatus: String, startDate: String, endDate: String) =
+        getResult { apiService.getPhoneOrders(paymentStatus, startDate, endDate) }
+
     suspend fun getOnlineOrders(startDate: String, endDate: String, order_status: String) =
         getResult { apiService.getOnlineOrders(startDate, endDate, order_status) }
+
+    suspend fun getAllOrders(startDate: String, endDate: String, order_status: String, payment_status: String, order_type_id: String) =
+        getResult { apiService.getAllOrders(startDate, endDate, order_status, payment_status, order_type_id) }
 
     suspend fun setAcceptedAndDeclineorder(
         time: Int,
@@ -680,14 +689,22 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
             apiService.createQueuePrinter(createQueuePrinterModel)
         }
 
-    suspend fun orderCounts(startDate: String?, endDate: String?) =
-        getResult { apiService.orderCounts(startDate, endDate) }
+    suspend fun orderCounts(startDate: String?, endDate: String?, isOpenOrder: Boolean) =
+        getResult {
+            if (!isOpenOrder) apiService.phoneOrderCounts(
+                startDate,
+                endDate
+            ) else apiService.orderCounts(startDate, endDate)
+        }
 
     suspend fun inventoryCounts() =
         getResult { apiService.inventoryCounts() }
 
     suspend fun onlineOrderCounts(startDate: String?, endDate: String?) =
         getResult { apiService.onlineOrderCounts(startDate, endDate) }
+
+    suspend fun allOrderCounts(startDate: String?, endDate: String?) =
+        getResult { apiService.allOrderCounts(startDate, endDate) }
 
 
     suspend fun timeDetails() =

@@ -75,7 +75,7 @@ class CreateTaxViewModel @Inject constructor(
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
-    fun updateTaxDataInItem(tax: TaxData, itemIds: ArrayList<Int>, oldItemIds: ArrayList<Int>) {
+    fun updateTaxDataInItem(tax: TaxData, itemIds: ArrayList<Int>, oldItemIds: List<Int>) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 var tempTaxData: ArrayList<TaxData> = arrayListOf()
@@ -171,8 +171,9 @@ class CreateTaxViewModel @Inject constructor(
 
 
             viewModelScope.launch {
-                val taxDataFromDb: TaxData = taxServiceChargeRepository.getItemsListOfTax(taxId)
-                val oldItemIds: ArrayList<Int> = taxDataFromDb.itemIds as ArrayList<Int>
+                val taxDataFromDb: TaxData? = taxServiceChargeRepository.getItemsListOfTax(taxId)
+
+                val oldItemIds: List<Int>? = taxDataFromDb?.itemIds
                 if (isEdit) {
                     resource = taxServiceChargeRepository.updateTax(taxId, taxData)
                 } else {
@@ -202,9 +203,12 @@ class CreateTaxViewModel @Inject constructor(
                                          updatedAt = createTaxResponse.data.updatedAt
                                      )*/
 
-                                    updateTaxDataInItem(tax, taxData.itemIds as ArrayList<Int>, oldItemIds)
+                                    if (oldItemIds != null) {
+                                        updateTaxDataInItem(tax, taxData.itemIds as ArrayList<Int>, oldItemIds)
+                                    }
                                     taxServiceChargeRepository.createTaxDatabase(tax)
 
+                                    itemIdsViewModel = ArrayList()
                                     _data.value = Event(createTaxResponse)
 
                                 }

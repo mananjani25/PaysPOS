@@ -1,0 +1,423 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingDefaultResource">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.android.pos.ui.fragments.openorder.OpenOrderCustomerViewModel" />
+    </data>
+
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:background="@color/bg_color"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/imgBack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center"
+                android:background="?attr/selectableItemBackground"
+                android:padding="@dimen/_6sdp"
+                app:srcCompat="@drawable/ic_cancel_black" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/CustomFontSemiBold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:padding="@dimen/_4sdp"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_6mdpi"
+                android:text="@string/select_your_order_type" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtHome"
+                style="@style/CustomFontSemiBold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_gravity="center"
+                android:background="@drawable/button_action_hover"
+                android:gravity="center"
+                android:paddingStart="@dimen/_15sdp"
+                android:paddingTop="@dimen/_7sdp"
+                android:paddingEnd="@dimen/_15sdp"
+                android:paddingBottom="@dimen/_7sdp"
+                android:text="@string/tv_home"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_6mdpi"
+                tools:ignore="RelativeOverlap" />
+
+        </RelativeLayout>
+
+        <include layout="@layout/divider" />
+
+
+        <ScrollView
+            android:id="@+id/scrollViewCustomer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="visible"
+            tools:ignore="ScrollViewCount">
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_100sdp"
+                android:layout_marginEnd="@dimen/_100sdp"
+                android:orientation="vertical">
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:orientation="vertical"
+                    android:visibility="visible">
+
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/txtPickup"
+                            style="@style/CustomFontBold"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:background="@drawable/button_action_hover"
+                            android:gravity="center"
+                            android:padding="@dimen/_7sdp"
+                            android:layout_marginEnd="@dimen/_10sdp"
+                            android:text="@string/pick_up"
+                            android:textAllCaps="true"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/_5mdpi" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/txtDelivery"
+                            style="@style/CustomFontBold"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:background="@drawable/background_square_border_grey"
+                            android:gravity="center"
+                            android:padding="@dimen/_7sdp"
+                            android:text="@string/delivery"
+                            android:textAllCaps="true"
+                            android:textColor="@color/txtColor"
+                            android:textSize="@dimen/_5mdpi" />
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/llSearch"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:background="@drawable/background_square_border_grey"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/_5sdp"
+                    android:visibility="visible">
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:layout_width="wrap_content"
+                        android:padding="@dimen/_5sdp"
+                        android:layout_height="wrap_content"
+                        app:srcCompat="@drawable/ic_search" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/etSearch"
+                        style="@style/CustomFontRegularStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:hint="@string/search_customer_by_name_amp_phone_number"
+                        android:imeOptions="actionDone"
+                        android:inputType="text"
+                        android:padding="@dimen/_5sdp"
+                        android:textColor="@color/txtColor"
+                        android:textColorHint="@color/hintColor"
+                        android:textSize="@dimen/_5mdpi"
+                        tools:ignore="TouchTargetSizeCheck" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:padding="@dimen/_10sdp"
+                    android:text="@string/add_new_customer"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_8mdpi" />
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+
+                    <androidx.appcompat.widget.AppCompatEditText
+                        android:id="@+id/edtFName"
+                        style="@style/CustomFontMediumStyle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:layout_marginEnd="@dimen/_5sdp"
+                        android:layout_weight="1"
+                        android:background="@drawable/background_square_border_grey"
+                        android:digits="@string/character_String"
+                        android:hint="@string/first_name"
+                        android:imeOptions="actionNext"
+                        android:inputType="textCapWords|textVisiblePassword"
+                        android:maxLength="60"
+                        android:padding="@dimen/_9sdp"
+                        android:textColor="@color/txtColor"
+                        android:textColorHint="@color/hintColor"
+                        android:textSize="@dimen/_7mdpi" />
+
+                    <androidx.appcompat.widget.AppCompatEditText
+                        android:id="@+id/edtLName"
+                        style="@style/CustomFontMediumStyle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/_5sdp"
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:layout_weight="1"
+                        android:background="@drawable/background_square_border_grey"
+                        android:digits="@string/character_String"
+                        android:hint="@string/last_name_"
+                        android:imeOptions="actionNext"
+                        android:inputType="textCapWords|textVisiblePassword"
+                        android:maxLength="60"
+                        android:padding="@dimen/_9sdp"
+                        android:textColor="@color/txtColor"
+                        android:textColorHint="@color/hintColor"
+                        android:textSize="@dimen/_7mdpi" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:orientation="horizontal">
+
+
+                    <com.santalu.maskedittext.MaskEditText
+                        android:id="@+id/edtPhoneNo"
+                        style="@style/CustomFontMediumStyle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:layout_marginEnd="@dimen/_5sdp"
+                        android:layout_weight="1"
+                        android:background="@drawable/background_square_border_grey"
+                        android:hint="@string/phone"
+                        android:imeOptions="actionNext"
+                        android:inputType="number"
+                        android:maxLength="20"
+                        app:met_mask="(###) ###-####"
+                        android:padding="@dimen/_9sdp"
+                        android:textColor="@color/txtColor"
+                        android:textColorHint="@color/hintColor"
+                        android:textSize="@dimen/_7mdpi" />
+
+                    <androidx.appcompat.widget.AppCompatEditText
+                        android:id="@+id/edtEmail"
+                        style="@style/CustomFontMediumStyle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/_5sdp"
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:layout_weight="1"
+                        android:background="@drawable/background_square_border_grey"
+                        android:hint="@string/tv_email_address_"
+                        android:imeOptions="actionNext"
+                        android:inputType="textEmailAddress"
+                        android:maxLength="60"
+                        android:padding="@dimen/_9sdp"
+                        android:textColor="@color/txtColor"
+                        android:textColorHint="@color/hintColor"
+                        android:textSize="@dimen/_7mdpi" />
+                </LinearLayout>
+
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/CustomFontSemiBold"
+
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:gravity="start"
+                        android:paddingVertical="@dimen/_10sdp"
+                        android:text="@string/delivery_address"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_8mdpi" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/CustomFontSemiBold"
+                        android:id="@+id/txtAddress"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:gravity="start"
+                        android:paddingVertical="@dimen/_10sdp"
+                        android:text="*"
+                        android:visibility="gone"
+                        android:textColor="@color/colorRed"
+                        android:textSize="@dimen/_8mdpi" />
+
+
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/heading_linear_delivery"
+                    android:layout_marginTop="@dimen/_3sdp"
+                    android:orientation="vertical">
+
+                    <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+                        android:id="@+id/edtStreet"
+                        style="@style/CustomFontMediumStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/background_square_border_grey"
+                        android:hint="@string/street"
+                        android:imeOptions="actionNext"
+                        android:inputType="textVisiblePassword"
+                        android:padding="@dimen/_9sdp"
+                        android:textColor="@color/txtColor"
+                        android:textColorHint="@color/hintColor"
+                        android:textSize="@dimen/_7mdpi" />
+
+                    <EditText
+                        android:id="@+id/edtSuite"
+                        style="@style/CustomFontMediumStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/background_square_border_grey"
+                        android:digits="@string/disable_emoji_string"
+                        android:hint="@string/apt_suite"
+                        android:inputType="textVisiblePassword"
+                        android:padding="@dimen/_9sdp"
+                        android:textColor="@color/txtColor"
+                        android:textColorHint="@color/hint_color"
+                        android:textSize="@dimen/_7mdpi" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:weightSum="3">
+
+
+                        <EditText
+                            android:id="@+id/edtCity"
+                            style="@style/CustomFontMediumStyle"
+                            android:layout_width="0sp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:background="@drawable/background_square_border_grey"
+                            android:digits="@string/disable_emoji_string"
+                            android:hint="@string/city"
+                            android:inputType="textVisiblePassword"
+                            android:padding="@dimen/_9sdp"
+                            android:textColor="@color/txtColor"
+                            android:textColorHint="@color/hint_color"
+                            android:textSize="@dimen/_7mdpi" />
+
+                        <EditText
+                            android:id="@+id/edtState"
+                            style="@style/CustomFontMediumStyle"
+                            android:layout_width="0sp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:background="@drawable/background_square_border_grey"
+                            android:digits="@string/disable_emoji_string"
+                            android:hint="@string/state"
+                            android:inputType="textVisiblePassword"
+                            android:padding="@dimen/_9sdp"
+                            android:textColor="@color/txtColor"
+                            android:textColorHint="@color/hint_color"
+                            android:textSize="@dimen/_7mdpi" />
+
+                        <EditText
+                            android:id="@+id/edtZip"
+                            style="@style/CustomFontMediumStyle"
+                            android:layout_width="0sp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:background="@drawable/background_square_border_grey"
+                            android:digits="@string/disable_emoji_string"
+                            android:hint="@string/zip"
+                            android:inputType="textVisiblePassword"
+                            android:padding="@dimen/_9sdp"
+                            android:textColor="@color/txtColor"
+                            android:textColorHint="@color/hint_color"
+                            android:textSize="@dimen/_7mdpi" />
+
+
+                    </LinearLayout>
+
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtNext"
+                    style="@style/CustomFontBold"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_15sdp"
+                    android:background="@drawable/button_action_hover"
+                    android:gravity="center"
+                    android:padding="@dimen/_7sdp"
+                    android:layout_marginBottom="@dimen/_20sdp"
+                    android:text="@string/tv_next"
+                    android:textAllCaps="true"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_5mdpi" />
+
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+        </ScrollView>
+
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+</layout>

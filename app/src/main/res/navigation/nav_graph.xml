@@ -149,7 +149,40 @@
             android:id="@+id/action_onlineOrder_to_addOnlneTime"
             app:destination="@id/addOnlineTimeDialog" />
     </fragment>
-
+    <fragment
+        android:id="@+id/allOrdersFragment"
+        android:name="com.android.pos.ui.fragments.allorders.AllOrdersFragment"
+        android:label="allOrders">
+        <action
+            android:id="@+id/action_allOrder_to_menuposbold"
+            app:destination="@id/menuFragment"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_allOrder_to_dashboarCategorynew"
+            app:destination="@id/dashboardCategoryBoldPOS"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_allOrders_to_addOnlneTime"
+            app:destination="@id/addOnlineTimeDialog" />
+        <action
+            android:id="@+id/action_allOrder_to_dashboardCategoryBoldPOS"
+            app:destination="@id/dashboardCategoryBoldPOS"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_allOrder_to_paymentBoldPosFragment"
+            app:destination="@id/paymentBoldPosFragment" />
+        <action
+            android:id="@+id/action_allOrder_to_reason_for_cancel_order_dialog"
+            app:destination="@id/reasonForCancleOrderDialog" />
+        <action
+            android:id="@+id/action_allOrder_to_reasonForrefundonline"
+            app:destination="@id/reasonForRefundDialogonline"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_allOrder_to_passcodeManager"
+            app:destination="@id/pascodeManagerDailog"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+    </fragment>
     <fragment
         android:id="@+id/createItem"
         android:name="com.android.pos.ui.fragments.createitem.CreateItem"
@@ -793,6 +826,10 @@
         android:name="com.android.pos.ui.dialog.AddNoteDialog"
         android:label="AddNoteDialog" />
     <dialog
+        android:id="@+id/changeOrderTypeDialog"
+        android:name="com.android.pos.ui.dialog.ChangeOrderTypeDialog"
+        android:label="ChangeOrderTypeDialog" />
+    <dialog
         android:id="@+id/addDiscountDialog"
         android:name="com.android.pos.ui.dialog.AddDiscountDialog"
         android:label="AddDiscountDialog">
@@ -812,6 +849,10 @@
         tools:layout="@layout/assign_customer_order_fragment">
         <action
             android:id="@+id/action_assignCustomerOrderFragment_to_addEditCustomer"
+            app:destination="@id/addEditCustomer" />
+        <action
+            android:id="@+id/action_assignCustomerOrderFragment_to_addEditCustomer_"
+            app:popUpTo="@id/dashboardCategoryBoldPOS"
             app:destination="@id/addEditCustomer" />
         <action
             android:id="@+id/action_assignCustomerOrderFragment_to_dashboard_category_new"
@@ -1458,6 +1499,11 @@
             app:enterAnim="@anim/nav_default_enter_anim"
             app:popUpToInclusive="true" />
         <action
+            android:id="@+id/action_menuFragment_to_allOrders"
+            app:destination="@id/allOrdersFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:popUpToInclusive="true" />
+        <action
             android:id="@+id/action_menuFragment_to_teamList"
             app:destination="@id/teamList"
             app:enterAnim="@anim/nav_default_enter_anim"
@@ -1530,6 +1576,10 @@
             app:destination="@id/onlineOrderFragment"
             app:enterAnim="@anim/nav_default_enter_anim" />
         <action
+            android:id="@+id/action_dashboardCategoryBoldPOS_to_allOrdersFragment"
+            app:destination="@id/allOrdersFragment"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
             android:id="@+id/action_dashboardCategoryBoldPOS_to_transactionFragment"
             app:destination="@id/transactionFragment"
             app:enterAnim="@anim/nav_default_enter_anim" />
@@ -1571,6 +1621,9 @@
             android:id="@+id/action_dashboardCategoryBoldPOS_to_addNoteDialog"
             app:destination="@id/addNoteDialog" />
         <action
+            android:id="@+id/action_dashboardCategoryBoldPOS_to_changeOrderTypeDialog"
+            app:destination="@id/changeOrderTypeDialog" />
+        <action
             android:id="@+id/action_dashboardCategoryBoldPOS_to_dineInOrderTable"
             app:destination="@id/dineInOrderTable"
             app:enterAnim="@anim/nav_default_enter_anim" />
@@ -1584,6 +1637,9 @@
         <action
             android:id="@+id/action_dashboardCategoryBoldPOS_to_createItem"
             app:destination="@id/createItem" />
+        <action
+            android:id="@+id/action_dashboardCategoryBoldPOS_to_phoneOrderFragment"
+            app:destination="@id/phoneOrderFragment" />
 
 
     </fragment>
@@ -1622,7 +1678,9 @@
             android:id="@+id/action_paymentBoldPosFragment_to_assignCustomerOrderFragment"
             app:destination="@id/assignCustomerOrderFragment"
             app:enterAnim="@anim/nav_default_enter_anim" />
-
+        <action
+            android:id="@+id/action_paymentBoldPosFragment_to_allOrdersFragment"
+            app:destination="@id/allOrdersFragment" />
     </fragment>
     <fragment
         android:id="@+id/magtekFragment"
@@ -1661,6 +1719,14 @@
         android:id="@+id/transferTableDialog"
         android:name="com.android.pos.ui.dialog.TransferTableDialog"
         android:label="TransferTableDialog" />
+    <fragment
+        android:id="@+id/phoneOrderFragment"
+        android:name="com.android.pos.ui.fragments.phoneOrder.PhoneOrderFragment"
+        android:label="PhoneOrderFragment" >
+        <action
+            android:id="@+id/action_phoneOrderFragment_to_assignCustomerOrderFragment"
+            app:destination="@id/assignCustomerOrderFragment" />
+    </fragment>
     <fragment
         android:id="@+id/printerQueueList"
         android:name="com.android.pos.ui.fragments.printerqueue.PrinterQueue"

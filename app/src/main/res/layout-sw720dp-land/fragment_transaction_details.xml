@@ -101,7 +101,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="@dimen/_7sdp"
-                    android:text="@{`Order List ( `+orderDetails.data.order.order_items.size()+` Items )`}"
+                    android:text="@{orderDetails.data.order.order_items.size > 1 ? `Order List ( `+orderDetails.data.order.order_items.size()+` Items )` : `Order List ( `+orderDetails.data.order.order_items.size()+` Item )` }"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi" />
 
@@ -305,6 +305,7 @@
                                 android:padding="@dimen/_1sdp">
 
                                 <androidx.appcompat.widget.AppCompatTextView
+                                    android:id="@+id/tvTipLabel"
                                     style="@style/CustomFontMediumStyle"
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
@@ -783,7 +784,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/_3sdp"
                             android:gravity="end"
-                            android:text="@{orderDetails.data.order.order_type}"
+                            android:text="@{orderDetails.data.order.order_type_name}"
                             android:textColor="@color/white"
                             android:textSize="@dimen/text_size_medium" />
                     </LinearLayout>

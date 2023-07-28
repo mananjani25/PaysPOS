@@ -17,7 +17,6 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.android.pos.BuildConfig
 import com.android.pos.MainApplication
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.entities.*
@@ -53,18 +52,22 @@ import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER
 import com.android.pos.data.remote.Constants.LOCK_SCREEN_TRANSACTION
 import com.android.pos.data.remote.Constants.MANUAL_SALE_CATEGORY_ID
 import com.android.pos.data.remote.Constants.MANUAL_SALE_ITEM_ID
+import com.android.pos.data.remote.Constants.MAX_ITEM_QUANTITY
 import com.android.pos.data.remote.Constants.ONLINE_ORDER_ENABLE
 import com.android.pos.data.remote.Constants.ONLY_SHOW_PRICE_GREATER_THAN_ZERO
 import com.android.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
 import com.android.pos.data.remote.Constants.ORDER_TYPE
+import com.android.pos.data.remote.Constants.ORDER_TYPE_ID
 import com.android.pos.data.remote.Constants.ORDER_TYPE_NAME
 import com.android.pos.data.remote.Constants.REPORT_END_TIME
 import com.android.pos.data.remote.Constants.REPORT_START_TIME
 import com.android.pos.data.remote.Constants.SERVICECHARGE_DINEIN_ORDER
 import com.android.pos.data.remote.Constants.SERVICECHARGE_TAKEOUT_OPENORDER
+import com.android.pos.data.remote.Constants.SHOW_CASH_CREDIT_PRICE_ON_CUSTOMER_DISPLAY
 import com.android.pos.data.remote.Constants.SYNC_SETTING_TIME_STAMP
 import com.android.pos.data.remote.Constants.SYNC_TIME_STAMP
 import com.android.pos.data.remote.Constants.SYSTEM_TIMEZONE
+import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.data.remote.Constants.UPDATE
 import com.android.pos.data.remote.Constants.VENUE_LOGO
@@ -89,6 +92,7 @@ import kotlinx.coroutines.flow.Flow
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.InputStream
+import java.lang.Runnable
 import java.net.HttpURLConnection
 import java.net.URL
 import java.text.NumberFormat
@@ -149,9 +153,13 @@ class DashBoardCategoryViewModel @Inject constructor(
     var tipTransactionAmount = 0.0
     private val _updateOrder = MutableLiveData<Event<Any?>>()
     val updateOrder: LiveData<Event<Any?>> = _updateOrder
+    private val _itemQuantityCheck = MutableLiveData<Event<Boolean?>>()
+    val itemQuantityCheck: LiveData<Event<Boolean?>> = _itemQuantityCheck
     var orderId: Int? = 0
 
     var openOrderUpdate: Boolean? = false
+    private val _removeGuestSuccess = MutableLiveData<Event<String>>()
+    val removeGuestSuccess: LiveData<Event<String>> = _removeGuestSuccess
 
 
     fun getCustomerReceiptSettings() = posRepository.getCustomerReceiptSettings()
@@ -233,6 +241,9 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
+
+    private val _syncDone = MutableLiveData<Event<Boolean?>>()
+    val syncDone: LiveData<Event<Boolean?>> = _syncDone
 
     private val _logout = MutableLiveData<Event<Boolean>>()
     val logout: LiveData<Event<Boolean>> = _logout
@@ -379,12 +390,21 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     fun addDineInRemovedItems(cartModel: CartModel): CartModel {
-        val items = arrayListOf<TbItem>()
-        cartModel.items.let { it?.let { it1 -> items.addAll(it1) } }
-        items.addAll(removeItemDineInList)
-        cartModel.items = items
-        removeItemDineInList.clear()
-        removeItemDineInList = arrayListOf()
+        var destroyedItems: ArrayList<TbItem> = arrayListOf()
+        cartModel.items?.forEach {
+
+            destroyedItems.add(it)
+
+        }
+        Log.e(TAG, "checkTotalDITems:  ${destroyedItems.size}")
+        cartModel.items = destroyedItems
+
+        /*  val items = arrayListOf<TbItem>()
+          cartModel.items.let { it?.let { it1 -> items.addAll(it1) } }
+          items.addAll(removeItemDineInList)
+          cartModel.items = items
+          removeItemDineInList.clear()
+          removeItemDineInList = arrayListOf()*/
         return cartModel
     }
 
@@ -543,9 +563,11 @@ class DashBoardCategoryViewModel @Inject constructor(
         dineInList: List<DineInModel> = arrayListOf(),
         isFromDineInScreen: Boolean = false
     ) {
+        Log.e("DashViewModModel", "checkCartSize: ${cartList?.size}")
         if (cartList != null && cartList.isEmpty()) {
             // empty cart hoy to new cart create kare
 
+            Log.e("DashViewModModel", "checkItem:  ${Gson().toJson(item?.modifiers)}")
 
             var cartModel = item?.let { addCartModel(it, isManualSales) }
             if (item != null) {
@@ -564,9 +586,10 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 }
             }
-            if (cartModel != null) {
+            // commented addCart to fix BIS-840
+            /*if (cartModel != null) {
                 addCart(cartModel!!)
-            }
+            }*/
 
 
         } else {
@@ -584,9 +607,6 @@ class DashBoardCategoryViewModel @Inject constructor(
                         if (type == ADD) {
                             var index = -1
                             var list = dineInList[selectedHeader].items
-                            if (prefProvider.getValueboolean(DINE_IN_UPDATE, false) == true) {
-                                item?.isEdited = true
-                            }
                             for (i in list.indices) {
                                 if (item != null) {
                                     if (item.isManualSales) {
@@ -601,8 +621,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     } else {
                                         Log.e("AddedInElse", "GotMod")
 
-                                        if (list[i].itemId == item.itemId && list[i].itemQuantity == 1000) {
+                                        if (list[i].itemId == item.itemId && list[i].itemQuantity > 1000) {
                                             isDineInItem1000 = true
+                                            _itemQuantityCheck.value = Event(true)
                                             break
                                         } else {
                                             if (list[i].itemId == item.itemId && checkVariation(
@@ -665,10 +686,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                         } else if (mod.id == modifier.id && mod.modifier_quantity != modifier.modifier_quantity) {
                                                             item.id += 1
                                                             isBreak = false
-                                                            Log.e(
-                                                                TAG,
-                                                                "newCartLogicModifier: isBreak"
-                                                            )
+                                                            Log.e(TAG, "newCartLogicModifier: isBreak")
 
                                                             return@forEach
                                                         }
@@ -710,7 +728,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 }
                             }
 
-                            if (!isDineInItem1000) {
+                            if(!isDineInItem1000){
                                 list.forEach {
                                     if (it.id == item?.id && it.itemId == item.itemId) {
                                         item.id += 1
@@ -772,6 +790,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                 itemDiscountApply(model, item)
                                             }
 
+
                                             list[index] = model
                                         } else {
                                             if (item != null) {
@@ -808,11 +827,49 @@ class DashBoardCategoryViewModel @Inject constructor(
                                             )
                                         ) {
                                             item.isEdited = true
+                                        } else {
+                                            item.isEdited = item.isEdited
                                         }
+
+                                        Log.e("checkISItemEdit", "isEdited  ${item.isEdited}")
                                         list.add(item)
                                     }
+                                } else if (prefProvider.getValue(
+                                        ORDER_TYPE,
+                                        TAKEOUT
+                                    ) == DINE_IN && prefProvider.getValueboolean(
+                                        DINE_IN_UPDATE, false
+                                    ) == true
+                                ) {
+                                    Log.e(
+                                        TAG,
+                                        "checkInsideSc  ${item?.isDestroy}  updateOrder ${isOrderUpdate}"
+                                    )
+
+                                    var flagD: Boolean = false
+                                    list.forEach {
+                                        if (item?.itemId == it.itemId && it.isDestroy == true) {
+
+                                            flagD = true
+
+                                        }
+
+                                    }
+
+                                    if (flagD) {
+                                        item?.let { list.add(it) }
+                                    }
+
                                 }
                                 Log.e("GEtDineInData", "getList  ${Gson().toJson(list)}")
+                                Log.e("GEtDineInData", "destroyTerer  ${item?.isDestroy}")
+                                Log.e(
+                                    TAG, "checkDinein  ${
+                                        prefProvider.getValueboolean(
+                                            DINE_IN_UPDATE, false
+                                        )
+                                    }"
+                                )
                                 cartList[0].items = list
                             }
 
@@ -823,7 +880,6 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
 
-                            item?.isEdited = true
                             for (i in list.indices) {
                                 if (item != null) {
                                     if (item.isManualSales) {
@@ -952,7 +1008,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                         } else if (type == DELETE) {
                             var list: ArrayList<TbItem> = arrayListOf()
                             if (item != null) {
-                                list = dineInList[item!!.headerPositionDinein].items
+                                list = dineInList[item.headerPositionDinein].items
                             } else {
                                 list = dineInList[dineInList.get(0).selectedPosition].items
                             }
@@ -1115,8 +1171,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 } else {
 
                                     Log.e("AddedInElse", "Item Qty = ${list[i].itemQuantity}")
-                                    if (list[i].itemId == item.itemId && list[i].itemQuantity == 1000) {
+                                    if (list[i].itemId == item.itemId && list[i].itemQuantity > 1000) {
                                         isItem1000 = true
+                                        _itemQuantityCheck.value = Event(true)
                                         break
                                     } else {
                                         if (list[i].itemId == item.itemId && checkVariation(
@@ -1124,15 +1181,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                 item
                                             ) && checkModifierNewLogic(list[i], item)
                                         ) {
-                                            Log.d(
-                                                TAG,
-                                                "cartLogic: " + i + "  checkUpdateOrder  ${
-                                                    prefProvider.getValueboolean(
-                                                        IS_UPDATE_ORDER,
-                                                        false
-                                                    )
-                                                }"
-                                            )
+                                            Log.d(TAG, "cartLogic: " + i)
 
                                             var listTmp =
                                                 combineItem(
@@ -1300,52 +1349,36 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 Log.e("DashViewModModel", "getIndexSecond  ${index}")
                                 if (item != null) {
                                     item.singleItemPrice = item.price
+
                                     item.modifiers.forEach { it ->
+                                        Log.e(TAG, "moditemQuantity  ${it.itemQuantity}")
+                                        Log.e(TAG, "itemQuantity  ${item.itemQuantity}")
+
+                                        /*  if (type == ADD){
+                                              it.modifier_quantity = it.itemQuantity / item.itemQuantity
+
+                                                  it.itemQuantity = item.itemQuantity
+
+                                          }
+                                          else{*/
                                         it.modifier_quantity = it.itemQuantity
                                         it.itemQuantity = it.itemQuantity * item.itemQuantity
+
+                                        /*}*/
+
                                         item.singleItemPrice += it.price * it.itemQuantity
                                     }
                                     item.isDestroy = false
-                                    Log.e(
-                                        TAG, "check Motot  ${
-                                            prefProvider.getValueboolean(
-                                                IS_UPDATE_ORDER,
-                                                false
-                                            )
-                                        }"
-                                    )
                                     if (prefProvider.getValueboolean(
-                                            IS_UPDATE_ORDER,
+                                            IS_UPDATE_ORDER_FROM_ACTIVE_ORDER,
                                             false
-                                        ) == true
+                                        )
                                     ) {
                                         item.isEdited = true
-                                        Log.e(TAG, "checkUpdateIsEdited  ${item.isEdited}")
                                     }
                                     list.add(item)
                                 }
                             } else {
-
-                               /* if (prefProvider.getValueboolean(
-                                        IS_UPDATE_ORDER,
-                                        false
-                                    ) == true
-                                ) {
-                                    var tmpin = -1
-                                    item?.isEdited = true
-                                    item?.isFired = false
-                                    item?.itemQuantity = item?.itemQuantity?.plus(1) ?: 1
-                                    list.forEachIndexed { index2, tbItem ->
-                                        if (tbItem.itemId == item?.itemId) {
-                                            tmpin = index2
-
-                                        }
-
-                                    }
-
-                                    item?.let { list.set(tmpin, it) }
-                                }*/
-
                                 Log.e("DashViewModModel", "getIndexThird  ${index}")
 
                             }
@@ -1504,7 +1537,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                     tbmodifier.modifier_quantity =
                                                         it.modifier_quantity
                                                 } else {
-                                                    it.modifier_quantity =
+                                                    tbmodifier.modifier_quantity =
                                                         it.itemQuantity / model.itemQuantity
                                                 }
 
@@ -2298,14 +2331,17 @@ class DashBoardCategoryViewModel @Inject constructor(
         Log.e(TAG, "newItemitemQuantityOld  ${list[index].itemQuantity}")
 //        if(list[index].itemQuantity < MAX_ITEM_QUANTITY){
 //        }
-        list[index].itemQuantity += item.itemQuantity
-        list[index].isEdited = true
-        list[index].modifiers.forEach { listmod ->
-            item.modifiers.forEach { itemmod ->
-                if (itemmod.id == listmod.id) {
-                    listmod.itemQuantity = itemmod.modifier_quantity * list[index].itemQuantity
+        if ((list[index].itemQuantity + item.itemQuantity) <= MAX_ITEM_QUANTITY) {
+            list[index].itemQuantity += item.itemQuantity
+            list[index].modifiers.forEach { listmod ->
+                item.modifiers.forEach { itemmod ->
+                    if (itemmod.id == listmod.id) {
+                        listmod.itemQuantity = itemmod.modifier_quantity * list[index].itemQuantity
+                    }
                 }
             }
+        } else {
+            _itemQuantityCheck.value = Event(true)
         }
 
         Log.d(TAG, "combineItem: " + list[index].itemQuantity)
@@ -2670,17 +2706,17 @@ class DashBoardCategoryViewModel @Inject constructor(
         context: Context
     ) {
 
-
-        var totalAmmount = 0.0
-        nonCashAdj = 0.0
-        totalPrice = 0.0
-        totalCount = 0
-        subTotalPrice = 0.0
-        totalDiscount = 0.0
-        totalTax = 0.0
-        totalServiceCharge = 0.0
-        var amountToBePaid = 0.0
         if (cartList != null && cartList.isNotEmpty()) {
+            var totalAmmount = 0.0
+            nonCashAdj = 0.0
+            totalPrice = 0.0
+            totalCount = 0
+            subTotalPrice = 0.0
+            totalDiscount = 0.0
+            totalTax = 0.0
+            totalServiceCharge = 0.0
+            var amountToBePaid = 0.0
+
             if (cartList[0].orderType == DINE_IN) {
 
                 var dineInItems = 0
@@ -2841,13 +2877,15 @@ class DashBoardCategoryViewModel @Inject constructor(
             cartModel.dineInList?.forEach { dine ->
 
                 dine.items.forEach { item ->
-                    totalCount += item.itemQuantity
-                    subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
+                    if (item.isDestroy != true) {
+                        totalCount += item.itemQuantity
+                        subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
 
-                    taxCalculation(item, cartModel.discountPrice / dineInItems)
+                        taxCalculation(item, cartModel.discountPrice / dineInItems)
 
-                    item.modifiers.forEach {
-                        subTotalPrice += (it.price * it.itemQuantity)
+                        item.modifiers.forEach {
+                            subTotalPrice += (it.price * it.itemQuantity)
+                        }
                     }
                 }
 
@@ -3496,7 +3534,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                             (tax.rate * totalPrice) / 100
                         Log.e("itemTaxPrice", "" + itemTaxPrice)
                         //String.format("%.2f",itemTaxPrice).toDouble()
-                        itemTaxPrice
+                        String.format("%.2f", itemTaxPrice)
+                            .toDouble()
                         //  MethodUtils.getTwoDecimal(itemTaxPrice)
                     }
 
@@ -3510,8 +3549,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                         //   MethodUtils.getTwoDecimal(tax.rate * item.itemQuantity)
                         /*String.format("%.2f", tax.rate * item.itemQuantity)
                             .toDouble()*/
+                        String.format("%.2f", tax.rate * item.itemQuantity)
+                            .toDouble()
 
-                        tax.rate * item.itemQuantity
                     }
 
                 }
@@ -3727,7 +3767,8 @@ class DashBoardCategoryViewModel @Inject constructor(
         orderAttributeRequestModel.note = cartModel.note
         orderAttributeRequestModel.offlineId = randomOfflineId()
         orderAttributeRequestModel.openOrderType = cartModel.orderType
-        orderAttributeRequestModel.orderTypeId = cartModel.orderTypeId
+        orderAttributeRequestModel.orderTypeId = prefProvider.getValueInt(ORDER_TYPE_ID, 2)
+        orderAttributeRequestModel.orderTypeName = prefProvider.getValue(ORDER_TYPE_NAME, DINE_IN)
         orderAttributeRequestModel.paymentStatus = 0
         orderAttributeRequestModel.serviceChargeEnabled = true
         orderAttributeRequestModel.taxEnabled = true
@@ -4008,6 +4049,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         cartModel.dineInList?.forEach { it ->
             val model = GuestsAttributes()
             model.name = it.title.toString()
+            model.Destroy = it.isDestroy
             if (it.id != 0) {
                 model.id = it.id
             }
@@ -4018,6 +4060,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 var totalTips = 0.0
                 var totalDiscount = 0.0
                 var totalAmount = 0.0
+                it.items.sortedBy { it.dineInSort }
                 it.items.forEach { tb ->
 
 
@@ -4135,15 +4178,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 orderItemsAttribute.isEdited = item.isEdited
                 orderItemsAttribute.isDestroy = item.isDestroy
                 orderItemsAttribute.isPaid = item.isPaid
-                orderItemsAttribute.isPrinted = if (prefProvider.getValueboolean(
-                        DINE_IN_UPDATE,
-                        false
-                    ) == true && item.isEdited == true
-                ) false else if (prefProvider.getValueboolean(
-                        DINE_IN_UPDATE,
-                        false
-                    ) == true && item.isEdited == false
-                ) true else false
+                orderItemsAttribute.isPrinted = true
                 orderItemsAttribute.isTaxRemoved = false
                 orderItemsAttribute.itemId =
                     if (item.isManualSales) item.itemId else item.itemId
@@ -4154,6 +4189,12 @@ class DashBoardCategoryViewModel @Inject constructor(
                 orderItemsAttribute.quantity = item.itemQuantity
                 orderItemsAttribute.terminalId = cartModel.terminalId
                 orderItemsAttribute.isFired = cartModel.isFired
+                item.dineInSort = if (item.dineInSort == 0) {
+                    orderItemsAttributeList.size + 1
+                } else {
+                    item.dineInSort
+                }
+                orderItemsAttribute.sort = item.dineInSort
 
 
                 orderItemsAttribute.timestamp = item.timeStamp.toString()
@@ -4178,7 +4219,31 @@ class DashBoardCategoryViewModel @Inject constructor(
             }
         }
 
-        LogUtil.logE("removeItemDine", "removeItemDineInList  ${removeItemDineInList.size}")
+
+        cartModel.items?.forEach {
+            cartModel?.dineInList?.forEach { m ->
+                m.items.forEach { oi ->
+                    if (oi.name.equals(it.name, true) == false && it.isDestroy) {
+                        var model = OrderItemsAttribute()
+                        model.category_id = it.categoryId
+                        model.itemId = it.itemId
+                        model.id = it.orderItemId
+                        model.isDestroy = it.isDestroy
+                        model.isEdited = it.isEdited
+                        orderItemsAttributeList.add(model)
+
+                    }
+                }
+            }
+
+        }
+
+
+
+        LogUtil.logE(
+            "removeItemDine",
+            "removeItemDineInList  ${removeItemDineInList.size}  checkUpdate ${isOrderUpdate}"
+        )
         if (removeItemDineInList.isNotEmpty()) {
             orderItemsAttributeList = addDestroyedItemsinDinein(orderItemsAttributeList)
         }
@@ -4532,11 +4597,11 @@ class DashBoardCategoryViewModel @Inject constructor(
         Log.e(TAG, "totalDiscountDineIn  ${totalDiscount}")
         val orderModel: OrderAttributeRequestModel = OrderAttributeRequestModel()
         var ttotalDiscount = totalDiscount
-        if (BuildConfig.DEBUG == false) {
-            ttotalDiscount = cartModel.discountPrice + totalDiscount
-        } else {
-            ttotalDiscount = totalDiscount
-        }
+//        if (BuildConfig.DEBUG == false) {
+//            ttotalDiscount = cartModel.discountPrice + totalDiscount
+//        } else {
+        ttotalDiscount = totalDiscount
+//        }
 
         Log.e(TAG, "ttotalDiscount:  ${ttotalDiscount}")
         LogUtil.logE(TAG, "getCartmodelId  ${cartModel.orderId}")
@@ -4553,7 +4618,8 @@ class DashBoardCategoryViewModel @Inject constructor(
             terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, 0)
             note = cartModel.note
             openOrderType = "DineIn"
-            orderTypeId = 2
+            orderTypeId = prefProvider.getValueInt(ORDER_TYPE_ID, 2)
+            orderTypeName = prefProvider.getValue(ORDER_TYPE_NAME, DINE_IN)
             tax_bifurcation_data = Gson().toJson(cartModel.taxlistDynamic)
             taxEnabled = true
             subTotal = MethodUtils.roundOffAmountDouble(subTotalPrice)
@@ -4653,7 +4719,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             orderItemsAttribute.isEdited = item.isEdited
             orderItemsAttribute.isDestroy = item.isDestroy
             orderItemsAttribute.isPaid = item.isPaid
-            orderItemsAttribute.isPrinted = false
+            orderItemsAttribute.isPrinted = true
             orderItemsAttribute.isTaxRemoved = false
             orderItemsAttribute.itemId = item.itemId
             orderItemsAttribute.is_manual_sales = item.isManualSales
@@ -4798,6 +4864,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun syncInventoryModule(b: Boolean) {
         _showProgress.value = Event(true)
+        _syncDone.value = Event(false)
         viewModelScope.launch {
             val resource = posRepository.syncInventory(
                 prefProvider.getValueInt(TERMINAL_ID, -1), prefProvider.getValue(
@@ -4823,10 +4890,6 @@ class DashBoardCategoryViewModel @Inject constructor(
                             val itemModifierSetList = ArrayList<ItemModifierSets>()
 
                             mCategory.forEach { category ->
-
-                                if (category.name.lowercase() == "Manual Sales".lowercase()) {
-                                    prefProvider.setValueInt(MANUAL_SALE_CATEGORY_ID, category.id)
-                                }
                                 val model = TbCategory().apply {
                                     createdAt = ""
                                     id = category.id
@@ -4843,9 +4906,6 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 categoryModelList.add(model)
 
                                 category.items.forEach {
-                                    if (it.name?.lowercase() == "Manual Sales".lowercase()) {
-                                        prefProvider.setValueInt(MANUAL_SALE_ITEM_ID, it.id)
-                                    }
 
                                     it.modifierSets.forEach { modifierset ->
                                         val itemModifierSets = ItemModifierSets().apply {
@@ -4984,7 +5044,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     resource.data.let { venueDetailsResponse ->
                         if (venueDetailsResponse?.status == 200) {
 
-                            resource.data?.let {
+                            resource.data?.let { it ->
                                 if (it.settingData.data.teamRoles.isNotEmpty()) {
                                     posRepository.addTeamRoleFromDb(it.settingData.data.teamRoles)
                                     rolePermission.findCurrentUserRoleAndSave(it.settingData.data.teamRoles)
@@ -5083,9 +5143,15 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     IS_PRINTER_QUEUE_ENABLE,
                                     it.settingData.data.isPrinterQueueEnable
                                 )
+
                                 prefProvider.setValueboolean(
                                     CUSTOMER_SIGN_REQUIRED_ON_CD,
                                     it.settingData.data.customer_sign_required_on_cd
+                                )
+
+                                prefProvider.setValueboolean(
+                                    SHOW_CASH_CREDIT_PRICE_ON_CUSTOMER_DISPLAY,
+                                    it.settingData.data.show_cash_credit_price_on_customer_display
                                 )
 
                                 prefProvider.setValue(
@@ -5165,7 +5231,13 @@ class DashBoardCategoryViewModel @Inject constructor(
 //                                posRepository.deleteCustomerPrinters()
 //                                posRepository.deleteKitchenPrinters()
                                 posRepository.addKitchenPrinter(it.settingData.data.printers.kitchenPrinterList)
-                                posRepository.addCustomerPrinter(it.settingData.data.printers.customerPrinterList)
+
+                                val custList = it.settingData.data.printers.customerPrinterList
+                                custList.forEach {
+                                    it.name = it.name.ifEmpty { "" }
+                                    it.modalName = it.modalName.ifEmpty { "" }
+                                }
+                                posRepository.addCustomerPrinter(custList)
                                 it.settingData.data.customerReceipt?.let { it1 ->
                                     posRepository.addCustomerReceiptSettings(
                                         it1
@@ -5293,7 +5365,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 SYNC_SETTING_TIME_STAMP,
                                 venueDetailsResponse.settingData.timeStamp
                             )
-
+                            _syncDone.value = Event(true)
 
                         } else {
                             _snackbarText.value = Event(resource.message)
@@ -5643,7 +5715,6 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
     fun updateActiveOrderFlagClear() {
-        Log.e(TAG, "check CallThay")
 
         prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER, false)
         prefProvider.setValueInt(Constants.IS_UPDATE_ORDER_ID, -1)
@@ -5653,6 +5724,10 @@ class DashBoardCategoryViewModel @Inject constructor(
         prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER, false)
         prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED, false)
 
+    }
+
+    fun unableToRemoveGuest(message: String = "") {
+        _removeGuestSuccess.value = Event(message)
     }
 
 }

@@ -15,6 +15,12 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
+import android.graphics.drawable.ColorDrawable
+import android.os.Build
+import android.os.Bundle
+import android.os.Handler
+import android.os.IBinder
+import android.os.Looper
 import android.util.Base64
 import android.util.Log
 import android.view.Display
@@ -73,6 +79,7 @@ import com.android.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.PAYMENT_ID
 import com.android.pos.data.remote.Constants.PAYMENT_ID_FOR_CUSTOMER_DISPLAY
+import com.android.pos.data.remote.Constants.PHONE_ORDER
 import com.android.pos.data.remote.Constants.PRINT_DATA_DINE_IN
 import com.android.pos.data.remote.Constants.SAVE_SPLIT_BUNDLE
 import com.android.pos.data.remote.Constants.SERVICECHARGE_DINEIN_ORDER
@@ -106,6 +113,28 @@ import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.MethodUtils.Companion.toPrecision
+import com.android.pos.utils.PrintSunmiUtils
+import com.android.pos.utils.PrinterDialog
+import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.addBuilderText
+import com.android.pos.utils.addBuilderTextForU220
+import com.android.pos.utils.addCustomerTextSize
+import com.android.pos.utils.addHorizontalHalfCustomerReceiptLine
+import com.android.pos.utils.addHorizontalKitchenLine
+import com.android.pos.utils.addHorizontalKitchenLineForU220
+import com.android.pos.utils.addHorizontalLine
+import com.android.pos.utils.addOrderItemForDineIn
+import com.android.pos.utils.addOrderItemForDineInInner
+import com.android.pos.utils.addOrderItems
+import com.android.pos.utils.addOrderItemsInner
+import com.android.pos.utils.addOrdersForKitchen
+import com.android.pos.utils.addOrdersForKitchenInner
+import com.android.pos.utils.addOrdersForKitchenU220
+import com.android.pos.utils.addTipsList
+import com.android.pos.utils.addTipsListInner
+import com.android.pos.utils.addWholeTbItemToGuest
+import com.android.pos.utils.addWholeTbItemToGuestInner
+import com.android.pos.utils.checkItemsforPrinter
 import com.android.pos.utils.PrintSunmiUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.addBuilderText
@@ -161,6 +190,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEventListener,
     BatteryStatusChangeEventListener, ICallback {
+    private var isPrint: Boolean = false
     private val paymentViewModel by activityViewModels<PaymentViewModel>()
     private lateinit var presentation: CustomDisplay
     private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
@@ -208,7 +238,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private var customerSettingModel = GetCustomerReceiptSettingsResponse.Data()
     private var kitchenSettingModel = GetKitchenReceiptSettingsResponse.Data()
     private var splitList: ArrayList<SplitDetailListModel> = arrayListOf()
-   /* private lateinit var printerDialog: PrinterDialog*/
+    private lateinit var printerDialog: PrinterDialog
     private var isGuestPaymentTotal = false
     private var cartList: CartModel? = null
     private var paidAmount: Double = 0.0
@@ -235,6 +265,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     ): View? {
         binding = FragmentOrderCompletBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
+        isPrint = true
 
         getCustomerDisplay(requireContext())?.let { display ->
             presentation = CustomDisplay(
@@ -248,7 +279,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             )
         }
 
-       /* printerDialog = PrinterDialog()*/
+        printerDialog = PrinterDialog()
         progressDialog()
 
 
@@ -266,8 +297,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             ?.observe(viewLifecycleOwner) { it ->
                 if (it.getString(Constants.KEY)?.lowercase() == "FROM_CUSTOMER".lowercase()) {
                     isFromCustomer = true
-                    if (pd != null && pd?.isShowing == true) {
-                        pd?.dismiss()
+                    if (pd != null && pd.isShowing) {
+                        pd.dismiss()
                     }
                 }
 
@@ -299,9 +330,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         if (this::presentation.isInitialized) {
             presentation.show()
             presentation.onDisplayChanged()
-            val finalPaidAmount =
-                binding.txtPaymentAmount.text.toString().replace(" payment successful", "")
-                    .replace("$", "").toDouble()
+//            val finalPaidAmount =
+//                binding.txtPaymentAmount.text.toString().replace(" payment successful", "")
+//                    .replace("$", "").toDouble()
+            Log.d("###RCB", "onResume TOTAL AMOUNT: ${receiptModel?.order?.totalAmount}")
+            val finalPaidAmount = receiptModel?.order?.totalAmount ?: 0.0
             if (prefProvider.getValueboolean(Constants.TIP_ADDED, false)) {
                 prefProvider.setValueboolean(Constants.TIP_ADDED, false)
                 presentation.showThankYou(finalPaidAmount)
@@ -841,12 +874,15 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             R.id.txtHome -> {
                 moveToDashboard()
             }
+
             R.id.txt_nextbutton -> {
                 moveToNextPayment()
             }
+
             R.id.llHome -> {
                 moveToDashboard()
             }
+
             R.id.txtAddCustomer -> {
                 setFragmentResultListener("ordercomplete_customer") { requestKey: String, bundle: Bundle ->
 
@@ -856,9 +892,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 bundle.putBoolean("fromPayment", true)
                 findNavController().navigate(R.id.action_orderCompleteFragment_to_assignCustomerOrderFragment)
             }
+
             R.id.llCheckOut -> {
                 moveToCheckOut()
             }
+
             R.id.llMessage -> {
 
                 binding.llNoReceipt.background =
@@ -895,6 +933,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 binding.tvMessage.setText(getString(R.string.please_enter_customer_contact_number))
                 MethodUtils.hideKeyboard(requireActivity())
             }
+
             R.id.llEmail -> {
                 binding.llNoReceipt.background =
                     resources.getDrawable(R.drawable.background_square_border_grey)
@@ -924,6 +963,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 binding.tvMessage.setText(getString(R.string.please_enter_customer_email_address))
                 MethodUtils.hideKeyboard(requireActivity())
             }
+
             R.id.llNoReceipt -> {
                 binding.llNoReceipt.background = resources.getDrawable(R.drawable.button_selected)
                 binding.llNoReceipt.setTextColor(resources.getColor(R.color.white))
@@ -935,16 +975,19 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 binding.llMessage.background =
                     resources.getDrawable(R.drawable.background_square_border_grey)
                 binding.llMessage.setTextColor(resources.getColor(R.color.txtColor))
-/*
-                binding.llPrint.background =
-                    resources.getDrawable(R.drawable.background_square_border_grey)
-                binding.llPrint.setTextColor(resources.getColor(R.color.txtColor))*/
+                /*
+                                binding.llPrint.background =
+                                    resources.getDrawable(R.drawable.background_square_border_grey)
+                                binding.llPrint.setTextColor(resources.getColor(R.color.txtColor))*/
                 moveToDashboard()
             }
+
             R.id.llPrint -> {
                 //removeCustomer()
                 /*  binding.llPrint.background = resources.getDrawable(R.drawable.button_selected)
                   binding.llPrint.setTextColor(resources.getColor(R.color.white))*/
+
+                isPrint = true
 
                 binding.llEmail.background =
                     resources.getDrawable(R.drawable.background_square_border_grey)
@@ -960,7 +1003,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 if (isDineIn) {
                     LogUtil.logE(TAG, "receiptModel:  ${Gson().toJson(receiptModel)}")
-                    customerPrintWholeOrder()
+                    customerPrintWholeOrder(false)
 
                 } else {
                     getCustomerPrinters(false)
@@ -968,6 +1011,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 // findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
             }
+
             R.id.txtSend -> {
 
                 MethodUtils.hideKeyboard(requireActivity())
@@ -980,6 +1024,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
             }
+
             R.id.imgBack -> {
                 backpress()
             }
@@ -1037,7 +1082,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         }
     }
 
-    private fun customerPrintWholeOrder() {
+    private fun customerPrintWholeOrder(shouldCheckForAutoPrinting: Boolean) {
+        isPrint = false
 
         var guestPos = requireArguments().getInt(GUEST_POSITION)
         LogUtil.logE(TAG, "getGuestPosition  ${guestPos}")
@@ -1060,17 +1106,40 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
 
         }
-        customerPrinterDineIn?.forEach {
-            if (it.status) {
-                initDineInPrinter(
-                    it,
-                    Constants.CUSTOMER,
-                    paymentType,
-                    true,
-                    listGuestItem = listItem,
-                    dineInList.get(guestPos).title.toString(),
-                    listItemWT
-                )
+        customerPrinterDineIn?.forEach { cpd ->
+            if (cpd.status) {
+
+                if (shouldCheckForAutoPrinting && !isGuest) {
+                    cpd.orderTypes.forEach {
+                        if (it.orderTypeId == receiptModel?.order?.orderTypeId) {
+                            it.printerSettings.forEach {
+                                if (it.printType.lowercase() == CUSTOMER.lowercase() && it.autoPrinting
+                                ) {
+                                    initDineInPrinter(
+                                        cpd,
+                                        Constants.CUSTOMER,
+                                        paymentType,
+                                        true,
+                                        listGuestItem = listItem,
+                                        dineInList.get(guestPos).title.toString(),
+                                        listItemWT
+                                    )
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    initDineInPrinter(
+                        cpd,
+                        Constants.CUSTOMER,
+                        paymentType,
+                        true,
+                        listGuestItem = listItem,
+                        dineInList.get(guestPos).title.toString(),
+                        listItemWT
+                    )
+                }
+
             }
 
         }
@@ -1440,7 +1509,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     builder,
                     prefProvider.getValue(Constants.BUSINESS_NAME, "").toString()
                 )
-                if(customerSettingModel.showVenueAddress) {
+                if (customerSettingModel.showVenueAddress) {
                     builder.addFeedLine(1)
                     builder.addTextFont(Builder.FONT_E)
                     builder.addTextAlign(Builder.ALIGN_CENTER)
@@ -1460,7 +1529,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             .toString()
                     )
                 }
-                if(customerSettingModel.showVenuePhone) {
+                if (customerSettingModel.showVenuePhone) {
                     builder.addFeedLine(1)
 
                     builder.addTextFont(Builder.FONT_E)
@@ -1499,7 +1568,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     )
                 }
 
-                if(customerSettingModel.showOrderType) {
+                if (customerSettingModel.showOrderType) {
                     builder.addFeedLine(1)
 
                     builder.addTextFont(Builder.FONT_E)
@@ -1841,7 +1910,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             "Total Discount",
 
                             if (finaldisLocal == 0.0) {
-                                "$" + MethodUtils.roundOffAmountString(0.0)
+                                "-$" + MethodUtils.roundOffAmountString(0.0)
                             } else {
 
                                 "-$" + MethodUtils.roundOffAmountString(
@@ -1916,32 +1985,33 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     )
                 }
 
-
-                builder.addTextLineSpace(30)
-                builder.addFeedUnit(30)
-                builder.addTextFont(Builder.FONT_E)
-                // builder.addTextAlign(Builder.ALIGN_LEFT)
-                builder.addTextLang(Builder.LANG_EN)
-                addCustomerTextSize(builder, customerSettingModel.fonts)
-                builder.addTextStyle(
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.COLOR_1
-                )
-
-
-                builder.addText(
-                    padLine(
-                        "Service Charge",
-                        "$" + MethodUtils.roundOffAmountString(checkOutDineInModel?.totalServiceCharge!!),
-                        if (customerSettingModel.fonts == LARGE) {
-                            24
-                        } else {
-                            48
-                        }
+                if ((getDineInOrderDetails?.serviceChargeEnabled == true) && prefProvider.getValueboolean(Constants.SERVICECHARGE_DINEIN_ORDER, false)) {
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+                    builder.addTextFont(Builder.FONT_E)
+                    // builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextLang(Builder.LANG_EN)
+                    addCustomerTextSize(builder, customerSettingModel.fonts)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.COLOR_1
                     )
-                )
+
+
+                    builder.addText(
+                        padLine(
+                            "Service Charge",
+                            "$" + MethodUtils.roundOffAmountString(checkOutDineInModel?.totalServiceCharge!!),
+                            if (customerSettingModel.fonts == LARGE) {
+                                24
+                            } else {
+                                48
+                            }
+                        )
+                    )
+                }
 
                 if (tipAmount != 0.0) {
 
@@ -1969,7 +2039,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     )
                 }
 
-                if (noCashAdjGlobal != 0.0  && customerSettingModel.showCashDisSurCharg) {
+                if (noCashAdjGlobal != 0.0 && customerSettingModel.showCashDisSurCharg) {
                     builder.addTextLineSpace(30)
                     builder.addFeedUnit(30)
                     builder.addTextFont(Builder.FONT_E)
@@ -2199,7 +2269,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }
 
                 builder.addFeedLine(1)
-                if (getDineInOrderDetails?.payments?.isNotEmpty() == true) {
+                if (receiptModel?.order?.payments?.isNotEmpty() == true) {
                     builder.addTextLineSpace(30)
                     builder.addFeedUnit(30)
 
@@ -2219,11 +2289,33 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     builder.addText(
                         padLine(
                             "Transaction ID",
-                            "" + getDineInOrderDetails?.payments?.size?.minus(1)?.let {
-                                getDineInOrderDetails?.payments?.get(
-                                    it
-                                )?.id
-                            },
+                            "" + receiptModel?.order?.payments?.size?.minus(1)
+                                ?.let { receiptModel?.order?.payments?.get(it)?.id },
+                            if (customerSettingModel.fonts == LARGE) {
+                                24
+                            } else {
+                                48
+                            }
+                        )
+                    )
+
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+                    builder.addTextFont(Builder.FONT_E)
+                    // builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextLang(Builder.LANG_EN)
+                    addCustomerTextSize(builder, customerSettingModel.fonts)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.TRUE,
+                        Builder.COLOR_1
+                    )
+
+                    builder.addText(
+                        padLine(
+                            "Transaction Type",
+                            receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.paymentType,
                             if (customerSettingModel.fonts == LARGE) {
                                 24
                             } else {
@@ -2233,33 +2325,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     )
                 }
 
-
-                builder.addTextLineSpace(30)
-                builder.addFeedUnit(30)
-                builder.addTextFont(Builder.FONT_E)
-                // builder.addTextAlign(Builder.ALIGN_LEFT)
-                builder.addTextLang(Builder.LANG_EN)
-                addCustomerTextSize(builder, customerSettingModel.fonts)
-                builder.addTextStyle(
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.TRUE,
-                    Builder.COLOR_1
-                )
-
-                builder.addText(
-                    padLine(
-                        "Transaction Type",
-                        paymentType,
-                        if (customerSettingModel.fonts == LARGE) {
-                            24
-                        } else {
-                            48
-                        }
-                    )
-                )
-
-                if (paymentType.lowercase() == "Card".lowercase() && getDineInOrderDetails?.payments?.isNotEmpty() == true) {
+                if (receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.paymentType?.lowercase() == "Card".lowercase()) {
 
                     builder.addTextLineSpace(30)
                     builder.addFeedUnit(30)
@@ -2277,11 +2343,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     builder.addText(
                         padLine(
                             "",
-                            getDineInOrderDetails?.payments?.get(
-                                getDineInOrderDetails?.payments?.size?.minus(
-                                    1
-                                ) ?: 0
-                            )?.cardName,
+                            receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardName,
                             if (customerSettingModel.fonts == Constants.LARGE) {
                                 24
                             } else {
@@ -2306,11 +2368,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     builder.addText(
                         padLine(
                             "",
-                            getDineInOrderDetails?.payments?.get(
-                                getDineInOrderDetails?.payments?.size?.minus(
-                                    1
-                                ) ?: 0
-                            )?.cardType,
+                            receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardType,
                             if (customerSettingModel.fonts == Constants.LARGE) {
                                 24
                             } else {
@@ -2334,11 +2392,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     builder.addText(
                         padLine(
                             "",
-                            getDineInOrderDetails?.payments?.get(
-                                getDineInOrderDetails?.payments?.size?.minus(
-                                    1
-                                ) ?: 0
-                            )?.cardNumber,
+                            receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardNumber,
                             if (customerSettingModel.fonts == Constants.LARGE) {
                                 24
                             } else {
@@ -2611,8 +2665,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             } else {
                 SunmiPrinterApi.getInstance().lineWrap(1)
             }
-            if(customerSettingModel.showOrderType) {
-                getDineInOrderDetails?.orderTypeName?.trim()?.let { PrintSunmiUtils.printOrderType(it) }
+            if (customerSettingModel.showOrderType) {
+                getDineInOrderDetails?.orderTypeName?.trim()
+                    ?.let { PrintSunmiUtils.printOrderType(it) }
                 SunmiPrinterApi.getInstance().lineWrap(1)
             }
 
@@ -2768,7 +2823,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     "Total Discount",
 
                     if (finaldisLocal == 0.0) {
-                        "$" + MethodUtils.roundOffAmountString(0.0)
+                        "-$" + MethodUtils.roundOffAmountString(0.0)
                     } else {
                         "-$" + MethodUtils.roundOffAmountString(
                             checkOutDineInModel?.totalDiscount ?: 0.0
@@ -2799,15 +2854,16 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 PrintSunmiUtils.tax(str3)
             }
 
+            if ((getDineInOrderDetails?.serviceChargeEnabled == true) && prefProvider.getValueboolean(Constants.SERVICECHARGE_DINEIN_ORDER, false)) {
+                val str4 = padLine(
+                    "Service Charge",
+                    "$" + MethodUtils.roundOffAmountString(checkOutDineInModel?.totalServiceCharge!!),
+                    if (customerSettingModel.fonts == LARGE) 23 else 48
+                ).toString()
 
-            val str4 = padLine(
-                "Service Charge",
-                "$" + MethodUtils.roundOffAmountString(checkOutDineInModel?.totalServiceCharge!!),
-                if (customerSettingModel.fonts == LARGE) 23 else 48
-            ).toString()
-
-            PrintSunmiUtils.serviceCharge(str4)
-            SunmiPrinterApi.getInstance().lineWrap(1)
+                PrintSunmiUtils.serviceCharge(str4)
+                SunmiPrinterApi.getInstance().lineWrap(1)
+            }
 
             if (tipAmount != 0.0) {
 
@@ -2925,29 +2981,50 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 }
             }
-
-            if (getDineInOrderDetails?.payments?.isNotEmpty() == true) {
+            if (receiptModel?.order?.payments?.isNotEmpty() == true) {
 
                 val str10 = padLine(
                     "Transaction ID",
-                    "" + getDineInOrderDetails?.payments?.size?.minus(1)?.let {
-                        getDineInOrderDetails?.payments?.get(
-                            it
-                        )?.id
-                    }, if (customerSettingModel.fonts == LARGE) 23 else 48
+                    "" + receiptModel?.order?.payments?.size?.minus(1)
+                        ?.let { receiptModel?.order?.payments?.get(it)?.id },
+                    if (customerSettingModel.fonts == LARGE) 23 else 48
                 ).toString()
                 PrintSunmiUtils.transactionId(str10)
+
+                val str11 = padLine(
+                    "Transaction Type",
+                    receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.paymentType,
+                    if (customerSettingModel.fonts == LARGE) 23 else 48
+                ).toString()
+                PrintSunmiUtils.transactionType(str11)
             }
 
+            if (receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.paymentType?.lowercase() == "Card".lowercase()) {
 
-            val str11 = padLine(
-                "Transaction Type",
-                paymentType, if (customerSettingModel.fonts == LARGE) 23 else 48
-            ).toString()
-            PrintSunmiUtils.transactionType(str11)
+                PrintSunmiUtils.normalText(
+                    padLine(
+                        "",
+                        receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardName,
+                        if (customerSettingModel.fonts == LARGE) 23 else 48
+                    ).toString()
+                )
 
+                PrintSunmiUtils.normalText(
+                    padLine(
+                        "",
+                        receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardType,
+                        if (customerSettingModel.fonts == LARGE) 23 else 48
+                    ).toString()
+                )
+                PrintSunmiUtils.normalText(
+                    padLine(
+                        "",
+                        receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardNumber,
+                        if (customerSettingModel.fonts == LARGE) 23 else 48
+                    ).toString()
+                )
 
-
+            }
 
             if (getDineInOrderDetails?.note != null && getDineInOrderDetails?.note != "" && customerSettingModel.showOrderNote) {
 
@@ -3034,11 +3111,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             if (customerSettingModel.showWebsiteAddress) {
                 PrintSunmiUtils.venueWebsiteInner(prefProvider.getValue(BUSINESS_WEBSITE, ""))
-            }else {
+            } else {
                 SunmiPrintHelper.getInstance().lineWrap(1)
             }
 
-            if(customerSettingModel.showOrderType) {
+            if (customerSettingModel.showOrderType) {
                 getDineInOrderDetails?.orderTypeName?.trim()?.let { PrintSunmiUtils.headerText(it) }
                 SunmiPrintHelper.getInstance().lineWrap(1)
             }
@@ -3196,7 +3273,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     "Total Discount",
 
                     if (finaldisLocal == 0.0) {
-                        "$" + MethodUtils.roundOffAmountString(0.0)
+                        "-$" + MethodUtils.roundOffAmountString(0.0)
                     } else {
                         "-$" + MethodUtils.roundOffAmountString(
                             checkOutDineInModel?.totalDiscount ?: 0.0
@@ -3227,15 +3304,16 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 PrintSunmiUtils.normalText(str3)
             }
 
+            if (getDineInOrderDetails?.serviceChargeEnabled == true && prefProvider.getValueboolean(Constants.SERVICECHARGE_DINEIN_ORDER, false)) {
+                val str4 = padLine(
+                    "Service Charge",
+                    "$" + MethodUtils.roundOffAmountString(checkOutDineInModel?.totalServiceCharge!!),
+                    if (customerSettingModel.fonts == LARGE) 23 else 48
+                ).toString()
 
-            val str4 = padLine(
-                "Service Charge",
-                "$" + MethodUtils.roundOffAmountString(checkOutDineInModel?.totalServiceCharge!!),
-                if (customerSettingModel.fonts == LARGE) 23 else 48
-            ).toString()
-
-            PrintSunmiUtils.normalText(str4)
-            SunmiPrintHelper.getInstance().lineWrap(1)
+                PrintSunmiUtils.normalText(str4)
+                SunmiPrintHelper.getInstance().lineWrap(1)
+            }
 
             if (tipAmount != 0.0) {
 
@@ -3354,58 +3432,46 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 }
             }
-
-            if (getDineInOrderDetails?.payments?.isNotEmpty() == true) {
+            if (receiptModel?.order?.payments?.isNotEmpty() == true) {
 
                 val str10 = padLine(
                     "Transaction ID",
-                    "" + getDineInOrderDetails?.payments?.size?.minus(1)?.let {
-                        getDineInOrderDetails?.payments?.get(
-                            it
-                        )?.id
-                    }, if (customerSettingModel.fonts == LARGE) 23 else 48
+                    "" + receiptModel?.order?.payments?.size?.minus(1)
+                        ?.let { receiptModel?.order?.payments?.get(it)?.id },
+                    if (customerSettingModel.fonts == LARGE) 23 else 48
                 ).toString()
                 PrintSunmiUtils.normalText(str10)
+
+                val str11 = padLine(
+                    "Transaction Type",
+                    receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.paymentType,
+                    if (customerSettingModel.fonts == LARGE) 23 else 48
+                ).toString()
+                PrintSunmiUtils.normalText(str11)
             }
 
-
-            val str11 = padLine(
-                "Transaction Type",
-                paymentType, if (customerSettingModel.fonts == LARGE) 23 else 48
-            ).toString()
-            PrintSunmiUtils.normalText(str11)
-
-            if (paymentType.lowercase() == "Card".lowercase() && getDineInOrderDetails?.payments?.isNotEmpty() == true) {
+            if (receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.paymentType?.lowercase() == "Card".lowercase()) {
 
                 PrintSunmiUtils.normalText(
                     padLine(
                         "",
-                        getDineInOrderDetails?.payments?.get(
-                            getDineInOrderDetails?.payments?.size?.minus(
-                                1
-                            ) ?: 0
-                        )?.cardName, if (customerSettingModel.fonts == LARGE) 23 else 48
+                        receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardName,
+                        if (customerSettingModel.fonts == LARGE) 23 else 48
                     ).toString()
                 )
 
                 PrintSunmiUtils.normalText(
                     padLine(
                         "",
-                        getDineInOrderDetails?.payments?.get(
-                            getDineInOrderDetails?.payments?.size?.minus(
-                                1
-                            ) ?: 0
-                        )?.cardType, if (customerSettingModel.fonts == LARGE) 23 else 48
+                        receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardType,
+                        if (customerSettingModel.fonts == LARGE) 23 else 48
                     ).toString()
                 )
                 PrintSunmiUtils.normalText(
                     padLine(
                         "",
-                        getDineInOrderDetails?.payments?.get(
-                            getDineInOrderDetails?.payments?.size?.minus(
-                                1
-                            ) ?: 0
-                        )?.cardNumber, if (customerSettingModel.fonts == LARGE) 23 else 48
+                        receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardNumber,
+                        if (customerSettingModel.fonts == LARGE) 23 else 48
                     ).toString()
                 )
 
@@ -3694,7 +3760,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 )
                 builder.addTextAlign(Builder.ALIGN_CENTER)
 
-                builder.addText(getDineInOrderDetails?.orderType + "\n")
+                builder.addText(getDineInOrderDetails?.orderTypeName + "\n")
 
                 if (customerSettingModel.fonts == LARGE) {
 
@@ -4014,7 +4080,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             "Total Discount",
 
                             if (getDineInOrderDetails?.totalDiscount == 0.0) {
-                                "$" + MethodUtils.roundOffAmountString(0.0)
+                                "-$" + MethodUtils.roundOffAmountString(0.0)
                             } else {
                                 getDineInOrderDetails?.totalDiscount?.let {
                                     "-$" + MethodUtils.roundOffAmountString(it)
@@ -4087,33 +4153,34 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     )
                 }
 
-
-                builder.addTextLineSpace(30)
-                builder.addFeedUnit(30)
-                builder.addTextFont(Builder.FONT_E)
-                // builder.addTextAlign(Builder.ALIGN_LEFT)
-                builder.addTextLang(Builder.LANG_EN)
-                addCustomerTextSize(builder, customerSettingModel.fonts)
-                builder.addTextStyle(
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.COLOR_1
-                )
-
-                builder.addText(
-                    padLine(
-                        "Service Charge",
-                        "$" + MethodUtils.roundOffAmountString(
-                            getDineInOrderDetails?.totalServiceCharges ?: 0.0
-                        ),
-                        if (customerSettingModel.fonts == LARGE) {
-                            24
-                        } else {
-                            48
-                        }
+                if ((getDineInOrderDetails?.serviceChargeEnabled == true) && prefProvider.getValueboolean(Constants.SERVICECHARGE_DINEIN_ORDER, false)) {
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+                    builder.addTextFont(Builder.FONT_E)
+                    // builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextLang(Builder.LANG_EN)
+                    addCustomerTextSize(builder, customerSettingModel.fonts)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.COLOR_1
                     )
-                )
+
+                    builder.addText(
+                        padLine(
+                            "Service Charge",
+                            "$" + MethodUtils.roundOffAmountString(
+                                getDineInOrderDetails?.totalServiceCharges ?: 0.0
+                            ),
+                            if (customerSettingModel.fonts == LARGE) {
+                                24
+                            } else {
+                                48
+                            }
+                        )
+                    )
+                }
 
 
                 if (tipAmount != 0.0) {
@@ -4148,7 +4215,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 if (noCashAdjGlobal != 0.0 && payTypeGlb == "Cash" && prefProvider.getValue(
                         OPTION_TYPE,
                         ""
-                    ).lowercase() == "CashDiscount".lowercase() && customerSettingModel.showCashDisSurCharg
+                    )
+                        .lowercase() == "CashDiscount".lowercase() && customerSettingModel.showCashDisSurCharg
                 ) {
                     builder.addTextLineSpace(30)
                     builder.addFeedUnit(30)
@@ -4425,6 +4493,21 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             }
                         )
                     )
+                    builder.addText(
+                        padLine(
+                            "Total",
+                            if (customerSettingModel.showTipLineForCash) {
+                                "_____________"
+                            } else {
+                                ""
+                            },
+                            if (customerSettingModel.fonts == LARGE) {
+                                24
+                            } else {
+                                48
+                            }
+                        )
+                    )
                 }
 
 
@@ -4474,7 +4557,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }
 
                 builder.addFeedLine(1)
-                if (getDineInOrderDetails?.payments?.isNotEmpty() == true) {
+                if (receiptModel?.order?.payments?.isNotEmpty() == true) {
                     builder.addTextLineSpace(30)
                     builder.addFeedUnit(30)
 
@@ -4494,8 +4577,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     builder.addText(
                         padLine(
                             "Transaction ID",
-                            "" + getDineInOrderDetails?.payments?.size?.minus(1)
-                                ?.let { getDineInOrderDetails?.payments?.get(it)?.id },
+                            "" + receiptModel?.order?.payments?.size?.minus(1)
+                                ?.let { receiptModel?.order?.payments?.get(it)?.id },
                             if (customerSettingModel.fonts == LARGE) {
                                 24
                             } else {
@@ -4523,6 +4606,83 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         padLine(
                             "Transaction Type",
                             receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.paymentType,
+                            if (customerSettingModel.fonts == LARGE) {
+                                24
+                            } else {
+                                48
+                            }
+                        )
+                    )
+                }
+
+                if (receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.paymentType?.lowercase() == "Card".lowercase()) {
+
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+                    builder.addTextFont(Builder.FONT_E)
+                    // builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextLang(Builder.LANG_EN)
+                    addCustomerTextSize(builder, customerSettingModel.fonts)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.TRUE,
+                        Builder.COLOR_1
+                    )
+
+                    builder.addText(
+                        padLine(
+                            "",
+                            receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardName,
+                            if (customerSettingModel.fonts == LARGE) {
+                                24
+                            } else {
+                                48
+                            }
+                        )
+                    )
+
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+                    builder.addTextFont(Builder.FONT_E)
+                    // builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextLang(Builder.LANG_EN)
+                    addCustomerTextSize(builder, customerSettingModel.fonts)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.TRUE,
+                        Builder.COLOR_1
+                    )
+
+                    builder.addText(
+                        padLine(
+                            "",
+                            receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardType,
+                            if (customerSettingModel.fonts == LARGE) {
+                                24
+                            } else {
+                                48
+                            }
+                        )
+                    )
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+                    builder.addTextFont(Builder.FONT_E)
+                    // builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextLang(Builder.LANG_EN)
+                    addCustomerTextSize(builder, customerSettingModel.fonts)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.TRUE,
+                        Builder.COLOR_1
+                    )
+
+                    builder.addText(
+                        padLine(
+                            "",
+                            receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardNumber,
                             if (customerSettingModel.fonts == LARGE) {
                                 24
                             } else {
@@ -4698,8 +4858,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             } else {
                 SunmiPrinterApi.getInstance().lineWrap(1)
             }
-            if(customerSettingModel.showOrderType) {
-                getDineInOrderDetails?.orderType?.trim()?.let { PrintSunmiUtils.printOrderType(it) }
+            if (customerSettingModel.showOrderType) {
+                getDineInOrderDetails?.orderTypeName?.trim()
+                    ?.let { PrintSunmiUtils.printOrderType(it) }
                 SunmiPrinterApi.getInstance().lineWrap(1)
             }
 
@@ -4890,7 +5051,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     "Total Discount",
 
                     if (getDineInOrderDetails?.totalDiscount == 0.0) {
-                        "$" + MethodUtils.roundOffAmountString(0.0)
+                        "-$" + MethodUtils.roundOffAmountString(0.0)
                     } else {
                         getDineInOrderDetails?.totalDiscount?.let {
                             "-$" + MethodUtils.roundOffAmountString(it)
@@ -4941,20 +5102,20 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 PrintSunmiUtils.tax(str3)
             }
 
-
-            val str4 = padLine(
-                "Service Charge",
-                "$" + MethodUtils.roundOffAmountString(
-                    getDineInOrderDetails?.totalServiceCharges ?: 0.0
-                ),
-                if (customerSettingModel.fonts == LARGE) {
-                    23
-                } else {
-                    48
-                }
-            ).toString()
-            PrintSunmiUtils.serviceCharge(str4)
-
+            if ((getDineInOrderDetails?.serviceChargeEnabled == true) && prefProvider.getValueboolean(Constants.SERVICECHARGE_DINEIN_ORDER, false)) {
+                val str4 = padLine(
+                    "Service Charge",
+                    "$" + MethodUtils.roundOffAmountString(
+                        getDineInOrderDetails?.totalServiceCharges ?: 0.0
+                    ),
+                    if (customerSettingModel.fonts == LARGE) {
+                        23
+                    } else {
+                        48
+                    }
+                ).toString()
+                PrintSunmiUtils.serviceCharge(str4)
+            }
 
 
             if (tipAmount != 0.0) {
@@ -4979,7 +5140,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             if (noCashAdjGlobal != 0.0 && payTypeGlb == "Cash" && prefProvider.getValue(
                     OPTION_TYPE,
                     ""
-                ).lowercase() == "CashDiscount".lowercase() && customerSettingModel.showCashDisSurCharg
+                )
+                    .lowercase() == "CashDiscount".lowercase() && customerSettingModel.showCashDisSurCharg
             ) {
 
 
@@ -5102,9 +5264,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                     if (customerSettingModel.fonts == LARGE) {
                         PrintSunmiUtils.tips("Tips      _____________")
+                        PrintSunmiUtils.tips("Total     _____________")
                         SunmiPrinterApi.getInstance().lineWrap(1)
                     } else {
                         PrintSunmiUtils.tips("Tips                              _____________")
+                        PrintSunmiUtils.tips("Total                             _____________")
                     }
 
 
@@ -5128,13 +5292,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }
             }
 
-            if (getDineInOrderDetails?.payments?.isNotEmpty() == true) {
+            if (receiptModel?.order?.payments?.isNotEmpty() == true) {
 
 
                 val str10 = padLine(
                     "Transaction ID",
-                    "" + getDineInOrderDetails?.payments?.size?.minus(1)
-                        ?.let { getDineInOrderDetails?.payments?.get(it)?.id },
+                    "" + receiptModel?.order?.payments?.size?.minus(1)
+                        ?.let { receiptModel?.order?.payments?.get(it)?.id },
                     if (customerSettingModel.fonts == LARGE) 23 else 48
                 ).toString()
 
@@ -5156,14 +5320,32 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             }
 
+            if (receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.paymentType?.lowercase() == "Card".lowercase()) {
+
+
+                val str12 =
+                    receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardName.toString()
+
+
+                val str13 =
+                    receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardType.toString()
+
+
+                val str14 =
+                    receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardNumber.toString()
+
+                PrintSunmiUtils.cardDetails(str12, str13, str14)
+                SunmiPrinterApi.getInstance().lineWrap(1)
+            }
+
 
             if (getDineInOrderDetails?.note != null && getDineInOrderDetails?.note != "" && customerSettingModel.showOrderNote) {
 
                 PrintSunmiUtils.orderNote(getDineInOrderDetails?.note!!)
             }
-            SunmiPrinterApi.getInstance().lineWrap(2)
-            PrintSunmiUtils.tips("__________________________")
-            SunmiPrinterApi.getInstance().lineWrap(1)
+//            SunmiPrinterApi.getInstance().lineWrap(2)
+//            PrintSunmiUtils.tips("__________________________")
+//            SunmiPrinterApi.getInstance().lineWrap(1)
 
             SunmiPrinterApi.getInstance().lineWrap(2)
             val str8 = padLine(
@@ -5380,11 +5562,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                             var customerName = dineInList[i]?.customer?.first_name + " "
 
-                            if(dineInList[i]?.customer?.last_name != null) {
-                                 customerName += dineInList[i].customer?.last_name
-                             }
+                            if (dineInList[i]?.customer?.last_name != null) {
+                                customerName += dineInList[i].customer?.last_name
+                            }
                             PrintSunmiUtils.normalTextCenter(customerName)
-
 
 
                         }
@@ -5414,7 +5595,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     "Total Discount",
 
                     if (getDineInOrderDetails?.totalDiscount == 0.0) {
-                        "$" + MethodUtils.roundOffAmountString(0.0)
+                        "-$" + MethodUtils.roundOffAmountString(0.0)
                     } else {
                         getDineInOrderDetails?.totalDiscount?.let {
                             "-$" + MethodUtils.roundOffAmountString(it)
@@ -5465,20 +5646,20 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 PrintSunmiUtils.normalText(str3)
             }
 
-
-            val str4 = padLine(
-                "Service Charge",
-                "$" + MethodUtils.roundOffAmountString(
-                    getDineInOrderDetails?.totalServiceCharges ?: 0.0
-                ),
-                if (customerSettingModel.fonts == LARGE) {
-                    23
-                } else {
-                    48
-                }
-            ).toString()
-            PrintSunmiUtils.normalText(str4)
-
+            if ((getDineInOrderDetails?.serviceChargeEnabled == true) && prefProvider.getValueboolean(Constants.SERVICECHARGE_DINEIN_ORDER, false)) {
+                val str4 = padLine(
+                    "Service Charge",
+                    "$" + MethodUtils.roundOffAmountString(
+                        getDineInOrderDetails?.totalServiceCharges ?: 0.0
+                    ),
+                    if (customerSettingModel.fonts == LARGE) {
+                        23
+                    } else {
+                        48
+                    }
+                ).toString()
+                PrintSunmiUtils.normalText(str4)
+            }
 
 
             if (tipAmount != 0.0) {
@@ -5503,7 +5684,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             if (noCashAdjGlobal != 0.0 && payTypeGlb == "Cash" && prefProvider.getValue(
                     OPTION_TYPE,
                     ""
-                ).lowercase() == "CashDiscount".lowercase() && customerSettingModel.showCashDisSurCharg
+                )
+                    .lowercase() == "CashDiscount".lowercase() && customerSettingModel.showCashDisSurCharg
             ) {
 
 
@@ -5627,9 +5809,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                     if (customerSettingModel.fonts == LARGE) {
                         PrintSunmiUtils.boldText("Tips      _____________")
+                        PrintSunmiUtils.boldText("Total     _____________")
                         SunmiPrintHelper.getInstance().lineWrap(1)
                     } else {
                         PrintSunmiUtils.boldText("Tips                              _____________")
+                        PrintSunmiUtils.boldText("Total                             _____________")
                     }
 
 
@@ -5653,14 +5837,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 }
             }
-
-            if (getDineInOrderDetails?.payments?.isNotEmpty() == true) {
+            if (receiptModel?.order?.payments?.isNotEmpty() == true) {
 
 
                 val str10 = padLine(
                     "Transaction ID",
-                    "" + getDineInOrderDetails?.payments?.size?.minus(1)
-                        ?.let { getDineInOrderDetails?.payments?.get(it)?.id },
+                    "" + receiptModel?.order?.payments?.size?.minus(1)
+                        ?.let { receiptModel?.order?.payments?.get(it)?.id },
                     if (customerSettingModel.fonts == LARGE) 23 else 48
                 ).toString()
 
@@ -5893,21 +6076,22 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             when (it.status) {
                 Status.SUCCESS -> {
                     ProgressUtils.dismissProgressDialog()
-                    if (it.data != null) {
+                    if (it.data != null && isPrint == true) {
 
 
                         Log.e(TAG, "CheckORderRypoe ${prefProvider.getValue(ORDER_TYPE, "")}")
                         kitchenPrinterList = it.data
                         val remain = requireArguments().getDouble("remainingAmount")
                         if (requireArguments().getBoolean("isDineIn")) {
-                            customerPrintWholeOrder()
-
+                            customerPrintWholeOrder(true)
                         } else {
                             getCustomerPrinters(true)
                         }
 
 
-                        if (prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false) == false) {
+
+
+                        if (!prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)) {
                             if (!requireArguments().getBoolean("isSpilt")) {
                                 if (!requireArguments().getBoolean("isDineIn") && !requireArguments().getBoolean(
                                         "isFromActiveOrder"
@@ -6043,16 +6227,20 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         }
 
 
-                        pd?.let { it.dismiss() }
+
+
+                        pd.dismiss()
 
 
                     }
 
 
                 }
+
                 Status.LOADING -> {
                     ProgressUtils.showProgressDialog(requireActivity())
                 }
+
                 Status.ERROR -> {
                     ProgressUtils.dismissProgressDialog()
 
@@ -6181,11 +6369,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
                 }
+
                 Status.ERROR -> {
 
                     ProgressUtils.dismissProgressDialog()
 
                 }
+
                 Status.LOADING -> {
                     ProgressUtils.showProgressDialog(requireActivity())
 
@@ -6202,10 +6392,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             when (it.status) {
                 Status.SUCCESS -> {
                     ProgressUtils.dismissProgressDialog()
-                    if (it.data != null) {
+                    if (it.data != null && isPrint == true) {
                         val customerList = it.data
 
-                        Log.e("CheckOrderComplete","customerListSize:  ${it.data.size}")
                         if (autoPrintCheck) {
                             customerList.forEach { cus ->
                                 if (cus.status) {
@@ -6219,7 +6408,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                 ) {
 
 
-                                                    initPrinter(cus, CUSTOMER)
+                                                    initPrinter(cus, CUSTOMER,autoPrintCheck)
 
 
                                                 }
@@ -6233,22 +6422,26 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                         } else {
                             customerList.forEach {
-                                initPrinter(it, CUSTOMER)
+                                initPrinter(it, CUSTOMER,autoPrintCheck)
 
 
                             }
                         }
+
+                        isPrint = false
 
 
                     }
 
 
                 }
+
                 Status.ERROR -> {
 
                     ProgressUtils.dismissProgressDialog()
 
                 }
+
                 Status.LOADING -> {
                     ProgressUtils.showProgressDialog(requireActivity())
 
@@ -6262,21 +6455,23 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     private fun initPrinter(
         customerReceiptPrinters: PrinterResponse.Data.CustomerReceiptPrinters,
-        type: String
+        type: String,
+        isAutoPrint:Boolean
     ) {
+        Log.e(TAG,"checkAutoPrint  ${isAutoPrint}")
+        pd.show()
 
-        pd?.show()
 
         if (customerReceiptPrinters.name.startsWith(SUNMI_PRINTER, true)) {
 
-            customerReceiptPrinters.ipAddress?.let { sunmiPrinterInit(it) }
+            customerReceiptPrinters.ipAddress?.let { sunmiPrinterInit(it,isAutoPrint) }
 
         } else if (customerReceiptPrinters.name.startsWith(SUNMI_INNER_PRINTER, true)) {
 
             SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
             viewLifecycleOwner.lifecycleScope.launch {
                 delay(100)
-                setService1()
+                setService1(isAutoPrint)
             }
 
 
@@ -6313,7 +6508,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 } catch (e: Exception) {
                     e.printStackTrace()
-                    pd?.dismiss()
+                    pd.dismiss()
                     LogUtil.logE(TAG, "PrinterException: " + e.message)
                     printer = null
                     return
@@ -6323,16 +6518,16 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     if (printer != null) {
                         PrinterClass.setPrinter(printer)
 
-                        generatePrint(customerReceiptPrinters, type)
+                        generatePrint(customerReceiptPrinters, type,isAutoPrint)
 
                     }
 
                 } catch (e: Exception) {
-                    pd?.dismiss()
+                    pd.dismiss()
                     e.printStackTrace()
                 }
             } else {
-                pd?.dismiss()
+                pd.dismiss()
                 LogUtil.logE(TAG, "PrinterIsNotNull:")
             }
         }
@@ -6342,7 +6537,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     private fun generatePrint(
         customerReceiptPrinters: PrinterResponse.Data.CustomerReceiptPrinters,
-        type: String
+        type: String,
+        isAutoPrint: Boolean
     ) {
         var builder: Builder? = null
         try {
@@ -6462,7 +6658,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 )
             }
 
-            if(customerSettingModel.showWebsiteAddress) {
+            if (customerSettingModel.showWebsiteAddress) {
                 receiptModel?.order?.venue_website?.let {
                     builder.addFeedLine(1)
 
@@ -6479,7 +6675,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     addBuilderText(builder, it)
                 }
             }
-            if(customerSettingModel.showOrderType) {
+            if (customerSettingModel.showOrderType) {
                 builder.addFeedLine(1)
 
                 builder.addTextFont(Builder.FONT_E)
@@ -6495,8 +6691,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 builder.addTextAlign(Builder.ALIGN_CENTER)
                 builder.addText(receiptModel?.order?.orderTypeName + "\n")
             }
-            /*if (receiptModel?.order?.orderType?.lowercase() == OPEN_ORDER.lowercase()
-                || receiptModel?.order?.orderType?.lowercase() == OPEN_ORDER.lowercase()
+
+            if (receiptModel?.order?.orderType.equals(PHONE_ORDER, true) ||
+                receiptModel?.order?.orderType.equals("OnlineWebOrder", true) ||
+                receiptModel?.order?.orderType.equals("Online Order", true) ||
+                receiptModel?.order?.orderType.equals("OnlineOrder", true)
             ) {
 
 
@@ -6513,10 +6712,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     Builder.COLOR_1
                 )
                 builder.addTextAlign(Builder.ALIGN_CENTER)
-                //   builder.addText(receiptModel?.order?.deliveryType + "\n")
+                builder.addText(receiptModel?.order?.deliveryType + "\n")
 
 
-            }*/
+            }
 
 
 
@@ -6786,7 +6985,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         "Total Discount",
 
                         if (receiptModel?.order?.totalDiscount == 0.0) {
-                            "$" + MethodUtils.roundOffAmountString(receiptModel?.order?.totalDiscount!!)
+                            "-$" + MethodUtils.roundOffAmountString(receiptModel?.order?.totalDiscount!!)
                         } else {
                             "-$" + MethodUtils.roundOffAmountString(receiptModel?.order?.totalDiscount!!)
                         },
@@ -6857,7 +7056,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 )
             }
 
-            if (receiptModel?.order?.totalServiceCharges != null) {
+            if (receiptModel?.order?.totalServiceCharges != null && (receiptModel?.order?.serviceChargeEnabled == true) && prefProvider.getValueboolean(
+                    Constants.SERVICECHARGE_TAKEOUT_OPENORDER, false)) {
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
                 builder.addTextFont(Builder.FONT_E)
@@ -6911,7 +7111,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 )
             }
 
-            if(customerSettingModel.showCashDisSurCharg) {
+            if (customerSettingModel.showCashDisSurCharg) {
                 if (receiptModel?.order?.payments?.isNotEmpty() == true && receiptModel?.order?.payments?.get(
                         receiptModel?.order?.payments?.size!! - 1
                     )?.paymentType?.lowercase() == "Card".lowercase() && receiptModel?.order?.payments?.get(
@@ -7344,6 +7544,21 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         }
                     )
                 )
+                builder.addText(
+                    padLine(
+                        "Total",
+                        if (customerSettingModel.showTipLineForCash) {
+                            "_____________"
+                        } else {
+                            ""
+                        },
+                        if (customerSettingModel.fonts == LARGE) {
+                            24
+                        } else {
+                            48
+                        }
+                    )
+                )
             }
 
 
@@ -7526,7 +7741,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             }
 
-            if (customerSettingModel.showCustomerAddress or customerSettingModel.showCustomerPhone or customerSettingModel.showCustomerName) {
+            if (customerSettingModel.showCustomerAddress || customerSettingModel.showCustomerPhone || customerSettingModel.showCustomerName) {
 
                 if (receiptModel?.order?.customer != null) {
 
@@ -7771,7 +7986,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 if (receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.paymentType.equals(
                         "Cash",
                         true
-                    )
+                    ) && isAutoPrint
                 ) {
                     builder.addPulse(
                         com.epson.epos2.printer.Printer.DRAWER_HIGH,
@@ -7785,11 +8000,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
                 PrinterClass.closePrinter()
-                pd?.dismiss()
+                pd.dismiss()
                 // findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
                 //PrinterClass.getPrinter()?.sendData(builder, 0, status, battery)
             } catch (e: Exception) {
-                pd?.dismiss()
+                pd.dismiss()
                 PrinterClass.closePrinter()
                 e.printStackTrace()
                 LogUtil.logE(TAG, "PrinterError: " + e.localizedMessage)
@@ -7797,7 +8012,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
         } catch (e: Exception) {
-            pd?.dismiss()
+            pd.dismiss()
             e.printStackTrace()
         }
     }
@@ -7847,8 +8062,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }
             }
 
-        }
-        else if (data.name.startsWith(SUNMI_INNER_PRINTER, true)) {
+        } else if (data.name.startsWith(SUNMI_INNER_PRINTER, true)) {
 
             SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
             viewLifecycleOwner.lifecycleScope.launch {
@@ -7886,7 +8100,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     )
                     if (printerStatusInfo.connection == 1) {
                         try {
-                           printer.disconnect()
+                            printer.disconnect()
 
                         } catch (e: java.lang.Exception) {
                             e.printStackTrace()
@@ -7904,10 +8118,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             printerAdd,
                             Printer.PARAM_DEFAULT
                         )
-                       // mPrinter.disconnect()
+                        // mPrinter.disconnect()
                     }
 
-                  //  mPrinter.startMonitor()
+                    //  mPrinter.startMonitor()
 
                     generateReceiptForU220(mPrinter, data, type)
 
@@ -7981,10 +8195,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 fontSizeH = 1
                 fontSizeW = 1
             }
+
             Constants.MEDIUM -> {
                 fontSizeH = 1
                 fontSizeW = 2
             }
+
             LARGE -> {
                 fontSizeH = 2
                 fontSizeW = 2
@@ -8034,10 +8250,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             .toString().lowercase()
         LogUtil.logE(TAG, "LowerCAse ${tmps.trimmedLength()}")
 
-        /*if (receiptModel?.order?.orderType.toString().lowercase() == "OpenOrder".trim()
-                .toString().lowercase() || receiptModel?.order?.orderType.toString()
-                .lowercase() == "Open Order".trim()
-                .toString().lowercase()
+        if (receiptModel?.order?.orderType.equals(PHONE_ORDER, true) ||
+            receiptModel?.order?.orderType.equals("OnlineWebOrder", true) ||
+            receiptModel?.order?.orderType.equals("Online Order", true) ||
+            receiptModel?.order?.orderType.equals("OnlineOrder", true)
         ) {
             mPrinter.addFeedLine(1)
             mPrinter.addTextFont(Builder.FONT_E)
@@ -8053,7 +8269,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             addBuilderTextForU220(mPrinter, receiptModel?.order?.deliveryType.toString())
         }
-*/
 
         if (kitchenSettingModel.showTeamMember) {
 
@@ -8163,7 +8378,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         mPrinter.addFeedLine(1)
 
-        if (kitchenSettingModel.showCustomerAddress != false or kitchenSettingModel.showCustomerPhone != false or kitchenSettingModel.showCustomerName != false) {
+        if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName != false) {
             mPrinter.addTextFont(Builder.FONT_B)
             //builder.addTextLineSpace(20)
             mPrinter.addTextLang(Builder.LANG_EN)
@@ -8364,10 +8579,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         fontSizeH = 1
                         fontSizeW = 1
                     }
+
                     Constants.MEDIUM -> {
                         fontSizeH = 1
                         fontSizeW = 2
                     }
+
                     LARGE -> {
                         fontSizeH = 2
                         fontSizeW = 2
@@ -8423,26 +8640,25 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     .toString().lowercase()
                 LogUtil.logE(TAG, "LowerCAse ${tmps.trimmedLength()}")
 
-                /*  if (receiptModel?.order?.orderType.toString().lowercase() == "OpenOrder".trim()
-                          .toString().lowercase() || receiptModel?.order?.orderType.toString()
-                          .lowercase() == "Open Order".trim()
-                          .toString().lowercase()
-                  ) {
-                      builder.addFeedLine(1)
-                      builder.addTextFont(Builder.FONT_E)
-                      builder.addTextLang(Builder.LANG_EN)
-                      builder.addTextSize(fontSizeH, fontSizeW)
-                      builder.addTextStyle(
-                          Builder.FALSE,
-                          Builder.FALSE,
-                          Builder.TRUE,
-                          Builder.COLOR_1
-                      )
-                      builder.addTextAlign(Builder.ALIGN_CENTER)
+                if (receiptModel?.order?.orderType.equals(PHONE_ORDER, true) ||
+                    receiptModel?.order?.orderType.equals("OnlineWebOrder", true) ||
+                    receiptModel?.order?.orderType.equals("Online Order", true) ||
+                    receiptModel?.order?.orderType.equals("OnlineOrder", true)
+                ) {
+                    builder.addFeedLine(1)
+                    builder.addTextFont(Builder.FONT_E)
+                    builder.addTextLang(Builder.LANG_EN)
+                    builder.addTextSize(fontSizeH, fontSizeW)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.TRUE,
+                        Builder.COLOR_1
+                    )
+                    builder.addTextAlign(Builder.ALIGN_CENTER)
 
-                      addBuilderText(builder, receiptModel?.order?.deliveryType.toString())
-                  }
-  */
+                    addBuilderText(builder, receiptModel?.order?.deliveryType.toString())
+                }
 
 //
 //                builder.addTextLineSpace(30)
@@ -8574,7 +8790,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }
 
                 addHorizontalKitchenLine(builder)
-                if (kitchenSettingModel.showCustomerAddress != false or kitchenSettingModel.showCustomerPhone != false or kitchenSettingModel.showCustomerName != false) {
+                if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName != false) {
                     if (receiptModel?.order?.customer != null) {
 
                         builder.addTextLineSpace(30)
@@ -8721,10 +8937,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         fontSizeH = 1
                         fontSizeW = 1
                     }
+
                     Constants.MEDIUM -> {
                         fontSizeH = 1
                         fontSizeW = 2
                     }
+
                     LARGE -> {
                         fontSizeH = 2
                         fontSizeW = 2
@@ -8777,31 +8995,33 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     )
                     builder.addTextAlign(Builder.ALIGN_CENTER)
 
-                    addBuilderText(builder, receiptModel?.order?.orderType.toString())
+                    addBuilderText(builder, receiptModel?.order?.orderTypeName.toString())
                 }
                 var tmps = "Open Order".toString().trim()
                     .toString().lowercase()
                 LogUtil.logE(TAG, "LowerCAse ${tmps.trimmedLength()}")
 
-//                if (receiptModel?.order?.orderType.toString().lowercase() == "OpenOrder".trim()
-//                        .toString().lowercase() || receiptModel?.order?.orderType.toString()
-//                        .lowercase() == "Open Order".trim()
-//                        .toString().lowercase()
-//                ) {
-//                    builder.addFeedLine(1)
-//                    builder.addTextFont(Builder.FONT_E)
-//                    builder.addTextLang(Builder.LANG_EN)
-//                    builder.addTextSize(fontSizeH, fontSizeW)
-//                    builder.addTextStyle(
-//                        Builder.FALSE,
-//                        Builder.FALSE,
-//                        Builder.TRUE,
-//                        Builder.COLOR_1
-//                    )
-//                    builder.addTextAlign(Builder.ALIGN_CENTER)
-//
-//                    addBuilderText(builder, receiptModel?.order?.deliveryType.toString())
-//                }
+
+
+                if (receiptModel?.order?.orderType.equals(PHONE_ORDER, true) ||
+                    receiptModel?.order?.orderType.equals("OnlineWebOrder", true) ||
+                    receiptModel?.order?.orderType.equals("Online Order", true) ||
+                    receiptModel?.order?.orderType.equals("OnlineOrder", true)
+                ) {
+                    builder.addFeedLine(1)
+                    builder.addTextFont(Builder.FONT_E)
+                    builder.addTextLang(Builder.LANG_EN)
+                    builder.addTextSize(fontSizeH, fontSizeW)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.TRUE,
+                        Builder.COLOR_1
+                    )
+                    builder.addTextAlign(Builder.ALIGN_CENTER)
+
+                    addBuilderText(builder, receiptModel?.order?.deliveryType.toString())
+                }
 
 
 //                builder.addTextLineSpace(30)
@@ -8935,7 +9155,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }
 
 
-                if (kitchenSettingModel.showCustomerAddress != false or kitchenSettingModel.showCustomerPhone != false or kitchenSettingModel.showCustomerName != false) {
+                if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName != false) {
                     if (receiptModel?.order?.customer != null) {
 
                         builder.addTextLineSpace(30)
@@ -9092,7 +9312,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     .lowercase() == "TM-m30".lowercase() && customerReceiptPrinters.printer_type != Constants.BLUETOOTH
             ) {
 
-                timeOut = 1000
+                timeOut = 10000
             }
 
             try {
@@ -9147,6 +9367,18 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 SunmiPrinterApi.getInstance().lineWrap(1)
 
             }
+
+
+
+            if (receiptModel?.order?.orderType.equals(PHONE_ORDER, true) ||
+                receiptModel?.order?.orderType.equals("OnlineWebOrder", true) ||
+                receiptModel?.order?.orderType.equals("Online Order", true) ||
+                receiptModel?.order?.orderType.equals("OnlineOrder", true)
+            ) {
+                PrintSunmiUtils.printOrderType(receiptModel?.order?.deliveryType.toString())
+                SunmiPrinterApi.getInstance().lineWrap(1)
+            }
+
 
             /*  if (receiptModel?.order?.orderType.toString().lowercase() == "OpenOrder".trim()
                       .toString().lowercase() || receiptModel?.order?.orderType.toString()
@@ -9229,9 +9461,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
 
             SunmiPrinterApi.getInstance().lineWrap(1)
-            if (kitchenSettingModel.showCustomerAddress != false or kitchenSettingModel.showCustomerPhone != false or kitchenSettingModel.showCustomerName != false) {
+            if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName != false) {
                 if (receiptModel?.order?.customer != null) {
-
 
                     PrintSunmiUtils.customerDetails()
 
@@ -9325,6 +9556,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 SunmiPrintHelper.getInstance().lineWrap(1)
             }
 
+            if (receiptModel?.order?.orderType.equals("Online Order", true) ||
+                receiptModel?.order?.orderType.equals("OnlineWebOrder", true) ||
+                receiptModel?.order?.orderType.equals(PHONE_ORDER, true)
+            ) {
+                PrintSunmiUtils.headerText(receiptModel?.order?.deliveryType.toString())
+                SunmiPrintHelper.getInstance().lineWrap(1)
+            }
+
             if (kitchenSettingModel.showTeamMember) {
                 PrintSunmiUtils.normalTextLarge("Employee:" + receiptModel?.order?.employee?.name)
             }
@@ -9354,7 +9593,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
 
             SunmiPrintHelper.getInstance().lineWrap(1)
-            if (kitchenSettingModel.showCustomerAddress != false or kitchenSettingModel.showCustomerPhone != false or kitchenSettingModel.showCustomerName != false) {
+            if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName != false) {
                 if (receiptModel?.order?.customer != null) {
 
 
@@ -9614,7 +9853,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
     fun progressDialog() {
-       /* pd = Dialog(requireActivity())
+        pd = Dialog(requireActivity())
         pd.setContentView(R.layout.view_loading)
         // pd.setProgressStyle(ProgressDialog.BUTTON_NEUTRAL)
 //        pd.setMessage("Please Wait..")
@@ -9624,22 +9863,22 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         )
         pd.setCanceledOnTouchOutside(false)
         pd.setCancelable(false)
-        pd.show()*/
+        pd.show()
 
 
     }
 
     override fun onPause() {
         super.onPause()
-      /*  if (pd != null && pd.isShowing) {
+        if (pd != null && pd.isShowing) {
             pd.dismiss()
-        }*/
+        }
         if (this::presentation.isInitialized) {
             presentation.hide()
         }
     }
 
-    private fun sunmiPrinterInit(ipAddress: String) {
+    private fun sunmiPrinterInit(ipAddress: String,isAutoPrint: Boolean) {
 
         SunmiPrinterApi.getInstance().setPrinter(SunmiPrinter.SunmiBlueToothPrinter, ipAddress)
 
@@ -9730,18 +9969,22 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
             if (customerSettingModel.showOrderType) {
-                SunmiPrinterApi.getInstance().lineWrap(2)
+                SunmiPrinterApi.getInstance().lineWrap(1)
 
-                receiptModel?.order?.orderTypeName?.trim()?.let { PrintSunmiUtils.printOrderType(it) }
+                receiptModel?.order?.orderTypeName?.trim()
+                    ?.let { PrintSunmiUtils.printOrderType(it) }
             }
 
 
-            /*if (receiptModel?.order?.orderType?.lowercase() == OPEN_ORDER.lowercase()
-                || receiptModel?.order?.orderType?.lowercase() == OPEN_ORDER.lowercase()
+            if (receiptModel?.order?.orderType.equals(PHONE_ORDER, true) ||
+                receiptModel?.order?.orderType.equals("OnlineWebOrder", true) ||
+                receiptModel?.order?.orderType.equals("Online Order", true) ||
+                receiptModel?.order?.orderType.equals("OnlineOrder", true)
             ) {
-
-                //  receiptModel?.order?.deliveryType?.let { PrintSunmiUtils.deliveryType(it) }
-            }*/
+                SunmiPrinterApi.getInstance().lineWrap(1)
+                receiptModel?.order?.deliveryType?.let { PrintSunmiUtils.deliveryType(it) }
+                SunmiPrinterApi.getInstance().lineWrap(1)
+            }
 
 
 
@@ -9867,7 +10110,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 val str1 = padLine(
                     "Total Discount",
                     if (receiptModel?.order?.totalDiscount == 0.0) {
-                        "$" + MethodUtils.roundOffAmountString(receiptModel?.order?.totalDiscount!!)
+                        "-$" + MethodUtils.roundOffAmountString(receiptModel?.order?.totalDiscount!!)
                     } else {
                         "-$" + MethodUtils.roundOffAmountString(receiptModel?.order?.totalDiscount!!)
                     }, if (customerSettingModel.fonts == LARGE) 23 else 48
@@ -9903,7 +10146,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             }
 
-            if (receiptModel?.order?.totalServiceCharges != null) {
+            if (receiptModel?.order?.totalServiceCharges != null && (receiptModel?.order?.serviceChargeEnabled == true) && prefProvider.getValueboolean(
+                    Constants.SERVICECHARGE_TAKEOUT_OPENORDER, false)) {
 
 
                 val str4 = padLine(
@@ -10182,9 +10426,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                     if (customerSettingModel.fonts == LARGE) {
                         PrintSunmiUtils.tips("Tips      _____________")
+                        PrintSunmiUtils.tips("Total     _____________")
                         SunmiPrinterApi.getInstance().lineWrap(1)
                     } else {
                         PrintSunmiUtils.tips("Tips                              _____________")
+                        PrintSunmiUtils.tips("Total                             _____________")
                     }
 
 
@@ -10248,7 +10494,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 SunmiPrinterApi.getInstance().lineWrap(1)
             }
 
-            if (customerSettingModel.showCustomerAddress or customerSettingModel.showCustomerPhone or customerSettingModel.showCustomerName) {
+            if (customerSettingModel.showCustomerAddress || customerSettingModel.showCustomerPhone || customerSettingModel.showCustomerName) {
 
                 if (receiptModel?.order?.customer != null) {
 
@@ -10361,7 +10607,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     }
 
-    private fun sunmiPrintInner() {
+    private fun sunmiPrintInner(isAutoPrint: Boolean) {
 
 
         try {
@@ -10411,18 +10657,20 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             } else {
                 SunmiPrintHelper.getInstance().lineWrap(1)
             }
-            if(customerSettingModel.showOrderType) {
+            if (customerSettingModel.showOrderType) {
                 receiptModel?.order?.orderTypeName?.trim()?.let { PrintSunmiUtils.headerText(it) }
                 SunmiPrintHelper.getInstance().lineWrap(1)
             }
 
-            /*    if (receiptModel?.order?.orderType?.lowercase() == OPEN_ORDER.lowercase()
-                    || receiptModel?.order?.orderType?.lowercase() == OPEN_ORDER.lowercase()
-                ) {
+            if (receiptModel?.order?.orderType.equals(PHONE_ORDER, true) ||
+                receiptModel?.order?.orderType.equals("OnlineWebOrder", true) ||
+                receiptModel?.order?.orderType.equals("Online Order", true) ||
+                receiptModel?.order?.orderType.equals("OnlineOrder", true)
+            ) {
 
-                    //  receiptModel?.order?.deliveryType?.let { PrintSunmiUtils.headerText(it) }
-                }
-    */
+                receiptModel?.order?.deliveryType?.let { PrintSunmiUtils.headerText(it) }
+                SunmiPrintHelper.getInstance().lineWrap(1)
+            }
 
 
             if (customerSettingModel.fonts == LARGE) {
@@ -10541,7 +10789,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 val str1 = padLine(
                     "Total Discount",
                     if (receiptModel?.order?.totalDiscount == 0.0) {
-                        "$" + MethodUtils.roundOffAmountString(receiptModel?.order?.totalDiscount!!)
+                        "-$" + MethodUtils.roundOffAmountString(receiptModel?.order?.totalDiscount!!)
                     } else {
                         "-$" + MethodUtils.roundOffAmountString(receiptModel?.order?.totalDiscount!!)
                     }, if (customerSettingModel.fonts == LARGE) 23 else 48
@@ -10577,7 +10825,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             }
 
-            if (receiptModel?.order?.totalServiceCharges != null) {
+            if (receiptModel?.order?.totalServiceCharges != null && (receiptModel?.order?.serviceChargeEnabled == true) && prefProvider.getValueboolean(
+                    Constants.SERVICECHARGE_TAKEOUT_OPENORDER, false)) {
 
 
                 val str4 = padLine(
@@ -10855,8 +11104,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                     if (customerSettingModel.fonts == LARGE) {
                         PrintSunmiUtils.boldText("Tips      _____________")
+                        PrintSunmiUtils.boldText("Total     _____________")
                     } else {
                         PrintSunmiUtils.boldText("Tips                              _____________")
+                        PrintSunmiUtils.boldText("Total                             _____________")
                     }
 
                     SunmiPrintHelper.getInstance().lineWrap(1)
@@ -10920,7 +11171,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 SunmiPrintHelper.getInstance().lineWrap(1)
             }
 
-            if (customerSettingModel.showCustomerAddress or customerSettingModel.showCustomerPhone or customerSettingModel.showCustomerName) {
+            if (customerSettingModel.showCustomerAddress || customerSettingModel.showCustomerPhone || customerSettingModel.showCustomerName) {
 
                 if (receiptModel?.order?.customer != null) {
 
@@ -11043,7 +11294,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         e.printStackTrace()
                     }
                     try {
-                        SunmiPrintHelper.getInstance().openCashBox()
+                        if (isAutoPrint) {
+                            SunmiPrintHelper.getInstance().openCashBox()
+                        }
                     } catch (e: java.lang.Exception) {
                         e.printStackTrace()
                     }
@@ -11106,7 +11359,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         }
     }
 
-    private fun setService1() {
+    private fun setService1(isAutoPrint: Boolean) {
 
         if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.FoundSunmiPrinter) {
 
@@ -11116,14 +11369,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 LogUtil.logE("SunmiPrintHelpe1r", "isBlueToothPrinter")
 
-                sunmiPrintInner()
+                sunmiPrintInner(isAutoPrint)
 
 
             }
 
         } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.CheckSunmiPrinter) {
             Handler(Looper.getMainLooper()).postDelayed({
-                setService1()
+                setService1(isAutoPrint)
             }, 2000)
             LogUtil.logE("SunmiPrintHelper", "CheckSunmiPrinter")
         } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.LostSunmiPrinter) {

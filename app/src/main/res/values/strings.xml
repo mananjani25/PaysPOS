@@ -222,7 +222,6 @@
     <string name="tv_new_tax_add">Add New Tax</string>
     <string name="tv_update_tax">Update Tax</string>
     <string name="tv_enable_default_tax">Enable Default Tax</string>
-    <string name="tv_sales_tax">Sales Tax</string>
     <string name="item_pricing">Item Pricing <font color='#E90C0C'>*</font></string>
     <string name="tv_apply_tax_to">APPLY TO ITEMS</string>
     <string name="tv_custom_amount">Custom Amount</string>
@@ -523,6 +522,7 @@
     <string name="printer_queue">Printer Queue</string>
     <string name="customer_details">Customer Details</string>
     <string name="delivery_address">Delivery Address</string>
+    <string name="delivery_address_">Delivery Address<font color='#E90C0C'>*</font></string>
     <string name="billing_address">Billing Address</string>
     <string name="shipping_address">Shipping Address</string>
     <string name="search_existing_customer_details">Search existing customer details</string>
@@ -540,6 +540,7 @@
     <string name="zip">Zip</string>
     <string name="clear">Clear</string>
     <string name="street">Street</string>
+    <string name="street_">Street<font color='#E90C0C'>*</font></string>
 
     <string name="printer">Printer</string>
     <string name="customer_receipt_printer">Customer receipt Printer</string>
@@ -646,6 +647,7 @@
 
     <string name="cancel">Cancel</string>
     <string name="assign_customer">Assign Customer</string>
+    <string name="remove_guest">Remove Guest</string>
     <string name="tv_choose_photo">Choose Photo</string>
     <string name="_201_555_0123">Mobile Number<font color='#E90C0C'>*</font></string>
     <string name="mobile_number">Mobile Number</string>
@@ -841,6 +843,9 @@
     <string name="toast_6">Bluetooth connect failed!</string>
     <string name="no_categories_available">No categories available</string>
     <string name="add_guest">Add Guest</string>
+    <string name="search_customer_by_name_amp_phone_number"><![CDATA[Search customer by name & phone number]]></string>
+    <string name="select_your_order_type">Select your order type</string>
+    <string name="phone_orders">Phone Orders</string>
     <string name="add_reason">Add Reason</string>
     <string name="remember_me">Remember me</string>
     <string name="search_by_item">Search by item</string>
@@ -849,6 +854,21 @@
     <string name="search_by_order_id_employee_customer_name">Search by Order id, employee, customer name</string>
     <string name="search_by_customer_name_order_id_receipt_id_amount">Search by employee name/customer name/order id/receipt id/$ amount</string>
     <string name="serving_efficiency">Serving Efficiency</string>
+    <string name="guests_having_order_items_cannot_be_removed">Guests having order items cannot be removed.</string>
+    <string name="minimum_one_guest_is_required">Minimum one guest is required</string>
+    <string name="order_total">Order Total</string>
+    <string name="cash">Cash</string>
+    <string name="minimum_guest_count_should_be_one">Minimum guest count should be 1</string>
+    <string name="all_orders">All Orders</string>
+    <string name="tv_delivery">Delivery</string>
+    <string name="tv_type">Type</string>
+    <string name="tv_station">Station</string>
+    <string name="tv_reprint_kitchen_receipt">Re-Print Kitchen Receipt</string>
+    <string name="add_phone_in_profile">Please add phone number in your profile.</string>
+    <string name="add_address_in_profile">Please add address in your profile</string>
+    <string name="please_enter_address">Please enter address</string>
+    <string name="please_enter_zipcode">Please enter zipcode</string>
+    <string name="item_quantity_cannot_exceed">Item quantity cannot exceed</string>
 
 </resources>
 

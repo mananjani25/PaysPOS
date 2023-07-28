@@ -37,6 +37,7 @@ import com.android.pos.data.remote.Constants.OPEN_ORDER_
 import com.android.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
 import com.android.pos.data.remote.Constants.PRINT_PAID
 import com.android.pos.data.remote.Constants.PRINT_UNPAID
+import com.android.pos.data.remote.Constants.SERVICECHARGE_TAKEOUT_OPENORDER
 import com.android.pos.data.remote.Constants.SHIPPING_ADDRESS
 import com.android.pos.data.remote.Constants.SUNMI_INNER_PRINTER
 import com.android.pos.data.remote.Constants.SUNMI_PRINTER
@@ -103,29 +104,29 @@ class ActiveOrderFragment(
     @Inject
     lateinit var rolePermission: RolePermission
 
-/*
-    companion object {
-        @JvmStatic
-        fun newInstance(param1: String, startTime: String?, endTime: String?) =
-            ActiveOrderFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, startTime)
-                    putString(ARG_PARAM3, endTime)
+    /*
+        companion object {
+            @JvmStatic
+            fun newInstance(param1: String, startTime: String?, endTime: String?) =
+                ActiveOrderFragment().apply {
+                    arguments = Bundle().apply {
+                        putString(ARG_PARAM1, param1)
+                        putString(ARG_PARAM2, startTime)
+                        putString(ARG_PARAM3, endTime)
+                    }
                 }
-            }
-    }
-*/
+        }
+    */
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-/*
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1).toString()
-            paramStartDate = it.getString(ARG_PARAM2).toString()
-            paramEndDate = it.getString(ARG_PARAM3).toString()
-        }
-*/
+        /*
+                arguments?.let {
+                    param1 = it.getString(ARG_PARAM1).toString()
+                    paramStartDate = it.getString(ARG_PARAM2).toString()
+                    paramEndDate = it.getString(ARG_PARAM3).toString()
+                }
+        */
         viewModel.setCurrentDate(myCalendar, startDateTime, endDateTime)
     }
 
@@ -228,9 +229,11 @@ class ActiveOrderFragment(
             "0" -> {
                 binding.txtOrderWillAppear.text = "Active order will appear here."
             }
+
             "1" -> {
                 binding.txtOrderWillAppear.text = "Completed order will appear here."
             }
+
             "2" -> {
                 binding.txtOrderWillAppear.text = "Cancelled order will appear here."
             }
@@ -327,11 +330,13 @@ class ActiveOrderFragment(
                             requireContext().sendBroadcast(intent)
                         }
                     }
+
                     Status.ERROR -> {
                         ProgressUtils.dismissProgressDialog()
                         binding.root.showAlert(resource.message)
 
                     }
+
                     Status.LOADING -> {
                         ProgressUtils.showProgressDialog(requireActivity())
                     }
@@ -387,7 +392,7 @@ class ActiveOrderFragment(
                 LogUtil.logE(TAG, "OpenORderUpdateOrder:  ${Gson().toJson(order.orderItems)}")
 
                 prefProvider.setValue(Constants.ORDER_TYPE, OPEN_ORDER)
-                prefProvider.setValue(Constants.ORDER_TYPE_NAME, OPEN_ORDER)
+                prefProvider.setValue(Constants.ORDER_TYPE_NAME, order.orderTypeName)
                 prefProvider.setValueInt(Constants.ORDER_TYPE_ID, order.orderTypeId)
 
                 if (order.customer != null) {
@@ -456,6 +461,7 @@ class ActiveOrderFragment(
 //                findNavController().navigateUp()
 
             }
+
             "PAY" -> {
 
                 prefProvider.setValue("PaidAmount", "")
@@ -470,7 +476,8 @@ class ActiveOrderFragment(
 
                 dashboardViewModel.deleteCart()
                 prefProvider.setValue(Constants.ORDER_TYPE, OPEN_ORDER)
-                prefProvider.setValue(Constants.ORDER_TYPE_NAME, OPEN_ORDER_)
+                prefProvider.setValue(Constants.ORDER_TYPE_NAME, order.orderTypeName)
+                prefProvider.setValueInt(Constants.ORDER_TYPE_ID, order.orderTypeId)
 
                 var itemDiscountTotal: Double = 0.0
                 var itemPassDis: Double = 0.0
@@ -572,10 +579,12 @@ class ActiveOrderFragment(
 
 
             }
+
             PRINT_UNPAID -> {
 
                 getCustomerPrinters(order, status)
             }
+
             PRINT_PAID -> {
                 getCustomerPrinters(order, status)
             }
@@ -984,11 +993,13 @@ class ActiveOrderFragment(
 
 
                 }
+
                 Status.ERROR -> {
 
                     ProgressUtils.dismissProgressDialog()
 
                 }
+
                 Status.LOADING -> {
                     ProgressUtils.showProgressDialog(requireActivity())
 
@@ -1247,30 +1258,30 @@ class ActiveOrderFragment(
 
             addBuilderText(builder, prefProvider.getValue(Constants.BUSINESS_NAME, "").toString())
 
-           if(customerSettingModel.showVenueAddress) {
-               builder.addFeedLine(1)
-               builder.addTextFont(Builder.FONT_E)
-               builder.addTextAlign(Builder.ALIGN_CENTER)
-               builder.addTextLang(Builder.LANG_EN)
-               addCustomerTextSize(builder, customerSettingModel.fonts)
+            if (customerSettingModel.showVenueAddress) {
+                builder.addFeedLine(1)
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, customerSettingModel.fonts)
 
-               builder.addTextStyle(
-                   Builder.FALSE,
-                   Builder.FALSE,
-                   Builder.FALSE,
-                   Builder.COLOR_1
-               )
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
 
-               addBuilderText(
-                   builder,
-                   prefProvider.getValue(
-                       Constants.BUSINESS_ADDRESS, prefProvider.getValue(
-                           BUSINESS_ADDRESS, ""
-                       )
-                   ).toString()
-               )
-           }
-            if(customerSettingModel.showVenuePhone) {
+                addBuilderText(
+                    builder,
+                    prefProvider.getValue(
+                        Constants.BUSINESS_ADDRESS, prefProvider.getValue(
+                            BUSINESS_ADDRESS, ""
+                        )
+                    ).toString()
+                )
+            }
+            if (customerSettingModel.showVenuePhone) {
                 builder.addFeedLine(1)
 
                 builder.addTextFont(Builder.FONT_E)
@@ -1291,7 +1302,7 @@ class ActiveOrderFragment(
                 )
             }
 
-            if(customerSettingModel.showWebsiteAddress) {
+            if (customerSettingModel.showWebsiteAddress) {
                 builder.addFeedLine(1)
 
                 builder.addTextFont(Builder.FONT_E)
@@ -1310,7 +1321,7 @@ class ActiveOrderFragment(
                 )
             }
 
-            if(customerSettingModel.showOrderType) {
+            if (customerSettingModel.showOrderType) {
                 builder.addFeedLine(1)
 
                 builder.addTextFont(Builder.FONT_E)
@@ -1611,7 +1622,7 @@ class ActiveOrderFragment(
                         "Total Discount",
 
                         if (receiptModel.totalDiscount == 0.0) {
-                            "$" + MethodUtils.roundOffAmountString(receiptModel.totalDiscount)
+                            "-$" + MethodUtils.roundOffAmountString(receiptModel.totalDiscount)
                         } else {
                             "-$" + MethodUtils.roundOffAmountString(receiptModel.totalDiscount)
                         },
@@ -1678,7 +1689,8 @@ class ActiveOrderFragment(
                 )
             }
 
-            if (receiptModel.totalServiceCharges != null) {
+            if (receiptModel.totalServiceCharges != null && receiptModel.serviceChargeEnabled && prefProvider.getValueboolean(
+                    SERVICECHARGE_TAKEOUT_OPENORDER, false)) {
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
                 builder.addTextFont(Builder.FONT_E)
@@ -1886,6 +1898,147 @@ class ActiveOrderFragment(
                 )
 
             }
+
+            if (receiptModel.cashDiscountType == "CashDiscount"
+            ) {
+
+                var cashdiscountAmount = 0.0
+                if (MethodUtils.isEnableCashDiscount(requireContext())) {
+                    cashdiscountAmount = MethodUtils.calculateCashDiscount(
+                        receiptModel.totalAmount,
+                        prefProvider,
+                        requireContext()
+                    )
+                } else {
+                    cashdiscountAmount = 0.0
+                }
+
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+
+                builder.addTextFont(Builder.FONT_E)
+                // builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, customerSettingModel.fonts)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+
+                val totalAmt = MethodUtils.roundOffAmountDouble(receiptModel.totalAmount)
+
+                builder.addText(
+                    padLine(
+                        "Pay by Cash",
+                        "$" + MethodUtils.roundOffAmountString(totalAmt - cashdiscountAmount),
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            24
+                        } else {
+                            48
+                        }
+                    )
+                )
+
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+
+                builder.addTextFont(Builder.FONT_E)
+                // builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, customerSettingModel.fonts)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+
+                builder.addText(
+                    padLine(
+                        "Pay by Card",
+                        "$" + MethodUtils.roundOffAmountString(totalAmt),
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            24
+                        } else {
+                            48
+                        }
+                    )
+                )
+
+
+            } else if (receiptModel.cashDiscountType == "SurCharge"
+            ) {
+
+
+                var cashdiscountAmount = 0.0
+                if (MethodUtils.isEnableCashDiscount(requireContext())) {
+                    cashdiscountAmount = MethodUtils.calculateCashDiscount(
+                        receiptModel.totalAmount,
+                        prefProvider,
+                        requireContext()
+                    )
+                } else {
+                    cashdiscountAmount = 0.0
+                }
+
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+
+                builder.addTextFont(Builder.FONT_E)
+                // builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, customerSettingModel.fonts)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+
+                val totalAmt = MethodUtils.roundOffAmountDouble(receiptModel.totalAmount)
+
+                builder.addText(
+                    padLine(
+                        "Pay by Cash",
+                        "$" + MethodUtils.roundOffAmountString(totalAmt),
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            24
+                        } else {
+                            48
+                        }
+                    )
+                )
+
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+
+                builder.addTextFont(Builder.FONT_E)
+                // builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, customerSettingModel.fonts)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+
+                builder.addText(
+                    padLine(
+                        "Pay by Card",
+                        "$" + MethodUtils.roundOffAmountString(totalAmt+cashdiscountAmount),
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            24
+                        } else {
+                            48
+                        }
+                    )
+                )
+
+            }
+
 
             if (customerSettingModel.showRefundAmount && printType == PRINT_PAID) {
                 builder.addTextLineSpace(30)
@@ -2326,7 +2479,7 @@ class ActiveOrderFragment(
                 PrintSunmiUtils.venueWebsite(prefProvider.getValue(Constants.BUSINESS_WEBSITE, ""))
             }
 
-            if(customerSettingModel.showOrderType) {
+            if (customerSettingModel.showOrderType) {
                 PrintSunmiUtils.printOrderType(receiptModel?.orderTypeName?.trim())
             }
 
@@ -2492,7 +2645,7 @@ class ActiveOrderFragment(
                     "Total Discount",
 
                     if (receiptModel.totalDiscount == 0.0) {
-                        "$" + MethodUtils.roundOffAmountString(receiptModel.totalDiscount)
+                        "-$" + MethodUtils.roundOffAmountString(receiptModel.totalDiscount)
                     } else {
                         "-$" + MethodUtils.roundOffAmountString(receiptModel.totalDiscount)
                     },
@@ -2535,7 +2688,8 @@ class ActiveOrderFragment(
                 PrintSunmiUtils.tax(str3)
             }
 
-            if (receiptModel.totalServiceCharges != null) {
+            if (receiptModel.totalServiceCharges != null && receiptModel.serviceChargeEnabled && prefProvider.getValueboolean(
+                    SERVICECHARGE_TAKEOUT_OPENORDER, false)) {
 
 
                 val str4 = padLine(
@@ -2664,6 +2818,84 @@ class ActiveOrderFragment(
                 PrintSunmiUtils.totalPrice(str5)
 
             }
+
+
+
+
+            if (receiptModel.cashDiscountType == "CashDiscount"
+            ) {
+
+                var cashdiscountAmount = 0.0
+                if (MethodUtils.isEnableCashDiscount(requireContext())) {
+                    cashdiscountAmount = MethodUtils.calculateCashDiscount(
+                        receiptModel.totalAmount,
+                        prefProvider,
+                        requireContext()
+                    )
+                } else {
+                    cashdiscountAmount = 0.0
+                }
+
+                val totalAmt = MethodUtils.roundOffAmountDouble(receiptModel.totalAmount)
+                val str5 = padLine(
+                    "Pay by Cash",
+                    "$" + MethodUtils.roundOffAmountString(totalAmt - cashdiscountAmount),
+                    if (customerSettingModel.fonts == Constants.LARGE) {
+                        23
+                    } else {
+                        48
+                    }
+                ).toString()
+                PrintSunmiUtils.totalPrice(str5)
+
+                val totalAmt1 = MethodUtils.roundOffAmountDouble(totalAmt)
+                val str51 = padLine(
+                    "Pay by Card",
+                    "$" + MethodUtils.roundOffAmountString(totalAmt1),
+                    if (customerSettingModel.fonts == Constants.LARGE) {
+                        23
+                    } else {
+                        48
+                    }
+                ).toString()
+                PrintSunmiUtils.totalPrice(str51)
+            } else if (receiptModel.cashDiscountType == "SurCharge"
+            ) {
+
+                var cashdiscountAmount = 0.0
+                cashdiscountAmount = MethodUtils.calculateCashDiscount(
+                    receiptModel.totalAmount,
+                    prefProvider,
+                    requireContext()
+                )
+
+                val totalAmt = MethodUtils.roundOffAmountDouble(receiptModel.totalAmount)
+                val str5 = padLine(
+                    "Pay by Cash",
+                    "$" + MethodUtils.roundOffAmountString(totalAmt),
+                    if (customerSettingModel.fonts == Constants.LARGE) {
+                        23
+                    } else {
+                        48
+                    }
+                ).toString()
+                PrintSunmiUtils.totalPrice(str5)
+
+                val totalAmt1 = MethodUtils.roundOffAmountDouble(totalAmt + cashdiscountAmount)
+                val str51 = padLine(
+                    "Pay by Card",
+                    "$" + MethodUtils.roundOffAmountString(totalAmt1),
+                    if (customerSettingModel.fonts == Constants.LARGE) {
+                        23
+                    } else {
+                        48
+                    }
+                ).toString()
+                PrintSunmiUtils.totalPrice(str51)
+
+            }
+
+
 
             if (customerSettingModel.showRefundAmount && printType == PRINT_PAID) {
 
@@ -2873,11 +3105,16 @@ class ActiveOrderFragment(
                 ) else ""
             )
             if (customerSettingModel.showWebsiteAddress) {
-                PrintSunmiUtils.venueWebsiteInner(prefProvider.getValue(Constants.BUSINESS_WEBSITE, ""))
-            }else {
+                PrintSunmiUtils.venueWebsiteInner(
+                    prefProvider.getValue(
+                        Constants.BUSINESS_WEBSITE,
+                        ""
+                    )
+                )
+            } else {
                 SunmiPrintHelper.getInstance().lineWrap(1)
             }
-            if(customerSettingModel.showOrderType) {
+            if (customerSettingModel.showOrderType) {
                 PrintSunmiUtils.headerText(receiptModel?.orderTypeName?.trim())
             }
 
@@ -3024,7 +3261,7 @@ class ActiveOrderFragment(
                     "Total Discount",
 
                     if (receiptModel.totalDiscount == 0.0) {
-                        "$" + MethodUtils.roundOffAmountString(receiptModel.totalDiscount)
+                        "-$" + MethodUtils.roundOffAmountString(receiptModel.totalDiscount)
                     } else {
                         "-$" + MethodUtils.roundOffAmountString(receiptModel.totalDiscount)
                     },
@@ -3067,7 +3304,8 @@ class ActiveOrderFragment(
                 PrintSunmiUtils.normalText(str3)
             }
 
-            if (receiptModel.totalServiceCharges != null) {
+            if (receiptModel.totalServiceCharges != null && receiptModel.serviceChargeEnabled && prefProvider.getValueboolean(
+                    SERVICECHARGE_TAKEOUT_OPENORDER, false)) {
 
 
                 val str4 = padLine(
@@ -3196,6 +3434,81 @@ class ActiveOrderFragment(
                 PrintSunmiUtils.boldText(str5)
 
             }
+
+
+            if (receiptModel.cashDiscountType == "CashDiscount"
+            ) {
+
+                var cashdiscountAmount = 0.0
+                if (MethodUtils.isEnableCashDiscount(requireContext())) {
+                    cashdiscountAmount = MethodUtils.calculateCashDiscount(
+                        receiptModel.totalAmount,
+                        prefProvider,
+                        requireContext()
+                    )
+                } else {
+                    cashdiscountAmount = 0.0
+                }
+
+                val totalAmt = MethodUtils.roundOffAmountDouble(receiptModel.totalAmount)
+                val str5 = padLine(
+                    "Pay by Cash",
+                    "$" + MethodUtils.roundOffAmountString(totalAmt - cashdiscountAmount),
+                    if (customerSettingModel.fonts == Constants.LARGE) {
+                        23
+                    } else {
+                        48
+                    }
+                ).toString()
+                PrintSunmiUtils.totalPrice(str5)
+
+                val totalAmt1 = MethodUtils.roundOffAmountDouble(totalAmt)
+                val str51 = padLine(
+                    "Pay by Card",
+                    "$" + MethodUtils.roundOffAmountString(totalAmt1),
+                    if (customerSettingModel.fonts == Constants.LARGE) {
+                        23
+                    } else {
+                        48
+                    }
+                ).toString()
+                PrintSunmiUtils.boldText(str51)
+            } else if (receiptModel.cashDiscountType == "SurCharge"
+            ) {
+
+                var cashdiscountAmount = 0.0
+                cashdiscountAmount = MethodUtils.calculateCashDiscount(
+                    receiptModel.totalAmount,
+                    prefProvider,
+                    requireContext()
+                )
+
+                val totalAmt = MethodUtils.roundOffAmountDouble(receiptModel.totalAmount)
+                val str5 = padLine(
+                    "Pay by Cash",
+                    "$" + MethodUtils.roundOffAmountString(totalAmt),
+                    if (customerSettingModel.fonts == Constants.LARGE) {
+                        23
+                    } else {
+                        48
+                    }
+                ).toString()
+                PrintSunmiUtils.totalPrice(str5)
+
+                val totalAmt1 = MethodUtils.roundOffAmountDouble(totalAmt + cashdiscountAmount)
+                val str51 = padLine(
+                    "Pay by Card",
+                    "$" + MethodUtils.roundOffAmountString(totalAmt1),
+                    if (customerSettingModel.fonts == Constants.LARGE) {
+                        23
+                    } else {
+                        48
+                    }
+                ).toString()
+                PrintSunmiUtils.boldText(str51)
+
+            }
+
 
             if (customerSettingModel.showRefundAmount && printType == PRINT_PAID) {
 

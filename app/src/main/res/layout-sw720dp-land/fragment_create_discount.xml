@@ -187,37 +187,46 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:fontFamily="@font/sf_pro_display_semibold"
+                                        android:layout_gravity="center_vertical"
                                         android:text="@string/symbole"
-                                        android:textColor="@color/txtColor"
+                                        android:textColor="@color/hint_color"
                                         android:textSize="@dimen/text_size_medium"
                                         android:visibility="gone"
                                         />
 
-                                    <androidx.appcompat.widget.AppCompatEditText
-                                        android:id="@+id/edt_discount"
-                                        style="@style/CustomFontSemiBold"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:background="@null"
-                                        android:hint="0.0"
-                                        android:maxLength="6"
-                                        android:imeOptions="actionDone"
-                                        android:inputType="numberDecimal"
-                                        android:paddingTop="@dimen/_7sdp"
-                                        android:paddingBottom="@dimen/_7sdp"
-                                        android:textColor="@color/txtColor"
-                                        android:textColorHint="@color/hintColor"
-                                        android:textSize="@dimen/text_size_medium" />
+                                    <FrameLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content">
 
-                                    <TextView
-                                        android:id="@+id/tvSymbolPer"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:fontFamily="@font/sf_pro_display_semibold"
-                                        android:text="@string/percentage_symbol"
-                                        android:textColor="@color/txtColor"
-                                        android:textSize="@dimen/text_size_medium"
-                                        android:visibility="gone" />
+                                        <androidx.appcompat.widget.AppCompatEditText
+                                            android:id="@+id/edt_discount"
+                                            style="@style/CustomFontSemiBold"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:background="@null"
+                                            android:hint="0.0"
+                                            android:imeOptions="actionDone"
+                                            android:inputType="numberDecimal"
+                                            android:maxLength="6"
+                                            android:paddingTop="@dimen/_7sdp"
+                                            android:paddingBottom="@dimen/_7sdp"
+                                            android:textColor="@color/txtColor"
+                                            android:textColorHint="@color/hintColor"
+                                            android:textSize="@dimen/text_size_medium" />
+
+                                        <TextView
+                                            android:id="@+id/tvSymbolPer"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginStart="@dimen/_22sdp"
+                                            android:layout_gravity="center_vertical"
+                                            android:fontFamily="@font/sf_pro_display_semibold"
+                                            android:text="@string/percentage_symbol"
+                                            android:textColor="@color/hint_color"
+                                            android:textSize="@dimen/text_size_medium"
+                                            android:visibility="gone" />
+
+                                    </FrameLayout>
                                 </LinearLayout>
 
                                 <com.google.android.material.switchmaterial.SwitchMaterial
