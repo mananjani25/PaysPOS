@@ -3371,12 +3371,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             PrintSunmiUtils.addHorizontalInner()
 
             receiptModel?.order?.orderItems?.let {
-                addOrdersForKitchenInner(
-                    it
-                )
-            }
-
-            receiptModel?.order?.orderItems?.let {
 
                 addOrdersForKitchenInner(
                     it,
