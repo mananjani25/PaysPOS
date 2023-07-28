@@ -31,6 +31,7 @@ data class ShiftRportConfiguration(
     @SerializedName("service_charge_details") val serviceChargeDetails: Boolean,
     @SerializedName("cash_log_details") val cashLogDetails: Boolean,
     @SerializedName("other_details") val otherDetails: Boolean,
+    @SerializedName("item_wise_sales") val isItemWiseSales: Boolean,
     @SerializedName("clock_in_out") val clockInOut: Boolean,
     @SerializedName("location_id") val locationId: Int,
     @SerializedName("created_at") val createdAt: String,

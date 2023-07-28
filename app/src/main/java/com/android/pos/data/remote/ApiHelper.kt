@@ -497,6 +497,9 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun emailReceipt(data: HashMap<String, String>) =
         getResult { apiService.emailReceipt(data) }
 
+    suspend fun emailReceiptForETS(data: HashMap<String, String>) =
+        getResult { apiService.sendMailForEmployeeTipSummary(data) }
+
     suspend fun phoneReceipt(data: HashMap<String, String>) =
         getResult { apiService.phoneReceipt(data) }
 
