@@ -97,10 +97,6 @@ import com.sunmi.externalprinterlibrary.api.SunmiPrinter
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import com.zebra.scannercontrol.FirmwareUpdateEvent
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import java.io.IOException
 import java.util.*
 import javax.inject.Inject
@@ -204,6 +200,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         checkCashDrawerObserver()
         Binding()
         prefProvider.setValue(Constants.REDIRECT_FROM, "")
+        prefProvider.setValue(Constants.OPEN_ORDER_ITEMS, "")
+
         if(prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD){
             viewModel.clearGiftCardCart()
         }

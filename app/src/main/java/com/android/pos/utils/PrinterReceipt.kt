@@ -3657,6 +3657,7 @@ fun addOrderItems(
         val obj = list[i]
 
 
+        Log.e(TAG,"quantity:  ${obj.quantity}")
         val item = padLineCustomerItem(
             obj.quantity.toString() + "  " + getItemNameToShow(obj.itemName),
             getItemPriceToShow(totalPrice(obj)),
