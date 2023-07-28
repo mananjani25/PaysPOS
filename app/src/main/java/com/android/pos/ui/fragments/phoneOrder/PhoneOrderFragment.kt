@@ -92,6 +92,7 @@ class PhoneOrderFragment : Fragment() {
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_phone_order, container, false)
         binding.lifecycleOwner = this
+        manageDeliveryTypeView()
         resultListener()
         placesClientInit()
         setupSnackbar()
@@ -141,6 +142,23 @@ class PhoneOrderFragment : Fragment() {
 
     }
 
+    private fun manageDeliveryTypeView(){
+        if(orderType == PICK_UP) {
+            orderType = PICK_UP
+            isPickUp = true
+            isDelivey = false
+            binding.txtPickup.setBackgroundResource(R.drawable.button_action_hover)
+            binding.txtDelivery.setBackgroundResource(R.drawable.background_square_border_grey)
+            binding.txtAddress.gone()
+        } else {
+            orderType = DELIVERY
+            isDelivey = true
+            isPickUp = false
+            binding.txtPickup.setBackgroundResource(R.drawable.background_square_border_grey)
+            binding.txtDelivery.setBackgroundResource(R.drawable.button_action_hover)
+            binding.txtAddress.visible()
+        }
+    }
 
     private fun placesClientInit() {
 
