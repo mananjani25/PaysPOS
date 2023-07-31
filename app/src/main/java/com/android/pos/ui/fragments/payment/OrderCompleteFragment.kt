@@ -317,7 +317,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         if (this::presentation.isInitialized) {
             presentation.show()
             presentation.onDisplayChanged()
-            val finalPaidAmount = MethodUtils.roundOffAmountDown(paidAmount + tipAmount)
+
+            val finalPaidAmount: Double = if(isCustomCash){
+                MethodUtils.roundOffAmountDown(paidAmount)
+            }else{
+                MethodUtils.roundOffAmountDown(paidAmount + tipAmount)
+            }
+
             val showTipCollectionBeforePay = prefProvider.getValueboolean(
                 Constants.SHOW_TIP_SCREEN_BEFORE_PAYMENT,
                 false

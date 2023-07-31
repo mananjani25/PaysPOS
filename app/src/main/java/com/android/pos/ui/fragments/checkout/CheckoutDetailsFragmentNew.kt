@@ -336,6 +336,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         tipFromCustomerDisplay = true
         tipAmount = tipAdded.tipAmount
         tippedAmountWithoutSurChargeDeduction = tipAdded.tippedAmountWithoutSurCharge
+        viewModel.setTipAmount(tippedAmountWithoutSurChargeDeduction)
         tipAmountCalculation()
         loadPaymentLayout()
         org.greenrobot.eventbus.EventBus.getDefault().unregister(this)
