@@ -1636,6 +1636,9 @@
             android:id="@+id/action_dashboardCategoryBoldPOS_to_assignCustomerOrderFragment"
             app:destination="@id/assignCustomerOrderFragment" />
         <action
+            android:id="@+id/action_dashboardCategoryBoldPOS_to_addCustomerToGiftCard"
+            app:destination="@id/addCustomerToGiftCard" />
+        <action
             android:id="@+id/action_dashboardCategoryBoldPOS_to_addDiscountDialog"
             app:destination="@id/addDiscountDialog" />
         <action
@@ -1701,6 +1704,10 @@
         <action
             android:id="@+id/action_paymentBoldPosFragment_to_assignCustomerOrderFragment"
             app:destination="@id/assignCustomerOrderFragment"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_paymentBoldPosFragment_to_addCustomerToGiftCard"
+            app:destination="@id/addCustomerToGiftCard"
             app:enterAnim="@anim/nav_default_enter_anim" />
         <action
             android:id="@+id/action_paymentBoldPosFragment_to_allOrdersFragment"

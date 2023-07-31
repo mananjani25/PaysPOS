@@ -36,9 +36,12 @@ import com.android.pos.data.model.requestModel.OrderAttributeRequestModel
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.ADD_VALUE
+import com.android.pos.data.remote.Constants.BALANCE_INQUIRY
 import com.android.pos.data.remote.Constants.CUSTOMER
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
+import com.android.pos.data.remote.Constants.GIFT_CARD
 import com.android.pos.data.remote.Constants.IS_FROM_ALL_ORDER
 import com.android.pos.data.remote.Constants.IS_PAYMENT_SCREEN
 import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
@@ -52,6 +55,7 @@ import com.android.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.ORDER_TYPE_ID
 import com.android.pos.data.remote.Constants.ORDER_TYPE_NAME
+import com.android.pos.data.remote.Constants.SELL_CARD
 import com.android.pos.data.remote.Constants.SMALL
 import com.android.pos.data.remote.Constants.SPLIT_ENABLE
 import com.android.pos.data.remote.Constants.SUNMI_INNER_PRINTER
@@ -93,10 +97,6 @@ import com.sunmi.externalprinterlibrary.api.SunmiPrinter
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import com.zebra.scannercontrol.FirmwareUpdateEvent
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import java.io.IOException
 import java.util.*
 import javax.inject.Inject
@@ -200,6 +200,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         checkCashDrawerObserver()
         Binding()
         prefProvider.setValue(Constants.REDIRECT_FROM, "")
+        prefProvider.setValue(Constants.OPEN_ORDER_ITEMS, "")
+
+        if(prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD){
+            viewModel.clearGiftCardCart()
+        }
 
 //        hideSystemUI()
 
@@ -1062,17 +1067,19 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     override fun onItemSelected(item: TbItem) {
 
         when (item.name) {
-            "Sell Card" -> {
+            SELL_CARD -> {
+                // clear customer if added any for previous order type
+                viewModel.clearCustomer()
                 if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
                     findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_purchaseGiftCard)
                 }
             }
-            "Add Value" -> {
+            ADD_VALUE -> {
                 if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
                     findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_addValueInGiftCard)
                 }
             }
-            "Balance Inquiry" -> {
+            BALANCE_INQUIRY -> {
                 if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
                     findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_balanceInquiry)
                 }
@@ -1710,7 +1717,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
 
             SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
-            setService(createOrderResponse.data)
+            setService(data,createOrderResponse.data)
 
 
         } else {
@@ -2205,7 +2212,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
     }
 
-    private fun setService(data: CreateOrderResponse.Data) {
+    private fun setService( kitchenReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,data: CreateOrderResponse.Data) {
         if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.FoundSunmiPrinter) {
 
             LogUtil.logE("SunmiPrintHelper1", "FoundSunmiPrinter")
@@ -2214,14 +2221,14 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                 LogUtil.logE("SunmiPrintHelpe1r", "isBlueToothPrinter")
 
-                generateKitchenReceiptSunmiInner(data)
+                generateKitchenReceiptSunmiInner(kitchenReceiptPrinters,data)
 
 
             }
 
         } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.CheckSunmiPrinter) {
             Handler(Looper.getMainLooper()).postDelayed({
-                setService(data)
+                setService(kitchenReceiptPrinters,data)
             }, 2000)
             LogUtil.logE("SunmiPrintHelper", "CheckSunmiPrinter")
         } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.LostSunmiPrinter) {
@@ -3326,7 +3333,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     }
 
     private fun generateKitchenReceiptSunmiInner(
-
+        kitchenReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
         receiptModel: CreateOrderResponse.Data
     ) {
         try {
@@ -3364,8 +3371,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             PrintSunmiUtils.addHorizontalInner()
 
             receiptModel?.order?.orderItems?.let {
+
                 addOrdersForKitchenInner(
-                    it
+                    it,
+                    kitchenReceiptPrinters.printerCategories.toCollection(arrayListOf())
                 )
             }
 

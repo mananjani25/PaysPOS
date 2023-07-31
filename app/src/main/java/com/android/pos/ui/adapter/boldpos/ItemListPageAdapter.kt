@@ -7,8 +7,12 @@ import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.entities.TbItem
+import com.android.pos.data.remote.Constants.ADD_VALUE
+import com.android.pos.data.remote.Constants.BALANCE_INQUIRY
+import com.android.pos.data.remote.Constants.SELL_CARD
 import com.android.pos.databinding.ViewItemBinding
 import com.android.pos.utils.callback.ItemCallback
+import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.setOnSingleClickListener
 import com.android.pos.utils.extensions.visible
 import java.util.*
@@ -47,6 +51,15 @@ class ItemListPageAdapter :
             binding.ivCheck.visibility = View.GONE
             binding.layoutMenu.imgOrderMenu.visible()
 
+            if (tbItem != null) {
+                if(tbItem.name == SELL_CARD || tbItem.name == ADD_VALUE || tbItem.name == BALANCE_INQUIRY) {
+                    binding.layoutMenu.imgOrderMenu.gone()
+                    binding.tvItemPrice.gone()
+                } else {
+                    binding.layoutMenu.imgOrderMenu.visible()
+                    binding.tvItemPrice.visible()
+                }
+            }
             binding.executePendingBindings()
         }
 

@@ -2114,10 +2114,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     } else {
                         custom_paymentAmount = 0.0
 
-                        val actualTotalAmount = WholetotalPrice / isSelectedCount
+                        val actualTotalAmountWithTip = (WholetotalPrice / isSelectedCount) +  tipAmount
+
                         val giftCardBalanceAmount = it.data.amount
 
-                        if (actualTotalAmount < giftCardBalanceAmount) {
+                        if (actualTotalAmountWithTip < giftCardBalanceAmount) {
                             val giftCardNumber =
                                 binding.edtGiftCardNumber.rawText.toString().trim()
                             prefProvider.setValueboolean(IS_GIFT_CARD_REDEEM, true)
@@ -2127,6 +2128,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                 IS_ORDER_REDEEMABLE_WITH_GIFT_CARD,
                                 true
                             )
+                            val actualTotalAmount = (WholetotalPrice / isSelectedCount)
                             paymentAmount = actualTotalAmount
                             paymentviewModel.totalPayAmount(paymentAmount)
                             redeemGiftCard()

@@ -5771,4 +5771,36 @@ class DashBoardCategoryViewModel @Inject constructor(
         _removeGuestSuccess.value = Event(message)
     }
 
+    // To clear gift-card cart
+    fun clearGiftCardCart() {
+        prefProvider.setValue("PaidAmount", "")
+        prefProvider.setValue(Constants.WHOLE_AMOUNT, "")
+        prefProvider.setValueInt("cardCount", 0)
+        prefProvider.setValue(Constants.SUB_TOTAL, "")
+        prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
+        prefProvider.setValue(Constants.TOTAL_DISCOUNT, "")
+        prefProvider.setValue(Constants.TIP, "")
+        prefProvider.setValue(Constants.TAX_CHARGE, "")
+        prefProvider.setValue(Constants.SERVICE_CHARGE, "")
+        prefProvider.setValue(ORDER_TYPE, "")
+        prefProvider.setValue(ORDER_TYPE_NAME, "")
+        prefProvider.setValueboolean(Constants.IS_ADD_VALUE_IN_GIFT_CARD, false)
+        prefProvider.setValue(Constants.CUSTOMER_NAME, "")
+        prefProvider.setValue(Constants.PREF_CUSTOMER, "")
+        prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
+        clearCustomer()
+        deleteCart()
+    }
+
+    // To clear customer if creating gift card
+    fun clearCustomer() {
+        prefProvider.setValue(Constants.CUSTOMER_NAME, "")
+        prefProvider.setValue(Constants.PREF_CUSTOMER, "")
+        prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
+        selectedCustomer = null
+        assignCustomer = null
+        prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED, false)
+        prefProvider.setValueboolean(LOYALTY_ADDED, false)
+    }
+
 }

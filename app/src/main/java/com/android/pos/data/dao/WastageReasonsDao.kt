@@ -14,7 +14,7 @@ interface WastageReasonsDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addAllWastageReasons(wastageReasonsList: List<VenueDetailsResponse.Data.WastageReason>)
 
-    @get:Query("select * from TbWastageReason where TbWastageReason.isActive = 1")
+    @get:Query("select * from TbWastageReason where TbWastageReason.isActive = 1 AND TbWastageReason.deletedAt IS NULL")
     val allWastageReasons: LiveData<List<VenueDetailsResponse.Data.WastageReason>>
 
 }

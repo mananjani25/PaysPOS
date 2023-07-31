@@ -41,6 +41,7 @@ import com.android.pos.data.remote.Constants.DINE_IN_LIST_EDIT
 import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
 import com.android.pos.data.remote.Constants.DINE_IN_UPDATE_LIST
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
+import com.android.pos.data.remote.Constants.GIFT_CARD
 import com.android.pos.data.remote.Constants.IS_FROM_ALL_ORDER
 import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER
 import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER
@@ -2084,6 +2085,14 @@ class CartFragment(
         }
 
         binding.txtAddCustomer.setOnSingleClickListener {
+            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
+                if(isFromPayment) {
+                    findNavController().navigate(R.id.action_paymentBoldPosFragment_to_addCustomerToGiftCard)
+                } else {
+                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_addCustomerToGiftCard)
+                }
+                return@setOnSingleClickListener
+            }
             if (isFromPayment) {
                 if (prefProvider.getValueboolean(
                         Constants.LOYALTY_ADDED,
