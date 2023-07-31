@@ -47,7 +47,6 @@ import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.android.pos.data.remote.Constants.IS_SYNC_MARKUP
-import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER
 import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER
 import com.android.pos.data.remote.Constants.LOCK_SCREEN_TRANSACTION
 import com.android.pos.data.remote.Constants.MANUAL_SALE_CATEGORY_ID
@@ -92,7 +91,6 @@ import kotlinx.coroutines.flow.Flow
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.InputStream
-import java.lang.Runnable
 import java.net.HttpURLConnection
 import java.net.URL
 import java.text.NumberFormat
@@ -4890,6 +4888,10 @@ class DashBoardCategoryViewModel @Inject constructor(
                             val itemModifierSetList = ArrayList<ItemModifierSets>()
 
                             mCategory.forEach { category ->
+
+                                if (category.name.lowercase() == "Manual Sales".lowercase()) {
+                                    prefProvider.setValueInt(MANUAL_SALE_CATEGORY_ID, category.id)
+                                }
                                 val model = TbCategory().apply {
                                     createdAt = ""
                                     id = category.id
@@ -4906,6 +4908,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 categoryModelList.add(model)
 
                                 category.items.forEach {
+                                    if (it.name?.lowercase() == "Manual Sales".lowercase()) {
+                                        prefProvider.setValueInt(MANUAL_SALE_ITEM_ID, it.id)
+                                    }
 
                                     it.modifierSets.forEach { modifierset ->
                                         val itemModifierSets = ItemModifierSets().apply {
