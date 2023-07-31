@@ -9,12 +9,8 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.graphics.Point
-import android.os.Build
-import android.os.Bundle
-import android.os.Handler
-import android.os.IBinder
-import android.os.Looper
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
@@ -115,27 +111,6 @@ import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.MethodUtils.Companion.toPrecision
 import com.android.pos.utils.PrintSunmiUtils
 import com.android.pos.utils.PrinterDialog
-import com.android.pos.utils.ProgressUtils
-import com.android.pos.utils.addBuilderText
-import com.android.pos.utils.addBuilderTextForU220
-import com.android.pos.utils.addCustomerTextSize
-import com.android.pos.utils.addHorizontalHalfCustomerReceiptLine
-import com.android.pos.utils.addHorizontalKitchenLine
-import com.android.pos.utils.addHorizontalKitchenLineForU220
-import com.android.pos.utils.addHorizontalLine
-import com.android.pos.utils.addOrderItemForDineIn
-import com.android.pos.utils.addOrderItemForDineInInner
-import com.android.pos.utils.addOrderItems
-import com.android.pos.utils.addOrderItemsInner
-import com.android.pos.utils.addOrdersForKitchen
-import com.android.pos.utils.addOrdersForKitchenInner
-import com.android.pos.utils.addOrdersForKitchenU220
-import com.android.pos.utils.addTipsList
-import com.android.pos.utils.addTipsListInner
-import com.android.pos.utils.addWholeTbItemToGuest
-import com.android.pos.utils.addWholeTbItemToGuestInner
-import com.android.pos.utils.checkItemsforPrinter
-import com.android.pos.utils.PrintSunmiUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.addBuilderText
 import com.android.pos.utils.addBuilderTextForU220
@@ -297,8 +272,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             ?.observe(viewLifecycleOwner) { it ->
                 if (it.getString(Constants.KEY)?.lowercase() == "FROM_CUSTOMER".lowercase()) {
                     isFromCustomer = true
-                    if (pd != null && pd.isShowing) {
-                        pd.dismiss()
+                    if (pd != null && pd?.isShowing == true) {
+                        pd?.dismiss()
                     }
                 }
 
@@ -6229,7 +6204,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
 
-                        pd.dismiss()
+                        pd?.dismiss()
 
 
                     }
@@ -6459,7 +6434,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         isAutoPrint:Boolean
     ) {
         Log.e(TAG,"checkAutoPrint  ${isAutoPrint}")
-        pd.show()
+        pd?.show()
 
 
         if (customerReceiptPrinters.name.startsWith(SUNMI_PRINTER, true)) {
@@ -6508,7 +6483,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 } catch (e: Exception) {
                     e.printStackTrace()
-                    pd.dismiss()
+                    pd?.dismiss()
                     LogUtil.logE(TAG, "PrinterException: " + e.message)
                     printer = null
                     return
@@ -6523,11 +6498,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     }
 
                 } catch (e: Exception) {
-                    pd.dismiss()
+                    pd?.dismiss()
                     e.printStackTrace()
                 }
             } else {
-                pd.dismiss()
+                pd?.dismiss()
                 LogUtil.logE(TAG, "PrinterIsNotNull:")
             }
         }
@@ -8000,11 +7975,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
                 PrinterClass.closePrinter()
-                pd.dismiss()
+                pd?.dismiss()
                 // findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
                 //PrinterClass.getPrinter()?.sendData(builder, 0, status, battery)
             } catch (e: Exception) {
-                pd.dismiss()
+                pd?.dismiss()
                 PrinterClass.closePrinter()
                 e.printStackTrace()
                 LogUtil.logE(TAG, "PrinterError: " + e.localizedMessage)
@@ -8012,7 +7987,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
         } catch (e: Exception) {
-            pd.dismiss()
+            pd?.dismiss()
             e.printStackTrace()
         }
     }
@@ -9854,24 +9829,24 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     fun progressDialog() {
         pd = Dialog(requireActivity())
-        pd.setContentView(R.layout.view_loading)
+        pd?.setContentView(R.layout.view_loading)
         // pd.setProgressStyle(ProgressDialog.BUTTON_NEUTRAL)
 //        pd.setMessage("Please Wait..")
-        pd.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        pd.window?.setBackgroundDrawable(
+        pd?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        pd?.window?.setBackgroundDrawable(
             ColorDrawable(Color.TRANSPARENT)
         )
-        pd.setCanceledOnTouchOutside(false)
-        pd.setCancelable(false)
-        pd.show()
+        pd?.setCanceledOnTouchOutside(false)
+        pd?.setCancelable(false)
+        pd?.show()
 
 
     }
 
     override fun onPause() {
         super.onPause()
-        if (pd != null && pd.isShowing) {
-            pd.dismiss()
+        if (pd != null && pd?.isShowing == true) {
+            pd?.dismiss()
         }
         if (this::presentation.isInitialized) {
             presentation.hide()

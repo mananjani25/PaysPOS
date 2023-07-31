@@ -58,8 +58,8 @@ import com.android.pos.data.entities.TbOrderType
 import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.data.entities.TbTimeZones
 import com.android.pos.data.entities.TeamRole
+import com.android.pos.data.entities.TypeConvertersQueueDineIn
 import com.android.pos.data.model.CharacterModel
-import com.android.pos.data.model.GuestAttrQueue
 import com.android.pos.data.model.PrinterQueueModel
 import com.android.pos.data.model.ShiftRportConfiguration
 import com.android.pos.data.model.SplitDetailListModel
