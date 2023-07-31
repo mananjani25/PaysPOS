@@ -13,7 +13,6 @@ import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
-import com.android.pos.data.remote.Constants.ORDER_TYPE_ID
 import com.android.pos.data.remote.Constants.PAYMENT_ID
 import com.android.pos.data.remote.Constants.PAYMENT_ID_FOR_CUSTOMER_DISPLAY
 import com.android.pos.data.remote.Constants.PHONE_ORDER
@@ -509,7 +508,6 @@ open class PaymentViewModel @Inject constructor(
         offlineId: String = "",
         totalServiceChargeM: Double = 0.0,
         totalDiscountM: Double = 0.0
-
     ): OrderRequestModel {
 
         val orderAttributeRequestModel = OrderAttributeRequestModel()
@@ -678,7 +676,7 @@ open class PaymentViewModel @Inject constructor(
         orderAttributeRequestModel.paymentAttributes = if (needPaymentAttributes == true) {
             paymentAttributes(
                 cartModel,
-                totalPayAmounts,
+                totalPrice,
                 subTotalPrice,
                 totalServiceCharge,
                 totalTax,
@@ -959,7 +957,8 @@ open class PaymentViewModel @Inject constructor(
         cashdiscountType: String,
         tipID: Int? = null,
         totalServiceChargeM: Double = 0.0,
-        totalDiscountM: Double = 0.0
+        totalDiscountM: Double = 0.0,
+        tipFromCustomerDisplay: Boolean = false
     ): OrderRequestModel {
 
         val orderAttributeRequestModel = OrderAttributeRequestModel()
@@ -1037,17 +1036,9 @@ open class PaymentViewModel @Inject constructor(
         //As discussed with Rohan - we have to avoid loss of merchant on
         // processing fees of any order while card payment
         //This is done by Dharmesh Basapati in BIS-957 task
-        val showTipCollectionBeforePay = prefProvider.getValueboolean(
-            Constants.SHOW_TIP_SCREEN_BEFORE_PAYMENT,
-            false
-        )
-        orderAttributeRequestModel.totalTips = if(tipAmount > 0.00 && showTipCollectionBeforePay){
-            val rateOrAmount = prefProvider.getValue(Constants.RATE_OR_AMOUNT, "0")
-            val newTipAmountAfterSurChargeDeduction = tipAmount - percentageCalculation(tipAmount,rateOrAmount.toDouble())
-            MethodUtils.roundOffAmountDouble(newTipAmountAfterSurChargeDeduction)
-        }else{
-            MethodUtils.roundOffAmountDouble(tipAmount)
-        }
+        val rateOrAmount = prefProvider.getValue(Constants.RATE_OR_AMOUNT, "0")
+        val newTipAmountAfterSurChargeDeduction = tipAmount - percentageCalculation(tipAmount,rateOrAmount.toDouble())
+        orderAttributeRequestModel.totalTips = MethodUtils.roundOffAmountDouble(newTipAmountAfterSurChargeDeduction)
 
         orderAttributeRequestModel.is_loyalty_applied = redeemLoyaltyInfo?.needToApplyLoyalty
         if (orderAttributeRequestModel.is_loyalty_applied == true) {
@@ -1079,7 +1070,7 @@ open class PaymentViewModel @Inject constructor(
                 finaldiscount,
                 paymentType,
                 orderAttributeRequestModel.cash_discount_type,
-                redeemLoyaltyInfo = redeemLoyaltyInfo
+                redeemLoyaltyInfo = redeemLoyaltyInfo, tipFromCustomerDisplay
             )
         } else {
             null
@@ -1809,6 +1800,8 @@ open class PaymentViewModel @Inject constructor(
             taxAmount = MethodUtils.roundOffAmountDouble(totalTax)
             terminalId = cartModel.terminalId
             tips = MethodUtils.roundOffAmountDouble(tipAmount)
+            //Actual Tip without any deduction of surcharge(for backend usage)
+            tipWithSurchargePercentage = MethodUtils.roundOffAmountDouble(tipAmount)
             tipsAdjusted = false
             totalDiscount = MethodUtils.roundOffAmountDouble(totalDis)
             tipID?.let { tipId = it }
@@ -1848,7 +1841,8 @@ open class PaymentViewModel @Inject constructor(
         finalcashdiscount: Double,
         paymentTypeStatus: String,
         cashdiscountType: String,
-        redeemLoyaltyInfo: RedeemLoyaltyInfo?
+        redeemLoyaltyInfo: RedeemLoyaltyInfo?,
+        tipFromCustomerDisplay: Boolean
     ): PaymentAttributes {
         return PaymentAttributes().apply {
 //            if (isUpdateOrder)
@@ -1942,18 +1936,12 @@ open class PaymentViewModel @Inject constructor(
             //As discussed with Rohan - we have to avoid loss of merchant on
             // processing fees of any order while card payment
             //This is done by Dharmesh Basapati in BIS-957 task
-            val showTipCollectionBeforePay = prefProvider.getValueboolean(
-                Constants.SHOW_TIP_SCREEN_BEFORE_PAYMENT,
-                false
-            )
-            tips = if(tipAmount > 0.00 && showTipCollectionBeforePay){
-                val rateOrAmount = prefProvider.getValue(Constants.RATE_OR_AMOUNT, "0")
-                val newTipAmountAfterSurChargeDeduction = tipAmount - percentageCalculation(tipAmount,rateOrAmount.toDouble())
-                MethodUtils.roundOffAmountDouble(newTipAmountAfterSurChargeDeduction)
-            }else{
-                MethodUtils.roundOffAmountDouble(tipAmount)
-            }
+            val rateOrAmount = prefProvider.getValue(Constants.RATE_OR_AMOUNT, "0")
+            val newTipAmountAfterSurChargeDeduction = tipAmount - percentageCalculation(tipAmount,rateOrAmount.toDouble())
+            tips = MethodUtils.roundOffAmountDouble(newTipAmountAfterSurChargeDeduction)
 
+            //Actual Tip without any deduction of surcharge(for backend usage)
+            tipWithSurchargePercentage = tipAmount
             tipsAdjusted = false
             totalDiscount = totalDis
 

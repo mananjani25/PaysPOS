@@ -581,6 +581,9 @@ class PaymentAttributes : Parcelable {
     @SerializedName("tips")
     var tips: Double = 0.0
 
+    @SerializedName("tip_with_surcharge_percentage")
+    var tipWithSurchargePercentage: Double = 0.0
+
     @SerializedName("tips_adjusted")
     var tipsAdjusted: Boolean = false
 

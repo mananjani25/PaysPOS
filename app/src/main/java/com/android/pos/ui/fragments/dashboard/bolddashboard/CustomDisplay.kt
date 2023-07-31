@@ -1447,7 +1447,7 @@ class CustomDisplay(
             val coroutineScope = CoroutineScope(Dispatchers.Main)
             coroutineScope.launch {
 //                delay(1000)
-//                edtAmount.setText(MethodUtils.roundOffAmountString(10.00))
+//                edtAmount.setText(MethodUtils.roundOffAmountString(12.50))
 //                delay(2000)
 //                binding.txtContinue.performClick()
             }
