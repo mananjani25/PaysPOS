@@ -268,7 +268,7 @@ class AddCustomerToGiftCardFragment : Fragment(), ItemCallback {
         selectedPosition = pos
         val customer = adapter.getItem(selectedPosition)
 
-        if(customer.email?.isEmpty() == true && customer.phones.isEmpty()){
+        if(customer.email.isNullOrEmpty() && customer.phones.isEmpty()){
             AlertUtils.showCustomAlertWithListenerWithOKCancelUpdated(
                 requireContext(),
                 getString(R.string.lbl_please_add_phone_or_email),"Edit",
