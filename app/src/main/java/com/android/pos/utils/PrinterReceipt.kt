@@ -1936,31 +1936,32 @@ fun addOrdersForKitchenOnlineOrderSunmi(
 
 
 fun addOrdersForKitchenOnlineOrderSunmiInner(
-    list: List<OnlineOrderResponseModel.Data.OrderItem>
+    list: List<OnlineOrderResponseModel.Data.OrderItem>,
+    printerCat: ArrayList<PrinterResponse.Data.PrinterCategories>? = null
 ) {
+
     for (i in 0 until list.size) {
-        val obj = list.get(i)
+        printerCat?.forEach {
+            if (it.id == list[i].categoryId && it.printerEnable && it.categoryActive) {
+                val obj = list.get(i)
+                PrintSunmiUtils.normalTextLarge(obj.quantity.toString() + " " + obj.itemName.uppercase())
 
-        PrintSunmiUtils.normalTextLarge(obj.quantity.toString() + " " + obj.itemName.uppercase())
-
-        if (obj.orderItemModifiers.isNotEmpty()) {
-            for (j in 0 until obj.orderItemModifiers.size) {
-                val modifierObj = obj.orderItemModifiers.get(j)
-
-
-                PrintSunmiUtils.normalTextLarge(
-                    "  " + if (modifierObj.modifier_quantity == 1) {
-                        "   "
-                    } else {
-                        "" + modifierObj.modifier_quantity + "x "
-                    } + modifierObj.name.uppercase()
-                )
-
-
+                if (obj.orderItemModifiers.isNotEmpty()) {
+                    for (j in 0 until obj.orderItemModifiers.size) {
+                        val modifierObj = obj.orderItemModifiers.get(j)
+                        PrintSunmiUtils.normalTextLarge(
+                            "  " + if (modifierObj.modifier_quantity == 1) {
+                                "   "
+                            } else {
+                                "" + modifierObj.modifier_quantity + "x "
+                            } + modifierObj.name.uppercase()
+                        )
+                    }
+                }
+                if (obj.note.isNotEmpty()) {
+                    PrintSunmiUtils.normalTextLarge("  Note:" + obj.note)
+                }
             }
-        }
-        if (obj.note.isNotEmpty()) {
-            PrintSunmiUtils.normalTextLarge("  Note:" + obj.note)
         }
     }
 }

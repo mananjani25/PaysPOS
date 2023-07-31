@@ -5109,8 +5109,6 @@ class AllOrdersListingFragment(
                 ).toString()
             )
 
-
-
             PrintSunmiUtils.addHorizontal()
 
 
@@ -5918,7 +5916,8 @@ class AllOrdersListingFragment(
 
 
             addOrdersForKitchenOnlineOrderSunmiInner(
-                orderData.orderItems
+                orderData.orderItems,
+                customerReceiptPrinters.printerCategories.toCollection(arrayListOf())
             )
 
 
