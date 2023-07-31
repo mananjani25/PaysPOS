@@ -85,7 +85,7 @@ class LoginFragment : Fragment() {
     ): View? {
 
 //       determineAdvertisingInfo()
-        networkCall()
+//        paxNetworkCall()
 
         if (prefProvider?.getValue(AUTH_TOKEN, "").toString().isNotEmpty()) {
             if (!prefProvider?.getValueboolean(IS_CLOCKOUT, false)!!) {
@@ -179,7 +179,7 @@ class LoginFragment : Fragment() {
         return binding.root
     }
 
-    private fun networkCall() {
+    private fun paxNetworkCall() {
         ProgressUtils.showProgressDialog("Please wait...s", requireActivity())
 
         var call: Call<PosLinkResult>? =

@@ -22,9 +22,11 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.pos.R
+import com.android.pos.data.model.responseModel.PosLinkResult
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DYNANA_FLAX
 import com.android.pos.databinding.FragmentTagtekBinding
+import com.android.pos.di.ApiModule2
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.fragments.magtek.MagtekViewModel
 import com.android.pos.utils.AlertUtils
@@ -42,6 +44,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.io.File
 import javax.inject.Inject
 
@@ -58,6 +63,8 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
     lateinit var commSetting: CommSetting
     private lateinit var mPaymentRequest: PaymentRequest
     private var posLink: PosLink = PosLink()
+    @Inject
+    lateinit var apiModule2: ApiModule2
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -87,7 +94,7 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
         binding.lifecycleOwner = this
         binding.tvPax.setOnClickListener {
             initPOSLink()
-            openConnectDialog()
+            paxNetworkCall()
         }
 
         mSessionManager.setDevicesFragment(this)
@@ -97,6 +104,42 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
         syncDevices()
 
         return binding.root
+    }
+
+    private fun paxNetworkCall() {
+        ProgressUtils.showProgressDialog("Connecting to PAX", requireActivity())
+
+        var call: Call<PosLinkResult>? =
+            apiModule2.getRetrofit2().getPAXDetails("NFAC0YS6", "1850067558", "")
+        call!!.enqueue(object : Callback<PosLinkResult> {
+
+            override fun onResponse(
+                call: Call<PosLinkResult>,
+                response: Response<PosLinkResult>
+            ) {
+//                ProgressUtils.dismissProgressDialog()
+
+                if (response.isSuccessful) {
+                    LogUtil.logE("onResponse", response.body().toString() + response.body()!!.ipAddress)
+                    var ipAddress = response.body()!!.ipAddress
+                    var port = response.body()!!.port
+                    Log.d("Pax Params: ", "pax $ipAddress $port")
+                    setCommSetting(ipAddress, port.toString())
+                    getMerchantDetails()
+                }
+            }
+
+            override fun onFailure(
+                call: Call<PosLinkResult>,
+                t: Throwable
+            ) {
+
+                ProgressUtils.dismissProgressDialog()
+
+                AlertUtils.showCustomAlert(requireContext(), t.message)
+                Log.d("onFailure: ", "Message-> ${t.message}")
+            }
+        })
     }
 
     private fun openConnectDialog(){
@@ -144,7 +187,7 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
 
         //initialization value  for comsetting's attribute
         commset.type = CommSetting.TCP
-        commset.timeOut = "6000"
+        commset.timeOut = "9000"
         commset.baudRate = "9600"
 //        commset.serialPort = "COM1"
         commset.isEnableProxy = false
@@ -193,11 +236,13 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
                     mID
                 )
                 CoroutineScope(Dispatchers.Main).launch {
+                    ProgressUtils.dismissProgressDialog()
                     Toast.makeText(requireContext(), "Merchant connected successfully", Toast.LENGTH_SHORT).show()
                 }
                 Log.d("Merchant Details: ", mID + " " + resultCode + "  " + status)
             } else {
                 CoroutineScope(Dispatchers.Main).launch {
+                    ProgressUtils.dismissProgressDialog()
                     Toast.makeText(requireContext(), "getMerchantDetails Failed ${result.Code} ${result.Msg}", Toast.LENGTH_LONG).show()
                 }
             }
