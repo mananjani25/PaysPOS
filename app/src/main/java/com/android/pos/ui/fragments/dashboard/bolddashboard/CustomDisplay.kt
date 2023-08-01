@@ -346,10 +346,10 @@ class CustomDisplay(
                     binding.txtSubTotalCash?.text = getCashDiscountedPrice(subTotalPrice)
                     binding.txtSubTotalCard?.text = MethodUtils.roundOffAmount(subTotalPrice)
 
-                    binding.txtTaxCash?.text = getCashDiscountedPrice(totalTax)
+                    binding.txtTaxCash?.text = MethodUtils.roundOffAmount(totalTax)
                     binding.txtTaxCard?.text = MethodUtils.roundOffAmount(totalTax)
 
-                    binding.txtServiceChargeCash?.text = getCashDiscountedPrice(totalServiceCharge)
+                    binding.txtServiceChargeCash?.text = MethodUtils.roundOffAmount(totalServiceCharge)
                     binding.txtServiceChargeCard?.text = MethodUtils.roundOffAmount(totalServiceCharge)
 
                     binding.txtTotalCash?.text = getCashDiscountedPrice(totalPrice)
@@ -362,8 +362,7 @@ class CustomDisplay(
                     binding.txtTaxCash?.text = MethodUtils.roundOffAmount(totalTax)
                     binding.txtTaxCard?.text = getSurchargedPrice(totalTax)
 
-                    binding.txtServiceChargeCash?.text =
-                        MethodUtils.roundOffAmount(totalServiceCharge)
+                    binding.txtServiceChargeCash?.text = MethodUtils.roundOffAmount(totalServiceCharge)
                     binding.txtServiceChargeCard?.text = getSurchargedPrice(totalServiceCharge)
 
                     binding.txtTotalCash?.text = MethodUtils.roundOffAmount(totalPrice)
@@ -400,109 +399,58 @@ class CustomDisplay(
                         ) == "CashDiscount"
                     ) {
                         binding.txtOrderTotal?.text = getCashDiscountedPrice(totalPrice)
+                        binding.txtCashDiscountSurchargeCard?.text = "-"+MethodUtils.roundOffAmount(cashdiscountAmount)
                     } else {
                         binding.txtOrderTotal?.text = getSurchargedPrice(totalPrice)
+                        binding.txtCashDiscountSurchargeCard?.text =
+                            MethodUtils.roundOffAmount(cashdiscountAmount)
                     }
 
                 } else {
                     binding.txtOrderTotal?.text = MethodUtils.roundOffAmount(totalPrice)
                 }
 
-                binding.txtCashDiscountSurchargeCard?.text =
-                    MethodUtils.roundOffAmount(cashdiscountAmount)
+
 
             }
 
         }
 
-    }
-
-    private fun getCashDiscountedPrice(amount: Double): String {
-        return MethodUtils.roundOffAmount(
-            amount - getCashDiscountSurcharge()
-        )
-    }
-
-    private fun getCashDiscountSurcharge(): Double {
-        var cashDiscountSurcharge = 0.0
-        if (prefProvider.getValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
-                .isEmpty() || prefProvider.getValue(
-                Constants.CASH_DISCOUNT_SURCHARGE,
-                ""
-            ) == "0.0"
-        ) {
-            cashDiscountSurcharge = dashBoardCategoryViewModel.cashdiscountAmount
-            prefProvider.setValue(
-                Constants.CASH_DISCOUNT_SURCHARGE,
-                String.format("%.2f", dashBoardCategoryViewModel.cashdiscountAmount)
-            )
-        } else {
-            cashDiscountSurcharge =
-                prefProvider.getValue(Constants.CASH_DISCOUNT_SURCHARGE, "").toDouble()
-        }
-        return cashDiscountSurcharge
     }
 
     private fun getSurchargedPrice(amount: Double): String {
-        return MethodUtils.roundOffAmount(
-            amount + getCashDiscountSurcharge()
+        return MethodUtils.roundOffAmount(amount + getCashDiscountOrSurChargeAmount(amount))
+    }
+
+    private fun getCashDiscountedPrice(amount: Double): String {
+        return MethodUtils.roundOffAmount(amount - getCashDiscountOrSurChargeAmount(amount))
+    }
+
+    private fun getCashDiscountOrSurChargeAmount(amount: Double): Double {
+        return MethodUtils.calculateCashDiscount(
+            amount,
+            prefProvider,
+            context
         )
     }
 
-    private fun setupTotals(cartList: List<CartModel>) {
-        dashBoardCategoryViewModel.apply {
-
-            if (order_note.isNotEmpty()) {
-                binding.relativeOrderNotes.visibility = View.VISIBLE
-                binding.txtOrderNote.text = order_note
-            } else {
-                binding.relativeOrderNotes.visibility = View.GONE
-            }
-
-            binding.txtSubTotal.text = MethodUtils.roundOffAmount(subTotalPrice)
-            binding.txtTax.text = MethodUtils.roundOffAmount(totalTax)
-            binding.txtServiceCharge.text = MethodUtils.roundOffAmount(totalServiceCharge)
-            binding.txtDiscount.text = "-" + MethodUtils.roundOffAmount(totalDiscount)
-            binding.txtNoncashAdj.text = MethodUtils.roundOffAmount(cashdiscountAmount)
-            //showSurcharge(true)
-
-            dashBoardCategoryViewModel.apply {
-                val data: TbCustomer? = prefProvider.getCustomerData()
-                if (data != null) {
-                    if (loyaltyPointCondition(data) && redeemLoyaltyInfo.needToApplyLoyalty) {
-                        binding.liinearInfoLayout.layoutParams.height =
-                            resources.getDimension(R.dimen._90sdp).toInt()
-                        binding.relativeLoylatyPoints.visibility = View.VISIBLE
-                        binding.lblLoyaltyPoints.visibility = View.VISIBLE
-
-                        binding.txtLabelLoyaltyAmounts.visibility = View.VISIBLE
-                        binding.checkloylaty.visibility = View.GONE
-                        binding.txtLoyaltyAmount.text = "- $${
-                            String.format(
-                                "%.2f", redeemLoyaltyInfo.usedLoyaltyAmount
-                            )
-                        }"
-                        binding.txtLoyaltyPoints.text = "${redeemLoyaltyInfo.usedLoyaltyPoints}"
-                    } else {
-                        binding.liinearInfoLayout.layoutParams.height =
-                            resources.getDimension(R.dimen._60sdp).toInt()
-                        binding.relativeLoylatyPoints.visibility = View.GONE
-                        binding.lblLoyaltyPoints.visibility = View.GONE
-                    }
+    private fun getCashDiscountSurcharge(totalPrice: Double, isCash: Boolean): Double {
+        return if (isCash) {
+            if (dashBoardCategoryViewModel.cashDiscountType == "CashDiscount") {
+                if (totalPrice - dashBoardCategoryViewModel.cashdiscountAmount < 0.0) {
+                    0.0
+                } else {
+                    totalPrice - dashBoardCategoryViewModel.cashdiscountAmount
                 }
-            }
-
-            if (taxBirfurcationAdapter.taxlist.size < 2) {
-                binding.imgDropdown.gone()
             } else {
-                binding.imgDropdown.visible()
+                totalPrice
             }
-
-            if (cartList[0].taxlistDynamic?.isNotEmpty() == true) {
-                taxBirfurcationAdapter.setList(cartList[0].taxlistDynamic as ArrayList<TaxData>)
+        } else {
+            if (dashBoardCategoryViewModel.cashDiscountType == "SurCharge") {
+                totalPrice + dashBoardCategoryViewModel.cashdiscountAmount
+            } else {
+                totalPrice
             }
-
-            itemCalculation(cartList, binding.txtTotal, context)
         }
     }
 
@@ -2153,7 +2101,20 @@ class CustomDisplay(
     }
 
     fun updateTotals(cashTotal: String, cardTotal: String) {
-        binding.txtTotalCash?.text = cashTotal
-        binding.txtTotalCard?.text = cardTotal
+
+        if (MethodUtils.isEnableCashDiscount(context) && !showCashCreditPrice) {
+            if (prefProvider.getValue(
+                    Constants.OPTION_TYPE,
+                    "CashDiscount"
+                ) == "CashDiscount"
+            ) {
+                binding.txtOrderTotal?.text = cashTotal
+            }else{
+                binding.txtOrderTotal?.text = cardTotal
+            }
+        }else{
+            binding.txtTotalCash?.text = cashTotal
+            binding.txtTotalCard?.text = cardTotal
+        }
     }
 }

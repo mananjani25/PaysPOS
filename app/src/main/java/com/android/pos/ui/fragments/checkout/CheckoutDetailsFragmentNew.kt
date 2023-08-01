@@ -2438,10 +2438,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 Constants.SHOW_TIP_SCREEN_BEFORE_PAYMENT,
                 false
             )
-            if (this::presentation.isInitialized) {
-                presentation.show()
-                presentation.showTipsAdded(tipAmount, WholetotalPrice)
-            }
+
             if(tipFromCustomerDisplay && showTipCollectionBeforePay){
                 MethodUtils.setPriceTextView(
                     binding.tvCash,
@@ -2466,13 +2463,16 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 binding.tvCard,
                 (getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectedCount) + tipAmount
             )
+
             if (this::presentation.isInitialized) {
                 presentation.show()
+                presentation.showTipsAdded(tipAmount, WholetotalPrice)
                 presentation.updateTotals(
                     binding.tvCash.text.toString(),
                     binding.tvCard.text.toString()
                 )
             }
+
             binding.tvCash.text =
                 "Cash (" + binding.tvCash.text + ")"
             binding.tvtipcash?.visible()
