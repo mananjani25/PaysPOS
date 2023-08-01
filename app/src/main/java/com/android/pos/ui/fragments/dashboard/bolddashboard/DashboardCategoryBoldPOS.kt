@@ -200,7 +200,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         checkCashDrawerObserver()
         Binding()
         prefProvider.setValue(Constants.REDIRECT_FROM, "")
-        prefProvider.setValue(Constants.OPEN_ORDER_ITEMS, "")
+        //prefProvider.setValue(Constants.OPEN_ORDER_ITEMS, "")
 
         if(prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD){
             viewModel.clearGiftCardCart()
