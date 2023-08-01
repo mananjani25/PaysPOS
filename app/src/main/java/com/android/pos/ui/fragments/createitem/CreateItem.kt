@@ -425,7 +425,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback, It
                 model.name = "Select Modifier Set"
                 spinnerList.add(model)
                 it.data.forEach {
-                    if (isEdit && itemObject.modifier_set_ids.contains(it.id)) {
+                    if (isEdit && itemObject.modifier_set_ids.contains(it.id) && it.itemIds.contains(itemObject.itemId)) {
                         it.isChecked = true
 
                         checkedList.add(it)
@@ -472,10 +472,14 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback, It
 
                                 mod.id?.let { it1 ->
                                     if (isEdit) {
-                                        itemObject.modifier_set_ids.toCollection(arrayListOf())
-                                            .add(
-                                                it1
-                                            )
+                                        val updatedModifiersList : ArrayList<Int> = arrayListOf()
+                                        updatedModifiersList.addAll(itemObject.modifier_set_ids)
+                                        updatedModifiersList.add(it1)
+                                        itemObject.modifier_set_ids = updatedModifiersList
+//                                        itemObject.modifier_set_ids.toCollection(arrayListOf())
+//                                            .add(
+//                                                it1
+//                                            )
                                     }
 
                                     runOnUiThread(Runnable {
@@ -702,6 +706,14 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback, It
                 Constants.CREATEITEM
             )
             navControll.popBackStack()
+        }
+
+        // To update modifiers list if items set is updated for any modifier
+        setFragmentResultListener("request_key_modifier_set_updated") { requestKey: String, bundle: Bundle ->
+            val isDataUpdated = bundle.getBoolean("isUpdated")
+            if (isDataUpdated) {
+                getModifiers()
+            }
         }
 
     }
@@ -967,7 +979,11 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback, It
 
         if (isEdit) {
             modifierSet.id?.let {
-                itemObject.modifier_set_ids.toCollection(arrayListOf()).remove(it)
+                val updatedModifiersList : ArrayList<Int> = arrayListOf()
+                updatedModifiersList.addAll(itemObject.modifier_set_ids)
+                updatedModifiersList.remove(it)
+                itemObject.modifier_set_ids = updatedModifiersList
+//                itemObject.modifier_set_ids.toCollection(arrayListOf()).remove(it)
             }
         }
 
@@ -1002,10 +1018,14 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback, It
 
                             mod.id?.let { it1 ->
                                 if (isEdit) {
-                                    itemObject.modifier_set_ids.toCollection(arrayListOf())
-                                        .add(
-                                            it1
-                                        )
+                                    val updatedModifierList : ArrayList<Int> = arrayListOf()
+                                    updatedModifierList.addAll(itemObject.modifier_set_ids)
+                                    updatedModifierList.add(it1)
+                                    itemObject.modifier_set_ids = updatedModifierList
+//                                    itemObject.modifier_set_ids.toCollection(arrayListOf())
+//                                        .add(
+//                                            it1
+//                                        )
                                 }
 
                                 runOnUiThread(Runnable {
