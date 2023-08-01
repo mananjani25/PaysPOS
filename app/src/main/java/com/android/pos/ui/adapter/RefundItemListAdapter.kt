@@ -255,7 +255,8 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
             tip_divided = rounded.replace(",","").toDouble()
             if (paymentType == "Card") {
                     if (totalItemPrice >= tip_divided) {
-                        totalItemPrice += tip_divided
+                        // Commented by Mansi to remove tip from refund
+//                        totalItemPrice += tip_divided
                     } else if (totalItemPrice == 0.0) {
                         totalItemPrice += tipValue / noteList.size
                     } else {
