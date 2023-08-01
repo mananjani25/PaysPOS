@@ -60,4 +60,7 @@ interface ModifierSetDao {
     @Query("SELECT * from ModifierSet  where ModifierSet.id  = :id LIMIT 1")
     fun itemOne(id: Int): ModifierSet?
 
+    // To update associated item ids array for a modifier
+    @Query("UPDATE ModifierSet SET itemIds = :itemIdsList WHERE ModifierSet.id = :modId")
+    suspend fun updateModifiersItem(modId: Int, itemIdsList: List<Int>)
 }

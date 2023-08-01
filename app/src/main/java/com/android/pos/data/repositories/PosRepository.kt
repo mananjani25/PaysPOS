@@ -1182,5 +1182,10 @@ class PosRepository @Inject constructor(
     suspend fun fetchAllItemsList(): List<TbItem?>? {
         return appDatabase.itemDao().allItemsList()
     }
+
+    // To update Items ids array for single modifier
+    suspend fun updateItemIdsForModifier(modId: Int?, itemIdsList: List<Int>) {
+        appDatabase.modifierSetDao().updateModifiersItem(modId!!, itemIdsList)
+    }
 }
 

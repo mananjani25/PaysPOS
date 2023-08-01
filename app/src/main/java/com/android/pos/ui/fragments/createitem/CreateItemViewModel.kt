@@ -18,7 +18,10 @@ import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.lang.Exception
 import javax.inject.Inject
 
 @HiltViewModel
@@ -161,6 +164,7 @@ class CreateItemViewModel @Inject constructor(
 
 
                                     val item = TbItem().convertToItem(createItemResponse.data, null)
+                                    updateItemsDataInModifiers(createItemResponse.data.modifierSetIds, item.itemId)
                                     posRepository.createItem(item)
 
                                     _data.value = Event(createItemResponse)
@@ -185,6 +189,56 @@ class CreateItemViewModel @Inject constructor(
 
         }
 
+    }
+
+    // To update items ids array for modifiers in DB
+    private suspend fun updateItemsDataInModifiers(modifierSetIds: List<Int>, itemId: Int) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                var oldModifierSetIds: ArrayList<Int> = arrayListOf()
+                posRepository.getSingleItem(itemId).let { item ->
+                    if(item?.modifier_set_ids != null) {
+                        oldModifierSetIds = item.modifier_set_ids as ArrayList
+                    }
+                }
+                // Remove item ids from modifier (if item's new modifier set doesn't contain ids of existing modifier set)
+                oldModifierSetIds.forEach { oldModifierId ->
+                    if (!modifierSetIds.contains(oldModifierId)) {
+                        val modifier: ModifierSet? = posRepository.getSingleModifier(oldModifierId)
+                        if (modifier != null) {
+                            val itemsIdsPresent: ArrayList<Int> = modifier.itemIds as ArrayList
+                            if (itemsIdsPresent.isNotEmpty()) {
+                                itemsIdsPresent.remove(itemId)
+                                posRepository.updateItemIdsForModifier(
+                                    oldModifierId,
+                                    itemsIdsPresent
+                                )
+                            }
+                        }
+                    }
+                }
+
+                // Add Item id to modifier  (if item's existing modifier set doesn't contain ids of new modifier set)
+                modifierSetIds.forEach { newModId ->
+                    if (!oldModifierSetIds.contains(newModId)) {
+                        val modifier: ModifierSet? = posRepository.getSingleModifier(newModId)
+                        if (modifier != null) {
+                            val itemsIdsPresent: ArrayList<Int> = modifier.itemIds as ArrayList
+                            if (itemsIdsPresent.isNotEmpty()) {
+                                if (!itemsIdsPresent.contains(itemId)) {
+                                    itemsIdsPresent.add(itemId)
+                                }
+                            } else {
+                                itemsIdsPresent.add(itemId)
+                            }
+                            posRepository.updateItemIdsForModifier(newModId, itemsIdsPresent)
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 
     fun setCategoryId(categoryId: Int) {
