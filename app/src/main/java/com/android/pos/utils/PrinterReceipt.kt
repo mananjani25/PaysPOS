@@ -18,6 +18,7 @@ import com.android.pos.data.model.responseModel.GetTipReponse
 import com.android.pos.data.model.responseModel.OnlineOrderResponseModel
 import com.android.pos.data.model.responseModel.OpenOrderResponse
 import com.android.pos.data.model.responseModel.PrinterResponse
+import com.android.pos.data.model.responseModel.employeeTipSummary.EmployeeTipSummaryResponse
 import com.android.pos.data.model.responseModel.report.KeyValue
 import com.android.pos.data.remote.Constants
 import com.android.pos.di.PrefProvider
@@ -54,6 +55,13 @@ fun padLine(
 }
 
 
+fun addPaymentDetailsHeader() {
+
+    PrintSunmiUtils.orderTime("Details" + repeat(" ", 20) + "Refund" + repeat(" ", 9) + "Amount")
+
+
+}
+
 fun addPaymentDetailsHeader(builder: Builder): Builder {
     builder.addTextLineSpace(30)
     builder.addFeedUnit(30)
@@ -68,6 +76,25 @@ fun addPaymentDetailsHeader(builder: Builder): Builder {
         Builder.COLOR_1
     )
     builder.addText("Details" + repeat(" ", 20) + "Refund" + repeat(" ", 9) + "Amount")
+
+
+    return builder
+}
+
+fun addItemWiseSalesHeader(builder: Builder): Builder {
+    builder.addTextLineSpace(30)
+    builder.addFeedUnit(30)
+    builder.addTextFont(Builder.FONT_E)
+    // builder.addTextAlign(Builder.ALIGN_LEFT)
+    builder.addTextLang(Builder.LANG_EN)
+    addCustomerTextSize(builder, Constants.SMALL)
+    builder.addTextStyle(
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.TRUE,
+        Builder.COLOR_1
+    )
+    builder.addText("Item Name" + repeat(" ", 18) + "Quantity" + repeat(" ", 7) + "Amount")
 
 
     return builder
@@ -92,10 +119,25 @@ fun addPaymentDetailsHeaderEODP(builder: Printer): Printer {
     return builder
 }
 
-fun addPaymentDetailsHeader() {
+fun addItemWiseSalesHeader() {
 
-    PrintSunmiUtils.orderTime("Details" + repeat(" ", 20) + "Refund" + repeat(" ", 9) + "Amount")
+    val header = "Item Name" + repeat(" ", 18) + "Quantity" + repeat(" ", 7) + "Amount"
+   PrintSunmiUtils.orderTime(header)
 
+}
+
+fun addItemWiseSalesHeaderSunmiInner() {
+
+    val header = "Item Name" + repeat(" ", 18) + "Quantity" + repeat(" ", 7) + "Amount"
+    PrintSunmiUtils.normalText(header)
+
+}
+
+fun employeeTipSummaryHeader() {
+
+    val header = "Employee Name   Cash Tips  Card Tips  Total Tips"
+
+    PrintSunmiUtils.normalText(header)
 
 }
 
@@ -563,6 +605,26 @@ fun addSixHeaderForOrderSaleDetails(builder: Builder): Builder {
     return builder
 }
 
+fun addSixHeaderForEmployeeTipSummary(builder: Builder) {
+
+
+    builder.addTextLineSpace(30)
+    builder.addFeedUnit(30)
+    builder.addTextFont(Builder.FONT_E)
+    // builder.addTextAlign(Builder.ALIGN_LEFT)
+    builder.addTextLang(Builder.LANG_EN)
+    addCustomerTextSize(builder, Constants.SMALL)
+    builder.addTextStyle(
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.TRUE,
+        Builder.COLOR_1
+    )
+
+    builder.addText("Employee Name   Cash Tips  Card Tips  Total Tips")
+
+}
+
 fun addSixHeaderForOrderSaleDetailsEODP(builder: Printer): Printer {
 
 
@@ -585,6 +647,10 @@ fun addSixHeaderForOrderSaleDetailsEODP(builder: Printer): Printer {
 
 fun addSixHeaderForOrderSaleDetailsSunmi() {
     PrintSunmiUtils.orderTime("OrderId    Tip      SC     PayType     Amount   ")
+}
+
+fun addSixHeaderForEmployeeTipSummarySunmi() {
+    PrintSunmiUtils.orderTime("Employee Name   Cash Tips  Card Tips  Total Tips")
 }
 
 fun addSixHeaderForOrderSaleDetailsSunmiInner() {
@@ -985,7 +1051,7 @@ fun addItemsInOrderSalesDetails(
     details: EodReportResponse.Data.OrderSalesDetails.Details
 ) {
 
-    var data = details.orderId
+    var data  = details.orderId
     data += repeat(" ", 10 - details.orderId.length) + MethodUtils.roundOffAmount(details.tip)
     data += repeat(" ", 18 - data.length) + MethodUtils.roundOffAmount(details.serviceCharge)
     data += repeat(" ", 27 - data.length) + details.payType
@@ -993,6 +1059,136 @@ fun addItemsInOrderSalesDetails(
 
     PrintSunmiUtils.orderTime(data)
 }
+
+fun addItemWiseSales(it: EodReportResponse.Data.ItemWiseSalesData) {
+
+    var itemName = ""
+    var quantity = ""
+    var amount = ""
+
+
+    itemName = it.itemName
+    quantity = it.quantity
+    amount =  MethodUtils.roundOffAmount(it.amount)
+
+    var fPart = itemName + repeat(" ", 27 - itemName.length) + quantity
+    var spaceLastPart = 48 - fPart.length
+    var spaceLast = 0
+    if (spaceLastPart > 1 && amount.length < spaceLastPart) {
+        spaceLast = spaceLastPart - amount.length
+    }
+
+    fPart += repeat(" ", spaceLast) + amount
+
+    PrintSunmiUtils.orderTime(fPart)
+
+}
+
+fun addItemWiseSalesSunmiInnerPrinter(it: EodReportResponse.Data.ItemWiseSalesData) {
+
+    var itemName = ""
+    var quantity = ""
+    var amount = ""
+
+
+    itemName = it.itemName
+    quantity = it.quantity
+    amount =  MethodUtils.roundOffAmount(it.amount)
+
+    var fPart = itemName + repeat(" ", 27 - itemName.length) + quantity
+    var spaceLastPart = 48 - fPart.length
+    var spaceLast = 0
+    if (spaceLastPart > 1 && amount.length < spaceLastPart) {
+        spaceLast = spaceLastPart - amount.length
+    }
+
+    fPart += repeat(" ", spaceLast) + amount
+
+    PrintSunmiUtils.normalText(fPart)
+
+}
+
+fun addItemsInEmployeeTipsSummary(data: EmployeeTipSummaryResponse.Data) {
+
+    var items = ""
+    var emName = data.employee_name
+    if (data.employee_name.length >= 13){
+        emName = data.employee_name.substring(0,11).plus("...")
+    }
+    items += repeat(" ", 0 - data.employee_name.length) + emName
+    items += repeat(" ", 17 - items.length) + MethodUtils.roundOffAmount(data.total_cash_tips)
+    items += repeat(" ", 28 - items.length) + MethodUtils.roundOffAmount(data.total_card_tips)
+    items += repeat(" ", 39 - items.length) + MethodUtils.roundOffAmount(data.total_tips)
+
+    Log.e("addItemsInEmployeeTip","$items")
+    PrintSunmiUtils.normalText(items)
+
+}
+
+fun itemWiseSalesM30Print(it: EodReportResponse.Data.ItemWiseSalesData, builder: Builder) {
+
+    var itemName = ""
+    var quantity = ""
+    var amount = ""
+
+
+    itemName = it.itemName
+    quantity = it.quantity
+    amount =  MethodUtils.roundOffAmount(it.amount)
+
+    var fPart = itemName + repeat(" ", 27 - itemName.length) + quantity
+    var spaceLastPart = 48 - fPart.length
+    var spaceLast = 0
+    if (spaceLastPart > 1 && amount.length < spaceLastPart) {
+        spaceLast = spaceLastPart - amount.length
+    }
+
+    fPart += repeat(" ", spaceLast) + amount
+
+    builder.addText(fPart)
+
+}
+
+fun addItemsInEmployeeTipsSummaryM30(data: EmployeeTipSummaryResponse.Data, builder: Builder) {
+
+    var items = ""
+    var emName = data.employee_name
+    if (data.employee_name.length >= 13){
+        emName = data.employee_name.substring(0,11).plus("...")
+    }
+    items += repeat(" ", 0 - data.employee_name.length) + emName
+    items += repeat(" ", 17 - items.length) + MethodUtils.roundOffAmount(data.total_cash_tips)
+    items += repeat(" ", 28 - items.length) + MethodUtils.roundOffAmount(data.total_card_tips)
+    items += repeat(" ", 39 - items.length) + MethodUtils.roundOffAmount(data.total_tips)
+
+    Log.e("addItemsInEmployeeTip","$items")
+  //  PrintSunmiUtils.orderTime(items)
+
+    builder.addTextLineSpace(30)
+    builder.addFeedUnit(30)
+    builder.addTextFont(Builder.FONT_E)
+    // builder.addTextAlign(Builder.ALIGN_LEFT)
+    builder.addTextLang(Builder.LANG_EN)
+    addCustomerTextSize(builder, Constants.SMALL)
+    builder.addTextStyle(
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.COLOR_1
+    )
+    builder.addText(items)
+
+}
+
+
+/** utility: string repeat  */
+fun repeat(str: String?, i: Int): String? {
+    if (i > -1)
+        return String(CharArray(i)).replace("\u0000", str!!)
+
+    return ""
+}
+
 
 fun addItemsInOrderSalesDetailsInner(
     details: EodReportResponse.Data.OrderSalesDetails.Details
@@ -1011,9 +1207,10 @@ fun padLineCustomerItem(
     @Nullable partOne: String?,
     @Nullable partTwo: String?,
     columnsPerLine: Int
-): String? {
+): String {
     var partOne = partOne
     var partTwo = partTwo
+
     if (partOne == null) {
         partOne = ""
     }

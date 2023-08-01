@@ -68,6 +68,10 @@ import com.android.pos.utils.addCreditTipAuditHeader
 import com.android.pos.utils.addCreditTipAuditHeaderInner
 import com.android.pos.utils.addCustomerTextSize
 import com.android.pos.utils.addHorizontalLine
+import com.android.pos.utils.addItemWiseSales
+import com.android.pos.utils.addItemWiseSalesHeader
+import com.android.pos.utils.addItemWiseSalesHeaderSunmiInner
+import com.android.pos.utils.addItemWiseSalesSunmiInnerPrinter
 import com.android.pos.utils.addItemsInOrderSalesDetails
 import com.android.pos.utils.addItemsInOrderSalesDetailsInner
 import com.android.pos.utils.addPaymentDetailsHeader
@@ -89,6 +93,7 @@ import com.android.pos.utils.extensions.liveSnackBar
 import com.android.pos.utils.extensions.runOnUiThread
 import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.extensions.visible
+import com.android.pos.utils.itemWiseSalesM30Print
 import com.android.pos.utils.padLine
 import com.android.pos.utils.printer.PrinterClass
 import com.android.pos.utils.repeat
@@ -385,7 +390,8 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
 
                     } catch (e: Exception) {
-                        LogUtil.logE(TAG, "PrinterException: " + e.message)
+                        LogUtil.logE(TAG, "customerReceiptPrinters.ipAddress: " + customerReceiptPrinters.ipAddress)
+                        LogUtil.logE(TAG, "PrinterException: " + e)
                         printer = null
                         return@launch
                     }
@@ -641,6 +647,8 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 Builder.COLOR_1
             )
             builder.addText("Employee Report:" + eodReportData?.reportTime)
+
+
             if (eodReportData?.orderSalesDetails?.data?.isNotEmpty() == true && eodReportConfiguration?.orderSalesDetails == true) {
                 builder.addFeedLine(2)
                 builder.addTextSize(2, 2)
@@ -870,6 +878,45 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     }
                 }
 
+
+            }
+
+            if (eodReportData?.itemWiseSales?.isNotEmpty() == true && eodReportConfiguration?.isItemWiseSales == true) {
+                builder.addFeedLine(3)
+                builder.addTextSize(2, 2)
+
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, MEDIUM)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+                builder.addText("Item Wise Sales")
+
+                builder.addFeedLine(2)
+                addCustomerTextSize(builder, SMALL)
+                addHorizontalLine(builder)
+
+                addItemWiseSalesHeader(builder)
+
+                builder.addFeedLine(1)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+                addCustomerTextSize(builder, SMALL)
+                addHorizontalLine(builder)
+
+                eodReportData?.itemWiseSales?.forEach {
+                    itemWiseSalesM30Print(it,builder)
+
+                }
 
             }
 
@@ -1920,6 +1967,20 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 SunmiPrinterApi.getInstance().lineWrap(1)
             }
 
+            if (eodReportData?.itemWiseSales?.isNotEmpty() == true && eodReportConfiguration?.isItemWiseSales == true){
+
+                PrintSunmiUtils.addLable("Item Wise Sales")
+                addItemWiseSalesHeader()
+
+                PrintSunmiUtils.addHorizontal()
+                eodReportData?.itemWiseSales?.forEach {
+                    addItemWiseSales(it)
+                }
+
+                SunmiPrinterApi.getInstance().lineWrap(1)
+
+            }
+
             if (eodReportData?.paymentDetails?.isNotEmpty() == true && eodReportConfiguration?.paymentDetails == true) {
 
                 PrintSunmiUtils.addLable("PAYMENT DETAILS")
@@ -2383,6 +2444,20 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     )
                 }
                 SunmiPrintHelper.getInstance().lineWrap(1)
+            }
+
+            if (eodReportData?.itemWiseSales?.isNotEmpty() == true && eodReportConfiguration?.isItemWiseSales == true){
+
+                PrintSunmiUtils.addLable("Item Wise Sales")
+                addItemWiseSalesHeaderSunmiInner()
+
+                PrintSunmiUtils.addHorizontal()
+                eodReportData?.itemWiseSales?.forEach {
+                    addItemWiseSalesSunmiInnerPrinter(it)
+                }
+
+                SunmiPrinterApi.getInstance().lineWrap(1)
+
             }
 
             if (eodReportData?.paymentDetails?.isNotEmpty() == true && eodReportConfiguration?.paymentDetails == true) {
