@@ -1230,14 +1230,20 @@ class AddEditCustomer : Fragment(), AddressTextChangeListner {
         viewModel.customerModel.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { updatedCustomerModel ->
                 activity?.let {
-                    AlertUtils.showCustomAlertWithListenerWithOK(
-                        it,
-                        "Your profile is updated.",
-                    )
-                    { _, _ ->
+                    if (prefProvider.getValue(
+                            Constants.ORDER_TYPE,
+                            Constants.TAKEOUT
+                        ) == Constants.GIFT_CARD
+                    ) {
+                        AlertUtils.showCustomAlertWithListenerWithOK(
+                            it,
+                            "Your profile is updated.",
+                        )
+                        { _, _ ->
 
-                        if(prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT)==Constants.GIFT_CARD){
-                            moveToCheckout(updatedCustomerModel)
+                            if(prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT)==Constants.GIFT_CARD){
+                                moveToCheckout(updatedCustomerModel)
+                            }
                         }
                     }
 
