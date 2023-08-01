@@ -40,10 +40,7 @@ import com.android.pos.utils.paxUtils.SettingINI
 import com.magtek.mobile.android.mtusdk.*
 import com.pax.poslink.*
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -94,7 +91,9 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
         binding.lifecycleOwner = this
         binding.tvPax.setOnClickListener {
             initPOSLink()
-            paxNetworkCall()
+//            paxNetworkCall()
+            setCommSetting("","")
+            getMerchantDetails()
         }
 
         mSessionManager.setDevicesFragment(this)
@@ -110,7 +109,7 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
         ProgressUtils.showProgressDialog("Connecting to PAX", requireActivity())
 
         var call: Call<PosLinkResult>? =
-            apiModule2.getRetrofit2().getPAXDetails("NFAC0YS6", "1850067558", "")
+            apiModule2.getRetrofit2().getPAXDetails("JT2OHZTP", "2290083869", "")
         call!!.enqueue(object : Callback<PosLinkResult> {
 
             override fun onResponse(
@@ -156,8 +155,8 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
             val port = edtPort.text.toString()
             val IP = edtIP.text.toString()
             Log.d("Connect Parameters: ","IP $IP Port $port")
-            setCommSetting(IP, port)
-            getMerchantDetails()
+            /*setCommSetting(IP, port)
+            getMerchantDetails()*/
             dialog.dismiss()
         }
         dialog.show()
@@ -178,21 +177,20 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
         //create commsetting object
 
         var file = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-
         val iniFile = "/storage/emulated/0/Download/"+ SettingINI.FILENAME
         /*val iniFile =
             activity!!.applicationContext.filesDir.absolutePath + "/" + SettingINI.FILENAME*/
-        Log.d("iniFile: ","iniFile $iniFile ${file.absolutePath}")
         val commset: CommSetting = SettingINI.getCommSettingFromFile(iniFile)
+        Log.d("iniFile: ","iniFile $iniFile ${file.absolutePath}")
 
         //initialization value  for comsetting's attribute
         commset.type = CommSetting.TCP
-        commset.timeOut = "9000"
+        commset.timeOut = "6000"
         commset.baudRate = "9600"
 //        commset.serialPort = "COM1"
         commset.isEnableProxy = false
-        commset.destPort = edtPort
-        commset.destIP = edtIP
+        commset.destPort = "10009"
+        commset.destIP = "192.168.3.176"
         /*val selectedHost = "UNKNOWN"
         Convenience.setHost(context, commset, selectedHost)*/
         Log.i(
@@ -213,11 +211,11 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
         GlobalScope.launch {
             Log.d("manageRequest ","Start")
             val manageRequest = ManageRequest()
-            manageRequest.TransType = manageRequest.ParseTransType("INIT")
-            /*manageRequest.TransType = manageRequest.ParseTransType("GETVAR")
+//            manageRequest.TransType = manageRequest.ParseTransType("INIT")
+            manageRequest.TransType = manageRequest.ParseTransType("GETVAR")
             manageRequest.EDCType = manageRequest.ParseEDCType("CREDIT")
             manageRequest.VarName = "MID"
-            manageRequest.ContactlessEntryFlag = "1"*/
+            manageRequest.ContactlessEntryFlag = "1"
 
             posLink.ManageRequest = manageRequest
             val result = posLink.ProcessTrans()
@@ -237,13 +235,52 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
                 )
                 CoroutineScope(Dispatchers.Main).launch {
                     ProgressUtils.dismissProgressDialog()
-                    Toast.makeText(requireContext(), "Merchant connected successfully", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Merchant $mID is connected successfully", Toast.LENGTH_SHORT).show()
                 }
+                getPaymentResponse()
                 Log.d("Merchant Details: ", mID + " " + resultCode + "  " + status)
             } else {
                 CoroutineScope(Dispatchers.Main).launch {
                     ProgressUtils.dismissProgressDialog()
                     Toast.makeText(requireContext(), "getMerchantDetails Failed ${result.Code} ${result.Msg}", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
+
+    private fun getPaymentResponse() {
+        GlobalScope.launch {
+            mPaymentRequest = PaymentRequest()
+            mPaymentRequest.TransType = mPaymentRequest.ParseTransType("SALE")
+            mPaymentRequest.TenderType = mPaymentRequest.ParseTenderType("CREDIT")
+
+            mPaymentRequest.Amount = "120"
+            mPaymentRequest.TipAmt = ""
+            mPaymentRequest.ECRRefNum = "123441"
+
+            posLink.PaymentRequest = mPaymentRequest
+            val result = posLink.ProcessTrans()
+            Log.d("result: ", result.Code.toString() + " " + result.Msg)
+            if (result.Code === ProcessTransResult.ProcessTransResultCode.OK) {
+                val msg = Message()
+                msg.what = Constants.TRANSACTION_SUCCESSED
+                msg.obj = posLink.PaymentResponse
+
+                val response = msg.obj as PaymentResponse
+                val resultCode = response.ResultCode
+                val resultTxt = response.ResultTxt
+                val approvedAmount = response.ApprovedAmount
+                val ExtData = response.ExtData
+
+                Log.d(
+                    "Payment Details: ",
+                    "$ExtData $resultCode $resultTxt"
+                )
+                Log.d("Payment Details: ", " Amt $approvedAmount ")
+            } else {
+                CoroutineScope(Dispatchers.Main).launch {
+                    ProgressUtils.dismissProgressDialog()
+                    Toast.makeText(requireContext(), "Payment Failed ${result.Code} ${result.Msg}", Toast.LENGTH_LONG).show()
                 }
             }
         }
