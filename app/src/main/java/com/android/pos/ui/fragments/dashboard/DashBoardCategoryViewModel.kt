@@ -417,7 +417,6 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun deleteCart() {
         prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
-        //prefProvider.setValue(Constants.OPEN_ORDER_ITEMS,"")
         cartModel = null
         GlobalScope.launch {
             posRepository.deleteCart(prefProvider.getValueInt(EMPLOYEE_ID, 0))
