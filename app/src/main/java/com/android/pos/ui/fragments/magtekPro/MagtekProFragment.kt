@@ -220,6 +220,7 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
                     ProgressUtils.dismissProgressDialog()
                     Toast.makeText(requireContext(), "Merchant $mID is connected successfully", Toast.LENGTH_SHORT).show()
                 }
+                prefProvider.setValueboolean(Constants.IS_PAX_CONNECTED, true)
                 getPaymentResponse()
                 Log.d("Merchant Details: ", mID + " " + resultCode + "  " + status)
             } else {

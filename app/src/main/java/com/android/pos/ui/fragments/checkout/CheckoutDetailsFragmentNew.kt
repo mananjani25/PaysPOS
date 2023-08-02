@@ -3,6 +3,7 @@ package com.android.pos.ui.fragments.checkout
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
 import android.os.Bundle
+import android.os.Message
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -52,7 +53,11 @@ import com.google.gson.JsonArray
 import com.magtek.mobile.android.mtlib.IMTCardData
 import com.magtek.mobile.android.mtlib.MTConnectionState
 import com.magtek.mobile.android.mtusdk.*
+import com.pax.poslink.PaymentRequest
+import com.pax.poslink.PosLink
+import com.pax.poslink.ProcessTransResult
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -112,6 +117,14 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     var totalDiscount = 0.0
     var cardPaymentAmount = 0.0
 
+    // PAX variables
+    private lateinit var mPaymentRequest: PaymentRequest
+    private var posLink: PosLink = PosLink()
+    var CARDBIN = ""
+    var cardLastDigits = ""
+    var CardName = ""
+    var EDCType = ""
+
     private var cartList: CartModel? = null
 
     @Inject
@@ -167,7 +180,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
 
 
-
+        if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)) {
+            binding.llManualCardEntry.visibility = View.GONE
+        }
 
         orderId = arguments?.getInt("orderId")
 
@@ -933,11 +948,15 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             paymentAmount += tipAmount
 
             if (paymentAmount != 0.0) {
-                magtekModule.stopListner(false)
-                if (device == 0) {
-                    magtekPaymentCall()
+                if (!prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)) {
+                    magtekModule.stopListner(false)
+                    if (device == 0) {
+                        magtekPaymentCall()
+                    } else {
+                        magtekProPaymentCall()
+                    }
                 } else {
-                    magtekProPaymentCall()
+                    makePaxPaymentRequest()
                 }
             } else {
                 errorDisplay("Payment Amount is zero.")
@@ -1066,6 +1085,65 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         errorDisplay("Payment Amount is zero.")
                     }
 
+                }
+            }
+        }
+    }
+
+    private fun makePaxPaymentRequest() {
+        GlobalScope.launch {
+            CoroutineScope(Dispatchers.Main).launch {
+                ProgressUtils.showProgressDialog(requireActivity())
+            }
+            mPaymentRequest = PaymentRequest()
+            mPaymentRequest.TransType = mPaymentRequest.ParseTransType("SALE")
+            mPaymentRequest.TenderType = mPaymentRequest.ParseTenderType("CREDIT")
+            mPaymentRequest.Amount = paymentAmount.toString()
+            mPaymentRequest.TipAmt = ""
+            mPaymentRequest.ECRRefNum = "123442"
+
+            posLink.PaymentRequest = mPaymentRequest
+            val result = posLink.ProcessTrans()
+            Log.d("result: ", result.Code.toString() + " " + result.Msg)
+            if (result.Code === ProcessTransResult.ProcessTransResultCode.OK) {
+                val msg = Message()
+                msg.what = Constants.TRANSACTION_SUCCESSED
+                msg.obj = posLink.PaymentResponse
+
+                val response = msg.obj as com.pax.poslink.PaymentResponse
+                val resultCode = response.ResultCode
+                val resultTxt = response.ResultTxt
+                val approvedAmount = response.ApprovedAmount
+                val ExtData = response.ExtData
+                /*prefProvider.setValue(
+                    Constants.APPROVED_AMOUNT,
+                    approvedAmount
+                )*/
+                /*cardLastDigits = response.BogusAccountNum
+                CARDBIN = UIUtil.findXMl(posLink.PaymentResponse.ExtData, "CARDBIN")!!
+                var tipAmount = UIUtil.findXMl(posLink.PaymentResponse.ExtData, "TipAmount")
+                CardName = UIUtil.findXMl(posLink.PaymentResponse.ExtData, "APPLAB")!!
+                val globalUID = UIUtil.findXMl(posLink.PaymentResponse.ExtData, "GlobalUID")
+                EDCType = UIUtil.findXMl(posLink.PaymentResponse.ExtData, "EDCTYPE").toString()*/
+//                prefProvider.setValue(Constants.GLOBAL_ID, globalUID!!)
+
+                Log.d(
+                    "Payment Details: ",
+                    "$ExtData $resultCode $resultTxt"
+                )
+                Log.d("Payment Details: ", "$cardLastDigits $approvedAmount $CARDBIN")
+
+                if (resultCode == "000000") {
+                    CoroutineScope(Dispatchers.Main).launch {
+                        ProgressUtils.dismissProgressDialog()
+                        coroutineScope {
+                            makePaymentCreditCard()
+                        }
+                    }
+                } else {
+                    CoroutineScope(Dispatchers.Main).launch {
+                        requireActivity().toast("$resultCode $resultTxt", Toast.LENGTH_LONG)
+                    }
                 }
             }
         }

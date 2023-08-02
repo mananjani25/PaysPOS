@@ -121,6 +121,7 @@ object Constants {
 
     const val PICK_UP = "Pickup"
     const val DELIVERY = "Delivery"
+    const val IS_PAX_CONNECTED = "isPAXConnected"
 
     const val DELIVERY_TYPE = "Delivery_Type"
     const val OPEN_ORDER_ITEMS = "Open_Order_Items"
