@@ -260,7 +260,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             var count = intent?.getStringExtra("count")
             count?.toInt()
                 ?.let { DashboardCategoryBoldPOS.newInstance().onlineOrderBadgeDisplay(it) }
-            if (navController?.currentDestination?.id == R.id.onlineOrderFragment) {
+            if (navController?.currentDestination?.id == R.id.allOrdersFragment) {
                 var intent = Intent()
                 intent.putExtra("refresh", true)
                 intent.action = Constants.ONLINE_ORDER_REFRESH
