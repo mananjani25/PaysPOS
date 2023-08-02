@@ -349,13 +349,26 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             viewLifecycleOwner
         ) { _: String, bundle: Bundle ->
             tipFromCustomerDisplay = false
-            tipAmount = bundle.getDouble("tipAmount")
-            viewModel.setTipAmount(tipAmount)
+
+            val rate = bundle.getDouble("tipPercent")
+            val totalAmountWithSurcharge = getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectedCount
+            tipAmount = if(rate > 0.00){
+                MethodUtils.percentageCalculation(totalAmountWithSurcharge, rate)//on total + surcharge
+            }else{
+                bundle.getDouble("tipAmount")
+            }
+
+            tippedAmountWithoutSurChargeDeduction = bundle.getDouble("tipAmount")//on total (without surcharge added)
+            viewModel.setTipAmount(tippedAmountWithoutSurChargeDeduction)
+
+            Log.d(TAG, "callback: TIP AMOUNT W/o SURCHARGE/TOTAL - $tippedAmountWithoutSurChargeDeduction")
+            Log.d(TAG, "callback: TIP AMOUNT ON SURCHARGE - $tipAmount")
+
             tipID = bundle.getInt("tipId")
 
-            prefProvider.setValueboolean(Constants.TIP_ADDED, true)
-            prefProvider.setValue(Constants.TIP_ADDED_AMOUNT, tipAmount.toString())
-            prefProvider.setValueInt(Constants.TIP_ADDED_ID, tipID)
+//            prefProvider.setValueboolean(Constants.TIP_ADDED, true)
+//            prefProvider.setValue(Constants.TIP_ADDED_AMOUNT, tipAmount.toString())
+//            prefProvider.setValueInt(Constants.TIP_ADDED_ID, tipID)
 
             tipAmountCalculation()
             loadPaymentLayout()
@@ -2439,7 +2452,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 false
             )
 
-            if(tipFromCustomerDisplay && showTipCollectionBeforePay){
+            //if(tipFromCustomerDisplay && showTipCollectionBeforePay){
                 MethodUtils.setPriceTextView(
                     binding.tvCash,
                     (getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectedCount) + tippedAmountWithoutSurChargeDeduction
@@ -2448,16 +2461,16 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     binding.tvCash0,
                     (getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectedCount) + tippedAmountWithoutSurChargeDeduction
                 )
-            }else{
-                MethodUtils.setPriceTextView(
-                    binding.tvCash,
-                    (getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectedCount) + tipAmount
-                )
-                MethodUtils.setPriceTextView(
-                    binding.tvCash0,
-                    (getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectedCount) + tipAmount
-                )
-            }
+//            }else{
+//                MethodUtils.setPriceTextView(
+//                    binding.tvCash,
+//                    (getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectedCount) + tipAmount
+//                )
+//                MethodUtils.setPriceTextView(
+//                    binding.tvCash0,
+//                    (getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectedCount) + tipAmount
+//                )
+//            }
 
             MethodUtils.setPriceTextView(
                 binding.tvCard,
@@ -2477,13 +2490,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 "Cash (" + binding.tvCash.text + ")"
             binding.tvtipcash?.visible()
 
-            if(tipFromCustomerDisplay && showTipCollectionBeforePay){
+            //if(tipFromCustomerDisplay && showTipCollectionBeforePay){
                 binding.tvtipcash?.text =
                     "(" + MethodUtils.roundOffAmount(tippedAmountWithoutSurChargeDeduction) + " Tip Added)"
-            }else{
-                binding.tvtipcash?.text =
-                    "(" + MethodUtils.roundOffAmount(tipAmount) + " Tip Added)"
-            }
+//            }else{
+//                binding.tvtipcash?.text =
+//                    "(" + MethodUtils.roundOffAmount(tipAmount) + " Tip Added)"
+//            }
 
             binding.tvCard.text =
                 "Card (" + binding.tvCard.text + ")"
@@ -2739,12 +2752,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             Constants.SHOW_TIP_SCREEN_BEFORE_PAYMENT,
             false
         )
-        var cashTipAmount = 0.0
-        cashTipAmount = if(tipFromCustomerDisplay && showTipCollectionBeforePay){
-            tippedAmountWithoutSurChargeDeduction
-        }else{
-            tipAmount
-        }
+//        var cashTipAmount = 0.0
+//        cashTipAmount = if(tipFromCustomerDisplay && showTipCollectionBeforePay){
+//            tippedAmountWithoutSurChargeDeduction
+//        }else{
+//            tipAmount
+//        }
         val myRequest = cartList?.let {
             paymentviewModel.createOrderRequest(
                 it,
@@ -2757,7 +2770,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 future_delivery_time,
                 true,
                 totalDiscount,
-                cashTipAmount,
+                tippedAmountWithoutSurChargeDeduction,
                 splitValue,
                 redeemLoyaltyInfo,
                 cashDiscountSurcharge,
