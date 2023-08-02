@@ -5,6 +5,7 @@ import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.text.style.ForegroundColorSpan
 import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -312,8 +313,10 @@ class CartFragment(
         LogUtil.logE("Customer Name", name)
         if (name.isNotEmpty() && name != null) {
             binding.txtAddCustomer.text = name
+           // binding.txtAddCustomer.gravity = Gravity.START
         } else {
             binding.txtAddCustomer.text = getString(R.string.add_customer2)
+           // binding.txtAddCustomer.gravity = Gravity.END
         }
 
     }

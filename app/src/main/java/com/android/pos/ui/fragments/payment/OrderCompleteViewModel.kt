@@ -1,5 +1,6 @@
 package com.android.pos.ui.fragments.payment
 
+import android.util.Log
 import android.util.Patterns
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -14,6 +15,9 @@ import com.android.pos.data.model.responseModel.BaseResponse
 import com.android.pos.data.model.responseModel.CustomerAssignedResponse
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.EMAIL
+import com.android.pos.data.remote.Constants.END_DATE
+import com.android.pos.data.remote.Constants.START_DATE
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
@@ -33,6 +37,8 @@ class OrderCompleteViewModel @Inject constructor(
 ) : ViewModel() {
 
     val createNoteDetails = MutableLiveData(CreateNoteRequest())
+
+    var itsFromETP = false
 
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
@@ -61,6 +67,60 @@ class OrderCompleteViewModel @Inject constructor(
 
     fun checkQueueExist(id: Int) = posRepository.checkQueueExist(id)
 
+
+    fun sendMailForETS(email: String, startDate: String, endDate: String){
+
+        // for listing -> reports/employee_tip_summary"
+
+        val data = HashMap<String, String>()
+        data[EMAIL] = email
+        data[START_DATE] = startDate
+        data[END_DATE] = endDate
+
+        if (email.isEmpty()) {
+            _snackbarText.value = Event(R.string.email_validate)
+        } else {
+
+            _showProgress.value = Event(true)
+
+            viewModelScope.launch {
+
+                resource =  posRepository.emailReceiptForETS(data)
+
+                when (resource.status) {
+                    Status.SUCCESS -> {
+                        itsFromETP = true
+                        _showProgress.value = Event(false)
+                        resource.data.let { baseResponse ->
+                            if (baseResponse?.status == 200) {
+
+                                resource.data?.let { response ->
+
+                                    _data.postValue(Event(response))
+
+                                }
+                            } else {
+                                _snackbarText.postValue(Event(resource.message))
+                            }
+                        }
+                    }
+
+                    Status.ERROR -> {
+                        itsFromETP = true
+                        _snackbarText.postValue(Event(resource.message))
+                        _showProgress.postValue(Event(false))
+                    }
+
+                    Status.LOADING -> {
+                        _showProgress.postValue(Event(true))
+                    }
+                }
+
+            }
+        }
+
+
+    }
 
     fun submit(
         type: String,
@@ -107,28 +167,30 @@ class OrderCompleteViewModel @Inject constructor(
 
                 when (resource.status) {
                     Status.SUCCESS -> {
+                        itsFromETP = false
                         _showProgress.value = Event(false)
                         resource.data.let { baseResponse ->
                             if (baseResponse?.status == 200) {
 
                                 resource.data?.let { response ->
 
-                                    _data.value = Event(response)
+                                    _data.postValue(Event(response))
 
                                 }
                             } else {
-                                _snackbarText.value = Event(resource.message)
+                                _snackbarText.postValue(Event(resource.message))
                             }
                         }
                     }
 
                     Status.ERROR -> {
-                        _snackbarText.value = Event(resource.message)
-                        _showProgress.value = Event(false)
+                        itsFromETP = false
+                        _snackbarText.postValue(Event(resource.message))
+                        _showProgress.postValue(Event(false))
                     }
 
                     Status.LOADING -> {
-                        _showProgress.value = Event(true)
+                        _showProgress.postValue(Event(true))
                     }
                 }
             }

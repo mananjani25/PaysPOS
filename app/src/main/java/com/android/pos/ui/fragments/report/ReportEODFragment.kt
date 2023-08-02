@@ -42,6 +42,7 @@ import com.android.pos.ui.adapter.ClockInClockOutAdapter
 import com.android.pos.ui.adapter.CreditCardBreakDownAdapter
 import com.android.pos.ui.adapter.CreditTipAuditAdapter
 import com.android.pos.ui.adapter.EmployeeGuestDetailsAdapter
+import com.android.pos.ui.adapter.ItemWiseSalesAdapter
 import com.android.pos.ui.adapter.PaymentDetailsAdapter
 import com.android.pos.ui.adapter.SalesOrderDetailsAdapter
 import com.android.pos.ui.adapter.SalesReportAdapter
@@ -90,6 +91,7 @@ import com.android.pos.utils.employeeGuestDetailsDataInner
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.liveSnackBar
+import com.android.pos.utils.extensions.printLog
 import com.android.pos.utils.extensions.runOnUiThread
 import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.extensions.visible
@@ -156,6 +158,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
     private val employeeGuestDetailsAdapter by lazy { EmployeeGuestDetailsAdapter() }
     private val creditTipAuditAdapter by lazy { CreditTipAuditAdapter() }
     private val tipDetailsAdapter by lazy { PaymentDetailsAdapter(hideRefund = false) }
+    private val itemWiseSalesAdapter by lazy { ItemWiseSalesAdapter() }
     private val saleCategorySummaryAdapter by lazy { SalesPerCategorySummary() }
 
 
@@ -314,12 +317,10 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
     }
 
     private fun generateEODReport() {
-        Log.d("BIS-685", "generateEODReport: Called")
         customerList.forEach {
             if (it.status) {
                 initPrinter(it)
             }
-
         }
     }
 
@@ -3022,38 +3023,40 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     private fun setupAdapter() {
 
-        binding.rvTerminal.adapter = terminalAdapter
+        binding.apply {
 
-        binding.rvSalesSummary.adapter = salesReportAdapter
-        binding.rvRefundDetails.adapter = refundDetailsAdapter
-        binding.rvPendingPayments.adapter = creditPaymentDetailsAdapter
-        binding.rvTaxDetails.adapter = taxDetailsAdapter
-        binding.rvDiscountDetails.adapter = discountDetailsAdapter
-        binding.rvSalesTaxSummary.adapter = salesTaxSummaryAdapter
-        binding.rvRefundAndVoid.adapter = cashEventSummaryAdapter
-        binding.rvTotalPayments.adapter = totalPaymentsAdapter
-        binding.rvCashPayments.adapter = cashPaymentsAdapter
-        binding.rvPaymentDetails.adapter = paymentDetailsAdapter
-        binding.rvOtherDetails.adapter = otherDetailsAdapter
-        binding.rvServiceChargeDetails.adapter = serviceChargeDetailsAdapter
-        binding.rvTipsDetails.adapter = tipDetailsAdapter
-        binding.rvCashLog.adapter = cashLogAdapter
-        binding.rvCreditCardBreakDown.adapter = creditCardBreakdownAdapter
-        binding.rvSalesDetails.adapter = salesOrderDetailsAdapter
-       // binding.rvSalesDetails.isNestedScrollingEnabled = false
-        binding.rvCreditAuditTip.adapter = creditTipAuditAdapter
-        binding.rvemployeeGuestDetails.adapter = employeeGuestDetailsAdapter
-        binding.rvSaleCategorySummary?.adapter = saleCategorySummaryAdapter
-        binding.rvClockInClockOut?.adapter = clockInClockOutAdapter
+            binding.rvTerminal.adapter = terminalAdapter
+
+            rvSalesSummary.adapter = salesReportAdapter
+            rvRefundDetails.adapter = refundDetailsAdapter
+            rvPendingPayments.adapter = creditPaymentDetailsAdapter
+            rvTaxDetails.adapter = taxDetailsAdapter
+            rvDiscountDetails.adapter = discountDetailsAdapter
+            rvSalesTaxSummary.adapter = salesTaxSummaryAdapter
+            rvRefundAndVoid.adapter = cashEventSummaryAdapter
+            rvTotalPayments.adapter = totalPaymentsAdapter
+            rvCashPayments.adapter = cashPaymentsAdapter
+            rvPaymentDetails.adapter = paymentDetailsAdapter
+            rvOtherDetails.adapter = otherDetailsAdapter
+            rvServiceChargeDetails.adapter = serviceChargeDetailsAdapter
+            rvTipsDetails.adapter = tipDetailsAdapter
+            rvCashLog.adapter = cashLogAdapter
+            rvCreditCardBreakDown.adapter = creditCardBreakdownAdapter
+            rvSalesDetails.adapter = salesOrderDetailsAdapter
+            //rvSalesDetails.isNestedScrollingEnabled = false
+            rvCreditAuditTip.adapter = creditTipAuditAdapter
+            rvemployeeGuestDetails.adapter = employeeGuestDetailsAdapter
+            rvSaleCategorySummary?.adapter = saleCategorySummaryAdapter
+            rvClockInClockOut?.adapter = clockInClockOutAdapter
+
+            rvItemWiseSales.adapter = itemWiseSalesAdapter
+        }
+
 
     }
 
     private fun initObservers() {
         binding.root.liveSnackBar(this, viewModel.snackbarText, Snackbar.LENGTH_SHORT)
-
-
-
-
 
         viewModel.startDateSelection.observe(requireActivity()) { event ->
             event.getContentIfNotHandled()?.let {
@@ -3112,7 +3115,6 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
                 updateData(it)
                 Handler(Looper.getMainLooper()).postDelayed(Runnable {
-
 
 
                     runOnUiThread(Runnable {
@@ -3405,12 +3407,39 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 binding.llTotal.gone()
             }
 
-            shiftReportsSettingModel?.salesSummary?.let { it1 ->
+
+        showHide(
+            rvMedia = binding.rvItemWiseSales,
+            textView = binding.txtItemWiseSales,
+            headerView = binding.itemWiseHeader,
+            visible = it.itemWiseSales.isEmpty()
+        )
+
+
+        shiftReportsSettingModel?.isItemWiseSales?.let { it1 ->
+            binding.apply {
                 showHide(
-                    binding.rvSalesSummary, binding.txtSalesSummary, null,
+                    rvItemWiseSales,
+                    txtItemWiseSales,
+                    itemWiseHeader,
                     it1
                 )
             }
+        }
+        requireContext().printLog("updateData","is boolean = ${shiftReportsSettingModel?.isItemWiseSales}")
+        requireContext().printLog("updateData","is data = ${it.itemWiseSales.isEmpty()}")
+
+
+        itemWiseSalesAdapter.add(it.itemWiseSales)
+
+
+
+        shiftReportsSettingModel?.salesSummary?.let { it1 ->
+            showHide(
+                binding.rvSalesSummary, binding.txtSalesSummary, null,
+                it1
+            )
+        }
 
             shiftReportsSettingModel?.salesAndTaxSummary?.let { it1 ->
                 showHide(

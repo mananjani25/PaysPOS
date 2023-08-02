@@ -14,6 +14,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -116,8 +117,9 @@ class EmployeeTipSummary : Fragment() {
         setInitDate()
         loadData()
         initObserver()
-
+        customerPrinters()
     }
+
 
     private fun loadData() {
 
@@ -160,10 +162,15 @@ class EmployeeTipSummary : Fragment() {
             }
         }
 
+
         viewModel.data.observe(viewLifecycleOwner, EventObserver { data ->
             data.let {
 
-                employeeTipSummaryAdapter.add(it.data)
+                ETSdataList = it.data
+                ETSdataList?.let {it1->
+                    employeeTipSummaryAdapter.add(it1)
+
+                }
 
             }
 
@@ -177,6 +184,32 @@ class EmployeeTipSummary : Fragment() {
                     ProgressUtils.dismissProgressDialog()
                 }
             }
+        }
+    }
+
+    private fun customerPrinters() {
+        viewModel.getCustomerPrinterList().observe(
+            viewLifecycleOwner
+        ) {
+            when (it.status) {
+                Status.SUCCESS -> {
+                   // ProgressUtils.dismissProgressDialog()
+                    if (it.data != null) {
+                        customerList = it.data
+                    }
+
+                }
+
+                Status.ERROR -> {
+                   // ProgressUtils.dismissProgressDialog()
+                }
+
+                Status.LOADING -> {
+                  //  ProgressUtils.showProgressDialog(requireActivity())
+                }
+
+            }
+
         }
     }
 
@@ -307,12 +340,514 @@ class EmployeeTipSummary : Fragment() {
         if (event.equals("1")) {
             sendEmail()
         } else if (event.equals("2")) {
-           // generateEODReport() // Print
+            generateEmployeeTipSummaryReceiptPrint()
         }else {
             if (event!=null){
                 viewModel.getEmployeeTipSummary()
             }
         }
+    }
+
+    private fun generateEmployeeTipSummaryReceiptPrint() {
+
+        customerList.forEach {
+            if (it.status) {
+                initPrinter(it)
+            }
+        }
+    }
+    private fun initPrinter(customerReceiptPrinters: PrinterResponse.Data.CustomerReceiptPrinters) {
+        Log.d("BIS-685", "initPrinter: Called")
+
+        if (customerReceiptPrinters.name.startsWith(Constants.SUNMI_PRINTER, true)) {
+
+            SunmiPrinterApi.getInstance()
+                .setPrinter(SunmiPrinter.SunmiBlueToothPrinter, customerReceiptPrinters.ipAddress)
+
+            if (!SunmiPrinterApi.getInstance().isConnected) {
+                SunmiPrinterApi.getInstance()
+                    .connectPrinter(requireContext(), object : ConnectCallback {
+
+                        override fun onFound() {
+                            println("onFound")
+                        }
+
+                        override fun onUnfound() {
+                            println("onUnfound")
+                        }
+
+                        override fun onConnect() {
+                            println("onConnect")
+                            createReportFormatETSsunmi()
+
+                        }
+
+                        override fun onDisconnect() {
+                            println("onDisconnect")
+                        }
+
+                    })
+            } else {
+                createReportFormatETSsunmi()
+            }
+
+        } else if (customerReceiptPrinters.name.startsWith(Constants.SUNMI_INNER_PRINTER, true)) {
+
+            SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
+            viewLifecycleOwner.lifecycleScope.launch {
+                delay(100)
+                setService(customerReceiptPrinters)
+            }
+
+
+        } else {
+
+
+            viewLifecycleOwner.lifecycleScope.launch {
+                PrinterClass.closePrinter()
+                if (PrinterClass.getPrinter() == null) {
+                    var printer: Print? = Print(requireContext())
+                    val enable = Print.FALSE
+
+                    try {
+                        printer?.openPrinter(
+                            if (customerReceiptPrinters.printer_type == Constants.BLUETOOTH) {
+                                Print.DEVTYPE_BLUETOOTH
+                            } else {
+                                Print.DEVTYPE_TCP
+                            },
+                            customerReceiptPrinters.ipAddress,
+                            enable,
+                            1000
+                        )
+
+
+                    } catch (e: Exception) {
+                        LogUtil.logE(TAG, "PrinterException: " + e.message)
+                        printer = null
+                        return@launch
+                    }
+                    try {
+                        if (printer != null) {
+                            PrinterClass.setPrinter(printer)
+                            createReportFormatETSM30(customerReceiptPrinters)
+                        }
+
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+            }
+        }
+    }
+
+    private fun createReportFormatETSM30(customerReceiptPrinters: PrinterResponse.Data.CustomerReceiptPrinters) {
+
+      try {
+
+          var builder: Builder? = null
+          builder =
+              Builder(
+                  if (customerReceiptPrinters.name.substring(0, 6).toString()
+                          .lowercase() == "TM-m30".lowercase()
+                  ) {
+                      "TM-m30"
+                  } else {
+                      customerReceiptPrinters.name
+                  }, PrinterClass.language, requireActivity()
+              )
+
+          if (prefProvider?.getValue(
+                  Constants.VENUE_LOGO,
+                  ""
+              )?.isNotEmpty() == true
+          ) {
+              builder.addFeedLine(1)
+              builder.addTextAlign(Builder.ALIGN_CENTER)
+
+              /* var bitmap = getBitmapFromURL(prefProvider.getValue(VENUE_LOGO, ""))*/
+
+              val decodedString: ByteArray = android.util.Base64.decode(
+                  prefProvider?.getValue(Constants.VENUE_LOGO, ""),
+                  android.util.Base64.DEFAULT
+              )
+              val bitmap: Bitmap =
+                  BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+
+              val newBitmap = Bitmap.createScaledBitmap(bitmap!!, 210, 210, true)
+              builder.addImage(
+                  newBitmap, 0, 0,
+                  newBitmap.width, newBitmap.height, Builder.COLOR_1, Builder.MODE_MONO,
+                  Builder.HALFTONE_DITHER, 1.0
+              )
+          }
+
+
+          builder.addFeedLine(1)
+          builder.addTextStyle(
+              Builder.FALSE,
+              Builder.FALSE,
+              Builder.TRUE,
+              Builder.COLOR_1
+          )
+          builder.addTextAlign(Builder.ALIGN_CENTER)
+          builder.addTextSize(2, 2)
+
+          addBuilderText(
+              builder,
+              prefProvider?.getValue(Constants.BUSINESS_NAME, "").toString()
+          )
+          builder.addFeedLine(1)
+          builder.addTextFont(Builder.FONT_E)
+          builder.addTextAlign(Builder.ALIGN_CENTER)
+          builder.addTextLang(Builder.LANG_EN)
+          addCustomerTextSize(builder, Constants.SMALL)
+
+          builder.addTextStyle(
+              Builder.FALSE,
+              Builder.FALSE,
+              Builder.FALSE,
+              Builder.COLOR_1
+          )
+
+          addBuilderText(
+              builder,
+              prefProvider?.getValue(Constants.BUSINESS_ADDRESS, "")
+                  .toString()
+          )
+
+          builder.addFeedLine(1)
+
+          builder.addTextFont(Builder.FONT_E)
+          builder.addTextAlign(Builder.ALIGN_CENTER)
+          builder.addTextLang(Builder.LANG_EN)
+          addCustomerTextSize(builder, Constants.SMALL)
+          builder.addTextStyle(
+              Builder.FALSE,
+              Builder.FALSE,
+              Builder.FALSE,
+              Builder.COLOR_1
+          )
+          addBuilderText(
+              builder,
+              MethodUtils.getUSFormatNumber(
+                  prefProvider?.getValue(
+                      Constants.BUSINESS_PHONE_NO,
+                      ""
+                  ).toString()
+              )
+          )
+
+          builder.addFeedLine(2)
+
+          builder.addTextFont(Builder.FONT_E)
+          builder.addTextAlign(Builder.ALIGN_CENTER)
+          builder.addTextLang(Builder.LANG_EN)
+          addCustomerTextSize(builder, Constants.MEDIUM)
+          builder.addTextStyle(
+              Builder.FALSE,
+              Builder.FALSE,
+              Builder.TRUE,
+              Builder.COLOR_1
+          )
+
+
+          builder.addText("Employee Tips Summary")
+
+          builder.addFeedLine(1)
+          builder.addTextStyle(
+              Builder.FALSE,
+              Builder.FALSE,
+              Builder.FALSE,
+              Builder.COLOR_1
+          )
+          addCustomerTextSize(builder, Constants.SMALL)
+          addHorizontalLine(builder)
+
+          builder.addFeedLine(1)
+
+          builder.addTextFont(Builder.FONT_E)
+          builder.addTextAlign(Builder.ALIGN_CENTER)
+          builder.addTextLang(Builder.LANG_EN)
+          addCustomerTextSize(builder, Constants.SMALL)
+          builder.addTextStyle(
+              Builder.FALSE,
+              Builder.FALSE,
+              Builder.FALSE,
+              Builder.COLOR_1
+          )
+
+
+          builder.addText("Employee : " + prefProvider?.employeeName())
+
+          builder.addFeedLine(1)
+
+          addHorizontalLine(builder)
+
+          builder.addFeedLine(1)
+          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+              val current = LocalDateTime.now()
+              val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy hh:mm:a")
+              val formatted = current.format(formatter)
+
+              builder.addTextLineSpace(30)
+              builder.addFeedUnit(30)
+              builder.addTextFont(Builder.FONT_E)
+              builder.addTextAlign(Builder.ALIGN_LEFT)
+              builder.addTextLang(Builder.LANG_EN)
+              addCustomerTextSize(builder, Constants.SMALL)
+              builder.addTextStyle(
+                  Builder.FALSE,
+                  Builder.FALSE,
+                  Builder.FALSE,
+                  Builder.COLOR_1
+              )
+              builder.addText("Print Time:" + formatted)
+          }
+
+
+          builder.addFeedLine(2)
+          addCustomerTextSize(builder, Constants.SMALL)
+          addHorizontalLine(builder)
+
+          addSixHeaderForEmployeeTipSummary(builder)
+
+          addCustomerTextSize(builder, Constants.SMALL)
+          addHorizontalLine(builder)
+
+          ETSdataList?.forEach {
+              addItemsInEmployeeTipsSummaryM30(it,builder)
+          }
+
+
+          builder.addFeedLine(3)
+
+
+          builder.addTextFont(Builder.FONT_E)
+          builder.addTextAlign(Builder.ALIGN_CENTER)
+          builder.addTextLang(Builder.LANG_EN)
+          addCustomerTextSize(builder, Constants.SMALL)
+          builder.addTextStyle(
+              Builder.FALSE,
+              Builder.FALSE,
+              Builder.TRUE,
+              Builder.COLOR_1
+          )
+          builder.addText("EMPLOYEE x " + com.android.pos.utils.repeat("_", 37))
+
+          builder.addFeedLine(2)
+          builder.addTextFont(Builder.FONT_E)
+          builder.addTextAlign(Builder.ALIGN_CENTER)
+          builder.addTextLang(Builder.LANG_EN)
+          addCustomerTextSize(builder, Constants.SMALL)
+          builder.addTextStyle(
+              Builder.FALSE,
+              Builder.FALSE,
+              Builder.TRUE,
+              Builder.COLOR_1
+          )
+          builder.addText("CASH RECEIVED BY" + com.android.pos.utils.repeat("_", 32))
+
+
+
+
+          builder.addFeedLine(2)
+          builder.addCut(Builder.CUT_FEED)
+
+          val status = IntArray(1)
+          val battery = IntArray(1)
+
+          try {
+
+
+              PrinterClass.getPrinter()?.sendData(
+                  builder,
+                  if (customerReceiptPrinters.name.substring(0, 6).toString()
+                          .lowercase() == "TM-m30".lowercase() || customerReceiptPrinters.name.substring(
+                          0,
+                          6
+                      ).toString().lowercase() == "TM-m10".lowercase()
+                  ) {
+                      10 * 10000
+                  } else {
+                      PrinterClass.BLUETOOTH_TIMEOUT
+
+                  }, status, battery
+              )
+
+              PrinterClass.closePrinter()
+
+              //findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
+              //PrinterClass.getPrinter()?.sendData(builder, 0, status, battery)
+          } catch (e: Exception) {
+              PrinterClass.closePrinter()
+              e.printStackTrace()
+              LogUtil.logE(TAG, "PrinterError: " + e.localizedMessage)
+          }
+      }catch (e:Exception){
+          LogUtil.logE(TAG, "PrinterError: 2" + e.localizedMessage)
+      }
+
+
+    }
+
+    private fun setService(customerReceiptPrinters: PrinterResponse.Data.CustomerReceiptPrinters) {
+        if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.FoundSunmiPrinter) {
+
+            LogUtil.logE("SunmiPrintHelper", "FoundSunmiPrinter")
+
+            if (!BluetoothUtil.isBlueToothPrinter) {
+                createReportFormatETSsunmiInnerPrinter()
+            }
+
+        } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.CheckSunmiPrinter) {
+            Handler(Looper.getMainLooper()).postDelayed(
+                { setService(customerReceiptPrinters) },
+                2000
+            )
+            LogUtil.logE("SunmiPrintHelper", "CheckSunmiPrinter")
+        } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.LostSunmiPrinter) {
+
+            LogUtil.logE("SunmiPrintHelper", "LostSunmiPrinter")
+        } else {
+            LogUtil.logE("SunmiPrintHelper", "ELSE")
+        }
+    }
+
+    private fun createReportFormatETSsunmiInnerPrinter() {
+
+        if (prefProvider?.getValue(
+                Constants.VENUE_LOGO,
+                ""
+            )?.isNotEmpty() == true
+        ) {
+            PrintSunmiUtils.printLogoInner(
+                prefProvider?.getValue(
+                    Constants.VENUE_LOGO,
+                    ""
+                )!!
+            )
+        }
+
+        PrintSunmiUtils.printBusinessDetailsInner(
+            prefProvider?.getValue(Constants.BUSINESS_NAME, "").toString(),
+            prefProvider?.getValue(Constants.BUSINESS_ADDRESS, "").toString(),
+            prefProvider?.getValue(Constants.BUSINESS_PHONE_NO, "").toString()
+        )
+        SunmiPrintHelper.getInstance().lineWrap(1)
+
+        PrintSunmiUtils.headerText("Employee Tips Summary")
+        if (prefProvider?.employeeName().toString().isNotEmpty()) {
+            PrintSunmiUtils.normalTextCenter("Employee : " + prefProvider?.employeeName())
+        }
+
+        PrintSunmiUtils.addHorizontalInner()
+        SunmiPrintHelper.getInstance().lineWrap(1)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            PrintSunmiUtils.normalText("Print Time:${MethodUtils.formatted()}")
+        }
+        SunmiPrintHelper.getInstance().lineWrap(1)
+
+
+        //Main part start
+
+        employeeTipSummaryHeader()
+        ETSdataList?.forEach {
+            addItemsInEmployeeTipsSummary(it)
+        }
+
+        // Main part end
+
+        SunmiPrintHelper.getInstance().lineWrap(2)
+
+
+        PrintSunmiUtils.normalText("EMPLOYEE x " + com.android.pos.utils.repeat("_", 36))
+        SunmiPrintHelper.getInstance().lineWrap(1)
+
+        PrintSunmiUtils.normalText("CASH RECEIVED BY" + com.android.pos.utils.repeat("_", 31))
+
+        PrintSunmiUtils.cutPaperInner()
+
+    }
+
+    private fun createReportFormatETSsunmi() {
+
+
+        if (prefProvider?.getValue(
+                Constants.VENUE_LOGO,
+                ""
+            )?.isNotEmpty() == true
+        ) {
+            printBusinessLogo()
+        }
+
+        PrintSunmiUtils.printBusinessDetails(
+            prefProvider?.getValue(Constants.BUSINESS_NAME, "").toString(),
+            prefProvider?.getValue(Constants.BUSINESS_ADDRESS, "").toString(),
+            prefProvider?.getValue(Constants.BUSINESS_PHONE_NO, "").toString()
+        )
+
+        SunmiPrinterApi.getInstance().lineWrap(1)
+
+        PrintSunmiUtils.addLable("Employee Tips Summary")
+
+        SunmiPrinterApi.getInstance().setAlignMode(1)
+        SunmiPrinterApi.getInstance().enableBold(false)
+        SunmiPrinterApi.getInstance().setFontZoom(1, 1)
+        SunmiPrinterApi.getInstance()
+            .printText("Employee : " + prefProvider?.employeeName())
+        SunmiPrinterApi.getInstance().lineWrap(1)
+
+        PrintSunmiUtils.addHorizontal()
+        SunmiPrinterApi.getInstance().lineWrap(1)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val current = LocalDateTime.now()
+            val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy hh:mm:a")
+            val formatted = current.format(formatter)
+
+            PrintSunmiUtils.orderTime("Print Time:$formatted")
+        }
+        SunmiPrinterApi.getInstance().lineWrap(1)
+
+        if (ETSdataList?.isNotEmpty() == true){
+            PrintSunmiUtils.addHorizontal()
+            addSixHeaderForEmployeeTipSummarySunmi()
+            PrintSunmiUtils.addHorizontal()
+
+            ETSdataList?.forEach {
+                addItemsInEmployeeTipsSummary(it)
+            }
+
+        }
+
+        SunmiPrinterApi.getInstance().lineWrap(2)
+
+
+
+        PrintSunmiUtils.orderTime("EMPLOYEE x " + com.android.pos.utils.repeat("_", 36))
+        SunmiPrinterApi.getInstance().lineWrap(1)
+
+        PrintSunmiUtils.orderTime("CASH RECEIVED BY" + com.android.pos.utils.repeat("_", 31))
+
+        SunmiPrinterApi.getInstance().lineWrap(5)
+        SunmiPrinterApi.getInstance().cutPaper(1, 1)
+
+    }
+
+    private fun printBusinessLogo() {
+        val decodedString: ByteArray = Base64.decode(
+            prefProvider?.getValue(Constants.VENUE_LOGO, "") ?: "",
+            Base64.DEFAULT
+        )
+        val bitmap: Bitmap =
+            BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+
+        val newBitmap = Bitmap.createScaledBitmap(bitmap, 210, 210, true)
+
+        PrintSunmiUtils.printLogo(newBitmap)
+
     }
 
     override fun onStop() {
