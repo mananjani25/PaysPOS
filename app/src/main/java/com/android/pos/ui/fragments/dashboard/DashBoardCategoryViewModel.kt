@@ -49,8 +49,8 @@ import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.android.pos.data.remote.Constants.IS_SYNC_MARKUP
 import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER
 import com.android.pos.data.remote.Constants.LOCK_SCREEN_TRANSACTION
-import com.android.pos.data.remote.Constants.MAX_ITEM_QUANTITY
 import com.android.pos.data.remote.Constants.LOYALTY_ADDED
+import com.android.pos.data.remote.Constants.MAX_ITEM_QUANTITY
 import com.android.pos.data.remote.Constants.ONLINE_ORDER_ENABLE
 import com.android.pos.data.remote.Constants.ONLY_SHOW_PRICE_GREATER_THAN_ZERO
 import com.android.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
@@ -417,7 +417,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun deleteCart() {
         prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
-        prefProvider.setValue(Constants.OPEN_ORDER_ITEMS,"")
+        //prefProvider.setValue(Constants.OPEN_ORDER_ITEMS,"")
         cartModel = null
         GlobalScope.launch {
             posRepository.deleteCart(prefProvider.getValueInt(EMPLOYEE_ID, 0))
