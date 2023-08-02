@@ -2449,7 +2449,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
             if (eodReportData?.itemWiseSales?.isNotEmpty() == true && eodReportConfiguration?.isItemWiseSales == true){
 
-                PrintSunmiUtils.addLable("Item Wise Sales")
+                PrintSunmiUtils.headerText("Item Wise Sales")
                 addItemWiseSalesHeaderSunmiInner()
 
                 PrintSunmiUtils.addHorizontal()

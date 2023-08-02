@@ -129,6 +129,7 @@ fun addItemWiseSalesHeader() {
 fun addItemWiseSalesHeaderSunmiInner() {
 
     val header = "Item Name" + repeat(" ", 18) + "Quantity" + repeat(" ", 7) + "Amount"
+    Log.e("addItemWiseSalesHeader","$header")
     PrintSunmiUtils.normalText(header)
 
 }
@@ -1103,7 +1104,7 @@ fun addItemWiseSalesSunmiInnerPrinter(it: EodReportResponse.Data.ItemWiseSalesDa
     }
 
     fPart += repeat(" ", spaceLast) + amount
-
+    Log.e("addItemWiseSalesHeader","$fPart")
     PrintSunmiUtils.normalText(fPart)
 
 }
