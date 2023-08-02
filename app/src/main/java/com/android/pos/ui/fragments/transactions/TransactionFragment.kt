@@ -1047,7 +1047,8 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
                 Constants.FIRST_DATA_GATEWAY == magtekRequestUtils.gatewayName() -> {
 
-                    val amount = refundAmount
+                    // commented by Mansi for task > Tip to be captured through RAPID CONNECT
+                    /*val amount = refundAmount
 
                     if (model != null) {
                         jsonArray =
@@ -1064,7 +1065,8 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                             }
 
                         networkCall(jsonArray, 0)
-                    }
+                    }*/
+                    tipCall(true)
                 }
 
                 // not support CAPTURE
@@ -1176,7 +1178,8 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
                 Constants.FIRST_DATA_GATEWAY == magtekRequestUtils.gatewayName() -> {
 
-                    val amount = refundAmount
+                    // commented by Mansi for task > Tip to be captured through RAPID CONNECT
+                    /*val amount = refundAmount
 
                     if (model != null) {
                         jsonArray =
@@ -1193,7 +1196,8 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                             }
 
                         networkCall(jsonArray, 0)
-                    }
+                    }*/
+                    tipCall(true)
                 }
 
                 // not support CAPTURE

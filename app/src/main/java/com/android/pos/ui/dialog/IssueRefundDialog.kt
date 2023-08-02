@@ -170,11 +170,12 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                 if (mData.order.refund_detail.refunded_amount.equals(0.0)) {
 
                     if (mData.payment_type == "Card") {
-                        var totalamount_tip = mData.amount + mData.tips
+                        var totalamount_tip = mData.amount
                         MethodUtils.setRefundPriceTextView(
                             binding.tvTotalRefundAmount,
                             (totalamount_tip)
                         )
+                        Log.d("edtAmount: ","edtAmount "+(totalamount_tip * 100).toString())
                         binding.edtAmount.setText((totalamount_tip * 100).toString())
                     } else {
                         MethodUtils.setRefundPriceTextView(
@@ -598,7 +599,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                     if (binding.edtAmount.text.toString()
                             .toDouble() > paymentOrderDetailsResponse.data.amount + paymentOrderDetailsResponse.data.tips
                     ) {
-                        binding.edtAmount.setText(MethodUtils.roundOffAmountString((paymentOrderDetailsResponse.data.amount + paymentOrderDetailsResponse.data.tips).toDouble()))
+                        binding.edtAmount.setText(MethodUtils.roundOffAmountString((paymentOrderDetailsResponse.data.amount).toDouble()))
                     }
                 } else {
                     if (binding.edtAmount.text.toString()

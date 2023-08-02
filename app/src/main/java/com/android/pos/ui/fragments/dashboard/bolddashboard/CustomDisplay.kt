@@ -1763,7 +1763,8 @@ class CustomDisplay(
 
                 Constants.FIRST_DATA_GATEWAY == magtekRequestUtils.gatewayName() -> {
 
-                    if (model != null) {
+                    // commented by Mansi for task > Tip to be captured through RAPID CONNECT
+                    /*if (model != null) {
                         jsonArray =
                             model.transactionOutput.token.let { it1 ->
                                 tippedAmount.times(100).let {
@@ -1778,7 +1779,8 @@ class CustomDisplay(
                             }
 
                         networkCall(jsonArray, 0, apiModule1)
-                    }
+                    }*/
+                    callUpdateTip()
                 }
 
                 // not support CAPTURE
@@ -1892,7 +1894,8 @@ class CustomDisplay(
 
                 Constants.FIRST_DATA_GATEWAY == magtekRequestUtils.gatewayName() -> {
 
-                    if (model != null) {
+                    // commented by Mansi for task > Tip to be captured through RAPID CONNECT
+                    /*if (model != null) {
                         jsonArray =
                             model.transactionOutput?.token?.let { it1 ->
                                 tippedAmount.times(100).let {
@@ -1907,7 +1910,8 @@ class CustomDisplay(
                             }
 
                         networkCall(jsonArray, 0, apiModule1)
-                    }
+                    }*/
+                    callUpdateTip()
                 }
 
                 // not support CAPTURE

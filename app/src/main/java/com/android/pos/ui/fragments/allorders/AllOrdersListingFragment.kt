@@ -3627,7 +3627,7 @@ class AllOrdersListingFragment(
 
                 Status.ERROR -> {
                     ProgressUtils.dismissProgressDialog()
-                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
 
                 }
             }

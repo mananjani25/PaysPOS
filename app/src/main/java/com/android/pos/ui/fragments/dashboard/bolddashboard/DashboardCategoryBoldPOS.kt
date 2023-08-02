@@ -200,7 +200,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         checkCashDrawerObserver()
         Binding()
         prefProvider.setValue(Constants.REDIRECT_FROM, "")
-        prefProvider.setValue(Constants.OPEN_ORDER_ITEMS, "")
+        //prefProvider.setValue(Constants.OPEN_ORDER_ITEMS, "")
 
         if(prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD){
             viewModel.clearGiftCardCart()
@@ -783,14 +783,14 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
         }
         binding.layoutHeader.txtOpenOrder.setOnClickListener {
-           try {
-               if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
-                   prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
-                   findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
-               }
-           } catch (e: Exception) {
-               e.printStackTrace()
-           }
+//           try {
+//               if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+//                   prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
+//                   findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+//               }
+//           } catch (e: Exception) {
+//               e.printStackTrace()
+//           }
         }
         binding.layoutHeader.txtOnlineOrder.setOnClickListener {
             try {
@@ -2386,7 +2386,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                             if (!allstatus){
                                 viewModel.downloadFinished(false)
                                 if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
-                                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
                                 }
                             }
 
