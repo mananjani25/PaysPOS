@@ -11,6 +11,7 @@ import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.data.model.responseModel.orderhistory.Orders
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.repositories.PosRepository
+import com.android.pos.data.repositories.TaxServiceChargeRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Resource
@@ -22,6 +23,7 @@ import javax.inject.Inject
 @HiltViewModel
 public class CustomerListViewModel @Inject constructor(
     private val posRepository: PosRepository,
+    private val taxServiceChargeRepository: TaxServiceChargeRepository,
     private val prefProvider: PrefProvider
 ) : ViewModel() {
 
@@ -52,6 +54,8 @@ public class CustomerListViewModel @Inject constructor(
     val serviceCharges = posRepository.serviceChargeList()
 
     var itemlist = posRepository.getWholeItemFromPos()
+
+    val enableTaxes = taxServiceChargeRepository.enableTaxes()  // fetch active taxes from DB
 
     fun customerList(data: LinkedHashMap<String, String>) =
         posRepository.customerListPagination(data)
