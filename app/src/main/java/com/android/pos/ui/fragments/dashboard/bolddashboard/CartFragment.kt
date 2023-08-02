@@ -1035,7 +1035,7 @@ class CartFragment(
                     if (it.isEmpty()) {
 //                        if (oldItemSize != null && oldItemSize != 1)
                         Log.e("TODOCheck", "here Add255Return  ${it.size}")
-                        //return@observe
+                        return@observe
                     } else {
                         val currentTimeMillis = System.currentTimeMillis()
 
