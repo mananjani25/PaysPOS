@@ -51,6 +51,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
     lateinit var listOfItemsId: ArrayList<Int>
     lateinit var listOfServiceCharge: ArrayList<TbServiceCharge>
     var isFromSearch: Boolean = false
+    var activeTaxList: List<TaxData> = arrayListOf()
 
     private val orderHistoryAdapter by lazy {
         OrderHistoryAdapter { view, order ->
@@ -92,7 +93,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
 
         initControls()
         initObservers()
-
+        getTaxList()   // active taxes list
         //call initial api
         viewModel.getReportSummary(
             isFromSearch
@@ -606,12 +607,11 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
                 }
                 return taxactive.toList()
             } else if (itemIdexist == 1) {
+                // if manual item > apply all active taxes
                 var taxactive: ArrayList<TaxData> = arrayListOf()
-                activeItems.taxes?.forEach { taxData ->
-                    if (taxData.isActive) {
-                        taxData.locationId = locationId
-                        taxactive.add(taxData)
-                    }
+                activeTaxList.forEach { taxData ->
+                    taxData.locationId = locationId
+                    taxactive.add(taxData)
                 }
                 return taxactive.toList()
             }
@@ -660,6 +660,14 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
             } ?: viewModel.showError(getString(R.string.error_order_id_not_available))
         } catch (e: Exception) {
             e.printStackTrace()
+        }
+    }
+
+    // fetch all active taxes list from database
+    private fun getTaxList() {
+        viewModel.enableTaxes.observe(viewLifecycleOwner) {
+            if (it.data != null)
+                activeTaxList = it.data
         }
     }
 }
