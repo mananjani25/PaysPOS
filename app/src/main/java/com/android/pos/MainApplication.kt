@@ -171,12 +171,12 @@ class MainApplication : Application() {
 
         //initialization value  for comsetting's attribute
         commSetting.type = CommSetting.TCP
-        commSetting.timeOut = "6000"
+        commSetting.timeOut = "9000"
         commSetting.baudRate = "9600"
 //        commSetting.serialPort = "COM1"
         commSetting.isEnableProxy = false
         commSetting.macAddr = ""
-        commSetting.destIP = "103.156.142.117"
+        commSetting.destIP = "172.20.10.3"
         commSetting.destPort = "10009"
         /*val selectedHost = "UNKNOWN"
         Convenience.setHost(context, commSetting, selectedHost)*/

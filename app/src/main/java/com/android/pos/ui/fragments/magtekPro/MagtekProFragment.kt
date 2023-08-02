@@ -91,9 +91,9 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
         binding.lifecycleOwner = this
         binding.tvPax.setOnClickListener {
             initPOSLink()
-//            paxNetworkCall()
-            setCommSetting("","")
-            getMerchantDetails()
+            paxNetworkCall()
+            /*setCommSetting("","")
+            getMerchantDetails()*/
         }
 
         mSessionManager.setDevicesFragment(this)
@@ -117,7 +117,6 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
                 response: Response<PosLinkResult>
             ) {
 //                ProgressUtils.dismissProgressDialog()
-
                 if (response.isSuccessful) {
                     LogUtil.logE("onResponse", response.body().toString() + response.body()!!.ipAddress)
                     var ipAddress = response.body()!!.ipAddress
@@ -141,26 +140,6 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
         })
     }
 
-    private fun openConnectDialog(){
-        val dialog = Dialog(requireActivity())
-        dialog.setContentView(R.layout.dialog_pax_connection);
-        dialog.setCancelable(true)
-
-        val edtIP: EditText = dialog.findViewById<EditText>(R.id.edtIP)
-        val edtPort: EditText = dialog.findViewById<EditText>(R.id.edtPort)
-        val btnConnect: TextView = dialog.findViewById<TextView>(R.id.txtSave)
-        edtIP.setText("192.168.7.160")
-
-        btnConnect.setOnClickListener {
-            val port = edtPort.text.toString()
-            val IP = edtIP.text.toString()
-            Log.d("Connect Parameters: ","IP $IP Port $port")
-            /*setCommSetting(IP, port)
-            getMerchantDetails()*/
-            dialog.dismiss()
-        }
-        dialog.show()
-    }
 
     private fun initPOSLink() {
         POSLinkCreatorWrapper.createSync(
@@ -185,12 +164,16 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
 
         //initialization value  for comsetting's attribute
         commset.type = CommSetting.TCP
-        commset.timeOut = "6000"
+        commset.timeOut = "9000"
         commset.baudRate = "9600"
 //        commset.serialPort = "COM1"
         commset.isEnableProxy = false
-        commset.destPort = "10009"
-        commset.destIP = "192.168.3.176"
+        commset.destPort = edtPort
+        commset.destIP = edtIP
+        /*commset.destPort = "10009"
+        commset.destIP = "172.20.10.3"*/
+//        commset.destIP = "192.168.1.10"
+//        commset.destIP = "192.168.3.176"
         /*val selectedHost = "UNKNOWN"
         Convenience.setHost(context, commset, selectedHost)*/
         Log.i(
@@ -219,7 +202,7 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
 
             posLink.ManageRequest = manageRequest
             val result = posLink.ProcessTrans()
-            Log.d("result: ", result.Code.toString() + " " + result.Msg)
+            Log.d("result: ", result.Code.toString() + " Msg: " + result.Msg)
             if (result.Code === ProcessTransResult.ProcessTransResultCode.OK) {
                 val msg = Message()
                 msg.what = Constants.TRANSACTION_SUCCESSED
@@ -242,7 +225,11 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
             } else {
                 CoroutineScope(Dispatchers.Main).launch {
                     ProgressUtils.dismissProgressDialog()
-                    Toast.makeText(requireContext(), "getMerchantDetails Failed ${result.Code} ${result.Msg}", Toast.LENGTH_LONG).show()
+                    if (result.Msg.toString() == "CONNECT ERROR" || result.Msg.toString() == "TIME OUT"){
+                        Toast.makeText(requireContext(), "Please check your internet connection", Toast.LENGTH_LONG).show()
+                    } else {
+                        Toast.makeText(requireContext(), "getMerchantDetails Failed ${result.Code} ${result.Msg}", Toast.LENGTH_LONG).show()
+                    }
                 }
             }
         }
@@ -254,7 +241,7 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
             mPaymentRequest.TransType = mPaymentRequest.ParseTransType("SALE")
             mPaymentRequest.TenderType = mPaymentRequest.ParseTenderType("CREDIT")
 
-            mPaymentRequest.Amount = "120"
+            mPaymentRequest.Amount = "001"
             mPaymentRequest.TipAmt = ""
             mPaymentRequest.ECRRefNum = "123441"
 
