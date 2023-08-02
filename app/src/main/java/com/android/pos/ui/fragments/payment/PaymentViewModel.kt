@@ -677,7 +677,7 @@ open class PaymentViewModel @Inject constructor(
         orderAttributeRequestModel.paymentAttributes = if (needPaymentAttributes == true) {
             paymentAttributes(
                 cartModel,
-                totalPayAmounts,
+                totalPrice,
                 subTotalPrice,
                 totalServiceCharge,
                 totalTax,
