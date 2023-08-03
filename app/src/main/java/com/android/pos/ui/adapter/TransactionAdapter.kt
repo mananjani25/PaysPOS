@@ -92,14 +92,14 @@ class TransactionAdapter(val viewModel: TransactionViewModel, val prefProvider: 
                 if (model.orderDetails != null && model.orderDetails.orderTypeName != null) {
                     itemBinding.tvOrderType?.text = model.orderDetails.orderTypeName.toString()
                 } else {
-                    if(model.payableType == GIFT_CARD || model.payableType == GIFT_CARD_AMOUNT_TAB) {
+                    if(model.payableType == GIFT_CARD || model.payableType == GIFT_CARD_AMOUNT_TAB || model.payableType == INVOICE ) {
                         itemBinding.tvOrderType?.text = DEFAULT_ORDER
                     } else {
                         itemBinding.tvOrderType?.text = "-"
                     }
                 }
             } catch (e: Exception) {
-                if(model.payableType == GIFT_CARD || model.payableType == GIFT_CARD_AMOUNT_TAB) {
+                if(model.payableType == GIFT_CARD || model.payableType == GIFT_CARD_AMOUNT_TAB || model.payableType == INVOICE) {
                     itemBinding.tvOrderType?.text = DEFAULT_ORDER
                 } else {
                     itemBinding.tvOrderType?.text = "-"
@@ -136,14 +136,14 @@ class TransactionAdapter(val viewModel: TransactionViewModel, val prefProvider: 
                     if (model.custom_order_id != 0) {
                         itemBinding.txtTransactionId.text = model.custom_order_id.toString()
                     } else {
-                        if(model.payableType == GIFT_CARD || model.payableType == GIFT_CARD_AMOUNT_TAB) {
+                        if(model.payableType == GIFT_CARD || model.payableType == GIFT_CARD_AMOUNT_TAB || model.payableType == INVOICE) {
                             itemBinding.txtTransactionId.text = model.payableId.toString()
                         } else {
                             itemBinding.txtTransactionId.text = "-"
                         }
                     }
                 } else {
-                    if(model.payableType == GIFT_CARD || model.payableType == GIFT_CARD_AMOUNT_TAB) {
+                    if(model.payableType == GIFT_CARD || model.payableType == GIFT_CARD_AMOUNT_TAB || model.payableType == INVOICE)  {
                         itemBinding.txtTransactionId.text = model.payableId.toString()
                     } else {
                         itemBinding.txtTransactionId.text = "-"
