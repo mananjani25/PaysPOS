@@ -745,4 +745,5 @@ object Constants {
     const val ADD_VALUE = "Add Value"
     const val BALANCE_INQUIRY = "Balance Inquiry"
     const val GIFT_CARD_CATEGORY = "GIFT CARD"
+    const val IS_LAST_ITEM_DELETE = "IS_LAST_ITEM_DELETE"
 }
