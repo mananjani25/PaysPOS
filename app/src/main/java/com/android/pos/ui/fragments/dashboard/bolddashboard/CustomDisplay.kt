@@ -324,13 +324,13 @@ class CustomDisplay(
                     ) == "CashDiscount"
                 ) {
 
-                    binding.txtSubTotalCash?.text = getCashDiscountedPrice(subTotalPrice)
+                    binding.txtSubTotalCash?.text = MethodUtils.roundOffAmount(subTotalPrice)
                     binding.txtSubTotalCard?.text = MethodUtils.roundOffAmount(subTotalPrice)
 
-                    binding.txtTaxCash?.text = getCashDiscountedPrice(totalTax)
+                    binding.txtTaxCash?.text = MethodUtils.roundOffAmount(totalTax)
                     binding.txtTaxCard?.text = MethodUtils.roundOffAmount(totalTax)
 
-                    binding.txtServiceChargeCash?.text = getCashDiscountedPrice(totalServiceCharge)
+                    binding.txtServiceChargeCash?.text = MethodUtils.roundOffAmount(totalServiceCharge)
                     binding.txtServiceChargeCard?.text = MethodUtils.roundOffAmount(totalServiceCharge)
 
                     binding.txtTotalCash?.text = getCashDiscountedPrice(totalPrice)
@@ -338,14 +338,14 @@ class CustomDisplay(
 
                 } else {
                     binding.txtSubTotalCash?.text = MethodUtils.roundOffAmount(subTotalPrice)
-                    binding.txtSubTotalCard?.text = getSurchargedPrice(subTotalPrice)
+                    binding.txtSubTotalCard?.text = MethodUtils.roundOffAmount(subTotalPrice)
 
                     binding.txtTaxCash?.text = MethodUtils.roundOffAmount(totalTax)
-                    binding.txtTaxCard?.text = getSurchargedPrice(totalTax)
+                    binding.txtTaxCard?.text = MethodUtils.roundOffAmount(totalTax)
 
                     binding.txtServiceChargeCash?.text =
                         MethodUtils.roundOffAmount(totalServiceCharge)
-                    binding.txtServiceChargeCard?.text = getSurchargedPrice(totalServiceCharge)
+                    binding.txtServiceChargeCard?.text = MethodUtils.roundOffAmount(totalServiceCharge)
 
                     binding.txtTotalCash?.text = MethodUtils.roundOffAmount(totalPrice)
                     binding.txtTotalCard?.text = getSurchargedPrice(totalPrice)
