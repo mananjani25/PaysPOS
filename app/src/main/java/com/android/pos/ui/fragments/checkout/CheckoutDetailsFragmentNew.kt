@@ -44,9 +44,11 @@ import com.android.pos.ui.fragments.payment.PaymentViewModel
 import com.android.pos.ui.fragments.settings.tip.TipListViewModel
 import com.android.pos.utils.*
 import com.android.pos.utils.callback.DeleteOptionCallback
-import com.android.pos.utils.callback.OnTipAddedListener
 import com.android.pos.utils.callback.magtekCallback
 import com.android.pos.utils.extensions.*
+import com.android.pos.utils.paxUtils.AppThreadPool
+import com.android.pos.utils.paxUtils.POSLinkCreatorWrapper
+import com.android.pos.utils.paxUtils.SettingINI
 import com.android.pos.utils.statusUtils.Status
 import com.google.gson.Gson
 import com.google.gson.JsonArray
@@ -56,6 +58,9 @@ import com.magtek.mobile.android.mtusdk.*
 import com.pax.poslink.PaymentRequest
 import com.pax.poslink.PosLink
 import com.pax.poslink.ProcessTransResult
+import com.pax.poslink.aidl.BasePOSLinkCallback
+import com.pax.poslink.fullIntegration.InputAccount
+import com.pax.poslink.fullIntegration.InputAccount.InputAccountCallback
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import retrofit2.Call
@@ -67,7 +72,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragment(), magtekCallback,
-    DeleteOptionCallback, IDeviceListCallback {
+    DeleteOptionCallback, IDeviceListCallback, InputAccountCallback, BasePOSLinkCallback<InputAccount.InputAccountResponse> {
     private var textToPay: Boolean = false
     private var isShow: Boolean = false
     private lateinit var presentation: CustomDisplay
@@ -193,7 +198,22 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             orderOfflineId = arguments?.getString("orderOfflineId").toString()
         }
 
+//        BroadPOSCommunicator.startListeningService()
+
+        initPOSLink()
+
         return binding.root
+    }
+
+    private fun initPOSLink() {
+        POSLinkCreatorWrapper.createSync(
+            context!!,
+            object : AppThreadPool.FinishInMainThreadCallback<PosLink?> {
+                override fun onFinish(result: PosLink?) {
+                    posLink = result!!
+                    Log.d("initPOSLink: ","onFinish")
+                }
+            })
     }
 
     private val tipListViewModel by activityViewModels<TipListViewModel>()
@@ -948,14 +968,15 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             paymentAmount += tipAmount
 
             if (paymentAmount != 0.0) {
-                if (!prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)) {
+                if (mSessionManager.isConnected) {
                     magtekModule.stopListner(false)
                     if (device == 0) {
                         magtekPaymentCall()
                     } else {
                         magtekProPaymentCall()
                     }
-                } else {
+                    prefProvider.setValueboolean(Constants.IS_PAX_CONNECTED, false)
+                } else if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false) && !mSessionManager.isConnected) {
                     makePaxPaymentRequest()
                 }
             } else {
@@ -1092,15 +1113,19 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     private fun makePaxPaymentRequest() {
         GlobalScope.launch {
+            posLink.SetCommSetting(SettingINI.getCommSettingFromFile("/storage/emulated/0/Download/"+ SettingINI.FILENAME))
+            var amt = (paymentAmount*100).toInt()
+            Log.d("Amt: ","amt $amt")
             CoroutineScope(Dispatchers.Main).launch {
                 ProgressUtils.showProgressDialog(requireActivity())
             }
             mPaymentRequest = PaymentRequest()
             mPaymentRequest.TransType = mPaymentRequest.ParseTransType("SALE")
             mPaymentRequest.TenderType = mPaymentRequest.ParseTenderType("CREDIT")
-            mPaymentRequest.Amount = paymentAmount.toString()
+            mPaymentRequest.Amount = amt.toString()
             mPaymentRequest.TipAmt = ""
-            mPaymentRequest.ECRRefNum = "123442"
+            mPaymentRequest.ECRRefNum = "143800"
+            mPaymentRequest.TransactionBehavior.ForceDuplicate = "1"
 
             posLink.PaymentRequest = mPaymentRequest
             val result = posLink.ProcessTrans()
@@ -1119,19 +1144,24 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     Constants.APPROVED_AMOUNT,
                     approvedAmount
                 )*/
-                /*cardLastDigits = response.BogusAccountNum
-                CARDBIN = UIUtil.findXMl(posLink.PaymentResponse.ExtData, "CARDBIN")!!
+                cardLastDigits = response.BogusAccountNum
+                EDCType = response.CardType
+                CARDBIN = response.CardInfo.CardBin
+                var tipAmount = response.ApprovedTipAmount
+                val globalUID = response.PaymentTransInfo.GlobalUid
+                /*CARDBIN = UIUtil.findXMl(posLink.PaymentResponse.ExtData, "CARDBIN")!!
                 var tipAmount = UIUtil.findXMl(posLink.PaymentResponse.ExtData, "TipAmount")
                 CardName = UIUtil.findXMl(posLink.PaymentResponse.ExtData, "APPLAB")!!
                 val globalUID = UIUtil.findXMl(posLink.PaymentResponse.ExtData, "GlobalUID")
                 EDCType = UIUtil.findXMl(posLink.PaymentResponse.ExtData, "EDCTYPE").toString()*/
 //                prefProvider.setValue(Constants.GLOBAL_ID, globalUID!!)
 
+                //implementation("org.dom4j:dom4j:2.1.3")
                 Log.d(
                     "Payment Details: ",
-                    "$ExtData $resultCode $resultTxt"
+                    "$ExtData $resultCode $resultTxt $globalUID"
                 )
-                Log.d("Payment Details: ", "$cardLastDigits $approvedAmount $CARDBIN")
+                Log.d("Payment Details: ", "$cardLastDigits $approvedAmount $CARDBIN $EDCType $tipAmount ${Gson().toJson(response)}")
 
                 if (resultCode == "000000") {
                     CoroutineScope(Dispatchers.Main).launch {
@@ -1142,10 +1172,21 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     }
                 } else {
                     CoroutineScope(Dispatchers.Main).launch {
+                        ProgressUtils.dismissProgressDialog()
                         requireActivity().toast("$resultCode $resultTxt", Toast.LENGTH_LONG)
                     }
                 }
+            } else {
+                CoroutineScope(Dispatchers.Main).launch {
+                    ProgressUtils.dismissProgressDialog()
+                    if (result.Msg.toString() == "CONNECT ERROR" || result.Msg.toString() == "TIME OUT"){
+                        Toast.makeText(requireContext(), "Please check your internet connection", Toast.LENGTH_LONG).show()
+                    } else {
+                        Toast.makeText(requireContext(), "getMerchantDetails Failed ${result.Code} ${result.Msg}", Toast.LENGTH_LONG).show()
+                    }
+                }
             }
+
         }
     }
 
@@ -2227,5 +2268,37 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             )
             paymentviewModel.createQueuePrinter(createRequest, createOrder)
         }
+    }
+
+    override fun onInputAccountStart() {
+        Log.d("onInputAccountStart","onInputAccountStart")
+    }
+
+    override fun onEnterExpiryDate() {
+        Log.d("onEnterExpiryDate","onEnterExpiryDate")
+    }
+
+    override fun onEnterZip() {
+        Log.d("onEnterZip","onEnterZip")
+    }
+
+    override fun onEnterCVV() {
+        Log.d("onEnterCVV","onEnterCVV")
+    }
+
+    override fun onSelectEMVApp(p0: MutableList<String>?) {
+        Log.d("onSelectEMVApp","onSelectEMVApp ${p0.toString()}")
+    }
+
+    override fun onProcessing(p0: String?, p1: String?) {
+        Log.d("onProcessing","onProcessing $p0 $p1")
+    }
+
+    override fun onWarnRemoveCard() {
+        Log.d("onWarnRemoveCard","onWarnRemoveCard")
+    }
+
+    override fun onFinish(p0: InputAccount.InputAccountResponse?) {
+        Log.d("InputAccount onFinish","onFinish ${p0.toString()}")
     }
 }

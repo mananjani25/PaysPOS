@@ -8,6 +8,7 @@ import android.os.Build
 import android.os.Handler
 import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
+import com.android.pos.utils.paxUtils.Convenience
 import com.android.pos.utils.paxUtils.SettingINI
 import com.android.pos.utils.scanner.helpers.AvailableScanner
 import com.android.pos.utils.scanner.helpers.Barcode
@@ -45,7 +46,7 @@ class MainApplication : Application() {
         val commSetting: CommSetting = setupSetting(applicationContext)
         POSLinkAndroid.init(applicationContext, commSetting)
         Log.i("DEBUG", "Start Application")
-//        Convenience.init(applicationContext)
+        Convenience.init(applicationContext)
     }
 
     companion object {

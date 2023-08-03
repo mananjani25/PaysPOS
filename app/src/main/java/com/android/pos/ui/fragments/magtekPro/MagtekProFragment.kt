@@ -184,7 +184,7 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
         POSLinkAndroid.initPOSListener(context, commset)
         SettingINI.saveCommSettingToFile(iniFile, commset)
         // set the folder to save the "comsetting.ini" file
-        posLink.appDataFolder = context!!.filesDir.absolutePath
+        posLink.appDataFolder = file.absolutePath
         posLink.SetCommSetting(commset)
         Log.d("SetCommSetting: ", "saved successfully")
     }
@@ -221,7 +221,7 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
                     Toast.makeText(requireContext(), "Merchant $mID is connected successfully", Toast.LENGTH_SHORT).show()
                 }
                 prefProvider.setValueboolean(Constants.IS_PAX_CONNECTED, true)
-                getPaymentResponse()
+//                getPaymentResponse()
                 Log.d("Merchant Details: ", mID + " " + resultCode + "  " + status)
             } else {
                 CoroutineScope(Dispatchers.Main).launch {
