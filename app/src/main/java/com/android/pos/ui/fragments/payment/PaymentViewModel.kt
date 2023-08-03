@@ -957,8 +957,7 @@ open class PaymentViewModel @Inject constructor(
         cashdiscountType: String,
         tipID: Int? = null,
         totalServiceChargeM: Double = 0.0,
-        totalDiscountM: Double = 0.0,
-        tipFromCustomerDisplay: Boolean = false
+        totalDiscountM: Double = 0.0
     ): OrderRequestModel {
 
         val orderAttributeRequestModel = OrderAttributeRequestModel()
@@ -1070,7 +1069,7 @@ open class PaymentViewModel @Inject constructor(
                 finaldiscount,
                 paymentType,
                 orderAttributeRequestModel.cash_discount_type,
-                redeemLoyaltyInfo = redeemLoyaltyInfo, tipFromCustomerDisplay
+                redeemLoyaltyInfo = redeemLoyaltyInfo
             )
         } else {
             null
@@ -1841,8 +1840,7 @@ open class PaymentViewModel @Inject constructor(
         finalcashdiscount: Double,
         paymentTypeStatus: String,
         cashdiscountType: String,
-        redeemLoyaltyInfo: RedeemLoyaltyInfo?,
-        tipFromCustomerDisplay: Boolean
+        redeemLoyaltyInfo: RedeemLoyaltyInfo?
     ): PaymentAttributes {
         return PaymentAttributes().apply {
 //            if (isUpdateOrder)
@@ -1940,7 +1938,7 @@ open class PaymentViewModel @Inject constructor(
             val newTipAmountAfterSurChargeDeduction = tipAmount - percentageCalculation(tipAmount,rateOrAmount.toDouble())
             tips = MethodUtils.roundOffAmountDouble(newTipAmountAfterSurChargeDeduction)
 
-            //Actual Tip without any deduction of surcharge(for backend usage)
+            //Actual Tip on Total only(for backend usage)
             tipWithSurchargePercentage = tipAmount
             tipsAdjusted = false
             totalDiscount = totalDis
