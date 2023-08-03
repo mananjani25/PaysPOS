@@ -45,6 +45,7 @@ import com.android.pos.data.remote.Constants.DINE_IN_LIST_EDIT
 import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.GIFT_CARD
+import com.android.pos.data.remote.Constants.IS_LAST_ITEM_DELETE
 import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.android.pos.data.remote.Constants.IS_SYNC_MARKUP
 import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER
@@ -570,6 +571,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         dineInList: List<DineInModel> = arrayListOf(),
         isFromDineInScreen: Boolean = false
     ) {
+        prefProvider.setValueboolean(IS_LAST_ITEM_DELETE, false)  // reset flag in case of adding or updating item
         Log.e("DashViewModModel", "checkCartSize: ${cartList?.size}")
         if (cartList != null && cartList.isEmpty()) {
             // empty cart hoy to new cart create kare
@@ -1640,6 +1642,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     model.isEdited = item.isEdited
                                     model.isDestroy = true
                                 } else {
+                                    if(list.size == 1) {
+                                        prefProvider.setValueboolean(IS_LAST_ITEM_DELETE, true)
+                                    }
                                     list.remove(model)
                                 }
                             }
@@ -1664,10 +1669,10 @@ class DashBoardCategoryViewModel @Inject constructor(
                     }
                     cartModel.items = list
                     addCart(cartModel)
-                    if (list.isEmpty()) {
+                    /*if (list.isEmpty()) {
                         // delete carts
                         deleteCart()
-                    }
+                    }*/
                 } else {
 
                     if (type == DELETE) {

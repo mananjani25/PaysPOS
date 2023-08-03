@@ -42,6 +42,7 @@ import com.android.pos.data.remote.Constants.DINE_IN_UPDATE_LIST
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.GIFT_CARD
 import com.android.pos.data.remote.Constants.IS_FROM_ALL_ORDER
+import com.android.pos.data.remote.Constants.IS_LAST_ITEM_DELETE
 import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER
 import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER
 import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER_ID
@@ -1035,7 +1036,12 @@ class CartFragment(
                     if (it.isEmpty()) {
 //                        if (oldItemSize != null && oldItemSize != 1)
                         Log.e("TODOCheck", "here Add255Return  ${it.size}")
-                        return@observe
+                        // Flag is used to update cart if last item from the cart will be deleted
+                        if(prefProvider.getValueboolean(IS_LAST_ITEM_DELETE, false)) {
+                            prefProvider.setValueboolean(IS_LAST_ITEM_DELETE, false) // reset flag after updating cart
+                        } else {
+                            return@observe
+                        }
                     } else {
                         val currentTimeMillis = System.currentTimeMillis()
 
