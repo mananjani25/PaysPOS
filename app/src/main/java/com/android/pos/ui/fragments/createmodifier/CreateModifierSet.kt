@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -310,6 +311,9 @@ class CreateModifierSet : Fragment(), TextWatcher {
                                 Constants.KEY,
                                 Constants.CREATEMODIFIER
                             )
+                            val result: Bundle =
+                                Bundle().apply { putBoolean("isUpdated", viewModel.isUpdated) }
+                            setFragmentResult("request_key_modifier_set_updated", result)
                             navControll.popBackStack()
                         }
                     }

@@ -49,12 +49,12 @@ class CreateModifierViewModel @Inject constructor(
 
     private var _data = MutableLiveData<Event<String>>()
     val data: LiveData<Event<String>> = _data
+    var isUpdated: Boolean = false
 
     fun setItemIds(itemIds: ArrayList<Int>) {
         this.itemIdsViewModel = itemIds
     }
 
-    @RequiresApi(Build.VERSION_CODES.N)
     fun submit() {
 
         val data = modifierDetails.value
@@ -102,6 +102,7 @@ class CreateModifierViewModel @Inject constructor(
                             if (modifierSetResponse?.status == 200) {
                                 resource.data?.let {
 
+                                    isUpdated = true
                                     _data.value = Event(it.message)
                                     updateModifierDataInItem(it.data.modifierSet)
                                     posRepository.addModifierSets(it.data.modifierSet)
@@ -157,35 +158,45 @@ class CreateModifierViewModel @Inject constructor(
         deleteList = delete
     }
 
-    @RequiresApi(Build.VERSION_CODES.N)
-    fun updateModifierDataInItem(modifierSet: com.android.pos.data.entities.ModifierSet) {
+    private fun updateModifierDataInItem(modifierSet: com.android.pos.data.entities.ModifierSet) {
         CoroutineScope(Dispatchers.IO).launch {
-            var tempModifierSetIds: ArrayList<Int> = arrayListOf()
-            val oldModifierSet: com.android.pos.data.entities.ModifierSet? =
-                modifierSet.id?.let { posRepository.getSingleModifier(it) }
-            val oldItemIds: List<Int>? = oldModifierSet?.itemIds
-            // Remove modifier set ids from Items
-            oldItemIds?.forEach {
-                if (!modifierSet.itemIds.contains(it)) {
-                    val item: TbItem? = posRepository.getSingleItem(it)
-                    tempModifierSetIds = item?.modifier_set_ids as ArrayList<Int>
-                    tempModifierSetIds.removeIf { it == modifierSet.id }
-                    posRepository.updateModifiersForItem(tempModifierSetIds, it)
-                }
-            }
-
-            // Add modifier set id to Items
-            modifierSet.itemIds.forEach {
-                if (oldItemIds != null) {
-                    if (!oldItemIds.contains(it)) {
+            try {
+                var tempModifierSetIds: ArrayList<Int> = arrayListOf()
+                val oldModifierSet: com.android.pos.data.entities.ModifierSet? =
+                    modifierSet.id?.let { posRepository.getSingleModifier(it) }
+                val oldItemIds: List<Int>? = oldModifierSet?.itemIds
+                // Remove modifier set ids from Items
+                oldItemIds?.forEach {
+                    if (!modifierSet.itemIds.contains(it)) {
                         val item: TbItem? = posRepository.getSingleItem(it)
-                        tempModifierSetIds = (item?.modifier_set_ids as ArrayList<Int>?)!!
-                        if (!tempModifierSetIds.contains(element = modifierSet.id)) {
-                            tempModifierSetIds.add(modifierSet.id!!)
+                        tempModifierSetIds = item?.modifier_set_ids as ArrayList<Int>
+                        if (tempModifierSetIds.isNotEmpty()) {
+                            tempModifierSetIds.remove(modifierSet.id)
                             posRepository.updateModifiersForItem(tempModifierSetIds, it)
                         }
                     }
                 }
+
+                // Add modifier set id to Items
+                modifierSet.itemIds.forEach {
+                    if (oldItemIds != null) {
+                        if (!oldItemIds.contains(it)) {
+                            val item: TbItem? = posRepository.getSingleItem(it)
+                            tempModifierSetIds = (item?.modifier_set_ids as ArrayList<Int>?)!!
+                            if (tempModifierSetIds.isNotEmpty()) {
+                                if (!tempModifierSetIds.contains(element = modifierSet.id)) {
+                                    tempModifierSetIds.add(modifierSet.id!!)
+                                    posRepository.updateModifiersForItem(tempModifierSetIds, it)
+                                }
+                            } else {
+                                tempModifierSetIds.add(modifierSet.id!!)
+                                posRepository.updateModifiersForItem(tempModifierSetIds, it)
+                            }
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
     }
