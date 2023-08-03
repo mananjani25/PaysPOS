@@ -1125,7 +1125,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             mPaymentRequest.Amount = amt.toString()
             mPaymentRequest.TipAmt = ""
             mPaymentRequest.ECRRefNum = "143800"
-            mPaymentRequest.TransactionBehavior.ForceDuplicate = "1"
+            mPaymentRequest.ExtData = "<Force>T</Force>"
 
             posLink.PaymentRequest = mPaymentRequest
             val result = posLink.ProcessTrans()
