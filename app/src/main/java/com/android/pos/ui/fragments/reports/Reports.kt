@@ -1,6 +1,7 @@
 package com.android.pos.ui.fragments.reports
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +13,7 @@ import com.android.pos.R
 import com.android.pos.databinding.FragmentReportsBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
+import com.android.pos.ui.fragments.employeeTipSummary.EmployeeTipSummary
 import com.android.pos.ui.fragments.report.ReportEODFragment
 import com.android.pos.ui.fragments.report.ReportSummaryFragment
 import com.android.pos.utils.extensions.gone
@@ -84,6 +86,11 @@ class Reports : Fragment() {
             loadFragment(frag)
 
         }
+        binding.txtEmployeeTipSummary.setOnClickListener {
+            selectedPosition(4)
+            val frag: Fragment = EmployeeTipSummary()
+            loadFragment(frag)
+        }
         binding.txtShiftReport.setOnClickListener {
             if (rolePermission.hasReportSummaryPermission(binding.root)) {
                 selectedPosition(2)
@@ -106,6 +113,7 @@ class Reports : Fragment() {
         }
 
         binding.commonToolbar.txtEmail?.setOnClickListener {
+            Log.e("ReportEODFragment","onclick txtEmail from parent fragment")
             EventBus.getDefault().post("1")
         }
         binding.commonToolbar.imgPrintEODReport?.setOnClickListener {
@@ -132,12 +140,18 @@ class Reports : Fragment() {
                 /*  binding.txtCurrentDrawer.setTextColor(requireContext().resources.getColor(R.color.txtColor))
                   binding.txtCurrentDrawer.setBackgroundColor(requireContext().resources.getColor(R.color.bg_color))
   */
+                binding.txtEodReport.setTextColor(requireContext().resources.getColor(R.color.txtColor))
+                binding.txtEodReport.setBackgroundColor(requireContext().resources.getColor(R.color.bg_color))
+
+                binding.txtShiftReport.setTextColor(requireContext().resources.getColor(R.color.txtColor))
+                binding.txtShiftReport.setBackgroundColor(requireContext().resources.getColor(R.color.bg_color))
+
+                binding.txtEmployeeTipSummary.setTextColor(requireContext().resources.getColor(R.color.txtColor))
+                binding.txtEmployeeTipSummary.setBackgroundColor(requireContext().resources.getColor(R.color.bg_color))
+
                 binding.txtSales.setTextColor(requireContext().resources.getColor(R.color.white))
                 binding.txtSales.background =
                     requireContext().resources.getDrawable(R.drawable.button_action_hover)
-
-                binding.txtEodReport.setTextColor(requireContext().resources.getColor(R.color.txtColor))
-                binding.txtEodReport.setBackgroundColor(requireContext().resources.getColor(R.color.bg_color))
 
                 binding.commonToolbar.txtEmail?.gone()
                 binding.commonToolbar.imgPrintEODReport?.gone()
@@ -153,10 +167,15 @@ class Reports : Fragment() {
                 binding.txtSales.setTextColor(requireContext().resources.getColor(R.color.txtColor))
                 binding.txtSales.setBackgroundColor(requireContext().resources.getColor(R.color.bg_color))
 
+                binding.txtShiftReport.setTextColor(requireContext().resources.getColor(R.color.txtColor))
+                binding.txtShiftReport.setBackgroundColor(requireContext().resources.getColor(R.color.bg_color))
+
+                binding.txtEmployeeTipSummary.setTextColor(requireContext().resources.getColor(R.color.txtColor))
+                binding.txtEmployeeTipSummary.setBackgroundColor(requireContext().resources.getColor(R.color.bg_color))
+
                 binding.txtEodReport.setTextColor(requireContext().resources.getColor(R.color.white))
                 binding.txtEodReport.background =
                     requireContext().resources.getDrawable(R.drawable.button_action_hover)
-
 
             }
 
@@ -169,10 +188,41 @@ class Reports : Fragment() {
                 binding.txtSales.setTextColor(requireContext().resources.getColor(R.color.txtColor))
                 binding.txtSales.setBackgroundColor(requireContext().resources.getColor(R.color.bg_color))
 
+                binding.txtEodReport.setTextColor(requireContext().resources.getColor(R.color.txtColor))
+                binding.txtEodReport.setBackgroundColor(requireContext().resources.getColor(R.color.bg_color))
+
+                binding.txtEmployeeTipSummary.setTextColor(requireContext().resources.getColor(R.color.txtColor))
+                binding.txtEmployeeTipSummary.setBackgroundColor(requireContext().resources.getColor(R.color.bg_color))
+
                 binding.txtShiftReport.setTextColor(requireContext().resources.getColor(R.color.white))
                 binding.txtShiftReport.background =
                     requireContext().resources.getDrawable(R.drawable.button_action_hover)
 
+
+            }
+            4-> {
+
+                binding.apply {
+
+                    commonToolbar.txtSubTitle.text = requireContext().getString(R.string.employee_tip_summary)
+
+                    txtSales.setTextColor(requireContext().resources.getColor(R.color.txtColor))
+                    txtSales.setBackgroundColor(requireContext().resources.getColor(R.color.bg_color))
+
+                    txtEodReport.setTextColor(requireContext().resources.getColor(R.color.txtColor))
+                    txtEodReport.setBackgroundColor(requireContext().resources.getColor(R.color.bg_color))
+
+                    txtShiftReport.setTextColor(requireContext().resources.getColor(R.color.txtColor))
+                    txtShiftReport.setBackgroundColor(requireContext().resources.getColor(R.color.bg_color))
+
+                    txtEmployeeTipSummary.setTextColor(requireContext().resources.getColor(R.color.white))
+                    txtEmployeeTipSummary.background =
+                        requireContext().resources.getDrawable(R.drawable.button_action_hover)
+
+                    binding.commonToolbar.txtEmail?.visible()
+                    binding.commonToolbar.imgPrintEODReport?.visible()
+
+                }
 
             }
 
