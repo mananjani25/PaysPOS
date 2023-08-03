@@ -1329,31 +1329,38 @@ class CustomDisplay(
 
     }
 
-    fun showTipsAdded(tipAmount: Double, WholetotalPrice: Double) {
-        if (tipAmount == 0.00) {
-            binding.lnrLayoutTip?.gone()
-        } else {
-            binding.lnrLayoutTip?.visible()
-            val percentageTip = String.format(
-                "%.0f", MethodUtils.calculatePercentageFromAmount(
-                    tipAmount,
-                    WholetotalPrice
-                )
-            )
-
-            binding.txtTipLabel?.text = "Tip ($percentageTip%)"
-            if (MethodUtils.isEnableCashDiscount(context) && showCashCreditPrice) {
+    fun showTipsAddedNew(tipAmountForCard: Double, tipAmountForCash: Double, WholetotalPrice: Double) {
+        if (MethodUtils.isEnableCashDiscount(context) && showCashCreditPrice) {
+            if (tipAmountForCash == 0.00 && tipAmountForCard == 0.00) {
+                binding.lnrLayoutTip?.gone()
+            } else {
+                binding.lnrLayoutTip?.visible()
+                binding.txtTipLabel?.text = "Tip"
                 binding.txtTipCash?.visible()
                 binding.txtTipCard?.visible()
-                binding.txtTipCash?.text = "" + MethodUtils.roundOffAmount(tipAmount)
-                binding.txtTipCard?.text = "" + MethodUtils.roundOffAmount(tipAmount)
-            } else {
-                binding.txtTipCash?.gone()
-                binding.txtTipCard?.visible()
-                binding.txtTipCard?.text = "" + MethodUtils.roundOffAmount(tipAmount)
+                binding.txtTipCash?.text = "" + MethodUtils.roundOffAmount(tipAmountForCash)
+                binding.txtTipCard?.text = "" + MethodUtils.roundOffAmount(tipAmountForCard)
+
             }
+        }else{
+            if (tipAmountForCash == 0.00) {
+                binding.lnrLayoutTip?.gone()
+            } else {
+                binding.lnrLayoutTip?.visible()
+                val percentageTip = String.format(
+                    "%.0f", MethodUtils.calculatePercentageFromAmount(
+                        tipAmountForCash,
+                        WholetotalPrice
+                    )
+                )
 
+                binding.txtTipLabel?.text = "Tip ($percentageTip%)"
+                binding.txtTipCash?.visible()
+                binding.txtTipCard?.visible()
+                binding.txtTipCash?.text = "" + MethodUtils.roundOffAmount(tipAmountForCash)
+                binding.txtTipCard?.text = "" + MethodUtils.roundOffAmount(tipAmountForCash)
 
+            }
         }
 
     }

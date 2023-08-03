@@ -159,10 +159,6 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 passcodeViewModel,
                 dineInViewModel
             )
-//            {
-//                tipAmount = it
-//                tipAmountCalculation()
-//            }
         }
 
         val device = prefProvider.getValueInt(Constants.MAGTEK_HARDWARE, 0)
@@ -562,6 +558,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 isInsert = false
                 isCardRev = false
 
+                prefProvider.setValueboolean(Constants.TIP_ADDED, false)
                 viewModel.setTipAmount(0.0)
                 when {
                     paymentType == "Cash" -> {
@@ -1860,7 +1857,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
             paymentAmount = binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
             val bundleVal = Bundle().apply {
-                putDouble("totalprice", ((paymentAmount + tipAmount)))
+                putDouble("totalprice", ((paymentAmount)))
             }
             findNavController().navigate(
                 R.id.action_paymentBoldPosFragment_to_customAmountFragment,
@@ -2320,7 +2317,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         } else {
             if (this::presentation.isInitialized) {
                 presentation.show()
-                presentation.showTipsAdded(tipAmount, WholetotalPrice)
+                presentation.showTipsAddedNew(tipAmount,tipAmount, WholetotalPrice)
             }
 
             MethodUtils.setPriceTextView(
@@ -2337,6 +2334,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             )
             if (this::presentation.isInitialized) {
                 presentation.show()
+                presentation.showTipsAddedNew(tipAmount, tipAmount, WholetotalPrice)
                 presentation.updateTotals(
                     binding.tvCash.text.toString(),
                     binding.tvCard.text.toString()
