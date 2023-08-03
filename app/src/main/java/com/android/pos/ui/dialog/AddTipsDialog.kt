@@ -37,6 +37,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface {
 
+    private var rate: Double = 0.00
     private var tipID: Int? = null
     private var totalTip: Double = 0.00
     private var totalPrice: Double = 0.0
@@ -101,7 +102,7 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
 
 
         binding.llKeypad.txt10.setOnClickListener {
-            val rate = binding.llKeypad.txt10.text.toString().trim()
+            rate = binding.llKeypad.txt10.text.toString().trim()
                 .substring(0, binding.llKeypad.txt10.text.toString().length - 1).toDouble()
 
             var price = 0.0
@@ -121,7 +122,7 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
             binding.edtAmount.setText(MethodUtils.roundOffAmountString(price))
         }
         binding.llKeypad.txt20.setOnClickListener {
-            val rate = binding.llKeypad.txt20.text.toString().trim()
+            rate = binding.llKeypad.txt20.text.toString().trim()
                 .substring(0, binding.llKeypad.txt20.text.toString().length - 1).toDouble()
             var price = 0.0
             price = if (isFromTransaction) {
@@ -141,7 +142,7 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
         binding.llKeypad.txt30.setOnClickListener {
 
 
-            val rate = binding.llKeypad.txt30.text.toString().trim()
+            rate = binding.llKeypad.txt30.text.toString().trim()
                 .substring(0, binding.llKeypad.txt30.text.toString().length - 1).toDouble()
 
             var price = 0.0
@@ -267,6 +268,7 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
             if (amount >0.0){
                 val result = Bundle().apply {
                     putDouble("tipAmount", amount)
+                    putDouble("tipPercent",rate)
                     tipID?.let { putInt("tipId", tipID ?: 0) }
 
                 }
@@ -305,6 +307,7 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
 
     override fun selectedItem(model: GetTipReponse.Data, pos: Int) {
         LogUtil.logE(TAG, "SelectedItem:  ${Gson().toJson(model)}")
+        rate = model.rate
         tipModel.apply { model }
         tipID = model.id
         var tipCalculation = 0.0

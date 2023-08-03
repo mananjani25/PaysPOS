@@ -369,6 +369,7 @@ object Constants {
 
     const val CUSTOMER_SIGN_REQUIRED_ON_CD = "customer_sign_required_on_cd"
     const val SHOW_CASH_CREDIT_PRICE_ON_CUSTOMER_DISPLAY = "show_cash_credit_price_on_customer_display"
+    const val SHOW_TIP_SCREEN_BEFORE_PAYMENT = "show_tip_screen_before_payment"
 
     const val ALL_ORDER_TAB_POS = 0
     const val OPEN_ORDER_TAB_POS = 1

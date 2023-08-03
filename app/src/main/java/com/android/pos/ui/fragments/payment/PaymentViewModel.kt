@@ -13,7 +13,6 @@ import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
-import com.android.pos.data.remote.Constants.ORDER_TYPE_ID
 import com.android.pos.data.remote.Constants.PAYMENT_ID
 import com.android.pos.data.remote.Constants.PAYMENT_ID_FOR_CUSTOMER_DISPLAY
 import com.android.pos.data.remote.Constants.PHONE_ORDER
@@ -25,6 +24,7 @@ import com.android.pos.ui.fragments.magtek.PaymentResponse
 import com.android.pos.utils.Event
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
+import com.android.pos.utils.MethodUtils.Companion.percentageCalculation
 import com.android.pos.utils.TimeFormatUtils
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
@@ -508,7 +508,6 @@ open class PaymentViewModel @Inject constructor(
         offlineId: String = "",
         totalServiceChargeM: Double = 0.0,
         totalDiscountM: Double = 0.0
-
     ): OrderRequestModel {
 
         val orderAttributeRequestModel = OrderAttributeRequestModel()
@@ -1032,7 +1031,13 @@ open class PaymentViewModel @Inject constructor(
         orderAttributeRequestModel.totalDiscount = actual_TotalDiscount
         orderAttributeRequestModel.totalServiceCharges = actual_TotalServiceCharge
         orderAttributeRequestModel.totalTaxAmount = actual_TotalTax
-        orderAttributeRequestModel.totalTips = tipAmount
+        //Deduct the SurCharge % amount from tipAmount and then go ahead
+        //As discussed with Rohan - we have to avoid loss of merchant on
+        // processing fees of any order while card payment
+        //This is done by Dharmesh Basapati in BIS-957 task
+        val rateOrAmount = prefProvider.getValue(Constants.RATE_OR_AMOUNT, "0")
+        val newTipAmountAfterSurChargeDeduction = tipAmount - percentageCalculation(tipAmount,rateOrAmount.toDouble())
+        orderAttributeRequestModel.totalTips = MethodUtils.roundOffAmountDouble(newTipAmountAfterSurChargeDeduction)
 
         orderAttributeRequestModel.is_loyalty_applied = redeemLoyaltyInfo?.needToApplyLoyalty
         if (orderAttributeRequestModel.is_loyalty_applied == true) {
@@ -1794,6 +1799,8 @@ open class PaymentViewModel @Inject constructor(
             taxAmount = MethodUtils.roundOffAmountDouble(totalTax)
             terminalId = cartModel.terminalId
             tips = MethodUtils.roundOffAmountDouble(tipAmount)
+            //Actual Tip without any deduction of surcharge(for backend usage)
+            tipWithSurchargePercentage = MethodUtils.roundOffAmountDouble(tipAmount)
             tipsAdjusted = false
             totalDiscount = MethodUtils.roundOffAmountDouble(totalDis)
             tipID?.let { tipId = it }
@@ -1922,8 +1929,17 @@ open class PaymentViewModel @Inject constructor(
             subTotal = subTotalPrice
             taxAmount = totalTax
             terminalId = cartModel.terminalId
-            tips = MethodUtils.roundOffAmountDouble(tipAmount)
 
+            //Deduct the SurCharge % amount from tipAmount and then go ahead
+            //As discussed with Rohan - we have to avoid loss of merchant on
+            // processing fees of any order while card payment
+            //This is done by Dharmesh Basapati in BIS-957 task
+            val rateOrAmount = prefProvider.getValue(Constants.RATE_OR_AMOUNT, "0")
+            val newTipAmountAfterSurChargeDeduction = tipAmount - percentageCalculation(tipAmount,rateOrAmount.toDouble())
+            tips = MethodUtils.roundOffAmountDouble(newTipAmountAfterSurChargeDeduction)
+
+            //Actual Tip on Total only(for backend usage)
+            tipWithSurchargePercentage = tipAmount
             tipsAdjusted = false
             totalDiscount = totalDis
 

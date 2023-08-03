@@ -316,12 +316,18 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         if (this::presentation.isInitialized) {
             presentation.show()
             presentation.onDisplayChanged()
-//            val finalPaidAmount =
-//                binding.txtPaymentAmount.text.toString().replace(" payment successful", "")
-//                    .replace("$", "").toDouble()
-            Log.d("###RCB", "onResume TOTAL AMOUNT: ${receiptModel?.order?.totalAmount}")
-            val finalPaidAmount = receiptModel?.order?.totalAmount ?: 0.0
-            if (prefProvider.getValueboolean(Constants.TIP_ADDED, false)) {
+
+            val finalPaidAmount: Double = if(isCustomCash){
+                MethodUtils.roundOffAmountDown(paidAmount)
+            }else{
+                MethodUtils.roundOffAmountDown(paidAmount + tipAmount)
+            }
+
+            val showTipCollectionBeforePay = prefProvider.getValueboolean(
+                Constants.SHOW_TIP_SCREEN_BEFORE_PAYMENT,
+                false
+            )
+            if (prefProvider.getValueboolean(Constants.TIP_ADDED, false) || showTipCollectionBeforePay) {
                 prefProvider.setValueboolean(Constants.TIP_ADDED, false)
                 presentation.showThankYou(finalPaidAmount)
             } else {

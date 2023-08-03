@@ -123,7 +123,9 @@ data class VenueDetailsResponse(
         @SerializedName("customer_sign_required_on_cd")
         val customer_sign_required_on_cd: Boolean,
         @SerializedName("show_cash_credit_price_on_customer_display")
-        val show_cash_credit_price_on_customer_display: Boolean
+        val show_cash_credit_price_on_customer_display: Boolean,
+        @SerializedName("show_tip_screen_before_payment")
+        val show_tip_screen_before_payment: Boolean
     ) {
         data class Printer(
             @SerializedName("customer_receipt_printers")
