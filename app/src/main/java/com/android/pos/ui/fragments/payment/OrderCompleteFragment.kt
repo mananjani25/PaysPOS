@@ -67,6 +67,7 @@ import com.android.pos.data.remote.Constants.GUEST_POSITION
 import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED
 import com.android.pos.data.remote.Constants.KITCHEN
+import com.android.pos.data.remote.Constants.KITCHENANDCUSTOMER
 import com.android.pos.data.remote.Constants.LARGE
 import com.android.pos.data.remote.Constants.LOCK_SCREEN_TRANSACTION
 import com.android.pos.data.remote.Constants.LOYALTY_ADDED
@@ -5945,6 +5946,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     override fun onStop() {
         super.onStop()
+        prefProvider.setValue(Constants.OPEN_ORDER_ITEMS,"")
         if (!isSpilt) {
             removeCustomer()
 
@@ -6134,8 +6136,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                         ) {
 
                                                             it.printerSettings.forEach {
-                                                                if (it.printType.lowercase()
-                                                                        .equals(KITCHEN.lowercase()) && it.autoPrinting
+                                                                if ((it.printType.lowercase()
+                                                                        .equals(KITCHEN.lowercase()) || it.printType.lowercase()
+                                                                        .equals(KITCHENANDCUSTOMER.lowercase()) ) && it.autoPrinting
                                                                 ) {
 
 

@@ -365,7 +365,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             viewModel.manualSaleItems(
                 prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT),
                 prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
-            ).observe(requireActivity()) {
+            ).observe(viewLifecycleOwner) {
                 cartList = it
                 LogUtil.logE(TAG, "cartListBeforeTax  ${Gson().toJson(cartList)}")
                 /* if (prefProvider.getValue(ORDER_TYPE,"") == OPEN_ORDER){
@@ -1859,6 +1859,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
     }
 
     private fun refreshItemCalculation() {
+        Log.d("DISCOUNT_ISSUE", "itemCalculation called 3")
         viewModel.itemCalculation(
             cartList,
             binding.txtTotal,

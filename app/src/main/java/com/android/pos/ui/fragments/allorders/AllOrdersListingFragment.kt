@@ -914,7 +914,7 @@ class AllOrdersListingFragment(
                 LogUtil.logE(TAG, "itemDiscountTotal:  ${itemDiscountTotal}")
                 LogUtil.logE(TAG, "totalOrderDiscount  ${order.totalDiscount}")
 
-//                order.totalDiscount = order.totalDiscount - itemDiscountTotal
+                order.totalDiscount = order.totalDiscount - itemDiscountTotal
 
                 LogUtil.logE(TAG, "OpenORderUpdateOrder:  ${Gson().toJson(order.orderItems)}")
 
@@ -3627,7 +3627,7 @@ class AllOrdersListingFragment(
 
                 Status.ERROR -> {
                     ProgressUtils.dismissProgressDialog()
-                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
 
                 }
             }

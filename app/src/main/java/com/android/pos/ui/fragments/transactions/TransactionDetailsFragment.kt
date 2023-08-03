@@ -404,7 +404,8 @@ class TransactionDetailsFragment : Fragment() {
 
                 Constants.FIRST_DATA_GATEWAY == magtekRequestUtils.gatewayName() -> {
 
-                    val amount = refundAmount
+                    // commented by Mansi for task > Tip to be captured through RAPID CONNECT
+                    /*val amount = refundAmount
 
                     if (model != null) {
                         jsonArray =
@@ -421,7 +422,8 @@ class TransactionDetailsFragment : Fragment() {
                             }
 
                         networkCall(jsonArray, 0)
-                    }
+                    }*/
+                    tipCall(true)
                 }
 
                 // not support CAPTURE
@@ -533,7 +535,8 @@ class TransactionDetailsFragment : Fragment() {
 
                 Constants.FIRST_DATA_GATEWAY == magtekRequestUtils.gatewayName() -> {
 
-                    val amount = refundAmount
+                    // commented by Mansi for task > Tip to be captured through RAPID CONNECT
+                    /*val amount = refundAmount
 
                     if (model != null) {
                         jsonArray =
@@ -550,7 +553,8 @@ class TransactionDetailsFragment : Fragment() {
                             }
 
                         networkCall(jsonArray, 0)
-                    }
+                    }*/
+                    tipCall(true)
                 }
 
                 // not support CAPTURE
