@@ -729,7 +729,6 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         bundle.putDouble("noCashAdj", cashDiscountSurcharge)
                         bundle.putBoolean("isFromActiveOrder", isFromOpenOrder)
 
-
                         if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
                             findNavController().navigate(
                                 R.id.action_paymentBoldPosFragment_to_orderComplete,
@@ -2540,7 +2539,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
         paymentviewModel.saveOrder(false)
         val myRequest = cartList?.let {
-            paymentviewModel.createOrderRequestForCard(
+            paymentviewModel.createOrderRequestForCardNew(
                 it,
                 subTotalPrice,
                 paymentAmount,
@@ -2557,9 +2556,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 cashDiscountSurcharge,
                 true,
                 paymentType,
+                cardNumber,
                 cashDiscountType,
                 tipID
             )
+
         }
         LogUtil.logE(TAG, "myRequestOriginal ${Gson().toJson(myRequest)}")
         if (myRequest != null) {
@@ -2618,6 +2619,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
         LogUtil.logE(TAG, "myRequestOriginal ${Gson().toJson(myRequest)}")
         LogUtil.logE("ORDER TYPE 1", prefProvider.getValue(Constants.ORDER_TYPE, ""))
+
+        Log.d("yash", " custom_paymentAmount   : " + custom_paymentAmount)
         if (myRequest != null) {
             if (custom_paymentAmount != 0.0) {
                 paymentviewModel.totalPayAmount(custom_paymentAmount)
@@ -2798,11 +2801,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     }
 
     override fun onDeviceResponse(response: String) {
-
     }
 
     override fun onDeviceList(bluetoothDevice: BluetoothDevice) {
-
     }
 
     override fun OnCardDataReceived(imtCardData: IMTCardData) {
@@ -2869,7 +2870,6 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 if (response.isSuccessful) {
                     LogUtil.logE("onResponse", Gson().toJson(response.body()))
                     if (response.body() != null && response.body()!![0].transactionOutput != null) {
-
                         if (isDynamo())
                             magtekModule.setLED(false)
 
@@ -2879,11 +2879,24 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                 magtekModule.closeDevice()
                             paymentviewModel.setMagensaResponse(
                                 Gson().toJson(response.body()!![0]),
-                                if (i == 3) cardNumber else ""
+                                (if (i == 3){ cardNumber = cardNumber.takeLast(4)
+                                }else if(i== 1){
+                                    cardNumber = (response.body()!![0].dataOutput?.PANLast4).toString()
+                                }else if(i==2){
+                                    cardNumber = (response.body()!![0].dataOutput?.PANLast4).toString()
+                                } else {
+                                    cardNumber = ""
+                                }).toString()
                             )
                             giftCardViewModel.setMagensaResponse(
                                 Gson().toJson(response.body()!![0]),
-                                if (i == 3) cardNumber else ""
+                                    (if (i == 3){ cardNumber =cardNumber.takeLast(4)
+                                }else if(i== 1){
+                                    cardNumber = (response.body()!![0].dataOutput?.PANLast4).toString()
+                                }else if(i==2){
+                                        cardNumber = (response.body()!![0].dataOutput?.PANLast4).toString()
+                                }else {
+                                        cardNumber = "" }).toString()
                             )
 
                             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
