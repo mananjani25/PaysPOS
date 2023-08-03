@@ -1370,14 +1370,6 @@ fun padLineForItem(
 }
 
 
-/** utility: string repeat  */
-fun repeat(str: String?, i: Int): String? {
-    if (i > -1)
-    return String(CharArray(i)).replace("\u0000", str!!)
-
-    return ""
-}
-
 fun getBitmapFromVectorDrawable(context: Context?, drawableId: Int): Bitmap {
     var drawable: Drawable? = context?.let { ContextCompat.getDrawable(it, drawableId) }
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {

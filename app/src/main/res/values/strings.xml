@@ -887,5 +887,10 @@
     <string name="wastage_item_confirmation_message">Are you sure, you want to add this item wastage?</string>
     <string name="wastage_item_quantity_message">Please provide quantity for adding this item to wastage</string>
 
+    <string name="cash_tips">Cash Tips</string>
+    <string name="card_tips">Card Tips</string>
+    <string name="total_tips">Total Tips</string>
+    <string name="item_wise_sales">Item Wise Sales</string>
+
 </resources>
 
