@@ -121,6 +121,7 @@ object Constants {
     const val GIFT_CARD = "GiftCard"
     const val GIFT_CARD_AMOUNT_TAB = "GiftCardAmountTab"
     const val INVOICE = "Invoice"
+    const val GIFT_CARD_AMOUNT_TAB = "GiftCardAmountTab"
     const val GIFT_CARD_NAME = "Gift Card"
     const val DINE_IN_STATUS = "DineInStatus"
     const val DINE_IN_TABLE_ID = "DineInTableId"

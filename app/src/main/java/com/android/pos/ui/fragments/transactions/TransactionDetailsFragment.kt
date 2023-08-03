@@ -734,6 +734,8 @@ class TransactionDetailsFragment : Fragment() {
         viewModel.dataPayment.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 paymentDetailsResponse = it
+                val jsonString = Gson().toJson(paymentDetailsResponse)
+                Log.e("paymentDetailsResponse","paymentDetailsResponse result = $jsonString")
 
                 if (paymentDetailsResponse.data.order.order_split_type == "OrderAmountTab" || paymentDetailsResponse.data.order.order_split_type == "OrderGuestTab") {
                     isSplitPayment = true
