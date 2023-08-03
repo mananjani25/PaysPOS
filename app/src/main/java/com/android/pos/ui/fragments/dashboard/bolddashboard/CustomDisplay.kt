@@ -255,7 +255,7 @@ class CustomDisplay(
                 } else {
                     binding.rowHeaderLayoutDineIn?.gone()
                     binding.rowHeaderLayout.visible()
-                    if (MethodUtils.isEnableCashDiscount(context) && showCashCreditPrice) {
+                    if (MethodUtils.isEnableCashDiscount(context) && showCashCreditPrice && prefProvider.getValue(ORDER_TYPE, TAKEOUT) != Constants.GIFT_CARD) {
                         binding.txtTotalLabel.gone()
                         binding.txtCashLabel.visible()
                         binding.txtCardLabel.visible()
@@ -323,7 +323,7 @@ class CustomDisplay(
     private fun setupTotalsNew(isDineIn: Boolean) {
         showCashCreditPrice = prefProvider.getValueboolean(Constants.SHOW_CASH_CREDIT_PRICE_ON_CUSTOMER_DISPLAY, false)
         dashBoardCategoryViewModel.apply {
-            if (MethodUtils.isEnableCashDiscount(context) && !isDineIn && showCashCreditPrice) {
+            if (MethodUtils.isEnableCashDiscount(context) && !isDineIn && showCashCreditPrice && prefProvider.getValue(ORDER_TYPE, TAKEOUT) != Constants.GIFT_CARD) {
                 binding.txtSubTotalCash?.visible()
                 binding.txtSubTotalCard?.visible()
                 binding.txtTaxCash?.visible()
@@ -391,7 +391,7 @@ class CustomDisplay(
                 binding.txtOrderTotal?.visible()
 
 
-                if (MethodUtils.isEnableCashDiscount(context)) {
+                if (MethodUtils.isEnableCashDiscount(context) && prefProvider.getValue(ORDER_TYPE, TAKEOUT) != Constants.GIFT_CARD) {
 
                     if (prefProvider.getValue(
                             Constants.OPTION_TYPE,

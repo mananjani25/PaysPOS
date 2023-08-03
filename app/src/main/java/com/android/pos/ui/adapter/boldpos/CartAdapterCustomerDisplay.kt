@@ -42,7 +42,10 @@ class CartAdapterCustomerDisplay : RecyclerView.Adapter<CartAdapterCustomerDispl
             binding.txtEachQntPrice.text = MethodUtils.roundOffAmount((item.price))
             MethodUtils.setPriceTextView(binding.txtEachQntPrice, totalEachPrice(item))
 
-            if (MethodUtils.isEnableCashDiscount(itemView.context) && showCashCreditPrice) {
+            if (MethodUtils.isEnableCashDiscount(itemView.context) && showCashCreditPrice && prefProvider.getValue(
+                    Constants.ORDER_TYPE,
+                    Constants.TAKEOUT
+                ) != Constants.GIFT_CARD) {
                 binding.txtTotalPrice.gone()
                 binding.txtCashAmount.visible()
                 binding.txtCardAmount.visible()
