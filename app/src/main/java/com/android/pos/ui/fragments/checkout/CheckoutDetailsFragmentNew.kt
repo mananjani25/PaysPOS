@@ -2099,8 +2099,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             mPaymentRequest.TenderType = mPaymentRequest.ParseTenderType("CREDIT")
             mPaymentRequest.Amount = amt.toString()
             mPaymentRequest.TipAmt = tip_amt.toString()
-            mPaymentRequest.ECRRefNum = "143800"
+            mPaymentRequest.ECRRefNum = System.currentTimeMillis().toString()
             mPaymentRequest.ExtData = "<Force>T</Force>"
+            Log.d("ECRRefNum", "ECRRefNum: ${System.currentTimeMillis().toString()}")
 
             posLink.PaymentRequest = mPaymentRequest
             val result = posLink.ProcessTrans()
@@ -2115,26 +2116,19 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 val resultTxt = response.ResultTxt
                 val approvedAmount = response.ApprovedAmount
                 val ExtData = response.ExtData
-                /*prefProvider.setValue(
-                    Constants.APPROVED_AMOUNT,
-                    approvedAmount
-                )*/
+                val refNum = response.RefNum
+
                 cardLastDigits = response.BogusAccountNum
                 EDCType = response.CardType
                 CARDBIN = response.CardInfo.CardBin
                 var tipAmount = response.ApprovedTipAmount
                 val globalUID = response.PaymentTransInfo.GlobalUid
-                /*CARDBIN = UIUtil.findXMl(posLink.PaymentResponse.ExtData, "CARDBIN")!!
-                var tipAmount = UIUtil.findXMl(posLink.PaymentResponse.ExtData, "TipAmount")
-                CardName = UIUtil.findXMl(posLink.PaymentResponse.ExtData, "APPLAB")!!
-                val globalUID = UIUtil.findXMl(posLink.PaymentResponse.ExtData, "GlobalUID")
-                EDCType = UIUtil.findXMl(posLink.PaymentResponse.ExtData, "EDCTYPE").toString()*/
 //                prefProvider.setValue(Constants.GLOBAL_ID, globalUID!!)
 
                 //implementation("org.dom4j:dom4j:2.1.3")
                 Log.d(
                     "Payment Details: ",
-                    "$ExtData $resultCode $resultTxt $globalUID"
+                    "$ExtData $resultCode $resultTxt $globalUID $refNum"
                 )
                 Log.d("Payment Details: ", "$cardLastDigits $approvedAmount $CARDBIN $EDCType $tipAmount ${Gson().toJson(response)}")
 
