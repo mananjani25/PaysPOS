@@ -896,7 +896,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     Builder.TRUE,
                     Builder.COLOR_1
                 )
-                builder.addText("Item Wise Sales")
+                builder.addText("ITEM WISE SALES")
 
                 builder.addFeedLine(2)
                 addCustomerTextSize(builder, SMALL)
@@ -1970,7 +1970,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
             if (eodReportData?.itemWiseSales?.isNotEmpty() == true && eodReportConfiguration?.isItemWiseSales == true){
 
-                PrintSunmiUtils.addLable("Item Wise Sales")
+                PrintSunmiUtils.addLable("ITEM WISE SALES")
                 addItemWiseSalesHeader()
 
                 PrintSunmiUtils.addHorizontal()
@@ -2449,7 +2449,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
             if (eodReportData?.itemWiseSales?.isNotEmpty() == true && eodReportConfiguration?.isItemWiseSales == true){
 
-                PrintSunmiUtils.headerText("Item Wise Sales")
+                PrintSunmiUtils.headerText("ITEM WISE SALES")
                 addItemWiseSalesHeaderSunmiInner()
 
                 PrintSunmiUtils.addHorizontal()
