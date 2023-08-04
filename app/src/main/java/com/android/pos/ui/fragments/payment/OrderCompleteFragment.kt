@@ -8471,6 +8471,49 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 )
             )
 
+            builder.addText(
+                padLine(
+                    "Paid Amount",
+                    "$" + MethodUtils.roundOffAmountString(
+                        paidAmount
+                    ),
+                    if (customerSettingModel.fonts == LARGE) {
+                        24
+                    } else {
+                        48
+                    }
+                )
+            )
+
+            if (customerSettingModel.showRefundAmount) {
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+
+                builder.addTextFont(Builder.FONT_E)
+                // builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, customerSettingModel.fonts)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+
+                //ADDCHANGE
+                builder.addText(
+                    padLine(
+                        "Change Amount",
+                        "$" + MethodUtils.roundOffAmountString(changeAmtGlobal),
+                        if (customerSettingModel.fonts == LARGE) {
+                            24
+                        } else {
+                            48
+                        }
+                    )
+                )
+            }
+
 
             builder.addTextLineSpace(30)
             builder.addFeedUnit(30)
@@ -10925,6 +10968,27 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         ).toString()
         PrintSunmiUtils.totalPrice(str5)
 
+        val str6 = padLine(
+            "Paid Amount",
+            "$" + MethodUtils.roundOffAmountString(
+                paidAmount
+            ), if (customerSettingModel.fonts == LARGE) 23 else 48
+        ).toString()
+        PrintSunmiUtils.totalPrice(str6)
+
+        if (customerSettingModel.showRefundAmount) {
+
+            val str7 = padLine(
+                "Change Amount",
+                "$" + MethodUtils.roundOffAmountString(changeAmtGlobal),
+                if (customerSettingModel.fonts == LARGE) 23 else 48
+            ).toString()
+
+            PrintSunmiUtils.changeAmount(str7)
+            SunmiPrinterApi.getInstance().lineWrap(2)
+
+        }
+
         val str10 = padLine(
             "Transaction ID",
             "" + giftCardReceiptModel?.gift_card?.payments?.size?.minus(1)
@@ -12633,6 +12697,27 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 if (customerSettingModel.fonts == LARGE) 23 else 48
             ).toString()
             PrintSunmiUtils.boldText(str5)
+
+            val str6 = padLine(
+                "Paid Amount",
+                "$" + MethodUtils.roundOffAmountString(
+                    paidAmount
+                ), if (customerSettingModel.fonts == LARGE) 23 else 48
+            ).toString()
+            PrintSunmiUtils.boldText(str6)
+
+            if (customerSettingModel.showRefundAmount) {
+
+                val str7 = padLine(
+                    "Change Amount",
+                    "$" + MethodUtils.roundOffAmountString(changeAmtGlobal),
+                    if (customerSettingModel.fonts == LARGE) 23 else 48
+                ).toString()
+
+                PrintSunmiUtils.boldText(str7)
+                SunmiPrintHelper.getInstance().lineWrap(1)
+
+            }
 
             val str10 = padLine(
                 "Transaction ID",
