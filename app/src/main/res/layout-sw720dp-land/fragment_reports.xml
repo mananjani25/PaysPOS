@@ -95,6 +95,22 @@
                     android:layout_height="1dp"
                     android:background="@color/dividerColor" />
 
+                <TextView
+                    android:id="@+id/txtEmployeeTipSummary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/sf_pro_display_semibold"
+                    android:padding="@dimen/_7sdp"
+                    android:text="@string/employee_tip_summary"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_6sdp"
+                    android:visibility="visible" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/dividerColor" />
+
             </LinearLayout>
 
 

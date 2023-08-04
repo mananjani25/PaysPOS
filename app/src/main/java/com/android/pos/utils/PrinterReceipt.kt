@@ -1122,7 +1122,7 @@ fun addItemsInEmployeeTipsSummary(data: EmployeeTipSummaryResponse.Data) {
     items += repeat(" ", 39 - items.length) + MethodUtils.roundOffAmount(data.total_tips)
 
     Log.e("addItemsInEmployeeTip","$items")
-    PrintSunmiUtils.normalText(items)
+    PrintSunmiUtils.orderTime(items)
 
 }
 
