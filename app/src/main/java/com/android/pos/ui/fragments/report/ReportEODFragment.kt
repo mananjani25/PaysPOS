@@ -2452,12 +2452,12 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 PrintSunmiUtils.headerText("Item Wise Sales")
                 addItemWiseSalesHeaderSunmiInner()
 
-                PrintSunmiUtils.addHorizontal()
+                PrintSunmiUtils.addHorizontalInner()
                 eodReportData?.itemWiseSales?.forEach {
                     addItemWiseSalesSunmiInnerPrinter(it)
                 }
 
-                SunmiPrinterApi.getInstance().lineWrap(1)
+                SunmiPrintHelper.getInstance().lineWrap(1)
 
             }
 
@@ -2475,11 +2475,11 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     if (it.size == 2) {
 
 
-                        addPaymentDetailsThreeDataInner(it)
+                       addPaymentDetailsThreeDataInner(it)
 
                     } else if (it.size == 1) {
                         it.forEach {
-                            addPaymentDetailsTwoDataInner(it)
+                           addPaymentDetailsTwoDataInner(it)
                         }
                     }
                 }
