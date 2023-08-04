@@ -56,10 +56,18 @@ class AllOrdersFragment : Fragment() {
 
     private fun configureToolbar() {
         binding.commonToolbar.imgDrawer.setOnClickListener {
-            findNavController().navigate(R.id.action_allOrder_to_menuposbold)
+            try {
+                findNavController().navigate(R.id.action_allOrder_to_menuposbold)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
         binding.commonToolbar.txtHome.setOnClickListener {
-            findNavController().navigate(R.id.action_allOrder_to_dashboarCategorynew)
+            try {
+                findNavController().navigate(R.id.action_allOrder_to_dashboarCategorynew)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 
