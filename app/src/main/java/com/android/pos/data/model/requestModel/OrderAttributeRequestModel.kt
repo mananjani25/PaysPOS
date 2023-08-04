@@ -88,7 +88,8 @@ class OrderAttributeRequestModel {
     var totalAmount: Double = 0.0
 
     @SerializedName("magensa_response")
-    var magensaResponse: String = ""
+    var magensaResponse: MagensaResponse? = null
+
 
     @SerializedName("tax_bifurcation_data")
     var tax_bifurcation_data: String = ""
@@ -517,6 +518,24 @@ data class OrderServiceChargesAttribute(
     @SerializedName("max_guest_count")
     var max_guest_count: Int? = null
 ) : Parcelable
+
+
+@Parcelize
+class MagensaResponse :Parcelable{
+    @SerializedName("CustomerTransactionID")
+    var customerTransactionID: String = ""
+
+    @SerializedName("DataOutput")
+    var dataOutput: DataOutput? = null
+
+}
+
+@Parcelize
+class DataOutput :Parcelable{
+    @SerializedName("PANLast4")
+    var panLast4 :String? = ""
+}
+
 
 @Parcelize
 class PaymentAttributes : Parcelable {

@@ -1653,7 +1653,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         }
         paymentviewModel.saveOrder(false)
         val myRequest = cartList?.let {
-            paymentviewModel.createOrderRequestForCard(
+            paymentviewModel.createOrderRequestForCardNew(
                 it,
                 subTotalPrice,
                 paymentAmount,
@@ -1669,7 +1669,9 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 redeemLoyaltyInfo,
                 cashDiscountSurcharge,
                 true,
-                paymentType, cashDiscountType,
+                paymentType,
+                cardNumber,
+                cashDiscountType,
                 tipID
             )
         }
@@ -1765,7 +1767,6 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             }else{
                 myRequest.completed_all_payments = true
             }
-            Log.d(TAG, "paymentClick: click 5")
             paymentviewModel.submit(myRequest)
         } else {
             val paymentReq = myRequest.order.paymentAttributes
@@ -1958,7 +1959,6 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
     private fun networkCall(jsonArray1: JsonArray?, i: Int) {
 
         ProgressUtils.showProgressDialog("Please wait payment under process", requireActivity())
-
         var call: Call<PaymentResponse>? = null
         when (i) {
             1 -> {
@@ -1981,13 +1981,19 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 ProgressUtils.dismissProgressDialog()
                 if (response.isSuccessful) {
                     if (response.body() != null && response.body()!![0].transactionOutput != null) {
-
                         if (response.body()!![0].transactionOutput?.isTransactionApproved == true) {
                             if (isDynamo())
                                 magtekModule.closeDevice()
                             paymentviewModel.setMagensaResponse(
                                 Gson().toJson(response.body()!![0]),
-                                if (i == 3) cardNumber else ""
+                                (if (i == 3){ cardNumber=cardNumber.takeLast(4)
+                                }else if(i== 1){
+                                    cardNumber = (response.body()!![0].dataOutput?.PANLast4).toString()
+                               }else if(i==2){
+                                    cardNumber = (response.body()!![0].dataOutput?.PANLast4).toString()
+                                } else {
+                                    cardNumber = ""
+                                }).toString()
                             )
                             if (isGuestPay) {
                                 paymentAmount -= tipAmount

@@ -117,6 +117,7 @@ open class PaymentViewModel @Inject constructor(
     public var actual_CardAmount: Double = 0.0
 
     public var magensaResponse: String? = null
+    public var magensaResponseDataClass: MagensaResponse? = null
 
     fun cardReaderList() = posRepository.cardReaderActiveList()
 
@@ -178,7 +179,6 @@ open class PaymentViewModel @Inject constructor(
                                         )
                                     )
                                 }
-
                                 LogUtil.logE(TAG, "isOnlySave:  ${onlySave}")
                                 LogUtil.logE(
                                     TAG,
@@ -1014,7 +1014,7 @@ open class PaymentViewModel @Inject constructor(
             }
         }
         orderAttributeRequestModel.tax_bifurcation_data = Gson().toJson(cartModel.taxlistDynamic)
-        orderAttributeRequestModel.magensaResponse = magensaResponse.toString()
+        orderAttributeRequestModel.magensaResponse = magensaResponseDataClass
 
         orderAttributeRequestModel.offlineId =
             if (isUpdateOrder) orderOfflineId.toString() else MethodUtils.randomOfflineId(
@@ -1108,6 +1108,153 @@ open class PaymentViewModel @Inject constructor(
 
         return orderRequestModel
     }
+
+
+    fun createOrderRequestForCardNew(
+        cartModel: CartModel,
+        subTotalPrice: Double,
+        totalPrice: Double,
+        totalServiceCharge: Double,
+        totalTax: Double,
+        ORDER_TYPE: String,
+        future_delivery_date: String,
+        future_delivery_time: String,
+        isPaid: Boolean,
+        totalDiscount: Double,
+        tipAmount: Double,
+        splitValue: Int,
+        redeemLoyaltyInfo: RedeemLoyaltyInfo?,
+        finaldiscount: Double,
+        needToAddPaymentAttributes: Boolean?,
+        paymentType: String,
+        cardNumberValue :String,
+        cashdiscountType: String,
+        tipID: Int? = null,
+        totalServiceChargeM: Double = 0.0,
+        totalDiscountM: Double = 0.0
+    ): OrderRequestModel {
+
+        val orderAttributeRequestModel = OrderAttributeRequestModel()
+
+
+        if (isUpdateOrder)
+            orderAttributeRequestModel.id = orderId
+
+
+
+        orderAttributeRequestModel.openOrderType =
+            prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT)
+
+        orderAttributeRequestModel.orderTypeId = order_type_id
+        orderAttributeRequestModel.date = TimeFormatUtils.getCurrentDate()
+        if (future_delivery_date.isNotEmpty())
+            orderAttributeRequestModel.futureDeliveryDate = future_delivery_date
+
+        if (future_delivery_time.isNotEmpty())
+            orderAttributeRequestModel.futureDeliveryTime = future_delivery_time
+
+        if (cartModel.openOrderType.isNotEmpty() && cartModel.openOrderType != null) {
+            orderAttributeRequestModel.deliveryType = cartModel.openOrderType
+        } else {
+            orderAttributeRequestModel.deliveryType = cartModel.deliveryType
+        }
+        orderAttributeRequestModel.employeeId = cartModel.employeeID
+        orderAttributeRequestModel.locationId = cartModel.locationId
+        orderAttributeRequestModel.terminalId = cartModel.terminalId
+        orderAttributeRequestModel.note = cartModel.note
+        if (paymentType == "Card") {
+            if (cashdiscountType == "SurCharge") {
+                orderAttributeRequestModel.cash_discount_or_surcharge = actual_CashDiscountSurCharge
+                orderAttributeRequestModel.cash_discount_type = cashdiscountType
+                orderAttributeRequestModel.totalAmount =
+                    actual_CardAmount + actual_CashDiscountSurCharge
+            } else if (cashdiscountType == "CashDiscount") {
+                orderAttributeRequestModel.cash_discount_type = ""
+                orderAttributeRequestModel.cash_discount_or_surcharge = 0.0
+                orderAttributeRequestModel.totalAmount = actual_CardAmount
+            } else {
+                orderAttributeRequestModel.cash_discount_or_surcharge = 0.0
+                orderAttributeRequestModel.cash_discount_type = ""
+                orderAttributeRequestModel.totalAmount = actual_CardAmount
+            }
+        }
+        cartModel.taxlistDynamic?.forEach { taxData ->
+            if (taxData.taxType == "Percentage") {
+                taxData.percentage_value =
+                    MethodUtils.roundOffAmountDouble(taxData.rate)
+            } else {
+                taxData.percentage_value =
+                    MethodUtils.roundOffAmountDouble((100 * taxData.totalTaxTypePrice) / taxData.subTotalAmount!!)
+            }
+        }
+        orderAttributeRequestModel.tax_bifurcation_data = Gson().toJson(cartModel.taxlistDynamic)
+        orderAttributeRequestModel.magensaResponse = magensaResponseDataClass
+       orderAttributeRequestModel.offlineId =
+            if (isUpdateOrder) orderOfflineId.toString() else MethodUtils.randomOfflineId(
+                prefProvider.getValueInt(Constants.LOCATION_ID, -1).toString()
+            )
+
+        orderAttributeRequestModel.paymentStatus = if (isPaid) 1 else 0
+        orderAttributeRequestModel.serviceChargeEnabled = true
+        orderAttributeRequestModel.taxEnabled = true
+        orderAttributeRequestModel.subTotal = actual_SubTotal
+
+        if (cartModel.discountId != null && cartModel.discountId != -1)
+            orderAttributeRequestModel.discount_id = cartModel.discountId
+        orderAttributeRequestModel.totalDiscount = actual_TotalDiscount
+        orderAttributeRequestModel.totalServiceCharges = actual_TotalServiceCharge
+        orderAttributeRequestModel.totalTaxAmount = actual_TotalTax
+        orderAttributeRequestModel.totalTips = tipAmount
+
+        orderAttributeRequestModel.is_loyalty_applied = redeemLoyaltyInfo?.needToApplyLoyalty
+        if (orderAttributeRequestModel.is_loyalty_applied == true) {
+            orderAttributeRequestModel.loyalty_program_id =
+                "${redeemLoyaltyInfo?.loyaltyProgramsModel?.id}"
+            orderAttributeRequestModel.loyalty_amount = redeemLoyaltyInfo?.usedLoyaltyAmount
+            orderAttributeRequestModel.used_reward_points = redeemLoyaltyInfo?.usedLoyaltyPoints
+        }
+
+        val customerId = prefProvider.getValueInt(Constants.CUSTOMER_ID, -1)
+        if (customerId != -1) {
+            orderAttributeRequestModel.customer_id = "" + customerId
+        }
+
+        orderAttributeRequestModel.paymentAttributes = if (needToAddPaymentAttributes == true) {
+            paymentAttributesForCardNew(
+                cartModel,
+                totalPrice,
+                subTotalPrice,
+                totalServiceCharge,
+                totalTax,
+                totalDiscount,
+                tipAmount,
+                splitValue,
+                finaldiscount,
+                paymentType,cardNumberValue,
+                orderAttributeRequestModel.cash_discount_type,
+                redeemLoyaltyInfo = redeemLoyaltyInfo
+            )
+        } else {
+            null
+        }
+
+        if (cartModel.orderType == DINE_IN) {
+            orderAttributeRequestModel.orderServiceChargesAttributes = serviceChargeListApplied
+        } else {
+            orderAttributeRequestModel.orderServiceChargesAttributes =
+                orderServiceChargesAttributes(cartModel, subTotalPrice)
+        }
+        if (cartModel.orderType == DINE_IN) {
+            orderAttributeRequestModel.guestsAttributes = getGuestsAttributes(cartModel)
+            orderAttributeRequestModel.orderItemsAttributes = dineInOrderItemAttributed(cartModel)
+        } else {
+            orderAttributeRequestModel.orderItemsAttributes = orderItemsAttributes(cartModel)
+        }
+        val orderRequestModel = OrderRequestModel(isPaid, orderAttributeRequestModel)
+
+        return orderRequestModel
+    }
+
 
     private fun getGuestsAttributes(cartModel: CartModel): List<GuestsAttributes> {
         val orderItemsAttributeList: ArrayList<GuestsAttributes> = arrayListOf()
@@ -1965,6 +2112,123 @@ open class PaymentViewModel @Inject constructor(
         }
     }
 
+
+    private fun paymentAttributesForCardNew(
+        cartModel: CartModel,
+        totalPrice: Double,
+        subTotalPrice: Double,
+        totalServiceCharge: Double,
+        totalTax: Double,
+        totalDis: Double,
+        tipAmount: Double,
+        splitValue: Int,
+        finalcashdiscount: Double,
+        paymentTypeStatus: String,cardNumber1 :String,
+        cashdiscountType: String,
+        redeemLoyaltyInfo: RedeemLoyaltyInfo?
+    ): PaymentAttributes {
+        return PaymentAttributes().apply {
+            val totalPP = MethodUtils.roundOffAmountDouble(totalPrice)
+            val totalDC = MethodUtils.roundOffAmountDouble(tipAmount)
+            val totalAM = totalPP /*- totalDC*/
+            amount = totalAM
+
+           if (magensaResponse != null) {
+                val model = Gson().fromJson(
+                    magensaResponse,
+                    PaymentResponse.PaymentResponseItem::class.java
+                )
+                if (model.dataOutput != null) {
+                   var cardN = ""
+                    model.dataOutput.additionalOutputData?.forEach {
+                        if (it.key == "CardType") {
+                            cardN = it.value
+                        }
+                    }
+                    cardName = cardN
+                    cardNumber = cardNumber1
+                    cardNumber = model.dataOutput.PANLast4
+                }
+
+                if (model.cardSwipeOutput != null) {
+                   cardNumber = model.cardSwipeOutput.pANLast4
+                    var cardN = ""
+                    model.cardSwipeOutput.additionalOutputData?.forEach {
+                        if (it.key == "CardType") {
+                            cardN = it.value
+                        }
+                    }
+
+                    cardName = cardN
+                    cardNumber = model.cardSwipeOutput.pANLast4
+                }
+
+
+                if (model.transactionOutput?.transactionOutputDetails?.isNotEmpty() == true) {
+                    var CardType = ""
+                    model.transactionOutput.transactionOutputDetails.forEach {
+                        if (it.key == "CardType") {
+                            CardType = it.value
+                        }
+                    }
+
+                    cardName = CardType
+                    cardNumber =
+                        if (cardNumberLast4.isNotEmpty()) cardNumberLast4.takeLast(4) else ""
+                    cardNumber = cardNumber1
+                }
+
+
+                transactionId = model.transactionOutput?.transactionID.toString()
+                cardType = 0
+            }
+            if (cashdiscountType.isNotEmpty()) {
+                cash_discount_or_surcharge = finalcashdiscount
+                total_cash_discount = finalcashdiscount
+            } else {
+                cash_discount_or_surcharge = 0.0
+                total_cash_discount = 0.0
+            }
+
+
+            magensa_response = magensaResponse.toString()
+            cashDiscountFee = 0.0
+            cash_discount_type = cashdiscountType
+            employeeId = cartModel.employeeID
+            offlineId =
+                if (isUpdateOrder) paymentOfflineId.toString() else MethodUtils.randomOfflineId(
+                    prefProvider.getValueInt(Constants.LOCATION_ID, -1).toString()
+                )
+            payableType = "Order"
+            paymentType = paymentTypeStatus
+            serviceChargeAmount = totalServiceCharge
+            subTotal = subTotalPrice
+            taxAmount = totalTax
+            terminalId = cartModel.terminalId
+            tips = MethodUtils.roundOffAmountDouble(tipAmount)
+            tipsAdjusted = false
+            totalDiscount = totalDis
+
+
+            if (isUpdateOrder && orderId != null) {
+                order_id = orderId
+            }
+            is_loyalty_applied = redeemLoyaltyInfo?.needToApplyLoyalty
+            if (is_loyalty_applied == true) {
+                loyalty_program_id = "${redeemLoyaltyInfo?.loyaltyProgramsModel?.id}"
+                loyalty_amount =
+                    if (splitValue == -1) redeemLoyaltyInfo?.usedLoyaltyAmount else redeemLoyaltyInfo?.usedLoyaltyAmount?.div(
+                        splitValue
+                    )
+                used_reward_points =
+                    if (splitValue == -1) redeemLoyaltyInfo?.usedLoyaltyPoints else redeemLoyaltyInfo?.usedLoyaltyPoints?.div(
+                        splitValue
+                    )
+                is_loyalty_applied = redeemLoyaltyInfo?.needToApplyLoyalty
+            }
+
+        }
+    }
 
     fun totalPayAmount(paymentAmount: Double) {
 
