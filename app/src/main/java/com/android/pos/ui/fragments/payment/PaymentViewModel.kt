@@ -984,6 +984,10 @@ open class PaymentViewModel @Inject constructor(
         } else {
             orderAttributeRequestModel.deliveryType = cartModel.deliveryType
         }
+        if (cartModel.orderType == PHONE_ORDER) {
+            orderAttributeRequestModel.deliveryType =
+                prefProvider.getValue(Constants.DELIVERY_TYPE, PICK_UP)
+        }
         orderAttributeRequestModel.employeeId = cartModel.employeeID
         orderAttributeRequestModel.locationId = cartModel.locationId
         orderAttributeRequestModel.terminalId = cartModel.terminalId
@@ -1157,6 +1161,10 @@ open class PaymentViewModel @Inject constructor(
             orderAttributeRequestModel.deliveryType = cartModel.openOrderType
         } else {
             orderAttributeRequestModel.deliveryType = cartModel.deliveryType
+        }
+        if (cartModel.orderType == PHONE_ORDER) {
+            orderAttributeRequestModel.deliveryType =
+                prefProvider.getValue(Constants.DELIVERY_TYPE, PICK_UP)
         }
         orderAttributeRequestModel.employeeId = cartModel.employeeID
         orderAttributeRequestModel.locationId = cartModel.locationId

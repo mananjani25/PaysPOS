@@ -425,6 +425,7 @@ class PrintSunmiUtils {
         fun customerDetails() {
 
             SunmiPrinterApi.getInstance().enableBold(true)
+            SunmiPrinterApi.getInstance().setAlignMode(0)
             setFontSize()
             SunmiPrinterApi.getInstance().printText("Customer Details")
             SunmiPrinterApi.getInstance().lineWrap(1)

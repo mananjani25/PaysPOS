@@ -4328,7 +4328,7 @@ class TransactionDetailsFragment : Fragment() , StatusChangeEventListener {
             }
             SunmiPrinterApi.getInstance().lineWrap(1)
             if (customerSettingModel.showOrderType) {
-                PrintSunmiUtils.printOrderType(paymentDetailsResponse.data.order.order_type_name.trim() + "here 1")
+                PrintSunmiUtils.printOrderType(paymentDetailsResponse.data.order.order_type_name.trim())
                 SunmiPrinterApi.getInstance().lineWrap(1)
             }
 
@@ -4663,11 +4663,20 @@ class TransactionDetailsFragment : Fragment() , StatusChangeEventListener {
 
                 PrintSunmiUtils.transactionType(tranType)
 
+                val str12 =
+                    paymentDetailsResponse.data.card_name ?: ""
+
+
+                val str13 =
+                    paymentDetailsResponse.data.card_type ?: ""
+
+
+                val str14 =
+                    paymentDetailsResponse.data.card_number ?: ""
+
 
                 PrintSunmiUtils.cardDetails(
-                    paymentDetailsResponse.data.card_name,
-                    paymentDetailsResponse.data.card_type,
-                    paymentDetailsResponse.data.card_number
+                    str12, str13, str14
                 )
 
 
