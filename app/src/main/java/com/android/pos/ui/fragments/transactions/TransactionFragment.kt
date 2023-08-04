@@ -945,10 +945,13 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
         viewModel.transactionDetails.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
 
-                if (!it.payableType.equals("Invoice", true) && !it.payableType.equals(
+                if (!it.payableType.equals("Invoice", true)
+                    && !it.payableType.equals(
                         "GiftCard",
                         true
                     )
+                    &&
+                    !it.payableType.equals("GiftCardAmountTab", true)
                 ) {
                     val bundle = Bundle().apply {
                         putInt("orderId", it.orderDetails.id)
@@ -1016,6 +1019,9 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                 true
             ) && !singleTransaction?.payableType.equals(
                 "Invoice", true
+            ) &&
+            !singleTransaction?.payableType.equals(
+                "GiftCardAmountTab", true
             )
         ) {
 

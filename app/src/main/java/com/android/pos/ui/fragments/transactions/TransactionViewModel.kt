@@ -118,10 +118,12 @@ class TransactionViewModel @Inject constructor(
     }
 
     fun transactionId(transactionId: GetTransactionListResponse.Data.Payment) {
+
         if (!transactionId.payableType.equals(
                 "GiftCard",
                 true
             ) || !transactionId.payableType.equals("Invoice", true)
+            || !transactionId.payableType.equals("GiftCardAmountTab", true)
         ) {
             _transactionDetails.value = Event(transactionId)
         }
@@ -188,9 +190,11 @@ class TransactionViewModel @Inject constructor(
                 "All Tips Type" -> {
                     data["tips_adjusted"] = ""
                 }
+
                 "Adjusted" -> {
                     data["tips_adjusted"] = true.toString()
                 }
+
                 "Unadjusted" -> {
                     data["tips_adjusted"] = false.toString()
                 }
@@ -199,9 +203,11 @@ class TransactionViewModel @Inject constructor(
                 "All Transaction Types" -> {
                     data["payment_type"] = ""
                 }
+
                 "Cash" -> {
                     data["payment_type"] = "Cash"
                 }
+
                 "Card" -> {
                     data["payment_type"] = "Card"
                 }
@@ -263,7 +269,7 @@ class TransactionViewModel @Inject constructor(
 
         viewModelScope.launch {
 
-            val resource = posRepository.orderUpdateTip(orderID, tipAmount, is_captured,data)
+            val resource = posRepository.orderUpdateTip(orderID, tipAmount, is_captured, data)
 
             when (resource.status) {
                 Status.SUCCESS -> {

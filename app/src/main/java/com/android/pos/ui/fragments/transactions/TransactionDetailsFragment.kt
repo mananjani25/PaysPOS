@@ -82,7 +82,6 @@ class TransactionDetailsFragment : Fragment() , StatusChangeEventListener {
     private var isPrint: Boolean = false
     private lateinit var orderDetailsItemAdapter: OrderDetailsItemListAdapter
     private lateinit var taxBirfurcationAdapter: TaxBirfurcationAdapter
-    private var orderIDglobal = 0
     var taxClickable = false
 
     @Inject
@@ -740,9 +739,9 @@ class TransactionDetailsFragment : Fragment() , StatusChangeEventListener {
         ProgressUtils.showProgressDialog(requireActivity())
         viewModel.dataPayment.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
-                orderIDglobal = it.data.order.id
-
                 paymentDetailsResponse = it
+                val jsonString = Gson().toJson(paymentDetailsResponse)
+                Log.e("paymentDetailsResponse","paymentDetailsResponse result = $jsonString")
 
                 if (paymentDetailsResponse.data.order.order_split_type == "OrderAmountTab" || paymentDetailsResponse.data.order.order_split_type == "OrderGuestTab") {
                     isSplitPayment = true
