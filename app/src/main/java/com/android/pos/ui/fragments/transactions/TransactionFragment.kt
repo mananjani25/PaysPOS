@@ -254,7 +254,11 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
             tipAmount = bundle.getDouble("tipAmount")
 
             if (singleTransaction?.paymentType == "Card") {
-                magtekCall(tipAmount)
+                if (!prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)) {
+                    magtekCall(tipAmount)
+                } else {
+                    adjustPaxTips()
+                }
             } else {
                 tipCall(false)
             }
@@ -372,7 +376,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
             mPaymentRequest.TransType = mPaymentRequest.ParseTransType("ADJUST")
             mPaymentRequest.TenderType = mPaymentRequest.ParseTenderType("CREDIT")
             mPaymentRequest.Amount = tip_amt.toString()
-            mPaymentRequest.OrigRefNum = "143800"
+            mPaymentRequest.OrigRefNum = ""
             mPaymentRequest.ExtData = "<Force>T</Force>"
 
             posLink.PaymentRequest = mPaymentRequest
