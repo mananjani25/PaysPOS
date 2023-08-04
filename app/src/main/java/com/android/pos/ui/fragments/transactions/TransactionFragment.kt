@@ -30,6 +30,7 @@ import com.android.pos.data.model.responseModel.MagtekOnlineOrderRefundResponse
 import com.android.pos.data.model.responseModel.VenueDetailsResponse
 import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.FILE_PATH
 import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.databinding.FragmentTransactionBinding
 import com.android.pos.di.ApiModule1
@@ -47,6 +48,8 @@ import com.android.pos.utils.callback.PaginationScrollListener
 import com.android.pos.utils.extensions.liveSnackBar
 import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.extensions.toast
+import com.android.pos.utils.paxUtils.AppThreadPool
+import com.android.pos.utils.paxUtils.POSLinkCreatorWrapper
 import com.android.pos.utils.paxUtils.SettingINI
 import com.android.pos.utils.statusUtils.Status
 import com.google.android.material.snackbar.Snackbar
@@ -168,6 +171,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
         binding.includeView.spTipTypes.onItemSelectedListener = this
         binding.includeView.spTransactionTypes.onItemSelectedListener = this
         setUpTipTypeSpinnerAdapter()
+        initPOSLink()
 
 
         startTime = TimePickerDialog.OnTimeSetListener { view, hour, minute ->
@@ -254,6 +258,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
             tipAmount = bundle.getDouble("tipAmount")
 
             if (singleTransaction?.paymentType == "Card") {
+                //Add condition according to params i.e magtek or pax in API response
                 if (!prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)) {
                     magtekCall(tipAmount)
                 } else {
@@ -363,9 +368,20 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
         }
     }
 
+    private fun initPOSLink() {
+        POSLinkCreatorWrapper.createSync(
+            context!!,
+            object : AppThreadPool.FinishInMainThreadCallback<PosLink?> {
+                override fun onFinish(result: PosLink?) {
+                    posLink = result!!
+                    Log.d("initPOSLink: ","onFinish")
+                }
+            })
+    }
+
     private fun adjustPaxTips() {
         GlobalScope.launch {
-            posLink.SetCommSetting(SettingINI.getCommSettingFromFile("/storage/emulated/0/Download/"+ SettingINI.FILENAME))
+            posLink.SetCommSetting(SettingINI.getCommSettingFromFile(FILE_PATH + SettingINI.FILENAME))
             val tip_amt = (tipAmount*100).toInt()
             Log.d("Amt: ","tip $tip_amt")
 
