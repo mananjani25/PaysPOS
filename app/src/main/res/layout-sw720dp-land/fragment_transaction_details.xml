@@ -1071,7 +1071,7 @@
                     android:text="@string/tv_print_kitchen_receipt"
                     android:textColor="@color/white"
                     android:textSize="@dimen/text_size_large"
-                    android:visibility="gone" />
+                    android:visibility="visible" />
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtTextReceipt"
                     style="@style/CustomFontBold"

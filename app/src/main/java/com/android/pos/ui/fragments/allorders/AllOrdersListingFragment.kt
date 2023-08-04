@@ -280,7 +280,7 @@ class AllOrdersListingFragment(
                         resource.data?.let {
                             LogUtil.logE(TAG, "getREsponseForOnline  ${Gson().toJson(it)}")
                             if (it.data.orderItems.isNotEmpty()) {
-                                getKitchenPrinters(it)
+                                getKitchenPrinters(it.data)
                             }
 
                         }
@@ -1121,7 +1121,6 @@ class AllOrdersListingFragment(
             }
 
             Constants.PRINT_UNPAID -> {
-
                 getCustomerPrinters(order, status)
             }
 
@@ -1148,7 +1147,7 @@ class AllOrdersListingFragment(
             }
 
             "REPRINT_KITCHEN_RECEIPT" -> {
-                //getKitchenPrinters(order)
+                getKitchenPrinters(order)
             }
         }
     }
@@ -3597,13 +3596,14 @@ class AllOrdersListingFragment(
         }
     }
 
-    private fun getKitchenPrinters(data: OnlineOrderStatusUpdateResponse) {
+    private fun getKitchenPrinters(data: OnlineOrderResponseModel.Data) {
         viewModel.getKitchenPrinterList().observe(viewLifecycleOwner) { it ->
             when (it.status) {
                 Status.SUCCESS -> {
+                    ProgressUtils.dismissProgressDialog()
                     it.data?.forEach {
                         if (it.status && checkItemsforPrinterOnlineOrder(
-                                data.data.orderItems, it.printerCategories.toCollection(
+                                data.orderItems, it.printerCategories.toCollection(
                                     arrayListOf()
                                 )
                             )
@@ -3639,7 +3639,7 @@ class AllOrdersListingFragment(
     private fun initKitchenPrinter(
         data: PrinterResponse.Data.KitchenReceiptPrinters,
         type: String,
-        orderData: OnlineOrderStatusUpdateResponse
+        orderData: OnlineOrderResponseModel.Data
     ) {
         if (data.name.startsWith(SUNMI_PRINTER, true)) {
 
@@ -3789,7 +3789,7 @@ class AllOrdersListingFragment(
     private fun generateKitchenReceiptU220(
         customerReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
         type: String,
-        orderData: OnlineOrderStatusUpdateResponse,
+        orderData: OnlineOrderResponseModel.Data,
         builder: Printer
     ) {
 
@@ -3840,9 +3840,9 @@ class AllOrdersListingFragment(
                     Builder.COLOR_1
                 )
                 if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
-                    builder.addText("OrderID:" + orderData?.data.custom_order_id)
+                    builder.addText("OrderID:" + orderData.custom_order_id)
                 } else {
-                    builder.addText("OrderID:" + orderData?.data.id)
+                    builder.addText("OrderID:" + orderData.id)
 
                 }
                 builder.addFeedUnit(30)
@@ -3863,7 +3863,7 @@ class AllOrdersListingFragment(
                     )
                     builder.addTextAlign(Builder.ALIGN_CENTER)
 
-                    addBuilderTextForU220(builder, "Online Order")
+                    addBuilderTextForU220(builder, orderData.orderTypeName.toString())
                 }
                 var tmps = "Open Order".toString().trim()
                     .toString().lowercase()
@@ -3907,7 +3907,7 @@ class AllOrdersListingFragment(
                     padLine(
                         Constants.getReceiptFormatDateFromUTCServer(
                             requireContext(),
-                            orderData.data.createdAt
+                            orderData.createdAt
                         ),
                         "",
                         33
@@ -3932,14 +3932,14 @@ class AllOrdersListingFragment(
 
                 addOrdersForKitchenOnlineOrderU220(
                     builder,
-                    orderData.data.orderItems,
+                    orderData.orderItems,
                     fontSizeH,
                     fontSizeW,
                     customerReceiptPrinters.printerCategories.toCollection(arrayListOf())
                 )
 
 
-                if (orderData?.data?.note.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
+                if (orderData.note.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
                     builder.addFeedUnit(30)
                     builder.addFeedLine(1)
                     builder.addTextFont(Builder.FONT_E)
@@ -3969,12 +3969,12 @@ class AllOrdersListingFragment(
                     )
 
 
-                    builder.addText(orderData?.data?.note.toString())
+                    builder.addText(orderData.note.toString())
                 }
 
 
                 if (kitchenSettingModel.showCustomerAddress != false or kitchenSettingModel.showCustomerPhone != false or kitchenSettingModel.showCustomerName != false) {
-                    if (orderData?.data?.customer != null) {
+                    if (orderData.customer != null) {
 
                         builder.addFeedUnit(30)
                         builder.addFeedLine(1)
@@ -4017,14 +4017,14 @@ class AllOrdersListingFragment(
                                 Builder.TRUE,
                                 Builder.COLOR_1
                             )
-                            builder.addText(orderData?.data?.customer?.firstName + " " + orderData?.data?.customer?.lastName)
+                            builder.addText(orderData.customer.firstName + " " + orderData.customer.lastName)
 
                         }
 
 
                         if (kitchenSettingModel.showCustomerPhone) {
 
-                            if (orderData?.data?.customer?.phones?.isNotEmpty() == true) {
+                            if (orderData.customer.phones.isNotEmpty() == true) {
                                 builder.addFeedUnit(30)
                                 builder.addTextFont(Builder.FONT_E)
                                 builder.addTextAlign(Builder.ALIGN_LEFT)
@@ -4039,8 +4039,8 @@ class AllOrdersListingFragment(
                                 )
                                 builder.addText(
                                     MethodUtils.getUSFormatNumber(
-                                        orderData?.data?.customer?.phones?.get(
-                                            orderData?.data?.customer?.phones.size - 1
+                                        orderData.customer.phones?.get(
+                                            orderData.customer.phones.size - 1
                                         )?.phoneNumber
                                     )
                                 )
@@ -4063,7 +4063,7 @@ class AllOrdersListingFragment(
                  builder.addText(receiptModel?.order?.customer?.email)*/
 
 
-                        if (orderData?.data?.customer?.addresses?.isNotEmpty() == true) {
+                        if (orderData.customer.addresses.isNotEmpty() == true) {
 
                             builder.addFeedUnit(30)
                             builder.addTextFont(Builder.FONT_E)
@@ -4078,7 +4078,7 @@ class AllOrdersListingFragment(
                                 Builder.COLOR_1
                             )
 
-                            orderData?.data?.customer?.addresses.filter {
+                            orderData.customer.addresses.filter {
                                 it.typeOfAddress == Constants.BILLING_ADDRESS
                             }
 
@@ -4115,9 +4115,9 @@ class AllOrdersListingFragment(
                 )
 
                 if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
-                    builder.addText("OrderID:" + orderData?.data.custom_order_id)
+                    builder.addText("OrderID:" + orderData.custom_order_id)
                 } else {
-                    builder.addText("OrderID:" + orderData?.data.id)
+                    builder.addText("OrderID:" + orderData.id)
                 }
                 builder.addFeedUnit(30)
                 builder.addFeedLine(1)
@@ -4137,7 +4137,7 @@ class AllOrdersListingFragment(
                     )
                     builder.addTextAlign(Builder.ALIGN_CENTER)
 
-                    addBuilderTextForU220(builder, "Online Order")
+                    addBuilderTextForU220(builder, orderData.orderTypeName.toString())
                 }
 
 
@@ -4183,7 +4183,7 @@ class AllOrdersListingFragment(
                     padLine(
                         Constants.getReceiptFormatDateFromUTCServer(
                             requireContext(),
-                            orderData.data.createdAt
+                            orderData.createdAt
                         ),
                         "",
                         if (kitchenSettingModel.fonts == Constants.LARGE) {
@@ -4202,14 +4202,14 @@ class AllOrdersListingFragment(
 
                 addOrdersForKitchenOnlineOrderU220(
                     builder,
-                    orderData.data.orderItems,
+                    orderData.orderItems,
                     fontSizeH,
                     fontSizeW,
                     customerReceiptPrinters.printerCategories.toCollection(arrayListOf())
                 )
 
 
-                if (orderData?.data?.note.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
+                if (orderData.note.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
                     builder.addFeedUnit(30)
                     builder.addFeedLine(1)
                     builder.addTextFont(Builder.FONT_E)
@@ -4239,12 +4239,12 @@ class AllOrdersListingFragment(
                     )
 
 
-                    builder.addText(orderData?.data?.note.toString())
+                    builder.addText(orderData.note.toString())
                 }
 
 
                 if (kitchenSettingModel.showCustomerAddress != false or kitchenSettingModel.showCustomerPhone != false or kitchenSettingModel.showCustomerName != false) {
-                    if (orderData?.data?.customer != null) {
+                    if (orderData.customer != null) {
 
                         builder.addFeedUnit(30)
                         builder.addFeedLine(1)
@@ -4278,14 +4278,14 @@ class AllOrdersListingFragment(
                                 Builder.TRUE,
                                 Builder.COLOR_1
                             )
-                            builder.addText(orderData?.data?.customer?.firstName + " " + orderData?.data?.customer?.lastName)
+                            builder.addText(orderData.customer?.firstName + " " + orderData.customer?.lastName)
 
                         }
 
 
                         if (kitchenSettingModel.showCustomerPhone) {
 
-                            if (orderData?.data?.customer?.phones?.isNotEmpty() == true) {
+                            if (orderData.customer.phones.isNotEmpty() == true) {
                                 builder.addFeedUnit(30)
                                 builder.addTextFont(Builder.FONT_E)
                                 builder.addTextAlign(Builder.ALIGN_LEFT)
@@ -4300,8 +4300,8 @@ class AllOrdersListingFragment(
                                 )
                                 builder.addText(
                                     MethodUtils.getUSFormatNumber(
-                                        orderData?.data?.customer?.phones?.get(
-                                            orderData?.data?.customer?.phones.size - 1
+                                        orderData.customer.phones.get(
+                                            orderData.customer.phones.size - 1
                                         )?.phoneNumber
                                     )
                                 )
@@ -4324,7 +4324,7 @@ class AllOrdersListingFragment(
                  builder.addText(receiptModel?.order?.customer?.email)*/
 
 
-                        if (orderData?.data?.customer?.addresses?.isNotEmpty() == true) {
+                        if (orderData.customer.addresses.isNotEmpty() == true) {
 
                             builder.addFeedUnit(30)
                             builder.addTextFont(Builder.FONT_E)
@@ -4339,7 +4339,7 @@ class AllOrdersListingFragment(
                                 Builder.COLOR_1
                             )
 
-                            orderData?.data?.customer?.addresses.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
+                            orderData.customer.addresses.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
                                 .forEach {
 
                                     if (it.typeOfAddress.equals(
@@ -4416,7 +4416,7 @@ class AllOrdersListingFragment(
     private fun generateKitchenReceipt(
         customerReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
         type: String,
-        orderData: OnlineOrderStatusUpdateResponse,
+        orderData: OnlineOrderResponseModel.Data,
     ) {
         var builder: Builder? = null
         try {
@@ -4467,9 +4467,9 @@ class AllOrdersListingFragment(
                     Builder.COLOR_1
                 )
                 if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
-                    builder.addText("OrderID:" + orderData?.data.custom_order_id)
+                    builder.addText("OrderID:" + orderData.custom_order_id)
                 } else {
-                    builder.addText("OrderID:" + orderData?.data.id)
+                    builder.addText("OrderID:" + orderData.id)
 
                 }
                 builder.addTextLineSpace(30)
@@ -4491,7 +4491,7 @@ class AllOrdersListingFragment(
                     )
                     builder.addTextAlign(Builder.ALIGN_CENTER)
 
-                    addBuilderText(builder, "Online Order")
+                    addBuilderText(builder, orderData.orderTypeName.toString())
                 }
                 var tmps = "Open Order".toString().trim()
                     .toString().lowercase()
@@ -4537,7 +4537,7 @@ class AllOrdersListingFragment(
                     padLine(
                         Constants.getReceiptFormatDateFromUTCServer(
                             requireContext(),
-                            orderData.data.createdAt
+                            orderData.createdAt
                         ),
                         "",
                         33
@@ -4562,14 +4562,14 @@ class AllOrdersListingFragment(
 
                 addOrdersForKitchenOnlineOrder(
                     builder,
-                    orderData.data.orderItems,
+                    orderData.orderItems,
                     fontSizeH,
                     fontSizeW,
                     customerReceiptPrinters.printerCategories.toCollection(arrayListOf())
                 )
 
 
-                if (orderData?.data?.note.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
+                if (orderData.note.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
                     builder.addTextLineSpace(30)
                     builder.addFeedUnit(30)
                     builder.addFeedLine(1)
@@ -4601,12 +4601,12 @@ class AllOrdersListingFragment(
                     )
 
 
-                    builder.addText(orderData?.data?.note.toString())
+                    builder.addText(orderData.note.toString())
                 }
 
 
                 if (kitchenSettingModel.showCustomerAddress != false or kitchenSettingModel.showCustomerPhone != false or kitchenSettingModel.showCustomerName != false) {
-                    if (orderData?.data?.customer != null) {
+                    if (orderData.customer != null) {
 
                         builder.addTextLineSpace(30)
                         builder.addFeedUnit(30)
@@ -4651,14 +4651,14 @@ class AllOrdersListingFragment(
                                 Builder.TRUE,
                                 Builder.COLOR_1
                             )
-                            builder.addText(orderData?.data?.customer?.firstName + " " + orderData?.data?.customer?.lastName)
+                            builder.addText(orderData.customer.firstName + " " + orderData.customer.lastName)
 
                         }
 
 
                         if (kitchenSettingModel.showCustomerPhone) {
 
-                            if (orderData?.data?.customer?.phones?.isNotEmpty() == true) {
+                            if (orderData.customer.phones.isNotEmpty() == true) {
                                 builder.addTextLineSpace(30)
                                 builder.addFeedUnit(30)
                                 builder.addTextFont(Builder.FONT_E)
@@ -4674,8 +4674,8 @@ class AllOrdersListingFragment(
                                 )
                                 builder.addText(
                                     MethodUtils.getUSFormatNumber(
-                                        orderData?.data?.customer?.phones?.get(
-                                            orderData?.data?.customer?.phones.size - 1
+                                        orderData.customer.phones.get(
+                                            orderData.customer.phones.size - 1
                                         )?.phoneNumber
                                     )
                                 )
@@ -4698,7 +4698,7 @@ class AllOrdersListingFragment(
                  builder.addText(receiptModel?.order?.customer?.email)*/
 
 
-                        if (orderData?.data?.customer?.addresses?.isNotEmpty() == true) {
+                        if (orderData.customer.addresses.isNotEmpty() == true) {
 
                             builder.addTextLineSpace(30)
                             builder.addFeedUnit(30)
@@ -4714,7 +4714,7 @@ class AllOrdersListingFragment(
                                 Builder.COLOR_1
                             )
 
-                            orderData?.data?.customer?.addresses.filter {
+                            orderData.customer.addresses.filter {
                                 it.typeOfAddress == Constants.BILLING_ADDRESS
                             }
 
@@ -4751,9 +4751,9 @@ class AllOrdersListingFragment(
                 )
 
                 if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
-                    builder.addText("OrderID:" + orderData?.data.custom_order_id)
+                    builder.addText("OrderID:" + orderData.custom_order_id)
                 } else {
-                    builder.addText("OrderID:" + orderData?.data.id)
+                    builder.addText("OrderID:" + orderData.id)
                 }
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
@@ -4774,7 +4774,7 @@ class AllOrdersListingFragment(
                     )
                     builder.addTextAlign(Builder.ALIGN_CENTER)
 
-                    addBuilderText(builder, "Online Order")
+                    addBuilderText(builder, orderData.orderTypeName.toString())
                 }
 
 
@@ -4822,7 +4822,7 @@ class AllOrdersListingFragment(
                     padLine(
                         Constants.getReceiptFormatDateFromUTCServer(
                             requireContext(),
-                            orderData.data.createdAt
+                            orderData.createdAt
                         ),
                         "",
                         if (kitchenSettingModel.fonts == Constants.LARGE) {
@@ -4841,14 +4841,14 @@ class AllOrdersListingFragment(
 
                 addOrdersForKitchenOnlineOrder(
                     builder,
-                    orderData.data.orderItems,
+                    orderData.orderItems,
                     fontSizeH,
                     fontSizeW,
                     customerReceiptPrinters.printerCategories.toCollection(arrayListOf())
                 )
 
 
-                if (orderData?.data?.note.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
+                if (orderData.note.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
                     builder.addTextLineSpace(30)
                     builder.addFeedUnit(30)
                     builder.addFeedLine(1)
@@ -4880,12 +4880,12 @@ class AllOrdersListingFragment(
                     )
 
 
-                    builder.addText(orderData?.data?.note.toString())
+                    builder.addText(orderData.note.toString())
                 }
 
 
                 if (kitchenSettingModel.showCustomerAddress != false or kitchenSettingModel.showCustomerPhone != false or kitchenSettingModel.showCustomerName != false) {
-                    if (orderData?.data?.customer != null) {
+                    if (orderData.customer != null) {
 
                         builder.addTextLineSpace(30)
                         builder.addFeedUnit(30)
@@ -4921,14 +4921,14 @@ class AllOrdersListingFragment(
                                 Builder.TRUE,
                                 Builder.COLOR_1
                             )
-                            builder.addText(orderData?.data?.customer?.firstName + " " + orderData?.data?.customer?.lastName)
+                            builder.addText(orderData.customer.firstName + " " + orderData.customer.lastName)
 
                         }
 
 
                         if (kitchenSettingModel.showCustomerPhone) {
 
-                            if (orderData?.data?.customer?.phones?.isNotEmpty() == true) {
+                            if (orderData.customer.phones.isNotEmpty() == true) {
                                 builder.addTextLineSpace(30)
                                 builder.addFeedUnit(30)
                                 builder.addTextFont(Builder.FONT_E)
@@ -4944,9 +4944,9 @@ class AllOrdersListingFragment(
                                 )
                                 builder.addText(
                                     MethodUtils.getUSFormatNumber(
-                                        orderData?.data?.customer?.phones?.get(
-                                            orderData?.data?.customer?.phones.size - 1
-                                        )?.phoneNumber
+                                        orderData.customer.phones.get(
+                                            orderData.customer.phones.size - 1
+                                        ).phoneNumber
                                     )
                                 )
                             }
@@ -4968,7 +4968,7 @@ class AllOrdersListingFragment(
                  builder.addText(receiptModel?.order?.customer?.email)*/
 
 
-                        if (orderData?.data?.customer?.addresses?.isNotEmpty() == true) {
+                        if (orderData.customer.addresses.isNotEmpty() == true) {
 
                             builder.addTextLineSpace(30)
                             builder.addFeedUnit(30)
@@ -4984,7 +4984,7 @@ class AllOrdersListingFragment(
                                 Builder.COLOR_1
                             )
 
-                            orderData?.data?.customer?.addresses.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
+                            orderData.customer.addresses.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
                                 .forEach {
 
                                     if (it.typeOfAddress.equals(
@@ -5054,7 +5054,7 @@ class AllOrdersListingFragment(
     private fun generateKitchenReceiptSunmi(
         customerReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
         type: String,
-        orderData: OnlineOrderStatusUpdateResponse
+        orderData: OnlineOrderResponseModel.Data
     ) {
 
         try {
@@ -5063,18 +5063,18 @@ class AllOrdersListingFragment(
             SunmiPrinterApi.getInstance().lineWrap(2)
             if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
                 PrintSunmiUtils.orderIdSunmi(
-                    "OrderID:" + orderData?.data.custom_order_id
+                    "OrderID:" + orderData.custom_order_id
                 )
             } else {
                 PrintSunmiUtils.orderIdSunmi(
-                    "OrderID:" + orderData?.data.id
+                    "OrderID:" + orderData.id
                 )
             }
 
             SunmiPrinterApi.getInstance().lineWrap(1)
 
             if (kitchenSettingModel.showOrderType) {
-                PrintSunmiUtils.printOrderType("Online Order")
+                PrintSunmiUtils.printOrderType(orderData.orderTypeName.toString())
             }
             SunmiPrinterApi.getInstance().lineWrap(1)
 
@@ -5098,7 +5098,7 @@ class AllOrdersListingFragment(
                 padLine(
                     Constants.getReceiptFormatDateFromUTCServer(
                         requireContext(),
-                        orderData.data.createdAt
+                        orderData.createdAt
                     ),
                     "",
                     if (kitchenSettingModel.fonts == Constants.LARGE) {
@@ -5109,43 +5109,41 @@ class AllOrdersListingFragment(
                 ).toString()
             )
 
-
-
             PrintSunmiUtils.addHorizontal()
 
 
             addOrdersForKitchenOnlineOrderSunmi(
-                orderData.data.orderItems,
+                orderData.orderItems,
                 customerReceiptPrinters.printerCategories.toCollection(arrayListOf())
             )
 
 
-            if (orderData?.data?.note.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
+            if (orderData.note.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
                 SunmiPrinterApi.getInstance().lineWrap(1)
-                PrintSunmiUtils.orderNote(orderData?.data?.note.toString())
+                PrintSunmiUtils.orderNote(orderData?.note.toString())
             }
 
 
             if (kitchenSettingModel.showCustomerAddress != false or kitchenSettingModel.showCustomerPhone != false or kitchenSettingModel.showCustomerName != false) {
-                if (orderData?.data?.customer != null) {
+                if (orderData.customer != null) {
                     SunmiPrinterApi.getInstance().lineWrap(1)
                     PrintSunmiUtils.customerDetails()
 
                     if (kitchenSettingModel.showCustomerName) {
-                        PrintSunmiUtils.customerName(orderData?.data?.customer?.firstName + " " + orderData?.data?.customer?.lastName)
+                        PrintSunmiUtils.customerName(orderData.customer.firstName + " " + orderData.customer.lastName)
 
                     }
 
 
                     if (kitchenSettingModel.showCustomerPhone) {
 
-                        if (orderData?.data?.customer?.phones?.isNotEmpty() == true) {
+                        if (orderData.customer.phones.isNotEmpty() == true) {
 
                             PrintSunmiUtils.customerPhone(
                                 MethodUtils.getUSFormatNumber(
-                                    orderData?.data?.customer?.phones?.get(
-                                        orderData?.data?.customer?.phones.size - 1
-                                    )?.phoneNumber
+                                    orderData.customer.phones.get(
+                                        orderData.customer.phones.size - 1
+                                    ).phoneNumber
                                 )
 
                             )
@@ -5154,27 +5152,30 @@ class AllOrdersListingFragment(
                     }
 
 
-                    if (orderData?.data?.customer?.addresses?.isNotEmpty() == true) {
+                    if (orderData.customer.addresses.isNotEmpty() == true) {
 
-                        orderData?.data?.customer?.addresses.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
+//                        orderData.customer.addresses.filter { typeOfAddress == Constants.BILLING_ADDRESS }
+//
+//                            .forEach {
+//
+//                                if (typeOfAddress.equals(
+//                                        Constants.BILLING_ADDRESS,
+//                                        ignoreCase = true
+//                                    )
+//                                ) {
+//                                    PrintSunmiUtils.customerAddress(
+//                                        fullAddress
+//                                    )
+//                                }
+//                            }
 
-                            .forEach {
 
-                                if (it.typeOfAddress.equals(
-                                        Constants.BILLING_ADDRESS,
-                                        ignoreCase = true
-                                    )
-                                ) {
-                                    PrintSunmiUtils.customerAddress(
-                                        it.fullAddress
-                                    )
-                                }
-                            }
-//                        PrintSunmiUtils.customerAddress(
-//                            orderData?.data?.customer?.addresses.get(
-//                                orderData?.data?.customer?.addresses.size - 1
-//                            ).fullAddress
-//                        )
+
+                        PrintSunmiUtils.customerAddress(
+                            orderData.customer.addresses.get(
+                                orderData.customer.addresses.size - 1
+                            ).fullAddress
+                        )
                     }
                 }
 
@@ -5842,7 +5843,7 @@ class AllOrdersListingFragment(
     private fun setServiceForKitchen(
         data: PrinterResponse.Data.KitchenReceiptPrinters,
         type: String,
-        orderData: OnlineOrderStatusUpdateResponse
+        orderData: OnlineOrderResponseModel.Data
     ) {
         if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.FoundSunmiPrinter) {
 
@@ -5871,7 +5872,7 @@ class AllOrdersListingFragment(
     private fun generateKitchenReceiptSunmiInner(
         customerReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
         type: String,
-        orderData: OnlineOrderStatusUpdateResponse
+        orderData: OnlineOrderResponseModel.Data
     ) {
 
         try {
@@ -5879,15 +5880,15 @@ class AllOrdersListingFragment(
             SunmiPrintHelper.getInstance().initPrinter()
             SunmiPrintHelper.getInstance().lineWrap(2)
             if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
-                PrintSunmiUtils.headerText("OrderID:" + orderData?.data.custom_order_id)
+                PrintSunmiUtils.headerText("OrderID:" + orderData.custom_order_id)
             } else {
-                PrintSunmiUtils.headerText("OrderID:" + orderData?.data.id)
+                PrintSunmiUtils.headerText("OrderID:" + orderData.id)
             }
             SunmiPrintHelper.getInstance().lineWrap(1)
 
 
             if (kitchenSettingModel.showOrderType) {
-                PrintSunmiUtils.headerText("Online Order")
+                PrintSunmiUtils.headerText(orderData.orderTypeName.toString())
             }
 
             if (kitchenSettingModel.showTeamMember) {
@@ -5905,7 +5906,7 @@ class AllOrdersListingFragment(
             PrintSunmiUtils.normalTextLarge(
                 Constants.getReceiptFormatDateFromUTCServer(
                     requireContext(),
-                    orderData.data.createdAt
+                    orderData.createdAt
                 )
             )
 
@@ -5915,36 +5916,37 @@ class AllOrdersListingFragment(
 
 
             addOrdersForKitchenOnlineOrderSunmiInner(
-                orderData.data.orderItems
+                orderData.orderItems,
+                customerReceiptPrinters.printerCategories.toCollection(arrayListOf())
             )
 
 
-            if (orderData?.data?.note.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
+            if (orderData.note.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
 
-                PrintSunmiUtils.orderNoteInnerLarge(orderData?.data?.note.toString())
+                PrintSunmiUtils.orderNoteInnerLarge(orderData.note.toString())
             }
 
 
             if (kitchenSettingModel.showCustomerAddress != false or kitchenSettingModel.showCustomerPhone != false or kitchenSettingModel.showCustomerName != false) {
-                if (orderData?.data?.customer != null) {
+                if (orderData.customer != null) {
 
                     PrintSunmiUtils.customerDetailsInner()
 
                     if (kitchenSettingModel.showCustomerName) {
-                        PrintSunmiUtils.normalTextLarge(orderData?.data?.customer?.firstName + " " + orderData?.data?.customer?.lastName)
+                        PrintSunmiUtils.normalTextLarge(orderData.customer.firstName + " " + orderData.customer.lastName)
 
                     }
 
 
                     if (kitchenSettingModel.showCustomerPhone) {
 
-                        if (orderData?.data?.customer?.phones?.isNotEmpty() == true) {
+                        if (orderData.customer.phones.isNotEmpty() == true) {
 
                             PrintSunmiUtils.normalTextLarge(
                                 MethodUtils.getUSFormatNumber(
-                                    orderData?.data?.customer?.phones?.get(
-                                        orderData?.data?.customer?.phones.size - 1
-                                    )?.phoneNumber
+                                    orderData.customer.phones?.get(
+                                        orderData.customer.phones.size - 1
+                                    ).phoneNumber
                                 )
 
                             )
@@ -5953,7 +5955,7 @@ class AllOrdersListingFragment(
                     }
 
 
-                    if (orderData?.data?.customer?.addresses?.isNotEmpty() == true) {
+                    if (orderData.customer.addresses.isNotEmpty() == true) {
 
 
 //                        PrintSunmiUtils.normalTextLarge(
@@ -5963,7 +5965,7 @@ class AllOrdersListingFragment(
 //                        )
 
 
-                        orderData?.data?.customer?.addresses.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
+                        orderData.customer.addresses.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
                             .forEach {
 
                                 if (it.typeOfAddress.equals(

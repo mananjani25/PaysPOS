@@ -2500,7 +2500,8 @@ class OnlineDetailFragment(
 
 
             addOrdersForKitchenOnlineOrderSunmiInner(
-                orderData.data.orderItems
+                orderData.data.orderItems,
+                customerReceiptPrinters.printerCategories.toCollection(arrayListOf())
             )
 
             SunmiPrintHelper.getInstance().lineWrap(1)

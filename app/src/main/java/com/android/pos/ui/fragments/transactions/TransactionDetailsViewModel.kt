@@ -58,8 +58,15 @@ class TransactionDetailsViewModel @Inject constructor(
     fun getTipsList() = posRepository.getTipsList()
 
     fun getCustomerReceiptSettings() = posRepository.getCustomerReceiptSettings()
+
+    fun getKitchenReceiptSettings() = posRepository.getKitchenReceiptSettings()
+
     fun getCustomerPrinterList(): LiveData<Resource<List<PrinterResponse.Data.CustomerReceiptPrinters>>> {
         return posRepository.getCustomerPrinters()
+    }
+
+    fun getKitchenPrinterList(): LiveData<Resource<List<PrinterResponse.Data.KitchenReceiptPrinters>>> {
+        return posRepository.getKitchenPrinters()
     }
 
     val endDate = MutableLiveData<String>()

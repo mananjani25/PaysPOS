@@ -11,6 +11,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.entities.TbServiceCharge
+import com.android.pos.data.model.GetPaymentOrderDetailsResponse
 import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.model.responseModel.EodReportResponse
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
@@ -1880,7 +1881,6 @@ fun addOrdersForKitchenOnlineOrderU220(
                             } + modifierObj.name.uppercase()
                         )
 
-
                     }
                 }
                 if (obj.note.isNotEmpty()) {
@@ -1897,15 +1897,10 @@ fun addOrdersForKitchenOnlineOrderU220(
                         Builder.COLOR_1
                     )
                     builder.addText("  Note:" + obj.note)
-
                 }
-
-
             }
         }
     }
-
-
     return builder
 }
 
@@ -1916,16 +1911,12 @@ fun addOrdersForKitchenOnlineOrderSunmi(
     for (i in 0 until list.size) {
         printerCat?.forEach {
             if (it.id == list[i].categoryId && it.printerEnable && it.categoryActive) {
-
                 val obj = list.get(i)
-
                 PrintSunmiUtils.orderTime(obj.quantity.toString() + " " + obj.itemName.uppercase())
 
                 if (obj.orderItemModifiers.isNotEmpty()) {
                     for (j in 0 until obj.orderItemModifiers.size) {
                         val modifierObj = obj.orderItemModifiers.get(j)
-
-
                         PrintSunmiUtils.orderTime(
                             "  " + if (modifierObj.modifier_quantity == 1) {
                                 "   "
@@ -1933,59 +1924,49 @@ fun addOrdersForKitchenOnlineOrderSunmi(
                                 "" + modifierObj.modifier_quantity + "x "
                             } + modifierObj.name.uppercase()
                         )
-
-
                     }
                 }
                 if (obj.note.isNotEmpty()) {
                     PrintSunmiUtils.orderTime("  Note:" + obj.note)
-
                 }
-
-
             }
         }
     }
-
 }
 
 
 fun addOrdersForKitchenOnlineOrderSunmiInner(
-    list: List<OnlineOrderResponseModel.Data.OrderItem>
+    list: List<OnlineOrderResponseModel.Data.OrderItem>,
+    printerCat: ArrayList<PrinterResponse.Data.PrinterCategories>? = null
 ) {
+
     for (i in 0 until list.size) {
-        val obj = list.get(i)
+        printerCat?.forEach {
+            if (it.id == list[i].categoryId && it.printerEnable && it.categoryActive) {
+                val obj = list.get(i)
+                PrintSunmiUtils.normalTextLarge(obj.quantity.toString() + " " + obj.itemName.uppercase())
 
-        PrintSunmiUtils.normalTextLarge(obj.quantity.toString() + " " + obj.itemName.uppercase())
-
-        if (obj.orderItemModifiers.isNotEmpty()) {
-            for (j in 0 until obj.orderItemModifiers.size) {
-                val modifierObj = obj.orderItemModifiers.get(j)
-
-
-                PrintSunmiUtils.normalTextLarge(
-                    "  " + if (modifierObj.modifier_quantity == 1) {
-                        "   "
-                    } else {
-                        "" + modifierObj.modifier_quantity + "x "
-                    } + modifierObj.name.uppercase()
-                )
-
-
+                if (obj.orderItemModifiers.isNotEmpty()) {
+                    for (j in 0 until obj.orderItemModifiers.size) {
+                        val modifierObj = obj.orderItemModifiers.get(j)
+                        PrintSunmiUtils.normalTextLarge(
+                            "  " + if (modifierObj.modifier_quantity == 1) {
+                                "   "
+                            } else {
+                                "" + modifierObj.modifier_quantity + "x "
+                            } + modifierObj.name.uppercase()
+                        )
+                    }
+                }
+                if (obj.note.isNotEmpty()) {
+                    PrintSunmiUtils.normalTextLarge("  Note:" + obj.note)
+                }
             }
         }
-        if (obj.note.isNotEmpty()) {
-            PrintSunmiUtils.normalTextLarge("  Note:" + obj.note)
-
-        }
-
-
     }
-
 }
 
 fun addOrdersForKitchenDineIn(
-
     list: ArrayList<TbItem>,
     printerCat: ArrayList<PrinterResponse.Data.PrinterCategories>? = null
 ) {
@@ -2025,7 +2006,6 @@ fun addOrdersForKitchenDineIn(
 }
 
 fun addOrdersForKitchenDineInInner(
-
     list: ArrayList<TbItem>
 ) {
 
@@ -2262,6 +2242,23 @@ fun checkItemsforPrinterDineIn(
 
     return flag
 }
+
+fun checkItemsforTransactionPrinter(
+    list: List<GetOrderDetailsResponse.Data.OrderItem>,
+    printerCat: ArrayList<PrinterResponse.Data.PrinterCategories?>? = null
+): Boolean {
+    var flag = false
+    for (i in 0 until list.size) {
+        printerCat?.forEach {
+            if (it?.id == list[i].categoryId && it.categoryActive && it.printerEnable) {
+                flag = true
+            }
+        }
+    }
+
+    return flag
+}
+
 
 
 fun checkItemsforPrinter(
@@ -2514,6 +2511,224 @@ fun addOrdersForKitchen(
 
                 SunmiPrinterApi.getInstance().lineWrap(1)
 
+            }
+        }
+    }
+
+}
+
+fun addOrdersForKitchenTransition(
+    builder: Builder,
+    list: List<GetOrderDetailsResponse.Data.OrderItem>,
+    fontSizeH: Int = 1,
+    fontSizeW: Int = 1,
+    printerCat: ArrayList<PrinterResponse.Data.PrinterCategories?>? = null,
+    guestAttributes: ArrayList<CreateOrderResponse.Data.Order.GuestAttributes>? = null
+): Builder {
+    for (i in 0 until list.size) {
+        printerCat?.forEach {
+            Log.e("PrinterReceipt", "checkPrinterItemN:   ${list.get(i).itemName}")
+            if (it?.id == list[i].categoryId) {
+                if (it.categoryActive && it.printerEnable) {
+                    val obj = list.get(i)
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+                    builder.addTextFont(Builder.FONT_C)
+                    builder.addTextLang(Builder.LANG_EN)
+                    builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextSize(fontSizeH, fontSizeW)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.TRUE,
+                        Builder.COLOR_1
+                    )
+
+                    builder.addText(obj.quantity.toString() + " " + obj.itemName.uppercase())
+                    builder.addFeedLine(1)
+                    if (obj.orderItemModifiers.isNotEmpty()) {
+                        for (j in 0 until obj.orderItemModifiers.size) {
+                            val modifierObj = obj.orderItemModifiers.get(j)
+                            builder.addTextLineSpace(30)
+                            builder.addFeedUnit(30)
+                            builder.addTextFont(Builder.FONT_C)
+                            //builder.addTextLineSpace(20)
+                            builder.addTextAlign(Builder.ALIGN_LEFT)
+                            builder.addTextLang(Builder.LANG_EN)
+                            builder.addTextSize(fontSizeH, fontSizeW)
+                            builder.addTextStyle(
+                                Builder.FALSE,
+                                Builder.FALSE,
+                                Builder.TRUE,
+                                Builder.COLOR_2
+                            )
+                            //builder.addTextPosition(1)
+                            builder.addText(
+                                "  " + if (modifierObj.modifier_quantity == 1) {
+                                    "   "
+                                } else {
+                                    "" + modifierObj.modifier_quantity + "x "
+                                } + modifierObj.name.uppercase()
+                            )
+                            builder.addFeedLine(1)
+                        }
+                        builder.addFeedLine(1)
+                    }
+                    if (obj.note.isNotEmpty()) {
+                        builder.addTextLineSpace(30)
+                        builder.addFeedUnit(30)
+                        builder.addTextFont(Builder.FONT_C)
+                        //builder.addTextLineSpace(20)
+                        builder.addTextAlign(Builder.ALIGN_LEFT)
+                        builder.addTextLang(Builder.LANG_EN)
+                        builder.addTextSize(fontSizeH, fontSizeW)
+                        builder.addTextStyle(
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.TRUE,
+                            Builder.COLOR_1
+                        )
+                        builder.addText("  Note:" + obj.note)
+                        builder.addFeedLine(1)
+                    }
+                }
+            }
+        }
+    }
+    return builder
+}
+
+fun addOrdersForKitchenTransition(
+    list: List<GetOrderDetailsResponse.Data.OrderItem>,
+    printerCat: ArrayList<PrinterResponse.Data.PrinterCategories>? = null
+) {
+    for (i in 0 until list.size) {
+        printerCat?.forEach {
+            if (it.id == list[i].categoryId && it.categoryActive && it.printerEnable) {
+                val obj = list.get(i)
+                PrintSunmiUtils.orderTime(obj.quantity.toString() + " " + obj.itemName.uppercase())
+                if (obj.orderItemModifiers.isNotEmpty()) {
+                    for (j in 0 until obj.orderItemModifiers.size) {
+                        val modifierObj = obj.orderItemModifiers.get(j)
+
+                        PrintSunmiUtils.orderTime(
+                            if (modifierObj.modifier_quantity == 1) {
+                                "      " + modifierObj.name.uppercase()
+                            } else {
+                                "  " + modifierObj.modifier_quantity + "x  " + modifierObj.name.uppercase()
+                            }
+                        )
+                    }
+                }
+                if (obj.note.isNotEmpty()) {
+                    PrintSunmiUtils.orderTime("  Note:" + obj.note)
+                }
+                SunmiPrinterApi.getInstance().lineWrap(1)
+            }
+        }
+    }
+}
+
+fun addOrdersForKitchenTransitionU220(
+    builder: Printer,
+    list: List<GetOrderDetailsResponse.Data.OrderItem>,
+    fontSizeH: Int = 1,
+    fontSizeW: Int = 1,
+    printerCat: ArrayList<PrinterResponse.Data.PrinterCategories?>? = null,
+    guestAttributes: ArrayList<CreateOrderResponse.Data.Order.GuestAttributes>? = null
+): Printer {
+    for (i in 0 until list.size) {
+        printerCat?.forEach {
+            if (it?.id == list[i].categoryId) {
+                if (it.categoryActive && it.printerEnable) {
+                    val obj = list.get(i)
+                    builder.addFeedLine(1)
+                    builder.addFeedUnit(30)
+                    builder.addTextFont(Builder.FONT_C)
+                    builder.addTextLang(Builder.LANG_EN)
+                    builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextSize(fontSizeH, fontSizeW)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.TRUE,
+                        Builder.COLOR_1
+                    )
+                    builder.addText(obj.quantity.toString() + " " + obj.itemName.uppercase())
+
+                    if (obj.orderItemModifiers.isNotEmpty()) {
+                        for (j in 0 until obj.orderItemModifiers.size) {
+                            val modifierObj = obj.orderItemModifiers.get(j)
+                            builder.addFeedLine(1)
+                            builder.addFeedUnit(30)
+                            builder.addTextFont(Builder.FONT_C)
+                            //builder.addTextLineSpace(20)
+                            builder.addTextAlign(Builder.ALIGN_LEFT)
+                            builder.addTextLang(Builder.LANG_EN)
+                            builder.addTextSize(fontSizeH, fontSizeW)
+                            builder.addTextStyle(
+                                Builder.FALSE,
+                                Builder.FALSE,
+                                Builder.TRUE,
+                                Builder.COLOR_2
+                            )
+                            //builder.addTextPosition(1)
+                            builder.addText(
+                                "  " + if (modifierObj.modifier_quantity == 1) {
+                                    "   "
+                                } else {
+                                    "" + modifierObj.modifier_quantity + "x "
+                                } + modifierObj.name.uppercase()
+                            )
+                        }
+                    }
+                    if (obj.note.isNotEmpty()) {
+                        builder.addFeedLine(1)
+                        builder.addFeedUnit(30)
+                        builder.addTextFont(Builder.FONT_C)
+                        //builder.addTextLineSpace(20)
+                        builder.addTextAlign(Builder.ALIGN_LEFT)
+                        builder.addTextLang(Builder.LANG_EN)
+                        builder.addTextSize(fontSizeH, fontSizeW)
+                        builder.addTextStyle(
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.TRUE,
+                            Builder.COLOR_1
+                        )
+                        builder.addText("  Note:" + obj.note)
+                    }
+                }
+            }
+        }
+    }
+    return builder
+}
+fun addOrdersForKitchenTransitionInner(
+    list: List<GetOrderDetailsResponse.Data.OrderItem>,
+    printerCat: ArrayList<PrinterResponse.Data.PrinterCategories>? = null
+) {
+    for (i in 0 until list.size) {
+
+        printerCat?.forEach {
+            if (it.id == list[i].categoryId && it.categoryActive && it.printerEnable) {
+
+                val obj = list.get(i)
+
+                PrintSunmiUtils.normalTextLarge(obj.quantity.toString() + " " + obj.itemName.uppercase())
+
+                if (obj.orderItemModifiers.isNotEmpty()) {
+                    for (j in 0 until obj.orderItemModifiers.size) {
+                        val modifierObj = obj.orderItemModifiers.get(j)
+                        PrintSunmiUtils.normalTextLarge(if (modifierObj.modifier_quantity == 1){"     " + modifierObj.name.uppercase()} else{"  "+modifierObj.modifier_quantity+"x " + modifierObj.name.uppercase()})
+
+                    }
+                }
+                if (obj.note.isNotEmpty()) {
+                    PrintSunmiUtils.normalTextLarge("  Note:" + obj.note)
+                }
+
+                SunmiPrintHelper.getInstance().lineWrap(1)
             }
         }
     }

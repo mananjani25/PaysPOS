@@ -10337,7 +10337,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     }
 
-
     private fun generateKitchenReceiptSunmiInner(kitchenReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
                                                  type: String) {
         try {
@@ -10471,7 +10470,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         }
 
     }
-
 
     private fun generateQRCode(qrcodeStaticUrl: String): Bitmap {
 
