@@ -15,7 +15,10 @@ import com.android.pos.data.model.responseModel.CreateCustomerReponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DELIVERY
 import com.android.pos.data.remote.Constants.DELIVERY_TYPE
+import com.android.pos.data.remote.Constants.GIFT_CARD
+import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.PICK_UP
+import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
@@ -54,6 +57,9 @@ class AddCustomerViewModel @Inject constructor(
 
     private val _updatedCustomer = MutableLiveData<Event<TbCustomer>>()
     val updatedCustomer: LiveData<Event<TbCustomer>> = _updatedCustomer
+
+    private val _customerModel = MutableLiveData<Event<TbCustomer>>()
+    val customerModel: LiveData<Event<TbCustomer>> = _customerModel
 
     val addCustomerDetails = MutableLiveData(CreateCustomerRequestModel())
     var listAddress: ArrayList<CreateCustomerRequestModel.Customer.Addresses> = arrayListOf()
@@ -187,32 +193,14 @@ class AddCustomerViewModel @Inject constructor(
             && value.data?.addresses_attributes?.get(0)?.postcode?.isEmpty() == true
         ) {
             _snackbarText.value = Event(R.string.please_enter_zipcode)
-        }
-
-        /*else if (TextUtils.isEmpty(value?.data?.last_name?.trim())) {
-            _snackbarText.value = Event(R.string.last_name_validate)
-        }*/
-        /* else if (value?.data?.phones_attributes?.size == 0) {
-
-             _snackbarText.value = Event(R.string.phone_no_validate)
-         }*/ /*else if (value?.data?.phones_attributes?.get(0)?.phone_number?.length!! < 10) {
+        } else if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD && value.data?.phones_attributes?.size == 0) {
+            _snackbarText.value = Event(R.string.phone_no_validate)
+        } else if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD && value.data?.phones_attributes?.get(0)?.phone_number?.length!! < 10){
             _snackbarText.value = Event(R.string.valid_phone_no_validate)
-        }*/
-        /* else if (TextUtils.isEmpty(value?.data?.email)) {
-             _snackbarText.value = Event(R.string.email_validate)
-         } else if (!Patterns.EMAIL_ADDRESS.matcher(value?.data?.email).matches()) {
-             _snackbarText.value = Event(R.string.valid_email_validate)
-         }*/
-
-        /*else if (TextUtils.isEmpty(value?.data?.company?.trim())) {
-            _snackbarText.value = Event(R.string.company_name_validate)
-        }*/
-        /*else if (TextUtils.isEmpty(value?.data?.birth_day) || TextUtils.isEmpty(value?.data?.birth_month) || TextUtils.isEmpty(
-                value?.data?.birthday_year
-            )
-        ) {
-            _snackbarText.value = Event(R.string.birth_date_validation)
-        }*/ else {
+        } else if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD && !TextUtils.isEmpty(value?.data?.email?.trim())
+            && !Patterns.EMAIL_ADDRESS.matcher(value.data?.email?.trim()).matches()) {
+            _snackbarText.value = Event(R.string.valid_email_validate)
+        } else {
             _showProgress.value = Event(true)
             addCustomerData = CreateCustomerRequestModel().apply {
 
@@ -291,6 +279,7 @@ class AddCustomerViewModel @Inject constructor(
                                         _updatedCustomer.value = Event(model)
                                     }else {
                                         _Basedata.value = Event(customerListReposne)
+                                        _customerModel.value = Event(model)
                                     }
 
                                 }

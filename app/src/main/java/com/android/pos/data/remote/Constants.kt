@@ -106,10 +106,13 @@ object Constants {
     const val TAKEOUT = "TakeOut"
     const val DINE_IN = "DineIn"
     const val PHONE_ORDER = "PhoneOrder"
+    const val PHONE_ORDER_ = "Phone Order"
     const val DINE_IN_UPDATE = "DineInUpdate"
     const val DINE_IN_ITEM = "DineInItem"
     const val OPEN_ORDER = "OpenOrder"
     const val OPEN_ORDER_ = "Open Order"
+    const val GIFT_CARD = "GiftCard"
+    const val GIFT_CARD_NAME = "Gift Card"
     const val DINE_IN_STATUS = "DineInStatus"
     const val DINE_IN_TABLE_ID = "DineInTableId"
 
@@ -294,10 +297,15 @@ object Constants {
 
 
     const val ORDERS = "orders"
+    const val GIFT_CARDS = "gift_cards"
+    const val GIFT_CARD_CHECK_BALANCE = "gift_card_check_balance"
+    const val GIFT_CARD_ADD_BALANCE = "gift_card_add_balance"
     const val ORDER_DETAILS = "orders/{id}"
     const val PAYMENT_DETAILS = "payments/{id}"
     const val ORDER_EMAIL_RECEIPT = "orders/send_order_email_receipt"
     const val ORDER_PHONE_RECEIPT = "orders/sms_order_detail"
+    const val GIFT_CARD_EMAIL_RECEIPT = "gift_cards/send_gift_card_email_receipt"
+    const val GIFT_CARD_PHONE_RECEIPT = "gift_cards/sms_gift_card_detail"
     const val ORDER_ASSIGN_CUSTOMER = "orders/{id}/assign_customer_into_order"
     const val ORDER_PAY_AMOUNT_WISE = "payments/pay_amount_wise"
     const val ORDER_COUNTS = "orders/open_orders_show_count"
@@ -493,6 +501,7 @@ object Constants {
     const val ACCEPTED_DECLINE_ONLINEORDER = "online_ordering_orders/{id}/accept_order"
     const val UPDATE_ONLINE_ORDER = "online_ordering_orders/{id}"
     const val CASH_EVENTS = "cash_events"
+    const val WASTAGE_ITEM = "orders/wastage_item"
 
     const val UTC_SERVER_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
 
@@ -732,4 +741,16 @@ object Constants {
 
     const val IS_FROM_ALL_ORDER="IS_FROM_ALL_ORDER"
 
+    const val GIFT_CARD_TYPE = "gift_card_type"
+    const val GIFT_CARD_PURCHASE_AMOUNT = "gift_card_purchase_amount"
+    const val IS_GIFT_CARD_REDEEM = "is_gift_card_redeem"
+    const val IS_ORDER_REDEEMABLE_WITH_GIFT_CARD = "is_order_redeemable_with_gift_card"
+    const val GIFT_CARD_NUMBER = "gift_card_number"
+    const val GIFT_CARD_PIN = "gift_card_pin"
+    const val IS_ADD_VALUE_IN_GIFT_CARD = "is_add_value_in_gift_card"
+
+    const val SELL_CARD = "Sell Card"
+    const val ADD_VALUE = "Add Value"
+    const val BALANCE_INQUIRY = "Balance Inquiry"
+    const val GIFT_CARD_CATEGORY = "GIFT CARD"
 }

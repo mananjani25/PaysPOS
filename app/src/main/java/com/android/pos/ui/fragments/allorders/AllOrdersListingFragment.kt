@@ -350,9 +350,9 @@ class AllOrdersListingFragment(
             paymentStatus = ""
         }
 
-        if (orderTab == OPEN_ORDER_TAB || orderTab == PHONE_ORDER_TAB) {
-            orderStatusLabel = ""
-        }
+//        if (orderTab == OPEN_ORDER_TAB || orderTab == PHONE_ORDER_TAB) {
+//            orderStatusLabel = ""
+//        }
 
         viewModel.getAllOrders(
             viewModel.startDate.value.toString(),
@@ -923,7 +923,7 @@ class AllOrdersListingFragment(
                     prefProvider.setValue(Constants.ORDER_TYPE_NAME, Constants.OPEN_ORDER_)
                 } else if (order.orderType == PHONE_ORDER_TAB) {
                     prefProvider.setValue(Constants.ORDER_TYPE, Constants.PHONE_ORDER)
-                    prefProvider.setValue(Constants.ORDER_TYPE_NAME, Constants.PHONE_ORDER)
+                    prefProvider.setValue(Constants.ORDER_TYPE_NAME, Constants.PHONE_ORDER_)
                 }
 
                 prefProvider.setValueInt(Constants.ORDER_TYPE_ID, order.orderTypeId)
@@ -1014,7 +1014,7 @@ class AllOrdersListingFragment(
                     prefProvider.setValue(Constants.ORDER_TYPE_NAME, Constants.OPEN_ORDER_)
                 } else if (order.orderType == PHONE_ORDER_TAB) {
                     prefProvider.setValue(Constants.ORDER_TYPE, Constants.PHONE_ORDER)
-                    prefProvider.setValue(Constants.ORDER_TYPE_NAME, Constants.PHONE_ORDER)
+                    prefProvider.setValue(Constants.ORDER_TYPE_NAME, Constants.PHONE_ORDER_)
                 }
 
                 prefProvider.setValueInt(Constants.ORDER_TYPE_ID, order.orderTypeId)
@@ -3627,7 +3627,7 @@ class AllOrdersListingFragment(
 
                 Status.ERROR -> {
                     ProgressUtils.dismissProgressDialog()
-                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
 
                 }
             }

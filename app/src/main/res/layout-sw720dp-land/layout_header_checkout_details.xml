@@ -68,6 +68,7 @@
                 android:gravity="center_vertical"
                 android:text="Add Tip"
                 android:textAllCaps="true"
+                android:visibility="gone"
                 android:textColor="@color/btnColor"
                 android:textSize="@dimen/_6mdpi" />
 

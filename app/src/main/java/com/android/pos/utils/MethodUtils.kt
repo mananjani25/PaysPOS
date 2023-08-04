@@ -654,7 +654,26 @@ class MethodUtils {
                 val s = if (this < 0) "-" else ""
                 "$s${i.toInt()}.$f"
             }
+
+        fun String.toDoubleWithPrecision(precision: Int): Double{
+            return this.toDouble().toPrecision(precision).toDouble()
+        }
+
+        /**
+         * An extension function to generate N-digit random numbers
+         * Example: 6.generateRandomNumbers() or 12.generateRandomNumbers()
+         * */
+        fun Int.generateRandomNumbers(): Long {
+            val randomNumber = StringBuilder()
+
+            repeat(this) {
+                randomNumber.append(kotlin.random.Random.nextInt(1,10))
+            }
+
+            return randomNumber.toString().toLong()
+        }
     }
+
 
 
 }

@@ -2974,6 +2974,7 @@ class ActiveOrderFragment(
                     }
                 ).toString()
                 PrintSunmiUtils.transactionType(str11)
+                SunmiPrinterApi.getInstance().lineWrap(1)
             }
             if (customerSettingModel.showCustomerAddress or customerSettingModel.showCustomerPhone or customerSettingModel.showCustomerName) {
 

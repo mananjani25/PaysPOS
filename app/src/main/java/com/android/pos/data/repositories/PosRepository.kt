@@ -11,6 +11,9 @@ import com.android.pos.data.model.PrinterQueueModel
 import com.android.pos.data.model.ShiftRportConfiguration
 import com.android.pos.data.model.SplitDetailListModel
 import com.android.pos.data.model.requestModel.*
+import com.android.pos.data.model.requestModel.giftCard.request.GiftCardAddValueRequest
+import com.android.pos.data.model.requestModel.giftCard.request.GiftCardCheckBalanceRequest
+import com.android.pos.data.model.requestModel.giftCard.request.SellGiftCardRequestModel
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.ApiHelper
 import com.android.pos.data.remote.Constants
@@ -87,6 +90,13 @@ class PosRepository @Inject constructor(
     suspend fun addCancelOrderReasonFromDb(cancelOrderReason: List<VenueDetailsResponse.Data.CancelOrderReason>) {
         appDatabase.cancelOrderReasonDao().addAllCancelOrderReasonsSuspend(cancelOrderReason)
     }
+
+    suspend fun addWastageReasonInDb(wastageReasonsList: List<VenueDetailsResponse.Data.WastageReason>) {
+        appDatabase.wastageReasonsDao().addAllWastageReasons(wastageReasonsList)
+    }
+
+    fun getWastageReasonsListFromDb() =
+        performGetOperationDatabase(databaseQuery = { appDatabase.wastageReasonsDao().allWastageReasons })
 
     fun getKitchenPrinters() =
         performGetOperationDatabase { appDatabase.printerDao().kitchenPrintList }
@@ -784,6 +794,15 @@ class PosRepository @Inject constructor(
     suspend fun createOrder(data: OrderRequestModel) =
         apiHelperNew.createOrder(data)
 
+    suspend fun sellGiftCard(data: SellGiftCardRequestModel) =
+        apiHelperNew.sellGiftCard(data)
+
+    suspend fun addValueInGiftCard(data: GiftCardAddValueRequest) =
+        apiHelperNew.addValueInGiftCard(data)
+
+    suspend fun giftCardCheckBalance(giftCardCheckBalanceRequest: GiftCardCheckBalanceRequest) =
+        apiHelperNew.giftCardCheckBalance(giftCardCheckBalanceRequest)
+
     suspend fun splitByOrder(data: SpitByOrderRequestModel) =
         apiHelperNew.splitByOrder(data)
 
@@ -809,6 +828,12 @@ class PosRepository @Inject constructor(
 
     suspend fun phoneReceipt(data: HashMap<String, String>) =
         apiHelperNew.phoneReceipt(data)
+
+    suspend fun giftCardEmailReceipt(data: HashMap<String, String>) =
+        apiHelperNew.giftCardEmailReceipt(data)
+
+    suspend fun giftCardPhoneReceipt(data: HashMap<String, String>) =
+        apiHelperNew.giftCardPhoneReceipt(data)
 
     suspend fun assignCustomerOrder(
         orderId: Int,
@@ -950,6 +975,7 @@ class PosRepository @Inject constructor(
 
     suspend fun cashInOut(data: CashLogRequest) = apiHelperNew.cashInOut(data)
 
+    suspend fun addItemToWastage(data: WastageItemRequest) = apiHelperNew.addItemToWastage(data)
 
     suspend fun getCashLog(
         startDate: String,

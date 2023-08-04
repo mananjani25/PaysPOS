@@ -87,6 +87,7 @@ class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
         binding = FragmentAllOrdersCountsBinding.inflate(inflater, container, false)
         Log.d(TAG, "onCreateView: CURRENT POS = $tabPosition")
         requireContext().registerReceiver(broadcastReceiver, IntentFilter("allOrderCounts"));
+        requireContext().registerReceiver(cancelledBroadcastReceiver, IntentFilter("cancelled"));
         binding.commonToolbar.root.gone()
         getAllOrderCounts(viewModel.startDate.value, viewModel.endDate.value)
 
@@ -113,14 +114,17 @@ class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
             presentation.show()
             presentation.onLogOutOrClockOutWithApiService(apiService)
         }
-        getOrderTypes()
-        changePosition(0)
-        setAdapter(mPos)
+        if (findNavController().currentDestination?.id == R.id.allOrdersFragment) {
+            getOrderTypes()
+            changePosition(0)
+            setAdapter(mPos)
+        }
     }
 
     override fun onDestroy() {
         super.onDestroy()
         requireContext().unregisterReceiver(broadcastReceiver)
+        requireContext().unregisterReceiver(cancelledBroadcastReceiver)
     }
 
     private var broadcastReceiver = object : BroadcastReceiver() {
@@ -163,6 +167,25 @@ class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
                 changePosition(position)
                 setAdapter(position)
             }
+
+        }
+    }
+
+    private var cancelledBroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            Log.d(TAG, "onReceive: cancelledBroadcastReceiver: Called")
+            val isCount = intent?.getBooleanExtra("isCount", false)
+            startDate = intent?.getStringExtra("start_date")
+            endDate = intent?.getStringExtra("end_date")
+
+//            getAllOrderCounts(startDate, endDate)
+
+            var position = intent?.getIntExtra("position", 0) ?: 0
+            if(tabPosition == ALL_ORDER_TAB_POS){
+                position = 3 //For cancelled in all orders otherwise 2
+            }
+            changePosition(position)
+            setAdapter(position)
 
         }
     }

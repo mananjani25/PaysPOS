@@ -19,6 +19,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
@@ -32,6 +33,7 @@ import com.android.pos.aidl.IWoyouService
 import com.android.pos.data.entities.TbOrderType
 import com.android.pos.data.model.PrinterListModel
 import com.android.pos.data.model.requestModel.CreatePrinterRequestModel
+import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.AVAILABLE
 import com.android.pos.data.remote.Constants.BLUETOOTH
 import com.android.pos.data.remote.Constants.CUSTOMER
@@ -40,6 +42,7 @@ import com.android.pos.data.remote.Constants.KITCHEN
 import com.android.pos.data.remote.Constants.KITCHENANDCUSTOMER
 import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.remote.Constants.PRINTER
+import com.android.pos.data.remote.Constants.SUNMI_PRINTER
 import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.data.remote.Constants.WIFI
 import com.android.pos.data.remote.Constants.getCurrentTimeFromTimeZone
@@ -212,18 +215,23 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Binding()
+        kitchenAdapter = PrinterListAdapter()
+        customerAdapter = PrinterListAdapter()
+        availableNetworkAdapter = PrinterListAdapter()
 
         observeShowProgress()
         onDeleteObserve()
-        kitchenAdapter = PrinterListAdapter()
+
+
         kitchenAdapter.setList(kitchenPrintList)
         kitchenAdapter.setListner(this)
-        customerAdapter = PrinterListAdapter()
+
         customerAdapter.setList(customerPrintList)
         customerAdapter.setListner(this)
-        availableNetworkAdapter = PrinterListAdapter()
+
         availableNetworkAdapter.setListner(this)
         availableNetworkAdapter.setList(arrayListOf())
+
         binding.rvAvailablePrinter.adapter = availableNetworkAdapter
         binding.rvAvailablePrinter.isNestedScrollingEnabled = false
         //   binding.rvAvailablePrinter.isLayoutFrozen = true
@@ -250,7 +258,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
         mFilterOption = FilterOption()
         mFilterOption!!.setDeviceType(Discovery.TYPE_PRINTER)
-
+        syncPrinterList()
 
         /* try {
              Discovery.start(requireContext(), mFilterOption, mDiscoveryListener)
@@ -290,7 +298,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             ex.printStackTrace()
         }
 
-        syncPrinterList()
+
 
         //mFilterOption?.setEpsonFilter(Discovery.FILTER_NAME);
         /*
@@ -331,7 +339,6 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                 com.android.pos.data.remote.Constants.KEY,
                 PRINTER
             )
-
             navController.popBackStack()
         }
 
@@ -1036,11 +1043,11 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
     override fun onPrinterSelected(printerListModel: PrinterListModel) {
 
-        if (printerListModel.printerName?.startsWith("CloudPrint", true) == true) {
+        if (printerListModel.printerName?.startsWith(SUNMI_PRINTER, true) == true) {
 
             printerListModel.deviceModel?.let { sunmiPrinterInit(it.ipAddress) }
 
-        } else if (printerListModel.printerName?.startsWith("InnerPrinter", true) == true) {
+        } else if (printerListModel.printerName?.startsWith(Constants.SUNMI_INNER_PRINTER, true) == true) {
 
 
             sunmiInnerPrinter(printerListModel.deviceModel?.ipAddress)
@@ -1324,7 +1331,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
                     viewModel.createPrinter(createPrinter)
                     availableNetworkAdapter.removeItemAt(layoutPosition)
-                    syncPrinterList()
+
 
                 }
                 CUSTOMER -> {
@@ -1356,8 +1363,6 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
                     viewModel.createPrinter(createPrinter)
                     availableNetworkAdapter.removeItemAt(layoutPosition)
-                    syncPrinterList()
-
 
                 }
                 KITCHENANDCUSTOMER -> {
@@ -1396,8 +1401,6 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                     viewModel.createPrinter(createBothPrinter)
                     availableNetworkAdapter.removeItemAt(layoutPosition)
 
-                    syncPrinterList()
-
 
                 }
 
@@ -1414,7 +1417,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
              printerListModel.type = CUSTOMER
              customerAdapter.addItem(printerListModel)
          }*/
-
+        syncPrinterList()
     }
 
 
@@ -1428,21 +1431,16 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     }
 
     override fun onDeletePrinter(printerListModel: PrinterListModel) {
-
         if (printerListModel.type.lowercase() == KITCHENANDCUSTOMER.lowercase()) {
             if (printerListModel.currentPrinterType == KITCHEN) {
                 deletePrinter(printerListModel.id!!, CUSTOMER)
-
             } else {
                 deletePrinter(printerListModel.id!!, KITCHEN)
-
             }
-
         } else {
             deletePrinter(printerListModel.id!!)
         }
-
-
+        syncPrinterList()
     }
 
     override fun onUpdatePrinterStatus(printerListModel: PrinterListModel, isChecked: Boolean) {
@@ -1453,6 +1451,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             prefProvider.getValueInt(TERMINAL_ID, 1),
             isChecked
         )
+        syncPrinterList()
     }
 
     private fun onInitPrinter(printerListModel: PrinterListModel) {
@@ -2168,8 +2167,6 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
             LogUtil.logE(TAG, "getPrinterCheck:  ${PrinterClass.getPrinter().toString()}")
 
-
-
             try {
                 PrinterClass.getPrinter()?.sendData(builder, SEND_TIMEOUT, status, battery)
                 //PrinterClass.getPrinter()?.sendData(builder, 0, status, battery)
@@ -2193,15 +2190,12 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         } catch (e: Exception) {
             e.printStackTrace()
         }
-
     }
-
 
     @SuppressLint("UseCompatLoadingForDrawables")
     private fun showPrinterStatus(printerListModel: PrinterListModel) {
         var builder: Builder? = null
         var method = ""
-
 
         try {
             LogUtil.logE(TAG, "SUBSTR:  ${printerListModel.printerName?.substring(0, 6)}")
@@ -2216,9 +2210,6 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             )
 
             builder.addFeedLine(2)
-
-
-
             builder.addTextFont(Builder.FONT_C)
             builder.addTextAlign(Builder.ALIGN_CENTER)
             builder.addTextLang(Builder.LANG_EN)

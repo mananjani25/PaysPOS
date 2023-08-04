@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingDefaultResource">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/bg_color"
+        android:minWidth="@dimen/_200sdp"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_25sdp">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/imgBack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center"
+                android:background="?attr/selectableItemBackground"
+                android:padding="@dimen/_4sdp"
+                app:srcCompat="@drawable/ic_cancel_black"
+                app:tint="@color/txtColor" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtTitle"
+                style="@style/CustomFontSemiBold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="@string/add_to_wastage"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_7mdpi" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtDone"
+                style="@style/CustomFontSemiBold"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentEnd="true"
+                android:layout_gravity="center"
+                android:background="@color/dark_btn_Color"
+                android:gravity="center"
+                android:paddingStart="@dimen/_15sdp"
+                android:paddingTop="@dimen/_5sdp"
+                android:paddingEnd="@dimen/_15sdp"
+                android:paddingBottom="@dimen/_5sdp"
+                android:text="@string/tv_done"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_6mdpi"
+                tools:ignore="RelativeOverlap" />
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/view" />
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:paddingHorizontal="@dimen/_20sdp"
+                android:paddingVertical="@dimen/_10sdp">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:paddingBottom="@dimen/_5sdp"
+                    android:text="@string/quantity"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_5mdpi"
+                    app:textAllCaps="true" />
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/background_button_menu"
+                    android:orientation="horizontal">
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:id="@+id/llMinus"
+                        android:layout_width="@dimen/_24sdp"
+                        android:layout_height="@dimen/_24sdp"
+                        android:background="@color/switchTrackColor"
+                        android:padding="@dimen/_7sdp">
+
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center"
+                            app:srcCompat="@drawable/ic_minus"
+                            app:tint="@color/white" />
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    <androidx.appcompat.widget.AppCompatEditText
+                        android:id="@+id/txtQty"
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:background="@drawable/background_light_edit_printer"
+                        android:imeOptions="actionDone"
+                        android:inputType="number"
+                        android:maxLength="5"
+                        android:textStyle="bold"
+                        android:padding="@dimen/_5sdp"
+                        android:text="1"
+                        android:textColor="@color/btnColorDark"
+                        android:textSize="@dimen/_12ssp" />
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:id="@+id/llPlus"
+                        android:layout_width="@dimen/_24sdp"
+                        android:layout_height="@dimen/_24sdp"
+                        android:background="@color/dark_btn_Color"
+                        android:padding="@dimen/_7sdp">
+
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center"
+                            app:srcCompat="@drawable/ic_add"
+                            app:tint="@color/white" />
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvWastageReasons"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="@dimen/_16sdp"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:listitem="@layout/view_wastage_item_reason"/>
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:paddingBottom="@dimen/_5sdp"
+                    android:text="@string/wastage_notes"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_5mdpi"
+                    app:textAllCaps="true" />
+
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/edtNote"
+                    style="@style/CustomFontMediumStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top"
+                    android:background="@drawable/background_square_border_grey"
+                    android:digits="@string/character_digits_String"
+                    android:gravity="top"
+                    android:hint="@string/add_note"
+                    android:inputType="textVisiblePassword|textMultiLine"
+                    android:minLines="5"
+                    android:padding="@dimen/_5sdp"
+                    android:textColor="@color/txtColor"
+                    android:textColorHint="@color/hintColor"
+                    android:textSize="@dimen/_6ssp" />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+        </androidx.core.widget.NestedScrollView>
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+</layout>

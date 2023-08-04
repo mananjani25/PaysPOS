@@ -3,6 +3,9 @@ package com.android.pos.data.remote
 import com.android.pos.data.entities.TbBusinessDetails
 import com.android.pos.data.entities.VariationsAttribute
 import com.android.pos.data.model.requestModel.*
+import com.android.pos.data.model.requestModel.giftCard.request.GiftCardAddValueRequest
+import com.android.pos.data.model.requestModel.giftCard.request.GiftCardCheckBalanceRequest
+import com.android.pos.data.model.requestModel.giftCard.request.SellGiftCardRequestModel
 import com.android.pos.utils.FileUtils.getContentType
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
@@ -442,6 +445,15 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun createOrder(data: OrderRequestModel) =
         getResult { apiService.createOrder(data) }
 
+    suspend fun sellGiftCard(data: SellGiftCardRequestModel) =
+        getResult { apiService.sellGiftCard(data) }
+
+    suspend fun addValueInGiftCard(data: GiftCardAddValueRequest) =
+        getResult { apiService.addValueInGiftCard(data) }
+
+    suspend fun giftCardCheckBalance(giftCardCheckBalanceRequest: GiftCardCheckBalanceRequest) =
+        getResult { apiService.giftCardCheckBalance(giftCardCheckBalanceRequest) }
+
     suspend fun splitByOrder(data: SpitByOrderRequestModel) =
         getResult { apiService.splitByOrder(data) }
 
@@ -487,6 +499,12 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
 
     suspend fun phoneReceipt(data: HashMap<String, String>) =
         getResult { apiService.phoneReceipt(data) }
+
+    suspend fun giftCardEmailReceipt(data: HashMap<String, String>) =
+        getResult { apiService.giftCardEmailReceipt(data) }
+
+    suspend fun giftCardPhoneReceipt(data: HashMap<String, String>) =
+        getResult { apiService.giftCardPhoneReceipt(data) }
 
     suspend fun assignCustomerOrder(
         orderId: Int,
@@ -683,4 +701,6 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun timeDetails() =
         getResult { apiService.getTimeDetails() }
 
+    suspend fun addItemToWastage(data: WastageItemRequest) =
+        getResult { apiService.addItemToWastage(data) }
 }

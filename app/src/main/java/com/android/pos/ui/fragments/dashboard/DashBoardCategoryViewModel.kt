@@ -44,10 +44,12 @@ import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.DINE_IN_LIST_EDIT
 import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
+import com.android.pos.data.remote.Constants.GIFT_CARD
 import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.android.pos.data.remote.Constants.IS_SYNC_MARKUP
 import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER
 import com.android.pos.data.remote.Constants.LOCK_SCREEN_TRANSACTION
+import com.android.pos.data.remote.Constants.LOYALTY_ADDED
 import com.android.pos.data.remote.Constants.MAX_ITEM_QUANTITY
 import com.android.pos.data.remote.Constants.ONLINE_ORDER_ENABLE
 import com.android.pos.data.remote.Constants.ONLY_SHOW_PRICE_GREATER_THAN_ZERO
@@ -194,8 +196,18 @@ class DashBoardCategoryViewModel @Inject constructor(
         taxDynamicList.clear()
     }
 
-    fun setcheckedLoyaltyApply(isapply: Boolean) {
+    fun setcheckedLoyaltyApply(isapply: Boolean, txtTotalAmount: AppCompatTextView? = null) {
         redeemLoyaltyInfo.needToApplyLoyalty = isapply
+        if(txtTotalAmount != null) {
+                redeemLoyaltyInfo.getAmountToBePaid()?.let {
+                    totalPrice = it
+
+                    MethodUtils.setPriceTextView(
+                        txtTotalAmount,
+                        it
+                    )
+                }
+            }
         Log.d(TAG, "setcheckedLoyaltyApply: " + redeemLoyaltyInfo.needToApplyLoyalty)
     }
 
@@ -894,7 +906,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                             Log.d(TAG, "cartLogic: " + i)
                                             index = i
                                             break
-                                        } else if (list[i].itemId == item.itemId && checkVariation(
+                                        } else if (list[i].itemId == item.itemId && (item.modifiers.isNotEmpty() || item.variationsAttributes.isNotEmpty()) && checkVariation(
                                                 list[i],
                                                 item
                                             ) && checkModifierNewLogic(list[i], item)
@@ -2701,7 +2713,8 @@ class DashBoardCategoryViewModel @Inject constructor(
     fun itemCalculation(
         cartList: List<CartModel>?,
         txtTotalAmount: AppCompatTextView,
-        context: Context
+        context: Context,
+        isFromManualSales: Boolean = false
     ) {
 
         if (cartList != null && cartList.isNotEmpty()) {
@@ -2718,6 +2731,34 @@ class DashBoardCategoryViewModel @Inject constructor(
             if (cartList[0].orderType == DINE_IN) {
 
                 var dineInItems = 0
+                if(isFromManualSales) {
+
+                    dineInItems = cartList[0].items?.size ?: 0
+                    cartList[0].items?.forEach { item ->
+                            totalCount += item.itemQuantity
+
+                            subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
+
+
+                            taxCalculation(item, cartList[0].discountPrice / dineInItems)
+
+                            item.modifiers.forEach {
+                                subTotalPrice += (it.price * it.itemQuantity)
+                            }
+                        }
+                    calculateDineInServiceCharge(cartList[0])
+                    subTotalPrice -= (cartList[0].discountPrice)
+
+                    if (subTotalPrice < 0) {
+                        subTotalPrice = 0.0
+                    }
+
+                    totalDiscount += cartList[0].discountPrice
+                    cartList[0].items?.forEach {
+                        totalDiscount += (it.discountPrice * it.itemQuantity)
+                    }
+
+                } else {
 
                 cartList[0].dineInList?.forEach { dine ->
                     dineInItems += dine.items.size
@@ -2749,7 +2790,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     subTotalPrice = 0.0
                 }
 
-
+                    totalDiscount += cartList[0].discountPrice
 
                 cartList[0].dineInList?.forEach {
                     it.items.forEach {
@@ -2757,7 +2798,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     }
                 }
 
-
+                }
                 totalPrice = (subTotalPrice + totalTax + totalServiceCharge)
                 amountToBePaid = totalPrice - totalDiscount
                 Log.e("ManualSale", "amountToBePaid:   ${amountToBePaid}")
@@ -2843,6 +2884,14 @@ class DashBoardCategoryViewModel @Inject constructor(
                     amountToBePaid = 0.0
                 }
             }
+        } else {
+            nonCashAdj = 0.0
+            totalPrice = 0.0
+            totalCount = 0
+            subTotalPrice = 0.0
+            totalDiscount = 0.0
+            totalTax = 0.0
+            totalServiceCharge = 0.0
         }
         //totalAmmount = totalPrice-cartList[0].discountPrice
 
@@ -3081,6 +3130,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                     var finalTotal = 0.0
                     finalTotal = (subTotalPrice + totalTax + totalServiceCharge)
 
+                    redeemLoyaltyInfo.needToApplyLoyalty = prefProvider.getValueboolean(
+                        LOYALTY_ADDED, false)
                     totalPrice = finalTotal
 
 
@@ -3107,7 +3158,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                         }
                     }
 
-                    if (MethodUtils.isEnableCashDiscount(context)) {
+                    if (MethodUtils.isEnableCashDiscount(context) && prefProvider.getValue(ORDER_TYPE, TAKEOUT) != GIFT_CARD) {
                         cashdiscountAmount = MethodUtils.calculateCashDiscount(
                             totalPrice,
                             prefProvider,
@@ -3150,7 +3201,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     ) {
 
         redeemLoyaltyInfo.total = total
-        val availablePoints = customer?.final_reward ?: 0
+        val availablePoints1 = customer?.final_reward ?: 0
 
         if (customer == null) {
             //loyalty cant be applied if customer is not selected.
@@ -3159,6 +3210,8 @@ class DashBoardCategoryViewModel @Inject constructor(
             activeLoyaltyProgram?.let {
                 redeemLoyaltyInfo.loyaltyProgramsModel = activeLoyaltyProgram
 
+                val availablePoints = it.rewardPoint.times((customer.final_reward?.floorDiv(it.rewardPoint)!!))
+                    ?:0
                 //if customer has more points than required(minimum limit)
                 var availableLoyaltyAmount = 0.0
                 if (it.rewardPoint == 0) {
@@ -3168,6 +3221,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     availablePoints * it.amount / it.rewardPoint
                 if (availableLoyaltyAmount > redeemLoyaltyInfo.total) {
                     var pointDouble = (redeemLoyaltyInfo.total * it.rewardPoint) / it.amount
+                    pointDouble = (it.rewardPoint * (pointDouble.div(it.rewardPoint)).toInt()).toDouble()
                     redeemLoyaltyInfo.usedLoyaltyPoints = ceil(pointDouble).toInt()
                     redeemLoyaltyInfo.usedLoyaltyAmount =
                         pointDouble * it.amount / it.rewardPoint
@@ -3197,7 +3251,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             }
         } else {
             redeemLoyaltyInfo.remainingAmount = redeemLoyaltyInfo.total
-            redeemLoyaltyInfo.remainingLoyaltyPoints = availablePoints
+            redeemLoyaltyInfo.remainingLoyaltyPoints = availablePoints1
             redeemLoyaltyInfo.usedLoyaltyPoints = 0
             redeemLoyaltyInfo.usedLoyaltyAmount = 0.0
             //redeemLoyaltyInfo.isLoyaltyApplied = false
@@ -4331,7 +4385,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         return orderItemTaxesAttributeList
     }
 
-    private fun orderItemModifierAttributes(
+    fun orderItemModifierAttributes(
         item: TbItem,
         terminalId: Int
     ): List<OrderItemModifierAttribute> {
@@ -5208,6 +5262,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 tipDiscountRepository.addTips(it.settingData.data.tip_settings)
 //                                posRepository.deleteCustomerReceiptSettingsFromDb()
                                 posRepository.addCancelOrderReasonFromDb(it.settingData.data.cancelOrderReasons)
+                                posRepository.addWastageReasonInDb(it.settingData.data.wastageReasons)
 //                                posRepository.deleteCustomerPrinters()
 //                                posRepository.deleteKitchenPrinters()
                                 posRepository.addKitchenPrinter(it.settingData.data.printers.kitchenPrinterList)
@@ -5708,6 +5763,38 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun unableToRemoveGuest(message: String = "") {
         _removeGuestSuccess.value = Event(message)
+    }
+
+    // To clear gift-card cart
+    fun clearGiftCardCart() {
+        prefProvider.setValue("PaidAmount", "")
+        prefProvider.setValue(Constants.WHOLE_AMOUNT, "")
+        prefProvider.setValueInt("cardCount", 0)
+        prefProvider.setValue(Constants.SUB_TOTAL, "")
+        prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
+        prefProvider.setValue(Constants.TOTAL_DISCOUNT, "")
+        prefProvider.setValue(Constants.TIP, "")
+        prefProvider.setValue(Constants.TAX_CHARGE, "")
+        prefProvider.setValue(Constants.SERVICE_CHARGE, "")
+        prefProvider.setValue(ORDER_TYPE, "")
+        prefProvider.setValue(ORDER_TYPE_NAME, "")
+        prefProvider.setValueboolean(Constants.IS_ADD_VALUE_IN_GIFT_CARD, false)
+        prefProvider.setValue(Constants.CUSTOMER_NAME, "")
+        prefProvider.setValue(Constants.PREF_CUSTOMER, "")
+        prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
+        clearCustomer()
+        deleteCart()
+    }
+
+    // To clear customer if creating gift card
+    fun clearCustomer() {
+        prefProvider.setValue(Constants.CUSTOMER_NAME, "")
+        prefProvider.setValue(Constants.PREF_CUSTOMER, "")
+        prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
+        selectedCustomer = null
+        assignCustomer = null
+        prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED, false)
+        prefProvider.setValueboolean(LOYALTY_ADDED, false)
     }
 
 }

@@ -826,4 +826,6 @@ public class SunmiPrintHelper {
         sunmiPrinterService.printBarCode("{C1234567890123456", 8, 90, 2, 2, null);
         sunmiPrinterService.lineWrap(1, null);
     }
+
+
 }

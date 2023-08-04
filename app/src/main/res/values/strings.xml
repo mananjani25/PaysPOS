@@ -717,7 +717,9 @@
     <string name="total_discount">Total Discount</string>
     <string name="loyalty_amount">Loyalty Amount</string>
     <string name="used_loyalty_points">Used Loyalty Points</string>
+    <string name="loyalty_balance">Loyalty Balance</string>
     <string name="loyalty_rewards">Loyalty Rewards</string>
+    <string name="used_loyalty_amount">Used Loyalty Amount</string>
     <string name="end_date_amp_time"><![CDATA[End Date & Time]]></string>
     <string name="start_date_amp_time"><![CDATA[Start Date & Time]]></string>
     <string name="terminal_login_id_tap_to_copy_unique_id">Terminal Login ID (Tap to copy Unique id)</string>
@@ -808,6 +810,7 @@
     <string name="cvv">CVV</string>
     <string name="mm_yy">MM/YY</string>
     <string name="_1234_5678_xxxx_1121">1234 5678 XXXX 1121</string>
+    <string name="_1234_xxxx">1234 XXXX</string>
     <string name="enter_card_number_here">Enter Card Number Here</string>
     <string name="charge">Charge</string>
     <string name="add_tip_">Add Tip(%)<font color='#E90C0C'>*</font></string>
@@ -865,6 +868,24 @@
     <string name="please_enter_address">Please enter address</string>
     <string name="please_enter_zipcode">Please enter zipcode</string>
     <string name="item_quantity_cannot_exceed">Item quantity cannot exceed</string>
+    <string name="lbl_purchase_gift_card">Purchase Gift Card</string>
+    <string name="lbl_select_gift_card">Select Gift Card:</string>
+    <string name="lbl_digital_gift_card">Digital Gift Card</string>
+    <string name="lbl_plastic_gift_card">Plastic Gift Card</string>
+    <string name="lbl_add_customer_to_gift_card">Add Customer To Gift Card</string>
+    <string name="lbl_add_value">Add Value</string>
+    <string name="lbl_balance_inquiry">Balance Inquiry</string>
+    <string name="hint_enter_your_gift_card_number">Enter Your Gift Card Number</string>
+    <string name="hint_enter_your_gift_card_amount">Enter Your Gift Card Amount</string>
+    <string name="msg_balance_inquiry_results">Balance Inquiry Results</string>
+    <string name="hint_gift_card_pin">Enter Gift Card PIN</string>
+    <string name="lbl_check_balance">Check Balance</string>
+    <string name="msg_insufficient_gift_card_balance">You have insufficient gift card balance, please proceed to pay with cash or card.</string>
+    <string name="lbl_please_add_phone_or_email">Please add email address or phone number in your profile.</string>
+    <string name="add_to_wastage">Add To Wastage</string>
+    <string name="wastage_notes">Wastage Notes</string>
+    <string name="wastage_item_confirmation_message">Are you sure, you want to add this item wastage?</string>
+    <string name="wastage_item_quantity_message">Please provide quantity for adding this item to wastage</string>
 
 </resources>
 

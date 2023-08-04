@@ -143,6 +143,7 @@ class DineInFragment : Fragment() {
         tableStatusSucess()
         observeShowProgress()
         binding.layoutHeader.imgTransferTable?.visible()
+        binding.layoutHeader.imgRefreshTables?.visible()
         binding.layoutHeader.txtUserName.text = prefProvider.getValue(Constants.EMPLOYEE_NAME, "")
 
     }
@@ -200,6 +201,14 @@ class DineInFragment : Fragment() {
             }
 
         }
+
+        // Refresh floor plan
+        binding.layoutHeader.imgRefreshTables.setOnClickListener {
+            floorPlanSelectedPos =
+                dineInFloorNameListAdapter.getSelectedPos()
+            loadFloorPlan()
+        }
+
         setFragmentResultListener("request_key_table_selection") { requestKey: String, bundle: Bundle ->
             var mergeStatus = bundle.getBoolean("merge_done")
             if (mergeStatus) {
@@ -924,7 +933,6 @@ class DineInFragment : Fragment() {
 
     private fun gotoDashboard(dineInFloorTableModel: GetFloorPlanResponse.Data.FloorPlanTable) {
         prefProvider.setValue(Constants.ORDER_TYPE, Constants.DINE_IN)
-        prefProvider.setValue(Constants.ORDER_TYPE_NAME, Constants.DINE_IN)
         val bundle = bundleOf(
             "isFromDineIn" to true,
             "numberOfGuest" to dineInFloorTableModel.chairCount,

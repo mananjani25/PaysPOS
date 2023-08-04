@@ -22,6 +22,7 @@ import com.android.pos.data.model.requestModel.OrderServiceChargesAttribute
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.IS_FROM_ALL_ORDER
+import com.android.pos.data.remote.Constants.MANUAL_SALE
 import com.android.pos.data.remote.Constants.OPEN_ORDER
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.REDIRECT_FROM
@@ -345,6 +346,9 @@ class PaymentBoldPosFragment : Fragment() {
                     if(prefProvider.getValueboolean(IS_FROM_ALL_ORDER,false)){
                         findNavController().navigate(R.id.action_paymentBoldPosFragment_to_allOrdersFragment)
                     }else{
+                        if(prefProvider.getValue(REDIRECT_FROM, "") == MANUAL_SALE) {
+                            viewModel.cartModel = null
+                        }
                         findNavController().popBackStack()
                     }
                 }

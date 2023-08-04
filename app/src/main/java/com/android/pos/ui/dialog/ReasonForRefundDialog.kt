@@ -241,7 +241,8 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
 
     private fun networkCall(jsonArray1: JsonArray?, i: Int) {
 
-        ProgressUtils.showProgressDialog(requireActivity())
+//        ProgressUtils.showProgressDialog(requireActivity())
+        viewModel.showProgressDialog(true)
 
         val call = if (i == 1) {
             jsonArray1?.let { apiModule1.getRetrofit1().processReferenceID(it) }
@@ -256,7 +257,7 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                 call: Call<PaymentResponse>,
                 response: Response<PaymentResponse>
             ) {
-                ProgressUtils.dismissProgressDialog()
+//                ProgressUtils.dismissProgressDialog()
                 if (response.isSuccessful) {
                     LogUtil.logE("onResponse", Gson().toJson(response.body()))
                     if (response.body() != null && response.body()!![0].transactionOutput != null) {
@@ -266,6 +267,7 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                             refundCall()
 
                         } else {
+                            viewModel.showProgressDialog(false)
                             AlertUtils.showCustomAlert(
                                 requireContext(),
                                 response.body()!![0].transactionOutput?.transactionMessage
@@ -273,6 +275,7 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                         }
 
                     } else {
+                        viewModel.showProgressDialog(false)
                         if (response.body()!![0].mPPGv4WSFault != null) {
                             AlertUtils.showCustomAlert(
                                 requireContext(),
@@ -281,12 +284,16 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                             )
                         }
                     }
+                } else {
+//                    ProgressUtils.dismissProgressDialog()
+                    viewModel.showProgressDialog(false)
                 }
             }
 
             override fun onFailure(call: Call<PaymentResponse>, t: Throwable) {
 
-                ProgressUtils.dismissProgressDialog()
+//                ProgressUtils.dismissProgressDialog()
+                viewModel.showProgressDialog(false)
             }
         })
     }

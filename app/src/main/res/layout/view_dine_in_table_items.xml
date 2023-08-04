@@ -190,6 +190,23 @@
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:paddingStart="@dimen/_2sdp">
+
+                    <ImageView
+                        android:id="@+id/ivWastage"
+                        android:layout_width="@dimen/_14sdp"
+                        android:layout_height="@dimen/_14sdp"
+                        android:padding="@dimen/_4sdp"
+                        android:button="@drawable/ic_dot_menu"
+                        android:gravity="center" />
+                </LinearLayout>
+
             </androidx.appcompat.widget.LinearLayoutCompat>
 
         </androidx.appcompat.widget.LinearLayoutCompat>

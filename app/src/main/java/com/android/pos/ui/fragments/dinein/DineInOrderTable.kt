@@ -129,6 +129,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     private var totalTax: Double = 0.0
     private var totalServiceCharge: Double = 0.0
     var totalGuestCount = 0
+    var eligibleGuestsForDivision = 0
     var divideCashDiscount = 0.0
     private var paymentAmount: Double = 0.0
     private var subTotalWT = 0.0
@@ -159,6 +160,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     var optionType = ""
     private lateinit var pd: Dialog
     private var totalDiscountWO = 0.0
+    private var clickedPosition: Int = -1
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -211,6 +213,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         navigateDineInOrderNew()
         reorderedItemObserver()
         removeGuestObserver()
+        wastageItemObserver()
         observeUnMergeTable()
         requireActivity().supportFragmentManager.setFragmentResultListener(
             "request_for_guestcount",
@@ -436,7 +439,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
         }
         onClick()
-
+        addItemToWastageResultListener()
 
     }
 
@@ -521,21 +524,26 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 prefProvider.setValue(Constants.ORDER_TYPE, DINE_IN)
 
                 var dividedOrderDiscount = 0.0
-                totalGuestCount = getOrderDetailsResponse?.guestAttributes?.size!! - 1
+                eligibleGuestsForDivision = dineInTableAdapter.getList()[0].eligibleGuestsForDivision
+                totalGuestCount = eligibleGuestsForDivision
                 var tmpOrderDis = 0.0
                 if (paidGuestAmount > 0 && globalOrderDiscount > 0.0) {
-                LogUtil.logE("globalOrderDiscount", "globalOrderDiscount  ${globalOrderDiscount}")
+                    LogUtil.logE(
+                        "globalOrderDiscount",
+                        "globalOrderDiscount  ${globalOrderDiscount}"
+                    )
                     var eachGuestDiscount =
-                        MethodUtils.roundOffAmountDouble(globalOrderDiscount / (getOrderDetailsResponse?.guestAttributes?.size!! - 1))
+                        MethodUtils.roundOffAmountDouble(globalOrderDiscount / eligibleGuestsForDivision)
 
-                dividedOrderDiscount = globalOrderDiscount - (eachGuestDiscount * paidGuestAmount)
+                    dividedOrderDiscount =
+                        globalOrderDiscount - (eachGuestDiscount * paidGuestAmount)
                     LogUtil.logE(TAG, "DividedOrwrs ${dividedOrderDiscount}")
 
                     tmpOrderDis = globalOrderDiscount - (eachGuestDiscount * paidGuestAmount)
 
 
                     var wholeDisDivide =
-                        MethodUtils.roundOffAmountDouble(wholeTableDiscount / (getOrderDetailsResponse?.guestAttributes?.size!! - 1))
+                        MethodUtils.roundOffAmountDouble(wholeTableDiscount / eligibleGuestsForDivision)
                     if (wholeDisDivide > dividedOrderDiscount) {
                         dividedOrderDiscount = wholeDisDivide - dividedOrderDiscount
                     } else {
@@ -583,7 +591,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 }
 
 
-
                 var listreemaining: List<TaxData> = emptyList()
                 listWT.forEach { wholetableitems ->
                     wholetableitems.taxes?.forEachIndexed { index, taxData ->
@@ -628,10 +635,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                         Log.d(TAG, "onClick: wholetable total tax $totaltaxtemp")
                         var found = -1
-                        totaltaxtemp /= (getOrderDetailsResponse?.guestAttributes?.size!! - 1)
+                        totaltaxtemp /= eligibleGuestsForDivision
                         var temp_remaining = totaltaxtemp * paidGuestAmount
                         var temp_subtotal =
-                            totalPrice / (getOrderDetailsResponse?.guestAttributes?.size!! - 1)
+                            totalPrice / eligibleGuestsForDivision
                         cartList?.taxlistDynamic?.forEachIndexed { indexcart, cartTaxtData ->
                             if (cartTaxtData.taxType == taxData.taxType) {
                                 found = indexcart
@@ -741,7 +748,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                 toFinalAmt,
                                 prefProvider,
                                 requireContext()
-                            ) / (getOrderDetailsResponse?.guestAttributes?.size!! - 1)
+                            ) / eligibleGuestsForDivision
                     }
                 } else {
                     divideCashDiscount = 0.0
@@ -796,7 +803,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 )
                 LogUtil.logE("DineCheck", "totalDiscount  ${totalDiscount}")
                 bundle.putParcelable("floorPlan", floorPlanModel)
-            bundle.putDouble("totalServiceCharge", MethodUtils.roundOffAmountDouble(serviceCharge))
+                bundle.putDouble(
+                    "totalServiceCharge",
+                    MethodUtils.roundOffAmountDouble(serviceCharge)
+                )
                 bundle.putDouble("totalDiscount", MethodUtils.roundOffAmountDouble(totalDiscount))
                 bundle.putDouble(
                     "totalOrderPassDiscount",
@@ -857,14 +867,23 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 bundle.putInt("orderId", orderId ?: -1)
                 bundle.putInt(GUEST_POSITION, 0)
                 prefProvider.setValue(Constants.ORDER_TYPE, Constants.DINE_IN)
-            prefProvider.setValueInt(Constants.ORDER_TYPE_ID, getOrderDetailsResponse?.orderTypeId ?: 2)
-            prefProvider.setValue(Constants.ORDER_TYPE_NAME, getOrderDetailsResponse?.orderTypeName ?: DINE_IN)
+                prefProvider.setValueInt(
+                    Constants.ORDER_TYPE_ID,
+                    getOrderDetailsResponse?.orderTypeId ?: 2
+                )
+                prefProvider.setValue(
+                    Constants.ORDER_TYPE_NAME,
+                    getOrderDetailsResponse?.orderTypeName ?: DINE_IN
+                )
 
                 if (findNavController().currentDestination?.id == R.id.dineInOrderTable)
-                findNavController().navigate(R.id.action_dineInOrderTable_to_checkoutDineIN, bundle)
+                    findNavController().navigate(
+                        R.id.action_dineInOrderTable_to_checkoutDineIN,
+                        bundle
+                    )
 
 
-            } catch (e: Exception){
+            } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
@@ -971,12 +990,21 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             bundle.putParcelable("tableDetails", getOrderDetailsResponse?.floorPlanTable)
             viewModelPayment.deleteCart()
             orderId?.let { it1 -> bundle.putInt("orderId", it1) }
-            Log.e(TAG, "dineIndorderId:   ${orderId}  >> ${getOrderDetailsResponse?.orderTypeName ?: DINE_IN}")
+            Log.e(
+                TAG,
+                "dineIndorderId:   ${orderId}  >> ${getOrderDetailsResponse?.orderTypeName ?: DINE_IN}"
+            )
 
             prefProvider.setValueboolean(DINE_IN_UPDATE, true)
             prefProvider.setValue(Constants.ORDER_TYPE, DINE_IN)
-            prefProvider.setValueInt(Constants.ORDER_TYPE_ID, getOrderDetailsResponse?.orderTypeId ?: 2)
-            prefProvider.setValue(Constants.ORDER_TYPE_NAME, getOrderDetailsResponse?.orderTypeName ?: DINE_IN)
+            prefProvider.setValueInt(
+                Constants.ORDER_TYPE_ID,
+                getOrderDetailsResponse?.orderTypeId ?: 2
+            )
+            prefProvider.setValue(
+                Constants.ORDER_TYPE_NAME,
+                getOrderDetailsResponse?.orderTypeName ?: DINE_IN
+            )
             prefProvider.setValueInt(
                 Constants.DINE_IN_TABLE_ID,
                 prefProvider.getValueInt(Constants.ORDER_TYPE_ID, 0)
@@ -1148,7 +1176,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             Log.d(TAG, "addGuestToOrder size: " + cartList!!.dineInList?.size)
             Log.d(TAG, "addGuestToOrder: " + Gson().toJson(cartList?.dineInList))
             prefProvider.setValueboolean(DINE_IN_UPDATE, true)
+            // RESET Data after coming back from checkout screen by clicking on guest pay (to resolve calculation issue for guest division)
             dashboardViewModel.totalDiscount = getOrderDetailsResponse?.totalDiscount ?: 0.0
+            dashboardViewModel.subTotalPrice = getOrderDetailsResponse?.subTotal ?: 0.0
+            // END RESET
             val request = dashboardViewModel.updateOrder(cartList!!)
             orderId?.let { viewModel.updateOrder(it, request) }
         } else {
@@ -1436,8 +1467,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         Log.e(TAG, "divideDiscount2:  ${divideDiscount2}")
         var divideDiscount = divideDiscount2
         LogUtil.logE("WholeTabDis", "Fasf  ${wholeTableDiscount}")
+        eligibleGuestsForDivision = dineInTableAdapter.getList()[0].eligibleGuestsForDivision
         var dividedWtDis: Double = MethodUtils.roundOffAmountDouble(
-            wholeTableDiscount / (getOrderDetailsResponse?.guestAttributes?.size?.minus(1)!!)
+            wholeTableDiscount / eligibleGuestsForDivision
         )
 
         divideDiscount += dividedWtDis
@@ -1480,7 +1512,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         subTotal += dineInTableAdapter.getList().get(0).guestDividedAmt
 
 
-        totalGuestCount = getOrderDetailsResponse?.guestAttributes?.size?.minus(1) ?: 1
+        totalGuestCount = eligibleGuestsForDivision ?: 1
         LogUtil.logE("TODAY", "totalGuestCount:  ${totalGuestCount}")
         LogUtil.logE("TODAY", "toFinalAmt:  ${toFinalAmt}")
 
@@ -1748,7 +1780,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         )
         LogUtil.logE(
             "FinalDetails",
-            "guestTotalServiceCharge:  ${MethodUtils.roundOffAmountDouble(serviceChargeGuest + serviceCharge)}"
+            "guestTotalServiceCharge:  ${MethodUtils.roundOffAmountDouble(serviceChargeGuest)}"
         )
 
         val newGuestModel = GuestDataModel(
@@ -1757,7 +1789,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             totalAmount = totalGuest,
             totalDiscount = MethodUtils.roundOffAmountDouble(divideDiscount),
             cashDiscount = MethodUtils.roundOffAmountDouble(divideCashDiscount),
-            totalServiceCharge = MethodUtils.roundOffAmountDouble(serviceChargeGuest + serviceCharge)
+            totalServiceCharge = MethodUtils.roundOffAmountDouble(serviceChargeGuest)
 
         )
         LogUtil.logE(TAG, "newGuestModel:  ${Gson().toJson(newGuestModel)}")
@@ -1855,7 +1887,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
         prefProvider.setValue(Constants.ORDER_TYPE, prefProvider.getValue(Constants.ORDER_TYPE, ""))
         prefProvider.setValueInt(Constants.ORDER_TYPE_ID, getOrderDetailsResponse?.orderTypeId ?: 2)
-        prefProvider.setValue(Constants.ORDER_TYPE_NAME, getOrderDetailsResponse?.orderTypeName ?: DINE_IN)
+        prefProvider.setValue(
+            Constants.ORDER_TYPE_NAME,
+            getOrderDetailsResponse?.orderTypeName ?: DINE_IN
+        )
         bundle.putParcelable("dineinPaymentModel", dineinCartPaymentModel)
 
 
@@ -2197,7 +2232,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                             dineInItem.item?.guestItemId = it.id
                                         }
                                     } else {
-                                        if(dineInItem.title == baseResponse.order.guestAttributes[i].name) {
+                                        if (dineInItem.title == baseResponse.order.guestAttributes[i].name) {
                                             dineInItem.itemsCount = guestItemsList.size
                                         }
                                     }
@@ -2219,7 +2254,19 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         }
     }
 
-    private fun navigateDineInOrderNew() {
+    private fun wastageItemObserver() {
+        viewModel.wastageItemsSuccess.observe(viewLifecycleOwner) { event ->
+            AlertUtils.showCustomAlertWithListenerWithOK(
+                requireContext(), event.getContentIfNotHandled().toString()
+            ) { _, _ ->
+                viewModel.Basedata.removeObservers(viewLifecycleOwner)
+                navigateDineInOrderNew(true)
+                orderId?.let { viewModel.apiCallOrderDetails(it) }
+            }
+        }
+    }
+
+    private fun navigateDineInOrderNew(isFromWastage: Boolean = false) {
 
         viewModel.Basedata.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { baseResponse ->
@@ -2248,7 +2295,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                         var listTableMerge: ArrayList<String> = arrayListOf()
                         listTableMerge.add(baseResponse.floorPlanTable.tableNumber.toString())
-                        baseResponse.floorPlanTable?.merged_child_table_details.forEach {
+                        baseResponse.floorPlanTable.merged_child_table_details?.forEach {
                             listTableMerge.add(it.table_number.toString())
 
                         }
@@ -2278,6 +2325,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     var totalFinalAmount: Double = 0.0
                     var totalCashDiscount: Double = 0.0
                     var totalItemDiscount: Double = 0.0
+                    var eligibleGuestsForDivision = 0
 
                     //extract logic from API data and drag & drop code
                     for (i in 0 until baseResponse.guestAttributes.size) {
@@ -2287,24 +2335,32 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         model.isHeader = 0
                         model.id = baseResponse.guestAttributes[i].id
                         model.isPaid = baseResponse.guestAttributes.get(i).isPaid
-                        model.itemsCount = baseResponse.guestAttributes.get(i).guestItemAttributes.size
+                        model.itemsCount =
+                            baseResponse.guestAttributes.get(i).guestItemAttributes.size
 
                         // guest item sorting
                         for (p in 0 until baseResponse.guestAttributes[i].guestItemAttributes.size) {
                             baseResponse.orderItems.forEach { orderItem ->
                                 if (orderItem.itemId == baseResponse.guestAttributes[i].guestItemAttributes[p].itemId) {
-                                    baseResponse.guestAttributes[i].guestItemAttributes[p].sort = orderItem.sort
+                                    baseResponse.guestAttributes[i].guestItemAttributes[p].sort =
+                                        orderItem.sort
                                 }
                             }
                         }
-                        guestItem = baseResponse.guestAttributes[i].guestItemAttributes.sortedBy { it.sort }
+                        guestItem =
+                            baseResponse.guestAttributes[i].guestItemAttributes.sortedBy { it.sort }
 
                         if (baseResponse.guestAttributes.get(i).guestItemAttributes.isNotEmpty()) {
                             if (baseResponse.guestAttributes.get(i).name.trim()
                                     .lowercase() != "Whole Table".trim().lowercase()
                             ) {
                                 totalGuestCount++
-                                println("total guest count >>: $totalGuestCount")
+                            }
+                            if (baseResponse.guestAttributes.get(i).name.trim()
+                                    .lowercase() != "Whole Table".trim()
+                                    .lowercase() && baseResponse.guestAttributes[i].guestItemAttributes.isNotEmpty()
+                            ) {
+                                eligibleGuestsForDivision++
                             }
 
                         }
@@ -2416,7 +2472,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                             item.note = it.note
                                             item.isFired = guestItem.get(j).is_fired
                                             // Applied sort to dineInItem
-                                            item.sort = if(item.dineInSort == 0 ) {dineInList.size} else {it.sort}
+                                            item.sort = if (item.dineInSort == 0) {
+                                                dineInList.size
+                                            } else {
+                                                it.sort
+                                            }
                                             item.dineInSort = item.sort
                                             item.timeStamp = it.timestamp
                                             if (it.orderItemModifiers.isNotEmpty()) {
@@ -2503,6 +2563,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         }
 
 
+                    }
+                    if (eligibleGuestsForDivision == 0) {
+                        eligibleGuestsForDivision = 1
                     }
 
 
@@ -2615,7 +2678,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                         totalPriceWT = subTotalWT + totalTaxWT + serviceChargeWT
 
                                         guestShareTotal =
-                                            totalPriceWT / (baseResponse.guestAttributes.size - 1)
+                                            totalPriceWT / eligibleGuestsForDivision
 
                                     }
 
@@ -2645,7 +2708,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                 if (isInRange(
                                         it.min_guest_count!!,
                                         it.max_guest_count!!,
-                                        baseResponse.guestAttributes.size - 1
+                                        eligibleGuestsForDivision
                                     )
                                 ) {
 
@@ -2676,19 +2739,25 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     val finalAmount =
                         totalSubTotal + totalTaxAmount + totalServiceChargeAmount - orderDiscount
 
+                    // Convert Order discount into percentage to divide in guest (To resolve minus guest amount issue)
                     dineInList[0].orderDiscountPercentage = MethodUtils.roundOffAmountDouble(
-                        MethodUtils.calculatePercentageFromAmount(totalDiscountWO, (baseResponse.subTotal + totalDiscountWO)))
+                        MethodUtils.calculatePercentageFromAmount(
+                            totalDiscountWO,
+                            (baseResponse.subTotal + totalDiscountWO)
+                        )
+                    )
                     dineInList.get(0).guestDividedAmt =
                         guestShareTotal
                     dineInList.get(0).totalGuestCount = baseResponse.guestAttributes.size - 1
+                    dineInList.get(0).eligibleGuestsForDivision = eligibleGuestsForDivision
                     dineInList.get(0).wholeTableSubTotal =
-                        subTotalWT / (baseResponse.guestAttributes.size - 1)
+                        subTotalWT / eligibleGuestsForDivision
                     dineInList.get(0).wholeTableTax =
-                        totalTaxWT / (baseResponse.guestAttributes.size - 1)
+                        totalTaxWT / eligibleGuestsForDivision
                     dineInList.get(0).wholeTableSurTax =
-                        serviceChargeWT / (baseResponse.guestAttributes.size - 1)
+                        serviceChargeWT / eligibleGuestsForDivision
                     dineInList.get(0).wholeTableDiscont =
-                        MethodUtils.roundOffAmountDouble(wholeTableDiscount / (baseResponse.guestAttributes.size - 1))
+                        MethodUtils.roundOffAmountDouble(wholeTableDiscount / eligibleGuestsForDivision)
 
                     dineInList.get(0).orderDiscount = orderDiscount
                     dineInList.get(0).orderTotalAmount =
@@ -2730,7 +2799,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         if (paidGuestCount > 0) {
                             paidGuestAmount = paidGuestCount
                             var perGTotal =
-                                subTotalWT / (baseResponse.guestAttributes.size - 1)
+                                subTotalWT / eligibleGuestsForDivision
                             LogUtil.logE(TAG, "perGTotal:  ${perGTotal}")
                             subTotalDInin = totalSubTotal - (perGTotal * paidGuestCount)
                         } else {
@@ -2753,7 +2822,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                         if (isInRange(
                                                 it.min_guest_count!!,
                                                 it.max_guest_count!!,
-                                                baseResponse.guestAttributes.size - 1
+                                                eligibleGuestsForDivision
                                             )
                                         ) {
                                             isApplied = true
@@ -2778,10 +2847,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                         }
 
-                        var unpaidCount = (baseResponse.guestAttributes.size - 1) - paidGuestCount
+                        var unpaidCount = eligibleGuestsForDivision - paidGuestCount
 
                         if (paidGuestCount > 0) {
-                            var tempTax = totalTaxWT / (baseResponse.guestAttributes.size - 1)
+                            var tempTax = totalTaxWT / eligibleGuestsForDivision
 
                             var guestTax = totalTaxAmount - totalTaxWT
                             finalTaxAmt = (tempTax * unpaidCount) + guestTax
@@ -2828,8 +2897,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                             presentation.onDisplayChanged()
                             presentation.showTableDetails(baseResponse)
                         }
-                        checkForAutoFire(true)
-
+                        if(!isFromWastage) {
+                            checkForAutoFire(true)
+                        }
 
                         //  binding.txtTotalAmountNew.setText("${MethodUtils.roundOffAmount(totalAmtnew)}")
 
@@ -2951,49 +3021,52 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         var totalTablePrice = 0.0
         var WTDiscount = 0.0
         var guestCount = 0
+        var eligibleGuestsForDivision = 0
         if (dragTo != -1) {
             oldList.get(dragTo).item?.guestItemId?.let { listOfMoveItemIds.add(it) }
             oldList.get(dragTo).item?.guestItemId = null
 
-            // To Check if similar item exist below moved item in current guest list, if exist then merge item
-            for (k in dragTo + 1 until oldList.size) {
-                if (oldList[k].isHeader == 0) {
-                    break
-                }
-                if (oldList[k].isHeader == 1) {
-                    if (oldList[dragTo].item?.itemId == oldList[k].item?.itemId) {
-                        if (checkVariation(oldList[dragTo].item!!, oldList[dragTo].item!!) &&
-                            checkModifierNewLogic(oldList[k].item!!, oldList[dragTo].item!!)
-                        ) {
-                            var updatedQuantity: Int =
-                                oldList[dragTo].item?.itemQuantity!! + oldList[k].item?.itemQuantity!!
-                            oldList[dragTo].item = oldList[k].item
-                            oldList[dragTo].item?.itemQuantity = updatedQuantity
-                            oldList[dragTo].item?.sort = dragTo
-                            oldList.remove(oldList[k])
-                            break
+            if (oldList[dragTo].item?.itemId != 1) {
+                // To Check if similar item exist below moved item in current guest list, if exist then merge item
+                for (k in dragTo + 1 until oldList.size) {
+                    if (oldList[k].isHeader == 0) {
+                        break
+                    }
+                    if (oldList[k].isHeader == 1) {
+                        if (oldList[dragTo].item?.itemId == oldList[k].item?.itemId) {
+                            if (checkVariation(oldList[dragTo].item!!, oldList[dragTo].item!!) &&
+                                checkModifierNewLogic(oldList[k].item!!, oldList[dragTo].item!!)
+                            ) {
+                                var updatedQuantity: Int =
+                                    oldList[dragTo].item?.itemQuantity!! + oldList[k].item?.itemQuantity!!
+                                oldList[dragTo].item = oldList[k].item
+                                oldList[dragTo].item?.itemQuantity = updatedQuantity
+                                oldList[dragTo].item?.sort = dragTo
+                                oldList.remove(oldList[k])
+                                break
+                            }
                         }
                     }
                 }
-            }
 
-            // To Check if similar item exist above moved item in current guest list, if exist then merge item
-            for (l in dragTo - 1 downTo 0) {
-                if (oldList[l].isHeader == 0) {
-                    break
-                }
-                if (oldList[l].isHeader == 1) {
-                    if (oldList[dragTo].item?.itemId == oldList[l].item?.itemId) {
-                        if (checkVariation(oldList[l].item!!, oldList[dragTo].item!!) &&
-                            checkModifierNewLogic(oldList[l].item!!, oldList[dragTo].item!!)
-                        ) {
-                            var updatedQuantity: Int =
-                                oldList[dragTo].item?.itemQuantity!! + oldList[l].item?.itemQuantity!!
-                            oldList[dragTo].item = oldList[l].item
-                            oldList[dragTo].item?.itemQuantity = updatedQuantity
-                            oldList[dragTo].item?.sort = dragTo
-                            oldList.remove(oldList[l])
-                            break
+                // To Check if similar item exist above moved item in current guest list, if exist then merge item
+                for (l in dragTo - 1 downTo 0) {
+                    if (oldList[l].isHeader == 0) {
+                        break
+                    }
+                    if (oldList[l].isHeader == 1) {
+                        if (oldList[dragTo].item?.itemId == oldList[l].item?.itemId) {
+                            if (checkVariation(oldList[l].item!!, oldList[dragTo].item!!) &&
+                                checkModifierNewLogic(oldList[l].item!!, oldList[dragTo].item!!)
+                            ) {
+                                var updatedQuantity: Int =
+                                    oldList[dragTo].item?.itemQuantity!! + oldList[l].item?.itemQuantity!!
+                                oldList[dragTo].item = oldList[l].item
+                                oldList[dragTo].item?.itemQuantity = updatedQuantity
+                                oldList[dragTo].item?.sort = dragTo
+                                oldList.remove(oldList[l])
+                                break
+                            }
                         }
                     }
                 }
@@ -3001,6 +3074,18 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             dragFrom = -1
             dragTo = -1
+
+            // Update guest wise itemsCount for all guest after reordering to manage eligible guests division
+            var currentGuestIndex = 0
+            for (m in 0 until oldList.size) {
+                if(oldList[m].isHeader == 0) {
+                    currentGuestIndex = m
+                    oldList[currentGuestIndex].itemsCount = 0
+                }
+                if (oldList[m].isHeader == 1) {
+                    oldList[currentGuestIndex].itemsCount++
+                }
+            }
 
             for (i in 0 until oldList.size) {
                 if (oldList.get(i).isHeader == 1) {
@@ -3028,11 +3113,17 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     }
                 } else {
                     guestCount++
+                    if(oldList[i].itemsCount > 0 && oldList[i].title != "Whole Table") {
+                        eligibleGuestsForDivision++
+                    }
                 }
 
 
             }
 
+            if (eligibleGuestsForDivision == 0) {
+                eligibleGuestsForDivision = 1
+            }
 
 
             for (i in 1 until oldList.size) {
@@ -3100,7 +3191,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                             if (isInRange(
                                     it.min_guest_count!!,
                                     it.max_guest_count!!,
-                                    (guestCount - 1)
+                                    (eligibleGuestsForDivision)
                                 )
                             ) {
                                 isApplied = true
@@ -3122,7 +3213,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             }
 
-            guestShare = (wholeTableAmt + WTServiceCharge + WTTax) / (guestCount - 1)
+            guestShare = (wholeTableAmt + WTServiceCharge + WTTax) / (eligibleGuestsForDivision)
 
 
             for (i in 0 until oldList.size) {
@@ -3164,19 +3255,23 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             }
             newList.get(0).guestDividedAmt = guestShare
             newList.get(0).totalGuestCount = guestCount - 1
+            newList.get(0).eligibleGuestsForDivision = eligibleGuestsForDivision
             newList.get(0).wholeTableSubTotal =
-                wholeTableAmt / (guestCount - 1)
+                wholeTableAmt / (eligibleGuestsForDivision)
             newList.get(0).wholeTableTax =
-                WTTax / (guestCount - 1)
+                WTTax / (eligibleGuestsForDivision)
             newList.get(0).wholeTableSurTax =
-                WTServiceCharge / (guestCount - 1)
+                WTServiceCharge / (eligibleGuestsForDivision)
             newList.get(0).orderDiscount = getOrderDetailsResponse?.totalDiscount ?: 0.0
+            // Convert Order discount into percentage to divide in guest (To resolve minus guest amount issue)
             newList[0].orderDiscountPercentage = MethodUtils.roundOffAmountDouble(
-                MethodUtils.calculatePercentageFromAmount(totalDiscountWO ,
+                MethodUtils.calculatePercentageFromAmount(
+                    totalDiscountWO,
                     (getOrderDetailsResponse?.subTotal ?: 0.0) + totalDiscountWO
-                ))
+                )
+            )
             newList.get(0).orderTotalAmount = subTotalDInin
-            totalGuestCount = guestCount - 1
+            totalGuestCount = eligibleGuestsForDivision
 
             newList[0].listOfItemsMoved.addAll(listOfMoveItemIds.toCollection(arrayListOf()))
 
@@ -3191,11 +3286,68 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         cartList = getCartModel(dineInTableAdapter.getList().toCollection(arrayListOf()))
         cartList?.listOfItemRemoved = listOfMoveItemIds
         prefProvider.setValueboolean(DINE_IN_UPDATE, true)
+        // RESET Data after coming back from checkout screen by clicking on guest pay (to resolve calculation issue for guest division)
+        dashboardViewModel.totalDiscount = getOrderDetailsResponse?.totalDiscount ?: 0.0
+        dashboardViewModel.subTotalPrice = getOrderDetailsResponse?.subTotal ?: 0.0
+        // END RESET
         val orderRequestModel = dashboardViewModel.updateOrder(cartList!!)
-        orderId?.let { viewModel.updateOrder(it, orderRequestModel, isFromReorder, message = "removed") }
+        orderId?.let {
+            viewModel.updateOrder(
+                it,
+                orderRequestModel,
+                isFromReorder,
+                message = "removed"
+            )
+        }
         listOfMoveItemIds.clear()
     }
 
+    // Navigate to Add Item to Wastage dialog
+    override fun onAddToWastage(position: Int, item: TbItem) {
+        val bundle = Bundle().apply {
+            putInt("itemQuantity", item.itemQuantity)
+        }
+        clickedPosition = position
+        findNavController().navigate(
+            R.id.action_dineInOrderTable_to_addItemToWastageDialog,
+            bundle
+        )
+    }
+
+    // Handle wastage item quantity and send data to server
+    private fun addItemToWastageResultListener() {
+        requireActivity().supportFragmentManager.setFragmentResultListener(
+            "request_for_add_to_wastage", viewLifecycleOwner
+        ) { _: String, bundle: Bundle ->
+            val itemQuantity: Int = bundle.getInt("itemQuantity", 0)
+            var wastageReason: VenueDetailsResponse.Data.WastageReason? = null
+            if(bundle.containsKey("wastageReason")) {
+                wastageReason =
+                    bundle.getParcelable<VenueDetailsResponse.Data.WastageReason>("wastageReason") as VenueDetailsResponse.Data.WastageReason
+            }
+            val wastageNote: String = bundle.getString("wastageNote", "")
+            if (clickedPosition != -1 && dineInTableAdapter.getList()[clickedPosition].item != null) {
+                prefProvider.setValueboolean(DINE_IN_UPDATE, true)
+                val wastageRequest = WastageItemRequest.WastageItem(
+                    orderId = orderId ?: -1,
+                    tableNo = getOrderDetailsResponse?.floorPlanTable?.tableNumber,
+                    employeeId = prefProvider.getValueInt(EMPLOYEE_ID, 0),
+                    itemQuantity = itemQuantity,
+                    itemName = dineInTableAdapter.getList()[clickedPosition].item?.name,
+                    wastageReasonId = if (wastageReason == null) { null} else { wastageReason.id},
+                    terminalId = prefProvider.getValueInt(TERMINAL_ID, -1),
+                    wastageNote = wastageNote,
+                    orderItemId = dineInTableAdapter.getList()[clickedPosition].item?.orderItemId,
+                    wastageItemModifiersAttributes = dashboardViewModel.orderItemModifierAttributes(
+                        dineInTableAdapter.getList()[clickedPosition].item!!,
+                        prefProvider.getValueInt(TERMINAL_ID, -1)
+                    )
+                )
+                val wastageItemRequest = WastageItemRequest(wastageRequest)
+                viewModel.wastageItemApiCall(wastageItemRequest)
+            }
+        }
+    }
 
     val touchHelper =
         ItemTouchHelper(object :
@@ -3272,9 +3424,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         customerList = it.data
                     }
                 }
+
                 Status.ERROR -> {
                     ProgressUtils.dismissProgressDialog()
                 }
+
                 Status.LOADING -> {
                     ProgressUtils.showProgressDialog(requireActivity())
                 }
@@ -3312,11 +3466,13 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
                 }
+
                 Status.ERROR -> {
 
                     ProgressUtils.dismissProgressDialog()
 
                 }
+
                 Status.LOADING -> {
                     ProgressUtils.showProgressDialog(requireActivity())
 
@@ -3331,7 +3487,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     private fun initPrinter(
         customerReceiptPrinters: PrinterResponse.Data.CustomerReceiptPrinters,
         type: String,
-        paymentType: String,
+        paymentStatus: String,
         guestPrint: Boolean,
         listGuestItem: ArrayList<TbItem>,
         guestName: String,
@@ -3370,7 +3526,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                 generateGuestPrintSunmi(
                                     customerReceiptPrinters,
                                     type,
-                                    paymentType,
+                                    paymentStatus,
                                     listGuestItem,
                                     guestName,
                                     listWTitems,
@@ -3382,7 +3538,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                 )
 
                             } else {
-                                generatePrintSunmi(customerReceiptPrinters, type, "")
+                                // step 1
+                                generatePrintSunmi(customerReceiptPrinters, type, paymentStatus)
                             }
 
                         }
@@ -3395,10 +3552,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             } else {
                 if (SunmiPrinterApi.getInstance().isConnected) {
                     if (guestPrint && getOrderDetailsResponse?.guestAttributes?.size!! > 2) {
+
                         generateGuestPrintSunmi(
                             customerReceiptPrinters,
                             type,
-                            paymentType,
+                            paymentStatus,
                             listGuestItem,
                             guestName,
                             listWTitems,
@@ -3410,7 +3568,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         )
 
                     } else {
-                        generatePrintSunmi(customerReceiptPrinters, type, "")
+                        generatePrintSunmi(customerReceiptPrinters, type, paymentStatus)
                     }
                 }
             }
@@ -3427,7 +3585,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     setService2(
                         customerReceiptPrinters,
                         type,
-                        paymentType,
+                        paymentStatus,
                         listGuestItem,
                         guestName,
                         listWTitems,
@@ -3444,7 +3602,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                 viewLifecycleOwner.lifecycleScope.launch {
                     delay(100)
-                    setService1()
+                    setService1(paymentStatus)
                 }
 
 
@@ -3496,7 +3654,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                 generateGuestPrint(
                                     customerReceiptPrinters,
                                     type,
-                                    paymentType,
+                                    paymentStatus,
                                     listGuestItem,
                                     guestName,
                                     listWTitems,
@@ -3721,7 +3879,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             )
             builder.addFeedLine(1)
 
-            if(customerSettingModel.showVenueAddress) {
+            if (customerSettingModel.showVenueAddress) {
 
                 builder.addTextFont(Builder.FONT_E)
                 builder.addTextAlign(Builder.ALIGN_CENTER)
@@ -3784,7 +3942,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 builder.addFeedLine(1)
             }
 
-            if(customerSettingModel.showOrderType) {
+            if (customerSettingModel.showOrderType) {
                 builder.addTextFont(Builder.FONT_E)
 
                 builder.addTextLang(Builder.LANG_EN)
@@ -4719,32 +4877,34 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 builder.addText(getOrderDetailsResponse?.note)
             }
 
-            builder.addTextLineSpace(30)
-            builder.addFeedUnit(30)
+            if (paymentType.equals("paid",ignoreCase = true)) {
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
 
-            builder.addTextFont(Builder.FONT_E)
-            // builder.addTextAlign(Builder.ALIGN_LEFT)
-            builder.addTextLang(Builder.LANG_EN)
-            addCustomerTextSize(builder, customerSettingModel.fonts)
-            builder.addTextStyle(
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.TRUE,
-                Builder.COLOR_1
-            )
-
-            //customer signature line.
-            builder.addText(
-                padLine(
-                    "Customer Signature",
-                    addHorizontalHalfCustomerReceiptLine(customerSettingModel.fonts),
-                    if (customerSettingModel.fonts == Constants.LARGE) {
-                        24
-                    } else {
-                        48
-                    }
+                builder.addTextFont(Builder.FONT_E)
+                // builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, customerSettingModel.fonts)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
                 )
-            )
+
+                //customer signature line.
+                builder.addText(
+                    padLine(
+                        "Customer Signature",
+                        addHorizontalHalfCustomerReceiptLine(customerSettingModel.fonts),
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            24
+                        } else {
+                            48
+                        }
+                    )
+                )
+            }
 
 
             if (customerSettingModel.showQrCode) {
@@ -4907,10 +5067,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             )
             if (customerSettingModel.showWebsiteAddress) {
                 PrintSunmiUtils.venueWebsite(prefProvider.getValue(Constants.BUSINESS_WEBSITE, ""))
-            }else {
+            } else {
                 SunmiPrinterApi.getInstance().lineWrap(1)
             }
-            if(customerSettingModel.showOrderType) {
+            if (customerSettingModel.showOrderType) {
                 getOrderDetailsResponse?.orderTypeName?.let { PrintSunmiUtils.printOrderType(it) }
                 SunmiPrinterApi.getInstance().lineWrap(1)
             }
@@ -5373,11 +5533,13 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             }
 
-            if (customerSettingModel.fonts == Constants.LARGE) {
-                PrintSunmiUtils.tips("Customer Signature ____")
+            if (paymentType.equals("paid",ignoreCase = true)) {
+                if (customerSettingModel.fonts == Constants.LARGE) {
+                    PrintSunmiUtils.tips("Customer Signature ____")
 
-            } else {
-                PrintSunmiUtils.tips("Customer Signature           __________________")
+                } else {
+                    PrintSunmiUtils.tips("Customer Signature           __________________")
+                }
             }
             SunmiPrinterApi.getInstance().lineWrap(1)
 
@@ -5443,9 +5605,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                             (tax.rate * totalPrice) / 100
 
                         MethodUtils.getTwoDecimal(itemTaxPrice)
-/*
-                        String.format("%.2f", itemTaxPrice)
-                            .toDouble()*/
+                        /*
+                                                String.format("%.2f", itemTaxPrice)
+                                                    .toDouble()*/
                     } else {
 
                         MethodUtils.getTwoDecimal(tax.rate * it.itemQuantity)
@@ -5518,11 +5680,16 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 ) else ""
             )
             if (customerSettingModel.showWebsiteAddress) {
-                PrintSunmiUtils.venueWebsiteInner(prefProvider.getValue(Constants.BUSINESS_WEBSITE, ""))
+                PrintSunmiUtils.venueWebsiteInner(
+                    prefProvider.getValue(
+                        Constants.BUSINESS_WEBSITE,
+                        ""
+                    )
+                )
             } else {
                 SunmiPrintHelper.getInstance().lineWrap(1)
             }
-            if(customerSettingModel.showOrderType) {
+            if (customerSettingModel.showOrderType) {
                 getOrderDetailsResponse?.orderTypeName?.let { PrintSunmiUtils.headerText(it) }
             }
             SunmiPrintHelper.getInstance().lineWrap(1)
@@ -5977,10 +6144,13 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             }
 
-            if (customerSettingModel.fonts == Constants.LARGE) {
-                PrintSunmiUtils.boldText("Customer Signature ____")
-            } else {
-                PrintSunmiUtils.boldText("Customer Signature           __________________")
+
+            if (paymentType.equals("paid",ignoreCase = true)) {
+                if (customerSettingModel.fonts == Constants.LARGE) {
+                    PrintSunmiUtils.boldText("Customer Signature ____")
+                } else {
+                    PrintSunmiUtils.boldText("Customer Signature           __________________")
+                }
             }
 
             SunmiPrintHelper.getInstance().lineWrap(2)
@@ -6113,7 +6283,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 prefProvider.getValue(Constants.BUSINESS_NAME, "").toString()
             )
             builder.addFeedLine(1)
-            if(customerSettingModel.showVenueAddress) {
+            if (customerSettingModel.showVenueAddress) {
                 builder.addTextFont(Builder.FONT_E)
                 builder.addTextAlign(Builder.ALIGN_CENTER)
                 builder.addTextLang(Builder.LANG_EN)
@@ -6134,7 +6304,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 builder.addFeedLine(1)
             }
 
-            if(customerSettingModel.showVenuePhone) {
+            if (customerSettingModel.showVenuePhone) {
                 builder.addTextFont(Builder.FONT_E)
                 builder.addTextAlign(Builder.ALIGN_CENTER)
                 builder.addTextLang(Builder.LANG_EN)
@@ -6155,7 +6325,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 builder.addFeedLine(1)
             }
 
-            if(customerSettingModel.showWebsiteAddress) {
+            if (customerSettingModel.showWebsiteAddress) {
                 builder.addTextFont(Builder.FONT_E)
                 builder.addTextAlign(Builder.ALIGN_CENTER)
                 builder.addTextLang(Builder.LANG_EN)
@@ -6174,7 +6344,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 builder.addFeedLine(1)
             }
 
-            if(customerSettingModel.showOrderType) {
+            if (customerSettingModel.showOrderType) {
                 builder.addTextFont(Builder.FONT_E)
 
                 builder.addTextLang(Builder.LANG_EN)
@@ -7092,32 +7262,35 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 builder.addText(getOrderDetailsResponse?.note)
             }
 
-            builder.addTextLineSpace(30)
-            builder.addFeedUnit(30)
 
-            builder.addTextFont(Builder.FONT_E)
-            // builder.addTextAlign(Builder.ALIGN_LEFT)
-            builder.addTextLang(Builder.LANG_EN)
-            addCustomerTextSize(builder, customerSettingModel.fonts)
-            builder.addTextStyle(
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.TRUE,
-                Builder.COLOR_1
-            )
+            if (paymentType.equals("paid",ignoreCase = true)) {
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
 
-            //customer signature line.
-            builder.addText(
-                padLine(
-                    "Customer Signature",
-                    addHorizontalHalfCustomerReceiptLine(customerSettingModel.fonts),
-                    if (customerSettingModel.fonts == Constants.LARGE) {
-                        24
-                    } else {
-                        48
-                    }
+                builder.addTextFont(Builder.FONT_E)
+                // builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, customerSettingModel.fonts)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
                 )
-            )
+
+                //customer signature line.
+                builder.addText(
+                    padLine(
+                        "Customer Signature",
+                        addHorizontalHalfCustomerReceiptLine(customerSettingModel.fonts),
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            24
+                        } else {
+                            48
+                        }
+                    )
+                )
+            }
 
 
             if (customerSettingModel.showQrCode) {
@@ -7207,12 +7380,14 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 printBusinessLogo()
             }
 
+          //  PrintSunmiUtils.paymentType("Unpaid")
+
             if (paymentType.isNotEmpty()) {
                 PrintSunmiUtils.paymentType(paymentType)
 
             }
 
-            PrintSunmiUtils.paymentType("Unpaid")
+
 
             PrintSunmiUtils.printBusinessDetails(
                 prefProvider.getValue(Constants.BUSINESS_NAME, ""),
@@ -7228,10 +7403,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             if (customerSettingModel.showWebsiteAddress) {
                 PrintSunmiUtils.venueWebsite(prefProvider.getValue(Constants.BUSINESS_WEBSITE, ""))
-            }else {
+            } else {
                 SunmiPrinterApi.getInstance().lineWrap(1)
             }
-            if(customerSettingModel.showOrderType) {
+            if (customerSettingModel.showOrderType) {
                 getOrderDetailsResponse?.orderTypeName?.let { PrintSunmiUtils.printOrderType(it) }
                 SunmiPrinterApi.getInstance().lineWrap(1)
             }
@@ -7699,12 +7874,14 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             SunmiPrinterApi.getInstance().lineWrap(2)
 
 
-            if (customerSettingModel.fonts == Constants.LARGE) {
-                PrintSunmiUtils.tips("Customer Signature ____")
-            } else {
-                PrintSunmiUtils.tips("Customer Signature           __________________")
+            if (paymentType.equals("paid",ignoreCase = true)) {
+                if (customerSettingModel.fonts == Constants.LARGE) {
+                    PrintSunmiUtils.tips("Customer Signature ____")
+                } else {
+                    PrintSunmiUtils.tips("Customer Signature           __________________")
+                }
+                SunmiPrinterApi.getInstance().lineWrap(1)
             }
-            SunmiPrinterApi.getInstance().lineWrap(1)
 
             if (customerSettingModel.showQrCode) {
 
@@ -7729,8 +7906,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
     }
 
-    private fun generatePrintSunmiInner(
-    ) {
+    private fun generatePrintSunmiInner(paymentStatus: String) {
 
 
         try {
@@ -7777,11 +7953,16 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             )
 
             if (customerSettingModel.showWebsiteAddress) {
-                PrintSunmiUtils.venueWebsiteInner(prefProvider.getValue(Constants.BUSINESS_WEBSITE, ""))
+                PrintSunmiUtils.venueWebsiteInner(
+                    prefProvider.getValue(
+                        Constants.BUSINESS_WEBSITE,
+                        ""
+                    )
+                )
             } else {
                 SunmiPrintHelper.getInstance().lineWrap(1)
             }
-            if(customerSettingModel.showOrderType) {
+            if (customerSettingModel.showOrderType) {
                 getOrderDetailsResponse?.orderTypeName?.let { PrintSunmiUtils.headerText(it) }
                 SunmiPrintHelper.getInstance().lineWrap(1)
             }
@@ -8229,11 +8410,15 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             }
 
 
+
             SunmiPrintHelper.getInstance().lineWrap(2)
-            if (customerSettingModel.fonts == Constants.LARGE) {
-                PrintSunmiUtils.boldText("Customer Signature ____")
-            } else {
-                PrintSunmiUtils.boldText("Customer Signature           __________________")
+
+            if (paymentStatus.equals("paid",ignoreCase = true)) {
+                if (customerSettingModel.fonts == Constants.LARGE) {
+                    PrintSunmiUtils.boldText("Customer Signature ____")
+                } else {
+                    PrintSunmiUtils.boldText("Customer Signature           __________________")
+                }
             }
 
             SunmiPrintHelper.getInstance().lineWrap(2)
@@ -8308,9 +8493,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     }
 
                 }
+
                 Status.LOADING -> {
                     ProgressUtils.showProgressDialog(requireActivity())
                 }
+
                 Status.ERROR -> {
                     ProgressUtils.dismissProgressDialog()
 
@@ -8505,10 +8692,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     fontSizeH = 1
                     fontSizeW = 1
                 }
+
                 Constants.MEDIUM -> {
                     fontSizeH = 1
                     fontSizeW = 2
                 }
+
                 Constants.LARGE -> {
                     fontSizeH = 2
                     fontSizeW = 2
@@ -8557,7 +8746,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     )
                     builder.addTextAlign(Builder.ALIGN_CENTER)
 
-                    addBuilderTextForU220(builder, getOrderDetailsResponse?.orderTypeName.toString())
+                    addBuilderTextForU220(
+                        builder,
+                        getOrderDetailsResponse?.orderTypeName.toString()
+                    )
                 }
 
                 builder.addFeedLine(2)
@@ -8716,10 +8908,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 fontSizeH = 1
                 fontSizeW = 1
             }
+
             Constants.MEDIUM -> {
                 fontSizeH = 1
                 fontSizeW = 2
             }
+
             Constants.LARGE -> {
                 fontSizeH = 2
                 fontSizeW = 2
@@ -8936,10 +9130,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     fontSizeH = 1
                     fontSizeW = 1
                 }
+
                 Constants.MEDIUM -> {
                     fontSizeH = 1
                     fontSizeW = 2
                 }
+
                 Constants.LARGE -> {
                     fontSizeH = 2
                     fontSizeW = 2
@@ -9398,8 +9594,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         }
     }
 
-    private fun setService1(
-    ) {
+    private fun setService1(paymentStatus: String) {
         if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.FoundSunmiPrinter) {
 
             LogUtil.logE("SunmiPrintHelper1", "FoundSunmiPrinter")
@@ -9408,14 +9603,14 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                 LogUtil.logE("SunmiPrintHelpe1r", "isBlueToothPrinter")
 
-                generatePrintSunmiInner()
+                generatePrintSunmiInner(paymentStatus)
 
 
             }
 
         } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.CheckSunmiPrinter) {
             Handler(Looper.getMainLooper()).postDelayed({
-                setService1()
+                setService1(paymentStatus)
             }, 2000)
             LogUtil.logE("SunmiPrintHelper", "CheckSunmiPrinter")
         } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.LostSunmiPrinter) {
@@ -9823,8 +10018,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
     fun checkForAutoFire(isCheckAndFire: Boolean) {
         Log.d("###17MAR23", "checkForAutoFire: Called - Start - $isCheckAndFire")
-        var list : List<DineInModel> = arrayListOf()
-         list = dineInTableAdapter.getList() ?: arrayListOf()
+        var list: List<DineInModel> = arrayListOf()
+        list = dineInTableAdapter.getList() ?: arrayListOf()
         val builder = ArrayList<String>()
         var listItem: ArrayList<TbItem> = arrayListOf()
 //        LogUtil.logE(TAG, "dineInList:  ${Gson().toJson(list)}")

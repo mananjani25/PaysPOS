@@ -15,8 +15,8 @@ import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.android.pos.data.remote.Constants.ORDER_TYPE_ID
 import com.android.pos.data.remote.Constants.PAYMENT_ID
-import com.android.pos.data.remote.Constants.PHONE_ORDER
 import com.android.pos.data.remote.Constants.PAYMENT_ID_FOR_CUSTOMER_DISPLAY
+import com.android.pos.data.remote.Constants.PHONE_ORDER
 import com.android.pos.data.remote.Constants.PICK_UP
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.repositories.PosRepository
@@ -200,7 +200,7 @@ open class PaymentViewModel @Inject constructor(
 
                                 } else {
                                     //Added by Dharmesh Basapati to avoid crash due to empty payments array
-                                    if( response.data.order.payments.isNotEmpty()){
+                                    if (response.data.order.payments.isNotEmpty()) {
                                         if (createOrderResponse.data.order.orderType != "Dine In" && response.data.order.payments[response.data.order.payments.size - 1].paymentType != "Card") {
                                             cashLogApi(createOrderResponse, "in")
                                             LogUtil.logE("QueueCheck", "CashLogAPI")
@@ -485,7 +485,6 @@ open class PaymentViewModel @Inject constructor(
         }
     }
 
-
     fun createOrderRequest(
         cartModel: CartModel,
         subTotalPrice: Double,
@@ -514,7 +513,6 @@ open class PaymentViewModel @Inject constructor(
 
         val orderAttributeRequestModel = OrderAttributeRequestModel()
 
-
         if (isUpdateOrder)
             orderAttributeRequestModel.id = orderId
 
@@ -528,11 +526,19 @@ open class PaymentViewModel @Inject constructor(
         orderAttributeRequestModel.openOrderType =
             prefProvider.getValue(Constants.ORDER_TYPE, "")
 
-        if (order_type_id == -1 && prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT) == Constants.OPEN_ORDER){
+        if (order_type_id == -1 && prefProvider.getValue(
+                Constants.ORDER_TYPE,
+                TAKEOUT
+            ) == Constants.OPEN_ORDER
+        ) {
             order_type_id = prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)
         }
 
-        if (order_type_id == -1 && prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT) == Constants.PHONE_ORDER){
+        if (order_type_id == -1 && prefProvider.getValue(
+                Constants.ORDER_TYPE,
+                TAKEOUT
+            ) == Constants.PHONE_ORDER
+        ) {
             order_type_id = prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)
         }
 
@@ -550,8 +556,9 @@ open class PaymentViewModel @Inject constructor(
 //        } else {
 //            orderAttributeRequestModel.deliveryType = cartModel.deliveryType
 //        }
-        if (cartModel.orderType == PHONE_ORDER){
-            orderAttributeRequestModel.deliveryType = prefProvider.getValue(Constants.DELIVERY_TYPE, PICK_UP)
+        if (cartModel.orderType == PHONE_ORDER) {
+            orderAttributeRequestModel.deliveryType =
+                prefProvider.getValue(Constants.DELIVERY_TYPE, PICK_UP)
         }
         orderAttributeRequestModel.employeeId = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
         orderAttributeRequestModel.locationId = prefProvider.getValueInt(Constants.LOCATION_ID, 1)
@@ -561,16 +568,16 @@ open class PaymentViewModel @Inject constructor(
             if (cashdiscountType == "SurCharge") {
                 orderAttributeRequestModel.cash_discount_type = cashdiscountType
                 orderAttributeRequestModel.cash_discount_or_surcharge = 0.0
-                orderAttributeRequestModel.totalAmount = actual_Total
+                orderAttributeRequestModel.totalAmount = totalPrice
             } else if (cashdiscountType == "CashDiscount") {
                 orderAttributeRequestModel.cash_discount_or_surcharge = actual_CashDiscountSurCharge
                 orderAttributeRequestModel.cash_discount_type = cashdiscountType
 
-                orderAttributeRequestModel.totalAmount = actual_Total - actual_CashDiscountSurCharge
+                orderAttributeRequestModel.totalAmount = totalPrice - actual_CashDiscountSurCharge
             } else {
                 orderAttributeRequestModel.cash_discount_or_surcharge = 0.0
                 orderAttributeRequestModel.cash_discount_type = ""
-                orderAttributeRequestModel.totalAmount = actual_Total
+                orderAttributeRequestModel.totalAmount = totalPrice
             }
         } /*else if (paymentType == "Card") {
             if (cashdiscountType == "SurCharge") {
@@ -707,7 +714,7 @@ open class PaymentViewModel @Inject constructor(
 
 
         var sendPaymentLink = false
-        val isPaidOrder: Boolean
+        var isPaidOrder: Boolean
         if (prefProvider.getValue(Constants.ORDER_TYPE, "")
                 .equals(PHONE_ORDER, ignoreCase = true)
         ) {
@@ -718,10 +725,21 @@ open class PaymentViewModel @Inject constructor(
             isPaidOrder = isPaid
         }
 
-        Log.e("isPaidOrder", isPaidOrder.toString())
+        isPaidOrder = prefProvider.getValueboolean(Constants.IS_ORDER_REDEEMABLE_WITH_GIFT_CARD, false)
+
+        Log.e("completed_all_payments", isPaidOrder.toString())
+
+        var giftCardRedeem: OrderRequestModel.GiftCardRedeem? = null
+
+        if(prefProvider.getValueboolean(Constants.IS_GIFT_CARD_REDEEM, false)){
+           giftCardRedeem = OrderRequestModel.GiftCardRedeem(prefProvider.getValue(Constants.GIFT_CARD_NUMBER, ""),prefProvider.getValue(Constants.GIFT_CARD_PIN,""))
+        }
 
         val orderRequestModel =
-            OrderRequestModel(isPaidOrder, orderAttributeRequestModel, sendPaymentLink)
+            OrderRequestModel(isPaidOrder, orderAttributeRequestModel,
+                sendPaymentLink,
+                gift_card_redeem = prefProvider.getValueboolean(Constants.IS_GIFT_CARD_REDEEM, false),
+                gift_card = giftCardRedeem)
 
         LogUtil.logE("orderRequestModel", ":  ${Gson().toJson(orderRequestModel)}")
 
@@ -807,8 +825,9 @@ open class PaymentViewModel @Inject constructor(
             orderAttributeRequestModel.deliveryType = cartModel.deliveryType
         }
 
-        if (cartModel.orderType == PHONE_ORDER){
-            orderAttributeRequestModel.deliveryType = prefProvider.getValue(Constants.DELIVERY_TYPE, PICK_UP)
+        if (cartModel.orderType == PHONE_ORDER) {
+            orderAttributeRequestModel.deliveryType =
+                prefProvider.getValue(Constants.DELIVERY_TYPE, PICK_UP)
         }
 
         orderAttributeRequestModel.employeeId = cartModel.employeeID
@@ -938,8 +957,8 @@ open class PaymentViewModel @Inject constructor(
         paymentType: String,
         cashdiscountType: String,
         tipID: Int? = null,
-        totalServiceChargeM:Double = 0.0,
-        totalDiscountM:Double = 0.0
+        totalServiceChargeM: Double = 0.0,
+        totalDiscountM: Double = 0.0
     ): OrderRequestModel {
 
         val orderAttributeRequestModel = OrderAttributeRequestModel()
@@ -1729,10 +1748,11 @@ open class PaymentViewModel @Inject constructor(
         return PaymentAttributes().apply {
 //            if (isUpdateOrder)
 //                id = paymentId
-            val totalPP =totalPrice
+            val totalPP = totalPrice
             val totalDC = MethodUtils.roundOffAmountDouble(tipAmount)
             val totalAM = totalPP /*- totalDC*/
             amount = totalAM
+
             if (paymentTypeStatus == "Cash") {
                 if (cashdiscountType == "SurCharge") {
                     cash_discount_or_surcharge = 0.0
@@ -1761,7 +1781,13 @@ open class PaymentViewModel @Inject constructor(
                 if (isUpdateOrder) paymentOfflineId.toString() else MethodUtils.randomOfflineId(
                     prefProvider.getValueInt(Constants.LOCATION_ID, -1).toString()
                 )
-            payableType = "Order"
+            payableType = if(prefProvider.getValueboolean(Constants.IS_GIFT_CARD_REDEEM, false)){
+                gift_card_redeemed_amount = MethodUtils.roundOffAmountDouble(totalAM + tipAmount)
+                "GiftCardRedeem"
+            }else{
+                gift_card_redeemed_amount = 0.0
+                "Order"
+            }
             paymentType = paymentTypeStatus
             serviceChargeAmount = MethodUtils.roundOffAmountDouble(totalServiceCharge)
             subTotal = MethodUtils.roundOffAmountDouble(subTotalPrice)
@@ -2056,10 +2082,12 @@ open class PaymentViewModel @Inject constructor(
                     // _queuePrinter.value = Event(resource?.data?.message.toString())
 
                 }
+
                 Status.LOADING -> {
                     _showProgress.value = Event(true)
 
                 }
+
                 Status.ERROR -> {
                     _snackbarText.value = Event(resource.message)
                     _showProgress.value = Event(false)
@@ -2114,10 +2142,12 @@ open class PaymentViewModel @Inject constructor(
                     _textToPaySpit.value = Event(true)
 
                 }
+
                 Status.LOADING -> {
                     _showProgress.value = Event(true)
 
                 }
+
                 Status.ERROR -> {
                     _snackbarText.value = Event(resource.message)
                     _showProgress.value = Event(false)

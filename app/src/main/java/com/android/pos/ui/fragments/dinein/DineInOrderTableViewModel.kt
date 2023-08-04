@@ -73,6 +73,9 @@ class DineInOrderTableViewModel @Inject constructor(
     val _removeGuestSuccess = MutableLiveData<Event<String>>()
     var removeGuestSuccess: LiveData<Event<String>> = _removeGuestSuccess
 
+    private val _wastageItemsSuccess = MutableLiveData<Event<String>>()
+    val wastageItemsSuccess: LiveData<Event<String>> = _wastageItemsSuccess
+
     val _guestPayment = MutableLiveData<Event<String>>()
     val onPayment: LiveData<Event<String>> = _guestPayment
 
@@ -81,6 +84,7 @@ class DineInOrderTableViewModel @Inject constructor(
 
 
     val getServiceChargeList = posRepository.serviceChargeList()
+    val getAllWastageReasonsList = posRepository.getWastageReasonsListFromDb()
 
     fun getCustomerReceiptSettings() = posRepository.getCustomerReceiptSettings()
 
@@ -664,6 +668,37 @@ class DineInOrderTableViewModel @Inject constructor(
 
             Status.LOADING -> {
                 _showProgress.value = Event(true)
+            }
+        }
+    }
+
+    fun wastageItemApiCall(wastageItemRequest: WastageItemRequest) {
+        viewModelScope.launch {
+            _showProgress.value = Event(true)
+            val resource = posRepository.addItemToWastage(wastageItemRequest)
+
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    _showProgress.value = Event(false)
+                    resource.data.let { response ->
+                        if (response?.status == 200) {
+                            response.let {
+                                _wastageItemsSuccess.value = Event(response.message)
+                            }
+                        } else {
+                            _snackbarText.value = Event(resource.message)
+                        }
+                    }
+                }
+
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message)
+                    _showProgress.value = Event(false)
+                }
+
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+                }
             }
         }
     }

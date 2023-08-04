@@ -15,7 +15,10 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.ADD_VALUE
+import com.android.pos.data.remote.Constants.BALANCE_INQUIRY
 import com.android.pos.data.remote.Constants.DEFAULT_ORDER
+import com.android.pos.data.remote.Constants.SELL_CARD
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.databinding.ViewCategoryItemBoldBinding
 import com.android.pos.di.PrefProvider
@@ -152,6 +155,8 @@ class ItemAdapterPagDash(
                 if (model?.hide_status == "HideForToday" || model?.hide_status == "HideForIndefinitely") {
                     AlertUtils.showCustomAlert(binding.root.context, model.name + " is sold out.")
                     return@setOnClickListener
+                } else if(model.name == SELL_CARD || model.name == ADD_VALUE || model.name == BALANCE_INQUIRY){
+                    listener.onItemSelected(model)
                 } else {
                     try {
                         getItem(position)?.let {

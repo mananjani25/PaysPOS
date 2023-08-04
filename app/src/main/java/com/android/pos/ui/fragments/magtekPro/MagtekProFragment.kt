@@ -25,6 +25,8 @@ import com.android.pos.R
 import com.android.pos.data.model.responseModel.PosLinkResult
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DYNANA_FLAX
+import com.android.pos.data.remote.Constants.MANUAL_SALE
+import com.android.pos.data.remote.Constants.REDIRECT_FROM
 import com.android.pos.databinding.FragmentTagtekBinding
 import com.android.pos.di.ApiModule2
 import com.android.pos.di.PrefProvider
@@ -322,7 +324,11 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
 
         binding.txtHome.setOnClickListener {
             if (findNavController().currentDestination?.id == R.id.magtekProFragment) {
-                findNavController().navigate(R.id.action_magtekProFragment_to_dashboardCategoryBoldPOS)
+                if(prefProvider.getValue(REDIRECT_FROM, "") == MANUAL_SALE) {
+                    findNavController().navigate(R.id.action_magtekProFragment_to_manualSalesNew)
+                }else {
+                    findNavController().navigate(R.id.action_magtekProFragment_to_dashboardCategoryBoldPOS)
+                }
             }
         }
 

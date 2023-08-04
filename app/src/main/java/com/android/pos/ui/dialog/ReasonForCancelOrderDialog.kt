@@ -159,11 +159,11 @@ class ReasonForCancelOrderDialog : DialogFragment() {
                     ) { _, _ ->
                         dismiss()
                         val intent = Intent()
-                        intent.action = "allOrderCounts"
+                        intent.action = "cancelled"
                         intent.putExtra("isCount", false)
                         intent.putExtra("start_date", startDate)
                         intent.putExtra("end_date", endDate)
-                        intent.putExtra("position", 3)
+                        intent.putExtra("position", 2)
                         requireContext().sendBroadcast(intent)
                     }
                 }

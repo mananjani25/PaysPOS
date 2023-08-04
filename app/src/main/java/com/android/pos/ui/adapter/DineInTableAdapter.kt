@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.entities.TbItem
@@ -89,19 +90,19 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             var guestSubTotalWithOutCharges = 0.0
             var totalTaxAmt: Double = 0.0
 
-            if (list[position].title?.trim()?.lowercase() == "Whole Table".trim().lowercase()) {
+            if (list[position].title?.trim()?.lowercase() == "Whole Table".trim().lowercase() || list[position].itemsCount == 0) {
                 binding.imgPrint.visibility = View.INVISIBLE
             } else {
                 binding.imgPrint.visibility = View.VISIBLE
             }
 
             if (list[position].title?.trim()?.lowercase() == "Whole Table".trim().lowercase() || isAnyPaymentDone) {
-                binding.removeGuest.visibility = View.INVISIBLE
+                binding.llRemoveGuest.visibility = View.INVISIBLE
             } else {
                 if(list[position].itemsCount == 0 && !list[position].isPaid) {
-                    binding.removeGuest.visibility = View.VISIBLE
+                    binding.llRemoveGuest.visibility = View.VISIBLE
                 } else {
-                    binding.removeGuest.visibility = View.INVISIBLE
+                    binding.llRemoveGuest.visibility = View.INVISIBLE
                 }
             }
             var guestDiscount = 0.0
@@ -209,18 +210,14 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                     binding.btnPay.setBackgroundColor(binding.root.context.getColor(R.color.colorGreen))
                     binding.txtPay.text = "Paid"
                 }
-            } else if (noItem && guestAmt == 0.0) {
+            } else if (list[position].itemsCount == 0) {
                 Log.e(TAG, "NoItemGuestAmt")
-                binding.btnPay.visibility = View.GONE
+                binding.btnPay.visibility = View.INVISIBLE
             } else {
                 binding.btnPay.visibility = View.VISIBLE
 
             }
-            if (noItem) {
-                binding.chkIsFired.isEnabled = false
-            } else {
-                binding.chkIsFired.isEnabled = true
-            }
+            binding.chkIsFired.isEnabled = !noItem
 
             if (list[layoutPosition].title?.lowercase() == "Whole Table".lowercase() || list.get(0).totalGuestCount == 1) {
                 Log.e(TAG, "TxtPayTitelTotal")
@@ -257,7 +254,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                         if (isInRange(
                                 it.min_guest_count!!,
                                 it.max_guest_count!!,
-                                list.get(0).totalGuestCount
+                                list[0].eligibleGuestsForDivision
                             )
                         ) {
                             isApplied = true
@@ -295,6 +292,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             var guestOrderDisShare = 0.0
             if (list.get(0).orderDiscount > 0) {
 
+                // Distributed order discount among guest based on discount percentage (To resolve minus guest amount issue)
                 guestOrderDisShare = MethodUtils.roundOffAmountDouble(
                    MethodUtils.percentageCalculation(MethodUtils.roundOffAmountDouble(guestSubTotalWithOutCharges +
                            list.get(0).wholeTableSubTotal), list[0].orderDiscountPercentage))
@@ -322,7 +320,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     binding.btnPay.setBackgroundColor(binding.root.context.getColor(R.color.btnColorDark))
                 }
-                binding.txtPay.text = "Pay " + MethodUtils.roundOffAmount(finalAmt)
+                binding.txtPay.text = "Pay : " + MethodUtils.roundOffAmount(finalAmt)
             }
 
             binding.btnPay.setOnClickListener {
@@ -372,7 +370,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                         MethodUtils.roundOffAmountDouble(guestSubTotal),
                         MethodUtils.roundOffAmountDouble(finalAmt),
                         MethodUtils.roundOffAmountDouble(totalTaxAmt),
-                        MethodUtils.roundOffAmountDouble(totalServiceCharge),
+                        MethodUtils.roundOffAmountDouble(totalServiceCharge + list[0].wholeTableSurTax),
                         guestOrderDisShare,
                         list[0].guestDividedAmt,
                         listItemWT,
@@ -421,18 +419,18 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                         listItem,
                         guestName,
                         listItemWT,
-                        MethodUtils.roundOffAmountDouble(guestSubTotal + list.get(0).wholeTableSubTotal - (list[0].orderDiscount / list[0].totalGuestCount)),
+                        MethodUtils.roundOffAmountDouble(guestSubTotal + list.get(0).wholeTableSubTotal - guestOrderDisShare),
                         MethodUtils.roundOffAmountDouble(finalAmt),
                         MethodUtils.roundOffAmountDouble(totalTaxAmt + list.get(0).wholeTableTax),
                         MethodUtils.roundOffAmountDouble(totalServiceCharge + list.get(0).wholeTableSurTax),
-                        (list[0].orderDiscount / list[0].totalGuestCount) + guestDiscount + list[0].wholeTableDiscont
+                        guestOrderDisShare + guestDiscount + list[0].wholeTableDiscont
                     )
                 }
 
 
             }
 
-            binding.removeGuest.setOnClickListener {
+            binding.llRemoveGuest.setOnClickListener {
                 listner.onRemoveGuest(layoutPosition)
             }
         }
@@ -550,10 +548,11 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 binding.chkIsFired.isChecked = true
                 binding.chkIsFired.isPressed = true
                 binding.chkIsFired.isEnabled = false
+                binding.ivWastage.visibility = View.VISIBLE
             } else {
                 binding.chkIsFired.isChecked = false
                 binding.chkIsFired.isEnabled = true
-
+                binding.ivWastage.visibility = View.GONE
             }
 
             list[bindingAdapterPosition].item?.dineInSort = bindingAdapterPosition
@@ -598,6 +597,9 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 }
             }
 
+            binding.ivWastage.setOnClickListener {
+                listner.onAddToWastage(layoutPosition, list[bindingAdapterPosition].item!!)
+            }
 
             /* itemAdapter = DineInTableItemAdapter()
              binding.rvItems.adapter = itemAdapter
@@ -762,6 +764,8 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             serviceChargeGuest: Double,
             divideDiscount: Double
         )
+
+        fun onAddToWastage(position: Int, item: TbItem)
         fun onRemoveGuest(position: Int)
     }
 
@@ -801,7 +805,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                         list[i].item?.dineInSort = order2
                         list[i - 1].item?.sort = order1
                         list[i - 1].item?.dineInSort = order1
-                       }
+                    }
                 }
                 notifyItemMoved(fromPosition, toPosition)
                 return true

@@ -1,0 +1,456 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingDefaultResource">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.android.pos.ui.fragments.customer.AddCustomerViewModel" />
+    </data>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/bg_color"
+        android:orientation="vertical">
+
+        <include
+            android:id="@+id/header"
+            layout="@layout/view_header_toolbar" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/view" />
+
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/nestedScrollView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/_80sdp"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:orientation="vertical"
+                android:padding="@dimen/_10sdp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:layout_marginEnd="@dimen/_15sdp"
+                    android:visibility="visible"
+                    android:weightSum="2">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/_5sdp"
+                        android:layout_weight="1"
+
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/txtFirstName"
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/first_name"
+                            android:textColor="@color/color65"
+                            android:textSize="@dimen/_5mdpi"
+                            android:visibility="gone" />
+
+                        <androidx.appcompat.widget.AppCompatEditText
+                            android:id="@+id/edtFName"
+                            style="@style/CustomFontMediumStyle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_5sdp"
+                            android:background="@drawable/background_square_border_grey"
+                            android:digits="@string/character_String"
+                            android:hint="@string/first_name"
+                            android:imeOptions="actionNext"
+                            android:inputType="textCapWords|textVisiblePassword"
+                            android:maxLength="20"
+                            android:padding="@dimen/_9sdp"
+                            android:text="@={viewModel.addCustomerDetails.data.first_name}"
+                            android:textColor="@color/txtColor"
+                            android:textColorHint="@color/hintColor"
+                            android:textSize="@dimen/_7mdpi" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/_5sdp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/txtLastName"
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/last_name_"
+                            android:textColor="@color/color65"
+                            android:textSize="@dimen/_5mdpi"
+                            android:visibility="gone" />
+
+                        <androidx.appcompat.widget.AppCompatEditText
+                            android:id="@+id/edtLName"
+                            style="@style/CustomFontMediumStyle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_5sdp"
+                            android:background="@drawable/background_square_border_grey"
+                            android:digits="@string/character_String"
+                            android:hint="@string/last_name_"
+                            android:imeOptions="actionNext"
+                            android:inputType="textCapWords|textVisiblePassword"
+                            android:maxLength="20"
+                            android:padding="@dimen/_9sdp"
+                            android:text="@={viewModel.addCustomerDetails.data.last_name}"
+                            android:textColor="@color/txtColor"
+                            android:textColorHint="@color/hintColor"
+                            android:textSize="@dimen/_7mdpi" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <TextView
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:text="@string/_phone_number"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_5mdpi"
+                    android:visibility="visible" />
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:layout_marginEnd="@dimen/_15sdp"
+                    android:background="@drawable/background_square_border_grey"
+                    android:orientation="vertical"
+                    android:visibility="visible">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <Spinner
+                            android:id="@+id/edtCountry"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/border_spiner"
+                            android:enabled="false"
+                            android:padding="@dimen/_9sdp"
+                            android:textColor="@color/txt_color_blue"
+                            android:textSize="@dimen/_5mdpi"
+                            android:theme="@style/SpinnerTheme1" />
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:paddingEnd="@dimen/_3sdp"
+                            android:src="@drawable/ic_arrow_drop_down" />
+                    </RelativeLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.5dp"
+                        android:background="@color/view" />
+
+                    <com.santalu.maskedittext.MaskEditText
+                        android:id="@+id/edtPhoneNo"
+                        style="@style/CustomFontMediumStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@null"
+                        android:hint="(201) 555-0123"
+                        android:inputType="number"
+                        android:maxLength="20"
+                        android:padding="@dimen/_9sdp"
+                        android:text="@={viewModel.phoneNo}"
+                        android:textColor="@color/txtColor"
+                        android:textColorHint="@color/hint_color_"
+                        android:textSize="@dimen/_7mdpi"
+                        app:met_mask="(###) ###-####" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <TextView
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:text="@string/tv_email_address_"
+                    android:textColor="@color/color65"
+                    android:textSize="@dimen/_5mdpi"
+                    android:visibility="gone" />
+
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/edtEmailAdd"
+                    style="@style/CustomFontMediumStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:layout_marginEnd="@dimen/_15sdp"
+                    android:background="@drawable/background_square_border_grey"
+                    android:digits="@string/disable_emoji_string"
+                    android:hint="@string/tv_email_address_"
+                    android:imeOptions="actionNext"
+                    android:inputType="textVisiblePassword"
+                    android:padding="@dimen/_9sdp"
+                    android:text="@={viewModel.addCustomerDetails.data.email}"
+                    android:textColor="@color/btnColor"
+                    android:textColorHint="@color/hintColor"
+                    android:textSize="@dimen/_7mdpi" />
+
+
+                <RelativeLayout
+                    android:id="@+id/relative_billingaddress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:layout_marginEnd="@dimen/_15sdp">
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:id="@+id/heading_linear"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/delivery_address"
+                            android:textColor="@color/txtColor"
+                            android:textSize="@dimen/_5mdpi" />
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    <ImageView
+                        android:id="@+id/imgAddressAdd"
+                        android:layout_width="@dimen/_12sdp"
+                        android:layout_height="@dimen/_12sdp"
+                        android:layout_alignParentEnd="true"
+                        android:src="@drawable/ic_add"
+                        android:visibility="gone"
+                        app:tint="@color/txt_color_blue" />
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/heading_linear"
+                        android:layout_marginTop="@dimen/_3sdp"
+                        android:orientation="vertical">
+
+
+                        <Spinner
+                            android:id="@+id/edtAddress"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_5sdp"
+                            android:background="@drawable/background_square_border_grey"
+                            android:padding="@dimen/_9sdp"
+                            android:theme="@style/SpinnerTheme" />
+
+                        <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+                            android:id="@+id/edtStreet"
+                            style="@style/CustomFontMediumStyle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/background_square_border_grey"
+                            android:digits="@string/character_digits_String"
+                            android:hint="Street"
+                            android:imeOptions="actionNext"
+                            android:inputType="textVisiblePassword"
+                            android:overScrollMode="always"
+                            android:padding="@dimen/_9sdp"
+                            android:scrollbarStyle="insideInset"
+                            android:scrollbars="vertical"
+                            android:textColor="@color/txtColor"
+                            android:textColorHint="@color/hintColor"
+                            android:textSize="@dimen/_7mdpi" />
+
+                        <EditText
+                            android:id="@+id/edtSuite"
+                            style="@style/CustomFontMediumStyle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/background_square_border_grey"
+                            android:digits="@string/character_digits_String"
+                            android:hint="@string/apt_suite"
+                            android:inputType="textVisiblePassword"
+                            android:padding="@dimen/_9sdp"
+                            android:textColor="@color/txtColor"
+                            android:textColorHint="@color/hint_color"
+                            android:textSize="@dimen/_7mdpi" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:weightSum="3">
+
+
+                            <EditText
+                                android:id="@+id/edtCity"
+                                style="@style/CustomFontMediumStyle"
+                                android:layout_width="0sp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:background="@drawable/background_square_border_grey"
+                                android:digits="@string/character_digits_String"
+                                android:hint="@string/city"
+                                android:inputType="textVisiblePassword"
+                                android:padding="@dimen/_9sdp"
+                                android:textColor="@color/txtColor"
+                                android:textColorHint="@color/hint_color"
+                                android:textSize="@dimen/_7mdpi" />
+
+                            <EditText
+                                android:id="@+id/edtState"
+                                style="@style/CustomFontMediumStyle"
+                                android:layout_width="0sp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:background="@drawable/background_square_border_grey"
+                                android:digits="@string/character_digits_String"
+                                android:hint="@string/state"
+                                android:inputType="textVisiblePassword"
+                                android:padding="@dimen/_9sdp"
+                                android:textColor="@color/txtColor"
+                                android:textColorHint="@color/hint_color"
+                                android:textSize="@dimen/_7mdpi" />
+
+                            <EditText
+                                android:id="@+id/edtZip"
+                                style="@style/CustomFontMediumStyle"
+                                android:layout_width="0sp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:background="@drawable/background_square_border_grey"
+                                android:digits="@string/numbers_digits_string"
+                                android:hint="@string/zip"
+                                android:inputType="number"
+                                android:padding="@dimen/_9sdp"
+                                android:singleLine="true"
+                                android:textColor="@color/txtColor"
+                                android:textColorHint="@color/hint_color"
+                                android:textSize="@dimen/_7mdpi" />
+
+
+                        </LinearLayout>
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+                </RelativeLayout>
+
+                <TextView
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:text="@string/company"
+                    android:textColor="@color/color65"
+                    android:textSize="@dimen/_5mdpi"
+                    android:visibility="gone" />
+
+                <EditText
+                    android:id="@+id/edtCompany"
+                    style="@style/CustomFontMediumStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:layout_marginEnd="@dimen/_15sdp"
+                    android:background="@drawable/background_square_border_grey"
+                    android:hint="@string/company_name"
+                    android:imeOptions="actionDone"
+                    android:inputType="textVisiblePassword"
+                    android:padding="@dimen/_9sdp"
+                    android:text="@={viewModel.addCustomerDetails.data.company}"
+                    android:textColor="@color/txtColor"
+                    android:textColorHint="@color/hintColor"
+                    android:textSize="@dimen/_7mdpi" />
+
+                <TextView
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:text="@string/tv_birthday_"
+                    android:textColor="@color/color65"
+                    android:textSize="@dimen/_5mdpi"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/edtBirthDay"
+                    style="@style/CustomFontMediumStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:layout_marginEnd="@dimen/_15sdp"
+                    android:layout_marginBottom="@dimen/_15sdp"
+                    android:background="@drawable/background_square_border_grey"
+                    android:clickable="true"
+                    android:hint="@string/tv_birthday_"
+                    android:padding="@dimen/_9sdp"
+                    android:text=""
+                    android:textColor="@color/txtColor"
+                    android:textColorHint="@color/hintColor"
+                    android:textSize="@dimen/_7mdpi" />
+
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/_50sdp">
+
+                    <TextView
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/_15sdp"
+                        android:layout_marginBottom="@dimen/_20sdp"
+                        android:text="@string/enroll_to_loyalty"
+                        android:textColor="@color/color65"
+                        android:textSize="@dimen/_5mdpi" />
+
+                    <CheckBox
+                        android:id="@+id/chkIsLoyalty"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="@={viewModel.addCustomerDetails.data.enroll_to_loyalty}"
+                        android:gravity="center" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+</layout>

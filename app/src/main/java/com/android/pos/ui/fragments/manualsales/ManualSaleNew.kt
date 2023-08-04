@@ -26,6 +26,7 @@ import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ADD
 import com.android.pos.data.remote.Constants.CUSTOMER_NAME
 import com.android.pos.data.remote.Constants.IS_FROM_ALL_ORDER
+import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER
 import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.data.remote.Constants.LOYALTY_ADDED
@@ -42,9 +43,11 @@ import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.AmountTextWatcher
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
+import com.android.pos.utils.MethodUtils.Companion.getSaltString
 import com.android.pos.utils.callback.ManualSaleOptionsCustomCallback
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.gone
+import com.android.pos.utils.extensions.setOnSingleClickListener
 import com.android.pos.utils.extensions.visible
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
@@ -78,6 +81,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
     private var isPayClicked: Boolean = false
     var tabItemMOdel = TbItem()
     private lateinit var taxBirfurcationAdapter: TaxBirfurcationAdapter
+    var selectedHeaderPosition: Int = 0
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -92,7 +96,9 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         getLoyaltyPrograms()
         getServiceCharge()
         getDiscountList()
-
+        if(arguments != null) {
+            selectedHeaderPosition = requireArguments().getInt("selectedHeaderPosition", 0)
+        }
         binding.layoutHeader.edtSearch.visibility = View.GONE
 
         return binding.root
@@ -143,6 +149,11 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
 
+        if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
+            binding.btnPay.gone()
+        } else {
+            binding.btnPay.visible()
+        }
 
         getManualCategoryId()
         onConfig()
@@ -285,13 +296,6 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             findNavController().navigate(R.id.action_manualSalesNew_to_menuFragment)
 
         }
-        binding.layoutHeader.txtOpenOrder.setOnClickListener {
-            try {
-                findNavController().navigate(R.id.action_manualSalesNew_to_orders)
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
 
         binding.layoutHeader.linearSwitchUser.setOnClickListener {
             val bundle = Bundle()
@@ -361,7 +365,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             viewModel.manualSaleItems(
                 prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT),
                 prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
-            ).observe(requireActivity()) {
+            ).observe(viewLifecycleOwner) {
                 cartList = it
                 LogUtil.logE(TAG, "cartListBeforeTax  ${Gson().toJson(cartList)}")
                 /* if (prefProvider.getValue(ORDER_TYPE,"") == OPEN_ORDER){
@@ -383,7 +387,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
                     viewModel.itemCalculation(
                         cartList,
-                        binding.txtTotalAmount, requireContext()
+                        binding.txtTotalAmount, requireContext(),
+                        isFromManualSales = true
                     )
                     setTaxBifurcationData(cartList!![0].taxlistDynamic as ArrayList<TaxData>)
                     setTextValue()
@@ -402,7 +407,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
                     viewModel.itemCalculation(
                         null,
-                        binding.txtTotalAmount, requireContext()
+                        binding.txtTotalAmount, requireContext(),
+                        isFromManualSales = true
                     )
                     binding.relativeOrderNotes?.gone()
                     setTextValue()
@@ -604,9 +610,17 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                     }
                     Log.d(TAG, "data list: " + Gson().toJson(mainCartList[0].taxlistDynamic))
                     val manualItems = cartList!![0].items
-                    val mainItems = mainCartList[0].items
-                    val mergeItems = merge(mainItems!!, manualItems!!)
-                    mainCartList[0].items = mergeItems
+                    if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
+                        val mainItems =
+                            mainCartList[0].dineInList?.get(selectedHeaderPosition)?.items
+                        val mergeItems = merge(mainItems!!, manualItems!!)
+                        mainCartList[0].dineInList?.get(selectedHeaderPosition)?.items =
+                            mergeItems as ArrayList<TbItem>
+                    } else {
+                        val mainItems = mainCartList[0].items
+                        val mergeItems = merge(mainItems!!, manualItems!!)
+                        mainCartList[0].items = mergeItems
+                    }
                     if (cartList!![0].discountPrice != 0.00)
                         mainCartList[0].discountPrice = cartList!![0].discountPrice
 
@@ -732,7 +746,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         }
 
 
-        binding.imgOrderMenu.setOnClickListener {
+        binding.imgOrderMenu.setOnSingleClickListener {
 
             val popupMenu = PopupMenu(requireContext(), it)
             popupMenu.menuInflater.inflate(R.menu.manual_sale_menu, popupMenu.menu)
@@ -870,6 +884,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                         viewModel.deleteCart()
                         prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
                         binding.txtTotalAmount.text = "$0.00"
+                        refreshItemCalculation()
 
                     }
                     negativeButton(R.string.tv_cancel) {
@@ -883,7 +898,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 hideClearCart()
             }
         }
-        binding.txtAddCustomer.setOnClickListener {
+        binding.txtAddCustomer.setOnSingleClickListener {
             findNavController().navigate(R.id.action_manualSaleNew_to_assignCustomerOrderFragment)
         }
 
@@ -1186,13 +1201,14 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             tabItemMOdel.categoryId = manualCategoryId
 
             tabItemMOdel.taxes = taxList
+            tabItemMOdel.timeStamp = randomOfflineId()
 
 
             LogUtil.logE("ordertypelist", Gson().toJson(viewModel.ordertypelist))
 
             viewModel.ordertypelist.forEach {
-                if (it.orderType.equals(
-                        prefProvider.getValue(Constants.ORDER_TYPE, "TakeOut"),
+                if (it.name.equals(
+                        prefProvider.getValue(Constants.ORDER_TYPE_NAME, "TakeOut"),
                         ignoreCase = true
                     )
                 ) {
@@ -1213,6 +1229,17 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
         }
 
+    }
+
+    // To generate unique time stamp for new item
+    fun randomOfflineId(): String {
+        val locationId = prefProvider.getValueInt(Constants.LOCATION_ID, -1).toString()
+        val timestamp = System.currentTimeMillis().toString()
+        val ss = locationId + timestamp.takeLast(4)
+        val reqLent = 12 - ss.length
+        val Alphabet = getSaltString(reqLent)
+        val timeStampFinal = Alphabet + ss
+        return timeStampFinal
     }
 
     private fun callbackForDialog() {
@@ -1415,7 +1442,6 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
     @SuppressLint("SetTextI18n")
     override fun onItemClicked(model: TbItem, position: Int) {
-        LogUtil.logE(TAG, "Itemmodel: ${Gson().toJson(model)}")
         LogUtil.logE(TAG, "ItemPosition: $position")
         viewModel.setPosition(position)
         val dialog = Dialog(requireContext())
@@ -1528,7 +1554,6 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             model.price = String.format("%.2f", (itemCost)).toDouble()
 
             viewModel.setPosition(position)
-            LogUtil.logE(TAG, "Itemmodel: ${Gson().toJson(model)}")
 
             LogUtil.logE(TAG, "ItemPosition: $position")
             cartList?.get(0)?.taxlistDynamic = arrayListOf()
@@ -1834,10 +1859,12 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
     }
 
     private fun refreshItemCalculation() {
+        Log.d("DISCOUNT_ISSUE", "itemCalculation called 3")
         viewModel.itemCalculation(
             cartList,
             binding.txtTotal,
-            requireContext()
+            requireContext(),
+            isFromManualSales = true
         )
     }
 

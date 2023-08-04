@@ -115,19 +115,23 @@
                 android:layout_height="@dimen/_10sdp"
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="@dimen/_15sdp"
-                android:layout_toStartOf="@+id/removeGuest"
+                android:layout_toStartOf="@+id/llRemoveGuest"
                 android:background="?attr/selectableItemBackground"
                 android:src="@drawable/print"
                 android:visibility="visible" />
 
-            <ImageView
-                android:id="@+id/removeGuest"
-                android:layout_width="@dimen/_10sdp"
-                android:layout_height="@dimen/_10sdp"
-                android:layout_centerVertical="true"
-                android:layout_marginEnd="@dimen/_15sdp"
-                android:layout_toStartOf="@+id/refViewLine"
-                android:src="@drawable/ic_remove_circle_primary" />
+            <LinearLayout
+                android:id="@+id/llRemoveGuest"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="end|center_vertical"
+                android:orientation="horizontal">
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="@dimen/_12sdp"
+                    android:layout_height="@dimen/_12sdp"
+                    android:src="@drawable/ic_remove_circle_primary" />
+            </LinearLayout>
 
             <View
                 android:id="@+id/refViewLine"
