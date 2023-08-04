@@ -6518,11 +6518,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         if(IS_GIFT_CARD_TYPE){
                             generatePrintForGiftCard(customerReceiptPrinters, type)
                         }else{
-                            generatePrint(customerReceiptPrinters, type,isAutoPrint)
+                            if(customerReceiptPrinters.status) {
+                                generatePrint(customerReceiptPrinters, type, isAutoPrint)
+                            }
                         }
-
                     }
-
                 } catch (e: Exception) {
                     pd.dismiss()
                     e.printStackTrace()
