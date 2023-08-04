@@ -398,10 +398,10 @@ class CustomDisplay(
                             "CashDiscount"
                         ) == "CashDiscount"
                     ) {
-                        binding.txtOrderTotal?.text = getCashDiscountedPrice(totalPrice)
+                        binding.txtOrderTotal?.text = MethodUtils.roundOffAmount(totalPrice)
                         binding.txtCashDiscountSurchargeCard?.text = "-"+MethodUtils.roundOffAmount(cashdiscountAmount)
                     } else {
-                        binding.txtOrderTotal?.text = getSurchargedPrice(totalPrice)
+                        binding.txtOrderTotal?.text = MethodUtils.roundOffAmount(totalPrice)
                         binding.txtCashDiscountSurchargeCard?.text =
                             MethodUtils.roundOffAmount(cashdiscountAmount)
                     }
