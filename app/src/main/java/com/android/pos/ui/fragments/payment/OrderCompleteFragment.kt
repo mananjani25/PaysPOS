@@ -8514,6 +8514,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 )
             }
 
+            builder.addFeedLine(1)
 
             builder.addTextLineSpace(30)
             builder.addFeedUnit(30)
@@ -11026,7 +11027,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         if (customerSettingModel.showCustomerAddress || customerSettingModel.showCustomerPhone || customerSettingModel.showCustomerName) {
 
             if (giftCardReceiptModel?.gift_card?.customer != null) {
-
+                SunmiPrinterApi.getInstance().lineWrap(1)
                 PrintSunmiUtils.customerDetails()
 
                 if (customerSettingModel.showCustomerName) {
