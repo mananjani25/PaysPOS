@@ -172,7 +172,7 @@ class MainApplication : Application() {
 
         //initialization value  for comsetting's attribute
         commSetting.type = CommSetting.TCP
-        commSetting.timeOut = "9000"
+        commSetting.timeOut = "-1"
         commSetting.baudRate = "9600"
 //        commSetting.serialPort = "COM1"
         commSetting.isEnableProxy = false

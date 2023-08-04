@@ -164,16 +164,12 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
 
         //initialization value  for comsetting's attribute
         commset.type = CommSetting.TCP
-        commset.timeOut = "9000"
+        commset.timeOut = "-1"
         commset.baudRate = "9600"
 //        commset.serialPort = "COM1"
         commset.isEnableProxy = false
         commset.destPort = edtPort
         commset.destIP = edtIP
-        /*commset.destPort = "10009"
-        commset.destIP = "172.20.10.3"*/
-//        commset.destIP = "192.168.1.10"
-//        commset.destIP = "192.168.3.176"
         /*val selectedHost = "UNKNOWN"
         Convenience.setHost(context, commset, selectedHost)*/
         Log.i(

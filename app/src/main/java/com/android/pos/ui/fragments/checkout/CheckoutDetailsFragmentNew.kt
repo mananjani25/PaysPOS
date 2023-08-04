@@ -1114,8 +1114,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     private fun makePaxPaymentRequest() {
         GlobalScope.launch {
             posLink.SetCommSetting(SettingINI.getCommSettingFromFile("/storage/emulated/0/Download/"+ SettingINI.FILENAME))
-            var amt = (paymentAmount*100).toInt()
-            Log.d("Amt: ","amt $amt")
+            val amt = ((paymentAmount-tipAmount)*100).toInt()
+            val tip_amt = (tipAmount*100).toInt()
+            Log.d("Amt: ","amt $amt tip $tip_amt")
+
             CoroutineScope(Dispatchers.Main).launch {
                 ProgressUtils.showProgressDialog(requireActivity())
             }
@@ -1123,7 +1125,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             mPaymentRequest.TransType = mPaymentRequest.ParseTransType("SALE")
             mPaymentRequest.TenderType = mPaymentRequest.ParseTenderType("CREDIT")
             mPaymentRequest.Amount = amt.toString()
-            mPaymentRequest.TipAmt = ""
+            mPaymentRequest.TipAmt = tip_amt.toString()
             mPaymentRequest.ECRRefNum = "143800"
             mPaymentRequest.ExtData = "<Force>T</Force>"
 
