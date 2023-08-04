@@ -39,6 +39,8 @@ data class EodReportResponse(
         val reportTime: String,
         @SerializedName("sales_and_taxes_summary")
         val salesAndTaxesSummary: List<KeyValue>,
+        @SerializedName("item_wise_sales")
+        val itemWiseSales: ArrayList<ItemWiseSalesData>,
         @SerializedName("sales_summary")
         val salesSummary: List<KeyValue>,
         @SerializedName("service_charge_details")
@@ -151,6 +153,15 @@ data class EodReportResponse(
                 var terminal: String
             )
         }
+
+        data class ItemWiseSalesData(
+            @SerializedName("item_name")
+            var itemName: String,
+            @SerializedName("quantity")
+            var quantity: String,
+            @SerializedName("amount")
+            var amount: Double,
+        )
 
 
     }

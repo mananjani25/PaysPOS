@@ -76,6 +76,7 @@ import com.android.pos.utils.*
 import com.android.pos.utils.callback.OrderCallBack
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.gone
+import com.android.pos.utils.extensions.printLog
 import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.printer.PrinterClass
@@ -1835,7 +1836,8 @@ class AllOrdersListingFragment(
                 )
             }
 
-            if (receiptModel.totalServiceCharges != null) {
+            val result =  prefProvider.getValueboolean(Constants.SERVICECHARGE_TAKEOUT_OPENORDER,false)
+            if (receiptModel.totalServiceCharges != null && result) {
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
                 builder.addTextFont(Builder.FONT_E)
@@ -1861,6 +1863,8 @@ class AllOrdersListingFragment(
                     )
                 )
             }
+
+
 
             if (receiptModel?.totalTips != 0.0) {
 
@@ -2665,7 +2669,7 @@ class AllOrdersListingFragment(
 
 
             if (receiptModel?.orderType?.lowercase() == Constants.OPEN_ORDER.lowercase()
-                || receiptModel?.orderType?.lowercase() == Constants.OPEN_ORDER.lowercase()
+             || receiptModel?.orderType?.lowercase() == Constants.OPEN_ORDER.lowercase()
             ) {
 
 //                PrintSunmiUtils.deliveryType(receiptModel?.deliveryType)
@@ -2868,20 +2872,26 @@ class AllOrdersListingFragment(
                 PrintSunmiUtils.tax(str3)
             }
 
-            if (receiptModel.totalServiceCharges != null) {
+            val result =  prefProvider.getValueboolean(Constants.SERVICECHARGE_TAKEOUT_OPENORDER,false)
+
+            if (result){
+
+                if (receiptModel.totalServiceCharges != null) {
 
 
-                val str4 = padLine(
-                    "Service Charge",
-                    "$" + MethodUtils.roundOffAmountString(receiptModel.totalServiceCharges),
-                    if (customerSettingModel.fonts == Constants.LARGE) {
-                        23
-                    } else {
-                        48
-                    }
-                ).toString()
-                PrintSunmiUtils.serviceCharge(str4)
+                    val str4 = padLine(
+                        "Service Charge",
+                        "$" + MethodUtils.roundOffAmountString(receiptModel.totalServiceCharges),
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            23
+                        } else {
+                            48
+                        }
+                    ).toString()
+                    PrintSunmiUtils.serviceCharge(str4)
+                }
             }
+
 
             if (receiptModel?.totalTips != 0.0) {
 
@@ -5479,8 +5489,9 @@ class AllOrdersListingFragment(
                 PrintSunmiUtils.normalText(str3)
             }
 
-            if (receiptModel.totalServiceCharges != null) {
+            val result =  prefProvider.getValueboolean(Constants.SERVICECHARGE_TAKEOUT_OPENORDER,false)
 
+            if (receiptModel.totalServiceCharges != null && result) {
 
                 val str4 = padLine(
                     "Service Charge",

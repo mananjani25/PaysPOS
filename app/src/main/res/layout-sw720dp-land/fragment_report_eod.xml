@@ -580,6 +580,23 @@
                     tools:itemCount="2"
                     tools:listitem="@layout/view_sales_report" />
 
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtItemWiseSales"
+                    style="@style/ReportTitleStyle"
+                    android:text="@string/item_wise_sales" />
+
+                <include
+                    android:id="@+id/itemWiseHeader"
+                    layout="@layout/item_wise_sales_header" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvItemWiseSales"
+                    style="@style/ReportRecyclerViewstyle"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:itemCount="2"
+                    tools:listitem="@layout/item_wise_sales_row" />
+
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtPaymentDetails"
                     style="@style/ReportTitleStyle"
@@ -596,6 +613,7 @@
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:itemCount="2"
                     tools:listitem="@layout/view_payment_details" />
+
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtTipsDetails"

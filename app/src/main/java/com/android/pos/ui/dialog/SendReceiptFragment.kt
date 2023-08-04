@@ -15,6 +15,8 @@ import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
+import com.android.pos.data.remote.Constants.END_DATE
+import com.android.pos.data.remote.Constants.START_DATE
 import com.android.pos.databinding.DailogSendReceiptBinding
 import com.android.pos.ui.fragments.payment.OrderCompleteViewModel
 import com.android.pos.utils.AlertUtils
@@ -30,6 +32,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class SendReceiptFragment : DialogFragment() {
 
+    private var ETS: Boolean = false
     private var emailAddress: String? = null
     private var isEod: Boolean = false
     private var isFromTimeSheet: Boolean = false
@@ -59,8 +62,18 @@ class SendReceiptFragment : DialogFragment() {
 
         isEod = requireArguments().getBoolean("EOD", false)
         isFromTimeSheet = requireArguments().getBoolean("isFromTimeSheet", false)
+        ETS = requireArguments().getBoolean("ETS", false)
+
         if (isEod) {
-            binding.txtAmount.text = "Email end of the day report"
+
+            if (ETS){
+                binding.txtAmount.text = "Email employee tip summary"
+
+            }else {
+                binding.txtAmount.text = "Email end of the day report"
+
+            }
+
             emailAddress = requireArguments().getString("email")
             if (emailAddress != null)
                 binding.edtEmail.setText(emailAddress)
@@ -119,7 +132,26 @@ class SendReceiptFragment : DialogFragment() {
                     dismiss()
                 }
             } else
-                if (isEod) {
+
+                if (ETS){ // Employee Tip Summary
+
+
+                    val startDate = requireArguments().getString(START_DATE)
+                    val endDate = requireArguments().getString(END_DATE)
+
+                   //findNavController().navigateUp()
+                   //dismiss()
+
+                    viewModelOrder.sendMailForETS(
+                        binding.edtEmail.text.toString().trim(),
+                        startDate!!,
+                        endDate!!
+
+                    )
+
+
+
+                }else if (isEod) {
 
                     if (binding.edtEmail.text.toString().trim().isEmpty()) {
                         it.showAlert(getString(R.string.email_validate))
@@ -157,27 +189,36 @@ class SendReceiptFragment : DialogFragment() {
 
     private fun observe() {
 
-        viewModelOrder.showProgress.observe(viewLifecycleOwner, { event ->
+        viewModelOrder.showProgress.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
+
                 if (it) {
                     ProgressUtils.showProgressDialog(requireActivity())
                 } else {
                     ProgressUtils.dismissProgressDialog()
                 }
-            }
-        })
 
-        viewModelOrder.data.observe(viewLifecycleOwner, { event ->
+            }
+        }
+
+        viewModelOrder.data.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { baseResponse ->
                 activity?.let {
+
                     AlertUtils.showCustomAlertWithListenerWithOK(
                         it, baseResponse.message
                     ) { _, _ ->
                         dismiss()
                     }
+
+                    if (viewModelOrder.itsFromETP){
+                        viewModelOrder.itsFromETP = false
+                        findNavController().navigateUp()
+                        dismiss()
+                    }
                 }
             }
-        })
+        }
     }
 
     override fun onResume() {

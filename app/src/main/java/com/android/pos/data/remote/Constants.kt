@@ -12,6 +12,13 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 object Constants {
+
+
+    const val START_DATE = "start_date"
+    const val END_DATE = "end_date"
+
+
+
     val IS_ORDER_LAST_PAYMENT = "is_order_last_payment"
     const val ARG_PARAM1 = "param1"
     const val ARG_PARAM2 = "param2"
@@ -338,6 +345,7 @@ object Constants {
 
     const val REPORT_SUMMARY = "reports/report_summary"
     const val REPORT_EOD_SUMMARY = "reports/employee_eod_report"
+    const val REPORT_EMPLOYEE_TIP_SUMMARY = "reports/employee_tip_summary"
     const val EMAIL_REPORT_SUMMARY = "reports/email_timesheet"
     const val ORDER_HISTORY = "customers/{id}/customer_order_history"
 

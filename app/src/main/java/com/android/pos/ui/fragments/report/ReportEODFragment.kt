@@ -42,6 +42,7 @@ import com.android.pos.ui.adapter.ClockInClockOutAdapter
 import com.android.pos.ui.adapter.CreditCardBreakDownAdapter
 import com.android.pos.ui.adapter.CreditTipAuditAdapter
 import com.android.pos.ui.adapter.EmployeeGuestDetailsAdapter
+import com.android.pos.ui.adapter.ItemWiseSalesAdapter
 import com.android.pos.ui.adapter.PaymentDetailsAdapter
 import com.android.pos.ui.adapter.SalesOrderDetailsAdapter
 import com.android.pos.ui.adapter.SalesReportAdapter
@@ -68,6 +69,10 @@ import com.android.pos.utils.addCreditTipAuditHeader
 import com.android.pos.utils.addCreditTipAuditHeaderInner
 import com.android.pos.utils.addCustomerTextSize
 import com.android.pos.utils.addHorizontalLine
+import com.android.pos.utils.addItemWiseSales
+import com.android.pos.utils.addItemWiseSalesHeader
+import com.android.pos.utils.addItemWiseSalesHeaderSunmiInner
+import com.android.pos.utils.addItemWiseSalesSunmiInnerPrinter
 import com.android.pos.utils.addItemsInOrderSalesDetails
 import com.android.pos.utils.addItemsInOrderSalesDetailsInner
 import com.android.pos.utils.addPaymentDetailsHeader
@@ -86,9 +91,11 @@ import com.android.pos.utils.employeeGuestDetailsDataInner
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.liveSnackBar
+import com.android.pos.utils.extensions.printLog
 import com.android.pos.utils.extensions.runOnUiThread
 import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.extensions.visible
+import com.android.pos.utils.itemWiseSalesM30Print
 import com.android.pos.utils.padLine
 import com.android.pos.utils.printer.PrinterClass
 import com.android.pos.utils.repeat
@@ -151,6 +158,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
     private val employeeGuestDetailsAdapter by lazy { EmployeeGuestDetailsAdapter() }
     private val creditTipAuditAdapter by lazy { CreditTipAuditAdapter() }
     private val tipDetailsAdapter by lazy { PaymentDetailsAdapter(hideRefund = false) }
+    private val itemWiseSalesAdapter by lazy { ItemWiseSalesAdapter() }
     private val saleCategorySummaryAdapter by lazy { SalesPerCategorySummary() }
 
 
@@ -309,12 +317,10 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
     }
 
     private fun generateEODReport() {
-        Log.d("BIS-685", "generateEODReport: Called")
         customerList.forEach {
             if (it.status) {
                 initPrinter(it)
             }
-
         }
     }
 
@@ -385,7 +391,8 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
 
                     } catch (e: Exception) {
-                        LogUtil.logE(TAG, "PrinterException: " + e.message)
+                        LogUtil.logE(TAG, "customerReceiptPrinters.ipAddress: " + customerReceiptPrinters.ipAddress)
+                        LogUtil.logE(TAG, "PrinterException: " + e)
                         printer = null
                         return@launch
                     }
@@ -641,6 +648,8 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 Builder.COLOR_1
             )
             builder.addText("Employee Report:" + eodReportData?.reportTime)
+
+
             if (eodReportData?.orderSalesDetails?.data?.isNotEmpty() == true && eodReportConfiguration?.orderSalesDetails == true) {
                 builder.addFeedLine(2)
                 builder.addTextSize(2, 2)
@@ -870,6 +879,45 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     }
                 }
 
+
+            }
+
+            if (eodReportData?.itemWiseSales?.isNotEmpty() == true && eodReportConfiguration?.isItemWiseSales == true) {
+                builder.addFeedLine(3)
+                builder.addTextSize(2, 2)
+
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, MEDIUM)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+                builder.addText("ITEM WISE SALES")
+
+                builder.addFeedLine(2)
+                addCustomerTextSize(builder, SMALL)
+                addHorizontalLine(builder)
+
+                addItemWiseSalesHeader(builder)
+
+                builder.addFeedLine(1)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+                addCustomerTextSize(builder, SMALL)
+                addHorizontalLine(builder)
+
+                eodReportData?.itemWiseSales?.forEach {
+                    itemWiseSalesM30Print(it,builder)
+
+                }
 
             }
 
@@ -1920,6 +1968,20 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 SunmiPrinterApi.getInstance().lineWrap(1)
             }
 
+            if (eodReportData?.itemWiseSales?.isNotEmpty() == true && eodReportConfiguration?.isItemWiseSales == true){
+
+                PrintSunmiUtils.addLable("ITEM WISE SALES")
+                addItemWiseSalesHeader()
+
+                PrintSunmiUtils.addHorizontal()
+                eodReportData?.itemWiseSales?.forEach {
+                    addItemWiseSales(it)
+                }
+
+                SunmiPrinterApi.getInstance().lineWrap(1)
+
+            }
+
             if (eodReportData?.paymentDetails?.isNotEmpty() == true && eodReportConfiguration?.paymentDetails == true) {
 
                 PrintSunmiUtils.addLable("PAYMENT DETAILS")
@@ -2383,6 +2445,20 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     )
                 }
                 SunmiPrintHelper.getInstance().lineWrap(1)
+            }
+
+            if (eodReportData?.itemWiseSales?.isNotEmpty() == true && eodReportConfiguration?.isItemWiseSales == true){
+
+                PrintSunmiUtils.headerText("ITEM WISE SALES")
+                addItemWiseSalesHeaderSunmiInner()
+
+                PrintSunmiUtils.addHorizontal()
+                eodReportData?.itemWiseSales?.forEach {
+                    addItemWiseSalesSunmiInnerPrinter(it)
+                }
+
+                SunmiPrinterApi.getInstance().lineWrap(1)
+
             }
 
             if (eodReportData?.paymentDetails?.isNotEmpty() == true && eodReportConfiguration?.paymentDetails == true) {
@@ -2947,38 +3023,40 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     private fun setupAdapter() {
 
-        binding.rvTerminal.adapter = terminalAdapter
+        binding.apply {
 
-        binding.rvSalesSummary.adapter = salesReportAdapter
-        binding.rvRefundDetails.adapter = refundDetailsAdapter
-        binding.rvPendingPayments.adapter = creditPaymentDetailsAdapter
-        binding.rvTaxDetails.adapter = taxDetailsAdapter
-        binding.rvDiscountDetails.adapter = discountDetailsAdapter
-        binding.rvSalesTaxSummary.adapter = salesTaxSummaryAdapter
-        binding.rvRefundAndVoid.adapter = cashEventSummaryAdapter
-        binding.rvTotalPayments.adapter = totalPaymentsAdapter
-        binding.rvCashPayments.adapter = cashPaymentsAdapter
-        binding.rvPaymentDetails.adapter = paymentDetailsAdapter
-        binding.rvOtherDetails.adapter = otherDetailsAdapter
-        binding.rvServiceChargeDetails.adapter = serviceChargeDetailsAdapter
-        binding.rvTipsDetails.adapter = tipDetailsAdapter
-        binding.rvCashLog.adapter = cashLogAdapter
-        binding.rvCreditCardBreakDown.adapter = creditCardBreakdownAdapter
-        binding.rvSalesDetails.adapter = salesOrderDetailsAdapter
-       // binding.rvSalesDetails.isNestedScrollingEnabled = false
-        binding.rvCreditAuditTip.adapter = creditTipAuditAdapter
-        binding.rvemployeeGuestDetails.adapter = employeeGuestDetailsAdapter
-        binding.rvSaleCategorySummary?.adapter = saleCategorySummaryAdapter
-        binding.rvClockInClockOut?.adapter = clockInClockOutAdapter
+            binding.rvTerminal.adapter = terminalAdapter
+
+            rvSalesSummary.adapter = salesReportAdapter
+            rvRefundDetails.adapter = refundDetailsAdapter
+            rvPendingPayments.adapter = creditPaymentDetailsAdapter
+            rvTaxDetails.adapter = taxDetailsAdapter
+            rvDiscountDetails.adapter = discountDetailsAdapter
+            rvSalesTaxSummary.adapter = salesTaxSummaryAdapter
+            rvRefundAndVoid.adapter = cashEventSummaryAdapter
+            rvTotalPayments.adapter = totalPaymentsAdapter
+            rvCashPayments.adapter = cashPaymentsAdapter
+            rvPaymentDetails.adapter = paymentDetailsAdapter
+            rvOtherDetails.adapter = otherDetailsAdapter
+            rvServiceChargeDetails.adapter = serviceChargeDetailsAdapter
+            rvTipsDetails.adapter = tipDetailsAdapter
+            rvCashLog.adapter = cashLogAdapter
+            rvCreditCardBreakDown.adapter = creditCardBreakdownAdapter
+            rvSalesDetails.adapter = salesOrderDetailsAdapter
+            //rvSalesDetails.isNestedScrollingEnabled = false
+            rvCreditAuditTip.adapter = creditTipAuditAdapter
+            rvemployeeGuestDetails.adapter = employeeGuestDetailsAdapter
+            rvSaleCategorySummary?.adapter = saleCategorySummaryAdapter
+            rvClockInClockOut?.adapter = clockInClockOutAdapter
+
+            rvItemWiseSales.adapter = itemWiseSalesAdapter
+        }
+
 
     }
 
     private fun initObservers() {
         binding.root.liveSnackBar(this, viewModel.snackbarText, Snackbar.LENGTH_SHORT)
-
-
-
-
 
         viewModel.startDateSelection.observe(requireActivity()) { event ->
             event.getContentIfNotHandled()?.let {
@@ -3037,7 +3115,6 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
                 updateData(it)
                 Handler(Looper.getMainLooper()).postDelayed(Runnable {
-
 
 
                     runOnUiThread(Runnable {
@@ -3245,6 +3322,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
             }
 
 
+        itemWiseSalesAdapter.add(it.itemWiseSales)
 
             showHide(
                 rvMedia = binding.rvTipsDetails,
@@ -3330,12 +3408,39 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 binding.llTotal.gone()
             }
 
-            shiftReportsSettingModel?.salesSummary?.let { it1 ->
+
+        showHide(
+            rvMedia = binding.rvItemWiseSales,
+            textView = binding.txtItemWiseSales,
+            headerView = binding.itemWiseHeader,
+            visible = it.itemWiseSales.isEmpty()
+        )
+
+
+        shiftReportsSettingModel?.isItemWiseSales?.let { it1 ->
+            binding.apply {
                 showHide(
-                    binding.rvSalesSummary, binding.txtSalesSummary, null,
+                    rvItemWiseSales,
+                    txtItemWiseSales,
+                    itemWiseHeader,
                     it1
                 )
             }
+        }
+        requireContext().printLog("updateData","is boolean = ${shiftReportsSettingModel?.isItemWiseSales}")
+        requireContext().printLog("updateData","is data = ${it.itemWiseSales.isEmpty()}")
+
+
+        itemWiseSalesAdapter.add(it.itemWiseSales)
+
+
+
+        shiftReportsSettingModel?.salesSummary?.let { it1 ->
+            showHide(
+                binding.rvSalesSummary, binding.txtSalesSummary, null,
+                it1
+            )
+        }
 
             shiftReportsSettingModel?.salesAndTaxSummary?.let { it1 ->
                 showHide(
@@ -3550,11 +3655,6 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                                     roleName as ArrayList<String>,
                                     defaultEmployeePos
                                 )
-
-
-
-
-
 
                             viewModel.setCurrentDate(myCalendar)
                         }

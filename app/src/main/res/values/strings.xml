@@ -889,5 +889,11 @@
     <string name="wastage_item_reason_message">Please provide reason for adding this item to wastage</string>
     <string name="customer_cannot_be_remove_at_the_moment">Customer cannot be removed at the moment.</string>
 
+    <string name="cash_tips">Cash Tips</string>
+    <string name="card_tips">Card Tips</string>
+    <string name="total_tips">Total Tips</string>
+    <string name="item_wise_sales">Item Wise Sales</string>
+    <string name="employee_tip_summary">Employee Tip Summary</string>
+
 </resources>
 

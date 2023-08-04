@@ -497,6 +497,9 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun emailReceipt(data: HashMap<String, String>) =
         getResult { apiService.emailReceipt(data) }
 
+    suspend fun emailReceiptForETS(data: HashMap<String, String>) =
+        getResult { apiService.sendMailForEmployeeTipSummary(data) }
+
     suspend fun phoneReceipt(data: HashMap<String, String>) =
         getResult { apiService.phoneReceipt(data) }
 
@@ -651,6 +654,14 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     ) =
         getResult {
             apiService.getReportEOD(startDate, endDate, terminalId, employee_id, email)
+        }
+
+    suspend fun getEmployeeTip(
+        startDate: String,
+        endDate: String
+    ) =
+        getResult {
+            apiService.getEmployeeTipSummary(startDate, endDate)
         }
 
     suspend fun sendEmailTimeSheet(
