@@ -383,7 +383,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
         GlobalScope.launch {
             posLink.SetCommSetting(SettingINI.getCommSettingFromFile(FILE_PATH + SettingINI.FILENAME))
             val tip_amt = (tipAmount*100).toInt()
-            Log.d("Amt: ","tip $tip_amt")
+            Log.d("Amt: ","tip $tip_amt RefNo ${singleTransaction?.ref_num}")
 
             CoroutineScope(Dispatchers.Main).launch {
                 ProgressUtils.showProgressDialog(requireActivity())
@@ -392,7 +392,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
             mPaymentRequest.TransType = mPaymentRequest.ParseTransType("ADJUST")
             mPaymentRequest.TenderType = mPaymentRequest.ParseTenderType("CREDIT")
             mPaymentRequest.Amount = tip_amt.toString()
-            mPaymentRequest.OrigRefNum = ""
+            mPaymentRequest.OrigRefNum = singleTransaction?.ref_num
             mPaymentRequest.ExtData = "<Force>T</Force>"
 
             posLink.PaymentRequest = mPaymentRequest
