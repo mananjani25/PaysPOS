@@ -607,4 +607,14 @@ class PaymentAttributes : Parcelable {
 
     @SerializedName("gift_card_redeemed_amount")
     var gift_card_redeemed_amount: Double? = 0.0
+
+    @SerializedName("global_uniq_id")
+    var global_uniq_id: String = ""
+
+    @SerializedName("ref_num")
+    var ref_num: String = ""
+
+    @SerializedName("ext_data")
+    var ext_data: String = ""
+
 }
