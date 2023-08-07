@@ -2556,7 +2556,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         if (item.modifiers.isNotEmpty()) {
             item.modifiers.forEach {
 
-                itemMod.put(it.id ?: 0, it.itemQuantity)
+                itemMod.put(it.id ?: 0, it.modifier_quantity)
                 listOfDataModSelected.add(it.id ?: 0)
 
             }
