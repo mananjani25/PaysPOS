@@ -39,6 +39,7 @@ import com.android.pos.utils.addBuilderText
 import com.android.pos.utils.addCustomerTextSize
 import com.android.pos.utils.addHorizontalLine
 import com.android.pos.utils.addItemsInEmployeeTipsSummary
+import com.android.pos.utils.addItemsInEmployeeTipsSummaryInnerPrinter
 import com.android.pos.utils.addItemsInEmployeeTipsSummaryM30
 import com.android.pos.utils.addSixHeaderForEmployeeTipSummary
 import com.android.pos.utils.addSixHeaderForEmployeeTipSummarySunmi
@@ -753,7 +754,7 @@ class EmployeeTipSummary : Fragment() {
 
         employeeTipSummaryHeader()
         ETSdataList?.forEach {
-            addItemsInEmployeeTipsSummary(it)
+            addItemsInEmployeeTipsSummaryInnerPrinter(it)
         }
 
         // Main part end
