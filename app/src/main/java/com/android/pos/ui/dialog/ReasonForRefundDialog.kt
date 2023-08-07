@@ -7,7 +7,10 @@ import android.content.ServiceConnection
 import android.graphics.Point
 import android.os.Bundle
 import android.os.IBinder
+import android.os.Message
+import android.util.Log
 import android.view.*
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
@@ -33,13 +36,21 @@ import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
+import com.android.pos.utils.extensions.toast
+import com.android.pos.utils.paxUtils.SettingINI
 import com.android.pos.utils.statusUtils.Status
 import com.epson.epos2.printer.Printer
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.google.gson.JsonArray
+import com.pax.poslink.PaymentRequest
+import com.pax.poslink.PosLink
+import com.pax.poslink.ProcessTransResult
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -58,6 +69,9 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
     private lateinit var refundData: RefundRequestModel
     private val viewModel by viewModels<TransactionDetailsViewModel>()
     private var woyouService: IWoyouService? = null
+    // PAX variables
+    private lateinit var mPaymentRequest: PaymentRequest
+    private var posLink: PosLink = PosLink()
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -120,6 +134,51 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
         return binding.root
     }
 
+    /*private fun refundViaPAX() {
+        posLink.SetCommSetting(SettingINI.getCommSettingFromFile(Constants.FILE_PATH + SettingINI.FILENAME))
+
+        CoroutineScope(Dispatchers.Main).launch {
+            ProgressUtils.showProgressDialog(requireActivity())
+        }
+
+        val refund = PaymentRequest()
+        refund.TenderType = refund.ParseTenderType("CREDIT")
+        refund.TransType = refund.ParseTransType("RETURN")
+
+        refund.Amount = "amount"
+        posLink.PaymentRequest = refund
+        val result = posLink.ProcessTrans()
+        Log.d("result: ", result.Code.toString() + " " + result.Msg)
+        if (result.Code === ProcessTransResult.ProcessTransResultCode.OK) {
+            val msg = Message()
+            msg.what = Constants.TRANSACTION_SUCCESSED
+            msg.obj = posLink.PaymentResponse
+
+            val response = msg.obj as com.pax.poslink.PaymentResponse
+            val resultCode = response.ResultCode
+            val resultTxt = response.ResultTxt
+
+            if (resultCode == "000000") {
+                CoroutineScope(Dispatchers.Main).launch {
+                    refundCall()
+                }
+            } else {
+                CoroutineScope(Dispatchers.Main).launch {
+                    ProgressUtils.dismissProgressDialog()
+                    requireActivity().toast("$resultCode $resultTxt", Toast.LENGTH_LONG)
+                }
+            }
+        } else {
+            CoroutineScope(Dispatchers.Main).launch {
+                ProgressUtils.dismissProgressDialog()
+                if (result.Msg.toString() == "CONNECT ERROR" || result.Msg.toString() == "TIME OUT"){
+                    Toast.makeText(requireContext(), "Please check your internet connection", Toast.LENGTH_LONG).show()
+                } else {
+                    Toast.makeText(requireContext(), "getMerchantDetails Failed ${result.Code} ${result.Msg}", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }*/
 
     private fun doneClick() {
         if (refundAmount != 0.0 || refundAmount > 0.0) {
@@ -447,43 +506,43 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                                     }
 
                                 } else {
-                                   try {
-                                       var mPrinter =
-                                           Printer(
-                                               Printer.TM_M30,
-                                               Printer.MODEL_ANK,
-                                               (activity as MainActivity).applicationContext
-                                           )
+                                    try {
+                                        var mPrinter =
+                                            Printer(
+                                                Printer.TM_M30,
+                                                Printer.MODEL_ANK,
+                                                (activity as MainActivity).applicationContext
+                                            )
 
 
-                                       var printerAdd =
-                                           if (data[i].printer_type == Constants.BLUETOOTH) "BT:" + data[i].macAddress else "TCP:" + data[i].ipAddress
-                                       mPrinter.connect(
-                                           printerAdd,
-                                           Printer.PARAM_DEFAULT
-                                       )
+                                        var printerAdd =
+                                            if (data[i].printer_type == Constants.BLUETOOTH) "BT:" + data[i].macAddress else "TCP:" + data[i].ipAddress
+                                        mPrinter.connect(
+                                            printerAdd,
+                                            Printer.PARAM_DEFAULT
+                                        )
 
-                                       mPrinter.addPulse(
-                                           com.epson.epos2.printer.Printer.DRAWER_HIGH,
-                                           com.epson.epos2.printer.Printer.PULSE_100
-                                       )
+                                        mPrinter.addPulse(
+                                            com.epson.epos2.printer.Printer.DRAWER_HIGH,
+                                            com.epson.epos2.printer.Printer.PULSE_100
+                                        )
 
-                                       try {
-                                           mPrinter.sendData(Printer.PARAM_DEFAULT)
-                                           mPrinter.disconnect()
-                                           sendToTransaction()
-                                       } catch (e: java.lang.Exception) {
-                                           e.printStackTrace()
-                                           try{
-                                               mPrinter.disconnect()}
-                                           catch (e:Exception){
-                                               e.printStackTrace()
-                                           }
-                                           sendToTransaction()
-                                       }
-                                   } catch (e: Exception){
-                                       e.printStackTrace()
-                                   }
+                                        try {
+                                            mPrinter.sendData(Printer.PARAM_DEFAULT)
+                                            mPrinter.disconnect()
+                                            sendToTransaction()
+                                        } catch (e: java.lang.Exception) {
+                                            e.printStackTrace()
+                                            try {
+                                                mPrinter.disconnect()
+                                            } catch (e: Exception) {
+                                                e.printStackTrace()
+                                            }
+                                            sendToTransaction()
+                                        }
+                                    } catch (e: Exception) {
+                                        e.printStackTrace()
+                                    }
 
                                 }
                             }
