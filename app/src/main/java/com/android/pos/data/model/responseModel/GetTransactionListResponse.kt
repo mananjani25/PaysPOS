@@ -77,7 +77,13 @@ data class GetTransactionListResponse(
             @SerializedName("refunded_amount")
             val refundedAmount: Double,
             @SerializedName("magensa_response")
-            val magensaResponse: String?
+            val magensaResponse: String?,
+            @SerializedName("global_uniq_id")
+            var global_uniq_id: String = "",
+            @SerializedName("ref_num")
+            var ref_num: String = "",
+            @SerializedName("ext_data")
+            var ext_data: String = ""
 
         ) {
             data class Customer(

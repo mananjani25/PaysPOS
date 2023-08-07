@@ -957,6 +957,9 @@ open class PaymentViewModel @Inject constructor(
         paymentType: String,
         cashdiscountType: String,
         tipID: Int? = null,
+        globalUID: String = "",
+        refNum: String = "",
+        extData: String = "",
         totalServiceChargeM: Double = 0.0,
         totalDiscountM: Double = 0.0
     ): OrderRequestModel {
@@ -1051,6 +1054,7 @@ open class PaymentViewModel @Inject constructor(
         }
 
 
+        Log.d("paymentAttributesCard:", "globalUID $globalUID refNum $refNum extData $extData")
         orderAttributeRequestModel.paymentAttributes = if (needToAddPaymentAttributes == true) {
             paymentAttributesForCard(
                 cartModel,
@@ -1064,7 +1068,10 @@ open class PaymentViewModel @Inject constructor(
                 finaldiscount,
                 paymentType,
                 orderAttributeRequestModel.cash_discount_type,
-                redeemLoyaltyInfo = redeemLoyaltyInfo
+                redeemLoyaltyInfo = redeemLoyaltyInfo,
+                globalUID,
+                refNum,
+                extData
             )
         } else {
             null
@@ -1833,7 +1840,10 @@ open class PaymentViewModel @Inject constructor(
         finalcashdiscount: Double,
         paymentTypeStatus: String,
         cashdiscountType: String,
-        redeemLoyaltyInfo: RedeemLoyaltyInfo?
+        redeemLoyaltyInfo: RedeemLoyaltyInfo?,
+        globalUID: String = "",
+        refNum: String = "",
+        extData: String = ""
     ): PaymentAttributes {
         return PaymentAttributes().apply {
 //            if (isUpdateOrder)
@@ -1907,6 +1917,10 @@ open class PaymentViewModel @Inject constructor(
                 total_cash_discount = 0.0
             }
 
+            //PAX Details
+            ext_data = extData
+            global_uniq_id = globalUID
+            ref_num = refNum
 
             magensa_response = magensaResponse.toString()
             cashDiscountFee = 0.0

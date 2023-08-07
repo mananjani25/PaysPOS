@@ -140,6 +140,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     var cardLastDigits = ""
     var CardName = ""
     var EDCType = ""
+    var GlobalUID = ""
+    var RefNumber = ""
+    var ExtData = ""
 
     private var cartList: CartModel? = null
 
@@ -2115,20 +2118,20 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 val resultCode = response.ResultCode
                 val resultTxt = response.ResultTxt
                 val approvedAmount = response.ApprovedAmount
-                val ExtData = response.ExtData
-                val refNum = response.RefNum
+                ExtData = response.ExtData
+                RefNumber = response.RefNum
 
                 cardLastDigits = response.BogusAccountNum
                 EDCType = response.CardType
                 CARDBIN = response.CardInfo.CardBin
                 var tipAmount = response.ApprovedTipAmount
-                val globalUID = response.PaymentTransInfo.GlobalUid
+                GlobalUID = response.PaymentTransInfo.GlobalUid
 //                prefProvider.setValue(Constants.GLOBAL_ID, globalUID!!)
 
                 //implementation("org.dom4j:dom4j:2.1.3")
                 Log.d(
                     "Payment Details: ",
-                    "$ExtData $resultCode $resultTxt $globalUID $refNum"
+                    "$ExtData $resultCode $resultTxt $GlobalUID $RefNumber"
                 )
                 Log.d("Payment Details: ", "$cardLastDigits $approvedAmount $CARDBIN $EDCType $tipAmount ${Gson().toJson(response)}")
 
@@ -2675,7 +2678,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 true,
                 paymentType,
                 cashDiscountType,
-                tipID
+                tipID,
+                GlobalUID,
+                RefNumber,
+                ExtData
             )
         }
         LogUtil.logE(TAG, "myRequestOriginal ${Gson().toJson(myRequest)}")
