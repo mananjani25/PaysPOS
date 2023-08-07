@@ -2048,17 +2048,6 @@ class AllOrdersListingFragment(
             if (receiptModel.cashDiscountType == "CashDiscount"
             ) {
 
-                var cashdiscountAmount = 0.0
-                if (MethodUtils.isEnableCashDiscount(requireContext())) {
-                    cashdiscountAmount = MethodUtils.calculateCashDiscount(
-                        receiptModel.totalAmount,
-                        prefProvider,
-                        requireContext()
-                    )
-                } else {
-                    cashdiscountAmount = 0.0
-                }
-
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
 
@@ -2073,12 +2062,10 @@ class AllOrdersListingFragment(
                     Builder.COLOR_1
                 )
 
-                val totalAmt = MethodUtils.roundOffAmountDouble(receiptModel.totalAmount)
-
                 builder.addText(
                     padLine(
                         "Pay by Cash",
-                        "$" + MethodUtils.roundOffAmountString(totalAmt - cashdiscountAmount),
+                        "$" + MethodUtils.roundOffAmountString(receiptModel.totalAmount - MethodUtils.getLatestCashDiscountOrSurCharge(receiptModel.totalAmount, prefProvider, requireContext())),
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             24
                         } else {
@@ -2104,7 +2091,7 @@ class AllOrdersListingFragment(
                 builder.addText(
                     padLine(
                         "Pay by Card",
-                        "$" + MethodUtils.roundOffAmountString(totalAmt),
+                        "$" + MethodUtils.roundOffAmountString(receiptModel.totalAmount),
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             24
                         } else {
@@ -2117,18 +2104,6 @@ class AllOrdersListingFragment(
             } else if (receiptModel.cashDiscountType == "SurCharge"
             ) {
 
-
-                var cashdiscountAmount = 0.0
-                if (MethodUtils.isEnableCashDiscount(requireContext())) {
-                    cashdiscountAmount = MethodUtils.calculateCashDiscount(
-                        receiptModel.totalAmount,
-                        prefProvider,
-                        requireContext()
-                    )
-                } else {
-                    cashdiscountAmount = 0.0
-                }
-
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
 
@@ -2143,12 +2118,10 @@ class AllOrdersListingFragment(
                     Builder.COLOR_1
                 )
 
-                val totalAmt = MethodUtils.roundOffAmountDouble(receiptModel.totalAmount)
-
                 builder.addText(
                     padLine(
                         "Pay by Cash",
-                        "$" + MethodUtils.roundOffAmountString(totalAmt),
+                        "$" + MethodUtils.roundOffAmountString(receiptModel.totalAmount),
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             24
                         } else {
@@ -2174,7 +2147,7 @@ class AllOrdersListingFragment(
                 builder.addText(
                     padLine(
                         "Pay by Card",
-                        "$" + MethodUtils.roundOffAmountString(totalAmt+cashdiscountAmount),
+                        "$" + MethodUtils.roundOffAmountString(receiptModel.totalAmount + MethodUtils.getLatestCashDiscountOrSurCharge(receiptModel.totalAmount,prefProvider,requireContext())),
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             24
                         } else {
@@ -3002,21 +2975,9 @@ class AllOrdersListingFragment(
             if (receiptModel.cashDiscountType == "CashDiscount"
             ) {
 
-                var cashdiscountAmount = 0.0
-                if (MethodUtils.isEnableCashDiscount(requireContext())) {
-                    cashdiscountAmount = MethodUtils.calculateCashDiscount(
-                        receiptModel.totalAmount,
-                        prefProvider,
-                        requireContext()
-                    )
-                } else {
-                    cashdiscountAmount = 0.0
-                }
-
-                val totalAmt = MethodUtils.roundOffAmountDouble(receiptModel.totalAmount)
                 val str5 = padLine(
                     "Pay by Cash",
-                    "$" + MethodUtils.roundOffAmountString(totalAmt - cashdiscountAmount),
+                    "$" + MethodUtils.roundOffAmountString(receiptModel.totalAmount - MethodUtils.getLatestCashDiscountOrSurCharge(receiptModel.totalAmount,prefProvider,requireContext())),
                     if (customerSettingModel.fonts == Constants.LARGE) {
                         23
                     } else {
@@ -3025,7 +2986,7 @@ class AllOrdersListingFragment(
                 ).toString()
                 PrintSunmiUtils.totalPrice(str5)
 
-                val totalAmt1 = MethodUtils.roundOffAmountDouble(totalAmt)
+                val totalAmt1 = MethodUtils.roundOffAmountDouble(receiptModel.totalAmount)
                 val str51 = padLine(
                     "Pay by Card",
                     "$" + MethodUtils.roundOffAmountString(totalAmt1),
@@ -3039,17 +3000,9 @@ class AllOrdersListingFragment(
             } else if (receiptModel.cashDiscountType == "SurCharge"
             ) {
 
-                var cashdiscountAmount = 0.0
-                cashdiscountAmount = MethodUtils.calculateCashDiscount(
-                    receiptModel.totalAmount,
-                    prefProvider,
-                    requireContext()
-                )
-
-                val totalAmt = MethodUtils.roundOffAmountDouble(receiptModel.totalAmount)
                 val str5 = padLine(
                     "Pay by Cash",
-                    "$" + MethodUtils.roundOffAmountString(totalAmt),
+                    "$" + MethodUtils.roundOffAmountString(receiptModel.totalAmount),
                     if (customerSettingModel.fonts == Constants.LARGE) {
                         23
                     } else {
@@ -3058,7 +3011,7 @@ class AllOrdersListingFragment(
                 ).toString()
                 PrintSunmiUtils.totalPrice(str5)
 
-                val totalAmt1 = MethodUtils.roundOffAmountDouble(totalAmt + cashdiscountAmount)
+                val totalAmt1 = MethodUtils.roundOffAmountDouble(receiptModel.totalAmount + MethodUtils.getLatestCashDiscountOrSurCharge(receiptModel.totalAmount,prefProvider,requireContext()))
                 val str51 = padLine(
                     "Pay by Card",
                     "$" + MethodUtils.roundOffAmountString(totalAmt1),
@@ -5611,21 +5564,9 @@ class AllOrdersListingFragment(
             if (receiptModel.cashDiscountType == "CashDiscount"
             ) {
 
-                var cashdiscountAmount = 0.0
-                if (MethodUtils.isEnableCashDiscount(requireContext())) {
-                    cashdiscountAmount = MethodUtils.calculateCashDiscount(
-                        receiptModel.totalAmount,
-                        prefProvider,
-                        requireContext()
-                    )
-                } else {
-                    cashdiscountAmount = 0.0
-                }
-
-                val totalAmt = MethodUtils.roundOffAmountDouble(receiptModel.totalAmount)
                 val str5 = padLine(
                     "Pay by Cash",
-                    "$" + MethodUtils.roundOffAmountString(totalAmt - cashdiscountAmount),
+                    "$" + MethodUtils.roundOffAmountString(receiptModel.totalAmount - MethodUtils.getLatestCashDiscountOrSurCharge(receiptModel.totalAmount,prefProvider,requireContext())),
                     if (customerSettingModel.fonts == Constants.LARGE) {
                         23
                     } else {
@@ -5634,7 +5575,7 @@ class AllOrdersListingFragment(
                 ).toString()
                 PrintSunmiUtils.boldText(str5)
 
-                val totalAmt1 = MethodUtils.roundOffAmountDouble(totalAmt)
+                val totalAmt1 = MethodUtils.roundOffAmountDouble(receiptModel.totalAmount)
                 val str51 = padLine(
                     "Pay by Card",
                     "$" + MethodUtils.roundOffAmountString(totalAmt1),
@@ -5648,17 +5589,9 @@ class AllOrdersListingFragment(
             } else if (receiptModel.cashDiscountType == "SurCharge"
             ) {
 
-                var cashdiscountAmount = 0.0
-                cashdiscountAmount = MethodUtils.calculateCashDiscount(
-                    receiptModel.totalAmount,
-                    prefProvider,
-                    requireContext()
-                )
-
-                val totalAmt = MethodUtils.roundOffAmountDouble(receiptModel.totalAmount)
                 val str5 = padLine(
                     "Pay by Cash",
-                    "$" + MethodUtils.roundOffAmountString(totalAmt),
+                    "$" + MethodUtils.roundOffAmountString(receiptModel.totalAmount),
                     if (customerSettingModel.fonts == Constants.LARGE) {
                         23
                     } else {
@@ -5667,7 +5600,7 @@ class AllOrdersListingFragment(
                 ).toString()
                 PrintSunmiUtils.boldText(str5)
 
-                val totalAmt1 = MethodUtils.roundOffAmountDouble(totalAmt + cashdiscountAmount)
+                val totalAmt1 = MethodUtils.roundOffAmountDouble(receiptModel.totalAmount + MethodUtils.getLatestCashDiscountOrSurCharge(receiptModel.totalAmount,prefProvider,requireContext()))
                 val str51 = padLine(
                     "Pay by Card",
                     "$" + MethodUtils.roundOffAmountString(totalAmt1),
