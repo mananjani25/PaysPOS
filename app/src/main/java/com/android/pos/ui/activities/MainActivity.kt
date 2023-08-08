@@ -1063,8 +1063,8 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     override fun onResume() {
         super.onResume()
         if (this::presentation.isInitialized) {
-           // presentation.show()
-           // presentation.onDisplayChanged()
+            presentation.show()
+            presentation.onDisplayChanged()
         }
         prefProvider?.setValue(UNIQUE_ID, getDeviceId())
 

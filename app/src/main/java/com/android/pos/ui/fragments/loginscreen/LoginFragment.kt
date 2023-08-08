@@ -171,8 +171,8 @@ class LoginFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         if(this::presentation.isInitialized){
-           // presentation.show()
-           // presentation.onLogOutOrClockOut()
+            presentation.show()
+            presentation.onLogOutOrClockOut()
         }
     }
 
