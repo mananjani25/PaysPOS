@@ -262,7 +262,7 @@ abstract class AppDatabase : RoomDatabase() {
         val MIGRATION_7_8: Migration = object : Migration(7, 8) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 try {
-                    database.execSQL("ALTER TABLE EodShiftReport ADD COLUMN isItemWiseSales INTEGER DEFAULT 0")
+                    database.execSQL("ALTER TABLE EodShiftReport ADD COLUMN isItemWiseSales INTEGER DEFAULT 0 NOT NULL")
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
