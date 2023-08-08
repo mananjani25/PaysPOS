@@ -2292,7 +2292,7 @@ class TransactionDetailsFragment : Fragment() {
                 builder.addText(
                     padLine(
                         "Transaction Type",
-                        "Cash",
+                        paymentDetailsResponse.data.payment_type ?: "Cash",
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             24
                         } else {
@@ -2943,7 +2943,7 @@ class TransactionDetailsFragment : Fragment() {
                 PrintSunmiUtils.transactionType(
                     padLine(
                         "Transaction Type",
-                        "Cash", if (customerSettingModel.fonts == Constants.LARGE) 23 else 48
+                        paymentDetailsResponse.data.payment_type ?: "Cash", if (customerSettingModel.fonts == Constants.LARGE) 23 else 48
                     ).toString()
                 )
 
@@ -3419,7 +3419,7 @@ class TransactionDetailsFragment : Fragment() {
                 PrintSunmiUtils.normalText(
                     padLine(
                         "Transaction Type",
-                        "Cash", PrintSunmiUtils.lineChar()
+                        paymentDetailsResponse.data.payment_type ?: "Cash", PrintSunmiUtils.lineChar()
                     ).toString()
                 )
 
