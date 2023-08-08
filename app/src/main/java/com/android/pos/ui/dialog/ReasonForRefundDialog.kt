@@ -65,6 +65,7 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
 
     private var customerList: List<PrinterResponse.Data.CustomerReceiptPrinters> = arrayListOf()
     private var paymentType: String = ""
+    private var referenceNo: String? = null
     private var magensa_response_data: String = ""
     private var refundAmount: Double = 0.0
     private lateinit var binding: DialogRefundReasonBinding
@@ -105,6 +106,7 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
         refundAmount = arguments?.getDouble("refundAmount")!!
         magensa_response_data = arguments?.getString("magensa_response_data").toString()
         paymentType = arguments?.getString("paymentType").toString()
+        referenceNo = arguments?.getString("pax_ref_num").toString()
 
 
         binding.txtTitle.text = paymentType
@@ -123,7 +125,7 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
 
         binding.txtDone.setOnClickListener {
             if (MethodUtils.isDoubleClick()) return@setOnClickListener
-            if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)) {
+            if (!referenceNo.isNullOrEmpty()) {
                 refundViaPAX()
             } else {
                 doneClick()
