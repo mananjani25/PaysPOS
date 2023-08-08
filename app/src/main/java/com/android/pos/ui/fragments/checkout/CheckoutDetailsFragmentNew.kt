@@ -2397,7 +2397,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         Log.e(TAG, "WholetotalPrice:   ${WholetotalPrice}")
         MethodUtils.setPriceTextView(
             binding.tvCard,
-            getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectCount
+            (WholetotalPrice + MethodUtils.getLatestCashDiscountOrSurCharge(WholetotalPrice,prefProvider,requireContext())) / isSelectCount
         )
         if (this::presentation.isInitialized) {
             presentation.show()
@@ -2425,7 +2425,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             )
             MethodUtils.setPriceTextView(
                 binding.tvCard,
-                getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectedCount
+                (WholetotalPrice + MethodUtils.getLatestCashDiscountOrSurCharge(WholetotalPrice,prefProvider,requireContext())) / isSelectedCount
             )
             if (this::presentation.isInitialized) {
                 presentation.show()
@@ -2461,7 +2461,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
             MethodUtils.setPriceTextView(
                 binding.tvCard,
-                (getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectedCount) + tipAmount
+                ((WholetotalPrice + MethodUtils.getLatestCashDiscountOrSurCharge(WholetotalPrice,prefProvider,requireContext())) / isSelectedCount) + tipAmount
             )
 
             if (this::presentation.isInitialized) {
