@@ -340,7 +340,6 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         viewModel.setTipAmount(tipAmountOnOrderTotal)
         tipAmountCalculation()
         loadPaymentLayout()
-        org.greenrobot.eventbus.EventBus.getDefault().unregister(this)
     }
 
     @SuppressLint("SetTextI18n")
