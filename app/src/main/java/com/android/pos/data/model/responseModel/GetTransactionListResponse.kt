@@ -54,6 +54,8 @@ data class GetTransactionListResponse(
             val payableId: Int,
             @SerializedName("payable_type")
             val payableType: String,
+            @SerializedName("gift_card_id")
+            val giftCardId: Int,
             @SerializedName("payment_id")
             val paymentId: Any,
             @SerializedName("payment_type")
