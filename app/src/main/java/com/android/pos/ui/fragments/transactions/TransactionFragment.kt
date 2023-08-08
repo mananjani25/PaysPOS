@@ -258,8 +258,9 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
             tipAmount = bundle.getDouble("tipAmount")
 
             if (singleTransaction?.paymentType == "Card") {
-                //Add condition according to params i.e magtek or pax in API response
-                if (!prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)) {
+                //Add condition according to params i.e magtek or pax data in API response
+                Log.d("RefNum11: ","RefNum ${singleTransaction?.ref_num}")
+                if (singleTransaction?.ref_num.isNullOrEmpty()) {
                     magtekCall(tipAmount)
                 } else {
                     adjustPaxTips()

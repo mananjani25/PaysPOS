@@ -117,6 +117,8 @@ open class PaymentViewModel @Inject constructor(
     public var actual_CardAmount: Double = 0.0
 
     public var magensaResponse: String? = null
+    var paxReferenceNo: String? = null
+    var paxGlobalID: String? = null
 
     fun cardReaderList() = posRepository.cardReaderActiveList()
 
@@ -2118,6 +2120,13 @@ open class PaymentViewModel @Inject constructor(
 
         magensaResponse = response
         cardNumberLast4 = cardNumber1
+
+    }
+
+    fun setPAXData(ref_num: String, global_id: String) {
+
+        paxReferenceNo = ref_num
+        paxGlobalID = global_id
 
     }
 
