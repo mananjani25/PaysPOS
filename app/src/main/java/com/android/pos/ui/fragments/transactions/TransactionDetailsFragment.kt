@@ -4829,9 +4829,8 @@ class TransactionDetailsFragment : Fragment() {
                             )
                         )
                     }
-
-
                 }
+
             } else {
 
                 PrintSunmiUtils.normalText("ReceiptID:" + paymentDetailsResponse?.data.order.offline_id)
