@@ -3,6 +3,7 @@ package com.android.pos.ui.fragments.checkout
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
 import android.os.Bundle
+import android.os.Message
 import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
@@ -11,6 +12,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.Toast
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -47,17 +49,21 @@ import com.android.pos.ui.fragments.settings.tip.TipListViewModel
 import com.android.pos.utils.*
 import com.android.pos.utils.callback.DeleteOptionCallback
 import com.android.pos.utils.callback.magtekCallback
-import com.android.pos.utils.extensions.gone
-import com.android.pos.utils.extensions.runOnUiThread
-import com.android.pos.utils.extensions.setOnSingleClickListener
-import com.android.pos.utils.extensions.visible
+import com.android.pos.utils.extensions.*
+import com.android.pos.utils.paxUtils.AppThreadPool
+import com.android.pos.utils.paxUtils.POSLinkCreatorWrapper
+import com.android.pos.utils.paxUtils.SettingINI
 import com.android.pos.utils.statusUtils.Status
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.magtek.mobile.android.mtlib.IMTCardData
 import com.magtek.mobile.android.mtlib.MTConnectionState
 import com.magtek.mobile.android.mtusdk.*
+import com.pax.poslink.PaymentRequest
+import com.pax.poslink.PosLink
+import com.pax.poslink.ProcessTransResult
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -122,6 +128,16 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
     private var future_delivery_time: String = ""
     var totalDiscount = 0.0
     var cardPaymentAmount = 0.0
+    // PAX variables
+    private lateinit var mPaymentRequest: PaymentRequest
+    private var posLink: PosLink = PosLink()
+    var CARDBIN = ""
+    var cardLastDigits = ""
+    var CardName = ""
+    var EDCType = ""
+    var GlobalUID = ""
+    var RefNumber = ""
+    var ExtData = ""
 
     private var cartList: CartModel? = null
     private var splitModel: DineInOrderPayment? = null
@@ -195,7 +211,20 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 //            }
         }
 
+        initPOSLink()
+
         return binding.root
+    }
+
+    private fun initPOSLink() {
+        POSLinkCreatorWrapper.createSync(
+            context!!,
+            object : AppThreadPool.FinishInMainThreadCallback<PosLink?> {
+                override fun onFinish(result: PosLink?) {
+                    posLink = result!!
+                    Log.d("initPOSLink: ","onFinish")
+                }
+            })
     }
 
     private val tipListViewModel by activityViewModels<TipListViewModel>()
@@ -1095,11 +1124,16 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             paymentAmount += tipAmount
 
             if (paymentAmount != 0.0) {
-                magtekModule.stopListner(false)
-                if (device == 0) {
-                    magtekPaymentCall()
-                } else {
-                    magtekProPaymentCall()
+                if (mSessionManager.isConnected) {
+                    magtekModule.stopListner(false)
+                    if (device == 0) {
+                        magtekPaymentCall()
+                    } else {
+                        magtekProPaymentCall()
+                    }
+                    prefProvider.setValueboolean(Constants.IS_PAX_CONNECTED, false)
+                } else if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false) && !mSessionManager.isConnected) {
+                    makePaxPaymentRequest()
                 }
             } else {
                 errorDisplay("Payment Amount is zero.")
@@ -1224,6 +1258,82 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 }
             }
 
+
+        }
+    }
+
+    private fun makePaxPaymentRequest() {
+        GlobalScope.launch {
+            posLink.SetCommSetting(SettingINI.getCommSettingFromFile(Constants.FILE_PATH + SettingINI.FILENAME))
+            val amt = ((paymentAmount-tipAmount)*100).toInt()
+            val tip_amt = (tipAmount*100).toInt()
+            Log.d("Amt: ","amt $amt tip $tip_amt")
+
+            CoroutineScope(Dispatchers.Main).launch {
+                ProgressUtils.showProgressDialog(requireActivity())
+            }
+            mPaymentRequest = PaymentRequest()
+            mPaymentRequest.TransType = mPaymentRequest.ParseTransType("SALE")
+            mPaymentRequest.TenderType = mPaymentRequest.ParseTenderType("CREDIT")
+            mPaymentRequest.Amount = amt.toString()
+            mPaymentRequest.TipAmt = tip_amt.toString()
+            mPaymentRequest.ECRRefNum = System.currentTimeMillis().toString()
+            mPaymentRequest.ExtData = "<Force>T</Force>"
+            Log.d("ECRRefNum", "ECRRefNum: ${System.currentTimeMillis().toString()}")
+
+            posLink.PaymentRequest = mPaymentRequest
+            val result = posLink.ProcessTrans()
+            Log.d("result: ", result.Code.toString() + " " + result.Msg)
+            if (result.Code === ProcessTransResult.ProcessTransResultCode.OK) {
+                val msg = Message()
+                msg.what = Constants.TRANSACTION_SUCCESSED
+                msg.obj = posLink.PaymentResponse
+
+                val response = msg.obj as com.pax.poslink.PaymentResponse
+                val resultCode = response.ResultCode
+                val resultTxt = response.ResultTxt
+                val approvedAmount = response.ApprovedAmount
+                ExtData = response.ExtData
+                RefNumber = response.RefNum
+
+                cardLastDigits = response.BogusAccountNum
+                EDCType = response.CardType
+                CARDBIN = response.CardInfo.CardBin
+                var tipAmount = response.ApprovedTipAmount
+                GlobalUID = response.PaymentTransInfo.GlobalUid
+                paymentviewModel.setPAXData(RefNumber, GlobalUID)
+//                prefProvider.setValue(Constants.GLOBAL_ID, globalUID!!)
+
+                //implementation("org.dom4j:dom4j:2.1.3")
+                Log.d(
+                    "Payment Details: ",
+                    "$ExtData $resultCode $resultTxt $GlobalUID $RefNumber"
+                )
+                Log.d("Payment Details: ", "$cardLastDigits $approvedAmount $CARDBIN $EDCType $tipAmount ${Gson().toJson(response)}")
+
+                if (resultCode == "000000") {
+                    CoroutineScope(Dispatchers.Main).launch {
+                        ProgressUtils.dismissProgressDialog()
+                        coroutineScope {
+                            makePaymentCreditCard()
+                        }
+                    }
+                } else {
+                    CoroutineScope(Dispatchers.Main).launch {
+                        ProgressUtils.dismissProgressDialog()
+                        requireActivity().toast("$resultCode $resultTxt", Toast.LENGTH_LONG)
+                    }
+                }
+            } else {
+                CoroutineScope(Dispatchers.Main).launch {
+                    ProgressUtils.dismissProgressDialog()
+                    if (result.Msg.toString() == "CONNECT ERROR" || result.Msg.toString() == "TIME OUT"){
+                        Toast.makeText(requireContext(), "Please check your internet connection", Toast.LENGTH_LONG).show()
+                    } else {
+                        Toast.makeText(requireContext(), "getMerchantDetails Failed ${result.Code} ${result.Msg}", Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
 
         }
     }
