@@ -63,6 +63,7 @@ import com.magtek.mobile.android.mtlib.IMTCardData
 import com.magtek.mobile.android.mtlib.MTConnectionState
 import com.magtek.mobile.android.mtusdk.*
 import dagger.hilt.android.AndroidEntryPoint
+import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import retrofit2.Call
@@ -323,12 +324,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     override fun onStart() {
         super.onStart()
-        org.greenrobot.eventbus.EventBus.getDefault().register(this)
+        EventBus.getDefault().register(this)
     }
 
     override fun onStop() {
         super.onStop()
-        org.greenrobot.eventbus.EventBus.getDefault().unregister(this)
+        EventBus.getDefault().unregister(this)
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -340,7 +341,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         viewModel.setTipAmount(tipAmountOnOrderTotal)
         tipAmountCalculation()
         loadPaymentLayout()
-        org.greenrobot.eventbus.EventBus.getDefault().unregister(this)
+        //org.greenrobot.eventbus.EventBus.getDefault().unregister(this)
     }
 
     @SuppressLint("SetTextI18n")
@@ -352,19 +353,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             tipFromCustomerDisplay = false
 
             val rate = bundle.getDouble("tipPercent")
-            val totalAmountWithSurcharge =
-                getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectedCount
-            tipAmount = if (rate > 0.00) {
-                MethodUtils.percentageCalculation(
-                    totalAmountWithSurcharge,
-                    rate
-                )//on total + surcharge
+            tipAmountOnOrderTotal = if (rate > 0.00) {
+                MethodUtils.percentageCalculation(WholetotalPrice/isSelectedCount, rate)//on total (without surcharge added)
             } else {
                 bundle.getDouble("tipAmount")
             }
 
-            tipAmountOnOrderTotal =
-                bundle.getDouble("tipAmount")//on total (without surcharge added)
+            tipAmount = bundle.getDouble("tipAmount")//on total + surcharge
             viewModel.setTipAmount(tipAmountOnOrderTotal)
 
             Log.d(TAG, "callback: TIP AMOUNT W/o SURCHARGE/TOTAL - $tipAmountOnOrderTotal")
@@ -2395,10 +2390,23 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount
         )
         Log.e(TAG, "WholetotalPrice:   ${WholetotalPrice}")
-        MethodUtils.setPriceTextView(
-            binding.tvCard,
-            (WholetotalPrice + MethodUtils.getLatestCashDiscountOrSurCharge(WholetotalPrice,prefProvider,requireContext())) / isSelectCount
-        )
+
+        if (prefProvider.getValue(
+                Constants.OPTION_TYPE,
+                "CashDiscount"
+            ) == "CashDiscount"
+        ) {
+            MethodUtils.setPriceTextView(
+                binding.tvCard,
+                (WholetotalPrice) / isSelectCount
+            )
+        }else{
+            MethodUtils.setPriceTextView(
+                binding.tvCard,
+                (WholetotalPrice + MethodUtils.getLatestCashDiscountOrSurCharge(WholetotalPrice,prefProvider,requireContext())) / isSelectCount
+            )
+        }
+
         if (this::presentation.isInitialized) {
             presentation.show()
             presentation.updateTotals(
@@ -2423,10 +2431,21 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 binding.tvCash0,
                 getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectedCount
             )
-            MethodUtils.setPriceTextView(
-                binding.tvCard,
-                (WholetotalPrice + MethodUtils.getLatestCashDiscountOrSurCharge(WholetotalPrice,prefProvider,requireContext())) / isSelectedCount
-            )
+            if (prefProvider.getValue(
+                    Constants.OPTION_TYPE,
+                    "CashDiscount"
+                ) == "CashDiscount"
+            ) {
+                MethodUtils.setPriceTextView(
+                    binding.tvCard,
+                    (WholetotalPrice) / isSelectedCount
+                )
+            }else{
+                MethodUtils.setPriceTextView(
+                    binding.tvCard,
+                    (WholetotalPrice + MethodUtils.getLatestCashDiscountOrSurCharge(WholetotalPrice,prefProvider,requireContext())) / isSelectedCount
+                )
+            }
             if (this::presentation.isInitialized) {
                 presentation.show()
                 presentation.updateTotals(
@@ -2459,10 +2478,21 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 ) / isSelectedCount) + tipAmountOnOrderTotal
             )
 
-            MethodUtils.setPriceTextView(
-                binding.tvCard,
-                ((WholetotalPrice + MethodUtils.getLatestCashDiscountOrSurCharge(WholetotalPrice,prefProvider,requireContext())) / isSelectedCount) + tipAmount
-            )
+            if (prefProvider.getValue(
+                    Constants.OPTION_TYPE,
+                    "CashDiscount"
+                ) == "CashDiscount"
+            ) {
+                MethodUtils.setPriceTextView(
+                    binding.tvCard,
+                    ((WholetotalPrice ) / isSelectedCount) + tipAmount
+                )
+            }else{
+                MethodUtils.setPriceTextView(
+                    binding.tvCard,
+                    ((WholetotalPrice + MethodUtils.getLatestCashDiscountOrSurCharge(WholetotalPrice,prefProvider,requireContext())) / isSelectedCount) + tipAmount
+                )
+            }
 
             if (this::presentation.isInitialized) {
                 presentation.show()

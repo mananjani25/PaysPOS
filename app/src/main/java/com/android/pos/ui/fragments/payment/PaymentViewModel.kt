@@ -2213,7 +2213,16 @@ open class PaymentViewModel @Inject constructor(
             subTotal = subTotalPrice
             taxAmount = totalTax
             terminalId = cartModel.terminalId
-            tips = MethodUtils.roundOffAmountDouble(tipAmount)
+            //Deduct the SurCharge % amount from tipAmount and then go ahead
+            //As discussed with Rohan - we have to avoid loss of merchant on
+            // processing fees of any order while card payment
+            //This is done by Dharmesh Basapati in BIS-957 task
+            val rateOrAmount = prefProvider.getValue(Constants.RATE_OR_AMOUNT, "0")
+            val newTipAmountAfterSurChargeDeduction = tipAmount - percentageCalculation(tipAmount,rateOrAmount.toDouble())
+            tips = MethodUtils.roundOffAmountDouble(newTipAmountAfterSurChargeDeduction)
+
+            //Actual Tip on Total only(for backend usage)
+            tipWithSurchargePercentage = tipAmount
             tipsAdjusted = false
             totalDiscount = totalDis
 
