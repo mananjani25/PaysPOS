@@ -3874,10 +3874,27 @@ class AllOrdersListingFragment(
                     builder.addTextAlign(Builder.ALIGN_CENTER)
 
                     addBuilderTextForU220(builder, orderData.orderTypeName.toString())
+
+                    if ((orderData.orderType.equals(Constants.PHONE_ORDER, true) ||
+                                orderData.orderType.equals("OnlineWebOrder", true) ||
+                                orderData.orderType.equals("Online Order", true) ||
+                                orderData.orderType.equals("OnlineOrder", true)) && orderData.deliveryType != null) {
+                        builder.addFeedLine(1)
+                        builder.addTextFont(Builder.FONT_E)
+                        builder.addTextLang(Builder.LANG_EN)
+                        builder.addTextSize(fontSizeH, fontSizeW)
+                        builder.addTextStyle(
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.TRUE,
+                            Builder.COLOR_1
+                        )
+                        builder.addTextAlign(Builder.ALIGN_CENTER)
+
+                        addBuilderTextForU220(builder, orderData.deliveryType.toString())
+                        builder.addFeedLine(1)
+                    }
                 }
-                var tmps = "Open Order".toString().trim()
-                    .toString().lowercase()
-                LogUtil.logE(TAG, "LowerCAse ${tmps.trimmedLength()}")
 
 
                 if (kitchenSettingModel.showTeamMember) {
@@ -4148,6 +4165,26 @@ class AllOrdersListingFragment(
                     builder.addTextAlign(Builder.ALIGN_CENTER)
 
                     addBuilderTextForU220(builder, orderData.orderTypeName.toString())
+
+                    if ((orderData.orderType.equals(Constants.PHONE_ORDER, true) ||
+                                orderData.orderType.equals("OnlineWebOrder", true) ||
+                                orderData.orderType.equals("Online Order", true) ||
+                                orderData.orderType.equals("OnlineOrder", true)) && orderData.deliveryType != null) {
+                        builder.addFeedLine(1)
+                        builder.addTextFont(Builder.FONT_E)
+                        builder.addTextLang(Builder.LANG_EN)
+                        builder.addTextSize(fontSizeH, fontSizeW)
+                        builder.addTextStyle(
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.TRUE,
+                            Builder.COLOR_1
+                        )
+                        builder.addTextAlign(Builder.ALIGN_CENTER)
+
+                        addBuilderTextForU220(builder, orderData.deliveryType.toString())
+                        builder.addFeedLine(1)
+                    }
                 }
 
 
@@ -4502,11 +4539,27 @@ class AllOrdersListingFragment(
                     builder.addTextAlign(Builder.ALIGN_CENTER)
 
                     addBuilderText(builder, orderData.orderTypeName.toString())
-                }
-                var tmps = "Open Order".toString().trim()
-                    .toString().lowercase()
-                LogUtil.logE(TAG, "LowerCAse ${tmps.trimmedLength()}")
 
+                    if ((orderData.orderType.equals(Constants.PHONE_ORDER, true) ||
+                                orderData.orderType.equals("OnlineWebOrder", true) ||
+                                orderData.orderType.equals("Online Order", true) ||
+                                orderData.orderType.equals("OnlineOrder", true)) && orderData.deliveryType != null) {
+                        builder.addFeedLine(1)
+                        builder.addTextFont(Builder.FONT_E)
+                        builder.addTextLang(Builder.LANG_EN)
+                        builder.addTextSize(fontSizeH, fontSizeW)
+                        builder.addTextStyle(
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.TRUE,
+                            Builder.COLOR_1
+                        )
+                        builder.addTextAlign(Builder.ALIGN_CENTER)
+
+                        addBuilderText(builder, orderData.deliveryType.toString())
+                        builder.addFeedLine(1)
+                    }
+                }
 
                 if (kitchenSettingModel.showTeamMember) {
 
@@ -4785,6 +4838,26 @@ class AllOrdersListingFragment(
                     builder.addTextAlign(Builder.ALIGN_CENTER)
 
                     addBuilderText(builder, orderData.orderTypeName.toString())
+
+                    if ((orderData.orderType.equals(Constants.PHONE_ORDER, true) ||
+                                orderData.orderType.equals("OnlineWebOrder", true) ||
+                                orderData.orderType.equals("Online Order", true) ||
+                                orderData.orderType.equals("OnlineOrder", true)) && orderData.deliveryType != null) {
+                        builder.addFeedLine(1)
+                        builder.addTextFont(Builder.FONT_E)
+                        builder.addTextLang(Builder.LANG_EN)
+                        builder.addTextSize(fontSizeH, fontSizeW)
+                        builder.addTextStyle(
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.TRUE,
+                            Builder.COLOR_1
+                        )
+                        builder.addTextAlign(Builder.ALIGN_CENTER)
+
+                        addBuilderText(builder, orderData.deliveryType.toString())
+                        builder.addFeedLine(1)
+                    }
                 }
 
 
@@ -5085,8 +5158,16 @@ class AllOrdersListingFragment(
 
             if (kitchenSettingModel.showOrderType) {
                 PrintSunmiUtils.printOrderType(orderData.orderTypeName.toString())
+                SunmiPrinterApi.getInstance().lineWrap(1)
+
+                if ((orderData.orderType.equals(Constants.PHONE_ORDER, true) ||
+                    orderData.orderType.equals("OnlineWebOrder", true) ||
+                    orderData.orderType.equals("Online Order", true) ||
+                    orderData.orderType.equals("OnlineOrder", true)) && orderData.deliveryType != null) {
+                    PrintSunmiUtils.printOrderType(orderData.deliveryType.toString())
+                    SunmiPrinterApi.getInstance().lineWrap(1)
+                }
             }
-            SunmiPrinterApi.getInstance().lineWrap(1)
 
             if (kitchenSettingModel.showTeamMember) {
 
@@ -5900,6 +5981,15 @@ class AllOrdersListingFragment(
 
             if (kitchenSettingModel.showOrderType) {
                 PrintSunmiUtils.headerText(orderData.orderTypeName.toString())
+                SunmiPrinterApi.getInstance().lineWrap(1)
+
+                if ((orderData.orderType.equals(Constants.PHONE_ORDER, true) ||
+                            orderData.orderType.equals("OnlineWebOrder", true) ||
+                            orderData.orderType.equals("Online Order", true) ||
+                            orderData.orderType.equals("OnlineOrder", true)) && orderData.deliveryType != null) {
+                    PrintSunmiUtils.headerText(orderData.deliveryType.toString())
+                    SunmiPrinterApi.getInstance().lineWrap(1)
+                }
             }
 
             if (kitchenSettingModel.showTeamMember) {
