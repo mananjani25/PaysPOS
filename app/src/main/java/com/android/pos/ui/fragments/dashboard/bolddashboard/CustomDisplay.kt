@@ -1322,9 +1322,8 @@ class CustomDisplay(
                 )
 
                 binding.txtTipLabel?.text = "Tip ($percentageTip%)"
-                binding.txtTipCash?.visible()
+                binding.txtTipCash?.invisible()
                 binding.txtTipCard?.visible()
-                binding.txtTipCash?.text = "" + MethodUtils.roundOffAmount(tipAmountForCash)
                 binding.txtTipCard?.text = "" + MethodUtils.roundOffAmount(tipAmountForCash)
 
             }
