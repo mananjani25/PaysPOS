@@ -80,6 +80,11 @@ class AllOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
                         context
                     )
             }
+
+            if(!item.terminalName.isNullOrEmpty()) {
+                binding.txtStationName.text = item.terminalName
+            }
+
             if (item.futureDeliveryTime != null && item.futureDeliveryTime.isNotEmpty()) {
                 val inputFormat = SimpleDateFormat("hh:mm a")
                 val outputFormat = SimpleDateFormat("hh:mm a")
