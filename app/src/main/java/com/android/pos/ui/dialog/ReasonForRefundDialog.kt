@@ -52,6 +52,7 @@ import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
@@ -124,6 +125,7 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
 
 
         binding.txtDone.setOnClickListener {
+            Log.d("referenceNo: ","referenceNo $referenceNo")
             if (MethodUtils.isDoubleClick()) return@setOnClickListener
             if (!referenceNo.isNullOrEmpty()) {
                 refundViaPAX()
@@ -160,54 +162,56 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
     private fun refundViaPAX() {
         if (refundAmount != 0.0 || refundAmount > 0.0) {
             if (paymentType == "Card") {
-                posLink.SetCommSetting(SettingINI.getCommSettingFromFile(Constants.FILE_PATH + SettingINI.FILENAME))
+                GlobalScope.launch {
+                    posLink.SetCommSetting(SettingINI.getCommSettingFromFile(Constants.FILE_PATH + SettingINI.FILENAME))
 
-                CoroutineScope(Dispatchers.Main).launch {
-                    ProgressUtils.showProgressDialog(requireActivity())
-                }
-                val amt = (refundAmount*100).toInt()
-                val refund = PaymentRequest()
-                refund.TenderType = refund.ParseTenderType("CREDIT")
-                refund.TransType = refund.ParseTransType("RETURN")
+                    CoroutineScope(Dispatchers.Main).launch {
+                        ProgressUtils.showProgressDialog(requireActivity())
+                    }
+                    val amt = (refundAmount * 100).toInt()
+                    val refund = PaymentRequest()
+                    refund.TenderType = refund.ParseTenderType("CREDIT")
+                    refund.TransType = refund.ParseTransType("RETURN")
 
-                refund.Amount = amt.toString()
-                posLink.PaymentRequest = refund
-                val result = posLink.ProcessTrans()
-                Log.d("result: ", result.Code.toString() + " " + result.Msg)
-                if (result.Code === ProcessTransResult.ProcessTransResultCode.OK) {
-                    val msg = Message()
-                    msg.what = Constants.TRANSACTION_SUCCESSED
-                    msg.obj = posLink.PaymentResponse
+                    refund.Amount = amt.toString()
+                    posLink.PaymentRequest = refund
+                    val result = posLink.ProcessTrans()
+                    Log.d("result: ", result.Code.toString() + " " + result.Msg)
+                    if (result.Code === ProcessTransResult.ProcessTransResultCode.OK) {
+                        val msg = Message()
+                        msg.what = Constants.TRANSACTION_SUCCESSED
+                        msg.obj = posLink.PaymentResponse
 
-                    val response = msg.obj as com.pax.poslink.PaymentResponse
-                    val resultCode = response.ResultCode
-                    val resultTxt = response.ResultTxt
+                        val response = msg.obj as com.pax.poslink.PaymentResponse
+                        val resultCode = response.ResultCode
+                        val resultTxt = response.ResultTxt
 
-                    if (resultCode == "000000") {
-                        CoroutineScope(Dispatchers.Main).launch {
-                            refundCall()
+                        if (resultCode == "000000") {
+                            CoroutineScope(Dispatchers.Main).launch {
+                                refundCall()
+                            }
+                        } else {
+                            CoroutineScope(Dispatchers.Main).launch {
+                                ProgressUtils.dismissProgressDialog()
+                                requireActivity().toast("$resultCode $resultTxt", Toast.LENGTH_LONG)
+                            }
                         }
                     } else {
                         CoroutineScope(Dispatchers.Main).launch {
                             ProgressUtils.dismissProgressDialog()
-                            requireActivity().toast("$resultCode $resultTxt", Toast.LENGTH_LONG)
-                        }
-                    }
-                } else {
-                    CoroutineScope(Dispatchers.Main).launch {
-                        ProgressUtils.dismissProgressDialog()
-                        if (result.Msg.toString() == "CONNECT ERROR" || result.Msg.toString() == "TIME OUT") {
-                            Toast.makeText(
-                                requireContext(),
-                                "Please check your internet connection",
-                                Toast.LENGTH_LONG
-                            ).show()
-                        } else {
-                            Toast.makeText(
-                                requireContext(),
-                                "getMerchantDetails Failed ${result.Code} ${result.Msg}",
-                                Toast.LENGTH_LONG
-                            ).show()
+                            if (result.Msg.toString() == "CONNECT ERROR" || result.Msg.toString() == "TIME OUT") {
+                                Toast.makeText(
+                                    requireContext(),
+                                    "Please check your internet connection",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            } else {
+                                Toast.makeText(
+                                    requireContext(),
+                                    "getMerchantDetails Failed ${result.Code} ${result.Msg}",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
                         }
                     }
                 }
