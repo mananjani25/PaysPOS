@@ -2496,33 +2496,34 @@ class AllOrdersListingFragment(
 
                 builder.addText(receiptModel.note)
             }
+            if (printType == Constants.PRINT_PAID) {
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
 
-            builder.addTextLineSpace(30)
-            builder.addFeedUnit(30)
-
-            builder.addTextFont(Builder.FONT_E)
-            // builder.addTextAlign(Builder.ALIGN_LEFT)
-            builder.addTextLang(Builder.LANG_EN)
-            addCustomerTextSize(builder, customerSettingModel.fonts)
-            builder.addTextStyle(
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.TRUE,
-                Builder.COLOR_1
-            )
-
-            //customer signature line.
-            builder.addText(
-                padLine(
-                    "Customer Signature",
-                    addHorizontalHalfCustomerReceiptLine(customerSettingModel.fonts),
-                    if (customerSettingModel.fonts == Constants.LARGE) {
-                        24
-                    } else {
-                        48
-                    }
+                builder.addTextFont(Builder.FONT_E)
+                // builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, customerSettingModel.fonts)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
                 )
-            )
+
+                //customer signature line.
+                builder.addText(
+                    padLine(
+                        "Customer Signature",
+                        addHorizontalHalfCustomerReceiptLine(customerSettingModel.fonts),
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            24
+                        } else {
+                            48
+                        }
+                    )
+                )
+            }
 
 
 
@@ -3205,13 +3206,15 @@ class AllOrdersListingFragment(
                 PrintSunmiUtils.orderNote(receiptModel.note)
             }
             SunmiPrinterApi.getInstance().lineWrap(2)
-            val str8 = padLine(
-                "Customer Signature",
-                "     _________________________",
-                48
-            ).toString()
+            if (printType == Constants.PRINT_PAID) {
+                val str8 = padLine(
+                    "Customer Signature",
+                    "     _________________________",
+                    48
+                ).toString()
 
-            PrintSunmiUtils.customerSignature(str8)
+                PrintSunmiUtils.customerSignature(str8)
+            }
 
             if (customerSettingModel.showQrCode) {
 
@@ -5819,14 +5822,15 @@ class AllOrdersListingFragment(
             }
             SunmiPrintHelper.getInstance().lineWrap(2)
 
+            if (printType == Constants.PRINT_PAID) {
+                if (customerSettingModel.fonts == Constants.LARGE) {
+                    PrintSunmiUtils.boldText("Customer Signature ____")
+                } else {
+                    PrintSunmiUtils.boldText("Customer Signature           __________________")
+                }
 
-            if (customerSettingModel.fonts == Constants.LARGE) {
-                PrintSunmiUtils.boldText("Customer Signature ____")
-            } else {
-                PrintSunmiUtils.boldText("Customer Signature           __________________")
+                SunmiPrintHelper.getInstance().lineWrap(2)
             }
-
-            SunmiPrintHelper.getInstance().lineWrap(2)
             if (customerSettingModel.showQrCode) {
 
                 PrintSunmiUtils.qrCodeInner(receiptModel.digitalReceiptUrl)
