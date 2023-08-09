@@ -1729,6 +1729,11 @@ class CustomDisplay(
     private fun callUpdateTip() {
         lifecycleOwner.lifecycleScope.launch {
             showProgress()
+            if(mIsCardPayment){
+                if (prefProvider.getValue(Constants.OPTION_TYPE, "CashDiscount") == "SurCharge") {
+                    tippedAmount = MethodUtils.roundOffAmountDouble(tippedAmount - MethodUtils.getLatestCashDiscountOrSurCharge(tippedAmount, prefProvider, context))
+                }
+            }
             mTransactionViewModel.updateTipWithSignature(mOrderID, signatureInBase64, tippedAmount)
             mTransactionViewModel.updateTipData.observe(lifecycleOwner) { event ->
                 event.getContentIfNotHandled()?.let {
