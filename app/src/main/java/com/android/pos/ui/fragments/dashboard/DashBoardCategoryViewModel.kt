@@ -57,6 +57,8 @@ import com.android.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.ORDER_TYPE_ID
 import com.android.pos.data.remote.Constants.ORDER_TYPE_NAME
+import com.android.pos.data.remote.Constants.PAX_SERIAL_NO
+import com.android.pos.data.remote.Constants.PAX_TERMINAL_ID
 import com.android.pos.data.remote.Constants.REPORT_END_TIME
 import com.android.pos.data.remote.Constants.REPORT_START_TIME
 import com.android.pos.data.remote.Constants.SERVICECHARGE_DINEIN_ORDER
@@ -5154,6 +5156,14 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     e.printStackTrace()
                                 }
 
+                                prefProvider.setValue(
+                                    PAX_SERIAL_NO,
+                                    it.settingData.data.SerialNo
+                                )
+                                prefProvider.setValue(
+                                    PAX_TERMINAL_ID,
+                                    it.settingData.data.PAXTerminalID
+                                )
 
                                 prefProvider.setValue(
                                     BUSINESS_NAME,

@@ -109,9 +109,18 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
 
     private fun paxNetworkCall() {
         ProgressUtils.showProgressDialog("Connecting to PAX", requireActivity())
+        val srNo = prefProvider.getValue(
+            Constants.PAX_SERIAL_NO,
+            ""
+        )
+        val TID = prefProvider.getValue(
+            Constants.PAX_TERMINAL_ID,
+            ""
+        )
+        Log.d("Params: ","srNo $srNo TID $TID")
 
         var call: Call<PosLinkResult>? =
-            apiModule2.getRetrofit2().getPAXDetails("JT2OHZTP", "2290083869", "")
+            apiModule2.getRetrofit2().getPAXDetails(TID, srNo, "")
         call!!.enqueue(object : Callback<PosLinkResult> {
 
             override fun onResponse(
