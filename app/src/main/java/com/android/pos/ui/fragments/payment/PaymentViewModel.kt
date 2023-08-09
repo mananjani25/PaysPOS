@@ -2154,12 +2154,13 @@ open class PaymentViewModel @Inject constructor(
                         }
                     }
                     cardName = cardN
-                    cardNumber = cardNumber1
                     cardNumber = model.dataOutput.PANLast4
+                    if(cardNumber1.isNotEmpty()){
+                        cardNumber = cardNumber1
+                    }
                 }
 
                 if (model.cardSwipeOutput != null) {
-                   cardNumber = model.cardSwipeOutput.pANLast4
                     var cardN = ""
                     model.cardSwipeOutput.additionalOutputData?.forEach {
                         if (it.key == "CardType") {
@@ -2181,9 +2182,10 @@ open class PaymentViewModel @Inject constructor(
                     }
 
                     cardName = CardType
-                    cardNumber =
-                        if (cardNumberLast4.isNotEmpty()) cardNumberLast4.takeLast(4) else ""
-                    cardNumber = cardNumber1
+                    cardNumber = if (cardNumberLast4.isNotEmpty()) cardNumberLast4.takeLast(4) else ""
+                    if(cardNumber1.isNotEmpty()){
+                        cardNumber = cardNumber1
+                    }
                 }
 
 
