@@ -1861,12 +1861,17 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             totalDiscount = String.format("%.2f", totalDiscount / isSelectedCount).toDouble()
             cashDiscountSurcharge =
                 String.format("%.2f", cashDiscountSurcharge / isSelectedCount).toDouble()
-            paymentAmount = String.format("%.2f", WholetotalPrice / isSelectedCount).toDouble()
-            Log.d(TAG, "paymentClick: cashDiscountSurcharge " + cashDiscountSurcharge)
-            Log.d(TAG, "paymentClick: paymentAmount  " + paymentAmount)
-            if (cashDiscountType == "SurCharge") {
-                paymentAmount =
-                    String.format("%.2f", paymentAmount + cashDiscountSurcharge).toDouble()
+//            paymentAmount = String.format("%.2f", WholetotalPrice / isSelectedCount).toDouble()
+//            Log.d(TAG, "paymentClick: cashDiscountSurcharge " + cashDiscountSurcharge)
+//            Log.d(TAG, "paymentClick: paymentAmount  " + paymentAmount)
+//            if (cashDiscountType == "SurCharge") {
+//                paymentAmount =
+//                    String.format("%.2f", paymentAmount + cashDiscountSurcharge).toDouble()
+//            }
+            paymentAmount = if (cashDiscountType == "SurCharge") {
+                (WholetotalPrice + MethodUtils.getLatestCashDiscountOrSurCharge(WholetotalPrice, prefProvider, requireContext())) / isSelectedCount
+            } else {
+                WholetotalPrice / isSelectedCount
             }
             paymentAmount += tipAmount
 
@@ -2024,13 +2029,18 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             totalTax = String.format("%.2f", totalTax / isSelectedCount).toDouble()
             totalDiscount = String.format("%.2f", totalDiscount / isSelectedCount).toDouble()
             cashDiscountSurcharge = String.format("%.2f", cashDiscountSurcharge).toDouble()
-            paymentAmount = String.format("%.2f", WholetotalPrice / isSelectedCount).toDouble()
-            Log.d(TAG, "paymentClick: cashDiscountSurcharge " + cashDiscountSurcharge)
-            Log.d(TAG, "paymentClick: paymentAmount  " + paymentAmount)
-            if (cashDiscountType == "SurCharge") {
-                paymentAmount =
-                    String.format("%.2f", paymentAmount + (cashDiscountSurcharge / isSelectedCount))
-                        .toDouble()
+//            paymentAmount = String.format("%.2f", WholetotalPrice / isSelectedCount).toDouble()
+//            Log.d(TAG, "paymentClick: cashDiscountSurcharge " + cashDiscountSurcharge)
+//            Log.d(TAG, "paymentClick: paymentAmount  " + paymentAmount)
+//            if (cashDiscountType == "SurCharge") {
+//                paymentAmount =
+//                    String.format("%.2f", paymentAmount + (cashDiscountSurcharge / isSelectedCount))
+//                        .toDouble()
+//            }
+            paymentAmount = if (cashDiscountType == "SurCharge") {
+                (WholetotalPrice + MethodUtils.getLatestCashDiscountOrSurCharge(WholetotalPrice, prefProvider, requireContext())) / isSelectedCount
+            } else {
+                WholetotalPrice / isSelectedCount
             }
             paymentAmount += tipAmount
 
