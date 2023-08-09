@@ -345,8 +345,7 @@ class CustomDisplay(
                     binding.txtTaxCard?.text = MethodUtils.roundOffAmount(totalTax)
 
                     binding.txtServiceChargeCash?.text = getCashDiscountedPrice(totalServiceCharge)
-                    binding.txtServiceChargeCard?.text =
-                        MethodUtils.roundOffAmount(totalServiceCharge)
+                    binding.txtServiceChargeCard?.text = MethodUtils.roundOffAmount(totalServiceCharge)
 
                     binding.txtTotalCash?.text = getCashDiscountedPrice(totalPrice)
                     binding.txtTotalCard?.text = MethodUtils.roundOffAmount(totalPrice)
@@ -358,8 +357,7 @@ class CustomDisplay(
                     binding.txtTaxCash?.text = MethodUtils.roundOffAmount(totalTax)
                     binding.txtTaxCard?.text = getSurchargedPrice(totalTax)
 
-                    binding.txtServiceChargeCash?.text =
-                        MethodUtils.roundOffAmount(totalServiceCharge)
+                    binding.txtServiceChargeCash?.text = MethodUtils.roundOffAmount(totalServiceCharge)
                     binding.txtServiceChargeCard?.text = getSurchargedPrice(totalServiceCharge)
 
                     binding.txtTotalCash?.text = MethodUtils.roundOffAmount(totalPrice)
@@ -388,123 +386,56 @@ class CustomDisplay(
                 binding.txtOrderTotal?.visible()
 
 
-                if (MethodUtils.isEnableCashDiscount(context) && prefProvider.getValue(
-                        ORDER_TYPE,
-                        TAKEOUT
-                    ) != Constants.GIFT_CARD
-                ) {
+                if (MethodUtils.isEnableCashDiscount(context) && prefProvider.getValue(ORDER_TYPE, TAKEOUT) != Constants.GIFT_CARD) {
 
                     if (prefProvider.getValue(
                             Constants.OPTION_TYPE,
                             "CashDiscount"
                         ) == "CashDiscount"
                     ) {
-                        if (isInsideCheckout) {
+                        if(isInsideCheckout){
                             binding.txtOrderTotal?.text = getCashDiscountedPrice(totalPrice)
-                        } else {
+                        }else{
                             binding.txtOrderTotal?.text = MethodUtils.roundOffAmount(totalPrice)
                         }
 
-                        binding.txtCashDiscountSurchargeCard?.text =
-                            "-" + MethodUtils.roundOffAmount(cashdiscountAmount)
+                        binding.txtCashDiscountSurchargeCard?.text = "-"+MethodUtils.roundOffAmount(cashdiscountAmount)
                     } else {
-                        if (isInsideCheckout) {
+                        if(isInsideCheckout){
                             binding.txtOrderTotal?.text = getSurchargedPrice(totalPrice)
-                        } else {
+                        }else{
                             binding.txtOrderTotal?.text = MethodUtils.roundOffAmount(totalPrice)
                         }
                         binding.txtCashDiscountSurchargeCard?.text =
                             MethodUtils.roundOffAmount(cashdiscountAmount)
                     }
 
+                } else {
+                    binding.txtOrderTotal?.text = MethodUtils.roundOffAmount(totalPrice)
                 }
+
+
+
             }
-        }
-    }
 
-    private fun getCashDiscountedPrice(amount: Double): String {
-        return MethodUtils.roundOffAmount(
-            amount - getCashDiscountSurcharge()
-        )
-    }
-
-    private fun getCashDiscountSurcharge(): Double {
-        var cashDiscountSurcharge = 0.0
-        if (prefProvider.getValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
-                .isEmpty() || prefProvider.getValue(
-                Constants.CASH_DISCOUNT_SURCHARGE,
-                ""
-            ) == "0.0"
-        ) {
-            cashDiscountSurcharge = dashBoardCategoryViewModel.cashdiscountAmount
-            prefProvider.setValue(
-                Constants.CASH_DISCOUNT_SURCHARGE,
-                String.format("%.2f", dashBoardCategoryViewModel.cashdiscountAmount)
-            )
-        } else {
-            cashDiscountSurcharge =
-                prefProvider.getValue(Constants.CASH_DISCOUNT_SURCHARGE, "").toDouble()
         }
-        return cashDiscountSurcharge
+
     }
 
     private fun getSurchargedPrice(amount: Double): String {
-        return MethodUtils.roundOffAmount(
-            amount + getCashDiscountSurcharge()
-        )
+        return MethodUtils.roundOffAmount(amount + getCashDiscountOrSurChargeAmount(amount))
     }
 
-    private fun setupTotals(cartList: List<CartModel>) {
-        dashBoardCategoryViewModel.apply {
+    private fun getCashDiscountedPrice(amount: Double): String {
+        return MethodUtils.roundOffAmount(amount - getCashDiscountOrSurChargeAmount(amount))
+    }
 
-            if (order_note.isNotEmpty()) {
-                binding.relativeOrderNotes.visibility = View.VISIBLE
-                binding.txtOrderNote.text = order_note
-            } else {
-                binding.relativeOrderNotes.visibility = View.GONE
-            }
-
-            binding.txtSubTotal.text = MethodUtils.roundOffAmount(subTotalPrice)
-            binding.txtTax.text = MethodUtils.roundOffAmount(totalTax)
-            binding.txtServiceCharge.text =
-                MethodUtils.roundOffAmount(totalServiceCharge)
-            binding.txtDiscount.text = "-" + MethodUtils.roundOffAmount(totalDiscount)
-            binding.txtNoncashAdj.text = MethodUtils.roundOffAmount(cashdiscountAmount)
-            //showSurcharge(true)
-
-            dashBoardCategoryViewModel.apply {
-                val data: TbCustomer? = prefProvider.getCustomerData()
-                if (data != null) {
-                    if (loyaltyPointCondition(data) && redeemLoyaltyInfo.needToApplyLoyalty) {
-                        binding.liinearInfoLayout.layoutParams.height =
-                            resources.getDimension(R.dimen._90sdp).toInt()
-                        binding.relativeLoylatyPoints.visibility = View.VISIBLE
-                        binding.lblLoyaltyPoints.visibility = View.VISIBLE
-
-                        binding.txtLabelLoyaltyAmounts.visibility = View.VISIBLE
-                        binding.checkloylaty.visibility = View.GONE
-                        binding.txtLoyaltyAmount.text = "- $${
-                            String.format(
-                                "%.2f", redeemLoyaltyInfo.usedLoyaltyAmount
-                            )
-                        }"
-                        binding.txtLoyaltyPoints.text =
-                            "${redeemLoyaltyInfo.usedLoyaltyPoints}"
-                    } else {
-                        binding.liinearInfoLayout.layoutParams.height =
-                            resources.getDimension(R.dimen._60sdp).toInt()
-                        binding.relativeLoylatyPoints.visibility = View.GONE
-                        binding.lblLoyaltyPoints.visibility = View.GONE
-                    }
-                }
-            }
-
-            if (taxBirfurcationAdapter.taxlist.size < 2) {
-                binding.imgDropdown.gone()
-            } else {
-                binding.imgDropdown.visible()
-            }
-        }
+    private fun getCashDiscountOrSurChargeAmount(amount: Double): Double {
+        return MethodUtils.calculateCashDiscount(
+            amount,
+            prefProvider,
+            context
+        )
     }
 
     private fun displayCustomer() {
