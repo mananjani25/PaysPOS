@@ -50,7 +50,12 @@ class GetPaymentOrderDetailsResponse(
         @SerializedName("loyalty_amount") val loyalty_amount: Double?,
         @SerializedName("is_loyalty_applied") val is_loyalty_applied: Boolean?,
         @SerializedName("order") val order: Order,
-        @SerializedName("guest_count") val guestCount: Int?
+        @SerializedName("guest_count") val guestCount: Int?,
+        @SerializedName("global_uniq_id")
+        var global_uniq_id: String = "",
+        @SerializedName("ext_data")
+        var ext_data: String = "",
+        @SerializedName("ref_num") var ref_num: String = ""
     ) : Parcelable {
         fun showFormattedValue(value: Double) = "$" + String.format(
             "%.2f",
