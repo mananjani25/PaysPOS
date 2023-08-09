@@ -839,7 +839,6 @@ class TransactionDetailsFragment : Fragment() , StatusChangeEventListener {
                 }
                 binding.orderDetails = it
                 orderDetailsItemAdapter.addOrderDetailsItems(it.data.order.order_items)
-                orderId = it.data.order.order_type_id
                 Log.e("OrderTypeId", orderId.toString())
                 if(orderId.equals(5) || orderId.equals(2) || orderId.equals(6)){   // order_id 3 is for To go Open Order and order_id 1 for takeout
                     binding.txtPrintKitchenReceipt.visibility = View.GONE
