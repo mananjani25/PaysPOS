@@ -144,7 +144,7 @@
                 android:gravity="start"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi"
-                android:text="Station 1" />
+                tools:text="Station 1" />
 
             <LinearLayout
                 android:id="@+id/viewOrderStatus"
