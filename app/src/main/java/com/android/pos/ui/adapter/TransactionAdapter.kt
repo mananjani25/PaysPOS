@@ -84,8 +84,20 @@ class TransactionAdapter(val viewModel: TransactionViewModel, val prefProvider: 
                 )
 */
             if (model.paymentType == "Card") {
+                if(model.cardNumber.isNotEmpty()){
+                    if(model.cardNumber.length == 4){
+                        itemBinding.tvPaymentType.text = model.paymentType + "(${model.cardNumber})"
+                    } else if (model.cardNumber.length > 4){
+                        itemBinding.tvPaymentType.text = model.paymentType + "(${model.cardNumber.substring(model.cardNumber.length - 4)})"
+                    } else {
+                        itemBinding.tvPaymentType.text = model.paymentType
+                    }
+                }else{
+                    itemBinding.tvPaymentType.text = model.paymentType
+                }
                 itemBinding.tvPaymentType.setTextColor(itemBinding.root.resources.getColor(R.color.btnColor))
             } else {
+                itemBinding.tvPaymentType.text = model.paymentType
                 itemBinding.tvPaymentType.setTextColor(itemBinding.root.resources.getColor(R.color.txtColor))
             }
             try {
