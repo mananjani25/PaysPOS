@@ -210,7 +210,9 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 //                tipAmountCalculation()
 //            }
         }
-
+        if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)) {
+            binding.llManualCardEntry.visibility = View.GONE
+        }
         initPOSLink()
 
         return binding.root
