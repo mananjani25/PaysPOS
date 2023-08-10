@@ -112,14 +112,14 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
                 )
             } else {
                 val wholeAmount = prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble()
-                val actualAmount: Double = if (!MethodUtils.isEnableCashDiscount(requireContext()) || prefProvider.getValue(
-                        Constants.OPTION_TYPE,
-                        "CashDiscount"
-                    ) == "CashDiscount"
-                ) {
-                    (wholeAmount) / splitCount
+                val actualAmount: Double = if(MethodUtils.isEnableCashDiscount(requireContext())){
+                    if(prefProvider.getValue(Constants.OPTION_TYPE, "CashDiscount") == "CashDiscount"){
+                        (wholeAmount - MethodUtils.getLatestCashDiscountOrSurCharge(wholeAmount, prefProvider,requireContext())) / splitCount
+                    }else{
+                        (wholeAmount + MethodUtils.getLatestCashDiscountOrSurCharge(wholeAmount, prefProvider,requireContext())) / splitCount
+                    }
                 }else{
-                    (wholeAmount + MethodUtils.getLatestCashDiscountOrSurCharge(wholeAmount, prefProvider,requireContext())) / splitCount
+                    (wholeAmount) / splitCount
                 }
 
                 MethodUtils.percentageCalculation(actualAmount, rate)
@@ -137,14 +137,14 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
                 )
             } else {
                 val wholeAmount = prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble()
-                val actualAmount: Double = if (!MethodUtils.isEnableCashDiscount(requireContext()) || prefProvider.getValue(
-                        Constants.OPTION_TYPE,
-                        "CashDiscount"
-                    ) == "CashDiscount"
-                ) {
-                    (wholeAmount) / splitCount
+                val actualAmount: Double = if(MethodUtils.isEnableCashDiscount(requireContext())){
+                    if(prefProvider.getValue(Constants.OPTION_TYPE, "CashDiscount") == "CashDiscount"){
+                        (wholeAmount - MethodUtils.getLatestCashDiscountOrSurCharge(wholeAmount, prefProvider,requireContext())) / splitCount
+                    }else{
+                        (wholeAmount + MethodUtils.getLatestCashDiscountOrSurCharge(wholeAmount, prefProvider,requireContext())) / splitCount
+                    }
                 }else{
-                    (wholeAmount + MethodUtils.getLatestCashDiscountOrSurCharge(wholeAmount, prefProvider,requireContext())) / splitCount
+                    (wholeAmount) / splitCount
                 }
 
                 MethodUtils.percentageCalculation(actualAmount, rate)
@@ -164,14 +164,14 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
                 )
             } else {
                 val wholeAmount = prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble()
-                val actualAmount: Double = if (!MethodUtils.isEnableCashDiscount(requireContext()) || prefProvider.getValue(
-                        Constants.OPTION_TYPE,
-                        "CashDiscount"
-                    ) == "CashDiscount"
-                ) {
-                    (wholeAmount) / splitCount
+                val actualAmount: Double = if(MethodUtils.isEnableCashDiscount(requireContext())){
+                    if(prefProvider.getValue(Constants.OPTION_TYPE, "CashDiscount") == "CashDiscount"){
+                        (wholeAmount - MethodUtils.getLatestCashDiscountOrSurCharge(wholeAmount, prefProvider,requireContext())) / splitCount
+                    }else{
+                        (wholeAmount + MethodUtils.getLatestCashDiscountOrSurCharge(wholeAmount, prefProvider,requireContext())) / splitCount
+                    }
                 }else{
-                    (wholeAmount + MethodUtils.getLatestCashDiscountOrSurCharge(wholeAmount, prefProvider,requireContext())) / splitCount
+                    (wholeAmount) / splitCount
                 }
 
                 MethodUtils.percentageCalculation(actualAmount, rate)
@@ -333,14 +333,14 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
             tipCalculation = (totalPrice * model.rate) / 100
         } else {
             val wholeAmount = prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble()
-            val actualAmount: Double = if (!MethodUtils.isEnableCashDiscount(requireContext()) || prefProvider.getValue(
-                    Constants.OPTION_TYPE,
-                    "CashDiscount"
-                ) == "CashDiscount"
-            ) {
-                (wholeAmount) / splitCount
+            val actualAmount: Double = if(MethodUtils.isEnableCashDiscount(requireContext())){
+                if(prefProvider.getValue(Constants.OPTION_TYPE, "CashDiscount") == "CashDiscount"){
+                    (wholeAmount - MethodUtils.getLatestCashDiscountOrSurCharge(wholeAmount, prefProvider,requireContext())) / splitCount
+                }else{
+                    (wholeAmount + MethodUtils.getLatestCashDiscountOrSurCharge(wholeAmount, prefProvider,requireContext())) / splitCount
+                }
             }else{
-                (wholeAmount + MethodUtils.getLatestCashDiscountOrSurCharge(wholeAmount, prefProvider,requireContext())) / splitCount
+                (wholeAmount) / splitCount
             }
             tipCalculation = (actualAmount * model.rate) / 100
         }

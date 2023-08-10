@@ -335,7 +335,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     fun onMessageEvent(tipAdded: TipAdded) {
         Log.d(TAG, "onMessageEvent: TIP ADDED = $tipAdded")
         tipAmount = tipAdded.tipAmount
-        tipAmountOnOrderTotal = tipAdded.tippedAmountWithoutSurCharge
+
+        tipAmountOnOrderTotal = if(prefProvider.getValue(Constants.OPTION_TYPE, "CashDiscount") == "CashDiscount"){
+            tipAdded.tipAmount
+        }else{
+            tipAdded.tippedAmountWithoutSurCharge
+        }
+
         viewModel.setTipAmount(tipAmountOnOrderTotal)
         tipAmountCalculation()
         loadPaymentLayout()
@@ -350,10 +356,15 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         ) { _: String, bundle: Bundle ->
 
             val rate = bundle.getDouble("tipPercent")
-            tipAmountOnOrderTotal = if (rate > 0.00) {
-                MethodUtils.percentageCalculation(WholetotalPrice/isSelectedCount, rate)//on total (without surcharge added)
-            } else {
+
+            tipAmountOnOrderTotal = if(prefProvider.getValue(Constants.OPTION_TYPE, "CashDiscount") == "CashDiscount"){
                 bundle.getDouble("tipAmount")
+            }else{
+                if (rate > 0.00) {
+                    MethodUtils.percentageCalculation(WholetotalPrice/isSelectedCount, rate)//on total (without surcharge added)
+                } else {
+                    bundle.getDouble("tipAmount")
+                }
             }
 
             tipAmount = bundle.getDouble("tipAmount")//on total + surcharge

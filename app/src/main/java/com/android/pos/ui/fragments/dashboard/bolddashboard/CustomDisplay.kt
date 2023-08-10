@@ -301,7 +301,10 @@ class CustomDisplay(
         }
     }
 
+    private var isInsideCheckout = false
+
     fun showSurcharge(isInCheckout: Boolean) {
+        isInsideCheckout = isInCheckout
         if (isInCheckout) {
             if (MethodUtils.isEnableCashDiscount(context)) {
                 binding.lnrLayoutCashDiscountSurcharge?.visible()
@@ -398,10 +401,19 @@ class CustomDisplay(
                             "CashDiscount"
                         ) == "CashDiscount"
                     ) {
-                        binding.txtOrderTotal?.text = MethodUtils.roundOffAmount(totalPrice)
+                        if(isInsideCheckout){
+                            binding.txtOrderTotal?.text = getCashDiscountedPrice(totalPrice)
+                        }else{
+                            binding.txtOrderTotal?.text = MethodUtils.roundOffAmount(totalPrice)
+                        }
+
                         binding.txtCashDiscountSurchargeCard?.text = "-"+MethodUtils.roundOffAmount(cashdiscountAmount)
                     } else {
-                        binding.txtOrderTotal?.text = MethodUtils.roundOffAmount(totalPrice)
+                        if(isInsideCheckout){
+                            binding.txtOrderTotal?.text = getSurchargedPrice(totalPrice)
+                        }else{
+                            binding.txtOrderTotal?.text = MethodUtils.roundOffAmount(totalPrice)
+                        }
                         binding.txtCashDiscountSurchargeCard?.text =
                             MethodUtils.roundOffAmount(cashdiscountAmount)
                     }
@@ -1275,27 +1287,6 @@ class CustomDisplay(
 
     }
 
-    fun showTipsAddedOld(tipAmount: Double, WholetotalPrice: Double) {
-        if (tipAmount == 0.00) {
-            binding.tipLayout.gone()
-        } else {
-            binding.askForTipLayout.gone()
-            binding.addTipKeypadLayout.gone()
-            binding.tipLayout.visible()
-            val percentageTip = String.format(
-                "%.0f", MethodUtils.calculatePercentageFromAmount(
-                    tipAmount,
-                    WholetotalPrice
-                )
-            )
-
-            binding.tipPercentLabel.text = "Tip ($percentageTip%)"
-            binding.txtTipGiven.text = "" + MethodUtils.roundOffAmount(tipAmount)
-
-        }
-
-    }
-
     fun showTipsAddedNew(tipAmountForCard: Double, tipAmountForCash: Double, WholetotalPrice: Double) {
         if (MethodUtils.isEnableCashDiscount(context) && showCashCreditPrice) {
             if (tipAmountForCash == 0.00 && tipAmountForCard == 0.00) {
@@ -1310,35 +1301,41 @@ class CustomDisplay(
 
             }
         }else{
-            if (tipAmountForCash == 0.00) {
+            if (tipAmountForCash == 0.00 || tipAmountForCard == 0.00) {
                 binding.lnrLayoutTip?.gone()
             } else {
-                binding.lnrLayoutTip?.visible()
-                val percentageTip = String.format(
-                    "%.0f", MethodUtils.calculatePercentageFromAmount(
-                        tipAmountForCash,
-                        WholetotalPrice
-                    )
-                )
 
-                binding.txtTipLabel?.text = "Tip ($percentageTip%)"
-                binding.txtTipCash?.invisible()
-                binding.txtTipCard?.visible()
-                binding.txtTipCard?.text = "" + MethodUtils.roundOffAmount(tipAmountForCash)
+                binding.lnrLayoutTip?.visible()
+
+                if(prefProvider.getValue(Constants.OPTION_TYPE, "CashDiscount") == "CashDiscount"){
+                    val percentageTip = String.format(
+                        "%.0f", MethodUtils.calculatePercentageFromAmount(
+                            tipAmountForCash,
+                            WholetotalPrice
+                        )
+                    )
+
+                    binding.txtTipLabel?.text = "Tip ($percentageTip%)"
+                    binding.txtTipCash?.invisible()
+                    binding.txtTipCard?.visible()
+                    binding.txtTipCard?.text = "" + MethodUtils.roundOffAmount(tipAmountForCash)
+                }else{
+                    val percentageTip = String.format(
+                        "%.0f", MethodUtils.calculatePercentageFromAmount(
+                            tipAmountForCard,
+                            WholetotalPrice
+                        )
+                    )
+
+                    binding.txtTipLabel?.text = "Tip ($percentageTip%)"
+                    binding.txtTipCash?.invisible()
+                    binding.txtTipCard?.visible()
+                    binding.txtTipCard?.text = "" + MethodUtils.roundOffAmount(tipAmountForCard)
+                }
 
             }
         }
 
-    }
-
-    private fun showTipsAddedVer2(tipRate: Double, tipAmount: Double) {
-        if (tipAmount == 0.00) {
-            binding.tipLayout.gone()
-        } else {
-            binding.tipLayout.visible()
-            binding.tipPercentLabel.text = "Tip (${String.format("%.0f", tipRate)}%)"
-            binding.txtTipGiven.text = "" + MethodUtils.roundOffAmount(tipAmount)
-        }
     }
 
     private fun setupActiveTipsList(tipListViewModel: TipListViewModel) {
@@ -2113,7 +2110,8 @@ class CustomDisplay(
     }
 
     fun updateTotals(cashTotal: String, cardTotal: String) {
-
+        Log.d(TAG, "updateTotals: cashTotal = $cashTotal")
+        Log.d(TAG, "updateTotals: cardTotal = $cardTotal")
         if (MethodUtils.isEnableCashDiscount(context) && !showCashCreditPrice) {
             if (prefProvider.getValue(
                     Constants.OPTION_TYPE,
