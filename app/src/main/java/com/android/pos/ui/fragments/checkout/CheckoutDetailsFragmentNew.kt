@@ -76,7 +76,6 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragment(), magtekCallback,
     DeleteOptionCallback, IDeviceListCallback {
-    private var tipFromCustomerDisplay: Boolean = false
     private var tipAmountOnOrderTotal = 0.0
     private var textToPay: Boolean = false
     private var isShow: Boolean = false
@@ -335,7 +334,6 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(tipAdded: TipAdded) {
         Log.d(TAG, "onMessageEvent: TIP ADDED = $tipAdded")
-        tipFromCustomerDisplay = true
         tipAmount = tipAdded.tipAmount
         tipAmountOnOrderTotal = tipAdded.tippedAmountWithoutSurCharge
         viewModel.setTipAmount(tipAmountOnOrderTotal)
@@ -350,7 +348,6 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             "request_key_tips",
             viewLifecycleOwner
         ) { _: String, bundle: Bundle ->
-            tipFromCustomerDisplay = false
 
             val rate = bundle.getDouble("tipPercent")
             tipAmountOnOrderTotal = if (rate > 0.00) {
@@ -795,7 +792,6 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         bundle.putParcelable("cartList", cartList)
                         bundle.putParcelable("redeemLoyalty", redeemLoyaltyInfo)
                         bundle.putDouble("TipAmount", tipAmountOnOrderTotal)
-                        tipFromCustomerDisplay = false
                         bundle.putDouble("noCashAdj", cashDiscountSurcharge)
                         bundle.putBoolean("isFromActiveOrder", isFromOpenOrder)
 
@@ -1110,7 +1106,6 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                     isInsert = false
                     isCardRev = false
-                    tipFromCustomerDisplay = false
                     viewModel.setTipAmount(0.0)
                     when (paymentType) {
                         "Cash" -> {
@@ -1424,7 +1419,6 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                     isInsert = false
                     isCardRev = false
-                    tipFromCustomerDisplay = false
                     viewModel.setTipAmount(0.0)
                     when (paymentType) {
                         "Cash" -> {
@@ -1861,25 +1855,18 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             totalDiscount = String.format("%.2f", totalDiscount / isSelectedCount).toDouble()
             cashDiscountSurcharge =
                 String.format("%.2f", cashDiscountSurcharge / isSelectedCount).toDouble()
-//            paymentAmount = String.format("%.2f", WholetotalPrice / isSelectedCount).toDouble()
-//            Log.d(TAG, "paymentClick: cashDiscountSurcharge " + cashDiscountSurcharge)
-//            Log.d(TAG, "paymentClick: paymentAmount  " + paymentAmount)
-//            if (cashDiscountType == "SurCharge") {
-//                paymentAmount =
-//                    String.format("%.2f", paymentAmount + cashDiscountSurcharge).toDouble()
-//            }
-            paymentAmount = if (cashDiscountType == "SurCharge") {
-                (WholetotalPrice + MethodUtils.getLatestCashDiscountOrSurCharge(WholetotalPrice, prefProvider, requireContext())) / isSelectedCount
-            } else {
-                WholetotalPrice / isSelectedCount
+            paymentAmount = String.format("%.2f", WholetotalPrice / isSelectedCount).toDouble()
+            Log.d(TAG, "paymentClick: cashDiscountSurcharge " + cashDiscountSurcharge)
+            Log.d(TAG, "paymentClick: paymentAmount  " + paymentAmount)
+            if (cashDiscountType == "SurCharge") {
+                paymentAmount =
+                    String.format("%.2f", paymentAmount + cashDiscountSurcharge).toDouble()
             }
             paymentAmount += tipAmount
 
-            //if(tipFromCustomerDisplay){
             viewModel.setTipAmount(tipAmount)
             prefProvider.setValueboolean(Constants.TIP_ADDED, true)
             prefProvider.setValue(Constants.TIP_ADDED_AMOUNT, tipAmount.toString())
-            //}
 
             if (paymentAmount != 0.0) {
                 magtekModule.stopListner(false)
@@ -1892,7 +1879,6 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 errorDisplay("Payment Amount is zero.")
             }
 
-            //  makePaymentCreditCard()
         }
         binding.llManualCardEntry.setOnSingleClickListener {
             binding.frameLayoutId.visible()
@@ -1912,7 +1898,6 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         binding.tvCash0.setOnSingleClickListener {
 
-            //if(tipFromCustomerDisplay) {
             viewModel.setTipAmount(tipAmountOnOrderTotal)
             prefProvider.setValueboolean(Constants.TIP_ADDED, true)
             prefProvider.setValue(
@@ -1922,10 +1907,6 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             paymentAmount = binding.tvCash0.text.toString().replace("$", "").trim()
                 .toDouble() - tipAmountOnOrderTotal
             paymentviewModel.totalPayAmount(paymentAmount)
-//            }else{
-//                paymentviewModel.totalPayAmount(binding.tvCash0.text.toString().replace("$", "").trim().toDouble())
-//                paymentAmount = binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
-//            }
 
             custom_paymentAmount = 0.0
 
@@ -2017,11 +1998,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
             MethodUtils.hideKeyboard(requireActivity())
 
-            //if(tipFromCustomerDisplay){
             viewModel.setTipAmount(tipAmount)
             prefProvider.setValueboolean(Constants.TIP_ADDED, true)
             prefProvider.setValue(Constants.TIP_ADDED_AMOUNT, tipAmount.toString())
-            //}
 
             subTotalPrice = String.format("%.2f", subTotalPrice / isSelectedCount).toDouble()
             totalServiceCharge =
@@ -2029,18 +2008,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             totalTax = String.format("%.2f", totalTax / isSelectedCount).toDouble()
             totalDiscount = String.format("%.2f", totalDiscount / isSelectedCount).toDouble()
             cashDiscountSurcharge = String.format("%.2f", cashDiscountSurcharge).toDouble()
-//            paymentAmount = String.format("%.2f", WholetotalPrice / isSelectedCount).toDouble()
-//            Log.d(TAG, "paymentClick: cashDiscountSurcharge " + cashDiscountSurcharge)
-//            Log.d(TAG, "paymentClick: paymentAmount  " + paymentAmount)
-//            if (cashDiscountType == "SurCharge") {
-//                paymentAmount =
-//                    String.format("%.2f", paymentAmount + (cashDiscountSurcharge / isSelectedCount))
-//                        .toDouble()
-//            }
-            paymentAmount = if (cashDiscountType == "SurCharge") {
-                (WholetotalPrice + MethodUtils.getLatestCashDiscountOrSurCharge(WholetotalPrice, prefProvider, requireContext())) / isSelectedCount
-            } else {
-                WholetotalPrice / isSelectedCount
+            paymentAmount = String.format("%.2f", WholetotalPrice / isSelectedCount).toDouble()
+            Log.d(TAG, "paymentClick: cashDiscountSurcharge " + cashDiscountSurcharge)
+            Log.d(TAG, "paymentClick: paymentAmount  " + paymentAmount)
+            if (cashDiscountType == "SurCharge") {
+                paymentAmount =
+                    String.format("%.2f", paymentAmount + (cashDiscountSurcharge / isSelectedCount))
+                        .toDouble()
             }
             paymentAmount += tipAmount
 
@@ -2400,23 +2374,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount
         )
         Log.e(TAG, "WholetotalPrice:   ${WholetotalPrice}")
-
-        if (prefProvider.getValue(
-                Constants.OPTION_TYPE,
-                "CashDiscount"
-            ) == "CashDiscount"
-        ) {
-            MethodUtils.setPriceTextView(
-                binding.tvCard,
-                (WholetotalPrice) / isSelectCount
-            )
-        }else{
-            MethodUtils.setPriceTextView(
-                binding.tvCard,
-                (WholetotalPrice + MethodUtils.getLatestCashDiscountOrSurCharge(WholetotalPrice,prefProvider,requireContext())) / isSelectCount
-            )
-        }
-
+        MethodUtils.setPriceTextView(
+            binding.tvCard,
+            getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectCount
+        )
         if (this::presentation.isInitialized) {
             presentation.show()
             presentation.updateTotals(
@@ -2441,21 +2402,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 binding.tvCash0,
                 getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectedCount
             )
-            if (prefProvider.getValue(
-                    Constants.OPTION_TYPE,
-                    "CashDiscount"
-                ) == "CashDiscount"
-            ) {
-                MethodUtils.setPriceTextView(
-                    binding.tvCard,
-                    (WholetotalPrice) / isSelectedCount
-                )
-            }else{
-                MethodUtils.setPriceTextView(
-                    binding.tvCard,
-                    (WholetotalPrice + MethodUtils.getLatestCashDiscountOrSurCharge(WholetotalPrice,prefProvider,requireContext())) / isSelectedCount
-                )
-            }
+            MethodUtils.setPriceTextView(
+                binding.tvCard,
+                getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectedCount
+            )
             if (this::presentation.isInitialized) {
                 presentation.show()
                 presentation.updateTotals(
@@ -2488,21 +2438,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 ) / isSelectedCount) + tipAmountOnOrderTotal
             )
 
-            if (prefProvider.getValue(
-                    Constants.OPTION_TYPE,
-                    "CashDiscount"
-                ) == "CashDiscount"
-            ) {
-                MethodUtils.setPriceTextView(
-                    binding.tvCard,
-                    ((WholetotalPrice ) / isSelectedCount) + tipAmount
-                )
-            }else{
-                MethodUtils.setPriceTextView(
-                    binding.tvCard,
-                    ((WholetotalPrice + MethodUtils.getLatestCashDiscountOrSurCharge(WholetotalPrice,prefProvider,requireContext())) / isSelectedCount) + tipAmount
-                )
-            }
+            MethodUtils.setPriceTextView(
+                binding.tvCard,
+                (getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectedCount) + tipAmount
+            )
 
             if (this::presentation.isInitialized) {
                 presentation.show()
@@ -2623,7 +2562,6 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     "If you are going to do split payment then existing tip will be removed."
                 ) { _, _ ->
                     PaymentBoldPosFragment.newInstance().addTipHideShow(true)
-                    tipFromCustomerDisplay = false
                     tipAmount = 0.0
                     tipAmountOnOrderTotal = 0.0
                     viewModel.setTipAmount(0.0)
