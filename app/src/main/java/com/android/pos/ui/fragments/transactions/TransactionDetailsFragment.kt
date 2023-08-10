@@ -4825,7 +4825,7 @@ class TransactionDetailsFragment : Fragment() , StatusChangeEventListener {
             }
 
             if (customerSettingModel.showOrderType) {
-                PrintSunmiUtils.headerText(paymentDetailsResponse.data.order.order_type_name.trim() + "here 2")
+                PrintSunmiUtils.headerText(paymentDetailsResponse.data.order.order_type_name.trim())
             }
 
             if (paymentDetailsResponse.data.order.order_type.trim()
@@ -4869,9 +4869,8 @@ class TransactionDetailsFragment : Fragment() , StatusChangeEventListener {
                             )
                         )
                     }
-
-
                 }
+
             } else {
 
                 PrintSunmiUtils.normalText("ReceiptID:" + paymentDetailsResponse?.data.order.offline_id)
