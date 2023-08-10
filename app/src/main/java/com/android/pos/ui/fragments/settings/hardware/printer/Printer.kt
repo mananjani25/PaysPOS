@@ -1514,7 +1514,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
     private fun sunmiLANPrinter(printerListModel: PrinterListModel) {
         Log.e(TAG, "CheckTestSunmiLAN")
-        var cloudPrinter: CloudPrinter = CloudPrinter(
+        var cloudPrinter = CloudPrinter(
             printerListModel.printerName,
             printerListModel.deviceModel?.macAddress,
             9100
