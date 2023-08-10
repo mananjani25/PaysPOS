@@ -768,12 +768,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                 TAG,
                                 "observeData: " + wholePrice + " " + String.format(
                                     "%.2f",
-                                    paymentAmount - (cashDiscountSurcharge/isSelectedCount)
+                                    paymentAmount - (cashDiscountSurcharge / isSelectedCount)
                                 ).toDouble()
                             )
                             wholePrice - String.format(
                                 "%.2f",
-                                paymentAmount - (cashDiscountSurcharge/isSelectedCount)
+                                paymentAmount - (cashDiscountSurcharge / isSelectedCount)
                             ).toDouble()
                         } else {
                             wholePrice - paymentAmount
@@ -1809,7 +1809,6 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 errorDisplay("Payment Amount is zero.")
             }
 
-            //  makePaymentCreditCard()
         }
         binding.llManualCardEntry.setOnSingleClickListener {
             binding.frameLayoutId.visible()
@@ -1995,7 +1994,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     } else {
                         custom_paymentAmount = 0.0
 
-                        val actualTotalAmountWithTip = (WholetotalPrice / isSelectedCount) +  tipAmount
+                        val actualTotalAmountWithTip =
+                            (WholetotalPrice / isSelectedCount) + tipAmount
 
                         val giftCardBalanceAmount = it.data.amount
 
@@ -2020,7 +2020,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             )
                             AlertUtils.showCustomAlertWithListenerWithOK(
                                 requireContext(),
-                                message = "Your GiftCard Balance is $${giftCardBalanceAmount.toPrecision(2)}. Please use split payment."
+                                message = "Your GiftCard Balance is $${
+                                    giftCardBalanceAmount.toPrecision(
+                                        2
+                                    )
+                                }. Please use split payment."
                             ) { _, _ ->
                             }
                         }
@@ -2081,7 +2085,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 "%.2f",
                 viewModel.totalServiceCharge
             ).toDouble()
-            if (redeemLoyaltyInfo?.needToApplyLoyalty == true ) {
+            if (redeemLoyaltyInfo?.needToApplyLoyalty == true) {
                 WholetotalPrice -= redeemLoyaltyInfo?.usedLoyaltyAmount!!
                 viewModel.totalPrice = WholetotalPrice
             } else {
@@ -2340,6 +2344,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     binding.tvCard.text.toString()
                 )
             }
+
             binding.tvCash.text =
                 "Cash (" + binding.tvCash.text + ")"
             binding.tvtipcash?.visible()
@@ -2558,6 +2563,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 cashDiscountType,
                 tipID
             )
+
         }
         LogUtil.logE(TAG, "myRequestOriginal ${Gson().toJson(myRequest)}")
         if (myRequest != null) {
@@ -2877,11 +2883,24 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                 magtekModule.closeDevice()
                             paymentviewModel.setMagensaResponse(
                                 Gson().toJson(response.body()!![0]),
-                                if (i == 3) cardNumber else ""
+                                (if (i == 3){ cardNumber = cardNumber.takeLast(4)
+                                }else if(i== 1){
+                                    cardNumber = (response.body()!![0].dataOutput?.PANLast4).toString()
+                                }else if(i==2){
+                                    cardNumber = (response.body()!![0].dataOutput?.PANLast4).toString()
+                                } else {
+                                    cardNumber = ""
+                                }).toString()
                             )
                             giftCardViewModel.setMagensaResponse(
                                 Gson().toJson(response.body()!![0]),
-                                if (i == 3) cardNumber else ""
+                                    (if (i == 3){ cardNumber =cardNumber.takeLast(4)
+                                }else if(i== 1){
+                                    cardNumber = (response.body()!![0].dataOutput?.PANLast4).toString()
+                                }else if(i==2){
+                                        cardNumber = (response.body()!![0].dataOutput?.PANLast4).toString()
+                                }else {
+                                        cardNumber = "" }).toString()
                             )
 
                             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
