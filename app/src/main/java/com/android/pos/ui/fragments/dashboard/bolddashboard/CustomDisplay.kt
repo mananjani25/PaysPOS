@@ -1638,6 +1638,7 @@ class CustomDisplay(
             }
 
             binding.otherRootLayout.setOnClickListener {
+                activeTipsListAdapter.clearSelectedItem()
                 showTipKeypad(wholeTotalPrice)
             }
             val coroutineScope = CoroutineScope(Dispatchers.Main)
@@ -1647,6 +1648,7 @@ class CustomDisplay(
                 //binding.otherRootLayout.performClick()
             }
             binding.noTipRootLayout.setOnClickListener {
+                activeTipsListAdapter.clearSelectedItem()
                 if(showTipCollectionBeforePay) {
                     shouldHighlightNoTipLayout(true)
                     shouldHighlightOtherTipLayout(false)
@@ -1711,6 +1713,7 @@ class CustomDisplay(
         }else{
             binding.otherRootLayout.setBackgroundColor(Color.parseColor("#363636"))
             binding.txtOtherLabel.setTextColor(Color.parseColor("#ED5950"))
+            binding.txtOtherLabel.text = "Other"
         }
 
     }
@@ -1725,6 +1728,11 @@ class CustomDisplay(
     private fun callUpdateTip() {
         lifecycleOwner.lifecycleScope.launch {
             showProgress()
+            if(mIsCardPayment){
+                if (prefProvider.getValue(Constants.OPTION_TYPE, "CashDiscount") == "SurCharge") {
+                    tippedAmount = MethodUtils.roundOffAmountDouble(tippedAmount - MethodUtils.getLatestCashDiscountOrSurCharge(tippedAmount, prefProvider, context))
+                }
+            }
             mTransactionViewModel.updateTipWithSignature(mOrderID, signatureInBase64, tippedAmount)
             mTransactionViewModel.updateTipData.observe(lifecycleOwner) { event ->
                 event.getContentIfNotHandled()?.let {
