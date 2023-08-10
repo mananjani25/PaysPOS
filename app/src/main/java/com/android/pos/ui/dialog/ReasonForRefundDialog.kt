@@ -37,6 +37,8 @@ import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
 import com.android.pos.utils.extensions.toast
+import com.android.pos.utils.paxUtils.AppThreadPool
+import com.android.pos.utils.paxUtils.POSLinkCreatorWrapper
 import com.android.pos.utils.paxUtils.SettingINI
 import com.android.pos.utils.statusUtils.Status
 import com.epson.epos2.printer.Printer
@@ -50,6 +52,7 @@ import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
@@ -63,12 +66,14 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
 
     private var customerList: List<PrinterResponse.Data.CustomerReceiptPrinters> = arrayListOf()
     private var paymentType: String = ""
+    private var referenceNo: String? = null
     private var magensa_response_data: String = ""
     private var refundAmount: Double = 0.0
     private lateinit var binding: DialogRefundReasonBinding
     private lateinit var refundData: RefundRequestModel
     private val viewModel by viewModels<TransactionDetailsViewModel>()
     private var woyouService: IWoyouService? = null
+
     // PAX variables
     private lateinit var mPaymentRequest: PaymentRequest
     private var posLink: PosLink = PosLink()
@@ -102,6 +107,7 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
         refundAmount = arguments?.getDouble("refundAmount")!!
         magensa_response_data = arguments?.getString("magensa_response_data").toString()
         paymentType = arguments?.getString("paymentType").toString()
+        referenceNo = arguments?.getString("pax_ref_num").toString()
 
 
         binding.txtTitle.text = paymentType
@@ -119,8 +125,13 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
 
 
         binding.txtDone.setOnClickListener {
+            Log.d("referenceNo: ","referenceNo $referenceNo")
             if (MethodUtils.isDoubleClick()) return@setOnClickListener
-            doneClick()
+            if (!referenceNo.isNullOrEmpty()) {
+                refundViaPAX()
+            } else {
+                doneClick()
+            }
         }
 
         setupSnackbar()
@@ -131,54 +142,86 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
             findNavController().navigateUp()
         }
 
+        //POSLink initialization for PAX
+        initPOSLink()
+
         return binding.root
     }
 
-    /*private fun refundViaPAX() {
-        posLink.SetCommSetting(SettingINI.getCommSettingFromFile(Constants.FILE_PATH + SettingINI.FILENAME))
+    private fun initPOSLink() {
+        POSLinkCreatorWrapper.createSync(
+            context!!,
+            object : AppThreadPool.FinishInMainThreadCallback<PosLink?> {
+                override fun onFinish(result: PosLink?) {
+                    posLink = result!!
+                    Log.d("initPOSLink: ", "onFinish")
+                }
+            })
+    }
 
-        CoroutineScope(Dispatchers.Main).launch {
-            ProgressUtils.showProgressDialog(requireActivity())
-        }
+    private fun refundViaPAX() {
+        if (refundAmount != 0.0 || refundAmount > 0.0) {
+            if (paymentType == "Card") {
+                GlobalScope.launch {
+                    posLink.SetCommSetting(SettingINI.getCommSettingFromFile(Constants.FILE_PATH + SettingINI.FILENAME))
 
-        val refund = PaymentRequest()
-        refund.TenderType = refund.ParseTenderType("CREDIT")
-        refund.TransType = refund.ParseTransType("RETURN")
+                    CoroutineScope(Dispatchers.Main).launch {
+                        ProgressUtils.showProgressDialog(requireActivity())
+                    }
+                    val amt = (refundAmount * 100).toInt()
+                    val refund = PaymentRequest()
+                    refund.TenderType = refund.ParseTenderType("CREDIT")
+                    refund.TransType = refund.ParseTransType("RETURN")
 
-        refund.Amount = "amount"
-        posLink.PaymentRequest = refund
-        val result = posLink.ProcessTrans()
-        Log.d("result: ", result.Code.toString() + " " + result.Msg)
-        if (result.Code === ProcessTransResult.ProcessTransResultCode.OK) {
-            val msg = Message()
-            msg.what = Constants.TRANSACTION_SUCCESSED
-            msg.obj = posLink.PaymentResponse
+                    refund.Amount = amt.toString()
+                    posLink.PaymentRequest = refund
+                    val result = posLink.ProcessTrans()
+                    Log.d("result: ", result.Code.toString() + " " + result.Msg)
+                    if (result.Code === ProcessTransResult.ProcessTransResultCode.OK) {
+                        val msg = Message()
+                        msg.what = Constants.TRANSACTION_SUCCESSED
+                        msg.obj = posLink.PaymentResponse
 
-            val response = msg.obj as com.pax.poslink.PaymentResponse
-            val resultCode = response.ResultCode
-            val resultTxt = response.ResultTxt
+                        val response = msg.obj as com.pax.poslink.PaymentResponse
+                        val resultCode = response.ResultCode
+                        val resultTxt = response.ResultTxt
 
-            if (resultCode == "000000") {
-                CoroutineScope(Dispatchers.Main).launch {
-                    refundCall()
+                        if (resultCode == "000000") {
+                            CoroutineScope(Dispatchers.Main).launch {
+                                refundCall()
+                            }
+                        } else {
+                            CoroutineScope(Dispatchers.Main).launch {
+                                ProgressUtils.dismissProgressDialog()
+                                requireActivity().toast("$resultCode $resultTxt", Toast.LENGTH_LONG)
+                            }
+                        }
+                    } else {
+                        CoroutineScope(Dispatchers.Main).launch {
+                            ProgressUtils.dismissProgressDialog()
+                            if (result.Msg.toString() == "CONNECT ERROR" || result.Msg.toString() == "TIME OUT") {
+                                Toast.makeText(
+                                    requireContext(),
+                                    "Please check your internet connection",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            } else {
+                                Toast.makeText(
+                                    requireContext(),
+                                    "getMerchantDetails Failed ${result.Code} ${result.Msg}",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
+                        }
+                    }
                 }
             } else {
-                CoroutineScope(Dispatchers.Main).launch {
-                    ProgressUtils.dismissProgressDialog()
-                    requireActivity().toast("$resultCode $resultTxt", Toast.LENGTH_LONG)
-                }
+                refundCall()
             }
         } else {
-            CoroutineScope(Dispatchers.Main).launch {
-                ProgressUtils.dismissProgressDialog()
-                if (result.Msg.toString() == "CONNECT ERROR" || result.Msg.toString() == "TIME OUT"){
-                    Toast.makeText(requireContext(), "Please check your internet connection", Toast.LENGTH_LONG).show()
-                } else {
-                    Toast.makeText(requireContext(), "getMerchantDetails Failed ${result.Code} ${result.Msg}", Toast.LENGTH_LONG).show()
-                }
-            }
+            AlertUtils.showCustomAlert(requireActivity(), getString(R.string.msg_amount_refund))
         }
-    }*/
+    }
 
     private fun doneClick() {
         if (refundAmount != 0.0 || refundAmount > 0.0) {
