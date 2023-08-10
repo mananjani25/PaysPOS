@@ -122,6 +122,8 @@ data class OnlineOrderResponseModel(
         var isCheck: Boolean = false,
         @SerializedName("magensa_response")
         val magensa_response_data: String,
+        @SerializedName("terminal_name")
+        val terminalName: String,
         //@SerializedName("order_type_name") val order_type_name: String,
     ) {
         data class OrderItem(
