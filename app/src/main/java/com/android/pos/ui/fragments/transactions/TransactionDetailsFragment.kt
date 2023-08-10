@@ -839,8 +839,8 @@ class TransactionDetailsFragment : Fragment() , StatusChangeEventListener {
                 }
                 binding.orderDetails = it
                 orderDetailsItemAdapter.addOrderDetailsItems(it.data.order.order_items)
-                Log.e("OrderTypeId", orderId.toString())
-                if(orderId.equals(5) || orderId.equals(2) || orderId.equals(6)){   // order_id 3 is for To go Open Order and order_id 1 for takeout
+                Log.e("OrderTypeId", it.data.order.order_type_id.toString())
+                if(it.data.order.order_type_id.equals(5) || it.data.order.order_type_id.equals(2) || it.data.order.order_type_id.equals(6)){   // order_id 3 is for To go Open Order and order_id 1 for takeout
                     binding.txtPrintKitchenReceipt.visibility = View.GONE
                 }else{
                     binding.txtPrintKitchenReceipt.visibility = View.VISIBLE
