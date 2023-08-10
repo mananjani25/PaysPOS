@@ -829,11 +829,12 @@ class TransactionDetailsFragment : Fragment() {
                 }
                 binding.orderDetails = it
                 orderDetailsItemAdapter.addOrderDetailsItems(it.data.order.order_items)
-
-
-
-
-
+                Log.e("OrderTypeId", it.data.order.order_type_id.toString())
+                if(it.data.order.order_type_id.equals(5) || it.data.order.order_type_id.equals(2) || it.data.order.order_type_id.equals(6)){   // order_id 3 is for To go Open Order and order_id 1 for takeout
+                    binding.txtPrintKitchenReceipt.visibility = View.GONE
+                }else{
+                    binding.txtPrintKitchenReceipt.visibility = View.VISIBLE
+                }
                 binding.llDiscount.visibility = View.VISIBLE
                 if (paymentDetailsResponse.data.total_discount != 0.0) {
                     binding.txtDiscount.text = "- $" + String.format(
