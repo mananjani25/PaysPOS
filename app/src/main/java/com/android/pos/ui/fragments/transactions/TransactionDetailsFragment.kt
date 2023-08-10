@@ -75,7 +75,7 @@ import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class TransactionDetailsFragment : Fragment() , StatusChangeEventListener {
+class TransactionDetailsFragment : Fragment() {
 
     private lateinit var binding: FragmentTransactionDetailsBinding
     private val viewModel by viewModels<TransactionDetailsViewModel>()
@@ -200,7 +200,6 @@ class TransactionDetailsFragment : Fragment() , StatusChangeEventListener {
             }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
 
-
         binding.imgBack.setOnClickListener {
             var bundle: Bundle = Bundle()
             bundle.putInt("selectedorderType", selectedorderType!!)
@@ -224,9 +223,6 @@ class TransactionDetailsFragment : Fragment() , StatusChangeEventListener {
             isPrint = true
             getKitchenPrinters()
         }
-
-
-
         binding.linearTaxDetail.setOnClickListener {
             if (taxBirfurcationAdapter.taxlist.size > 0) {
                 if (!taxClickable) {
@@ -395,8 +391,6 @@ class TransactionDetailsFragment : Fragment() , StatusChangeEventListener {
 
         }
     }
-
-
 
     private fun tipCall(isCard: Boolean) {
         paymentDetailsResponse.data.let { viewModel.orderUpdateTip(it.id, tipAmount, isCard) }
@@ -740,8 +734,6 @@ class TransactionDetailsFragment : Fragment() , StatusChangeEventListener {
         viewModel.dataPayment.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 paymentDetailsResponse = it
-                val jsonString = Gson().toJson(paymentDetailsResponse)
-                Log.e("paymentDetailsResponse","paymentDetailsResponse result = $jsonString")
 
                 if (paymentDetailsResponse.data.order.order_split_type == "OrderAmountTab" || paymentDetailsResponse.data.order.order_split_type == "OrderGuestTab") {
                     isSplitPayment = true
@@ -839,9 +831,8 @@ class TransactionDetailsFragment : Fragment() , StatusChangeEventListener {
                 }
                 binding.orderDetails = it
                 orderDetailsItemAdapter.addOrderDetailsItems(it.data.order.order_items)
-                orderId = it.data.order.order_type_id
-                Log.e("OrderTypeId", orderId.toString())
-                if(orderId.equals(5) || orderId.equals(2) || orderId.equals(6)){   // order_id 3 is for To go Open Order and order_id 1 for takeout
+                Log.e("OrderTypeId", it.data.order.order_type_id.toString())
+                if(it.data.order.order_type_id.equals(5) || it.data.order.order_type_id.equals(2) || it.data.order.order_type_id.equals(6)){   // order_id 3 is for To go Open Order and order_id 1 for takeout
                     binding.txtPrintKitchenReceipt.visibility = View.GONE
                 }else{
                     binding.txtPrintKitchenReceipt.visibility = View.VISIBLE
@@ -1178,14 +1169,9 @@ class TransactionDetailsFragment : Fragment() , StatusChangeEventListener {
         viewModel.getKitchenPrinterList().observe(viewLifecycleOwner) { it ->
             when (it.status) {
                 Status.SUCCESS -> {
-                    Log.e(TAG, "status ${it.status.toString()}")
-                    ProgressUtils.dismissProgressDialog()
-                    Log.e("isPrint", "${isPrint.toString()}")
-                    Log.e("isPrint", "${it.data.toString()}")
-
+                     ProgressUtils.dismissProgressDialog()
                     if (it.data != null && isPrint == true) {
 
-                        Log.e(TAG, "CheckORderRypoe  ${prefProvider.getValue(Constants.ORDER_TYPE, "")}")
                         kitchenPrinterList = it.data
                         val remain = requireArguments().getDouble("remainingAmount")
 
@@ -1199,35 +1185,17 @@ class TransactionDetailsFragment : Fragment() , StatusChangeEventListener {
                                     ) {
 
                                         var noItem: Boolean = false
-                                        Log.e(
-                                            TAG,
-                                            "checkUpdateORder  ${
-                                                prefProvider.getValueboolean(
-                                                    Constants.OPEN_ORDER_UPDATE_FOR_PRINT,
-                                                    false
-                                                )
-                                            }"
-                                        )
+
                                         if (prefProvider.getValueboolean(
                                                 Constants.OPEN_ORDER_UPDATE_FOR_PRINT,
                                                 false
                                             ) == true
                                         ) {
                                             var list = checkOrderItemsForOpenORderUpdate()
-                                            Log.e(TAG, "checkEmpy:  ${list.size}")
                                             if (list.isEmpty()) {
                                                 noItem = true
                                             }
                                         }
-                                        Log.e(
-                                            TAG,
-                                            "checkOrderType  ${
-                                                prefProvider.getValue(
-                                                    Constants.ORDER_TYPE,
-                                                    ""
-                                                )
-                                            }"
-                                        )
                                         if (kitchenPrinterList.isNotEmpty() && noItem == false) {
                                             for (i in 0 until kitchenPrinterList.size) {
                                                 if (kitchenPrinterList[i].status) {
@@ -1275,9 +1243,7 @@ class TransactionDetailsFragment : Fragment() , StatusChangeEventListener {
                                             for (i in 0 until kitchenPrinterList.size) {
                                                 if (kitchenPrinterList[i].status) {
                                                     kitchenPrinterList[i].orderTypes.forEach {
-                                                        Log.e("orderTypeid", "${it.orderTypeId.toString()}")
-                                                        Log.e("orderTypeid", "${paymentDetailsResponse.data.order.order_type_id.toString()}")
-                                                        if (it.orderTypeId == paymentDetailsResponse.data.order.order_type_id
+                                                         if (it.orderTypeId == paymentDetailsResponse.data.order.order_type_id
 
                                                         ) {
 
@@ -1321,12 +1287,10 @@ class TransactionDetailsFragment : Fragment() , StatusChangeEventListener {
                 }
 
                 Status.LOADING -> {
-                    Log.e(TAG, "status ${it.status.toString()}")
                     ProgressUtils.showProgressDialog(requireActivity())
                 }
 
                 Status.ERROR -> {
-                    Log.e(TAG, "status ${it.status.toString()}")
                     ProgressUtils.dismissProgressDialog()
                 }
             }
@@ -1478,12 +1442,10 @@ class TransactionDetailsFragment : Fragment() , StatusChangeEventListener {
             }
         } else {
             if (!data.name.substring(0, 6).toString().lowercase().contains("TM-m".lowercase())) {
-                Log.e(TAG, "YesInsideU220")
 
                 var mPrinter = if (data.name.substring(0, 6).toString().lowercase()
                         .contains("TM-m".lowercase())
                 ) {
-                    Log.e(TAG, "YesContains")
                     Printer(
                         Printer.TM_M30,
                         Printer.MODEL_ANK, requireContext()
@@ -1496,10 +1458,7 @@ class TransactionDetailsFragment : Fragment() , StatusChangeEventListener {
                 }
 
                 mPrinter.setReceiveEventListener { printer, i, printerStatusInfo, s ->
-                    Log.e(
-                        TAG,
-                        "PrinterEvent  ${Gson().toJson(printerStatusInfo)} other1 ${s}  other2 ${i}"
-                    )
+
                     if (printerStatusInfo.connection == 1) {
                         try {
                             printer.disconnect()
@@ -1510,7 +1469,6 @@ class TransactionDetailsFragment : Fragment() , StatusChangeEventListener {
                     }
                 }
                 try {
-                    Log.e(TAG, "printerDataType:  ${data.printer_type}")
 
                     var printerAdd =
                         if (data.printer_type == Constants.BLUETOOTH) "BT:" + data.macAddress else "TCP:" + data.ipAddress
@@ -1544,7 +1502,6 @@ class TransactionDetailsFragment : Fragment() , StatusChangeEventListener {
                         printer?.setStatusChangeEventCallback(this)
                     } catch (e: Exception) {
                         //  printerDialog.dismiss()
-                        LogUtil.logE(TAG, "PrinterException: " + e.message)
                         printer = null
                         return
                     }
@@ -4826,7 +4783,7 @@ class TransactionDetailsFragment : Fragment() , StatusChangeEventListener {
             }
 
             if (customerSettingModel.showOrderType) {
-                PrintSunmiUtils.headerText(paymentDetailsResponse.data.order.order_type_name.trim() + "here 2")
+                PrintSunmiUtils.headerText(paymentDetailsResponse.data.order.order_type_name.trim())
             }
 
             if (paymentDetailsResponse.data.order.order_type.trim()
@@ -5289,10 +5246,4 @@ class TransactionDetailsFragment : Fragment() , StatusChangeEventListener {
         PrintSunmiUtils.printLogo(newBitmap)
 
     }
-
-    override fun onStatusChangeEvent(p0: String?, p1: Int) {
-        LogUtil.logE(TAG, "onStatusChangePrinter:  $p0")
-
-    }
-
 }
