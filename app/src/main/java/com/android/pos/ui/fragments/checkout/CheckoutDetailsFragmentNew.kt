@@ -1788,7 +1788,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             totalTax = String.format("%.2f", totalTax / isSelectedCount).toDouble()
             totalDiscount = String.format("%.2f", totalDiscount / isSelectedCount).toDouble()
             cashDiscountSurcharge =
-                String.format("%.2f", cashDiscountSurcharge / isSelectedCount).toDouble()
+                String.format("%.2f", MethodUtils.getLatestCashDiscountOrSurCharge(WholetotalPrice, prefProvider, requireContext()) / isSelectedCount).toDouble()
             paymentAmount = String.format("%.2f", WholetotalPrice / isSelectedCount).toDouble()
             Log.d(TAG, "paymentClick: cashDiscountSurcharge " + cashDiscountSurcharge)
             Log.d(TAG, "paymentClick: paymentAmount  " + paymentAmount)
@@ -1904,7 +1904,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 String.format("%.2f", totalServiceCharge / isSelectedCount).toDouble()
             totalTax = String.format("%.2f", totalTax / isSelectedCount).toDouble()
             totalDiscount = String.format("%.2f", totalDiscount / isSelectedCount).toDouble()
-            cashDiscountSurcharge = String.format("%.2f", cashDiscountSurcharge).toDouble()
+            cashDiscountSurcharge = MethodUtils.getLatestCashDiscountOrSurCharge(WholetotalPrice, prefProvider, requireContext())
             paymentAmount = String.format("%.2f", WholetotalPrice / isSelectedCount).toDouble()
             Log.d(TAG, "paymentClick: cashDiscountSurcharge " + cashDiscountSurcharge)
             Log.d(TAG, "paymentClick: paymentAmount  " + paymentAmount)
@@ -2203,8 +2203,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 String.format("%.2f", viewModel.cashdiscountAmount)
             )
         } else {
-            cashDiscountSurcharge =
-                prefProvider.getValue(Constants.CASH_DISCOUNT_SURCHARGE, "").toDouble()
+            cashDiscountSurcharge = MethodUtils.getLatestCashDiscountOrSurCharge(WholetotalPrice, prefProvider, requireContext())
         }
         cashDiscountType = viewModel.cashDiscountType
 
@@ -2348,6 +2347,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             binding.tvCash.text =
                 "Cash (" + binding.tvCash.text + ")"
             binding.tvtipcash?.visible()
+
             binding.tvtipcash?.text =
                 "(" + MethodUtils.roundOffAmount(tipAmount) + " Tip Added)"
             binding.tvCard.text =
@@ -2455,6 +2455,14 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     PaymentBoldPosFragment.newInstance().addTipHideShow(true)
                     tipAmount = 0.0
                     viewModel.setTipAmount(0.0)
+                    if (this::presentation.isInitialized) {
+                        presentation.show()
+                        presentation.showTipsAddedNew(tipAmount, tipAmount, WholetotalPrice)
+//                        presentation.updateTotals(
+//                            binding.tvCash.text.toString(),
+//                            binding.tvCard.text.toString()
+//                        )
+                    }
                     loadSplitLayout()
                     binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
                     binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
