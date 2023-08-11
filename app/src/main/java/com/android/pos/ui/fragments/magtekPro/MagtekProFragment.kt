@@ -41,6 +41,7 @@ import com.android.pos.utils.paxUtils.POSLinkCreatorWrapper
 import com.android.pos.utils.paxUtils.SettingINI
 import com.magtek.mobile.android.mtusdk.*
 import com.pax.poslink.*
+import com.pax.poslink.broadpos.BroadPOSCommunicator
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import retrofit2.Call
@@ -93,6 +94,7 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
         binding.lifecycleOwner = this
         binding.tvPax.setOnClickListener {
             initPOSLink()
+//            connectBP()
             paxNetworkCall()
             /*setCommSetting("","")
             getMerchantDetails()*/
@@ -105,6 +107,19 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
         syncDevices()
 
         return binding.root
+    }
+
+    private fun connectBP(){
+        BroadPOSCommunicator.getInstance(activity)
+            .startListeningService(object : BroadPOSCommunicator.StartListenerCallBack {
+                override fun onSuccess() {
+                    Toast.makeText(context, "Successful StartListenerCallBack", Toast.LENGTH_SHORT).show()
+                }
+
+                override fun onFail(msg: String) {
+                    Toast.makeText(context, "Failed StartListenerCallBack", Toast.LENGTH_SHORT).show()
+                }
+            })
     }
 
     private fun paxNetworkCall() {
@@ -134,6 +149,7 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
                     var port = response.body()!!.port
                     Log.d("Pax Params: ", "pax $ipAddress $port")
                     setCommSetting(ipAddress, port.toString())
+//                    connectBP()
                     getMerchantDetails()
                 }
             }
@@ -225,10 +241,11 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
                 )
                 CoroutineScope(Dispatchers.Main).launch {
                     ProgressUtils.dismissProgressDialog()
-                    Toast.makeText(requireContext(), "Merchant $mID is connected successfully", Toast.LENGTH_SHORT).show()
+                    AlertUtils.showCustomAlert(requireContext(), "Merchant $mID is connected successfully")
+//                    Toast.makeText(requireContext(), "Merchant $mID is connected successfully", Toast.LENGTH_SHORT).show()
                 }
-                prefProvider.setValueboolean(Constants.IS_PAX_CONNECTED, true)
 //                getPaymentResponse()
+                prefProvider.setValueboolean(Constants.IS_PAX_CONNECTED, true)
                 Log.d("Merchant Details: ", mID + " " + resultCode + "  " + status)
             } else {
                 CoroutineScope(Dispatchers.Main).launch {

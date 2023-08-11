@@ -32,7 +32,7 @@ class MainApplication : Application() {
         FirebaseApp.initializeApp(this)
         //bhumit.bhadani@bacancy.com = 10Ce70901@
         //TestFairy.begin(this, "SDK-SrnpgIU9"); // vishal.j.patel+103@bacancy.com/Pos@2022
-//        TestFairy.begin(this, "SDK-wVjSFkBf") // mansi.kothari@bacancy.com
+        TestFairy.begin(this, "SDK-wVjSFkBf") // mansi.kothari@bacancy.com
         instance = this
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
 
@@ -177,7 +177,7 @@ class MainApplication : Application() {
 //        commSetting.serialPort = "COM1"
         commSetting.isEnableProxy = false
         commSetting.macAddr = ""
-        commSetting.destIP = "172.20.10.3"
+        commSetting.destIP = "127.0.0.1"
         commSetting.destPort = "10009"
         /*val selectedHost = "UNKNOWN"
         Convenience.setHost(context, commSetting, selectedHost)*/

@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
 import android.os.Bundle
 import android.os.Message
-import android.provider.Settings.Global
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -70,6 +69,8 @@ import com.pax.poslink.PaymentRequest
 import com.pax.poslink.PosLink
 import com.pax.poslink.ProcessTransResult
 import com.pax.poslink.aidl.BasePOSLinkCallback
+import com.pax.poslink.broadpos.BroadPOSCommunicator
+import com.pax.poslink.broadpos.BroadPOSCommunicator.StartListenerCallBack
 import com.pax.poslink.fullIntegration.InputAccount
 import com.pax.poslink.fullIntegration.InputAccount.InputAccountCallback
 import dagger.hilt.android.AndroidEntryPoint
@@ -80,6 +81,7 @@ import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
+
 
 @AndroidEntryPoint
 class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragment(), magtekCallback,
@@ -1860,6 +1862,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
             //  makePaymentCreditCard()
         }
+
         binding.llManualCardEntry.setOnSingleClickListener {
             binding.frameLayoutId.visible()
             binding.relativeMain.gone()
@@ -2015,6 +2018,19 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 giftCardViewModel.giftCardCheckBalance(GiftCardCheckBalanceRequest(name = giftCardNumber))
             }
         }
+    }
+
+    private fun connectBP(){
+        BroadPOSCommunicator.getInstance(activity)
+            .startListeningService(object : StartListenerCallBack {
+                override fun onSuccess() {
+                    Toast.makeText(context, "Successful StartListenerCallBack", Toast.LENGTH_SHORT).show()
+                }
+
+                override fun onFail(msg: String) {
+                    Toast.makeText(context, "Failed StartListenerCallBack", Toast.LENGTH_SHORT).show()
+                }
+            })
     }
 
     private fun showProgressObserver() {

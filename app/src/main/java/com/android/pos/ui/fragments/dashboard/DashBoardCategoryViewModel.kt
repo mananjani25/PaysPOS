@@ -5158,11 +5158,11 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                                 prefProvider.setValue(
                                     PAX_SERIAL_NO,
-                                    it.settingData.data.SerialNo
+                                    it.settingData.data.SerialNo?: ""
                                 )
                                 prefProvider.setValue(
                                     PAX_TERMINAL_ID,
-                                    it.settingData.data.PAXTerminalID
+                                    it.settingData.data.PAXTerminalID?:""
                                 )
 
                                 prefProvider.setValue(
