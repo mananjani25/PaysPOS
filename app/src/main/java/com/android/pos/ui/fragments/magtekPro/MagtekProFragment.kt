@@ -147,6 +147,14 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
                     LogUtil.logE("onResponse", response.body().toString() + response.body()!!.ipAddress)
                     var ipAddress = response.body()!!.ipAddress
                     var port = response.body()!!.port
+                    prefProvider.setValue(
+                        Constants.PAX_IP,
+                        ipAddress
+                    )
+                    prefProvider.setValue(
+                        Constants.PAX_PORT,
+                        port.toString()
+                    )
                     Log.d("Pax Params: ", "pax $ipAddress $port")
                     setCommSetting(ipAddress, port.toString())
 //                    connectBP()
@@ -305,7 +313,8 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
                 arrayOf(
                     Manifest.permission.BLUETOOTH_ADMIN,
                     Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.ACCESS_FINE_LOCATION
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
                 )
             )
         } else {

@@ -129,6 +129,8 @@ object Constants {
     const val IS_PAX_CONNECTED = "isPAXConnected"
     const val PAX_SERIAL_NO = "SerialNo"
     const val PAX_TERMINAL_ID = "TerminalID"
+    const val PAX_IP = "IPAddress"
+    const val PAX_PORT = "Port"
 
     const val DELIVERY_TYPE = "Delivery_Type"
     const val OPEN_ORDER_ITEMS = "Open_Order_Items"

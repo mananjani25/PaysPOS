@@ -226,6 +226,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 //        BroadPOSCommunicator.startListeningService()
 
         initPOSLink()
+//        setCommSetting()
 
         return binding.root
     }
@@ -2104,8 +2105,48 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
     }
 
+        /*private fun setCommSetting() {
+        //create commsetting object
+
+        var file = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+        val iniFile = "/storage/emulated/0/Download/"+ SettingINI.FILENAME
+        *//*val iniFile =
+            activity!!.applicationContext.filesDir.absolutePath + "/" + SettingINI.FILENAME*//*
+        val commset: CommSetting = SettingINI.getCommSettingFromFile(iniFile)
+        Log.d("iniFile: ","iniFile $iniFile ${file.absolutePath}")
+
+        //initialization value  for comsetting's attribute
+        commset.type = CommSetting.TCP
+        commset.timeOut = "-1"
+        commset.baudRate = "9600"
+//        commset.serialPort = "COM1"
+        commset.isEnableProxy = false
+        commset.destPort = prefProvider.getValue(
+            Constants.PAX_PORT,
+            ""
+        )
+        commset.destIP = prefProvider.getValue(
+            Constants.PAX_IP,
+            ""
+        )
+        *//*val selectedHost = "UNKNOWN"
+        Convenience.setHost(context, commset, selectedHost)*//*
+        Log.i(
+            "TAG", "coms.CommType = " + commset.type + "; coms.TimeOut=" + commset.timeOut
+                    + "; SerialPort=" + commset.serialPort + "; coms.BaudRate=" + commset.baudRate
+                    + "; coms.DestIP=" + commset.destIP + "; coms.DestPort=" + commset.destPort + "; coms.MacAddr=" + commset.macAddr + "; coms.EnableProxy=" + commset.isEnableProxy
+        )
+        POSLinkAndroid.initPOSListener(context, commset)
+        SettingINI.saveCommSettingToFile(iniFile, commset)
+        // set the folder to save the "comsetting.ini" file
+        posLink.appDataFolder = file.absolutePath
+        posLink.SetCommSetting(commset)
+        Log.d("SetCommSetting: ", "saved successfully")
+    }*/
+
     private fun makePaxPaymentRequest() {
         GlobalScope.launch {
+            Log.d("getCommSettingFromFile ","getCommSettingFromFile: "+Gson().toJson(SettingINI.getCommSettingFromFile("/storage/emulated/0/Download/"+ SettingINI.FILENAME)))
             posLink.SetCommSetting(SettingINI.getCommSettingFromFile("/storage/emulated/0/Download/"+ SettingINI.FILENAME))
             val amt = ((paymentAmount-tipAmount)*100).toInt()
             val tip_amt = (tipAmount*100).toInt()
