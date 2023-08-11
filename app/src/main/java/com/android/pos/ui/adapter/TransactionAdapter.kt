@@ -162,7 +162,7 @@ class TransactionAdapter(val viewModel: TransactionViewModel, val prefProvider: 
             }
 
 
-            if ( model.payableType == GIFT_CARD_AMOUNT_TAB ){
+            if ( model.payableType == GIFT_CARD_AMOUNT_TAB  || model.payableType == GIFT_CARD){
                 itemBinding.txtTransactionId.text = model.giftCardId.toString()
             }
 
