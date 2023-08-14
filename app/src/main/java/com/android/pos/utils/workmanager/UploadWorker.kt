@@ -22,9 +22,9 @@ import com.android.pos.data.remote.Constants.CREATE_QUEUE_PRINTER_PHASE3
 import com.android.pos.data.remote.Constants.DELETE_QUEUE_ORDER_PHASE3
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.IS_MASTER_TERMINAL
+import com.android.pos.utils.CloudPrinter
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.addBuilderText
-import com.android.pos.utils.addDoubleDotLineForSunmiQueue
 import com.android.pos.utils.addHorizontalLine
 import com.android.pos.utils.addHorizontalLineNew
 import com.android.pos.utils.addHorizontalLineNewU220
@@ -32,7 +32,6 @@ import com.android.pos.utils.addOrdersForKitchenCustomer
 import com.android.pos.utils.addOrdersForKitchenCustomerNewPrinter
 import com.android.pos.utils.padLine
 import com.android.pos.utils.printGuestByItemForQueue
-import com.android.pos.utils.printGuestByItemForSunmiQueue
 import com.android.pos.utils.printer.PrinterClass
 import com.epson.epos2.ConnectionListener
 import com.epson.epos2.Epos2Exception
@@ -54,7 +53,6 @@ import com.hosopy.actioncable.Subscription
 import com.sunmi.externalprinterlibrary2.ConnectCallback
 import com.sunmi.externalprinterlibrary2.ResultCallback
 import com.sunmi.externalprinterlibrary2.StatusCallback
-import com.sunmi.externalprinterlibrary2.printer.CloudPrinter
 import com.sunmi.externalprinterlibrary2.style.AlignStyle
 import com.sunmi.externalprinterlibrary2.style.CloudPrinterStatus
 import com.sunmi.externalprinterlibrary2.style.UnderlineStyle
@@ -2415,11 +2413,11 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
         cloudPrinter?.printText(obj.dateAndTime)
 
 
-        cloudPrinter?.let { addDoubleDotLineForSunmiQueue(it) }
+        //cloudPrinter?.let { addDoubleDotLineForSunmiQueue(it) }
 
         if (obj.orderType == DINE_IN) {
 
-            cloudPrinter?.let { printGuestByItemForSunmiQueue(obj.guestAttributes, it) }
+            //cloudPrinter?.let { printGuestByItemForSunmiQueue(obj.guestAttributes, it) }
 
 
         } else {
