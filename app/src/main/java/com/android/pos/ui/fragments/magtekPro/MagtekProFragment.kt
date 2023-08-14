@@ -96,8 +96,13 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
             initPOSLink()
 //            connectBP()
             paxNetworkCall()
-            /*setCommSetting("","")
-            getMerchantDetails()*/
+        }
+
+        binding.tvDisconnectPax.setOnClickListener {
+//            BroadPOSCommunicator.getInstance(activity).stopListeningService()
+            prefProvider.setValueboolean(Constants.IS_PAX_CONNECTED, false)
+            binding.tvDisconnectPax.visibility = View.GONE
+            binding.tvPax.visibility = View.VISIBLE
         }
 
         mSessionManager.setDevicesFragment(this)
@@ -117,7 +122,7 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
                 }
 
                 override fun onFail(msg: String) {
-                    Toast.makeText(context, "Failed StartListenerCallBack", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
                 }
             })
     }
@@ -250,7 +255,8 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
                 CoroutineScope(Dispatchers.Main).launch {
                     ProgressUtils.dismissProgressDialog()
                     AlertUtils.showCustomAlert(requireContext(), "Merchant $mID is connected successfully")
-//                    Toast.makeText(requireContext(), "Merchant $mID is connected successfully", Toast.LENGTH_SHORT).show()
+                    binding.tvDisconnectPax.visibility = View.VISIBLE
+                    binding.tvPax.visibility = View.GONE
                 }
 //                getPaymentResponse()
                 prefProvider.setValueboolean(Constants.IS_PAX_CONNECTED, true)
