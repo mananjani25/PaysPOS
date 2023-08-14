@@ -1857,7 +1857,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 } else if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false) && !mSessionManager.isConnected) {
                     makePaxPaymentRequest()
                 } else{
-                    errorDisplay("Payment device is not connected.")
+                    errorDisplay("Please connect a payment device.")
                 }
             } else {
                 errorDisplay("Payment Amount is zero.")

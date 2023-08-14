@@ -105,6 +105,14 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
             binding.tvPax.visibility = View.VISIBLE
         }
 
+        if(prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)){
+            binding.tvDisconnectPax.visibility = View.VISIBLE
+            binding.tvPax.visibility = View.GONE
+        }else{
+            binding.tvDisconnectPax.visibility = View.GONE
+            binding.tvPax.visibility = View.VISIBLE
+        }
+
         mSessionManager.setDevicesFragment(this)
 
         setup()
