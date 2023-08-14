@@ -22,9 +22,9 @@ import com.android.pos.data.remote.Constants.CREATE_QUEUE_PRINTER_PHASE3
 import com.android.pos.data.remote.Constants.DELETE_QUEUE_ORDER_PHASE3
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.IS_MASTER_TERMINAL
-import com.android.pos.utils.CloudPrinter
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.addBuilderText
+import com.android.pos.utils.addDoubleDotLineForSunmiQueue
 import com.android.pos.utils.addHorizontalLine
 import com.android.pos.utils.addHorizontalLineNew
 import com.android.pos.utils.addHorizontalLineNewU220
@@ -32,6 +32,7 @@ import com.android.pos.utils.addOrdersForKitchenCustomer
 import com.android.pos.utils.addOrdersForKitchenCustomerNewPrinter
 import com.android.pos.utils.padLine
 import com.android.pos.utils.printGuestByItemForQueue
+import com.android.pos.utils.printGuestByItemForSunmiQueue
 import com.android.pos.utils.printer.PrinterClass
 import com.epson.epos2.ConnectionListener
 import com.epson.epos2.Epos2Exception
@@ -53,6 +54,7 @@ import com.hosopy.actioncable.Subscription
 import com.sunmi.externalprinterlibrary2.ConnectCallback
 import com.sunmi.externalprinterlibrary2.ResultCallback
 import com.sunmi.externalprinterlibrary2.StatusCallback
+import com.sunmi.externalprinterlibrary2.printer.CloudPrinter
 import com.sunmi.externalprinterlibrary2.style.AlignStyle
 import com.sunmi.externalprinterlibrary2.style.CloudPrinterStatus
 import com.sunmi.externalprinterlibrary2.style.UnderlineStyle
@@ -351,7 +353,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                         ).getBoolean(IS_MASTER_TERMINAL, false) == true
                     ) {
 
-                            consumer?.connect()
+                        consumer?.connect()
 
 
                     }
@@ -877,6 +879,21 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
                                 }
 
+                             /*   if (it.asJsonObject.has("customer_details") == true) {
+                                    var customerObj =
+                                        it.asJsonObject.get("customer_details").asJsonObject ?: null
+                                    if (customerObj != null) {
+                                        modelOrder.customerName =
+                                            it.asJsonObject.get("customer_details").asJsonObject.get(
+                                                "first_name"
+                                            ).asString + " " + it.asJsonObject.get(
+                                                "customer_details"
+                                            ).asJsonObject.get("last_name").asString
+
+
+                                    }
+                                }*/
+
 
                                 listofPrinterOrders.add(modelOrder)
                             }
@@ -1268,6 +1285,19 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
                                     listofPrinterOrders.add(modelOrder)
                                 }
+                               /* if (it.asJsonObject.has("customer_details") == true) {
+                                    var customerObj =
+                                        it.asJsonObject.get("customer_details").asJsonObject
+                                    if (customerObj != null) {
+                                        modelOrder.customerName =
+                                            it.asJsonObject.get("customer_details").asJsonObject.get(
+                                                "first_name"
+                                            ).asString + " " + it.asJsonObject.get("customer_details").asJsonObject.get(
+                                                "last_name"
+                                            ).asString
+                                    }
+
+                                }*/
                             }
 
 
@@ -1959,38 +1989,38 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
                                 } else {
 
-                                     //   delay(3000)
-                                        val params = JsonObject()
-                                        params.addProperty("id", locationId)
-                                        params.addProperty(
-                                            "url",
-                                            baseUrl + CREATE_QUEUE_PRINTER_PHASE3
-                                        )
-                                        Log.e(
-                                            TAG,
-                                            "checkReuestURL: ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}  locationID: ${locationId}"
-                                        )
-                                        subscription?.perform("received", params)
-                                    }
+                                    //   delay(3000)
+                                    val params = JsonObject()
+                                    params.addProperty("id", locationId)
+                                    params.addProperty(
+                                        "url",
+                                        baseUrl + CREATE_QUEUE_PRINTER_PHASE3
+                                    )
+                                    Log.e(
+                                        TAG,
+                                        "checkReuestURL: ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}  locationID: ${locationId}"
+                                    )
+                                    subscription?.perform("received", params)
+                                }
 
 
                             } else {
 
                                 currentOrderIndex = currentOrderIndex + 1
 
-                                    sendDataToPrintToSunmi(
-                                        listOfPrintersData,
-                                        currentPrinterIndex,
-                                        printerObjList.get(
-                                            listOfPrintersData.get(
-                                                currentPrinterIndex
-                                            ).macAddress
-                                        ) as CloudPrinter?,
-                                        listOfPrintersData.get(currentPrinterIndex).printerQueueModelList,
-                                        listOfPrintersData.get(currentPrinterIndex).macAddress,
-                                        currentOrderIndex
+                                sendDataToPrintToSunmi(
+                                    listOfPrintersData,
+                                    currentPrinterIndex,
+                                    printerObjList.get(
+                                        listOfPrintersData.get(
+                                            currentPrinterIndex
+                                        ).macAddress
+                                    ) as CloudPrinter?,
+                                    listOfPrintersData.get(currentPrinterIndex).printerQueueModelList,
+                                    listOfPrintersData.get(currentPrinterIndex).macAddress,
+                                    currentOrderIndex
 
-                                    )
+                                )
 
 
                             }
@@ -2413,11 +2443,11 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
         cloudPrinter?.printText(obj.dateAndTime)
 
 
-        //cloudPrinter?.let { addDoubleDotLineForSunmiQueue(it) }
+        cloudPrinter?.let { addDoubleDotLineForSunmiQueue(it) }
 
         if (obj.orderType == DINE_IN) {
 
-            //cloudPrinter?.let { printGuestByItemForSunmiQueue(obj.guestAttributes, it) }
+            cloudPrinter?.let { printGuestByItemForSunmiQueue(obj.guestAttributes, it) }
 
 
         } else {
@@ -2454,10 +2484,23 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
 
                 }
+                if (obj.orderItems.get(i).note != null && obj.orderItems.get(i).note.isNotEmpty()) {
+                    cloudPrinter?.printText("  Note:" + obj.orderItems.get(i).note)
+                }
+
             }
         }
 
+        Log.e(TAG, "customerName:  ${obj.customerName}")
         if (obj.orderType != DINE_IN && obj.customerName != null && obj.customerName.isNotEmpty()) {
+            cloudPrinter?.let { addDoubleDotLineForSunmiQueue(it) }
+            cloudPrinter?.printText(obj.customerName)
+            if (obj.customerPhoneNo.isNotEmpty()) {
+                cloudPrinter?.printText(obj.customerPhoneNo)
+            }
+            if (obj.customerAddress.isNotEmpty()) {
+                cloudPrinter?.printText(obj.customerAddress)
+            }
 
 
         }

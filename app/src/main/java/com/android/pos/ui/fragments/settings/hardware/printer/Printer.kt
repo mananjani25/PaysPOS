@@ -59,13 +59,19 @@ import com.android.pos.databinding.FragmentPrinterBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.PrinterListAdapter
-import com.android.pos.utils.*
+import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.LogUtil
+import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.MethodUtils.Companion.getSaltString
+import com.android.pos.utils.PrintSunmiUtils
+import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.addHorizontalKitchenLine
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.runOnUiThread
 import com.android.pos.utils.extensions.setOnSingleClickListener
 import com.android.pos.utils.extensions.visible
+import com.android.pos.utils.padLine
 import com.android.pos.utils.printer.PrinterClass
 import com.android.pos.utils.printer.PrinterClass.SEND_TIMEOUT
 import com.android.pos.utils.printer.PrinterClass.language
@@ -1517,11 +1523,9 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
 
 
-        var cloudPrinter = CloudPrinter(
-            printerListModel.printerName,
+        var cloudPrinter:CloudPrinter = CloudPrinter(printerListModel.printerName,
             printerListModel.deviceModel?.macAddress,
-            9100
-        )
+            9100)
         cloudPrinter.connect(requireContext(),
             object : com.sunmi.externalprinterlibrary2.ConnectCallback {
                 override fun onConnect() {
