@@ -777,6 +777,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                                     binding.txtServiceCharge.text = "$0.00"
                                     clearCustomer()
                                     reSetTaxBifurcationData()
+                                    redirectToCategoryType()
 
                                 }
                                 negativeButton(R.string.tv_cancel) {
@@ -978,6 +979,11 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             }
 
         }
+    }
+
+    private fun redirectToCategoryType() {
+        binding.layoutHeader.txtHome.performClick()
+
     }
 
     private fun getTaxBifurcationList(list1: List<TaxData>?, list2: List<TaxData>?): List<TaxData> {
