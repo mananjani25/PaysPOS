@@ -1268,7 +1268,13 @@ class CustomDisplay(
 
     }
 
-    fun showTipsAddedNew(tipAmountForCard: Double, tipAmountForCash: Double, WholetotalPrice: Double) {
+    fun showTipsAddedNew(tipAmountForCard: Double, tipAmountForCash: Double, WholetotalPrice: Double, isSplitCase: Boolean = false) {
+        if(isSplitCase){
+            //clear tip selection in CustomerDisplay
+            activeTipsListAdapter.clearSelectedItem()
+            shouldHighlightNoTipLayout(false)
+            shouldHighlightOtherTipLayout(false)
+        }
         if (MethodUtils.isEnableCashDiscount(context) && showCashCreditPrice) {
             if (tipAmountForCash == 0.00 && tipAmountForCard == 0.00) {
                 binding.lnrLayoutTip?.gone()
