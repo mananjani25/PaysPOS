@@ -555,7 +555,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     }
 
     private fun calculateDiscountPercentage(originalPrice: Double, percentage: Double): Double {
-        return MethodUtils.roundOffAmountDouble((originalPrice * percentage) / 100)
+        return ((originalPrice * percentage) / 100)
     }
 
     private fun totalPrice(model: TbItem): Double {

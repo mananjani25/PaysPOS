@@ -27,6 +27,7 @@ import com.android.pos.ui.fragments.settings.discount.DiscountListViewModel
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
+import com.android.pos.utils.MethodUtils.Companion.toPrecision
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.NumberFormat
@@ -175,9 +176,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                         val applyDiscount =
                             (defaultModel.discountPrice * 100) / (itemPrice/*(defaultModel.price + modifierPrice) * defaultModel.itemQuantity*/)
                         binding.edtAmount.setText(
-                            MethodUtils.roundOffAmountString(
-                                Math.round(applyDiscount)
-                                    .toDouble()
+                            MethodUtils.roundOffAmountString((applyDiscount).toPrecision(2).toDouble()
                             )
                         )
 
