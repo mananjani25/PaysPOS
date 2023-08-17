@@ -1317,10 +1317,12 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 LogUtil.logE(TAG, "GetDiscountResult:  ${Gson().toJson(result)}")
                 if (result.discountType == requireContext().getString(R.string.disc_percentage)) {
                     val cartModel = cartAdapter.getItem(pos)
-                    cartModel.discountPrice = calculateDiscountPercentage(
+                    var disPrice = calculateDiscountPercentage(
                         cartAdapter.getItem(pos).price,
                         result.percentage
                     )
+                    LogUtil.logE(TAG, "discountPrice:  $disPrice")
+                    cartModel.discountPrice = disPrice
                     cartModel.discountId = result.id
                     cartModel.discountType = result.discountType
                     cartModel.isDiscountDefault = true
@@ -1997,8 +1999,9 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
     fun calculateDiscountPercentage(originalPrice: Double, percentage: Double): Double {
         val disPrice = MethodUtils.roundOffAmountDouble((originalPrice * percentage) / 100)
+        LogUtil.logE(TAG, "originalPrice  $originalPrice")
         LogUtil.logE(TAG, "disPrice  $disPrice")
-        return if (disPrice < originalPrice) {
+        return if (disPrice <= originalPrice) {
             disPrice
         } else {
             0.0

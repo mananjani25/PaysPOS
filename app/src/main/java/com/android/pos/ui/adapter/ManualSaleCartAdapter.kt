@@ -55,7 +55,7 @@ class ManualSaleCartAdapter : RecyclerView.Adapter<ManualSaleCartAdapter.MyViewH
                 binding.tvDiscountRate.gone()
             }
             itemView.setOnClickListener {
-                listnerCall.onItemClicked(model, pos)
+                listnerCall.onItemClicked(list[pos], pos)
             }
             //binding.model = model
             binding.executePendingBindings()
