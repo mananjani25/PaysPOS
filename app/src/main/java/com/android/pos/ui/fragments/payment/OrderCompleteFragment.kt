@@ -8795,11 +8795,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
                 PrinterClass.closePrinter()
-                pd.dismiss()
+                pd?.dismiss()
                 // findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
                 //PrinterClass.getPrinter()?.sendData(builder, 0, status, battery)
             } catch (e: Exception) {
-                pd.dismiss()
+                pd?.dismiss()
                 PrinterClass.closePrinter()
                 e.printStackTrace()
                 LogUtil.logE(TAG, "PrinterError: " + e.localizedMessage)
@@ -8807,7 +8807,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
         } catch (e: Exception) {
-            pd.dismiss()
+            pd?.dismiss()
             e.printStackTrace()
         }
     }
@@ -11038,10 +11038,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         PrintSunmiUtils.cutPaper()
 
-        pd.dismiss()
+        pd?.dismiss()
 
     } catch (e: Exception) {
-        pd.dismiss()
+        pd?.dismiss()
         e.printStackTrace()
     }
 
@@ -12767,10 +12767,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }
             }
 
-            pd.dismiss()
+            pd?.dismiss()
 
         } catch (e: Exception) {
-            pd.dismiss()
+            pd?.dismiss()
             e.printStackTrace()
         }
 

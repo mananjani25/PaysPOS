@@ -13,7 +13,6 @@ import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
-import com.android.pos.data.remote.Constants.ORDER_TYPE_ID
 import com.android.pos.data.remote.Constants.PAYMENT_ID
 import com.android.pos.data.remote.Constants.PAYMENT_ID_FOR_CUSTOMER_DISPLAY
 import com.android.pos.data.remote.Constants.PHONE_ORDER
@@ -528,12 +527,8 @@ open class PaymentViewModel @Inject constructor(
 
         Log.e("checkOrderTypeID","getOrderTypeID  ${prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)}")
         Log.e("checkOrderTypeID","getOrderTypeIDVARTE  ${order_type_id}")
-        if (order_type_id == -1 && prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT) == Constants.OPEN_ORDER){
-        if (order_type_id == -1 && prefProvider.getValue(
-                Constants.ORDER_TYPE,
-                TAKEOUT
-            ) == Constants.OPEN_ORDER
-        ) {
+        if (order_type_id == -1 && prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT) == Constants.OPEN_ORDER)
+        {
             order_type_id = prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)
         }
         else if (prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT) == Constants.DINE_IN && orderId != 0){
@@ -1309,7 +1304,7 @@ open class PaymentViewModel @Inject constructor(
                 orderItemsAttribute.isCount = 0
                 orderItemsAttribute.isEdited = item.isEdited
                 orderItemsAttribute.isPaid = false
-                orderItemsAttribute.isPrinted = false
+                orderItemsAttribute.isPrinted = true
                 orderItemsAttribute.isTaxRemoved = false
                 orderItemsAttribute.itemId = if (item.isManualSales) 30 else item.itemId
                 orderItemsAttribute.is_manual_sales = item.isManualSales

@@ -19,7 +19,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
@@ -35,7 +34,6 @@ import com.android.pos.aidl.IWoyouService
 import com.android.pos.data.entities.TbOrderType
 import com.android.pos.data.model.PrinterListModel
 import com.android.pos.data.model.requestModel.CreatePrinterRequestModel
-import com.android.pos.data.remote.Constants
 import com.android.pos.data.model.requestModel.OrderAttributeRequestModel
 import com.android.pos.data.model.requestModel.OrderItemsAttribute
 import com.android.pos.data.model.requestModel.OrderRequestModel
@@ -55,7 +53,6 @@ import com.android.pos.data.remote.Constants.MANUAL_SALE_CATEGORY_ID
 import com.android.pos.data.remote.Constants.MANUAL_SALE_ITEM_ID
 import com.android.pos.data.remote.Constants.PRINTER
 import com.android.pos.data.remote.Constants.TAKEOUT
-import com.android.pos.data.remote.Constants.SUNMI_PRINTER
 import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.data.remote.Constants.WIFI
 import com.android.pos.data.remote.Constants.createCloudPrinter
@@ -1472,7 +1469,6 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                 viewModel.createPrinterQueueTestOrder(order)
 
             } else {
-        if (printerListModel.printerName?.startsWith(SUNMI_PRINTER, true) == true) {
 
                 printerListModel.deviceModel?.let { sunmiPrinterInit(it.ipAddress) }
             }
@@ -1518,7 +1514,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
             }
 
-        } else if (printerListModel.printerName?.startsWith(Constants.SUNMI_INNER_PRINTER, true) == true) {
+        } else if (printerListModel.printerName?.startsWith("InnerPrinter", true) == true) {
 
 
             sunmiInnerPrinter(printerListModel.deviceModel?.ipAddress)
@@ -1891,9 +1887,6 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             /* Handler(Looper.getMainLooper()).postDelayed({
                  syncPrinterList()
              },1000)*/
-
-                    viewModel.createPrinter(createPrinter)
-                    availableNetworkAdapter.removeItemAt(layoutPosition)
 
 
         } else {

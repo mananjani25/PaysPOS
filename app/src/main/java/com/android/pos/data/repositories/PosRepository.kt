@@ -43,6 +43,10 @@ import com.android.pos.data.model.requestModel.OrderCancelRequest
 import com.android.pos.data.model.requestModel.OrderRequestModel
 import com.android.pos.data.model.requestModel.RefundRequestModelOnlineOrder
 import com.android.pos.data.model.requestModel.SpitByOrderRequestModel
+import com.android.pos.data.model.requestModel.WastageItemRequest
+import com.android.pos.data.model.requestModel.giftCard.request.GiftCardAddValueRequest
+import com.android.pos.data.model.requestModel.giftCard.request.GiftCardCheckBalanceRequest
+import com.android.pos.data.model.requestModel.giftCard.request.SellGiftCardRequestModel
 import com.android.pos.data.model.responseModel.BaseResponse
 import com.android.pos.data.model.responseModel.GetCustomerReceiptSettingsResponse
 import com.android.pos.data.model.responseModel.GetKitchenReceiptSettingsResponse
@@ -53,11 +57,6 @@ import com.android.pos.data.model.responseModel.OpenOrderResponse
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.model.responseModel.VenueDataResponse
 import com.android.pos.data.model.responseModel.VenueDetailsResponse
-import com.android.pos.data.model.requestModel.*
-import com.android.pos.data.model.requestModel.giftCard.request.GiftCardAddValueRequest
-import com.android.pos.data.model.requestModel.giftCard.request.GiftCardCheckBalanceRequest
-import com.android.pos.data.model.requestModel.giftCard.request.SellGiftCardRequestModel
-import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.ApiHelper
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN
@@ -157,9 +156,6 @@ class PosRepository @Inject constructor(
 
     fun getWastageReasonsListFromDb() =
         performGetOperationDatabase(databaseQuery = { appDatabase.wastageReasonsDao().allWastageReasons })
-
-    fun getKitchenPrinters() =
-        performGetOperationDatabase { appDatabase.printerDao().kitchenPrintList }
 
     fun getCustomerPrinters() =
         performGetOperationDatabase { appDatabase.printerDao().customerPrintList }
