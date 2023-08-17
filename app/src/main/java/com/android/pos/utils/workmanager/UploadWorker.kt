@@ -22,9 +22,10 @@ import com.android.pos.data.remote.Constants.CREATE_QUEUE_PRINTER_PHASE3
 import com.android.pos.data.remote.Constants.DELETE_QUEUE_ORDER_PHASE3
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.IS_MASTER_TERMINAL
-import com.android.pos.utils.CloudPrinter
+import com.android.pos.data.remote.Constants.createCloudPrinterWithName
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.addBuilderText
+import com.android.pos.utils.addDoubleDotLineForSunmiQueue
 import com.android.pos.utils.addHorizontalLine
 import com.android.pos.utils.addHorizontalLineNew
 import com.android.pos.utils.addHorizontalLineNewU220
@@ -32,6 +33,7 @@ import com.android.pos.utils.addOrdersForKitchenCustomer
 import com.android.pos.utils.addOrdersForKitchenCustomerNewPrinter
 import com.android.pos.utils.padLine
 import com.android.pos.utils.printGuestByItemForQueue
+import com.android.pos.utils.printGuestByItemForSunmiQueue
 import com.android.pos.utils.printer.PrinterClass
 import com.epson.epos2.ConnectionListener
 import com.epson.epos2.Epos2Exception
@@ -53,6 +55,8 @@ import com.hosopy.actioncable.Subscription
 import com.sunmi.externalprinterlibrary2.ConnectCallback
 import com.sunmi.externalprinterlibrary2.ResultCallback
 import com.sunmi.externalprinterlibrary2.StatusCallback
+import com.sunmi.externalprinterlibrary2.printer.CloudPrinter
+import com.sunmi.externalprinterlibrary2.printer.CloudPrinterBuilder
 import com.sunmi.externalprinterlibrary2.style.AlignStyle
 import com.sunmi.externalprinterlibrary2.style.CloudPrinterStatus
 import com.sunmi.externalprinterlibrary2.style.UnderlineStyle
@@ -181,10 +185,9 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                 } else {
                     Log.e(TAG, "CloudPrinter  ")
                     for (i in 0 until kitchenPrinterList.size) {
-                        var cloudPrinter: CloudPrinter = CloudPrinter(
-                            kitchenPrinterList.get(i).modalName,
-                            kitchenPrinterList.get(i).macAddress
-                        )
+
+                        var cloudPrinter: CloudPrinter = CloudPrinterBuilder.buildPrinter(  kitchenPrinterList.get(i).modalName,
+                            kitchenPrinterList.get(i).macAddress)
                         cloudPrinter.connect(mContext, object : ConnectCallback {
                             override fun onConnect() {
                                 printerObjList.set(
@@ -539,12 +542,11 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                                     Constants.SUNMIBRAND
                                 )
                             ) {
-                                var cloudPrinter: CloudPrinter = CloudPrinter(
-                                    dataList.get(i).asJsonObject.get("printer_name").asString,
+                                var cloudPrinter: CloudPrinter = createCloudPrinterWithName(dataList.get(i).asJsonObject.get("printer_name").asString,
                                     dataList.get(i).asJsonObject.get("mac_address").asString,
-                                    dataList.get(i).asJsonObject.get("port_no").asInt
+                                    dataList.get(i).asJsonObject.get("port_no").asInt)
 
-                                )
+
                                 printerObjList.set(
                                     dataList.get(i).asJsonObject.get("mac_address").asString
                                         ?: "",
@@ -909,7 +911,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                     currentOrderIndex = 0
                     currentPrinterIndex = 0
 
-                    if (listOfPrintersData.get(0).printerName.contains("Printer", true)) {
+                    if (listOfPrintersData.get(0).printerName.contains("CloudPrint_", true)) {
 
                         if (listOfPrintersData.get(0).printerQueueModelList.size != 0) {
                             Log.e(TAG, "sendData1st:  ")
@@ -1310,7 +1312,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                         currentOrderIndex = 0
                         currentPrinterIndex = 0
                     }
-                    if (listOfPrintersData.get(0).printerName.contains("Printer")) {
+                    if (listOfPrintersData.get(0).printerName.contains("CloudPrint_",true)) {
                         Log.e(TAG, "ActionCableContainSunmi")
                         if (orderSize != 0) {
 
@@ -2015,7 +2017,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
             } else if (cloudPrinter == null) {
 
                 Log.e(TAG, "checkCLoudObjNull")
-                var cloudPrinter: CloudPrinter = CloudPrinter(
+                var cloudPrinter: CloudPrinter = createCloudPrinterWithName(
                     listOfPrintersData.get(currentPrinterIndexF).printerName,
                     macAddress,
                     listOfPrintersData.get(currentPrinterIndexF).portNo
@@ -2413,11 +2415,11 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
         cloudPrinter?.printText(obj.dateAndTime)
 
 
-        //cloudPrinter?.let { addDoubleDotLineForSunmiQueue(it) }
+        cloudPrinter?.let { addDoubleDotLineForSunmiQueue(it) }
 
         if (obj.orderType == DINE_IN) {
 
-            //cloudPrinter?.let { printGuestByItemForSunmiQueue(obj.guestAttributes, it) }
+            cloudPrinter?.let { printGuestByItemForSunmiQueue(obj.guestAttributes, it) }
 
 
         } else {

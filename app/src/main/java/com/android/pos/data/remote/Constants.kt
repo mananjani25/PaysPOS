@@ -8,6 +8,8 @@ import com.android.pos.di.PrefProvider
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.TimeFormatUtils
 import com.google.gson.Gson
+import com.sunmi.externalprinterlibrary2.printer.CloudPrinter
+import com.sunmi.externalprinterlibrary2.printer.CloudPrinterBuilder
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.TimeZone
@@ -738,5 +740,13 @@ object Constants {
     const val DEFAULT_ORDER = "Take Out"
 
     const val IS_FROM_ALL_ORDER="IS_FROM_ALL_ORDER"
+
+    fun createCloudPrinter(ipAddress:String,portNo:Int):CloudPrinter{
+        return CloudPrinterBuilder.buildPrinter(ipAddress,portNo)
+    }
+
+    fun createCloudPrinterWithName(name:String,ipAddress:String,portNo:Int):CloudPrinter{
+        return CloudPrinterBuilder.buildPrinter(name,ipAddress,portNo)
+    }
 
 }

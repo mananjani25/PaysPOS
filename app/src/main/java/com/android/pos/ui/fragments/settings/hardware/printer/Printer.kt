@@ -45,6 +45,7 @@ import com.android.pos.data.remote.Constants.DISCOVERY_INTERVAL
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.EPSONBRAND
 import com.android.pos.data.remote.Constants.IS_MASTER_TERMINAL
+import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.android.pos.data.remote.Constants.KITCHEN
 import com.android.pos.data.remote.Constants.KITCHENANDCUSTOMER
 import com.android.pos.data.remote.Constants.LOCATION_ID
@@ -54,6 +55,7 @@ import com.android.pos.data.remote.Constants.PRINTER
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.data.remote.Constants.WIFI
+import com.android.pos.data.remote.Constants.createCloudPrinter
 import com.android.pos.data.remote.Constants.getCurrentTimeFromTimeZone
 import com.android.pos.databinding.FragmentPrinterBinding
 import com.android.pos.di.PrefProvider
@@ -188,7 +190,13 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     }
 
     private fun checkMasterTerminal() {
-        if (prefProvider.getValueboolean(IS_MASTER_TERMINAL, false) == false) {
+        if (prefProvider.getValueboolean(
+                IS_MASTER_TERMINAL,
+                false
+            ) == false && prefProvider.getValueboolean(
+                IS_PRINTER_QUEUE_ENABLE, false
+            ) == true
+        ) {
             binding.txtLabel2.gone()
             binding.linearKitchenPrntData?.gone()
             binding.rvKitchenPrinter.gone()
@@ -1419,8 +1427,45 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     override fun onPrinterSelected(printerListModel: PrinterListModel) {
 
         if (printerListModel.printerName?.startsWith("CloudPrint", true) == true) {
+            if (prefProvider?.getValueboolean(
+                    IS_MASTER_TERMINAL,
+                    false
+                ) && printerListModel.currentPrinterType == KITCHEN && printerListModel.connectionType == WIFI
+            ) {
 
-            printerListModel.deviceModel?.let { sunmiPrinterInit(it.ipAddress) }
+
+                var orderTypeID: Int = 0
+                orderTypeList.forEach {
+                    if (it.orderType == TAKEOUT) {
+                        orderTypeID = it.id
+                    }
+                }
+
+                var listItems: ArrayList<OrderItemsAttribute> = arrayListOf()
+                var orderItem = OrderItemsAttribute()
+                orderItem.itemId = prefProvider.getValueInt(MANUAL_SALE_ITEM_ID, 1)
+                orderItem.category_id = prefProvider.getValueInt(MANUAL_SALE_CATEGORY_ID, 1)
+                orderItem.itemName = "Test Print"
+                listItems.add(orderItem)
+                var orderAttr = OrderAttributeRequestModel()
+                orderAttr.orderTypeId = orderTypeID
+                orderAttr.employeeId = prefProvider.getValueInt(EMPLOYEE_ID, 0)
+                orderAttr.locationId = prefProvider.getValueInt(LOCATION_ID, 0)
+                orderAttr.offlineId = randomOfflineId()
+                orderAttr.paymentStatus = 1
+                orderAttr.orderItemsAttributes = listItems
+                orderAttr.macAddress = printerListModel.deviceModel?.macAddress.toString()
+
+
+                var order = OrderRequestModel(order = orderAttr, completed_all_payments = true)
+
+
+                viewModel.createPrinterQueueTestOrder(order)
+
+            } else {
+
+                printerListModel.deviceModel?.let { sunmiPrinterInit(it.ipAddress) }
+            }
 
         } else if (printerListModel.printerName?.startsWith("Printer", true) == true) {
             if (prefProvider?.getValueboolean(
@@ -1516,12 +1561,12 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         Log.e(TAG, "CheckTestSunmiLAN")
 
 
-
-        var cloudPrinter = CloudPrinter(
-            printerListModel.printerName,
-            printerListModel.deviceModel?.macAddress,
+        var cloudPrinter = createCloudPrinter(
+            printerListModel.deviceModel?.macAddress ?: "",
             9100
         )
+
+
         cloudPrinter.connect(requireContext(),
             object : com.sunmi.externalprinterlibrary2.ConnectCallback {
                 override fun onConnect() {
@@ -1934,7 +1979,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
             var list: ArrayList<CreatePrinterRequestModel.PrinterSettingsAttributes> = arrayListOf()
             if (printerListModel.printerName == "TM-U220" || printerListModel.printerName == "TM-U220B" || printerListModel.printerName?.startsWith(
-                    "Printer",
+                    "Cloud",
                     true
                 ) == true && prefProvider.getValueboolean(
                     IS_MASTER_TERMINAL, false
@@ -1986,7 +2031,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             printer_type = printerListModel.connectionType,
             ip_address = printerListModel.deviceModel?.ipAddress,
             printerSettingsAttributes = list,
-            printerBrand = if (printerListModel.printerName?.startsWith("Printer", true) == true) {
+            printerBrand = if (printerListModel.printerName?.startsWith("Cloud", true) == true) {
                 Constants.SUNMIBRAND
             } else {
                 EPSONBRAND
@@ -3043,7 +3088,11 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
                 var inAvail: Boolean = false
                 availableNetworkAdapter.getList().forEach {
-                    if (it.printerName.equals(p0?.cloudPrinterInfo?.name, true)) {
+                    if (it.printerName.equals(
+                            p0?.cloudPrinterInfo?.name,
+                            true
+                        ) && it.connectionType?.equals(WIFI, true) == true
+                    ) {
                         inAvail = true
 
 

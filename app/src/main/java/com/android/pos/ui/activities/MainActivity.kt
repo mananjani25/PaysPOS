@@ -40,6 +40,7 @@ import com.android.pos.data.model.responseModel.GetKitchenReceiptSettingsRespons
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.IS_MASTER_TERMINAL
+import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_STARTS
 import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.remote.Constants.UNIQUE_ID
@@ -57,7 +58,6 @@ import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.ui.fragments.payment.OrderCompleteViewModel
 import com.android.pos.ui.fragments.settings.hardware.Hardware
 import com.android.pos.utils.*
-import com.android.pos.utils.MethodUtils.Companion.toPrecision
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.statusUtils.Status
 import com.android.pos.utils.workmanager.ThreadPoolManager
@@ -198,7 +198,8 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 "checkMAsterTeminal",
                 "check  ${prefProvider?.getValueboolean(IS_MASTER_TERMINAL, false)}"
             )
-            if (prefProvider?.getValueboolean(IS_MASTER_TERMINAL, false) == true && prefProvider?.getValueboolean(Constants.IS_PRINTER_QUEUE_STARTS,false) == false) {
+            if (prefProvider?.getValueboolean(IS_MASTER_TERMINAL, false) == true && prefProvider?.getValueboolean(Constants.IS_PRINTER_QUEUE_STARTS,false) == false && prefProvider?.getValueboolean(
+                    IS_PRINTER_QUEUE_ENABLE,false) == true) {
                 prefProvider?.setValueboolean(Constants.IS_PRINTER_QUEUE_STARTS,true)
                 getKitOne()
 

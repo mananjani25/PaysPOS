@@ -6066,7 +6066,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
 
-                        if (!prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)) {
+                        Log.e(TAG,"checkPrinterQueueStatus:  ${prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)}")
+                        if (prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false) == false) {
                             if (!requireArguments().getBoolean("isSpilt")) {
                                 if (!requireArguments().getBoolean("isDineIn") && !requireArguments().getBoolean(
                                         "isFromActiveOrder"
