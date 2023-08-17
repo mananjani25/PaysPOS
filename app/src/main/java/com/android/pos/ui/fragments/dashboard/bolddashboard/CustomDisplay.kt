@@ -1462,10 +1462,22 @@ class CustomDisplay(
                         )
                     } else {
 //                        magtekCall(wholeTotalPrice)
-                        if (mPaymentViewModel.paxReferenceNo.isNullOrEmpty()) {
+
+                        /*if (mPaymentViewModel.paxReferenceNo.isNullOrEmpty()) {
                             magtekCall(wholeTotalPrice)
                         } else {
                             adjustPaxTips()
+                        }*/
+
+                        if (mPaymentViewModel.paxReferenceNo.isNullOrEmpty()) {
+                            magtekCall(wholeTotalPrice)
+                        } else if(!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)){
+                            adjustPaxTips()
+                        } else if(!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && !prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)){
+                            AlertUtils.showCustomAlert(
+                                context,
+                                "Please connect to PAX device"
+                            )
                         }
                     }
                 } else {

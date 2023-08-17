@@ -127,10 +127,20 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
         binding.txtDone.setOnClickListener {
             Log.d("referenceNo: ","referenceNo $referenceNo")
             if (MethodUtils.isDoubleClick()) return@setOnClickListener
-            if (!referenceNo.isNullOrEmpty()) {
+            /*if (!referenceNo.isNullOrEmpty()) {
                 refundViaPAX()
             } else {
                 doneClick()
+            }*/
+            if (referenceNo.isNullOrEmpty()) {
+                doneClick()
+            } else if(referenceNo.isNullOrEmpty() && prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)) {
+                refundViaPAX()
+            } else if(!referenceNo.isNullOrEmpty() && !prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)){
+                AlertUtils.showCustomAlert(
+                    requireContext(),
+                    "Please connect to PAX device"
+                )
             }
         }
 
@@ -202,7 +212,7 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                             if (result.Msg.toString() == "CONNECT ERROR" || result.Msg.toString() == "TIME OUT") {
                                 Toast.makeText(
                                     requireContext(),
-                                    "Please check your internet connection",
+                                    R.string.pax_connect_error,
                                     Toast.LENGTH_LONG
                                 ).show()
                             } else {

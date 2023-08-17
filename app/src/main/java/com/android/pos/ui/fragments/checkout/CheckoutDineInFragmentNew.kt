@@ -1330,7 +1330,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 CoroutineScope(Dispatchers.Main).launch {
                     ProgressUtils.dismissProgressDialog()
                     if (result.Msg.toString() == "CONNECT ERROR" || result.Msg.toString() == "TIME OUT"){
-                        Toast.makeText(requireContext(), "Please check your internet connection", Toast.LENGTH_LONG).show()
+                        Toast.makeText(requireContext(), R.string.pax_connect_error, Toast.LENGTH_LONG).show()
                     } else {
                         Toast.makeText(requireContext(), "getMerchantDetails Failed ${result.Code} ${result.Msg}", Toast.LENGTH_LONG).show()
                     }

@@ -68,6 +68,8 @@
 
     <string name="variation_name_validate">Please enter Variation Name</string>
 
+    <string name="pax_connect_error">Please check if devices are in same network</string>
+
     <string name="category_name_validate">Please enter Category Name</string>
     <string name="modifier_name_validate">Please enter Modifier Name</string>
     <string name="modifier_set_name_validate">All modifier names must be different</string>

@@ -32,7 +32,7 @@ class MainApplication : Application() {
         FirebaseApp.initializeApp(this)
         //bhumit.bhadani@bacancy.com = 10Ce70901@
         //TestFairy.begin(this, "SDK-SrnpgIU9"); // vishal.j.patel+103@bacancy.com/Pos@2022
-        TestFairy.begin(this, "SDK-wVjSFkBf") // mansi.kothari@bacancy.com
+        TestFairy.begin(this, "SDK-tk8IVNOn") // mansi.kothari@bacancy.com
         instance = this
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
 

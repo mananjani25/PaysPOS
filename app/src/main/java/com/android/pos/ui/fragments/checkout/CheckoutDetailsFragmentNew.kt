@@ -2156,13 +2156,14 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     CoroutineScope(Dispatchers.Main).launch {
                         ProgressUtils.dismissProgressDialog()
                         requireActivity().toast("$resultCode $resultTxt", Toast.LENGTH_LONG)
+//                        connectBP()
                     }
                 }
             } else {
                 CoroutineScope(Dispatchers.Main).launch {
                     ProgressUtils.dismissProgressDialog()
                     if (result.Msg.toString() == "CONNECT ERROR" || result.Msg.toString() == "TIME OUT"){
-                        Toast.makeText(requireContext(), "Please check your internet connection", Toast.LENGTH_LONG).show()
+                        Toast.makeText(requireContext(), R.string.pax_connect_error, Toast.LENGTH_LONG).show()
                     } else {
                         Toast.makeText(requireContext(), "getMerchantDetails Failed ${result.Code} ${result.Msg}", Toast.LENGTH_LONG).show()
                     }
@@ -2170,6 +2171,19 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             }
 
         }
+    }
+
+    private fun connectBP(){
+        BroadPOSCommunicator.getInstance(activity)
+            .startListeningService(object : BroadPOSCommunicator.StartListenerCallBack {
+                override fun onSuccess() {
+                    Toast.makeText(context, "Successful StartListenerCallBack", Toast.LENGTH_SHORT).show()
+                }
+
+                override fun onFail(msg: String) {
+                    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                }
+            })
     }
 
     private fun manualCardPaymentCall(

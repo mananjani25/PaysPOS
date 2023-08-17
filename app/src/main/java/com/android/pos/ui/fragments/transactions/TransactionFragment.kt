@@ -260,10 +260,20 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
             if (singleTransaction?.paymentType == "Card") {
                 //Add condition according to params i.e magtek or pax data in API response
                 Log.d("RefNum11: ","RefNum ${singleTransaction?.ref_num}")
-                if (singleTransaction?.ref_num.isNullOrEmpty()) {
+                /*if (singleTransaction?.ref_num.isNullOrEmpty()) {
                     magtekCall(tipAmount)
                 } else {
                     adjustPaxTips()
+                }*/
+                if (singleTransaction?.ref_num.isNullOrEmpty()) {
+                    magtekCall(tipAmount)
+                } else if(!singleTransaction?.ref_num.isNullOrEmpty() && prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)){
+                    adjustPaxTips()
+                } else if(!singleTransaction?.ref_num.isNullOrEmpty() && !prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)){
+                    AlertUtils.showCustomAlert(
+                        requireContext(),
+                        "Please connect to PAX device"
+                    )
                 }
             } else {
                 tipCall(false)
@@ -440,7 +450,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                 CoroutineScope(Dispatchers.Main).launch {
                     ProgressUtils.dismissProgressDialog()
                     if (result.Msg.toString() == "CONNECT ERROR" || result.Msg.toString() == "TIME OUT"){
-                        Toast.makeText(requireContext(), "Please check your internet connection", Toast.LENGTH_LONG).show()
+                        Toast.makeText(requireContext(), R.string.pax_connect_error, Toast.LENGTH_LONG).show()
                     } else {
                         Toast.makeText(requireContext(), "getMerchantDetails Failed ${result.Code} ${result.Msg}", Toast.LENGTH_LONG).show()
                     }

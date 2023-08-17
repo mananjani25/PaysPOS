@@ -284,8 +284,13 @@ class TransactionDetailsFragment : Fragment() {
                 Log.d("RefNum11: ","RefNum ${paymentDetailsResponse.data?.ref_num}")
                 if (paymentDetailsResponse.data?.ref_num.isNullOrEmpty()) {
                     magtekCall(tipAmount)
-                } else {
+                } else if(!paymentDetailsResponse.data?.ref_num.isNullOrEmpty() && prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)){
                     adjustPaxTips()
+                } else if(!paymentDetailsResponse.data?.ref_num.isNullOrEmpty() && !prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)){
+                    AlertUtils.showCustomAlert(
+                        requireContext(),
+                        "Please connect to PAX device"
+                    )
                 }
             } else {
                 tipCall(false)
@@ -474,7 +479,7 @@ class TransactionDetailsFragment : Fragment() {
                 CoroutineScope(Dispatchers.Main).launch {
                     ProgressUtils.dismissProgressDialog()
                     if (result.Msg.toString() == "CONNECT ERROR" || result.Msg.toString() == "TIME OUT"){
-                        Toast.makeText(requireContext(), "Please check your internet connection", Toast.LENGTH_LONG).show()
+                        Toast.makeText(requireContext(), R.string.pax_connect_error, Toast.LENGTH_LONG).show()
                     } else {
                         Toast.makeText(requireContext(), "getMerchantDetails Failed ${result.Code} ${result.Msg}", Toast.LENGTH_LONG).show()
                     }
