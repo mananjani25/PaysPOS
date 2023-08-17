@@ -230,7 +230,7 @@ class ManualSaleViewModel @Inject constructor(
     ) {
 
         redeemLoyaltyInfo.total = total
-        val availablePoints = customer?.final_reward ?: 0
+        val availablePoints1 = customer?.final_reward ?: 0
 
         if (customer == null) {
             //loyalty cant be applied if customer is not selected.
@@ -239,6 +239,8 @@ class ManualSaleViewModel @Inject constructor(
             activeLoyaltyProgram?.let {
                 redeemLoyaltyInfo.loyaltyProgramsModel = activeLoyaltyProgram
 
+                val availablePoints = it.rewardPoint.times((customer.final_reward?.floorDiv(it.rewardPoint)!!))
+                    ?:0
                 //if customer has more points than required(minimum limit)
                 var availableLoyaltyAmount = 0.0
                 if (it.rewardPoint == 0) {
@@ -248,6 +250,7 @@ class ManualSaleViewModel @Inject constructor(
                     availablePoints * it.amount / it.rewardPoint
                 if (availableLoyaltyAmount > redeemLoyaltyInfo.total) {
                     var pointDouble = (redeemLoyaltyInfo.total * it.rewardPoint) / it.amount
+                    pointDouble = (it.rewardPoint * (pointDouble.div(it.rewardPoint)).toInt()).toDouble()
                     redeemLoyaltyInfo.usedLoyaltyPoints = ceil(pointDouble).toInt()
                     redeemLoyaltyInfo.usedLoyaltyAmount = pointDouble * it.amount / it.rewardPoint
                     if (redeemLoyaltyInfo.usedLoyaltyAmount >= redeemLoyaltyInfo.total) {
@@ -276,7 +279,7 @@ class ManualSaleViewModel @Inject constructor(
             }
         } else {
             redeemLoyaltyInfo.remainingAmount = redeemLoyaltyInfo.total
-            redeemLoyaltyInfo.remainingLoyaltyPoints = availablePoints
+            redeemLoyaltyInfo.remainingLoyaltyPoints = availablePoints1
             redeemLoyaltyInfo.usedLoyaltyPoints = 0
             redeemLoyaltyInfo.usedLoyaltyAmount = 0.0
             //redeemLoyaltyInfo.isLoyaltyApplied = false

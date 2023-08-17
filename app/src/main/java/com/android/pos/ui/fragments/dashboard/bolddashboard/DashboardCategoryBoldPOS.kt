@@ -36,9 +36,12 @@ import com.android.pos.data.model.requestModel.OrderAttributeRequestModel
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.ADD_VALUE
+import com.android.pos.data.remote.Constants.BALANCE_INQUIRY
 import com.android.pos.data.remote.Constants.CUSTOMER
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
+import com.android.pos.data.remote.Constants.GIFT_CARD
 import com.android.pos.data.remote.Constants.IS_FROM_ALL_ORDER
 import com.android.pos.data.remote.Constants.IS_PAYMENT_SCREEN
 import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
@@ -52,6 +55,7 @@ import com.android.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.ORDER_TYPE_ID
 import com.android.pos.data.remote.Constants.ORDER_TYPE_NAME
+import com.android.pos.data.remote.Constants.SELL_CARD
 import com.android.pos.data.remote.Constants.SMALL
 import com.android.pos.data.remote.Constants.SPLIT_ENABLE
 import com.android.pos.data.remote.Constants.SUNMI_INNER_PRINTER
@@ -195,6 +199,12 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     ): View? {
         checkCashDrawerObserver()
         Binding()
+        prefProvider.setValue(Constants.REDIRECT_FROM, "")
+        //prefProvider.setValue(Constants.OPEN_ORDER_ITEMS, "")
+
+        if(prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD){
+            viewModel.clearGiftCardCart()
+        }
 
 //        hideSystemUI()
 
@@ -394,6 +404,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         viewModel.activeLoyaltyProgramLiveData.observe(requireActivity()) {
             if (it.status == Status.SUCCESS && it.data != null) {
                 LogUtil.logE("Loyalty", "getLoyaltyPrograms fetched..")
+                prefProvider.saveActiveLoyaltyData(it.data)
+                viewModel.activeLoyaltyProgram = it.data
+            } else {
                 prefProvider.saveActiveLoyaltyData(it.data)
                 viewModel.activeLoyaltyProgram = it.data
             }
@@ -770,14 +783,14 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
         }
         binding.layoutHeader.txtOpenOrder.setOnClickListener {
-           try {
-               if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
-                   prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
-                   findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
-               }
-           } catch (e: Exception) {
-               e.printStackTrace()
-           }
+//           try {
+//               if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+//                   prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
+//                   findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+//               }
+//           } catch (e: Exception) {
+//               e.printStackTrace()
+//           }
         }
         binding.layoutHeader.txtOnlineOrder.setOnClickListener {
             try {
@@ -845,26 +858,33 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
      }*/
         binding.layoutHeader.txtKeypad.setOnClickListener {
             try {
-                if (rolePermission.hasManualSalesPermission(binding.root)) {
-                    prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
-                    viewModel.deleteManualSaleCart()
-                    binding.layoutHeader.txtKeypad.setTextColor(resources.getColor(R.color.btnColor))
-                    binding.layoutHeader.txtKeypad.setTypeface(
-                        binding.layoutHeader.txtKeypad.typeface,
-                        Typeface.BOLD
-                    )
-                    binding.layoutHeader.txtOpenOrder.setTextColor(resources.getColor(R.color.txtColor))
-                    binding.layoutHeader.txtOpenOrder.setTypeface(
-                        binding.layoutHeader.txtOpenOrder.typeface,
-                        Typeface.NORMAL
-                    )
-                    var bundle: Bundle = Bundle()
-                    bundle.putParcelableArrayList("carttlist", cartList)
-                    findNavController().navigate(
-                        R.id.action_dashboardCategoryBoldPOS_to_manualSalesNew,
-                        bundle
-                    )
+            if (rolePermission.hasManualSalesPermission(binding.root)) {
+                prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
+                viewModel.deleteManualSaleCart()
+                binding.layoutHeader.txtKeypad.setTextColor(resources.getColor(R.color.btnColor))
+                binding.layoutHeader.txtKeypad.setTypeface(
+                    binding.layoutHeader.txtKeypad.typeface,
+                    Typeface.BOLD
+                )
+                binding.layoutHeader.txtOpenOrder.setTextColor(resources.getColor(R.color.txtColor))
+                binding.layoutHeader.txtOpenOrder.setTypeface(
+                    binding.layoutHeader.txtOpenOrder.typeface,
+                    Typeface.NORMAL
+                )
+                var bundle: Bundle = Bundle()
+                bundle.putParcelableArrayList("carttlist", cartList)
+                if(prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
+                    if ((cartList[0].dineInList?.size ?: 0) > 0) {
+                        cartList[0].dineInList?.get(0)?.selectedPosition =
+                            viewModel.dineInHeaderPosition
+                    }
+                    bundle.putInt("selectedHeaderPosition", viewModel.dineInHeaderPosition)
                 }
+                findNavController().navigate(
+                    R.id.action_dashboardCategoryBoldPOS_to_manualSalesNew,
+                    bundle
+                )
+            }
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -1045,66 +1065,86 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
 
     override fun onItemSelected(item: TbItem) {
-        item.timeStamp = randomOfflineId()
 
-        Log.e("viewModel.cartModel",Gson().toJson(viewModel.cartModel))
-
-        prefProvider.setValue(Constants.REDIRECT_FROM, "")
-
-        if (cartList.isEmpty() && viewModel.cartModel != null) {
-            viewModel.cartModel?.let {
-              cartList.add(it)
-            }
-        }
-
-        if (cartList.isEmpty() && viewModel.cartModel != null) {
-            cartList = arrayListOf()
-            cartList = viewModel.createCart(cartList)
-            if (cartList[0].employeeID != prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)) {
-                cartList[0] = viewModel.cartModel!!
-            }
-        }
-
-
-        if (item.modifier_set_ids.isNotEmpty() || item.variationsAttributes.isNotEmpty()) {
-            /*  if (item.variationsAttributes.isNotEmpty()) {
-                  item.variationsAttributes.get(0).isChecked = true
-              }*/
-            item.modifiers.forEach { it.isChecked = false }
-            item.variationsAttributes.forEach { it ->
-                if (it.priceType == "Variable") {
-                    it.price = null
+        when (item.name) {
+            SELL_CARD -> {
+                // clear customer if added any for previous order type
+                viewModel.clearCustomer()
+                if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_purchaseGiftCard)
                 }
             }
-            val backStateName: String = AddItemFragment.javaClass.getName()
-            val fragment = AddItemFragment.newInstance(item, this, cartList, false)
-            val fm: FragmentManager = requireActivity().supportFragmentManager
-            fm.beginTransaction().add(binding.frameLayout.id, fragment)
-                .setReorderingAllowed(true)
-                .addToBackStack(backStateName).commit()
-            //  loadCategoryFragment(fragment)
-        } else {
-            Log.e(TAG, "cartListItemAddSize: ${cartList.size}")
-            if (cartList.isEmpty()) {
-                viewModel.createCart(cartList)
+            ADD_VALUE -> {
+                if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_addValueInGiftCard)
+                }
             }
-            item.itemQuantity = 1
-            if (cartList.size > 0) {
+            BALANCE_INQUIRY -> {
+                if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_balanceInquiry)
+                }
+            }
+            else -> {
+                item.timeStamp = randomOfflineId()
 
-                if (cartList.isNotEmpty())
-                    cartList[0].employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+                Log.e("viewModel.cartModel",Gson().toJson(viewModel.cartModel))
 
-                if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
-                    if (cartList[0].dineInList?.isEmpty() == true) {
-                        cartList[0].dineInList = dineInList
+                prefProvider.setValue(Constants.REDIRECT_FROM, "")
+
+                if (cartList.isEmpty() && viewModel.cartModel != null) {
+                    viewModel.cartModel?.let {
+                        cartList.add(it)
                     }
+                }
+
+                if (cartList.isEmpty() && viewModel.cartModel != null) {
+                    cartList = arrayListOf()
+                    cartList = viewModel.createCart(cartList)
+                    if (cartList[0].employeeID != prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)) {
+                        cartList[0] = viewModel.cartModel!!
+                    }
+                }
 
 
-                    if (cartList[0].dineInList?.isNotEmpty() == true) {
-                        Log.e(
-                            "checkDineHeaderPos",
-                            "dineInHeaderPosition:  ${viewModel.dineInHeaderPosition}"
-                        )
+                if (item.modifier_set_ids.isNotEmpty() || item.variationsAttributes.isNotEmpty()) {
+                    /*  if (item.variationsAttributes.isNotEmpty()) {
+                          item.variationsAttributes.get(0).isChecked = true
+                      }*/
+                    item.modifiers.forEach { it.isChecked = false }
+                    item.variationsAttributes.forEach { it ->
+                        if (it.priceType == "Variable") {
+                            it.price = null
+                        }
+                    }
+                    val backStateName: String = AddItemFragment.javaClass.getName()
+                    val fragment = AddItemFragment.newInstance(item, this, cartList, false)
+                    val fm: FragmentManager = requireActivity().supportFragmentManager
+                    fm.beginTransaction().add(binding.frameLayout.id, fragment)
+                        .setReorderingAllowed(true)
+                        .addToBackStack(backStateName).commit()
+                    //  loadCategoryFragment(fragment)
+                } else {
+                    Log.e(TAG, "cartListItemAddSize: ${cartList.size}")
+                    if (cartList.isEmpty()) {
+                        viewModel.createCart(cartList)
+                    }
+                    item.itemQuantity = 1
+                    if (cartList.size > 0) {
+
+                        if (cartList.isNotEmpty())
+                            cartList[0].employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+
+                        if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
+                            if (cartList[0].dineInList?.isEmpty() == true) {
+                                cartList[0].dineInList = dineInList
+                            }
+
+
+                            if (cartList[0].dineInList?.isNotEmpty() == true) {
+                                Log.e(
+                                    "checkDineHeaderPos",
+                                    "dineInHeaderPosition:  ${viewModel.dineInHeaderPosition}"
+                                )
 
                         if (prefProvider.getValueboolean(Constants.DINE_IN_UPDATE, false)) {
                             item.isEdited = true
@@ -1125,8 +1165,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 }
             }
 
+                }
+            }
         }
-
 
     }
 
@@ -1258,16 +1299,12 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 }
             }
 
-            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
 
-                binding.layoutHeader.txtKeypad.visibility = View.GONE
-            } else {
                 if (prefProvider.getValue(ORDER_TYPE, "").trim().isEmpty()) {
                     binding.layoutHeader.txtKeypad.gone()
                 } else {
                     binding.layoutHeader.txtKeypad.visible()
                 }
-            }
 
         }
 
@@ -1680,7 +1717,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
 
             SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
-            setService(createOrderResponse.data)
+            setService(data,createOrderResponse.data)
 
 
         } else {
@@ -2175,7 +2212,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
     }
 
-    private fun setService(data: CreateOrderResponse.Data) {
+    private fun setService( kitchenReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,data: CreateOrderResponse.Data) {
         if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.FoundSunmiPrinter) {
 
             LogUtil.logE("SunmiPrintHelper1", "FoundSunmiPrinter")
@@ -2184,14 +2221,14 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                 LogUtil.logE("SunmiPrintHelpe1r", "isBlueToothPrinter")
 
-                generateKitchenReceiptSunmiInner(data)
+                generateKitchenReceiptSunmiInner(kitchenReceiptPrinters,data)
 
 
             }
 
         } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.CheckSunmiPrinter) {
             Handler(Looper.getMainLooper()).postDelayed({
-                setService(data)
+                setService(kitchenReceiptPrinters,data)
             }, 2000)
             LogUtil.logE("SunmiPrintHelper", "CheckSunmiPrinter")
         } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.LostSunmiPrinter) {
@@ -2349,7 +2386,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                             if (!allstatus){
                                 viewModel.downloadFinished(false)
                                 if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
-                                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
                                 }
                             }
 
@@ -3296,7 +3333,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     }
 
     private fun generateKitchenReceiptSunmiInner(
-
+        kitchenReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
         receiptModel: CreateOrderResponse.Data
     ) {
         try {
@@ -3334,8 +3371,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             PrintSunmiUtils.addHorizontalInner()
 
             receiptModel?.order?.orderItems?.let {
+
                 addOrdersForKitchenInner(
-                    it
+                    it,
+                    kitchenReceiptPrinters.printerCategories.toCollection(arrayListOf())
                 )
             }
 

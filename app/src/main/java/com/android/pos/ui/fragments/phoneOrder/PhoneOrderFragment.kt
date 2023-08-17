@@ -75,6 +75,7 @@ class PhoneOrderFragment : Fragment() {
 
     var placesClient: PlacesClient? = null
     var adapter1: AutoCompleteAdapter? = null
+    var selectedCustomer: TbCustomer? = null
 
 
     @set:Inject
@@ -91,6 +92,7 @@ class PhoneOrderFragment : Fragment() {
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_phone_order, container, false)
         binding.lifecycleOwner = this
+        manageDeliveryTypeView()
         resultListener()
         placesClientInit()
         setupSnackbar()
@@ -107,7 +109,7 @@ class PhoneOrderFragment : Fragment() {
         setFragmentResultListener("request_key_customer_phone_order") { requestKey: String, bundle: Bundle ->
             val result = bundle.getParcelable<TbCustomer>("data")
             if (result != null) {
-
+                selectedCustomer = result
                 setupCustomer(result)
             }
         }
@@ -140,6 +142,23 @@ class PhoneOrderFragment : Fragment() {
 
     }
 
+    private fun manageDeliveryTypeView(){
+        if(orderType == PICK_UP) {
+            orderType = PICK_UP
+            isPickUp = true
+            isDelivey = false
+            binding.txtPickup.setBackgroundResource(R.drawable.button_action_hover)
+            binding.txtDelivery.setBackgroundResource(R.drawable.background_square_border_grey)
+            binding.txtAddress.gone()
+        } else {
+            orderType = DELIVERY
+            isDelivey = true
+            isPickUp = false
+            binding.txtPickup.setBackgroundResource(R.drawable.background_square_border_grey)
+            binding.txtDelivery.setBackgroundResource(R.drawable.button_action_hover)
+            binding.txtAddress.visible()
+        }
+    }
 
     private fun placesClientInit() {
 
@@ -283,9 +302,9 @@ class PhoneOrderFragment : Fragment() {
                     MethodUtils.getText(binding.edtLName),
                     "",
                     MethodUtils.getText(binding.edtEmail),
+                    selectedCustomer?.enroll_to_loyalty ?: false,
                     false,
-                    false,
-                    0,
+                    selectedCustomer?.final_reward ?: 0,
                     "",
                     phonesList,
                     list

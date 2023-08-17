@@ -11,7 +11,7 @@
         <RelativeLayout
             android:id="@+id/linearHeader"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/_30sdp"
             android:orientation="horizontal"
             app:layout_constraintTop_toTopOf="parent">
 
@@ -19,12 +19,12 @@
                 android:id="@+id/txtHome"
                 style="@style/CustomFontBold"
                 android:layout_width="wrap_content"
-                android:layout_height="@dimen/_23sdp"
+                android:layout_height="match_parent"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:background="@drawable/button_action_hover"
                 android:gravity="center_vertical"
-                android:paddingHorizontal="@dimen/_12sdp"
+                android:paddingHorizontal="@dimen/_16sdp"
                 android:paddingVertical="@dimen/_5sdp"
                 android:text="Home"
                 android:textAllCaps="true"
@@ -49,7 +49,7 @@
                 android:layout_width="@dimen/_15sdp"
                 android:layout_height="@dimen/_15sdp"
                 android:layout_centerVertical="true"
-                android:layout_marginEnd="@dimen/_8sdp"
+                android:layout_marginEnd="@dimen/_12sdp"
                 android:layout_toStartOf="@+id/txtHome"
                 android:background="?attr/selectableItemBackground"
                 android:padding="@dimen/_2sdp"
@@ -64,20 +64,20 @@
                 android:layout_marginEnd="@dimen/_8sdp"
                 android:layout_toStartOf="@+id/imgPrintAll"
                 android:padding="@dimen/_2sdp"
-                android:visibility="gone"
                 android:src="@drawable/ic_trans_table"
+                android:visibility="gone"
                 app:tint="@color/white" />
 
-           <!-- <ImageView
-                android:id="@+id/imgTransferTable"
-                android:layout_width="@dimen/_17sdp"
-                android:layout_height="@dimen/_15sdp"
-                android:layout_centerVertical="true"
-                android:layout_marginEnd="@dimen/_8sdp"
-                android:layout_toStartOf="@+id/imgMergeTable"
-                android:padding="@dimen/_2sdp"
-                android:src="@drawable/merge"
-                app:tint="@color/white" />-->
+            <!-- <ImageView
+                 android:id="@+id/imgTransferTable"
+                 android:layout_width="@dimen/_17sdp"
+                 android:layout_height="@dimen/_15sdp"
+                 android:layout_centerVertical="true"
+                 android:layout_marginEnd="@dimen/_8sdp"
+                 android:layout_toStartOf="@+id/imgMergeTable"
+                 android:padding="@dimen/_2sdp"
+                 android:src="@drawable/merge"
+                 app:tint="@color/white" />-->
 
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -87,6 +87,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
                 android:layout_centerVertical="true"
+                android:layout_marginStart="@dimen/_4sdp"
                 android:layout_marginEnd="@dimen/_4sdp"
                 android:gravity="center"
                 android:padding="@dimen/_6sdp"
@@ -109,20 +110,26 @@
             android:id="@+id/linearHeaderNew"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/button_action_hover"
+            android:background="@drawable/dine_in_header_bg"
             android:orientation="horizontal"
             android:paddingVertical="@dimen/_3sdp"
-            android:weightSum="5"
+            android:weightSum="10"
             app:layout_constraintTop_toBottomOf="@+id/viewLine">
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.5" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_weight="0.6"
+                android:layout_weight="1.2"
                 android:gravity="center"
-                android:paddingVertical="@dimen/_5sdp"
+                android:paddingHorizontal="@dimen/_2sdp"
+                android:paddingVertical="@dimen/_4sdp"
                 android:text="Fire To Kitchen"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_7mdpi" />
@@ -134,7 +141,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_weight="1.75"
+                android:layout_weight="3"
                 android:gravity="start"
                 android:paddingStart="@dimen/_15sdp"
                 android:text="Item Name"
@@ -148,8 +155,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_weight="0.65"
-                android:gravity="start"
+                android:layout_weight="1.2"
+                android:gravity="center"
                 android:text="Group Quantity"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_7mdpi" />
@@ -161,7 +168,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_weight="1"
+                android:layout_weight="1.6"
                 android:gravity="center"
                 android:text="Employees"
                 android:textColor="@color/white"
@@ -174,12 +181,16 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_weight="1"
-                android:gravity="end"
-                android:paddingRight="@dimen/_20sdp"
+                android:layout_weight="1.5"
+                android:gravity="center"
                 android:text="Price"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_7mdpi" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -188,7 +199,6 @@
             android:id="@+id/rvItemList"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/_5sdp"
             android:orientation="vertical"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constrainedHeight="true"
@@ -206,7 +216,7 @@
             android:paddingStart="@dimen/_2sdp"
             android:paddingTop="@dimen/_4sdp"
             android:paddingEnd="@dimen/_2sdp"
-            android:paddingBottom="@dimen/_2sdp"
+            android:paddingBottom="@dimen/_4sdp"
             app:layout_constrainedWidth="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -225,22 +235,6 @@
                 android:minWidth="@dimen/_120sdp"
                 android:padding="@dimen/_8sdp"
                 android:text="@string/tv_home"
-                android:textColor="@color/white"
-                android:textSize="@dimen/_6ssp" />
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/txt_addguest"
-                style="@style/CustomFontBold"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/_2sdp"
-                android:layout_marginEnd="@dimen/_2sdp"
-                android:layout_weight="1"
-                android:background="@drawable/dine_in_footer_selector"
-                android:gravity="center"
-                android:minWidth="@dimen/_120sdp"
-                android:padding="@dimen/_8sdp"
-                android:text="Add Guest"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_6ssp" />
 
@@ -269,7 +263,7 @@
                 android:layout_marginStart="@dimen/_2sdp"
                 android:layout_marginEnd="@dimen/_2sdp"
                 android:layout_weight="1"
-                android:background="@drawable/btn_border_orange"
+                android:background="@drawable/dine_in_footer_selector"
                 android:gravity="center"
                 android:minWidth="@dimen/_120sdp"
                 android:padding="@dimen/_8sdp"
@@ -277,6 +271,21 @@
                 android:textColor="@color/white"
                 android:textSize="@dimen/_6ssp" />
 
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txt_addguest"
+                style="@style/CustomFontBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_2sdp"
+                android:layout_marginEnd="@dimen/_2sdp"
+                android:layout_weight="1"
+                android:background="@drawable/dine_in_footer_selector"
+                android:gravity="center"
+                android:minWidth="@dimen/_120sdp"
+                android:padding="@dimen/_8sdp"
+                android:text="Add Guest"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_6ssp" />
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:id="@+id/btnPayNew"

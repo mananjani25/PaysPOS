@@ -119,7 +119,7 @@ class TransactionViewModel @Inject constructor(
 
     fun transactionId(transactionId: GetTransactionListResponse.Data.Payment) {
         if (!transactionId.payableType.equals(
-                "GiftCart",
+                "GiftCard",
                 true
             ) || !transactionId.payableType.equals("Invoice", true)
         ) {

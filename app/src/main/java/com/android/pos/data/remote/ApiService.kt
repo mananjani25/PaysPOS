@@ -7,6 +7,12 @@ import com.android.pos.data.model.CustomerListResponse
 import com.android.pos.data.model.CustomerSearchList
 import com.android.pos.data.model.GetPaymentOrderDetailsResponse
 import com.android.pos.data.model.requestModel.*
+import com.android.pos.data.model.requestModel.giftCard.request.GiftCardAddValueRequest
+import com.android.pos.data.model.requestModel.giftCard.request.GiftCardCheckBalanceRequest
+import com.android.pos.data.model.requestModel.giftCard.request.SellGiftCardRequestModel
+import com.android.pos.data.model.requestModel.giftCard.response.GiftCardAddValueResponse
+import com.android.pos.data.model.requestModel.giftCard.response.GiftCardCheckBalanceResponse
+import com.android.pos.data.model.requestModel.giftCard.response.SellGiftCardResponseModel
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.model.responseModel.allOrders.AllOrdersCountResponse
 import com.android.pos.data.model.responseModel.category.CategoriesResponse
@@ -51,6 +57,11 @@ import com.android.pos.data.remote.Constants.FORGOT_PASSWORD
 import com.android.pos.data.remote.Constants.GET_FLOOR_PLAN
 import com.android.pos.data.remote.Constants.GET_PRINTERS
 import com.android.pos.data.remote.Constants.GET_TEAM_MODULE
+import com.android.pos.data.remote.Constants.GIFT_CARDS
+import com.android.pos.data.remote.Constants.GIFT_CARD_ADD_BALANCE
+import com.android.pos.data.remote.Constants.GIFT_CARD_CHECK_BALANCE
+import com.android.pos.data.remote.Constants.GIFT_CARD_EMAIL_RECEIPT
+import com.android.pos.data.remote.Constants.GIFT_CARD_PHONE_RECEIPT
 import com.android.pos.data.remote.Constants.HIDE_CATEGORY
 import com.android.pos.data.remote.Constants.HIDE_ITEM
 import com.android.pos.data.remote.Constants.INCREASE_ONGOING_ORDER_COUNTER
@@ -124,6 +135,7 @@ import com.android.pos.data.remote.Constants.UPDATE_SERVICECHARGE
 import com.android.pos.data.remote.Constants.UPDATE_TIP
 import com.android.pos.data.remote.Constants.UPDATE_TIP_WITH_SIGNATURE
 import com.android.pos.data.remote.Constants.USERS_LOG_IN
+import com.android.pos.data.remote.Constants.WASTAGE_ITEM
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.http.*
@@ -668,6 +680,15 @@ interface ApiService {
     @POST(ORDERS)
     suspend fun createOrder(@Body orderRequestModel: OrderRequestModel): CreateOrderResponse
 
+    @POST(GIFT_CARDS)
+    suspend fun sellGiftCard(@Body sellGiftCardRequestModel: SellGiftCardRequestModel): SellGiftCardResponseModel
+
+    @PUT(GIFT_CARD_ADD_BALANCE)
+    suspend fun addValueInGiftCard(@Body giftCardAddValueRequest: GiftCardAddValueRequest): SellGiftCardResponseModel
+
+    @POST(GIFT_CARD_CHECK_BALANCE)
+    suspend fun giftCardCheckBalance(@Body giftCardCheckBalanceRequest: GiftCardCheckBalanceRequest): GiftCardCheckBalanceResponse
+
     @POST(ORDER_PAY_AMOUNT_WISE)
     suspend fun splitByOrder(@Body orderRequestModel: SpitByOrderRequestModel): CreateOrderResponse
 
@@ -722,6 +743,12 @@ interface ApiService {
 
     @POST(ORDER_PHONE_RECEIPT)
     suspend fun phoneReceipt(@QueryMap options: HashMap<String, String>): BaseResponse
+
+    @POST(GIFT_CARD_EMAIL_RECEIPT)
+    suspend fun giftCardEmailReceipt(@QueryMap options: HashMap<String, String>): BaseResponse
+
+    @POST(GIFT_CARD_PHONE_RECEIPT)
+    suspend fun giftCardPhoneReceipt(@QueryMap options: HashMap<String, String>): BaseResponse
 
 
     @PUT(ORDER_ASSIGN_CUSTOMER)
@@ -932,6 +959,9 @@ interface ApiService {
 
     @POST(CREATE_QUEUE_PRINTER)
     suspend fun createQueuePrinter(@Body createPrinterQueueRequest: CreateQueuePrinterRequestModel): BaseResponse
+
+    @POST(WASTAGE_ITEM)
+    suspend fun addItemToWastage(@Body wastageItemRequest: WastageItemRequest): GetOrderDetailsResponse
 
     @GET(ORDER_COUNTS)
     suspend fun orderCounts(

@@ -44,6 +44,8 @@ import com.android.pos.data.model.DineInModel
 import com.android.pos.data.model.GuestDataModel
 import com.android.pos.data.model.SplitBundleModel
 import com.android.pos.data.model.SplitDetailListModel
+import com.android.pos.data.model.requestModel.giftCard.response.GiftCardAddValueResponse
+import com.android.pos.data.model.requestModel.giftCard.response.SellGiftCardResponseModel
 import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.model.responseModel.GetCustomerReceiptSettingsResponse
 import com.android.pos.data.model.responseModel.GetKitchenReceiptSettingsResponse
@@ -60,10 +62,12 @@ import com.android.pos.data.remote.Constants.BUSINESS_WEBSITE
 import com.android.pos.data.remote.Constants.CASH_DISCOUNT_SURCHARGE
 import com.android.pos.data.remote.Constants.CUSTOMER
 import com.android.pos.data.remote.Constants.DINE_IN_ADAPTER_LIST
+import com.android.pos.data.remote.Constants.GIFT_CARD
 import com.android.pos.data.remote.Constants.GUEST_POSITION
 import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED
 import com.android.pos.data.remote.Constants.KITCHEN
+import com.android.pos.data.remote.Constants.KITCHENANDCUSTOMER
 import com.android.pos.data.remote.Constants.LARGE
 import com.android.pos.data.remote.Constants.LOCK_SCREEN_TRANSACTION
 import com.android.pos.data.remote.Constants.LOYALTY_ADDED
@@ -87,6 +91,7 @@ import com.android.pos.data.remote.Constants.SUB_TOTAL
 import com.android.pos.data.remote.Constants.SUB_TOTAL_DINEIN
 import com.android.pos.data.remote.Constants.SUNMI_INNER_PRINTER
 import com.android.pos.data.remote.Constants.SUNMI_PRINTER
+import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.remote.Constants.TOTAL_PRICE_DINEIN
 import com.android.pos.data.remote.Constants.VENUE_LOGO
 import com.android.pos.data.remote.Constants.WHOLE_AMOUNT
@@ -108,6 +113,7 @@ import com.android.pos.ui.fragments.transactions.TransactionViewModel
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
+import com.android.pos.utils.MethodUtils.Companion.toDoubleWithPrecision
 import com.android.pos.utils.MethodUtils.Companion.toPrecision
 import com.android.pos.utils.PrintSunmiUtils
 import com.android.pos.utils.PrinterDialog
@@ -165,6 +171,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEventListener,
     BatteryStatusChangeEventListener, ICallback {
+    private var IS_GIFT_CARD_TYPE: Boolean = false
     private var isPrint: Boolean = false
     private val paymentViewModel by activityViewModels<PaymentViewModel>()
     private lateinit var presentation: CustomDisplay
@@ -209,6 +216,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private val viewModel by viewModels<OrderCompleteViewModel>()
     private val paymentviewModel by viewModels<PaymentViewModel>()
     private var receiptModel: CreateOrderResponse.Data? = null
+    private var giftCardReceiptModel: SellGiftCardResponseModel.Data? = null
+    private var giftCardAddValueReceiptModel: GiftCardAddValueResponse.Data? = null
     private var receiptModelForOpenORder: CreateOrderResponse.Data? = null
     private var customerSettingModel = GetCustomerReceiptSettingsResponse.Data()
     private var kitchenSettingModel = GetKitchenReceiptSettingsResponse.Data()
@@ -257,7 +266,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         printerDialog = PrinterDialog()
         progressDialog()
 
-
+        if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
+            IS_GIFT_CARD_TYPE = true
+        }
 
         if (requireArguments().getBoolean("isSpilt")) {
             observeSplitList()
@@ -360,6 +371,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private fun getCustomerReceiptSettings() {
         viewModel.getCustomerReceiptSettings().observe(viewLifecycleOwner) {
             if (it != null) {
+                customerSettingModel = GetCustomerReceiptSettingsResponse.Data()
                 customerSettingModel = it
 
 
@@ -425,6 +437,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             splitChange = requireArguments().getDouble("splitChange")
             orderID = requireArguments().getInt("orderID")
             receiptModel = requireArguments().getParcelable("receiptData")
+            giftCardReceiptModel = requireArguments().getParcelable("giftCardReceiptData")
             receiptModelForOpenORder = requireArguments().getParcelable("receiptData")
             Log.e(TAG, "checkreceiptModel:   ${Gson().toJson(receiptModel)}")
             splitValue = requireArguments().getInt("splitValue")
@@ -990,12 +1003,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             R.id.txtSend -> {
 
                 MethodUtils.hideKeyboard(requireActivity())
-                viewModel.submit(
-                    type,
-                    binding.edtEmail.text.toString().trim(),
-                    binding.edtPhoneNo.text.toString().trim(),
-                    orderID
-                )
+                    viewModel.submit(
+                        type,
+                        binding.edtEmail.text.toString().trim(),
+                        binding.edtPhoneNo.text.toString().trim(),
+                        orderID,
+                        IS_GIFT_CARD_TYPE
+                    )
 
 
             }
@@ -5831,19 +5845,19 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             if (receiptModel?.order?.payments?.isNotEmpty() == true) {
 
                 val str11 = padLine(
-                    "Transaction Type",
+                    "Transaction Type" ,
                     receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.paymentType,
                     if (customerSettingModel.fonts == LARGE) 23 else 48
                 ).toString()
 
-                PrintSunmiUtils.normalText(str11)
+                PrintSunmiUtils.normalTextTest(str11)
 
             }
 
             if (receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.paymentType?.lowercase() == "Card".lowercase()) {
-                PrintSunmiUtils.normalText(receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardName.toString())
-                PrintSunmiUtils.normalText(receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardType.toString())
-                PrintSunmiUtils.normalText(receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardNumber.toString())
+                PrintSunmiUtils.normalTextTest(receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardName.toString())
+                PrintSunmiUtils.normalTextTest(receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardType.toString())
+                PrintSunmiUtils.normalTextTest(receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardNumber.toString())
 
             }
 
@@ -5926,6 +5940,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     override fun onStop() {
         super.onStop()
+        prefProvider.setValue(Constants.OPEN_ORDER_ITEMS,"")
         if (!isSpilt) {
             removeCustomer()
 
@@ -6116,8 +6131,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                         ) {
 
                                                             it.printerSettings.forEach {
-                                                                if (it.printType.lowercase()
-                                                                        .equals(KITCHEN.lowercase()) && it.autoPrinting
+                                                                if ((it.printType.lowercase()
+                                                                        .equals(KITCHEN.lowercase()) || it.printType.lowercase()
+                                                                        .equals(KITCHENANDCUSTOMER.lowercase()) ) && it.autoPrinting
                                                                 ) {
 
 
@@ -6277,7 +6293,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
 
 
-            orderItemsToPrint?.forEachIndexed { index, orderItem ->
+            orderItemsToPrint.forEachIndexed { index, orderItem ->
 
                 if (itemIds.contains(
                         orderItem.itemId
@@ -6286,7 +6302,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                     arrayItems.forEachIndexed { index, orderItemJ ->
 
-                        if (orderItemJ.itemId == orderItem.itemId) {
+                        if (orderItemJ.itemId == orderItem.itemId && orderItemJ.timestamp == orderItem.timestamp) {
                             if (orderItemJ.quantity != orderItem.quantity) {
                                 if (orderItem.quantity > orderItemJ.quantity) {
                                     orderItem.quantity =
@@ -6371,68 +6387,67 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     if (it.data != null && isPrint == true) {
                         val customerList = it.data
 
-                        if (autoPrintCheck) {
-                            customerList.forEach { cus ->
-                                if (cus.status) {
-                                    cus.orderTypes.forEach {
+                        Log.e(TAG,"IS_GIFT_CARD_TYPE:  ${IS_GIFT_CARD_TYPE}")
+                        if (IS_GIFT_CARD_TYPE) {
+                            customerList.forEach {
+                                if (it.status) {
+                                    initPrinter(it, CUSTOMER,autoPrintCheck)
+                                }
+                            }
+                        } else {
+                            if (autoPrintCheck) {
+                                customerList.forEach { cus ->
+                                    if (cus.status) {
+                                        cus.orderTypes.forEach {
 
-                                        if (it.orderTypeId == receiptModel?.order?.orderTypeId) {
+                                            if (it.orderTypeId == receiptModel?.order?.orderTypeId) {
 
-                                            it.printerSettings.forEach {
-                                                if (it.printType.lowercase()
-                                                        .equals(CUSTOMER.lowercase()) && it.autoPrinting
-                                                ) {
-
-
-                                                    initPrinter(cus, CUSTOMER,autoPrintCheck)
+                                                it.printerSettings.forEach {
+                                                    if (it.printType.lowercase()
+                                                            .equals(CUSTOMER.lowercase()) && it.autoPrinting
+                                                    ) {
 
 
+                                                        initPrinter(cus, CUSTOMER, autoPrintCheck)
+
+
+                                                    }
                                                 }
                                             }
                                         }
                                     }
+
                                 }
+                            } else {
+                                customerList.forEach {
+                                    if (it.status) {
+                                        initPrinter(it, CUSTOMER, autoPrintCheck)
+                                    }
 
-                            }
-
-
-                        } else {
-                            customerList.forEach {
-                                initPrinter(it, CUSTOMER,autoPrintCheck)
-
-
+                                }
                             }
                         }
-
                         isPrint = false
 
-
                     }
-
 
                 }
 
                 Status.ERROR -> {
-
                     ProgressUtils.dismissProgressDialog()
-
                 }
 
                 Status.LOADING -> {
                     ProgressUtils.showProgressDialog(requireActivity())
-
                 }
-
             }
-
         }
-
     }
 
     private fun initPrinter(
         customerReceiptPrinters: PrinterResponse.Data.CustomerReceiptPrinters,
         type: String,
-        isAutoPrint:Boolean
+        isAutoPrint: Boolean
     ) {
         Log.e(TAG,"checkAutoPrint  ${isAutoPrint}")
         pd?.show()
@@ -6494,7 +6509,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     if (printer != null) {
                         PrinterClass.setPrinter(printer)
 
-                        generatePrint(customerReceiptPrinters, type,isAutoPrint)
+                        if(IS_GIFT_CARD_TYPE){
+                            generatePrintForGiftCard(customerReceiptPrinters, type)
+                        }else{
+                            generatePrint(customerReceiptPrinters, type,isAutoPrint)
+                        }
 
                     }
 
@@ -7641,79 +7660,86 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             )
 
             if (receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.paymentType?.lowercase() == "Card".lowercase()) {
-                builder.addTextLineSpace(30)
-                builder.addFeedUnit(30)
-                builder.addTextFont(Builder.FONT_E)
-                // builder.addTextAlign(Builder.ALIGN_LEFT)
-                builder.addTextLang(Builder.LANG_EN)
-                addCustomerTextSize(builder, customerSettingModel.fonts)
-                builder.addTextStyle(
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.TRUE,
-                    Builder.COLOR_1
-                )
 
-                builder.addText(
-                    padLine(
-                        "",
-                        receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardName,
-                        if (customerSettingModel.fonts == LARGE) {
-                            24
-                        } else {
-                            48
-                        }
+              if(!(receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardName).isNullOrBlank()){
+                  builder.addTextLineSpace(30)
+                  builder.addFeedUnit(30)
+                  builder.addTextFont(Builder.FONT_E)
+                  // builder.addTextAlign(Builder.ALIGN_LEFT)
+                  builder.addTextLang(Builder.LANG_EN)
+                  addCustomerTextSize(builder, customerSettingModel.fonts)
+                  builder.addTextStyle(
+                      Builder.FALSE,
+                      Builder.FALSE,
+                      Builder.TRUE,
+                      Builder.COLOR_1
+                  )
+
+                  builder.addText(
+                      padLine(
+                          "",
+                          receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardName,
+                          if (customerSettingModel.fonts == LARGE) {
+                              24
+                          } else {
+                              48
+                          }
+                      )
+                  )
+              }
+
+                if(!(receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardType).isNullOrBlank()) {
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+                    builder.addTextFont(Builder.FONT_E)
+                    // builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextLang(Builder.LANG_EN)
+                    addCustomerTextSize(builder, customerSettingModel.fonts)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.TRUE,
+                        Builder.COLOR_1
                     )
-                )
 
-                builder.addTextLineSpace(30)
-                builder.addFeedUnit(30)
-                builder.addTextFont(Builder.FONT_E)
-                // builder.addTextAlign(Builder.ALIGN_LEFT)
-                builder.addTextLang(Builder.LANG_EN)
-                addCustomerTextSize(builder, customerSettingModel.fonts)
-                builder.addTextStyle(
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.TRUE,
-                    Builder.COLOR_1
-                )
-
-                builder.addText(
-                    padLine(
-                        "",
-                        receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardType,
-                        if (customerSettingModel.fonts == LARGE) {
-                            24
-                        } else {
-                            48
-                        }
+                    builder.addText(
+                        padLine(
+                            "",
+                            receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardType,
+                            if (customerSettingModel.fonts == LARGE) {
+                                24
+                            } else {
+                                48
+                            }
+                        )
                     )
-                )
-                builder.addTextLineSpace(30)
-                builder.addFeedUnit(30)
-                builder.addTextFont(Builder.FONT_E)
-                // builder.addTextAlign(Builder.ALIGN_LEFT)
-                builder.addTextLang(Builder.LANG_EN)
-                addCustomerTextSize(builder, customerSettingModel.fonts)
-                builder.addTextStyle(
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.TRUE,
-                    Builder.COLOR_1
-                )
-
-                builder.addText(
-                    padLine(
-                        "",
-                        receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardNumber,
-                        if (customerSettingModel.fonts == LARGE) {
-                            24
-                        } else {
-                            48
-                        }
+                }
+                if(!(receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardNumber).isNullOrBlank()) {
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+                    builder.addTextFont(Builder.FONT_E)
+                    // builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextLang(Builder.LANG_EN)
+                    addCustomerTextSize(builder, customerSettingModel.fonts)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.TRUE,
+                        Builder.COLOR_1
                     )
-                )
+
+                    builder.addText(
+                        padLine(
+                            "",
+                            receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardNumber,
+                            if (customerSettingModel.fonts == LARGE) {
+                                24
+                            } else {
+                                48
+                            }
+                        )
+                    )
+                }
 
             }
 
@@ -7993,6 +8019,799 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         }
     }
 
+    /**
+     * This method is used to print the receipt for sell gift card or add value in gift card.
+     * This method prints from TM-m30 Printers
+     * */
+    private fun generatePrintForGiftCard(
+        customerReceiptPrinters: PrinterResponse.Data.CustomerReceiptPrinters,
+        type: String
+    ) {
+        var builder: Builder? = null
+        try {
+            builder =
+                Builder(
+                    if (customerReceiptPrinters.name.substring(0, 6).toString()
+                            .lowercase() == "TM-m30".lowercase()
+                    ) {
+                        "TM-m30"
+                    } else {
+                        customerReceiptPrinters.name
+                    }, PrinterClass.language, requireActivity()
+                )
+
+            LogUtil.logE(TAG, "getVanueLogo:  ${prefProvider.getValue(VENUE_LOGO, "")}")
+
+            if (customerSettingModel.showOrderIdTop) {
+                builder.addFeedLine(1)
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(2, 2)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+
+                builder.addText("OrderID:" + giftCardReceiptModel?.gift_card?.id)
+
+                builder.addFeedLine(1)
+            }
+
+            if (customerSettingModel.showVenueLogo && prefProvider.getValue(VENUE_LOGO, "")
+                    .isNotEmpty()
+            ) {
+                builder.addFeedLine(1)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+
+                /* var bitmap = getBitmapFromURL(prefProvider.getValue(VENUE_LOGO, ""))*/
+
+                val decodedString: ByteArray = android.util.Base64.decode(
+                    prefProvider.getValue(VENUE_LOGO, ""),
+                    android.util.Base64.DEFAULT
+                )
+                val bitmap: Bitmap =
+                    BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+
+                val newBitmap = Bitmap.createScaledBitmap(bitmap!!, 210, 210, true)
+                builder.addImage(
+                    newBitmap, 0, 0,
+                    newBitmap.width, newBitmap.height, Builder.COLOR_1, Builder.MODE_MONO,
+                    Builder.HALFTONE_DITHER, 1.0
+                )
+            }
+
+
+            builder.addFeedLine(1)
+            builder.addTextFont(Builder.FONT_E)
+
+            builder.addTextLang(Builder.LANG_EN)
+
+
+            builder.addTextSize(2, 2)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.TRUE,
+                Builder.COLOR_1
+            )
+            builder.addTextAlign(Builder.ALIGN_CENTER)
+
+            addBuilderText(builder, prefProvider.getValue(BUSINESS_NAME, "").toString())
+            if (customerSettingModel.showVenueAddress) {
+                builder.addFeedLine(1)
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, customerSettingModel.fonts)
+
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+
+                addBuilderText(
+                    builder,
+                    prefProvider.getValue(BUSINESS_ADDRESS, "").toString()
+                )
+            }
+            if (customerSettingModel.showVenuePhone) {
+                builder.addFeedLine(1)
+
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, customerSettingModel.fonts)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+                addBuilderText(
+                    builder,
+                    MethodUtils.getUSFormatNumber(
+                        prefProvider.getValue(BUSINESS_PHONE_NO, "").toString()
+                    )
+                )
+            }
+
+            if (customerSettingModel.showWebsiteAddress) {
+                receiptModel?.order?.venue_website?.let {
+                    builder.addFeedLine(1)
+
+                    builder.addTextFont(Builder.FONT_E)
+                    builder.addTextAlign(Builder.ALIGN_CENTER)
+                    builder.addTextLang(Builder.LANG_EN)
+                    addCustomerTextSize(builder, customerSettingModel.fonts)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.COLOR_1
+                    )
+                    addBuilderText(builder, it)
+                }
+            }
+            if (customerSettingModel.showOrderType) {
+                builder.addFeedLine(1)
+
+                builder.addTextFont(Builder.FONT_E)
+
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(2, 2)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+                builder.addText(giftCardReceiptModel?.gift_card?.order_type_name + "\n")
+            }
+
+            if (customerSettingModel.fonts == LARGE) {
+
+                builder.addFeedLine(1)
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, customerSettingModel.fonts)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+
+                builder.addText("ReceiptID:" + giftCardReceiptModel?.gift_card?.payments?.get(
+                    giftCardReceiptModel?.gift_card?.payments?.size?.minus(1) ?: 0
+                )?.offline_id)
+
+                if (customerSettingModel.showTeam) {
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+                    builder.addTextFont(Builder.FONT_E)
+                    builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextLang(Builder.LANG_EN)
+                    addCustomerTextSize(builder, customerSettingModel.fonts)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.COLOR_1
+                    )
+
+
+                    builder.addText("Employee:" + giftCardReceiptModel?.gift_card?.employee?.name)
+
+                }
+
+                if (customerSettingModel.showOrderTime) {
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+                    builder.addTextFont(Builder.FONT_E)
+                    builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextLang(Builder.LANG_EN)
+                    addCustomerTextSize(builder, customerSettingModel.fonts)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.COLOR_1
+                    )
+
+
+                    builder.addText(
+                        "Order Time:" + getReceiptFormatDateFromUTCServer(
+                            requireContext(),
+                            giftCardReceiptModel?.gift_card?.payments?.get(
+                                giftCardReceiptModel?.gift_card?.payments?.size?.minus(1) ?: 0
+                            )?.created_at!!
+                        )
+                    )
+
+                }
+
+                if (customerSettingModel.showPrintTime) {
+
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+
+                        val current = LocalDateTime.now()
+                        val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy hh:mm:a")
+                        val formatted = current.format(formatter)
+
+                        builder.addTextLineSpace(30)
+                        builder.addFeedUnit(30)
+                        builder.addTextFont(Builder.FONT_E)
+                        builder.addTextAlign(Builder.ALIGN_LEFT)
+                        builder.addTextLang(Builder.LANG_EN)
+                        addCustomerTextSize(builder, customerSettingModel.fonts)
+                        builder.addTextStyle(
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.COLOR_1
+                        )
+                        builder.addText(
+                            "Print Time:" + getCurrentTimeFromTimeZone(
+                                requireContext(),
+                                formatted
+                            )
+                        )
+                    }
+
+
+                }
+            } else {
+
+
+                builder.addFeedLine(1)
+                builder.addTextFont(Builder.FONT_E)
+                //  builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, customerSettingModel.fonts)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+
+                builder.addText(
+                    padLine(
+                        "ReceiptID:" + giftCardReceiptModel?.gift_card?.payments?.get(
+                            giftCardReceiptModel?.gift_card?.payments?.size?.minus(1) ?: 0
+                        )?.offline_id,
+                        "",
+                        if (customerSettingModel.fonts == LARGE) {
+                            24
+                        } else {
+                            48
+                        }
+                    )
+                )
+
+                if (customerSettingModel.showTeam) {
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+                    builder.addTextFont(Builder.FONT_E)
+                    //  builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextLang(Builder.LANG_EN)
+                    addCustomerTextSize(builder, customerSettingModel.fonts)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.COLOR_1
+                    )
+
+
+                    builder.addText(
+                        padLine(
+                            if (customerSettingModel.showTeam) {
+                                "Employee:" + giftCardReceiptModel?.gift_card?.employee?.name
+                            } else {
+                                ""
+                            },
+                            "",
+                            if (customerSettingModel.fonts == LARGE) {
+                                24
+                            } else {
+                                48
+                            }
+                        )
+                    )
+
+                }
+                if (customerSettingModel.showOrderTime && giftCardReceiptModel?.gift_card?.payments?.get(
+                        giftCardReceiptModel?.gift_card?.payments?.size?.minus(
+                            1
+                        ) ?: 0
+                    )?.created_at?.isNotEmpty() == true) {
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+                    builder.addTextFont(Builder.FONT_E)
+                    //  builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextLang(Builder.LANG_EN)
+                    addCustomerTextSize(builder, customerSettingModel.fonts)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.COLOR_1
+                    )
+
+
+
+                    builder.addText(
+                        padLine(
+                            if (customerSettingModel.showOrderTime) {
+                                "Order Time:" + getReceiptFormatDateFromUTCServer(
+                                    requireContext(),
+                                    giftCardReceiptModel?.gift_card?.payments?.get(
+                                        giftCardReceiptModel?.gift_card?.payments?.size?.minus(
+                                            1
+                                        ) ?: 0
+                                    )?.created_at!!
+                                )
+                            } else {
+                                ""
+                            },
+                            "",
+                            if (customerSettingModel.fonts == LARGE) {
+                                24
+                            } else {
+                                48
+                            }
+                        )
+                    )
+                }
+
+                if (customerSettingModel.showPrintTime && giftCardReceiptModel?.gift_card?.payments?.get(
+                        giftCardReceiptModel?.gift_card?.payments?.size?.minus(1) ?: 0
+                    )?.created_at?.isNotEmpty() == true) {
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+
+                        val current = LocalDateTime.now()
+                        val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy hh:mm:a")
+                        val formatted = current.format(formatter)
+                        builder.addTextLineSpace(30)
+                        builder.addFeedUnit(30)
+                        builder.addTextFont(Builder.FONT_E)
+                        //  builder.addTextAlign(Builder.ALIGN_LEFT)
+                        builder.addTextLang(Builder.LANG_EN)
+                        addCustomerTextSize(builder, customerSettingModel.fonts)
+                        builder.addTextStyle(
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.COLOR_1
+                        )
+
+
+                        builder.addText(
+                            padLine(
+                                if (customerSettingModel.showPrintTime) {
+                                    "Print Time:" + getCurrentTimeFromTimeZone(
+                                        requireContext(),
+                                        formatted
+                                    )
+                                } else {
+                                    ""
+                                },
+                                "",
+                                if (customerSettingModel.fonts == LARGE) {
+                                    24
+                                } else {
+                                    48
+                                }
+                            )
+                        )
+
+                    }
+                }
+            }
+
+            builder.addFeedLine(1)
+
+            addHorizontalLine(builder)
+
+            val giftCardList: MutableList<CreateOrderResponse.Data.Order.OrderItem> =
+                mutableListOf()
+
+            var giftCardAmount = 0.00
+            if(giftCardReceiptModel?.gift_card?.payments != null && giftCardReceiptModel?.gift_card?.payments?.isNotEmpty()!!){
+                giftCardAmount = giftCardReceiptModel?.gift_card?.payments?.
+                get(giftCardReceiptModel?.gift_card?.payments?.size!! - 1)?.amount?.toPrecision(2)?.toDoubleWithPrecision(2)!!
+            }
+
+            Log.d(TAG, "generatePrintForGiftCard:  giftCardAmount = ${giftCardAmount.toPrecision(2)}")
+
+            giftCardList.add(
+                0, CreateOrderResponse.Data.Order.OrderItem(
+                    itemName = "${giftCardReceiptModel?.gift_card?.gift_card_type} Gift Card",
+                    price = giftCardAmount, quantity = 1
+                )
+            )
+
+            addOrderItems(
+                builder,
+                giftCardList,
+                customerSettingModel.fonts,
+                customerSettingModel.showModifiers
+            )
+
+            builder.addFeedLine(2)
+
+            builder.addText(
+                padLine(
+                    "Total Price",
+                    "$${giftCardAmount.toPrecision(2)}",
+                    if (customerSettingModel.fonts == LARGE) {
+                        24
+                    } else {
+                        48
+                    }
+                )
+            )
+
+
+            builder.addTextLineSpace(30)
+            builder.addFeedUnit(30)
+
+            builder.addTextFont(Builder.FONT_E)
+            // builder.addTextAlign(Builder.ALIGN_LEFT)
+            builder.addTextLang(Builder.LANG_EN)
+            addCustomerTextSize(builder, customerSettingModel.fonts)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.TRUE,
+                Builder.COLOR_1
+            )
+
+            builder.addText(
+                padLine(
+                    "Transaction ID",
+                    "" + giftCardReceiptModel?.gift_card?.payments?.size?.minus(1)
+                        ?.let { giftCardReceiptModel?.gift_card?.payments?.get(it)?.id },
+                    if (customerSettingModel.fonts == LARGE) {
+                        24
+                    } else {
+                        48
+                    }
+                )
+            )
+
+            builder.addTextLineSpace(30)
+            builder.addFeedUnit(30)
+            builder.addTextFont(Builder.FONT_E)
+            // builder.addTextAlign(Builder.ALIGN_LEFT)
+            builder.addTextLang(Builder.LANG_EN)
+            addCustomerTextSize(builder, customerSettingModel.fonts)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.TRUE,
+                Builder.COLOR_1
+            )
+
+            builder.addText(
+                padLine(
+                    "Transaction Type",
+                    giftCardReceiptModel?.gift_card?.payments?.get(giftCardReceiptModel?.gift_card?.payments?.size!! - 1)?.payment_type,
+                    if (customerSettingModel.fonts == LARGE) {
+                        24
+                    } else {
+                        48
+                    }
+                )
+            )
+
+            if (giftCardReceiptModel?.gift_card?.payments?.get(giftCardReceiptModel?.gift_card?.payments?.size!! - 1)?.payment_type?.lowercase() == "Card".lowercase()) {
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addTextFont(Builder.FONT_E)
+                // builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, customerSettingModel.fonts)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+
+                builder.addText(
+                    padLine(
+                        "",
+                        giftCardReceiptModel?.gift_card?.payments?.get(giftCardReceiptModel?.gift_card?.payments?.size!! - 1)?.card_name,
+                        if (customerSettingModel.fonts == LARGE) {
+                            24
+                        } else {
+                            48
+                        }
+                    )
+                )
+
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addTextFont(Builder.FONT_E)
+                // builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, customerSettingModel.fonts)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+
+                builder.addText(
+                    padLine(
+                        "",
+                        giftCardReceiptModel?.gift_card?.payments?.get(giftCardReceiptModel?.gift_card?.payments?.size!! - 1)?.card_type,
+                        if (customerSettingModel.fonts == LARGE) {
+                            24
+                        } else {
+                            48
+                        }
+                    )
+                )
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addTextFont(Builder.FONT_E)
+                // builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, customerSettingModel.fonts)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+
+                builder.addText(
+                    padLine(
+                        "",
+                        giftCardReceiptModel?.gift_card?.payments?.get(giftCardReceiptModel?.gift_card?.payments?.size!! - 1)?.card_number,
+                        if (customerSettingModel.fonts == LARGE) {
+                            24
+                        } else {
+                            48
+                        }
+                    )
+                )
+
+            }
+
+            if (customerSettingModel.showCustomerAddress || customerSettingModel.showCustomerPhone || customerSettingModel.showCustomerName) {
+
+                if (giftCardReceiptModel?.gift_card?.customer != null) {
+
+                    builder.addFeedLine(1)
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+
+                    builder.addTextFont(Builder.FONT_E)
+                    // builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextLang(Builder.LANG_EN)
+                    addCustomerTextSize(builder, customerSettingModel.fonts)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.TRUE,
+                        Builder.COLOR_1
+                    )
+                    builder.addText(
+                        padLine(
+                            "Customer Details",
+                            "",
+                            if (customerSettingModel.fonts == LARGE) {
+                                24
+                            } else {
+                                48
+                            }
+                        )
+                    )
+
+                    builder.addFeedLine(1)
+
+                    addHorizontalLine(builder)
+                    builder.addFeedLine(1)
+                    if (customerSettingModel.showCustomerName) {
+
+                        builder.addTextFont(Builder.FONT_E)
+                        // builder.addTextAlign(Builder.ALIGN_LEFT)
+                        builder.addTextLang(Builder.LANG_EN)
+                        addCustomerTextSize(builder, customerSettingModel.fonts)
+                        builder.addTextStyle(
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.COLOR_1
+                        )
+
+                        builder.addText(
+                            padLine(
+                                giftCardReceiptModel?.gift_card?.customer?.firstName + " " + giftCardReceiptModel?.gift_card?.customer?.lastName,
+                                "",
+                                if (customerSettingModel.fonts == LARGE) {
+                                    24
+                                } else {
+                                    48
+                                }
+                            )
+                        )
+                    }
+                    if (customerSettingModel.showCustomerPhone) {
+
+
+                        if (giftCardReceiptModel?.gift_card?.customer?.phones?.isNotEmpty() == true) {
+
+                            var phoneNoLast = giftCardReceiptModel?.gift_card?.customer?.phones?.get(
+                                giftCardReceiptModel?.gift_card?.customer?.phones?.size?.minus(
+                                    1
+                                ) ?: 0
+                            )?.phoneNumber ?: ""
+
+                            if (phoneNoLast.isNotEmpty()) {
+                                builder.addTextLineSpace(30)
+                                builder.addFeedUnit(30)
+                                builder.addTextFont(Builder.FONT_E)
+                                //builder.addTextAlign(Builder.ALIGN_LEFT)
+                                builder.addTextLang(Builder.LANG_EN)
+                                addCustomerTextSize(builder, customerSettingModel.fonts)
+                                builder.addTextStyle(
+                                    Builder.FALSE,
+                                    Builder.FALSE,
+                                    Builder.FALSE,
+                                    Builder.COLOR_1
+                                )
+
+                                val phone = giftCardReceiptModel?.gift_card?.customer?.phones?.size?.minus(
+                                    1
+                                )?.let {
+                                    giftCardReceiptModel?.gift_card?.customer?.phones?.get(
+                                        it
+                                    )?.phoneNumber
+                                }
+                                builder.addText(
+                                    padLine(
+                                        MethodUtils.getUSFormatNumber(phone.toString()),
+                                        "",
+                                        if (customerSettingModel.fonts == LARGE) {
+                                            24
+                                        } else {
+                                            48
+                                        }
+                                    )
+                                )
+
+                            }
+
+                        }
+
+                    }
+
+
+
+                    if (customerSettingModel.showCustomerAddress) {
+                        if (giftCardReceiptModel?.gift_card?.customer?.addresses?.isNotEmpty() == true) {
+
+                            builder.addTextLineSpace(30)
+                            builder.addFeedUnit(30)
+                            builder.addTextFont(Builder.FONT_E)
+                            //builder.addTextAlign(Builder.ALIGN_LEFT)
+                            builder.addTextLang(Builder.LANG_EN)
+                            addCustomerTextSize(builder, customerSettingModel.fonts)
+                            builder.addTextStyle(
+                                Builder.FALSE,
+                                Builder.FALSE,
+                                Builder.FALSE,
+                                Builder.COLOR_1
+                            )
+
+
+                            giftCardReceiptModel?.gift_card?.customer?.addresses?.filter { it.typeOfAddress == SHIPPING_ADDRESS }
+                                ?.forEach {
+
+                                    if (it.typeOfAddress.equals(
+                                            SHIPPING_ADDRESS,
+                                            ignoreCase = true
+                                        )
+                                    ) {
+
+                                        builder.addText(
+                                            padLine(
+                                                it.fullAddress,
+                                                "",
+                                                if (customerSettingModel.fonts == LARGE) {
+                                                    24
+                                                } else {
+                                                    48
+                                                }
+                                            )
+                                        )
+
+                                    }
+                                }
+
+
+                        }
+                    }
+
+                }
+            }
+
+            builder.addFeedLine(2)
+
+            //customer signature line.
+            builder.addText(
+                padLine(
+                    "Customer Signature",
+                    addHorizontalHalfCustomerReceiptLine(customerSettingModel.fonts),
+                    if (customerSettingModel.fonts == LARGE) {
+                        24
+                    } else {
+                        48
+                    }
+                )
+            )
+
+
+            builder.addFeedLine(2)
+            builder.addCut(Builder.CUT_FEED)
+
+            val status = IntArray(1)
+            val battery = IntArray(1)
+
+            try {
+                if (giftCardReceiptModel?.gift_card?.payments?.get(giftCardReceiptModel?.gift_card?.payments?.size!! - 1)?.payment_type.equals(
+                        "Cash",
+                        true
+                    )
+                ) {
+                    builder.addPulse(
+                        com.epson.epos2.printer.Printer.DRAWER_HIGH,
+                        com.epson.epos2.printer.Printer.PULSE_100
+                    )
+                }
+                PrinterClass.getPrinter()?.sendData(
+                    builder,
+                    BLUETOOTH_TIMEOUT, status, battery
+                )
+
+
+                PrinterClass.closePrinter()
+                pd.dismiss()
+                // findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
+                //PrinterClass.getPrinter()?.sendData(builder, 0, status, battery)
+            } catch (e: Exception) {
+                pd.dismiss()
+                PrinterClass.closePrinter()
+                e.printStackTrace()
+                LogUtil.logE(TAG, "PrinterError: " + e.localizedMessage)
+            }
+
+
+        } catch (e: Exception) {
+            pd.dismiss()
+            e.printStackTrace()
+        }
+    }
+
     private fun initKitchenPrinter(
         data: PrinterResponse.Data.KitchenReceiptPrinters,
         type: String
@@ -8043,7 +8862,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
             viewLifecycleOwner.lifecycleScope.launch {
                 delay(200)
-                setService2()
+                setService2(data, type)
             }
 
         } else {
@@ -9320,7 +10139,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     }
 
     private fun generateKitchenReceiptSunmi(
-        customerReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
+        kitchenReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
         type: String
     ) {
         try {
@@ -9413,7 +10232,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                     addOrdersForKitchen(
                         if (printOrderItems.isNotEmpty()) printOrderItems else it,
-                        customerReceiptPrinters.printerCategories.toCollection(arrayListOf())
+                        kitchenReceiptPrinters.printerCategories.toCollection(arrayListOf())
                     )
                 }
 
@@ -9424,7 +10243,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                     addOrdersForKitchen(
                         it,
-                        customerReceiptPrinters.printerCategories.toCollection(arrayListOf())
+                        kitchenReceiptPrinters.printerCategories.toCollection(arrayListOf())
                     )
                 }
             }
@@ -9513,9 +10332,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     }
 
 
-    private fun generateKitchenReceiptSunmiInner(
-
-    ) {
+    private fun generateKitchenReceiptSunmiInner(kitchenReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
+                                                 type: String) {
         try {
             // PrintSunmiUtils.fontSizeInner(LARGE)
             SunmiPrintHelper.getInstance().initPrinter()
@@ -9556,12 +10374,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             SunmiPrintHelper.getInstance().lineWrap(1)
 
             receiptModel?.order?.orderItems?.let {
+
                 addOrdersForKitchenInner(
-                    it
+                    it,
+                    kitchenReceiptPrinters.printerCategories.toCollection(arrayListOf())
                 )
             }
 
-            SunmiPrintHelper.getInstance().lineWrap(1)
+
             if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
 
                 PrintSunmiUtils.orderNoteInnerLarge(receiptModel?.order?.note.toString())
@@ -9634,7 +10454,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }
             }
 
-            SunmiPrintHelper.getInstance().lineWrap(2)
+            SunmiPrintHelper.getInstance().lineWrap(1)
             PrintSunmiUtils.cutPaperInner()
 
             //  SunmiPrinterApi.getInstance().disconnectPrinter(requireContext())
@@ -9849,12 +10669,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         if (pd != null && pd?.isShowing == true) {
             pd?.dismiss()
         }
+        prefProvider.setValue(Constants.OPEN_ORDER_ITEMS,"")
         if (this::presentation.isInitialized) {
             presentation.hide()
         }
     }
 
-    private fun sunmiPrinterInit(ipAddress: String,isAutoPrint: Boolean) {
+    private fun sunmiPrinterInit(ipAddress: String, isAutoPrint: Boolean) {
 
         SunmiPrinterApi.getInstance().setPrinter(SunmiPrinter.SunmiBlueToothPrinter, ipAddress)
 
@@ -9878,7 +10699,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                     override fun onConnect() {
                         println("onConnect")
-                        sunmiPrint()
+                        if (IS_GIFT_CARD_TYPE) {
+                            sunmiCloudPrintForGiftCard()
+                        } else {
+                            sunmiPrint()
+                        }
                     }
 
                     override fun onDisconnect() {
@@ -9887,8 +10712,337 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 })
         } else {
-            sunmiPrint()
+            if (IS_GIFT_CARD_TYPE) {
+                sunmiCloudPrintForGiftCard()
+            } else {
+                sunmiPrint()
+            }
         }
+    }
+
+    /**
+     * This method is used to print the receipt for sell gift card or add value in gift card.
+     * This method prints from Sunmi Cloud Printer
+     * */
+    private fun sunmiCloudPrintForGiftCard() = try {
+
+        PrintSunmiUtils.fontSize(customerSettingModel.fonts)
+
+        SunmiPrinterApi.getInstance().printerInit()
+
+        if (customerSettingModel.showOrderIdTop) {
+            PrintSunmiUtils.orderIdLarge("OrderID:" + giftCardReceiptModel?.gift_card?.id)
+            SunmiPrinterApi.getInstance().lineWrap(1)
+        }
+
+        if (customerSettingModel.showVenueLogo
+            && prefProvider.getValue(VENUE_LOGO, "").isNotEmpty()
+        ) {
+            printBusinessLogo()
+        }
+
+        PrintSunmiUtils.printBusinessDetails(
+            prefProvider.getValue(BUSINESS_NAME, ""),
+            if (customerSettingModel.showVenueAddress) prefProvider.getValue(
+                BUSINESS_ADDRESS,
+                ""
+            ) else "",
+            if (customerSettingModel.showVenuePhone) prefProvider.getValue(
+                BUSINESS_PHONE_NO,
+                ""
+            ) else ""
+        )
+        if (customerSettingModel.showWebsiteAddress) {
+            PrintSunmiUtils.venueWebsite(prefProvider.getValue(BUSINESS_WEBSITE, ""))
+        } else {
+            SunmiPrinterApi.getInstance().lineWrap(1)
+        }
+
+        if (customerSettingModel.showOrderType) {
+            SunmiPrinterApi.getInstance().lineWrap(1)
+            PrintSunmiUtils.printOrderType(
+                giftCardReceiptModel?.gift_card?.order_type_name ?: "TakeOut"
+            )
+        }
+
+        if (customerSettingModel.fonts == LARGE) {
+
+            PrintSunmiUtils.receiptID(
+                "ReceiptID:" + giftCardReceiptModel?.gift_card?.payments?.get(
+                    giftCardReceiptModel?.gift_card?.payments?.size?.minus(1) ?: 0
+                )?.offline_id
+            )
+
+            if (customerSettingModel.showTeam) {
+                PrintSunmiUtils.employee("Employee: ${giftCardReceiptModel?.gift_card?.employee?.name}")
+            }
+
+            if (customerSettingModel.showOrderTime) {
+
+                PrintSunmiUtils.orderTime(
+                    "Order Time:" + getReceiptFormatDateFromUTCServer(
+                        requireContext(),
+                        giftCardReceiptModel?.gift_card?.payments?.get(
+                            giftCardReceiptModel?.gift_card?.payments?.size?.minus(1) ?: 0
+                        )?.created_at!!
+                    )
+                )
+
+            }
+
+            if (customerSettingModel.showPrintTime) {
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+                    PrintSunmiUtils.orderTime(
+                        "Print Time:" + getCurrentTimeFromTimeZone(
+                            requireContext(),
+                            MethodUtils.formatted()
+                        )
+                    )
+
+                }
+
+            }
+        } else {
+
+
+            val str = padLine(
+                "ReceiptID:" + giftCardReceiptModel?.gift_card?.payments?.get(
+                    giftCardReceiptModel?.gift_card?.payments?.size?.minus(
+                        1
+                    ) ?: 0
+                )?.offline_id,
+                "",
+                if (customerSettingModel.fonts == LARGE) 23 else 48
+            ).toString().trim()
+
+            PrintSunmiUtils.orderId(str)
+
+            if (customerSettingModel.showTeam) {
+
+                val empName = padLine(
+                    if (customerSettingModel.showTeam) {
+                        "Employee: ${giftCardReceiptModel?.gift_card?.employee?.name}"
+                    } else {
+                        ""
+                    },
+                    "", if (customerSettingModel.fonts == LARGE) 23 else 48
+                ).toString()
+                PrintSunmiUtils.employee(empName)
+
+            }
+            if (customerSettingModel.showOrderTime
+                && giftCardReceiptModel?.gift_card?.payments?.get(
+                    giftCardReceiptModel?.gift_card?.payments?.size?.minus(
+                        1
+                    ) ?: 0
+                )?.created_at?.isNotEmpty() == true
+            ) {
+
+                val orderTime = padLine(
+                    if (customerSettingModel.showOrderTime) {
+                        "Order Time:" + getReceiptFormatDateFromUTCServer(
+                            requireContext(),
+                            giftCardReceiptModel?.gift_card?.payments?.get(
+                                giftCardReceiptModel?.gift_card?.payments?.size?.minus(
+                                    1
+                                ) ?: 0
+                            )?.created_at!!
+                        )
+                    } else {
+                        ""
+                    },
+                    "", if (customerSettingModel.fonts == LARGE) 23 else 48
+                ).toString()
+
+                PrintSunmiUtils.orderTime(orderTime)
+
+            }
+
+            if (customerSettingModel.showPrintTime && giftCardReceiptModel?.gift_card?.payments?.get(
+                    giftCardReceiptModel?.gift_card?.payments?.size?.minus(1) ?: 0
+                )?.created_at?.isNotEmpty() == true
+            ) {
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+                    val printTime = padLine(
+                        if (customerSettingModel.showPrintTime) {
+                            "Print Time:" + getCurrentTimeFromTimeZone(
+                                requireContext(),
+                                MethodUtils.formatted()
+                            )
+                        } else {
+                            ""
+                        },
+                        "", if (customerSettingModel.fonts == LARGE) 23 else 48
+                    ).toString()
+
+                    PrintSunmiUtils.orderTime(printTime)
+
+                }
+            }
+        }
+
+
+        PrintSunmiUtils.addHorizontal()
+
+        val giftCardList: MutableList<CreateOrderResponse.Data.Order.OrderItem> = mutableListOf()
+
+        var giftCardAmount = 0.00
+        if(giftCardReceiptModel?.gift_card?.payments != null && giftCardReceiptModel?.gift_card?.payments?.isNotEmpty()!!){
+            giftCardAmount = giftCardReceiptModel?.gift_card?.payments?.
+            get(giftCardReceiptModel?.gift_card?.payments?.size!! - 1)?.amount?.toPrecision(2)?.toDoubleWithPrecision(2)!!
+        }
+
+        Log.d(TAG, "sunmiCloudPrintForGiftCard: giftCardAmount = ${giftCardAmount.toPrecision(2)}")
+
+        giftCardList.add(
+            0, CreateOrderResponse.Data.Order.OrderItem(
+                itemName = "${giftCardReceiptModel?.gift_card?.gift_card_type} Gift Card",
+                price = giftCardAmount, quantity = 1
+            )
+        )
+
+        addOrderItems(
+            giftCardList,
+            false,
+            customerSettingModel.fonts
+        )
+
+        SunmiPrinterApi.getInstance().lineWrap(1)
+
+        val str5 = padLine(
+            "Total Price",
+            "$${giftCardAmount.toPrecision(2)}",
+            if (customerSettingModel.fonts == LARGE) 23 else 48
+        ).toString()
+        PrintSunmiUtils.totalPrice(str5)
+
+        val str10 = padLine(
+            "Transaction ID",
+            "" + giftCardReceiptModel?.gift_card?.payments?.size?.minus(1)
+                ?.let { giftCardReceiptModel?.gift_card?.payments?.get(it)?.id },
+            if (customerSettingModel.fonts == LARGE) 23 else 48
+        ).toString()
+        PrintSunmiUtils.transactionId(str10)
+
+        val str11 = padLine(
+            "Transaction Type",
+            giftCardReceiptModel?.gift_card?.payments?.get(giftCardReceiptModel?.gift_card?.payments?.size!! - 1)?.payment_type,
+            if (customerSettingModel.fonts == LARGE) 23 else 48
+        ).toString()
+        PrintSunmiUtils.transactionType(str11)
+
+
+        if (giftCardReceiptModel?.gift_card?.payments?.get(giftCardReceiptModel?.gift_card?.payments?.size!! - 1)?.payment_type?.lowercase() == "Card".lowercase()) {
+
+
+            val str12 =
+                giftCardReceiptModel?.gift_card?.payments?.get(giftCardReceiptModel?.gift_card?.payments?.size!! - 1)?.card_name.toString()
+
+
+            val str13 =
+                giftCardReceiptModel?.gift_card?.payments?.get(giftCardReceiptModel?.gift_card?.payments?.size!! - 1)?.card_type.toString()
+
+
+            val str14 =
+                giftCardReceiptModel?.gift_card?.payments?.get(giftCardReceiptModel?.gift_card?.payments?.size!! - 1)?.card_number.toString()
+
+            PrintSunmiUtils.cardDetails(str12, str13, str14)
+            SunmiPrinterApi.getInstance().lineWrap(1)
+        }
+
+        if (customerSettingModel.showCustomerAddress || customerSettingModel.showCustomerPhone || customerSettingModel.showCustomerName) {
+
+            if (giftCardReceiptModel?.gift_card?.customer != null) {
+
+                PrintSunmiUtils.customerDetails()
+
+                if (customerSettingModel.showCustomerName) {
+
+                    PrintSunmiUtils.customerName(giftCardReceiptModel?.gift_card?.customer?.firstName + " " + giftCardReceiptModel?.gift_card?.customer?.lastName)
+
+                }
+                if (customerSettingModel.showCustomerPhone) {
+
+                    if (giftCardReceiptModel?.gift_card?.customer?.phones?.isNotEmpty() == true) {
+
+                        val number = giftCardReceiptModel?.gift_card?.customer?.phones?.size?.minus(
+                            1
+                        )?.let {
+                            giftCardReceiptModel?.gift_card?.customer?.phones?.get(
+                                it
+                            )?.phoneNumber
+                        }
+                        PrintSunmiUtils.customerPhone(
+                            padLine(
+                                number?.let { MethodUtils.getUSFormatNumber(it) },
+                                "",
+                                if (customerSettingModel.fonts == LARGE) 23 else 48
+                            ).toString()
+                        )
+
+
+                    }
+
+
+                }
+
+
+
+                if (customerSettingModel.showCustomerAddress) {
+                    if (giftCardReceiptModel?.gift_card?.customer?.addresses?.isNotEmpty() == true) {
+
+                        giftCardReceiptModel?.gift_card?.customer?.addresses!!.filter { it.typeOfAddress == SHIPPING_ADDRESS }
+                            .forEach {
+
+                                if (it.typeOfAddress.equals(
+                                        SHIPPING_ADDRESS,
+                                        ignoreCase = true
+                                    )
+                                ) {
+                                    PrintSunmiUtils.customerAddress(
+                                        it.fullAddress
+                                    )
+                                }
+                            }
+
+
+//                            PrintSunmiUtils.customerAddress(
+//                                padLine(
+//                                    giftCardReceiptModel?.gift_card?.customer?.addresses?.size?.minus(1)?.let {
+//                                        giftCardReceiptModel?.gift_card?.customer?.addresses?.get(
+//                                            it
+//                                        )?.fullAddress
+//                                    }, "", if (customerSettingModel.fonts == LARGE) 23 else 48
+//                                ).toString()
+//                            )
+
+                    }
+                }
+
+            }
+            SunmiPrinterApi.getInstance().lineWrap(1)
+        }
+
+        SunmiPrinterApi.getInstance().lineWrap(2)
+        val str8 = padLine(
+            "Customer Signature",
+            "     _________________________",
+            48
+        ).toString()
+
+        PrintSunmiUtils.customerSignature(str8)
+
+        PrintSunmiUtils.cutPaper()
+
+        pd.dismiss()
+
+    } catch (e: Exception) {
+        pd.dismiss()
+        e.printStackTrace()
     }
 
     private fun sunmiPrint() {
@@ -10071,6 +11225,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             PrintSunmiUtils.addHorizontal()
 
 
+            Log.e(TAG,"orderItemsGetD:  ${Gson().toJson(receiptModel?.order?.orderItems)}")
             receiptModel?.order?.orderItems?.let {
                 addOrderItems(
                     it,
@@ -10746,9 +11901,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }
             }
 
-
             PrintSunmiUtils.addHorizontalInner()
-
 
             receiptModel?.order?.orderItems?.let {
                 addOrderItemsInner(
@@ -11126,25 +12279,22 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.paymentType,
                 if (customerSettingModel.fonts == LARGE) 23 else 48
             ).toString()
-            PrintSunmiUtils.normalText(str11)
-
-
+            PrintSunmiUtils.normalTextTest(str11)
             if (receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.paymentType?.lowercase() == "Card".lowercase()) {
 
-
-                val str12 =
+                val strCardName=
                     receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardName.toString()
 
 
-                val str13 =
+                val strCardType =
                     receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardType.toString()
 
 
-                val str14 =
+                val strCardNumber =
                     receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardNumber.toString()
 
-                PrintSunmiUtils.cardDetailsInner(str12, str13, str14)
-                SunmiPrintHelper.getInstance().lineWrap(1)
+                PrintSunmiUtils.cardDetailsInner(strCardName, strCardType, strCardNumber, customerSettingModel.fonts )
+//                SunmiPrintHelper.getInstance().lineWrap(1)
             }
 
             if (customerSettingModel.showCustomerAddress || customerSettingModel.showCustomerPhone || customerSettingModel.showCustomerName) {
@@ -11294,6 +12444,338 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     }
 
+    /**
+     * This method is used to print the receipt for sell gift card or add value in gift card.
+     * This method prints from Sunmi Inner Printer
+     * */
+    private fun sunmiInnerPrintForGiftCard() {
+
+        try {
+
+            PrintSunmiUtils.fontSizeInner(customerSettingModel.fonts)
+
+            SunmiPrintHelper.getInstance().initPrinter()
+
+            if (customerSettingModel.showOrderIdTop) {
+                PrintSunmiUtils.headerText("OrderID:" + giftCardReceiptModel?.gift_card?.id)
+                SunmiPrintHelper.getInstance().lineWrap(1)
+            }
+
+            if (customerSettingModel.showVenueLogo && prefProvider.getValue(VENUE_LOGO, "")
+                    .isNotEmpty()
+            ) {
+                PrintSunmiUtils.printLogoInner(prefProvider.getValue(VENUE_LOGO, ""))
+            }
+
+            PrintSunmiUtils.printBusinessDetailsInner(
+                prefProvider.getValue(BUSINESS_NAME, ""),
+                if (customerSettingModel.showVenueAddress) {
+                    prefProvider.getValue(BUSINESS_ADDRESS, "")
+                } else "",
+                if (customerSettingModel.showVenuePhone) prefProvider.getValue(
+                    BUSINESS_PHONE_NO,
+                    ""
+                ) else ""
+            )
+
+            if (customerSettingModel.showWebsiteAddress) {
+                PrintSunmiUtils.venueWebsiteInner(prefProvider.getValue(BUSINESS_WEBSITE, ""))
+            } else {
+                SunmiPrintHelper.getInstance().lineWrap(1)
+            }
+            if (customerSettingModel.showOrderType) {
+                giftCardReceiptModel?.gift_card?.order_type_name?.trim()
+                    ?.let { PrintSunmiUtils.headerText(it) }
+                SunmiPrintHelper.getInstance().lineWrap(1)
+            }
+
+            if (customerSettingModel.fonts == LARGE) {
+
+                PrintSunmiUtils.normalText(
+                    "ReceiptID:" + giftCardReceiptModel?.gift_card?.payments?.get(
+                        giftCardReceiptModel?.gift_card?.payments?.size?.minus(1) ?: 0
+                    )?.offline_id
+                )
+
+                if (customerSettingModel.showTeam) {
+                    PrintSunmiUtils.normalText("Employee: ${giftCardReceiptModel?.gift_card?.employee?.name}")
+                }
+
+                if (customerSettingModel.showOrderTime) {
+                    PrintSunmiUtils.normalText(
+                        "Order Time:" + getReceiptFormatDateFromUTCServer(
+                            requireContext(),
+                            giftCardReceiptModel?.gift_card?.payments?.get(
+                                giftCardReceiptModel?.gift_card?.payments?.size?.minus(1) ?: 0
+                            )?.created_at!!
+                        )
+                    )
+                }
+
+                if (customerSettingModel.showPrintTime) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        PrintSunmiUtils.normalText(
+                            "Print Time:" + getCurrentTimeFromTimeZone(
+                                requireContext(),
+                                MethodUtils.formatted()
+                            )
+                        )
+                    }
+                }
+            } else {
+
+                PrintSunmiUtils.normalText(
+                    "ReceiptID:" + giftCardReceiptModel?.gift_card?.payments?.get(
+                        giftCardReceiptModel?.gift_card?.payments?.size?.minus(1) ?: 0
+                    )?.offline_id
+                )
+
+                if (customerSettingModel.showTeam) {
+
+                    val empName = padLine(
+                        if (customerSettingModel.showTeam) {
+                            "Employee:" + giftCardReceiptModel?.gift_card?.employee?.name
+                        } else {
+                            ""
+                        },
+                        "", if (customerSettingModel.fonts == LARGE) 23 else 48
+                    ).toString()
+                    PrintSunmiUtils.normalText(empName)
+
+                }
+                if (customerSettingModel.showOrderTime && giftCardReceiptModel?.gift_card?.payments?.get(
+                        giftCardReceiptModel?.gift_card?.payments?.size?.minus(
+                            1
+                        ) ?: 0
+                    )?.created_at?.isNotEmpty() == true
+                ) {
+
+                    val orderTime = padLine(
+                        if (customerSettingModel.showOrderTime) {
+                            "Order Time:" + getReceiptFormatDateFromUTCServer(
+                                requireContext(),
+                                giftCardReceiptModel?.gift_card?.payments?.get(
+                                    giftCardReceiptModel?.gift_card?.payments?.size?.minus(
+                                        1
+                                    ) ?: 0
+                                )?.created_at!!
+                            )
+                        } else {
+                            ""
+                        },
+                        "", if (customerSettingModel.fonts == LARGE) 23 else 48
+                    ).toString()
+
+                    PrintSunmiUtils.normalText(orderTime)
+
+                }
+
+                if (customerSettingModel.showPrintTime && giftCardReceiptModel?.gift_card?.payments?.get(
+                        giftCardReceiptModel?.gift_card?.payments?.size?.minus(1) ?: 0
+                    )?.created_at?.isNotEmpty() == true
+                ) {
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+                        val printTime = padLine(
+                            if (customerSettingModel.showPrintTime) {
+                                "Print Time:" + getCurrentTimeFromTimeZone(
+                                    requireContext(),
+                                    MethodUtils.formatted()
+                                )
+                            } else {
+                                ""
+                            },
+                            "", if (customerSettingModel.fonts == LARGE) 23 else 48
+                        ).toString()
+
+                        PrintSunmiUtils.normalText(printTime)
+
+                    }
+                }
+            }
+
+            PrintSunmiUtils.addHorizontalInner()
+
+            val giftCardList: MutableList<CreateOrderResponse.Data.Order.OrderItem> =
+                mutableListOf()
+
+            var giftCardAmount = 0.00
+            if(giftCardReceiptModel?.gift_card?.payments != null && giftCardReceiptModel?.gift_card?.payments?.isNotEmpty()!!){
+                giftCardAmount = giftCardReceiptModel?.gift_card?.payments?.
+                get(giftCardReceiptModel?.gift_card?.payments?.size!! - 1)?.amount?.toPrecision(2)?.toDoubleWithPrecision(2)!!
+            }
+
+            Log.d(TAG, "sunmiInnerPrintForGiftCard:  giftCardAmount = ${giftCardAmount.toPrecision(2)}")
+
+            giftCardList.add(
+                0, CreateOrderResponse.Data.Order.OrderItem(
+                    itemName = "${giftCardReceiptModel?.gift_card?.gift_card_type} Gift Card",
+                    price = giftCardAmount, quantity = 1
+                )
+            )
+
+            addOrderItemsInner(
+                giftCardList,
+                false,
+                customerSettingModel.fonts
+            )
+            SunmiPrintHelper.getInstance().lineWrap(1)
+
+            val str5 = padLine(
+                "Total Price",
+                "$${giftCardAmount.toPrecision(2)}",
+                if (customerSettingModel.fonts == LARGE) 23 else 48
+            ).toString()
+            PrintSunmiUtils.boldText(str5)
+
+            val str10 = padLine(
+                "Transaction ID",
+                "" + giftCardReceiptModel?.gift_card?.payments?.size?.minus(1)
+                    ?.let { giftCardReceiptModel?.gift_card?.payments?.get(it)?.id },
+                if (customerSettingModel.fonts == LARGE) 23 else 48
+            ).toString()
+            PrintSunmiUtils.boldText(str10)
+
+            val str11 = padLine(
+                "Transaction Type",
+                giftCardReceiptModel?.gift_card?.payments?.get(giftCardReceiptModel?.gift_card?.payments?.size!! - 1)?.payment_type,
+                if (customerSettingModel.fonts == LARGE) 23 else 48
+            ).toString()
+            PrintSunmiUtils.boldText(str11)
+
+            if (giftCardReceiptModel?.gift_card?.payments?.get(giftCardReceiptModel?.gift_card?.payments?.size!! - 1)?.payment_type?.lowercase() == "Card".lowercase()) {
+
+                val str12 =
+                    giftCardReceiptModel?.gift_card?.payments?.get(giftCardReceiptModel?.gift_card?.payments?.size!! - 1)?.card_name.toString()
+
+
+                val str13 =
+                    giftCardReceiptModel?.gift_card?.payments?.get(giftCardReceiptModel?.gift_card?.payments?.size!! - 1)?.card_type.toString()
+
+
+                val str14 =
+                    giftCardReceiptModel?.gift_card?.payments?.get(giftCardReceiptModel?.gift_card?.payments?.size!! - 1)?.card_number.toString()
+
+                PrintSunmiUtils.cardDetailsInner(str12, str13, str14,customerSettingModel.fonts)
+                SunmiPrintHelper.getInstance().lineWrap(1)
+            }
+
+            if (customerSettingModel.showCustomerAddress || customerSettingModel.showCustomerPhone || customerSettingModel.showCustomerName) {
+
+                if (giftCardReceiptModel?.gift_card?.customer != null) {
+
+                    SunmiPrintHelper.getInstance().lineWrap(1)
+                    PrintSunmiUtils.customerDetailsInner()
+
+                    if (customerSettingModel.showCustomerName) {
+
+                        PrintSunmiUtils.normalText(giftCardReceiptModel?.gift_card?.customer?.firstName + " " + giftCardReceiptModel?.gift_card?.customer?.lastName)
+
+                    }
+                    if (customerSettingModel.showCustomerPhone) {
+
+                        if (giftCardReceiptModel?.gift_card?.customer?.phones?.isNotEmpty() == true) {
+
+                            val phone =
+                                giftCardReceiptModel?.gift_card?.customer?.phones?.size?.minus(
+                                    1
+                                )?.let {
+                                    giftCardReceiptModel?.gift_card?.customer?.phones?.get(
+                                        it
+                                    )?.phoneNumber
+                                }
+                            PrintSunmiUtils.normalText(
+                                padLine(
+                                    phone?.let { MethodUtils.getUSFormatNumber(it) },
+                                    "",
+                                    if (customerSettingModel.fonts == LARGE) 23 else 48
+                                ).toString()
+                            )
+
+                        }
+
+                    }
+
+                    if (customerSettingModel.showCustomerAddress) {
+                        if (giftCardReceiptModel?.gift_card?.customer?.addresses?.isNotEmpty() == true) {
+
+                            giftCardReceiptModel?.gift_card?.customer?.addresses?.filter { it.typeOfAddress == SHIPPING_ADDRESS }
+                                ?.forEach {
+
+                                    if (it.typeOfAddress.equals(
+                                            SHIPPING_ADDRESS,
+                                            ignoreCase = true
+                                        )
+                                    ) {
+                                        PrintSunmiUtils.normalText(
+                                            padLine(
+                                                it.fullAddress,
+                                                "",
+                                                if (customerSettingModel.fonts == LARGE) 23 else 48
+                                            ).toString()
+                                        )
+                                    }
+                                }
+
+                        }
+                    }
+
+                }
+                SunmiPrintHelper.getInstance().lineWrap(1)
+            }
+
+            SunmiPrintHelper.getInstance().lineWrap(1)
+
+            SunmiPrintHelper.getInstance().lineWrap(2)
+            if (customerSettingModel.fonts == Constants.LARGE) {
+                PrintSunmiUtils.boldText("Customer Signature ____")
+            } else {
+                PrintSunmiUtils.boldText("Customer Signature           __________________")
+            }
+
+            SunmiPrintHelper.getInstance().lineWrap(2)
+
+            PrintSunmiUtils.cutPaperInner()
+
+            if (giftCardReceiptModel?.gift_card?.payments?.get(giftCardReceiptModel?.gift_card?.payments?.size!! - 1)?.payment_type.equals(
+                    "Cash", true
+                )
+            ) {
+                if (woyouService != null) {
+                    woyouService!!.sendRAWData(byteArrayOf(0x1B, 0x45, 0x01), this)
+                } else {
+                    val aa = ByteArray(5)
+
+                    aa[0] = 0x10
+                    aa[1] = 0x14
+                    aa[2] = 0x00
+                    aa[3] = 0x00
+                    aa[4] = 0x00
+
+                    try {
+                        SunmiPrinterApi.getInstance().sendRawData(aa)
+                    } catch (e: java.lang.Exception) {
+                        e.printStackTrace()
+                    }
+                    try {
+                        SunmiPrintHelper.getInstance().openCashBox()
+                    } catch (e: java.lang.Exception) {
+                        e.printStackTrace()
+                    }
+
+                }
+            }
+
+            pd.dismiss()
+
+        } catch (e: Exception) {
+            pd.dismiss()
+            e.printStackTrace()
+        }
+
+    }
+
     private fun printBusinessLogo() {
         val decodedString: ByteArray = Base64.decode(
             prefProvider.getValue(VENUE_LOGO, ""),
@@ -11345,8 +12827,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 LogUtil.logE("SunmiPrintHelpe1r", "isBlueToothPrinter")
 
-                sunmiPrintInner(isAutoPrint)
-
+                if (IS_GIFT_CARD_TYPE) {
+                    sunmiInnerPrintForGiftCard()
+                } else {
+                    sunmiPrintInner(isAutoPrint)
+                }
 
             }
 
@@ -11363,7 +12848,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         }
     }
 
-    private fun setService2() {
+    private fun setService2(  kitchenReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
+                              type: String) {
 
         if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.FoundSunmiPrinter) {
 
@@ -11373,14 +12859,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 LogUtil.logE("SunmiPrintHelpe1r", "isBlueToothPrinter")
 
-                generateKitchenReceiptSunmiInner()
+                generateKitchenReceiptSunmiInner(kitchenReceiptPrinters,type)
 
 
             }
 
         } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.CheckSunmiPrinter) {
             Handler(Looper.getMainLooper()).postDelayed({
-                setService2()
+                setService2(kitchenReceiptPrinters,type)
             }, 2000)
             LogUtil.logE("SunmiPrintHelper", "CheckSunmiPrinter")
         } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.LostSunmiPrinter) {

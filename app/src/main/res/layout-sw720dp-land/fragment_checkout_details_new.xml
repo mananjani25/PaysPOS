@@ -364,6 +364,39 @@
                             android:visibility="visible"
                             android:weightSum="3">
 
+                            <androidx.appcompat.widget.LinearLayoutCompat
+                                android:id="@+id/lnrGiftCard"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:visibility="gone"
+                                android:background="@drawable/background_txt_selector"
+                                android:gravity="center_vertical|center_horizontal"
+                                android:paddingVertical="@dimen/_10sdp">
+
+                                <ImageView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginEnd="@dimen/_3sdp"
+                                    app:srcCompat="@drawable/baseline_card_giftcard_24"
+                                    app:tint="@color/white" />
+
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    android:id="@+id/tvGiftCard"
+                                    style="@style/CustomFontSemiBold"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_below="@+id/tvCard"
+                                    android:layout_gravity="center_vertical"
+
+                                    android:gravity="center_horizontal"
+                                    android:text="Gift Card"
+                                    android:textColor="@color/txtColor"
+                                    android:textSize="@dimen/_7mdpi"
+                                    android:visibility="visible" />
+
+                            </androidx.appcompat.widget.LinearLayoutCompat>
+
                             <androidx.appcompat.widget.AppCompatTextView
                                 android:id="@+id/tvPaymentLink"
                                 style="@style/CustomFontSemiBold"
@@ -377,9 +410,9 @@
                                 android:orientation="horizontal"
                                 android:paddingVertical="@dimen/_10sdp"
                                 android:text="Text To Pay"
-                                android:visibility="gone"
                                 android:textColor="@color/txtColor"
-                                android:textSize="@dimen/_7mdpi" />
+                                android:textSize="@dimen/_7mdpi"
+                                android:visibility="gone" />
 
 
                         </androidx.appcompat.widget.LinearLayoutCompat>
@@ -704,9 +737,9 @@
                     android:layout_weight="4"
                     android:background="@null"
                     android:hint="@string/_1234_5678_xxxx_1121"
+                    android:importantForAutofill="no"
                     android:inputType="number"
                     android:maxLength="23"
-                    android:importantForAutofill="no"
                     android:textColor="@color/btnColor"
                     android:textColorHint="@color/hint_color"
                     android:textSize="@dimen/_7mdpi"
@@ -758,6 +791,138 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtCharge"
+                style="@style/CustomFontBold"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tvCard"
+                android:layout_gravity="center_vertical"
+                android:layout_marginHorizontal="@dimen/_10sdp"
+                android:layout_marginTop="@dimen/_20sdp"
+                android:background="@drawable/btn_background_selector"
+                android:gravity="center"
+                android:padding="@dimen/_9sdp"
+                android:text="@string/charge"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_7mdpi" />
+
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/llGiftCard"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/bg_color"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_20sdp"
+                android:background="@color/view"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/imgBackGiftCard"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:padding="@dimen/_5sdp"
+                    android:src="@mipmap/ic_left_arrow"
+                    app:tint="@color/drawable_ic_color" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|center"
+                    android:gravity="center"
+                    android:text="@string/hint_enter_your_gift_card_number"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_8mdpi" />
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/_10sdp"
+                android:layout_marginTop="@dimen/_18sdp"
+                android:background="@drawable/background_square_border_grey"
+                android:orientation="horizontal"
+                android:padding="@dimen/_9sdp"
+                android:weightSum="4">
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_manual_card" />
+
+                <com.santalu.maskedittext.MaskEditText
+                    android:id="@+id/edtGiftCardNumber"
+                    style="@style/CustomFontBold"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="@dimen/_10sdp"
+                    android:layout_weight="4"
+                    android:background="@null"
+                    android:hint="@string/enter_card_number_here"
+                    android:importantForAutofill="no"
+                    android:inputType="number"
+                    android:maxLength="15"
+                    android:textColor="@color/btnColor"
+                    android:textColorHint="@color/hint_color"
+                    android:textSize="@dimen/_7mdpi"
+                    app:met_mask="####  ####" />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginStart="@dimen/_5sdp"
+                android:visibility="gone"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:text="@string/enter_card_number_here"
+                android:textColor="@color/hint_color"
+                android:textSize="@dimen/_5mdpi" />
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/_10sdp"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:background="@drawable/background_square_border_grey"
+                android:visibility="gone"
+                android:orientation="horizontal"
+                android:padding="@dimen/_9sdp"
+                android:weightSum="4">
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_gift_card_pin" />
+
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/edtGiftCardPin"
+                    style="@style/CustomFontBold"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="@dimen/_10sdp"
+                    android:layout_weight="4"
+                    android:background="@null"
+                    android:hint="@string/hint_gift_card_pin"
+                    android:importantForAutofill="no"
+                    android:inputType="numberPassword"
+                    android:maxLength="4"
+                    android:textColor="@color/btnColor"
+                    android:textColorHint="@color/hint_color"
+                    android:textSize="@dimen/_7mdpi" />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtChargeGC"
                 style="@style/CustomFontBold"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

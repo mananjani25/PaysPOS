@@ -22,20 +22,35 @@
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:orientation="horizontal"
-            android:paddingVertical="@dimen/_2sdp">
+            android:paddingVertical="@dimen/_4sdp">
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:weightSum="5">
+                android:weightSum="10">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.5"
+                    android:gravity="end|center_vertical"
+                    android:orientation="horizontal">
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:layout_width="@dimen/_12sdp"
+                        android:layout_height="@dimen/_12sdp"
+                        android:src="@drawable/ic_baseline_menu" />
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.6"
-                    android:orientation="horizontal"
-                    android:gravity="center">
+                    android:layout_weight="1.2"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
                     <androidx.appcompat.widget.AppCompatCheckBox
                         android:id="@+id/chkIsFired"
                         android:layout_width="wrap_content"
@@ -48,9 +63,9 @@
 
                 <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_gravity="center"
-                    android:layout_weight="1.9"
+                    android:layout_weight="3"
                     android:gravity="center"
                     android:orientation="vertical">
 
@@ -89,27 +104,25 @@
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
                     android:background="@color/view"
-                    android:visibility="invisible"
+                    android:visibility="gone"
                     app:layout_constraintTop_toBottomOf="@+id/linearHeader" />
 
                 <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_gravity="center"
-                    android:layout_weight="0.5"
-                    android:gravity="start">
+                    android:layout_weight="1.2"
+                    android:gravity="center">
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontBold"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-
                         android:gravity="center"
                         android:text="@{``+model.itemQuantity}"
                         android:textColor="@color/dark_btn_Color"
-                        android:textSize="@dimen/_6mdpi"
-                        />
+                        android:textSize="@dimen/_7mdpi" />
                 </LinearLayout>
 
                 <View
@@ -117,27 +130,26 @@
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
                     android:background="@color/view"
-                    android:visibility="invisible"
+                    android:visibility="gone"
                     app:layout_constraintTop_toBottomOf="@+id/linearHeader" />
 
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:translationX="-25dp">
+                    android:layout_weight="1.6"
+                    android:gravity="center">
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txtEmpName"
                         style="@style/CustomFontRegularStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="start"
-                        android:gravity="start"
+                        android:layout_gravity="center"
+                        android:gravity="center"
                         android:text=""
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_5mdpi"
+                        android:textSize="@dimen/_7mdpi"
                         tools:text="Item" />
                 </LinearLayout>
 
@@ -146,46 +158,61 @@
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
                     android:background="@color/view"
-                    android:visibility="invisible"
+                    android:visibility="gone"
                     app:layout_constraintTop_toBottomOf="@+id/linearHeader" />
 
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_weight="1"
+                    android:layout_weight="1.5"
                     android:gravity="center"
-
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:paddingStart="@dimen/_12sdp">
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tvRate"
                         style="@style/CustomFontSemiBold"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="end"
+                        android:layout_gravity="center"
                         android:gravity="center"
+                        android:paddingHorizontal="@dimen/_6sdp"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_5mdpi"
-                        tools:text="$20.00"
-                        android:paddingRight="@dimen/_20sdp"
-                        />
+                        android:textSize="@dimen/_7mdpi"
+                        tools:text="$20.00" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tvDiscountRate"
                         style="@style/CustomFontSemiBold"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="end"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
                         android:layout_marginTop="@dimen/_2sdp"
                         android:gravity="center"
+                        android:paddingHorizontal="@dimen/_6sdp"
+                        android:paddingRight="@dimen/_20sdp"
                         android:textColor="@color/colorRed"
                         android:textSize="@dimen/_5mdpi"
-                        tools:text="$20.00"
-                        android:paddingRight="@dimen/_20sdp"/>
+                        tools:text="$20.00" />
 
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:paddingStart="@dimen/_2sdp">
+
+                    <ImageView
+                        android:id="@+id/ivWastage"
+                        android:layout_width="@dimen/_18sdp"
+                        android:layout_height="@dimen/_18sdp"
+                        android:padding="@dimen/_3sdp"
+                        android:src="@drawable/food_wastage"
+                        app:tint="@color/txtColor" />
+                </LinearLayout>
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 

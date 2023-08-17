@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Base64
 import com.android.pos.data.model.responseModel.GetTipReponse
+import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.LARGE
 import com.android.pos.data.remote.Constants.MEDIUM
 import com.android.pos.data.remote.Constants.SMALL
@@ -386,12 +387,12 @@ class PrintSunmiUtils {
             SunmiPrinterApi.getInstance().enableBold(true)
             setFontSize()
             SunmiPrinterApi.getInstance().printText(value)
-            SunmiPrinterApi.getInstance().lineWrap(2)
+//            SunmiPrinterApi.getInstance().lineWrap(1)
 
         }
 
         fun cardDetails(cardName: String, cardType: String, cardNumber: String) {
-
+            //SunmiPrinterApi.getInstance().printText("cardName")
             for (i in 1..3) {
 
                 SunmiPrinterApi.getInstance().setAlignMode(2)
@@ -399,18 +400,26 @@ class PrintSunmiUtils {
                 setFontSize()
                 when (i) {
                     1 -> {
-                        SunmiPrinterApi.getInstance().printText(cardName)
+                        if(!cardName.isNullOrBlank()){
+                            SunmiPrinterApi.getInstance().printText(cardName)
+                            SunmiPrinterApi.getInstance().lineWrap(1)
+                        }
                     }
                     2 -> {
-                        SunmiPrinterApi.getInstance().printText(cardType)
+                        if(!cardType.isNullOrBlank()){
+                            SunmiPrinterApi.getInstance().printText(cardType)
+                            SunmiPrinterApi.getInstance().lineWrap(1)
+                        }
                     }
                     3 -> {
-                        SunmiPrinterApi.getInstance().printText(cardNumber)
+                        if(!cardNumber.isNullOrBlank()){
+                            SunmiPrinterApi.getInstance().printText(cardNumber)
+                            SunmiPrinterApi.getInstance().lineWrap(1)
+                        }
                     }
                 }
-
-                SunmiPrinterApi.getInstance().lineWrap(1)
             }
+//            SunmiPrinterApi.getInstance().lineWrap(1)
         }
 
         fun customerDetails() {
@@ -708,19 +717,73 @@ class PrintSunmiUtils {
 
         }
 
-        fun cardDetailsInner(cardName: String, cardType: String, cardNumber: String) {
+        fun cardDetailsInner( cardName: String, cardType: String,cardNumber: String, font: String) {
 
+//            for (i in 1..3) {
+//
+//                when (i) {
+//                    1 -> {
+//                        val strCardType = padLine(
+//                            "",
+//                            cardType,
+//                            if (font == Constants.LARGE) 23 else 48
+//                        ).toString()
+//                        normalTextTest(strCardType)
+//                    }
+//                    2 -> {
+//                        val strCardName = padLine(
+//                            "",
+//                            cardName,
+//                            if (font == Constants.LARGE) 23 else 48
+//                        ).toString()
+//                        normalTextTest(strCardName)
+//                    }
+//                    3 -> {
+//                        val strCardNumber = padLine(
+//                            "",
+//                            cardNumber,
+//                            if (font == Constants.LARGE) 23 else 48
+//                        ).toString()
+//                        normalTextTest(strCardNumber)
+//                    }
+//                }
+//            }
             for (i in 1..3) {
 
                 when (i) {
                     1 -> {
-                        normalText(cardName)
+                        if(!cardName.isNullOrBlank()){
+                            val strCardName = padLine(
+                                "",
+                                cardName,
+                                if (font == Constants.LARGE) 23 else 48
+                            ).toString()
+                            normalText(strCardName)
+
+                        }
                     }
+
                     2 -> {
-                        normalText(cardType)
+                        if(!cardType.isNullOrBlank()){
+                            val strCardType = padLine(
+                                "",
+                                cardType,
+                                if (font == Constants.LARGE) 23 else 48
+                            ).toString()
+                            PrintSunmiUtils.normalText(strCardType)
+                        }
+
                     }
+
                     3 -> {
-                        normalText(cardNumber)
+                        if(!cardNumber.isNullOrBlank()){
+                            val strCardNumber = padLine(
+                                "",
+                                cardNumber,
+                                if (font == Constants.LARGE) 23 else 48
+                            ).toString()
+                            PrintSunmiUtils.normalText(strCardNumber)
+                        }
                     }
                 }
             }

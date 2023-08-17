@@ -62,8 +62,13 @@ class OrderCompleteViewModel @Inject constructor(
     fun checkQueueExist(id: Int) = posRepository.checkQueueExist(id)
 
 
-    fun submit(type: String, email: String, phoneNumber: String, orderID: Int) {
-
+    fun submit(
+        type: String,
+        email: String,
+        phoneNumber: String,
+        orderID: Int,
+        isGiftCardType: Boolean = false
+    ) {
 
         if (type == "Email" && email.isEmpty()) {
             _snackbarText.value = Event(R.string.email_validate)
@@ -88,11 +93,17 @@ class OrderCompleteViewModel @Inject constructor(
 
             viewModelScope.launch {
 
-                resource = if (type == "Email") {
-                    posRepository.emailReceipt(data)
-                } else
-                    posRepository.phoneReceipt(data)
-
+                resource = if(isGiftCardType){
+                    if (type == "Email") {
+                        posRepository.giftCardEmailReceipt(data)
+                    } else
+                        posRepository.giftCardPhoneReceipt(data)
+                } else {
+                    if (type == "Email") {
+                        posRepository.emailReceipt(data)
+                    } else
+                        posRepository.phoneReceipt(data)
+                }
 
                 when (resource.status) {
                     Status.SUCCESS -> {

@@ -6,34 +6,46 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/dine_in_order_footer_unselected"
-        android:paddingVertical="@dimen/_4sdp">
+        android:layout_height="@dimen/_30ssp"
+        android:background="@drawable/dine_in_order_header_bg"
+        android:paddingVertical="@dimen/_5sdp">
 
         <RelativeLayout
             android:id="@+id/linearHeader"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-
+            android:layout_height="match_parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_toStartOf="@+id/imgPrint"
+                android:layout_centerVertical="true"
                 android:orientation="horizontal"
-                android:weightSum="5">
+                android:weightSum="10">
+
+                <LinearLayout
+                    android:id="@+id/llRemoveGuest"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.5"
+                    android:gravity="end|center_vertical"
+                    android:orientation="horizontal">
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:layout_width="@dimen/_12sdp"
+                        android:layout_height="@dimen/_12sdp"
+                        android:src="@drawable/ic_remove_circle_primary" />
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_weight="0.7"
-                    android:gravity="center"
-                    android:layout_marginStart="@dimen/_1sdp">
+                    android:layout_marginStart="@dimen/_1sdp"
+                    android:layout_weight="1.2"
+                    android:gravity="center">
 
 
                     <androidx.appcompat.widget.AppCompatCheckBox
@@ -41,7 +53,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:layout_marginLeft="@dimen/_1sdp"
                         android:button="@drawable/dine_in_fire_selector"
                         android:checked="false"
                         android:gravity="center" />
@@ -51,7 +62,15 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_gravity="center_vertical"
-                    android:layout_weight="2">
+                    android:layout_weight="3">
+
+                    <ImageView
+                        android:id="@+id/imgPerson"
+                        android:layout_width="@dimen/_8sdp"
+                        android:layout_height="@dimen/_8sdp"
+                        android:layout_gravity="center"
+                        android:layout_marginStart="@dimen/_12sdp"
+                        android:src="@drawable/ic_person" />
 
                     <TextView
                         android:id="@+id/txtTableName"
@@ -60,13 +79,66 @@
                         android:layout_height="match_parent"
                         android:layout_gravity="center"
                         android:gravity="start|center_vertical"
+                        android:paddingStart="@dimen/_4sdp"
                         android:text="Whole Table"
                         android:textColor="@color/white"
-                        android:textSize="@dimen/_7mdpi"
-                        android:paddingStart="@dimen/_14sdp"
-                        />
+                        android:textSize="@dimen/_7mdpi" />
                 </LinearLayout>
 
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="2.8" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1.5"
+                    android:gravity="center"
+                    android:paddingStart="@dimen/_12sdp">
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:id="@+id/btnPay"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:background="@color/btnColorDark"
+                        android:clickable="true"
+                        android:gravity="center"
+                        android:visibility="visible">
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/txtPay"
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center"
+                            android:gravity="center"
+                            android:paddingHorizontal="@dimen/_6sdp"
+                            android:paddingVertical="@dimen/_5sdp"
+                            android:text="@string/pay_now"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/_6mdpi" />
+
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:paddingStart="@dimen/_2sdp">
+
+                    <ImageView
+                        android:id="@+id/imgPrint"
+                        android:layout_width="@dimen/_10sdp"
+                        android:layout_height="@dimen/_10sdp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/print" />
+                </LinearLayout>
             </LinearLayout>
 
             <ImageView
@@ -79,60 +151,13 @@
                 android:src="@drawable/ic_groups"
                 android:visibility="gone" />
 
-
-            <androidx.appcompat.widget.LinearLayoutCompat
-                android:id="@+id/btnPay"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:layout_marginEnd="@dimen/_7sdp"
-
-                android:background="@color/btnColorDark"
-                android:clickable="true"
-                android:gravity="center"
-                android:visibility="visible">
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/txtPay"
-                    style="@style/CustomFontSemiBold"
-                    android:layout_width="@dimen/_60sdp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:paddingHorizontal="@dimen/_6sdp"
-                    android:paddingVertical="@dimen/_4sdp"
-                    android:text="@string/pay_now"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/_5mdpi" />
-
-
-            </androidx.appcompat.widget.LinearLayoutCompat>
-
-            <ImageView
-                android:id="@+id/imgPrint"
-                android:layout_width="@dimen/_10sdp"
-                android:layout_height="@dimen/_10sdp"
-                android:layout_centerVertical="true"
-                android:layout_marginEnd="@dimen/_15sdp"
-                android:layout_toStartOf="@+id/removeGuest"
-                android:src="@drawable/print" />
-
-            <ImageView
-                android:id="@+id/removeGuest"
-                android:layout_width="@dimen/_12sdp"
-                android:layout_height="@dimen/_12sdp"
-                android:layout_centerVertical="true"
-                android:layout_marginEnd="@dimen/_15sdp"
-                android:layout_toStartOf="@+id/refViewLine"
-                android:src="@drawable/ic_remove_circle_primary" />
-
             <View
                 android:id="@+id/refViewLine"
                 android:layout_width="1dp"
                 android:layout_height="1dp"
                 android:layout_marginEnd="@dimen/_45sdp"
-                android:layout_toStartOf="@+id/llInfo1" />
+                android:layout_toStartOf="@+id/llInfo1"
+                android:visibility="gone" />
 
 
             <androidx.appcompat.widget.LinearLayoutCompat
@@ -147,7 +172,7 @@
                 android:background="@drawable/background_button_menu"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:visibility="invisible">
+                android:visibility="gone">
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:layout_width="wrap_content"

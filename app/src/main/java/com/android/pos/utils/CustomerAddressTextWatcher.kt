@@ -9,7 +9,6 @@ import android.widget.EditText
 import com.android.pos.utils.callback.AddressTextChangeListner
 
 class CustomerAddressTextWatcher(
-    var checkBox: CheckBox,
     var edittext: EditText,
     var changeField: Boolean,
     var listner: AddressTextChangeListner,

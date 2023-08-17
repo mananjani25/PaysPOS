@@ -107,20 +107,6 @@
                 android:textColorHint="@color/hint_color"
                 android:textSize="@dimen/_7mdpi" />
 
-            <TextView
-                android:id="@+id/txt_open_order"
-                style="@style/CustomFontBold"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginEnd="@dimen/_5sdp"
-                android:background="?attr/selectableItemBackground"
-                android:gravity="center"
-                android:padding="@dimen/_5sdp"
-                android:text="OPEN ORDERS"
-                android:textAllCaps="true"
-                android:textColor="@color/btnColor"
-                android:textSize="@dimen/_6mdpi" />
 
 
             <ImageView

@@ -715,6 +715,10 @@
             android:defaultValue="false"
             app:argType="boolean" />
 
+        <action
+            android:id="@+id/action_addEditCustomer_to_paymentBoldPosFragment"
+            app:destination="@id/paymentBoldPosFragment" />
+
     </fragment>
     <fragment
         android:id="@+id/teamMemberTimeSheetFragment"
@@ -1029,6 +1033,14 @@
             app:popUpTo="@id/orderCompleteFragment" />
     </fragment>
     <fragment
+        android:id="@+id/purchaseGiftCard"
+        android:name="com.android.pos.ui.fragments.eGiftCard.PurchaseGiftCardFragment"
+        android:label="@string/lbl_purchase_gift_card">
+        <action
+            android:id="@+id/action_purchaseGiftCard_to_addCustomerToGiftCard"
+            app:destination="@id/addCustomerToGiftCard" />
+    </fragment>
+    <fragment
         android:id="@+id/orders"
         android:name="com.android.pos.ui.fragments.orders.Orders"
         android:label="Orders">
@@ -1150,6 +1162,10 @@
         android:name="com.android.pos.ui.dialog.ReasonForCancelOrderDialog"
         android:label="ReasonForCancelOrderDialog"></dialog>
 
+    <dialog
+        android:id="@+id/addItemToWastageDialog"
+        android:name="com.android.pos.ui.dialog.AddItemToWastageDialog"
+        android:label="AddItemToWastageDialog"/>
 
     <dialog
         android:id="@+id/editVariationDialog"
@@ -1336,6 +1352,9 @@
             app:destination="@id/dineInFragment"
             app:popUpTo="@id/dineInOrderTable"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_dineInOrderTable_to_addItemToWastageDialog"
+            app:destination="@id/addItemToWastageDialog" />
     </fragment>
     <fragment
         android:id="@+id/payByGuestDialog"
@@ -1587,6 +1606,18 @@
             android:id="@+id/action_dashboardCategoryBoldPOS_to_orders"
             app:destination="@id/orders"
             app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_dashboardCategoryBoldPOS_to_purchaseGiftCard"
+            app:destination="@id/purchaseGiftCard"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_dashboardCategoryBoldPOS_to_addValueInGiftCard"
+            app:destination="@id/addValueInGiftCard"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_dashboardCategoryBoldPOS_to_balanceInquiry"
+            app:destination="@id/balanceInquiry"
+            app:enterAnim="@anim/nav_default_enter_anim" />
 
         <action
             android:id="@+id/action_dashboardCategoryBoldPOS_to_passcode"
@@ -1611,6 +1642,9 @@
         <action
             android:id="@+id/action_dashboardCategoryBoldPOS_to_assignCustomerOrderFragment"
             app:destination="@id/assignCustomerOrderFragment" />
+        <action
+            android:id="@+id/action_dashboardCategoryBoldPOS_to_addCustomerToGiftCard"
+            app:destination="@id/addCustomerToGiftCard" />
         <action
             android:id="@+id/action_dashboardCategoryBoldPOS_to_addDiscountDialog"
             app:destination="@id/addDiscountDialog" />
@@ -1679,6 +1713,10 @@
             app:destination="@id/assignCustomerOrderFragment"
             app:enterAnim="@anim/nav_default_enter_anim" />
         <action
+            android:id="@+id/action_paymentBoldPosFragment_to_addCustomerToGiftCard"
+            app:destination="@id/addCustomerToGiftCard"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
             android:id="@+id/action_paymentBoldPosFragment_to_allOrdersFragment"
             app:destination="@id/allOrdersFragment" />
     </fragment>
@@ -1698,6 +1736,12 @@
         <action
             android:id="@+id/action_magtekProFragment_to_dashboardCategoryBoldPOS"
             app:destination="@id/dashboardCategoryBoldPOS"
+            app:popUpToInclusive="true" />
+
+        <action
+            android:id="@+id/action_magtekProFragment_to_manualSalesNew"
+            app:destination="@id/manualSaleNew"
+            app:popUpTo="@id/manualSaleNew"
             app:popUpToInclusive="true" />
     </fragment>
     <dialog
@@ -1739,6 +1783,43 @@
             app:popUpToInclusive="true" />
 
     </fragment>
+    <fragment android:id="@+id/addCustomerToGiftCard"
+        android:name="com.android.pos.ui.fragments.eGiftCard.AddCustomerToGiftCardFragment"
+        android:label="@string/lbl_add_customer_to_gift_card">
+        <action
+            android:id="@+id/action_addCustomerToGiftCard_to_addEditCustomer"
+            app:destination="@id/addEditCustomer"
+            app:enterAnim="@anim/nav_default_enter_anim">
 
+            <argument
+                android:name="isEdit"
+                app:argType="boolean" />
+        </action>
+        <action
+            android:id="@+id/action_addCustomerToGiftCard_to_addNewCustomerForGiftCard"
+            app:destination="@id/addNewCustomerForGiftCard" />
+        <action
+            android:id="@+id/action_addCustomerToGiftCard_to_dashboard_category_new"
+            app:destination="@id/dashboardCategoryBoldPOS" />
+        <action
+            android:id="@+id/action_addCustomerToGiftCard_to_paymentBoldPosFragment"
+            app:destination="@id/paymentBoldPosFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addNewCustomerForGiftCard"
+        android:name="com.android.pos.ui.fragments.eGiftCard.AddNewCustomerForGiftCardFragment"
+        android:label="@string/lbl_add_customer_to_gift_card"/>
+    <fragment
+        android:id="@+id/addValueInGiftCard"
+        android:name="com.android.pos.ui.fragments.eGiftCard.AddValueInGiftCardFragment"
+        android:label="@string/lbl_add_value">
+        <action
+            android:id="@+id/action_addValueInGiftCard_to_paymentBoldPosFragment"
+            app:destination="@id/paymentBoldPosFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/balanceInquiry"
+        android:name="com.android.pos.ui.fragments.eGiftCard.BalanceInquiryFragment"
+        android:label="@string/lbl_balance_inquiry"/>
 
 </navigation>

@@ -14,6 +14,7 @@
             android:id="@+id/linearFirst"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
             android:paddingVertical="@dimen/_2sdp">
 
             <ImageView
@@ -54,18 +55,64 @@
             android:layout_toLeftOf="@+id/txthome"
             android:paddingVertical="@dimen/_2sdp">
 
+            <LinearLayout
+                android:id="@+id/imgRefreshTables"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="@dimen/_8sdp"
+                android:visibility="gone">
             <ImageView
-                android:id="@+id/imgTransferTable"
-                android:layout_width="@dimen/_22sdp"
-                android:layout_height="@dimen/_18sdp"
+                android:layout_width="@dimen/_10sdp"
+                android:layout_height="@dimen/_10sdp"
                 android:layout_gravity="center"
-                android:visibility="gone"
                 android:background="?attr/selectableItemBackground"
-                android:padding="@dimen/_2sdp"
+                android:src="@drawable/ic_sync"
+                android:tint="@color/txtColor"
+                tools:ignore="UseAppTint" />
+                <TextView
+                    style="@style/CustomFontMediumStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:background="?attr/selectableItemBackground"
+                    android:padding="@dimen/_2sdp"
+                    android:text="Refresh"
+                    android:textAllCaps="true"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_6mdpi"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/imgTransferTable"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:gravity="center"
+                android:visibility="gone">
+
+            <ImageView
+                android:layout_width="@dimen/_14sdp"
+                android:layout_height="@dimen/_10sdp"
+                android:layout_gravity="center"
+                android:background="?attr/selectableItemBackground"
                 android:src="@drawable/transfer_table_icon"
                 android:tint="@color/txtColor"
                 tools:ignore="UseAppTint" />
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/CustomFontMediumStyle"
+                    android:layout_gravity="center"
+                    android:background="?attr/selectableItemBackground"
+                    android:padding="@dimen/_2sdp"
+                    android:text="Transfer"
+                    android:textAllCaps="true"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_6mdpi"/>
+            </LinearLayout>
             <TextView
                 android:id="@+id/txt_Dineinordere"
                 style="@style/CustomFontSemiBold"
@@ -83,17 +130,21 @@
 
             <TextView
                 android:id="@+id/txt_merge"
-                style="@style/CustomFontRegularStyle"
+                style="@style/CustomFontMediumStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginHorizontal="@dimen/_10sdp"
+                android:gravity="center"
+                android:layout_gravity="center_vertical"
+                android:layout_marginHorizontal="@dimen/_5sdp"
                 android:background="?attr/selectableItemBackground"
                 android:padding="@dimen/_5sdp"
                 android:text="merge"
                 android:textAllCaps="true"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_6mdpi" />
+                android:textSize="@dimen/_6mdpi"
+                android:drawablePadding="@dimen/_2sdp"
+                android:drawableTint="@color/white"
+                app:drawableLeftCompat="@drawable/merge_table" />
 
 
             <LinearLayout
@@ -101,6 +152,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/_18sdp"
                 android:contentDescription="@string/clock"
+                android:layout_gravity="center_vertical"
                 android:orientation="horizontal">
 
                 <ImageView

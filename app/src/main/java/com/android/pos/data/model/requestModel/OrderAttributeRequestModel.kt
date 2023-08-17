@@ -437,7 +437,8 @@ class OrderModifierTaxesAttribute {
 
 }
 
-class OrderItemModifierAttribute {
+@Parcelize
+class OrderItemModifierAttribute : Parcelable {
     @SerializedName("id")
     var id: Int? = null
 
@@ -607,4 +608,7 @@ class PaymentAttributes : Parcelable {
 
     @SerializedName("is_loyalty_applied")
     var is_loyalty_applied: Boolean? = false
+
+    @SerializedName("gift_card_redeemed_amount")
+    var gift_card_redeemed_amount: Double? = 0.0
 }

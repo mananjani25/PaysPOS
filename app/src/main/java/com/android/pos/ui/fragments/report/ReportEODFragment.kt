@@ -1615,6 +1615,77 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
 
             }
+
+            // Clock in-out report
+            if (eodReportData?.clockInClockOut?.isNotEmpty() == true && eodReportConfiguration?.clockInOut == true) {
+                builder.addFeedLine(3)
+                builder.addTextSize(2, 2)
+
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, MEDIUM)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+                builder.addText("CLOCK IN-CLOCK OUT")
+                builder.addFeedLine(2)
+
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+                addCustomerTextSize(builder, SMALL)
+                addHorizontalLine(builder)
+
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, SMALL)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+                builder.addFeedLine(1)
+
+                eodReportData?.clockInClockOut?.forEach {
+                    it.forEach { data ->
+                        if (data.key != "Total") {
+                            builder.addTextLineSpace(30)
+                            builder.addFeedUnit(30)
+                            builder.addTextFont(Builder.FONT_E)
+                            // builder.addTextAlign(Builder.ALIGN_LEFT)
+                            builder.addTextLang(Builder.LANG_EN)
+                            addCustomerTextSize(builder, SMALL)
+                            builder.addTextStyle(
+                                Builder.FALSE,
+                                Builder.FALSE,
+                                Builder.FALSE,
+                                Builder.COLOR_1
+                            )
+                            builder.addText(
+                                padLine(
+                                    if (data.key == "Total Working Hour") {
+                                        "Total"
+                                    } else {
+                                        data.key
+                                    },
+                                    data.value.toString(),
+                                    48
+                                )
+                            )
+                        }
+                    }
+                    builder.addFeedLine(1)
+                }
+            }
             if (eodReportData?.cashLogDetails?.isNotEmpty() == true && eodReportConfiguration?.cashLogDetails == true) {
                 builder.addFeedLine(3)
                 builder.addTextSize(2, 2)
@@ -2147,6 +2218,25 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 SunmiPrinterApi.getInstance().lineWrap(1)
 
             }
+
+            // Clock in-out report
+            if (eodReportData?.clockInClockOut?.isNotEmpty() == true && eodReportConfiguration?.clockInOut == true) {
+                PrintSunmiUtils.addLable("CLOCK IN-CLOCK OUT")
+                eodReportData?.clockInClockOut?.forEach { it ->
+                    it.forEach {
+                        if (it.key != "Total") {
+                            PrintSunmiUtils.orderTime(
+                                padLine(
+                                    if (it.key == "Total Working Hour") { "Total" } else { it.key },
+                                    it.value.toString(),
+                                    48
+                                ).toString()
+                            )
+                        }
+                    }
+                }
+            }
+
             if (eodReportData?.cashLogDetails?.isNotEmpty() == true && eodReportConfiguration?.cashLogDetails == true) {
 
                 PrintSunmiUtils.addLable("CASH LOG DETAILS")
@@ -2601,6 +2691,28 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 SunmiPrintHelper.getInstance().lineWrap(1)
 
             }
+
+            // Clock in-out report
+            if (eodReportData?.clockInClockOut?.isNotEmpty() == true && eodReportConfiguration?.clockInOut == true) {
+
+                PrintSunmiUtils.headerText("CLOCK IN-CLOCK OUT")
+                SunmiPrintHelper.getInstance().lineWrap(1)
+
+                eodReportData?.clockInClockOut?.forEach {
+                    it.filter { it.key == "Total Working Hour" }.forEach { data ->
+                        if (data.key != "Total") {
+                            PrintSunmiUtils.normalText(
+                                padLine(
+                                    if (data.key == "Total Working Hour") { "Total" } else { data.key },
+                                    data.value.toString(),
+                                    48).toString()
+                            )
+                        }
+                    }
+                    SunmiPrintHelper.getInstance().lineWrap(1)
+                }
+            }
+
             if (eodReportData?.cashLogDetails?.isNotEmpty() == true && eodReportConfiguration?.cashLogDetails == true) {
 
                 PrintSunmiUtils.headerText("CASH LOG DETAILS")

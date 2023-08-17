@@ -1,5 +1,5 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="@color/txt_color_blue"/>
+    <solid android:color="@color/dark_btn_Color"/>
     <stroke
         android:width="1dp"
         android:color="@color/btnColor" />

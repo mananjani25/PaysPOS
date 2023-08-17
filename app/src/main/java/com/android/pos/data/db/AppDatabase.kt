@@ -36,6 +36,7 @@ import com.android.pos.data.dao.TeamRoleDao
 import com.android.pos.data.dao.TerminalsDao
 import com.android.pos.data.dao.TimeZonesDao
 import com.android.pos.data.dao.TipsDao
+import com.android.pos.data.dao.WastageReasonsDao
 import com.android.pos.data.dao.cardReaderDao
 import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.CashDiscountModel
@@ -105,8 +106,8 @@ import com.android.pos.data.typeconvert.TypeConvertorPhone
         PrinterResponse.Data.KitchenReceiptPrinters::class, GetKitchenReceiptSettingsResponse.Data::class,
         GetCustomerReceiptSettingsResponse.Data::class, LoyaltyProgramsModel::class, SplitDetailListModel::class,
         CashDiscountModel::class, TbCountryList::class, TbCardReader::class, VenueDetailsResponse.Data.CancelOrderReason::class,
-        DineInCartModel::class, ShiftRportConfiguration::class, TbBusinessDetails::class, TbTimeZones::class, PrinterQueueModel::class],
-    version = 6
+        DineInCartModel::class, ShiftRportConfiguration::class, TbBusinessDetails::class, TbTimeZones::class, PrinterQueueModel::class, VenueDetailsResponse.Data.WastageReason::class],
+    version = 7
 )
 @TypeConverters(
     TypeConvertersIds::class,
@@ -169,6 +170,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun businessDetailsDao(): BusinessDetailsDao
     abstract fun timeZonesDao(): TimeZonesDao
     abstract fun printerQueueDao(): PrinterQueueDao
+    abstract fun wastageReasonsDao(): WastageReasonsDao
 
     companion object {
 
@@ -238,9 +240,30 @@ abstract class AppDatabase : RoomDatabase() {
 
         }
 
+        val MIGRATION_6_7: Migration = object : Migration(6, 7) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                try {
+                    database.execSQL("ALTER TABLE EodShiftReport ADD COLUMN clockInOut INTEGER DEFAULT 0 NOT NULL")
+                    database.execSQL("CREATE TABLE IF NOT EXISTS `TbWastageReason` " +
+                            "(`id` INTEGER PRIMARY KEY NOT NULL, " +
+                            "`isActive` INTEGER NOT NULL, " +
+                            "`name` TEXT NOT NULL, " +
+                            "`sort` INTEGER NOT NULL, " +
+                            "`locationID` INTEGER NOT NULL, " +
+                            "`createdAt` TEXT NOT NULL, " +
+                            "`updatedAt` TEXT NOT NULL, " +
+                            "`deletedAt` TEXT)")
+                //database.execSQL("CREATE TABLE IF NOT EXISTS `TbWastageReason` (`id` INTEGER, PRIMARY KEY(`id`), `name` TEXT NOT NULL)")
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+
+        }
+
         private fun buildDatabase(appContext: Context) =
             Room.databaseBuilder(appContext, AppDatabase::class.java, DATABASE_NAME)
-                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
+                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7)
                 .build()
     }
 
