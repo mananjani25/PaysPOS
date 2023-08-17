@@ -561,6 +561,7 @@
     <string name="tv_all_payment_types">All Transaction Types</string>
     <string name="tv_cash_payment">Cash</string>
     <string name="tv_card_payment">Card</string>
+    <string name="tv_giftcard_payment">Gift Card</string>
     <string name="tv_external">External</string>
     <string name="tv_terminal_id">Terminal</string>
     <string name="tv_order_details">Order Details</string>
