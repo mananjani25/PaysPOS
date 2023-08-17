@@ -2677,14 +2677,14 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
 
         if (tbItem.variationsAttributes.isEmpty() && item.variationsAttributes.isEmpty()) return true
-        if (listOfDataMod.containsAll(listOfDataModSelecteItem) && listOfDataMod.size == listOfDataModSelecteItem.size) {
-            if (tbItem.variationsAttributes.get(0).id == item.variationsAttributes.get(0).id) {
-                isSame = true
+        isSame = if (listOfDataMod.containsAll(listOfDataModSelecteItem) && listOfDataMod.size == listOfDataModSelecteItem.size) {
+            if (tbItem.variationsAttributes[0].id == item.variationsAttributes[0].id) {
+                (tbItem.variationsAttributes[0].price == item.variationsAttributes[0].price)
             } else {
-                isSame = false
+                false
             }
         } else {
-            isSame = false
+            false
         }
 
 
