@@ -71,6 +71,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
     var amountToBepaid = 0.0
     var totalquantity = 0
     var taxClickable = false
+    private var initialItemQuantity = 0
+
 
     @Inject
     lateinit var rolePermission: RolePermission
@@ -1468,6 +1470,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         val txtSave: AppCompatTextView = dialog.findViewById(R.id.txtSave)
 
         edtNote.setText(model.note)
+        initialItemQuantity = model.itemQuantity
         totalquantity = 0
         var qty = model.itemQuantity
         totalquantity = qty
@@ -1662,14 +1665,14 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 }
             }
             val bundle = Bundle().apply {
-                putInt("totalquantity", totalquantity)
+                putInt("totalquantity", initialItemQuantity)
                 putBoolean("isFromDetails", true)
 
                 if (cartList?.isNotEmpty() == true) {
 
-                    var totalItemswithQuantity = 0
+                    var totalItemswithQuantity = initialItemQuantity
 
-                    if (prefProvider.getValue(
+                    /*if (prefProvider.getValue(
                             Constants.ORDER_TYPE,
                             TAKEOUT
                         ) == Constants.DINE_IN
@@ -1685,7 +1688,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
                         }
                     }
-
+*/
                     var perItemDiscount = 0.0
                     if (cartList?.get(0)?.discountPrice != 0.0) {
                         if (totalItemswithQuantity == 0) {
@@ -1704,7 +1707,6 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                     putString("orderDiscountType", cartList!![0].discountType)
                     putDouble("selectedvalue", cartList!![0].discountSelectdValue)
                     putDouble("itemOrderDiscount", perItemDiscount)
-                    putInt("totalquantity", totalItemswithQuantity)
                 }
                 putParcelable("model", model)
             }
