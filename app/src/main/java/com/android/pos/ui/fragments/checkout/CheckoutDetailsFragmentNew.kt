@@ -2705,7 +2705,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 tipID,
                 GlobalUID,
                 RefNumber,
-                ExtData
+                ExtData,
+                cardLastDigits
             )
         }
         LogUtil.logE(TAG, "myRequestOriginal ${Gson().toJson(myRequest)}")

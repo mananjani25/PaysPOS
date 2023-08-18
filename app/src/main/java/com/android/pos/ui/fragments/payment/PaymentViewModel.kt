@@ -962,6 +962,7 @@ open class PaymentViewModel @Inject constructor(
         globalUID: String = "",
         refNum: String = "",
         extData: String = "",
+        cardLastDigits: String = "",
         totalServiceChargeM: Double = 0.0,
         totalDiscountM: Double = 0.0
     ): OrderRequestModel {
@@ -1073,7 +1074,8 @@ open class PaymentViewModel @Inject constructor(
                 redeemLoyaltyInfo = redeemLoyaltyInfo,
                 globalUID,
                 refNum,
-                extData
+                extData,
+                cardLastDigits
             )
         } else {
             null
@@ -1845,7 +1847,8 @@ open class PaymentViewModel @Inject constructor(
         redeemLoyaltyInfo: RedeemLoyaltyInfo?,
         globalUID: String = "",
         refNum: String = "",
-        extData: String = ""
+        extData: String = "",
+        cardLastDigits: String = ""
     ): PaymentAttributes {
         return PaymentAttributes().apply {
 //            if (isUpdateOrder)
@@ -1923,6 +1926,7 @@ open class PaymentViewModel @Inject constructor(
             ext_data = extData
             global_uniq_id = globalUID
             ref_num = refNum
+            cardNumber = cardLastDigits.ifEmpty { "" }
 
             magensa_response = magensaResponse.toString()
             cashDiscountFee = 0.0

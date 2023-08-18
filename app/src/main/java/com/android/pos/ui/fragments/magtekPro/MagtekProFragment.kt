@@ -1,7 +1,6 @@
 package com.android.pos.ui.fragments.magtekPro
 
 import android.Manifest
-import android.app.Dialog
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
@@ -11,8 +10,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.databinding.DataBindingUtil
@@ -43,11 +40,13 @@ import com.magtek.mobile.android.mtusdk.*
 import com.pax.poslink.*
 import com.pax.poslink.broadpos.BroadPOSCommunicator
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.io.File
 import javax.inject.Inject
 
 
@@ -148,7 +147,7 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
         Log.d("Params: ","srNo $srNo TID $TID")
 
         var call: Call<PosLinkResult>? =
-            apiModule2.getRetrofit2().getPAXDetails(TID, srNo, "")
+            apiModule2.getRetrofit2().getPAXDetails("", srNo, "")
         call!!.enqueue(object : Callback<PosLinkResult> {
 
             override fun onResponse(
@@ -274,6 +273,13 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
                     ProgressUtils.dismissProgressDialog()
                     if (result.Msg.toString() == "CONNECT ERROR" || result.Msg.toString() == "TIME OUT"){
                         Toast.makeText(requireContext(), R.string.pax_connect_error, Toast.LENGTH_LONG).show()
+                        /*AlertUtils.showCustomAlertWithListenerWithOKCancel(
+                            requireContext(),
+                            getString(R.string.pax_connect_error), getString(R.string.connect),
+                        )
+                        { _, _ ->
+                            // Add connect to PAX logic
+                        }*/
                     } else {
                         Toast.makeText(requireContext(), "getMerchantDetails Failed ${result.Code} ${result.Msg}", Toast.LENGTH_LONG).show()
                     }
