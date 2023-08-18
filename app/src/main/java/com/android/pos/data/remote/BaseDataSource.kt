@@ -42,7 +42,7 @@ abstract class BaseDataSource {
                 getErrorMessage(
                     "",
                     Int.MAX_VALUE,
-                    message = e.message!!
+                    message = (if (e.message == null) "" else e.message).toString()
                 ), null
             )
         }
@@ -63,17 +63,17 @@ abstract class BaseDataSource {
 
     private fun showNetworkError(errorBody: String): String {
 //                   {"data":{},"type":"Error","status":400,"message":"Invalid Email or Password"}
-        try {
+        return try {
             val jsonObject = JSONObject(errorBody.trim())
             if (jsonObject.has("error")) {
-                return jsonObject.getString("error")
+                jsonObject.getString("error")
             } else {
-                return jsonObject.getString("message")
+                jsonObject.getString("message")
             }
 
         } catch (e: Exception) {
             e.printStackTrace()
-            return "Server Error"
+            "Server Error"
         }
 
     }
