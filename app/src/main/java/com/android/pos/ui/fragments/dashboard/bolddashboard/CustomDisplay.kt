@@ -115,7 +115,7 @@ class CustomDisplay(
     var notPayAnyAmount: Boolean = false
 
     lateinit var tipsListViewModel: TipListViewModel
-    lateinit var activeTipsListAdapter: ActiveTipsListAdapter
+    var activeTipsListAdapter: ActiveTipsListAdapter? = null
 
     private var showCashCreditPrice = false
 
@@ -1310,7 +1310,7 @@ class CustomDisplay(
     ) {
         if (isSplitCase) {
             //clear tip selection in CustomerDisplay
-            activeTipsListAdapter.clearSelectedItem()
+            activeTipsListAdapter?.clearSelectedItem()
             shouldHighlightNoTipLayout(false)
             shouldHighlightOtherTipLayout(false)
         }
@@ -1369,15 +1369,14 @@ class CustomDisplay(
 
             if (it.data?.isNotEmpty() == true) {
 
-                activeTipsListAdapter.clearAll()
+                activeTipsListAdapter?.clearAll()
 
                 it.data.forEach { data ->
                     data.isChecked = false
                 }
-                binding.rvActiveTipsList.layoutManager =
-                    GridLayoutManager(context, it.data.size)
-                activeTipsListAdapter.setList(it.data, wholeTotalPrice)
-                activeTipsListAdapter.setListner(this)
+                binding.rvActiveTipsList.layoutManager = GridLayoutManager(context, it.data.size)
+                activeTipsListAdapter?.setList(it.data, wholeTotalPrice)
+                activeTipsListAdapter?.setListner(this)
                 lifecycleOwner.lifecycleScope.launch {
                     //delay(5000)
                     //binding.rvActiveTipsList.smoothScrollToPosition(tipsList.size - 1)
@@ -1731,7 +1730,7 @@ class CustomDisplay(
             }
 
             binding.otherRootLayout.setOnClickListener {
-                activeTipsListAdapter.clearSelectedItem()
+                activeTipsListAdapter?.clearSelectedItem()
                 showTipKeypad(wholeTotalPrice)
             }
 
