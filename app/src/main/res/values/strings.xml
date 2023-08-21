@@ -299,6 +299,7 @@
     <string name="tv_join_us">Join us for Lunch Wed – Fri 12:00 – 2:30 PM</string>
     <string name="tv_customer_receipt_preview">CUSTOMER RECEIPT PREVIEW</string>
     <string name="tv_customer_receipt">Customer Receipt</string>
+    <string name="tv_print_unpaid_receipt">Print UnPaid Receipt</string>
     <string name="tv_food_cafe">Food Cafe</string>
     <string name="tv_sub_total">Sub Total</string>
     <string name="tv_refund_amount">Refund Amount</string>

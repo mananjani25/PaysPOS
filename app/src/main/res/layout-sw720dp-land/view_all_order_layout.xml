@@ -366,7 +366,7 @@
                     android:background="@drawable/background_txt_selector"
                     android:gravity="center"
                     android:padding="@dimen/_10sdp"
-                    android:text="@string/tv_customer_receipt"
+                    android:text="@string/tv_print_unpaid_receipt"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_7mdpi"
                     app:textAllCaps="false" />
