@@ -316,11 +316,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         if (this::presentation.isInitialized) {
             presentation.show()
             presentation.onDisplayChanged()
-//            val finalPaidAmount =
-//                binding.txtPaymentAmount.text.toString().replace(" payment successful", "")
-//                    .replace("$", "").toDouble()
-            Log.d("###RCB", "onResume TOTAL AMOUNT: ${receiptModel?.order?.totalAmount}")
-            val finalPaidAmount = receiptModel?.order?.totalAmount ?: 0.0
+
+            val finalPaidAmount: Double = if(isCustomCash){
+                MethodUtils.roundOffAmountDown(paidAmount)
+            }else{
+                MethodUtils.roundOffAmountDown(paidAmount + tipAmount)
+            }
+
             if (prefProvider.getValueboolean(Constants.TIP_ADDED, false)) {
                 prefProvider.setValueboolean(Constants.TIP_ADDED, false)
                 presentation.showThankYou(finalPaidAmount)
@@ -439,7 +441,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             receiptModel = requireArguments().getParcelable("receiptData")
             giftCardReceiptModel = requireArguments().getParcelable("giftCardReceiptData")
             receiptModelForOpenORder = requireArguments().getParcelable("receiptData")
-            Log.e(TAG, "checkreceiptModel:   ${Gson().toJson(receiptModel)}")
             splitValue = requireArguments().getInt("splitValue")
             isSpilt = requireArguments().getBoolean("isSpilt")
             isSplitByNo = requireArguments().getBoolean("isSplitByNo")
@@ -448,9 +449,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             paymentType = requireArguments().getString("paymentType", "")
             dis_charge_value = requireArguments().getDouble("dis_charge_value", 0.0)
 
-            // paidAmount = paidAmount - tipAmount
         }
-        LogUtil.logE(TAG, "receiptModel:  ${Gson().toJson(receiptModel)}")
         setLabelData()
 
         binding.edtEmail.setOnFocusChangeListener { v, hasFocus ->
@@ -488,7 +487,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     remainingAmount
                 )
                 binding.txtTitle.text =
-                    MethodUtils.roundOffAmount(paidAmount + tipAmount)
+                    MethodUtils.roundOffAmountDown(
+                        paidAmount + tipAmount
+                    ).toDouble().toPrecision(2)
 
 
                 LogUtil.logE(TAG, "paymentpaidAmount  ${paidAmount}")
@@ -536,7 +537,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         binding.txtPaymentAmount.text =
                             "" + MainApplication.getInstance()!!
                                 .getText(R.string.symbole) + MethodUtils.roundOffAmountDown(
-                                paidAmount + tipAmount
+                                paidAmount
                             ).toDouble().toPrecision(2) + " payment successful"
 
                         LogUtil.logE("Change 2", binding.txtChangeAmount.text.toString())
@@ -602,7 +603,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 viewModel.deleteSplitDb()
                 if (isCustomCash) {
                     binding.txtTitle.text =
-                        MethodUtils.roundOffAmount(paidAmount)
+                        MethodUtils.roundOffAmountDown(paidAmount)
+                            .toDouble().toPrecision(2)
                     binding.txtPaymentAmount.text =
                         "" + MainApplication.getInstance()!!
                             .getText(R.string.symbole) + MethodUtils.roundOffAmountDown(paidAmount)
@@ -610,7 +612,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 } else {
                     binding.txtTitle.text =
-                        MethodUtils.roundOffAmount(paidAmount + tipAmount)
+                        MethodUtils.roundOffAmountDown(paidAmount + tipAmount)
+                            .toDouble().toPrecision(2)
                     binding.txtPaymentAmount.text =
                         "" + MainApplication.getInstance()!!
                             .getText(R.string.symbole) + MethodUtils.roundOffAmountDown(paidAmount + tipAmount)
@@ -671,7 +674,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     remainingAmount
                 )
                 binding.txtTitle.text =
-                    MethodUtils.roundOffAmount(paidAmount + tipAmount)
+                    MethodUtils.roundOffAmountDown(
+                        paidAmount + tipAmount
+                    ).toDouble().toPrecision(2)
 
                 if (remainingAmount < paidAmount) {
                     if (isCustomCash && splitChange != 0.0) {
@@ -759,7 +764,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     requireContext().getDrawable(R.drawable.background_square_border_grey)
                 viewModel.deleteSplitDb()
                 binding.txtTitle.text =
-                    MethodUtils.roundOffAmount(paidAmount + tipAmount)
+                    MethodUtils.roundOffAmountDown(paidAmount + tipAmount)
+                        .toDouble().toPrecision(2)
 
                 if (isCustomCash) {
                     changeAmtGlobal = MethodUtils.roundOffAmountDouble(remainingAmount - tipAmount)
@@ -5855,12 +5861,38 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
 
             if (receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.paymentType?.lowercase() == "Card".lowercase()) {
-                PrintSunmiUtils.normalTextTest(receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardName.toString())
-                PrintSunmiUtils.normalTextTest(receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardType.toString())
-                PrintSunmiUtils.normalTextTest(receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardNumber.toString())
+                val str12 = padLine(
+                    "" ,
+                    receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardName.toString(),
+                    if (customerSettingModel.fonts == LARGE) 23 else 48
+                ).toString()
 
+                if(!str12.isNullOrBlank()) {
+                    PrintSunmiUtils.normalTextTest(str12)
+                    SunmiPrintHelper.getInstance().lineWrap(1)
+                }
+
+                val str13 = padLine(
+                    "" ,
+                    receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardType.toString(),
+                    if (customerSettingModel.fonts == LARGE) 23 else 48
+                ).toString()
+
+                if(!str13.isNullOrBlank()) {
+                    PrintSunmiUtils.normalTextTest(str13)
+                    SunmiPrintHelper.getInstance().lineWrap(1)
+                }
+                val str14 = padLine(
+                    "" ,
+                    receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardNumber.toString(),
+                    if (customerSettingModel.fonts == LARGE) 23 else 48
+                ).toString()
+
+                if(!str14.isNullOrBlank()) {
+                    PrintSunmiUtils.normalTextTest(str14)
+                    SunmiPrintHelper.getInstance().lineWrap(1)
+                }
             }
-
 
             if (getDineInOrderDetails?.note != null && getDineInOrderDetails?.note != "" && customerSettingModel.showOrderNote) {
 
@@ -6386,7 +6418,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     if (it.data != null && isPrint == true) {
                         val customerList = it.data
 
-                        Log.e(TAG,"IS_GIFT_CARD_TYPE:  ${IS_GIFT_CARD_TYPE}")
                         if (IS_GIFT_CARD_TYPE) {
                             customerList.forEach {
                                 if (it.status) {
@@ -6511,11 +6542,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         if(IS_GIFT_CARD_TYPE){
                             generatePrintForGiftCard(customerReceiptPrinters, type)
                         }else{
-                            generatePrint(customerReceiptPrinters, type,isAutoPrint)
+                            if(customerReceiptPrinters.status) {
+                                generatePrint(customerReceiptPrinters, type, isAutoPrint)
+                            }
                         }
-
                     }
-
                 } catch (e: Exception) {
                     pd.dismiss()
                     e.printStackTrace()
@@ -7405,26 +7436,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 Builder.COLOR_1
             )
 
-            var newPaidAmount = paidAmount
-            if (MethodUtils.roundOffAmountDouble(paidAmount + tipAmount) == MethodUtils.roundOffAmountDouble(
-                    (receiptModel?.order?.payments?.get(
-                        receiptModel?.order?.payments?.size?.minus(1) ?: 0
-                    )?.amount ?: 0.0).plus(
-                        (receiptModel?.order?.payments?.get(
-                            receiptModel?.order?.payments?.size?.minus(
-                                1
-                            ) ?: 0
-                        )?.tips ?: 0.0)
-                    ) ?: 0.0
-                )
-            ) {
-                newPaidAmount = paidAmount + tipAmount
+            val newPaidAmount = if(isCustomCash){
+                paidAmount
+            } else {
+                paidAmount + tipAmount
             }
-
-            if (isSpilt) {
-                newPaidAmount = paidAmount + tipAmount
-            }
-            LogUtil.logE("ToCheck", "PaidAmount ${newPaidAmount}")
 
             builder.addText(
                 padLine(
@@ -10330,7 +10346,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     }
 
-
     private fun generateKitchenReceiptSunmiInner(kitchenReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
                                                  type: String) {
         try {
@@ -10464,7 +10479,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         }
 
     }
-
 
     private fun generateQRCode(qrcodeStaticUrl: String): Bitmap {
 
@@ -11487,28 +11501,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             }
 
-
-            var newPaidAmount = paidAmount
-            if (MethodUtils.roundOffAmountDouble(paidAmount + tipAmount) == MethodUtils.roundOffAmountDouble(
-                    (receiptModel?.order?.payments?.get(
-                        receiptModel?.order?.payments?.size?.minus(1) ?: 0
-                    )?.amount ?: 0.0).plus(
-                        (receiptModel?.order?.payments?.get(
-                            receiptModel?.order?.payments?.size?.minus(
-                                1
-                            ) ?: 0
-                        )?.tips ?: 0.0)
-                    ) ?: 0.0
-                )
-            ) {
-                newPaidAmount = paidAmount + tipAmount
+            val newPaidAmount = if(isCustomCash){
+                paidAmount
+            } else {
+                paidAmount + tipAmount
             }
-
-            if (isSpilt) {
-                newPaidAmount = paidAmount + tipAmount
-            }
-            LogUtil.logE("ToCheck", "PaidAmount ${newPaidAmount}")
-
 
             val str6 = padLine(
                 "Paid Amount",
@@ -11942,21 +11939,16 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             PrintSunmiUtils.normalText(str2)
 
             if (receiptModel?.order?.totalTaxAmount != null) {
-
-
                 val str3 = padLine(
                     "Tax",
                     "$" + MethodUtils.roundOffAmountString(receiptModel?.order?.totalTaxAmount!!),
                     if (customerSettingModel.fonts == LARGE) 23 else 48
                 ).toString()
                 PrintSunmiUtils.normalText(str3)
-
             }
 
             if (receiptModel?.order?.totalServiceCharges != null && (receiptModel?.order?.serviceChargeEnabled == true) && prefProvider.getValueboolean(
                     Constants.SERVICECHARGE_TAKEOUT_OPENORDER, false)) {
-
-
                 val str4 = padLine(
                     "Service Charge",
                     "$" + MethodUtils.roundOffAmountString(receiptModel?.order?.totalServiceCharges!!),
@@ -11974,7 +11966,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     if (customerSettingModel.fonts == LARGE) 23 else 48
                 ).toString()
                 PrintSunmiUtils.normalText(str8)
-
             }
 
             if (customerSettingModel.showCashDisSurCharg) {
@@ -11984,10 +11975,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         receiptModel?.order?.payments?.size!! - 1
                     )?.cash_discount_type?.lowercase() == "SurCharge".lowercase()
                 ) {
-
                     if (receiptModel?.order?.totalCashDiscountFee != null) {
-
-
                         val str8 = padLine(
                             "SurCharge",
                             "$" + MethodUtils.roundOffAmountString(
@@ -11997,17 +11985,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             ), if (customerSettingModel.fonts == LARGE) 23 else 48
                         ).toString()
                         PrintSunmiUtils.normalText(str8)
-
                     }
-
-
                 } else if (receiptModel?.order?.payments?.isNotEmpty() == true && receiptModel?.order?.payments?.get(
                         receiptModel?.order?.payments?.size!! - 1
                     )?.cash_discount_type?.lowercase() == "CashDiscount".lowercase()
                 ) {
-
                     if (receiptModel?.order?.totalCashDiscountFee != null) {
-
                         val str8 = padLine(
                             "Cash Discount",
                             if (receiptModel?.order?.totalCashDiscountFee == 0.0) {
@@ -12025,20 +12008,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             }, if (customerSettingModel.fonts == LARGE) 23 else 48
                         ).toString()
                         PrintSunmiUtils.normalText(str8)
-
-
                     }
                 }
             }
 
-
-
-
             if (receiptModel?.order?.payments?.isNotEmpty() == true) {
                 if (receiptModel?.order?.payments?.get(0)?.isLoyaltyApplied == true && receiptModel?.order?.payments!![0].loyaltyUSedPoints != 0) {
                     if (receiptModel?.order?.loyaltyAmount != 0.0) {
-
-
                         val str8 = padLine(
                             "Used Loyalty Amount",
                             "-$" + receiptModel?.order?.loyaltyAmount?.let {
@@ -12048,23 +12024,16 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             }, if (customerSettingModel.fonts == LARGE) 23 else 48
                         ).toString()
                         PrintSunmiUtils.normalText(str8)
-
                     }
-
-
                     val str8 = padLine(
                         "Used Loyalty Points",
                         receiptModel?.order?.payments!![0].loyaltyUSedPoints.toString(),
                         if (customerSettingModel.fonts == LARGE) 23 else 48
                     ).toString()
                     PrintSunmiUtils.normalText(str8)
-
                 }
             }
-
-
             var totalfamount = 0.0
-
             if (receiptModel?.order?.totalAmount != null) {
                 SunmiPrintHelper.getInstance().lineWrap(1)
 
@@ -12079,7 +12048,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         )
                     //PLZCHECK
                     if (receiptModel?.order?.cash_discount_type?.lowercase() == "CashDiscount".lowercase()) {
-
                         val str5 = padLine(
                             "Total Price",
                             "$" + MethodUtils.roundOffAmountString(
@@ -12088,28 +12056,20 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                 )?.cash_discount_or_surcharge ?: 0.0)
                             ), if (customerSettingModel.fonts == LARGE) 23 else 48
                         ).toString()
-
                         PrintSunmiUtils.boldText(str5)
-
-
                         totalfamount = MethodUtils.roundOffAmountDouble(
                             finalAmt - (receiptModel?.order?.payments?.get(
                                 receiptModel?.order?.payments?.size?.minus(1) ?: 0
                             )?.cash_discount_or_surcharge ?: 0.0)
                         )
                     } else {
-
-
                         val str5 = padLine(
                             "Total Price",
                             "$" + MethodUtils.roundOffAmountString(finalAmt),
                             if (customerSettingModel.fonts == LARGE) 23 else 48
                         ).toString()
                         PrintSunmiUtils.boldText(str5)
-
-
                         totalfamount = MethodUtils.roundOffAmountDouble(finalAmt)
-
                     }
 
                 } else {
@@ -12163,28 +12123,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             }
 
-
-            var newPaidAmount = paidAmount
-            if (MethodUtils.roundOffAmountDouble(paidAmount + tipAmount) == MethodUtils.roundOffAmountDouble(
-                    (receiptModel?.order?.payments?.get(
-                        receiptModel?.order?.payments?.size?.minus(1) ?: 0
-                    )?.amount ?: 0.0).plus(
-                        (receiptModel?.order?.payments?.get(
-                            receiptModel?.order?.payments?.size?.minus(
-                                1
-                            ) ?: 0
-                        )?.tips ?: 0.0)
-                    ) ?: 0.0
-                )
-            ) {
-                newPaidAmount = paidAmount + tipAmount
+            val newPaidAmount = if(isCustomCash){
+                paidAmount
+            } else {
+                paidAmount + tipAmount
             }
-
-            if (isSpilt) {
-                newPaidAmount = paidAmount + tipAmount
-            }
-            LogUtil.logE("ToCheck", "PaidAmount ${newPaidAmount}")
-
 
             val str6 = padLine(
                 "Paid Amount",
