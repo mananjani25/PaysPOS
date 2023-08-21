@@ -45,6 +45,7 @@ import com.android.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.android.pos.ui.fragments.eGiftCard.GiftCardViewModel
 import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.ui.fragments.magtek.MagtekRequestUtils
+import com.android.pos.ui.fragments.magtek.MagtekViewModel
 import com.android.pos.ui.fragments.magtek.PaymentResponse
 import com.android.pos.ui.fragments.magtekPro.MTParser
 import com.android.pos.ui.fragments.magtekPro.SessionManager
@@ -108,6 +109,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     private val paymentviewModel by activityViewModels<PaymentViewModel>()
     private val giftCardViewModel by activityViewModels<GiftCardViewModel>()
     private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
+    private val magtekProViewModel by viewModels<MagtekViewModel>()
 
     var paymentType = "Cash"
     var cashDiscountSurcharge = 0.0
@@ -226,6 +228,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 //        BroadPOSCommunicator.startListeningService()
 
         initPOSLink()
+        getMerchantDataObserver()
 //        setCommSetting()
 
         return binding.root
@@ -2163,13 +2166,43 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 CoroutineScope(Dispatchers.Main).launch {
                     ProgressUtils.dismissProgressDialog()
                     if (result.Msg.toString() == "CONNECT ERROR" || result.Msg.toString() == "TIME OUT"){
-                        Toast.makeText(requireContext(), R.string.pax_connect_error, Toast.LENGTH_LONG).show()
+                        AlertUtils.showCustomAlertWithListenerWithOKCancel(
+                            requireContext(),
+                            getString(R.string.pax_connect_error), getString(R.string.reconnect),
+                        )
+                        { _, _ ->
+                            // Add connect to PAX logic
+                            magtekProViewModel.initPOSLink(requireContext())
+                        }
+//                        Toast.makeText(requireContext(), R.string.pax_connect_error, Toast.LENGTH_LONG).show()
                     } else {
                         Toast.makeText(requireContext(), "getMerchantDetails Failed ${result.Code} ${result.Msg}", Toast.LENGTH_LONG).show()
                     }
                 }
             }
 
+        }
+    }
+
+    private fun getMerchantDataObserver() {
+        magtekProViewModel.merchantData.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let { response ->
+                Log.d("merchantData: ","merchantData observe")
+                val resultCode = response.resultCode
+                val status = response.resultTxt
+                val mID = response.VarValue
+                prefProvider.setValueboolean(Constants.IS_PAX_CONNECTED, true)
+                prefProvider.setValue(
+                    Constants.MERCHANT_ID,
+                    mID
+                )
+                CoroutineScope(Dispatchers.Main).launch {
+                    ProgressUtils.dismissProgressDialog()
+                    makePaxPaymentRequest()
+//                    AlertUtils.showCustomAlert(requireContext(), "Merchant $mID is connected successfully")
+                }
+                Log.d("Merchant Details: ", mID + " " + resultCode + "  " + status)
+            }
         }
     }
 

@@ -41,6 +41,7 @@ import com.android.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
 import com.android.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.ui.fragments.magtek.MagtekRequestUtils
+import com.android.pos.ui.fragments.magtek.MagtekViewModel
 import com.android.pos.ui.fragments.magtek.PaymentResponse
 import com.android.pos.utils.*
 import com.android.pos.utils.callback.ItemCallback
@@ -124,6 +125,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
     private lateinit var presentation: CustomDisplay
     private val passcodeViewModel by activityViewModels<PasscodeViewModel>()
     private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
+    private val magtekProViewModel by viewModels<MagtekViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -172,6 +174,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
         binding.includeView.spTransactionTypes.onItemSelectedListener = this
         setUpTipTypeSpinnerAdapter()
         initPOSLink()
+        getMerchantDataObserver()
 
 
         startTime = TimePickerDialog.OnTimeSetListener { view, hour, minute ->
@@ -390,6 +393,28 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
             })
     }
 
+    private fun getMerchantDataObserver() {
+        magtekProViewModel.merchantData.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let { response ->
+                Log.d("merchantData: ","merchantData observe")
+                val resultCode = response.resultCode
+                val status = response.resultTxt
+                val mID = response.VarValue
+                prefProvider.setValueboolean(Constants.IS_PAX_CONNECTED, true)
+                prefProvider.setValue(
+                    Constants.MERCHANT_ID,
+                    mID
+                )
+                CoroutineScope(Dispatchers.Main).launch {
+                    ProgressUtils.dismissProgressDialog()
+                    adjustPaxTips()
+//                    AlertUtils.showCustomAlert(requireContext(), "Merchant $mID is connected successfully")
+                }
+                Log.d("Merchant Details: ", mID + " " + resultCode + "  " + status)
+            }
+        }
+    }
+
     private fun adjustPaxTips() {
         GlobalScope.launch {
             posLink.SetCommSetting(SettingINI.getCommSettingFromFile(FILE_PATH + SettingINI.FILENAME))
@@ -450,7 +475,15 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                 CoroutineScope(Dispatchers.Main).launch {
                     ProgressUtils.dismissProgressDialog()
                     if (result.Msg.toString() == "CONNECT ERROR" || result.Msg.toString() == "TIME OUT"){
-                        Toast.makeText(requireContext(), R.string.pax_connect_error, Toast.LENGTH_LONG).show()
+                        AlertUtils.showCustomAlertWithListenerWithOKCancel(
+                            requireContext(),
+                            getString(R.string.pax_connect_error), getString(R.string.reconnect),
+                        )
+                        { _, _ ->
+                            // Add connect to PAX logic
+                            magtekProViewModel.initPOSLink(requireContext())
+                        }
+//                        Toast.makeText(requireContext(), R.string.pax_connect_error, Toast.LENGTH_LONG).show()
                     } else {
                         Toast.makeText(requireContext(), "getMerchantDetails Failed ${result.Code} ${result.Msg}", Toast.LENGTH_LONG).show()
                     }

@@ -62,6 +62,7 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
     lateinit var commSetting: CommSetting
     private lateinit var mPaymentRequest: PaymentRequest
     private var posLink: PosLink = PosLink()
+
     @Inject
     lateinit var apiModule2: ApiModule2
 
@@ -92,9 +93,10 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
         binding.tvPax.setOnClickListener {
-            initPOSLink()
+//            initPOSLink()
 //            connectBP()
-            paxNetworkCall()
+//            paxNetworkCall()
+            viewModel.initPOSLink(requireContext())
         }
 
         binding.tvDisconnectPax.setOnClickListener {
@@ -104,10 +106,10 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
             binding.tvPax.visibility = View.VISIBLE
         }
 
-        if(prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)){
+        if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)) {
             binding.tvDisconnectPax.visibility = View.VISIBLE
             binding.tvPax.visibility = View.GONE
-        }else{
+        } else {
             binding.tvDisconnectPax.visibility = View.GONE
             binding.tvPax.visibility = View.VISIBLE
         }
@@ -117,15 +119,40 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
         setup()
         setupAdapter()
         syncDevices()
+        getMerchantDataObserver()
 
         return binding.root
     }
 
-    private fun connectBP(){
+    private fun getMerchantDataObserver() {
+        viewModel.merchantData.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let { response ->
+                Log.d("merchantData: ","merchantData observe")
+                val resultCode = response.resultCode
+                val status = response.resultTxt
+                val mID = response.VarValue
+                prefProvider.setValue(
+                    Constants.MERCHANT_ID,
+                    mID
+                )
+                CoroutineScope(Dispatchers.Main).launch {
+                    ProgressUtils.dismissProgressDialog()
+                    AlertUtils.showCustomAlert(requireContext(), "Merchant $mID is connected successfully")
+                    binding.tvDisconnectPax.visibility = View.VISIBLE
+                    binding.tvPax.visibility = View.GONE
+                }
+                prefProvider.setValueboolean(Constants.IS_PAX_CONNECTED, true)
+                Log.d("Merchant Details: ", mID + " " + resultCode + "  " + status)
+            }
+        }
+    }
+
+    private fun connectBP() {
         BroadPOSCommunicator.getInstance(activity)
             .startListeningService(object : BroadPOSCommunicator.StartListenerCallBack {
                 override fun onSuccess() {
-                    Toast.makeText(context, "Successful StartListenerCallBack", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Successful StartListenerCallBack", Toast.LENGTH_SHORT)
+                        .show()
                 }
 
                 override fun onFail(msg: String) {
@@ -144,7 +171,7 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
             Constants.PAX_TERMINAL_ID,
             ""
         )
-        Log.d("Params: ","srNo $srNo TID $TID")
+        Log.d("Params: ", "srNo $srNo TID $TID")
 
         var call: Call<PosLinkResult>? =
             apiModule2.getRetrofit2().getPAXDetails("", srNo, "")
@@ -156,7 +183,10 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
             ) {
 //                ProgressUtils.dismissProgressDialog()
                 if (response.isSuccessful) {
-                    LogUtil.logE("onResponse", response.body().toString() + response.body()!!.ipAddress)
+                    LogUtil.logE(
+                        "onResponse",
+                        response.body().toString() + response.body()!!.ipAddress
+                    )
                     var ipAddress = response.body()!!.ipAddress
                     var port = response.body()!!.port
                     prefProvider.setValue(
@@ -194,7 +224,7 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
             object : AppThreadPool.FinishInMainThreadCallback<PosLink?> {
                 override fun onFinish(result: PosLink?) {
                     posLink = result!!
-                    Log.d("initPOSLink: ","onFinish")
+                    Log.d("initPOSLink: ", "onFinish")
                 }
             })
     }
@@ -203,11 +233,11 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
         //create commsetting object
 
         var file = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-        val iniFile = "/storage/emulated/0/Download/"+ SettingINI.FILENAME
+        val iniFile = "/storage/emulated/0/Download/" + SettingINI.FILENAME
         /*val iniFile =
             activity!!.applicationContext.filesDir.absolutePath + "/" + SettingINI.FILENAME*/
         val commset: CommSetting = SettingINI.getCommSettingFromFile(iniFile)
-        Log.d("iniFile: ","iniFile $iniFile ${file.absolutePath}")
+        Log.d("iniFile: ", "iniFile $iniFile ${file.absolutePath}")
 
         //initialization value  for comsetting's attribute
         commset.type = CommSetting.TCP
@@ -235,7 +265,7 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
     // Get merchant details from pax
     private fun getMerchantDetails() {
         GlobalScope.launch {
-            Log.d("manageRequest ","Start")
+            Log.d("manageRequest ", "Start")
             val manageRequest = ManageRequest()
 //            manageRequest.TransType = manageRequest.ParseTransType("INIT")
             manageRequest.TransType = manageRequest.ParseTransType("GETVAR")
@@ -261,7 +291,10 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
                 )
                 CoroutineScope(Dispatchers.Main).launch {
                     ProgressUtils.dismissProgressDialog()
-                    AlertUtils.showCustomAlert(requireContext(), "Merchant $mID is connected successfully")
+                    AlertUtils.showCustomAlert(
+                        requireContext(),
+                        "Merchant $mID is connected successfully"
+                    )
                     binding.tvDisconnectPax.visibility = View.VISIBLE
                     binding.tvPax.visibility = View.GONE
                 }
@@ -271,17 +304,18 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
             } else {
                 CoroutineScope(Dispatchers.Main).launch {
                     ProgressUtils.dismissProgressDialog()
-                    if (result.Msg.toString() == "CONNECT ERROR" || result.Msg.toString() == "TIME OUT"){
-                        Toast.makeText(requireContext(), R.string.pax_connect_error, Toast.LENGTH_LONG).show()
-                        /*AlertUtils.showCustomAlertWithListenerWithOKCancel(
+                    if (result.Msg.toString() == "CONNECT ERROR" || result.Msg.toString() == "TIME OUT") {
+//                        Toast.makeText(requireContext(), R.string.pax_connect_error, Toast.LENGTH_LONG).show()
+                        AlertUtils.showCustomAlert(
                             requireContext(),
-                            getString(R.string.pax_connect_error), getString(R.string.connect),
+                            getString(R.string.pax_connect_error)
                         )
-                        { _, _ ->
-                            // Add connect to PAX logic
-                        }*/
                     } else {
-                        Toast.makeText(requireContext(), "getMerchantDetails Failed ${result.Code} ${result.Msg}", Toast.LENGTH_LONG).show()
+                        Toast.makeText(
+                            requireContext(),
+                            "getMerchantDetails Failed ${result.Code} ${result.Msg}",
+                            Toast.LENGTH_LONG
+                        ).show()
                     }
                 }
             }
@@ -320,7 +354,11 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
             } else {
                 CoroutineScope(Dispatchers.Main).launch {
                     ProgressUtils.dismissProgressDialog()
-                    Toast.makeText(requireContext(), "Payment Failed ${result.Code} ${result.Msg}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        requireContext(),
+                        "Payment Failed ${result.Code} ${result.Msg}",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             }
         }
@@ -379,9 +417,9 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
 
         binding.txtHome.setOnClickListener {
             if (findNavController().currentDestination?.id == R.id.magtekProFragment) {
-                if(prefProvider.getValue(REDIRECT_FROM, "") == MANUAL_SALE) {
+                if (prefProvider.getValue(REDIRECT_FROM, "") == MANUAL_SALE) {
                     findNavController().navigate(R.id.action_magtekProFragment_to_manualSalesNew)
-                }else {
+                } else {
                     findNavController().navigate(R.id.action_magtekProFragment_to_dashboardCategoryBoldPOS)
                 }
             }

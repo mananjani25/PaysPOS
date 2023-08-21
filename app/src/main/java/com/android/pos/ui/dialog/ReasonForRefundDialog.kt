@@ -28,6 +28,7 @@ import com.android.pos.di.ApiModule1
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.fragments.magtek.MagtekRequestUtils
+import com.android.pos.ui.fragments.magtek.MagtekViewModel
 import com.android.pos.ui.fragments.magtek.PaymentResponse
 import com.android.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.android.pos.ui.fragments.transactions.TransactionDetailsViewModel
@@ -72,6 +73,7 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
     private lateinit var binding: DialogRefundReasonBinding
     private lateinit var refundData: RefundRequestModel
     private val viewModel by viewModels<TransactionDetailsViewModel>()
+    private val magtekProViewModel by viewModels<MagtekViewModel>()
     private var woyouService: IWoyouService? = null
 
     // PAX variables
@@ -154,6 +156,7 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
 
         //POSLink initialization for PAX
         initPOSLink()
+        getMerchantDataObserver()
 
         return binding.root
     }
@@ -169,6 +172,28 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
             })
     }
 
+    private fun getMerchantDataObserver() {
+        magtekProViewModel.merchantData.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let { response ->
+                Log.d("merchantData: ","merchantData observe")
+                val resultCode = response.resultCode
+                val status = response.resultTxt
+                val mID = response.VarValue
+                prefProvider.setValueboolean(Constants.IS_PAX_CONNECTED, true)
+                prefProvider.setValue(
+                    Constants.MERCHANT_ID,
+                    mID
+                )
+                CoroutineScope(Dispatchers.Main).launch {
+                    ProgressUtils.dismissProgressDialog()
+                    refundViaPAX()
+//                    AlertUtils.showCustomAlert(requireContext(), "Merchant $mID is connected successfully")
+                }
+                Log.d("Merchant Details: ", mID + " " + resultCode + "  " + status)
+            }
+        }
+    }
+
     private fun refundViaPAX() {
         if (refundAmount != 0.0 || refundAmount > 0.0) {
             if (paymentType == "Card") {
@@ -182,6 +207,7 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                     val refund = PaymentRequest()
                     refund.TenderType = refund.ParseTenderType("CREDIT")
                     refund.TransType = refund.ParseTransType("RETURN")
+//                    refund.ExtData = "<Token>$amt</Token>"
 
                     refund.Amount = amt.toString()
                     posLink.PaymentRequest = refund
@@ -210,11 +236,19 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                         CoroutineScope(Dispatchers.Main).launch {
                             ProgressUtils.dismissProgressDialog()
                             if (result.Msg.toString() == "CONNECT ERROR" || result.Msg.toString() == "TIME OUT") {
-                                Toast.makeText(
+                                AlertUtils.showCustomAlertWithListenerWithOKCancel(
+                                    requireContext(),
+                                    getString(R.string.pax_connect_error), getString(R.string.reconnect),
+                                )
+                                { _, _ ->
+                                    // Add connect to PAX logic
+                                    magtekProViewModel.initPOSLink(requireContext())
+                                }
+                            /*Toast.makeText(
                                     requireContext(),
                                     R.string.pax_connect_error,
                                     Toast.LENGTH_LONG
-                                ).show()
+                                ).show()*/
                             } else {
                                 Toast.makeText(
                                     requireContext(),
