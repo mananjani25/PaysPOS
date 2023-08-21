@@ -61,13 +61,19 @@ import com.android.pos.databinding.FragmentPrinterBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.PrinterListAdapter
-import com.android.pos.utils.*
+import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.LogUtil
+import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.MethodUtils.Companion.getSaltString
+import com.android.pos.utils.PrintSunmiUtils
+import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.addHorizontalKitchenLine
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.runOnUiThread
 import com.android.pos.utils.extensions.setOnSingleClickListener
 import com.android.pos.utils.extensions.visible
+import com.android.pos.utils.padLine
 import com.android.pos.utils.printer.PrinterClass
 import com.android.pos.utils.printer.PrinterClass.SEND_TIMEOUT
 import com.android.pos.utils.printer.PrinterClass.language
@@ -1470,8 +1476,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
             } else {
 
-                printerListModel.deviceModel?.let { sunmiPrinterInit(it.ipAddress) }
-            }
+            printerListModel.deviceModel?.let { sunmiPrinterInit(it.ipAddress) }
 
         } else if (printerListModel.printerName?.startsWith("Printer", true) == true) {
             if (prefProvider?.getValueboolean(
@@ -1567,12 +1572,12 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         Log.e(TAG, "CheckTestSunmiLAN")
 
 
-        var cloudPrinter = createCloudPrinter(
-            printerListModel.deviceModel?.macAddress ?: "",
+
+        var cloudPrinter = CloudPrinter(
+            printerListModel.printerName,
+            printerListModel.deviceModel?.macAddress,
             9100
         )
-
-
         cloudPrinter.connect(requireContext(),
             object : com.sunmi.externalprinterlibrary2.ConnectCallback {
                 override fun onConnect() {
@@ -2065,12 +2070,16 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     }
 
     override fun onDeletePrinter(printerListModel: PrinterListModel) {
+
         if (printerListModel.type.lowercase() == KITCHENANDCUSTOMER.lowercase()) {
             if (printerListModel.currentPrinterType == KITCHEN) {
                 deletePrinter(printerListModel.id!!, CUSTOMER)
+
             } else {
                 deletePrinter(printerListModel.id!!, KITCHEN)
+
             }
+
         } else {
             deletePrinter(printerListModel.id!!)
         }

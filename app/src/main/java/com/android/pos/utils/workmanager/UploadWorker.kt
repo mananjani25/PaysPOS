@@ -57,6 +57,7 @@ import com.sunmi.externalprinterlibrary2.ResultCallback
 import com.sunmi.externalprinterlibrary2.StatusCallback
 import com.sunmi.externalprinterlibrary2.printer.CloudPrinter
 import com.sunmi.externalprinterlibrary2.printer.CloudPrinterBuilder
+import com.sunmi.externalprinterlibrary2.printer.CloudPrinter
 import com.sunmi.externalprinterlibrary2.style.AlignStyle
 import com.sunmi.externalprinterlibrary2.style.CloudPrinterStatus
 import com.sunmi.externalprinterlibrary2.style.UnderlineStyle
@@ -1970,38 +1971,38 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
                                 } else {
 
-                                    //   delay(3000)
-                                    val params = JsonObject()
-                                    params.addProperty("id", locationId)
-                                    params.addProperty(
-                                        "url",
-                                        baseUrl + CREATE_QUEUE_PRINTER_PHASE3
-                                    )
-                                    Log.e(
-                                        TAG,
-                                        "checkReuestURL: ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}  locationID: ${locationId}"
-                                    )
-                                    subscription?.perform("received", params)
-                                }
+                                     //   delay(3000)
+                                        val params = JsonObject()
+                                        params.addProperty("id", locationId)
+                                        params.addProperty(
+                                            "url",
+                                            baseUrl + CREATE_QUEUE_PRINTER_PHASE3
+                                        )
+                                        Log.e(
+                                            TAG,
+                                            "checkReuestURL: ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}  locationID: ${locationId}"
+                                        )
+                                        subscription?.perform("received", params)
+                                    }
 
 
                             } else {
 
                                 currentOrderIndex = currentOrderIndex + 1
 
-                                sendDataToPrintToSunmi(
-                                    listOfPrintersData,
-                                    currentPrinterIndex,
-                                    printerObjList.get(
-                                        listOfPrintersData.get(
-                                            currentPrinterIndex
-                                        ).macAddress
-                                    ) as CloudPrinter?,
-                                    listOfPrintersData.get(currentPrinterIndex).printerQueueModelList,
-                                    listOfPrintersData.get(currentPrinterIndex).macAddress,
-                                    currentOrderIndex
+                                    sendDataToPrintToSunmi(
+                                        listOfPrintersData,
+                                        currentPrinterIndex,
+                                        printerObjList.get(
+                                            listOfPrintersData.get(
+                                                currentPrinterIndex
+                                            ).macAddress
+                                        ) as CloudPrinter?,
+                                        listOfPrintersData.get(currentPrinterIndex).printerQueueModelList,
+                                        listOfPrintersData.get(currentPrinterIndex).macAddress,
+                                        currentOrderIndex
 
-                                )
+                                    )
 
 
                             }
@@ -2468,10 +2469,23 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
 
                 }
+                if (obj.orderItems.get(i).note != null && obj.orderItems.get(i).note.isNotEmpty()) {
+                    cloudPrinter?.printText("  Note:" + obj.orderItems.get(i).note)
+                }
+
             }
         }
 
+        Log.e(TAG, "customerName:  ${obj.customerName}")
         if (obj.orderType != DINE_IN && obj.customerName != null && obj.customerName.isNotEmpty()) {
+            cloudPrinter?.let { addDoubleDotLineForSunmiQueue(it) }
+            cloudPrinter?.printText(obj.customerName)
+            if (obj.customerPhoneNo.isNotEmpty()) {
+                cloudPrinter?.printText(obj.customerPhoneNo)
+            }
+            if (obj.customerAddress.isNotEmpty()) {
+                cloudPrinter?.printText(obj.customerAddress)
+            }
 
 
         }
