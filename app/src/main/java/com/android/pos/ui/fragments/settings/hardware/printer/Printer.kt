@@ -55,7 +55,7 @@ import com.android.pos.data.remote.Constants.PRINTER
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.data.remote.Constants.WIFI
-import com.android.pos.data.remote.Constants.createCloudPrinter
+import com.android.pos.data.remote.Constants.createCloudPrinterWithName
 import com.android.pos.data.remote.Constants.getCurrentTimeFromTimeZone
 import com.android.pos.databinding.FragmentPrinterBinding
 import com.android.pos.di.PrefProvider
@@ -373,7 +373,6 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         } catch (ex: IOException) {
             ex.printStackTrace()
         }
-
 
 
         //mFilterOption?.setEpsonFilter(Discovery.FILTER_NAME);
@@ -1476,7 +1475,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
             } else {
 
-            printerListModel.deviceModel?.let { sunmiPrinterInit(it.ipAddress) }
+                printerListModel.deviceModel?.let { sunmiPrinterInit(it.ipAddress) }
+            }
 
         } else if (printerListModel.printerName?.startsWith("Printer", true) == true) {
             if (prefProvider?.getValueboolean(
@@ -1572,10 +1572,9 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         Log.e(TAG, "CheckTestSunmiLAN")
 
 
-
-        var cloudPrinter = CloudPrinter(
-            printerListModel.printerName,
-            printerListModel.deviceModel?.macAddress,
+        var cloudPrinter: CloudPrinter = createCloudPrinterWithName(
+            printerListModel?.printerName ?: "",
+            printerListModel.deviceModel?.macAddress ?: "",
             9100
         )
         cloudPrinter.connect(requireContext(),
@@ -1938,8 +1937,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                               syncPrinterList()
                           },1000)*/
 
-                    viewModel.createPrinter(createPrinter)
-                    availableNetworkAdapter.removeItemAt(layoutPosition)
+                        viewModel.createPrinter(createPrinter)
+                        availableNetworkAdapter.removeItemAt(layoutPosition)
 
                     }
 
