@@ -2497,9 +2497,11 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                     isQueueRunning = false
                 } else {
                     try {
-                        cloudPrinter.commitTransBuffer(
-                            this@UploadWorker
-                        )
+
+                            cloudPrinter.commitTransBuffer(
+                                this@UploadWorker
+                            )
+
                     }catch (e:Exception){
                         e.printStackTrace()
                     }
