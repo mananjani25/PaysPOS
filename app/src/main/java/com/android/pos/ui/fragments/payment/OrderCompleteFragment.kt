@@ -399,6 +399,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         Binding()
         setupSnackbar()
         observeShowProgress()
+        prefProvider.setValueboolean(Constants.IS_ADD_VALUE_IN_GIFT_CARD, false)
         tipAmount = requireArguments().getDouble("TipAmount")
         isDineIn = requireArguments().getBoolean("isDineIn")
         if (isDineIn) {
