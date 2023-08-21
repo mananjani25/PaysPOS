@@ -186,8 +186,10 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                     Log.e(TAG, "CloudPrinter  ")
                     for (i in 0 until kitchenPrinterList.size) {
 
-                        var cloudPrinter: CloudPrinter = CloudPrinterBuilder.buildPrinter(  kitchenPrinterList.get(i).modalName,
-                            kitchenPrinterList.get(i).macAddress)
+                        var cloudPrinter: CloudPrinter = CloudPrinterBuilder.buildPrinter(
+                            kitchenPrinterList.get(i).modalName,
+                            kitchenPrinterList.get(i).macAddress
+                        )
                         cloudPrinter.connect(mContext, object : ConnectCallback {
                             override fun onConnect() {
                                 printerObjList.set(
@@ -354,7 +356,8 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                         ).getBoolean(IS_MASTER_TERMINAL, false) == true
                     ) {
 
-                            consumer?.connect()
+                        sendNotification("Please check your Network Connectivity.")
+                        consumer?.connect()
 
 
                     }
@@ -542,9 +545,11 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                                     Constants.SUNMIBRAND
                                 )
                             ) {
-                                var cloudPrinter: CloudPrinter = createCloudPrinterWithName(dataList.get(i).asJsonObject.get("printer_name").asString,
+                                var cloudPrinter: CloudPrinter = createCloudPrinterWithName(
+                                    dataList.get(i).asJsonObject.get("printer_name").asString,
                                     dataList.get(i).asJsonObject.get("mac_address").asString,
-                                    dataList.get(i).asJsonObject.get("port_no").asInt)
+                                    dataList.get(i).asJsonObject.get("port_no").asInt
+                                )
 
 
                                 printerObjList.set(
@@ -1312,7 +1317,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                         currentOrderIndex = 0
                         currentPrinterIndex = 0
                     }
-                    if (listOfPrintersData.get(0).printerName.contains("CloudPrint_",true)) {
+                    if (listOfPrintersData.get(0).printerName.contains("CloudPrint_", true)) {
                         Log.e(TAG, "ActionCableContainSunmi")
                         if (orderSize != 0) {
 
@@ -1961,38 +1966,38 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
                                 } else {
 
-                                     //   delay(3000)
-                                        val params = JsonObject()
-                                        params.addProperty("id", locationId)
-                                        params.addProperty(
-                                            "url",
-                                            baseUrl + CREATE_QUEUE_PRINTER_PHASE3
-                                        )
-                                        Log.e(
-                                            TAG,
-                                            "checkReuestURL: ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}  locationID: ${locationId}"
-                                        )
-                                        subscription?.perform("received", params)
-                                    }
+                                    //   delay(3000)
+                                    val params = JsonObject()
+                                    params.addProperty("id", locationId)
+                                    params.addProperty(
+                                        "url",
+                                        baseUrl + CREATE_QUEUE_PRINTER_PHASE3
+                                    )
+                                    Log.e(
+                                        TAG,
+                                        "checkReuestURL: ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}  locationID: ${locationId}"
+                                    )
+                                    subscription?.perform("received", params)
+                                }
 
 
                             } else {
 
                                 currentOrderIndex = currentOrderIndex + 1
 
-                                    sendDataToPrintToSunmi(
-                                        listOfPrintersData,
-                                        currentPrinterIndex,
-                                        printerObjList.get(
-                                            listOfPrintersData.get(
-                                                currentPrinterIndex
-                                            ).macAddress
-                                        ) as CloudPrinter?,
-                                        listOfPrintersData.get(currentPrinterIndex).printerQueueModelList,
-                                        listOfPrintersData.get(currentPrinterIndex).macAddress,
-                                        currentOrderIndex
+                                sendDataToPrintToSunmi(
+                                    listOfPrintersData,
+                                    currentPrinterIndex,
+                                    printerObjList.get(
+                                        listOfPrintersData.get(
+                                            currentPrinterIndex
+                                        ).macAddress
+                                    ) as CloudPrinter?,
+                                    listOfPrintersData.get(currentPrinterIndex).printerQueueModelList,
+                                    listOfPrintersData.get(currentPrinterIndex).macAddress,
+                                    currentOrderIndex
 
-                                    )
+                                )
 
 
                             }
