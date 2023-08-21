@@ -1717,8 +1717,11 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
                     override fun onFailed(p0: String?) {
                         Log.e(TAG, "checkFailed")
+
                         isQueueRunning = false
                         if (listOfPrintersData.size - 1 == currentPrinterIndex) {
+                            sendNotification("Printer - ${listOfPrintersData[currentPrinterIndex].modelName} is Offline.")
+
                             /*  Log.e(
                                   TAG,
                                   "listOfPrinerData:   ${listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size}"
@@ -1786,6 +1789,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                             }
 
                         } else if (listOfPrintersData.size - 1 > currentPrinterIndex) {
+                            sendNotification("Printer - ${listOfPrintersData[currentPrinterIndex].modelName} is Offline.")
                             /* Log.e(
                                  TAG,
                                  "checkLog: ${currentPrinterIndex}  orderIndex: ${
@@ -2050,7 +2054,9 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
                     override fun onFailed(p0: String?) {
                         Log.e(TAG, "checkFailed")
+
                         if (listOfPrintersData.size - 1 == currentPrinterIndex) {
+                            sendNotification("Printer - ${listOfPrintersData[currentPrinterIndex].modelName} is Offline.")
                             /*  Log.e(
                                   TAG,
                                   "listOfPrinerData:   ${listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size}"
@@ -2118,6 +2124,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                             }
 
                         } else if (listOfPrintersData.size - 1 > currentPrinterIndex) {
+                            sendNotification("Printer - ${listOfPrintersData[currentPrinterIndex].modelName} is Offline.")
                             /* Log.e(
                                  TAG,
                                  "checkLog: ${currentPrinterIndex}  orderIndex: ${
