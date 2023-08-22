@@ -100,7 +100,46 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <RelativeLayout
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_18sdp"
+                android:background="@drawable/background_square_border_grey"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:layout_marginBottom="@dimen/_2sdp"
+                android:padding="@dimen/_4sdp">
+
+
+                <TextView
+                    android:id="@+id/edt1"
+                    android:text="$"
+                    android:textColor="@color/btnColor"
+                    android:gravity="center_vertical"
+                    android:textSize="@dimen/_6sdp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"/>
+
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/edtAmount"
+                    android:text="0.00"
+                    android:layout_toEndOf="@+id/edt1"
+                    android:gravity="center_vertical"
+                    style="@style/CustomFontBold"
+                    android:background="@null"
+                    android:inputType="number"
+                    android:editable="true"
+                    android:maxLength="8"
+                    android:enabled="true"
+                    android:textColor="@color/btnColor"
+                    android:textColorHint="@color/txtColorGray"
+                    android:textSize="@dimen/_6sdp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"/>
+
+
+            </RelativeLayout>
+            <!--<androidx.constraintlayout.widget.ConstraintLayout
+                android:orientation="horizontal"
                 android:id="@+id/lnrAmount"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_18sdp"
@@ -128,7 +167,7 @@
                     android:textSize="@dimen/_6sdp"
                     tools:ignore="MissingConstraints" />
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>-->
 
             <include
                 android:id="@+id/llKeypad"

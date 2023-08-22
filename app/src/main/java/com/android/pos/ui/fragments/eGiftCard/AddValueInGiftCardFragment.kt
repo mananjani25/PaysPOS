@@ -1,8 +1,8 @@
 package com.android.pos.ui.fragments.eGiftCard
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
@@ -43,7 +43,9 @@ class AddValueInGiftCardFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.edtAmount.addTextChangedListener(AmountTextWatcher(binding.edtAmount, true))
+       binding.edtAmount.addTextChangedListener(AmountTextWatcher(binding.edtAmount, true,isFromGiftCard = true))
+
+
     }
 
     private fun setDefaultAmountsInKeypad() {

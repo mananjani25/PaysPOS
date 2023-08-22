@@ -100,6 +100,7 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
+<!--
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_18sdp"
@@ -112,23 +113,63 @@
                 <androidx.appcompat.widget.AppCompatEditText
                     android:id="@+id/edtAmount"
                     style="@style/CustomFontBold"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
                     android:background="@null"
                     android:digits="0123456789"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+
                     android:gravity="center"
                     android:maxLength="8"
                     android:editable="true"
                     android:enabled="true"
-                    android:text="$0.00"
-                    android:imeOptions="actionDone"
                     android:hint="@string/hint_enter_your_gift_card_amount"
                     android:textColor="@color/btnColor"
                     android:textColorHint="@color/txtColorGray"
                     android:textSize="@dimen/_6sdp"
                     tools:ignore="MissingConstraints" />
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>-->
+
+            <RelativeLayout
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_18sdp"
+                android:background="@drawable/background_square_border_grey"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:layout_marginBottom="@dimen/_2sdp"
+                android:padding="@dimen/_4sdp">
+
+
+                <TextView
+                    android:id="@+id/edt1"
+                    android:text="$"
+                    style="@style/CustomFontBold"
+                    android:textColor="@color/btnColor"
+                    android:gravity="center_vertical"
+                    android:textSize="@dimen/_6sdp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"/>
+
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/edtAmount"
+                    android:text="0.00"
+                    android:layout_toEndOf="@+id/edt1"
+                    android:gravity="center_vertical"
+                    style="@style/CustomFontBold"
+                    android:background="@null"
+                    android:inputType="number"
+                    android:editable="true"
+                    android:maxLength="8"
+                    android:enabled="true"
+                    android:textColor="@color/btnColor"
+                    android:textColorHint="@color/txtColorGray"
+                    android:textSize="@dimen/_6sdp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"/>
+
+
+            </RelativeLayout>
+
 
             <include
                 android:id="@+id/llKeypad"
