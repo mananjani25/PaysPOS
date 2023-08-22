@@ -3,6 +3,7 @@ package com.android.pos.ui.fragments.team
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -139,39 +140,6 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
         adapter.setOperationCallback(this)
         binding.rvEmployeeList.adapter = adapter
 
-
-        object : SwipeHelper(activity, binding.rvEmployeeList) {
-/*
-            override fun getMovementFlags(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder
-            ): Int {
-
-                LogUtil.logE("makeMovementFlags", viewHolder.itemView.tag.toString())
-                if (viewHolder.itemView.tag.toString() == "header") {
-                    return 0
-                }
-                return makeMovementFlags(0, ItemTouchHelper.LEFT)
-
-            }
-*/
-
-            override fun instantiateUnderlayButton(
-                viewHolder: RecyclerView.ViewHolder?,
-                underlayButtons: MutableList<UnderlayButton?>
-            ) {
-
-                underlayButtons.add(UnderlayButton(
-                    "Delete",
-                    ContextCompat.getColor(requireContext(), R.color.swipe_text_color_d),
-                    ContextCompat.getColor(requireContext(), R.color.white_swipe)
-                ) { pos ->
-
-
-                })
-
-            }
-        }
     }
 
     private fun observeShowProgress() {
