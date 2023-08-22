@@ -492,7 +492,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     remainingAmount
                 )
                 binding.txtTitle.text =
-                    MethodUtils.roundOffAmountDown(
+                   "$" + MethodUtils.roundOffAmountDown(
                         if(!isCustomCash) paidAmount + tipAmount else paidAmount
                     ).toDouble().toPrecision(2)
 
@@ -608,7 +608,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 viewModel.deleteSplitDb()
                 if (isCustomCash) {
                     binding.txtTitle.text =
-                        MethodUtils.roundOffAmountDown(paidAmount)
+                        "$" + MethodUtils.roundOffAmountDown(paidAmount)
                             .toDouble().toPrecision(2)
                     binding.txtPaymentAmount.text =
                         "" + MainApplication.getInstance()!!
@@ -617,7 +617,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 } else {
                     binding.txtTitle.text =
-                        MethodUtils.roundOffAmountDown(paidAmount + tipAmount)
+                        "$" + MethodUtils.roundOffAmountDown(paidAmount + tipAmount)
                             .toDouble().toPrecision(2)
                     binding.txtPaymentAmount.text =
                         "" + MainApplication.getInstance()!!
@@ -679,7 +679,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     remainingAmount
                 )
                 binding.txtTitle.text =
-                    MethodUtils.roundOffAmountDown(
+                    "$" + MethodUtils.roundOffAmountDown(
                         paidAmount + tipAmount
                     ).toDouble().toPrecision(2)
 
@@ -769,7 +769,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     requireContext().getDrawable(R.drawable.background_square_border_grey)
                 viewModel.deleteSplitDb()
                 binding.txtTitle.text =
-                    MethodUtils.roundOffAmountDown(paidAmount + tipAmount)
+                    "$" + MethodUtils.roundOffAmountDown(paidAmount + tipAmount)
                         .toDouble().toPrecision(2)
 
                 if (isCustomCash) {
