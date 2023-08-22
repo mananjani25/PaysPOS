@@ -49,6 +49,7 @@ import com.google.gson.JsonArray
 import com.pax.poslink.PaymentRequest
 import com.pax.poslink.PosLink
 import com.pax.poslink.ProcessTransResult
+import com.pax.poslink.ReportRequest
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -127,7 +128,7 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
 
 
         binding.txtDone.setOnClickListener {
-            Log.d("referenceNo: ","referenceNo $referenceNo")
+            Log.d("referenceNo: ", "referenceNo $referenceNo")
             if (MethodUtils.isDoubleClick()) return@setOnClickListener
             /*if (!referenceNo.isNullOrEmpty()) {
                 refundViaPAX()
@@ -136,9 +137,17 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
             }*/
             if (referenceNo.isNullOrEmpty()) {
                 doneClick()
-            } else if(referenceNo.isNullOrEmpty() && prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)) {
+            } else if (referenceNo.isNullOrEmpty() && prefProvider.getValueboolean(
+                    Constants.IS_PAX_CONNECTED,
+                    false
+                )
+            ) {
                 refundViaPAX()
-            } else if(!referenceNo.isNullOrEmpty() && !prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)){
+            } else if (!referenceNo.isNullOrEmpty() && !prefProvider.getValueboolean(
+                    Constants.IS_PAX_CONNECTED,
+                    false
+                )
+            ) {
                 AlertUtils.showCustomAlert(
                     requireContext(),
                     "Please connect to PAX device"
@@ -157,6 +166,7 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
         //POSLink initialization for PAX
         initPOSLink()
         getMerchantDataObserver()
+//        getBatchLocalReport()
 
         return binding.root
     }
@@ -175,7 +185,7 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
     private fun getMerchantDataObserver() {
         magtekProViewModel.merchantData.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { response ->
-                Log.d("merchantData: ","merchantData observe")
+                Log.d("merchantData: ", "merchantData observe")
                 val resultCode = response.resultCode
                 val status = response.resultTxt
                 val mID = response.VarValue
@@ -192,6 +202,36 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                 Log.d("Merchant Details: ", mID + " " + resultCode + "  " + status)
             }
         }
+    }
+
+    private fun getBatchLocalReport() {
+        GlobalScope.launch {
+            posLink.SetCommSetting(SettingINI.getCommSettingFromFile(Constants.FILE_PATH + SettingINI.FILENAME))
+
+            val report = ReportRequest()
+            report.TransType = report.ParseTransType("LOCALDETAILREPORT") //recommend
+            report.EDCType = report.ParseEDCType("CREDIT")
+//        report.PaymentType = report.ParseTransType("SALE")
+            posLink.ReportRequest = report
+            val result = posLink.ProcessTrans()
+            Log.d("result: ", result.Code.toString() + " " + result.Msg)
+            if (result.Code === ProcessTransResult.ProcessTransResultCode.OK) {
+                val msg = Message()
+                msg.what = Constants.TRANSACTION_SUCCESSED
+                msg.obj = posLink.ReportResponse
+
+                val response = msg.obj as com.pax.poslink.ReportResponse
+                val resultCode = response.ResultCode
+                val resultTxt = response.ResultTxt
+
+                val count = response.CreditCount
+                Log.d("Params:", "Report $resultCode $resultTxt ${response.ExtData}  ${Gson().toJson(response)}")
+            }
+        }
+    }
+
+    private fun tokenizeRefund() {
+
     }
 
     private fun refundViaPAX() {
@@ -238,17 +278,18 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                             if (result.Msg.toString() == "CONNECT ERROR" || result.Msg.toString() == "TIME OUT") {
                                 AlertUtils.showCustomAlertWithListenerWithOKCancel(
                                     requireContext(),
-                                    getString(R.string.pax_connect_error), getString(R.string.reconnect),
+                                    getString(R.string.pax_connect_error),
+                                    getString(R.string.reconnect),
                                 )
                                 { _, _ ->
                                     // Add connect to PAX logic
                                     magtekProViewModel.initPOSLink(requireContext())
                                 }
-                            /*Toast.makeText(
-                                    requireContext(),
-                                    R.string.pax_connect_error,
-                                    Toast.LENGTH_LONG
-                                ).show()*/
+                                /*Toast.makeText(
+                                        requireContext(),
+                                        R.string.pax_connect_error,
+                                        Toast.LENGTH_LONG
+                                    ).show()*/
                             } else {
                                 Toast.makeText(
                                     requireContext(),

@@ -2115,7 +2115,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             mPaymentRequest.Amount = amt.toString()
             mPaymentRequest.TipAmt = tip_amt.toString()
             mPaymentRequest.ECRRefNum = System.currentTimeMillis().toString()
-            mPaymentRequest.ExtData = "<Force>T</Force>"
+            mPaymentRequest.ExtData = "<Force>T</Force><TokenRequest>1</TokenRequest>"
             Log.d("ECRRefNum", "ECRRefNum: ${System.currentTimeMillis().toString()}")
 
             posLink.PaymentRequest = mPaymentRequest
@@ -2142,6 +2142,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 //                prefProvider.setValue(Constants.GLOBAL_ID, globalUID!!)
 
                 //implementation("org.dom4j:dom4j:2.1.3")
+                response.PaymentTransInfo.Token
                 Log.d(
                     "Payment Details: ",
                     "$ExtData $resultCode $resultTxt $GlobalUID $RefNumber"
