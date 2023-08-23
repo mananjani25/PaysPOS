@@ -7,22 +7,13 @@ import android.graphics.Color
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
-import android.view.Display
-import android.view.Gravity
-import android.view.View
-import android.view.Window
+import android.view.*
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.pos.R
-import com.android.pos.data.entities.CartModel
-import com.android.pos.data.entities.Modifier
-import com.android.pos.data.entities.TaxData
-import com.android.pos.data.entities.TbCustomer
-import com.android.pos.data.entities.TbItem
-import com.android.pos.data.entities.TbServiceCharge
-import com.android.pos.data.entities.VariationsAttribute
+import com.android.pos.data.entities.*
 import com.android.pos.data.model.DineInModel
 import com.android.pos.data.model.GuestPaymentCalculationModel
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
@@ -53,25 +44,15 @@ import com.android.pos.ui.fragments.magtek.PaymentResponse
 import com.android.pos.ui.fragments.payment.PaymentViewModel
 import com.android.pos.ui.fragments.settings.tip.TipListViewModel
 import com.android.pos.ui.fragments.transactions.TransactionViewModel
-import com.android.pos.utils.AmountTextWatcher
-import com.android.pos.utils.LogUtil
-import com.android.pos.utils.MethodUtils
+import com.android.pos.utils.*
 import com.android.pos.utils.MethodUtils.Companion.toPrecision
 import com.android.pos.utils.callback.MyCallback
-import com.android.pos.utils.extensions.gone
-import com.android.pos.utils.extensions.invisible
-import com.android.pos.utils.extensions.isVisible
-import com.android.pos.utils.extensions.setOnSingleClickListener
-import com.android.pos.utils.extensions.visible
+import com.android.pos.utils.extensions.*
 import com.android.pos.utils.statusUtils.Status
 import com.github.gcacace.signaturepad.views.SignaturePad.OnSignedListener
 import com.google.gson.Gson
 import com.google.gson.JsonArray
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.greenrobot.eventbus.EventBus
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -301,7 +282,10 @@ class CustomDisplay(
         }
     }
 
+    private var isInsideCheckout = false
+
     fun showSurcharge(isInCheckout: Boolean) {
+        isInsideCheckout = isInCheckout
         if (isInCheckout) {
             if (MethodUtils.isEnableCashDiscount(context)) {
                 binding.lnrLayoutCashDiscountSurcharge?.visible()
@@ -398,58 +382,104 @@ class CustomDisplay(
                             "CashDiscount"
                         ) == "CashDiscount"
                     ) {
-                        binding.txtOrderTotal?.text = MethodUtils.roundOffAmount(totalPrice)
+                        if(isInsideCheckout){
+                            binding.txtOrderTotal?.text = getCashDiscountedPrice(totalPrice)
+                        }else{
+                            binding.txtOrderTotal?.text = MethodUtils.roundOffAmount(totalPrice)
+                        }
+
                         binding.txtCashDiscountSurchargeCard?.text = "-"+MethodUtils.roundOffAmount(cashdiscountAmount)
                     } else {
-                        binding.txtOrderTotal?.text = MethodUtils.roundOffAmount(totalPrice)
+                        if(isInsideCheckout){
+                            binding.txtOrderTotal?.text = getSurchargedPrice(totalPrice)
+                        }else{
+                            binding.txtOrderTotal?.text = MethodUtils.roundOffAmount(totalPrice)
+                        }
                         binding.txtCashDiscountSurchargeCard?.text =
                             MethodUtils.roundOffAmount(cashdiscountAmount)
                     }
 
-                } else {
-                    binding.txtOrderTotal?.text = MethodUtils.roundOffAmount(totalPrice)
-                }
-
-
-
-            }
-
-        }
-
-    }
-
-    private fun getSurchargedPrice(amount: Double): String {
-        return MethodUtils.roundOffAmount(amount + getCashDiscountOrSurChargeAmount(amount))
     }
 
     private fun getCashDiscountedPrice(amount: Double): String {
-        return MethodUtils.roundOffAmount(amount - getCashDiscountOrSurChargeAmount(amount))
-    }
-
-    private fun getCashDiscountOrSurChargeAmount(amount: Double): Double {
-        return MethodUtils.calculateCashDiscount(
-            amount,
-            prefProvider,
-            context
+        return MethodUtils.roundOffAmount(
+            amount - getCashDiscountSurcharge()
         )
     }
 
-    private fun getCashDiscountSurcharge(totalPrice: Double, isCash: Boolean): Double {
-        return if (isCash) {
-            if (dashBoardCategoryViewModel.cashDiscountType == "CashDiscount") {
-                if (totalPrice - dashBoardCategoryViewModel.cashdiscountAmount < 0.0) {
-                    0.0
-                } else {
-                    totalPrice - dashBoardCategoryViewModel.cashdiscountAmount
-                }
-            } else {
-                totalPrice
-            }
+    private fun getCashDiscountSurcharge(): Double {
+        var cashDiscountSurcharge = 0.0
+        if (prefProvider.getValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
+                .isEmpty() || prefProvider.getValue(
+                Constants.CASH_DISCOUNT_SURCHARGE,
+                ""
+            ) == "0.0"
+        ) {
+            cashDiscountSurcharge = dashBoardCategoryViewModel.cashdiscountAmount
+            prefProvider.setValue(
+                Constants.CASH_DISCOUNT_SURCHARGE,
+                String.format("%.2f", dashBoardCategoryViewModel.cashdiscountAmount)
+            )
         } else {
-            if (dashBoardCategoryViewModel.cashDiscountType == "SurCharge") {
-                totalPrice + dashBoardCategoryViewModel.cashdiscountAmount
+            cashDiscountSurcharge =
+                prefProvider.getValue(Constants.CASH_DISCOUNT_SURCHARGE, "").toDouble()
+        }
+        return cashDiscountSurcharge
+    }
+
+    private fun getSurchargedPrice(amount: Double): String {
+        return MethodUtils.roundOffAmount(
+            amount + getCashDiscountSurcharge()
+        )
+    }
+
+    private fun setupTotals(cartList: List<CartModel>) {
+        dashBoardCategoryViewModel.apply {
+
+            if (order_note.isNotEmpty()) {
+                binding.relativeOrderNotes.visibility = View.VISIBLE
+                binding.txtOrderNote.text = order_note
             } else {
-                totalPrice
+                binding.relativeOrderNotes.visibility = View.GONE
+            }
+
+            binding.txtSubTotal.text = MethodUtils.roundOffAmount(subTotalPrice)
+            binding.txtTax.text = MethodUtils.roundOffAmount(totalTax)
+            binding.txtServiceCharge.text = MethodUtils.roundOffAmount(totalServiceCharge)
+            binding.txtDiscount.text = "-" + MethodUtils.roundOffAmount(totalDiscount)
+            binding.txtNoncashAdj.text = MethodUtils.roundOffAmount(cashdiscountAmount)
+            //showSurcharge(true)
+
+            dashBoardCategoryViewModel.apply {
+                val data: TbCustomer? = prefProvider.getCustomerData()
+                if (data != null) {
+                    if (loyaltyPointCondition(data) && redeemLoyaltyInfo.needToApplyLoyalty) {
+                        binding.liinearInfoLayout.layoutParams.height =
+                            resources.getDimension(R.dimen._90sdp).toInt()
+                        binding.relativeLoylatyPoints.visibility = View.VISIBLE
+                        binding.lblLoyaltyPoints.visibility = View.VISIBLE
+
+                        binding.txtLabelLoyaltyAmounts.visibility = View.VISIBLE
+                        binding.checkloylaty.visibility = View.GONE
+                        binding.txtLoyaltyAmount.text = "- $${
+                            String.format(
+                                "%.2f", redeemLoyaltyInfo.usedLoyaltyAmount
+                            )
+                        }"
+                        binding.txtLoyaltyPoints.text = "${redeemLoyaltyInfo.usedLoyaltyPoints}"
+                    } else {
+                        binding.liinearInfoLayout.layoutParams.height =
+                            resources.getDimension(R.dimen._60sdp).toInt()
+                        binding.relativeLoylatyPoints.visibility = View.GONE
+                        binding.lblLoyaltyPoints.visibility = View.GONE
+                    }
+                }
+            }
+
+            if (taxBirfurcationAdapter.taxlist.size < 2) {
+                binding.imgDropdown.gone()
+            } else {
+                binding.imgDropdown.visible()
             }
         }
     }
@@ -1275,28 +1305,13 @@ class CustomDisplay(
 
     }
 
-    fun showTipsAddedOld(tipAmount: Double, WholetotalPrice: Double) {
-        if (tipAmount == 0.00) {
-            binding.tipLayout.gone()
-        } else {
-            binding.askForTipLayout.gone()
-            binding.addTipKeypadLayout.gone()
-            binding.tipLayout.visible()
-            val percentageTip = String.format(
-                "%.0f", MethodUtils.calculatePercentageFromAmount(
-                    tipAmount,
-                    WholetotalPrice
-                )
-            )
-
-            binding.tipPercentLabel.text = "Tip ($percentageTip%)"
-            binding.txtTipGiven.text = "" + MethodUtils.roundOffAmount(tipAmount)
-
+    fun showTipsAddedNew(tipAmountForCard: Double, tipAmountForCash: Double, WholetotalPrice: Double, isSplitCase: Boolean = false) {
+        if(isSplitCase){
+            //clear tip selection in CustomerDisplay
+            activeTipsListAdapter.clearSelectedItem()
+            shouldHighlightNoTipLayout(false)
+            shouldHighlightOtherTipLayout(false)
         }
-
-    }
-
-    fun showTipsAddedNew(tipAmountForCard: Double, tipAmountForCash: Double, WholetotalPrice: Double) {
         if (MethodUtils.isEnableCashDiscount(context) && showCashCreditPrice) {
             if (tipAmountForCash == 0.00 && tipAmountForCard == 0.00) {
                 binding.lnrLayoutTip?.gone()
@@ -1321,26 +1336,15 @@ class CustomDisplay(
                     )
                 )
 
-                binding.txtTipLabel?.text = "Tip ($percentageTip%)"
-                binding.txtTipCash?.visible()
-                binding.txtTipCard?.visible()
-                binding.txtTipCash?.text = "" + MethodUtils.roundOffAmount(tipAmountForCash)
-                binding.txtTipCard?.text = "" + MethodUtils.roundOffAmount(tipAmountForCash)
+                    binding.txtTipLabel?.text = "Tip ($percentageTip%)"
+                    binding.txtTipCash?.invisible()
+                    binding.txtTipCard?.visible()
+                    binding.txtTipCard?.text = "" + MethodUtils.roundOffAmount(tipAmountForCash)
+
+                }
 
             }
         }
-
-    }
-
-    private fun showTipsAddedVer2(tipRate: Double, tipAmount: Double) {
-        if (tipAmount == 0.00) {
-            binding.tipLayout.gone()
-        } else {
-            binding.tipLayout.visible()
-            binding.tipPercentLabel.text = "Tip (${String.format("%.0f", tipRate)}%)"
-            binding.txtTipGiven.text = "" + MethodUtils.roundOffAmount(tipAmount)
-        }
-    }
 
     private fun setupActiveTipsList(tipListViewModel: TipListViewModel) {
         activeTipsListAdapter = ActiveTipsListAdapter()
@@ -1403,44 +1407,25 @@ class CustomDisplay(
             txtContinue.setOnClickListener {
 
                 tippedAmount = edtAmount.text.toString().replace("$", "").trim().toDouble()
-                val showTipCollectionBeforePay = prefProvider.getValueboolean(
-                    Constants.SHOW_TIP_SCREEN_BEFORE_PAYMENT,
-                    false
-                )
-                if(showTipCollectionBeforePay){
-                    EventBus.getDefault().post(TipAdded(tippedAmount, tippedAmount))
-                    //showMainCart()
-                    showWouldYouLikeToAddTipScreen(
-                        tipsListViewModel,
-                        mTransactionViewModel,
-                        mWholeTotalPrice,
-                        mOrderID,
-                        mIsCardPayment,
-                        mPaymentViewModel,
-                        magtekRequestUtils,
-                        apiModule1,
-                        true
-                    )
-                }else{
-                    if (mIsCardPayment) {
-                        if (mIsSignatureRequired) {
-                            showWouldYouLikeToAddTipScreen(
-                                tipsListViewModel,
-                                mTransactionViewModel,
-                                mWholeTotalPrice,
-                                mOrderID,
-                                mIsCardPayment,
-                                mPaymentViewModel,
-                                magtekRequestUtils,
-                                apiModule1,
-                                true
-                            )
-                        } else {
-                            magtekCall(wholeTotalPrice)
-                        }
+
+                if (mIsCardPayment) {
+                    if (mIsSignatureRequired) {
+                        showWouldYouLikeToAddTipScreen(
+                            tipsListViewModel,
+                            mTransactionViewModel,
+                            mWholeTotalPrice,
+                            mOrderID,
+                            mIsCardPayment,
+                            mPaymentViewModel,
+                            magtekRequestUtils,
+                            apiModule1,
+                            true
+                        )
                     } else {
-                        callUpdateTip()
+                        magtekCall(wholeTotalPrice)
                     }
+                } else {
+                    callUpdateTip()
                 }
             }
 
@@ -1596,16 +1581,8 @@ class CustomDisplay(
         this.apiModule1 = apiModule1
         mWholeTotalPrice = wholeTotalPrice
 
-        val showTipCollectionBeforePay = prefProvider.getValueboolean(
-            Constants.SHOW_TIP_SCREEN_BEFORE_PAYMENT,
-            false
-        )
-
         binding.apply {
             askForTipLayout.visible()
-
-            wouldYouLikeToAddTipLabel.text = "Would you like to add a Tip?"
-
             setupActiveTipsList(mTipListViewModel)
             observeActiveTipsList(wholeTotalPrice)
 
@@ -1639,23 +1616,12 @@ class CustomDisplay(
             }
 
             binding.otherRootLayout.setOnClickListener {
+                activeTipsListAdapter.clearSelectedItem()
                 showTipKeypad(wholeTotalPrice)
             }
-            val coroutineScope = CoroutineScope(Dispatchers.Main)
-            coroutineScope.launch {
-                //delay(3000)
-                //binding.noTipRootLayout.performClick()
-                //binding.otherRootLayout.performClick()
-            }
+
             binding.noTipRootLayout.setOnClickListener {
-                if(showTipCollectionBeforePay) {
-                    shouldHighlightNoTipLayout(true)
-                    shouldHighlightOtherTipLayout(false)
-                    //Update main screen with 0.00 tip in bracket
-                    EventBus.getDefault().post(TipAdded(0.00,0.00))
-                }else{
-                    showThankYou(mWholeTotalPrice)
-                }
+                showThankYou(mWholeTotalPrice)
             }
 
             binding.tvContinue.setOnSingleClickListener {
@@ -1712,6 +1678,7 @@ class CustomDisplay(
         }else{
             binding.otherRootLayout.setBackgroundColor(Color.parseColor("#363636"))
             binding.txtOtherLabel.setTextColor(Color.parseColor("#ED5950"))
+            binding.txtOtherLabel.text = "Other"
         }
 
     }
@@ -1763,25 +1730,12 @@ class CustomDisplay(
     override fun selectedItem(model: GetTipReponse.Data, pos: Int, wholeTotalPrice: Double) {
         tipRate = model.rate
         tippedAmount = MethodUtils.percentageCalculation(wholeTotalPrice, model.rate)
-        val tippedAmountWithoutSurCharge = MethodUtils.percentageCalculation(wholeTotalPrice - dashBoardCategoryViewModel.cashdiscountAmount, model.rate)
-        val showTipCollectionBeforePay = prefProvider.getValueboolean(
-            Constants.SHOW_TIP_SCREEN_BEFORE_PAYMENT,
-            false
-        )
-        if(showTipCollectionBeforePay){
-            shouldHighlightNoTipLayout(false)
-            shouldHighlightOtherTipLayout(false)
-            //Update main screen with tipAmount added and updated card amount
-            EventBus.getDefault().post(TipAdded(tippedAmount,tippedAmountWithoutSurCharge))
-        }else{
-            if ((mIsCardPayment && !mIsSignatureRequired) || (!mIsCardPayment)) {
-                callUpdateTip()
-            }
-            if (!binding.signaturePad.isEmpty) {
-                enableConfirmButton()
-            }
+        if ((mIsCardPayment && !mIsSignatureRequired) || (!mIsCardPayment)) {
+            callUpdateTip()
         }
-
+        if (!binding.signaturePad.isEmpty) {
+            enableConfirmButton()
+        }
     }
 
     private fun enableConfirmButton() {

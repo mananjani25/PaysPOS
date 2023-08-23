@@ -672,9 +672,18 @@ class MethodUtils {
 
             return randomNumber.toString().toLong()
         }
+        fun getLatestCashDiscountOrSurCharge(totalAmount: Double, prefProvider: PrefProvider, context: Context): Double{
+            return if (isEnableCashDiscount(context)) {
+                calculateCashDiscount(
+                    totalAmount,
+                    prefProvider,
+                    context
+                )
+            } else {
+                0.0
+            }
+        }
     }
-
-
 
 }
 

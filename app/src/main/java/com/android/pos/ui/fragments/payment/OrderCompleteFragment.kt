@@ -323,11 +323,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 MethodUtils.roundOffAmountDown(paidAmount + tipAmount)
             }
 
-            val showTipCollectionBeforePay = prefProvider.getValueboolean(
-                Constants.SHOW_TIP_SCREEN_BEFORE_PAYMENT,
-                false
-            )
-            if (prefProvider.getValueboolean(Constants.TIP_ADDED, false) || showTipCollectionBeforePay) {
+            if (prefProvider.getValueboolean(Constants.TIP_ADDED, false)) {
                 prefProvider.setValueboolean(Constants.TIP_ADDED, false)
                 presentation.showThankYou(finalPaidAmount)
             } else {
@@ -454,7 +450,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             paymentType = requireArguments().getString("paymentType", "")
             dis_charge_value = requireArguments().getDouble("dis_charge_value", 0.0)
 
-            // paidAmount = paidAmount - tipAmount
         }
         setLabelData()
 
@@ -493,7 +488,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     remainingAmount
                 )
                 binding.txtTitle.text =
-                    MethodUtils.roundOffAmount(paidAmount + tipAmount)
+                    MethodUtils.roundOffAmountDown(
+                        paidAmount + tipAmount
+                    ).toDouble().toPrecision(2)
 
 
                 LogUtil.logE(TAG, "paymentpaidAmount  ${paidAmount}")
@@ -541,7 +538,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         binding.txtPaymentAmount.text =
                             "" + MainApplication.getInstance()!!
                                 .getText(R.string.symbole) + MethodUtils.roundOffAmountDown(
-                                paidAmount + tipAmount
+                                paidAmount
                             ).toDouble().toPrecision(2) + " payment successful"
 
                         LogUtil.logE("Change 2", binding.txtChangeAmount.text.toString())
@@ -607,7 +604,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 viewModel.deleteSplitDb()
                 if (isCustomCash) {
                     binding.txtTitle.text =
-                        MethodUtils.roundOffAmount(paidAmount)
+                        MethodUtils.roundOffAmountDown(paidAmount)
+                            .toDouble().toPrecision(2)
                     binding.txtPaymentAmount.text =
                         "" + MainApplication.getInstance()!!
                             .getText(R.string.symbole) + MethodUtils.roundOffAmountDown(paidAmount)
@@ -615,7 +613,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 } else {
                     binding.txtTitle.text =
-                        MethodUtils.roundOffAmount(paidAmount + tipAmount)
+                        MethodUtils.roundOffAmountDown(paidAmount + tipAmount)
+                            .toDouble().toPrecision(2)
                     binding.txtPaymentAmount.text =
                         "" + MainApplication.getInstance()!!
                             .getText(R.string.symbole) + MethodUtils.roundOffAmountDown(paidAmount + tipAmount)
@@ -676,7 +675,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     remainingAmount
                 )
                 binding.txtTitle.text =
-                    MethodUtils.roundOffAmount(paidAmount + tipAmount)
+                    MethodUtils.roundOffAmountDown(
+                        paidAmount + tipAmount
+                    ).toDouble().toPrecision(2)
 
                 if (remainingAmount < paidAmount) {
                     if (isCustomCash && splitChange != 0.0) {
@@ -764,7 +765,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     requireContext().getDrawable(R.drawable.background_square_border_grey)
                 viewModel.deleteSplitDb()
                 binding.txtTitle.text =
-                    MethodUtils.roundOffAmount(paidAmount + tipAmount)
+                    MethodUtils.roundOffAmountDown(paidAmount + tipAmount)
+                        .toDouble().toPrecision(2)
 
                 if (isCustomCash) {
                     changeAmtGlobal = MethodUtils.roundOffAmountDouble(remainingAmount - tipAmount)
@@ -7413,26 +7415,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 Builder.COLOR_1
             )
 
-            var newPaidAmount = paidAmount
-            if (MethodUtils.roundOffAmountDouble(paidAmount + tipAmount) == MethodUtils.roundOffAmountDouble(
-                    (receiptModel?.order?.payments?.get(
-                        receiptModel?.order?.payments?.size?.minus(1) ?: 0
-                    )?.amount ?: 0.0).plus(
-                        (receiptModel?.order?.payments?.get(
-                            receiptModel?.order?.payments?.size?.minus(
-                                1
-                            ) ?: 0
-                        )?.tips ?: 0.0)
-                    ) ?: 0.0
-                )
-            ) {
-                newPaidAmount = paidAmount + tipAmount
+            val newPaidAmount = if(isCustomCash){
+                paidAmount
+            } else {
+                paidAmount + tipAmount
             }
-
-            if (isSpilt) {
-                newPaidAmount = paidAmount + tipAmount
-            }
-            LogUtil.logE("ToCheck", "PaidAmount ${newPaidAmount}")
 
             builder.addText(
                 padLine(
@@ -11493,28 +11480,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             }
 
-
-            var newPaidAmount = paidAmount
-            if (MethodUtils.roundOffAmountDouble(paidAmount + tipAmount) == MethodUtils.roundOffAmountDouble(
-                    (receiptModel?.order?.payments?.get(
-                        receiptModel?.order?.payments?.size?.minus(1) ?: 0
-                    )?.amount ?: 0.0).plus(
-                        (receiptModel?.order?.payments?.get(
-                            receiptModel?.order?.payments?.size?.minus(
-                                1
-                            ) ?: 0
-                        )?.tips ?: 0.0)
-                    ) ?: 0.0
-                )
-            ) {
-                newPaidAmount = paidAmount + tipAmount
+            val newPaidAmount = if(isCustomCash){
+                paidAmount
+            } else {
+                paidAmount + tipAmount
             }
-
-            if (isSpilt) {
-                newPaidAmount = paidAmount + tipAmount
-            }
-            LogUtil.logE("ToCheck", "PaidAmount ${newPaidAmount}")
-
 
             val str6 = padLine(
                 "Paid Amount",
@@ -12045,10 +12015,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 SunmiPrintHelper.getInstance().lineWrap(1)
 
                 if (paymentType == "Cash") {
-                    var finalAmt: Double = (receiptModel?.order?.subTotal ?: 0.0)
-                        .plus(receiptModel?.order?.totalTaxAmount ?: 0.0)
-                        .plus(receiptModel?.order?.totalServiceCharges ?: 0.0)
-                        .plus(receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size?.minus(1) ?: 0)?.tips ?: 0.0)
+
+                    var finalAmt: Double = (receiptModel?.order?.subTotal
+                        ?: 0.0).plus(receiptModel?.order?.totalTaxAmount ?: 0.0)
+                        .plus(receiptModel?.order?.totalServiceCharges ?: 0.0).plus(
+                            receiptModel?.order?.payments?.get(
+                                receiptModel?.order?.payments?.size?.minus(1) ?: 0
+                            )?.tips ?: 0.0
+                        )
                     //PLZCHECK
                     if (receiptModel?.order?.cash_discount_type?.lowercase() == "CashDiscount".lowercase()) {
                         val str5 = padLine(
@@ -12126,28 +12100,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             }
 
-
-            var newPaidAmount = paidAmount
-            if (MethodUtils.roundOffAmountDouble(paidAmount + tipAmount) == MethodUtils.roundOffAmountDouble(
-                    (receiptModel?.order?.payments?.get(
-                        receiptModel?.order?.payments?.size?.minus(1) ?: 0
-                    )?.amount ?: 0.0).plus(
-                        (receiptModel?.order?.payments?.get(
-                            receiptModel?.order?.payments?.size?.minus(
-                                1
-                            ) ?: 0
-                        )?.tips ?: 0.0)
-                    ) ?: 0.0
-                )
-            ) {
-                newPaidAmount = paidAmount + tipAmount
+            val newPaidAmount = if(isCustomCash){
+                paidAmount
+            } else {
+                paidAmount + tipAmount
             }
-
-            if (isSpilt) {
-                newPaidAmount = paidAmount + tipAmount
-            }
-            LogUtil.logE("ToCheck", "PaidAmount ${newPaidAmount}")
-
 
             val str6 = padLine(
                 "Paid Amount",
