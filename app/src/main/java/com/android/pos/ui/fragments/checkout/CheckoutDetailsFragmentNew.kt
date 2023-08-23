@@ -558,7 +558,6 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 isInsert = false
                 isCardRev = false
 
-                prefProvider.setValueboolean(Constants.TIP_ADDED, false)
                 viewModel.setTipAmount(0.0)
                 when {
                     paymentType == "Cash" -> {
