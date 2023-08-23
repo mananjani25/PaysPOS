@@ -28,7 +28,8 @@ data class PrinterQueueModel(
     var printSuccessData: String = "",
     var employeeName: String = "",
     var dateAndTime: String = "",
-    var guestAttributes: List<GuestAttrQueue> = emptyList()
+    var guestAttributes: List<GuestAttrQueue> = emptyList(),
+    var orderNote:String = ""
 ) {
     data class PrinterReceivedSuccessModel(
         var printerId: Int,

@@ -117,6 +117,7 @@ object Constants {
 
     const val TAKEOUT = "TakeOut"
     const val DINE_IN = "DineIn"
+    const val DINE_IN_SPACE = "Dine In"
     const val PHONE_ORDER = "PhoneOrder"
     const val PHONE_ORDER_ = "Phone Order"
     const val DINE_IN_UPDATE = "DineInUpdate"

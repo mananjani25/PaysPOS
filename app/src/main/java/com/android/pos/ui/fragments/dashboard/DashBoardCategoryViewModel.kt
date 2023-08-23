@@ -4230,7 +4230,15 @@ class DashBoardCategoryViewModel @Inject constructor(
                 orderItemsAttribute.isEdited = item.isEdited
                 orderItemsAttribute.isDestroy = item.isDestroy
                 orderItemsAttribute.isPaid = item.isPaid
-                orderItemsAttribute.isPrinted = true
+                orderItemsAttribute.isPrinted = if (prefProvider.getValueboolean(
+                        DINE_IN_UPDATE,
+                        false
+                    ) == true && item.isEdited == true
+                ) false else if (prefProvider.getValueboolean(
+                        DINE_IN_UPDATE,
+                        false
+                    ) == true && item.isEdited == false
+                ) true else false
                 orderItemsAttribute.isTaxRemoved = false
                 orderItemsAttribute.itemId =
                     if (item.isManualSales) item.itemId else item.itemId
