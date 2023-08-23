@@ -236,7 +236,11 @@ class CustomDisplay(
                 } else {
                     binding.rowHeaderLayoutDineIn?.gone()
                     binding.rowHeaderLayout.visible()
-                    if (MethodUtils.isEnableCashDiscount(context) && showCashCreditPrice && prefProvider.getValue(ORDER_TYPE, TAKEOUT) != Constants.GIFT_CARD) {
+                    if (MethodUtils.isEnableCashDiscount(context) && showCashCreditPrice && prefProvider.getValue(
+                            ORDER_TYPE,
+                            TAKEOUT
+                        ) != Constants.GIFT_CARD
+                    ) {
                         binding.txtTotalLabel.gone()
                         binding.txtCashLabel.visible()
                         binding.txtCardLabel.visible()
@@ -305,9 +309,16 @@ class CustomDisplay(
     }
 
     private fun setupTotalsNew(isDineIn: Boolean) {
-        showCashCreditPrice = prefProvider.getValueboolean(Constants.SHOW_CASH_CREDIT_PRICE_ON_CUSTOMER_DISPLAY, false)
+        showCashCreditPrice = prefProvider.getValueboolean(
+            Constants.SHOW_CASH_CREDIT_PRICE_ON_CUSTOMER_DISPLAY,
+            false
+        )
         dashBoardCategoryViewModel.apply {
-            if (MethodUtils.isEnableCashDiscount(context) && !isDineIn && showCashCreditPrice && prefProvider.getValue(ORDER_TYPE, TAKEOUT) != Constants.GIFT_CARD) {
+            if (MethodUtils.isEnableCashDiscount(context) && !isDineIn && showCashCreditPrice && prefProvider.getValue(
+                    ORDER_TYPE,
+                    TAKEOUT
+                ) != Constants.GIFT_CARD
+            ) {
                 binding.txtSubTotalCash?.visible()
                 binding.txtSubTotalCard?.visible()
                 binding.txtTaxCash?.visible()
@@ -334,7 +345,8 @@ class CustomDisplay(
                     binding.txtTaxCard?.text = MethodUtils.roundOffAmount(totalTax)
 
                     binding.txtServiceChargeCash?.text = getCashDiscountedPrice(totalServiceCharge)
-                    binding.txtServiceChargeCard?.text = MethodUtils.roundOffAmount(totalServiceCharge)
+                    binding.txtServiceChargeCard?.text =
+                        MethodUtils.roundOffAmount(totalServiceCharge)
 
                     binding.txtTotalCash?.text = getCashDiscountedPrice(totalPrice)
                     binding.txtTotalCard?.text = MethodUtils.roundOffAmount(totalPrice)
@@ -346,7 +358,8 @@ class CustomDisplay(
                     binding.txtTaxCash?.text = MethodUtils.roundOffAmount(totalTax)
                     binding.txtTaxCard?.text = getSurchargedPrice(totalTax)
 
-                    binding.txtServiceChargeCash?.text = MethodUtils.roundOffAmount(totalServiceCharge)
+                    binding.txtServiceChargeCash?.text =
+                        MethodUtils.roundOffAmount(totalServiceCharge)
                     binding.txtServiceChargeCard?.text = getSurchargedPrice(totalServiceCharge)
 
                     binding.txtTotalCash?.text = MethodUtils.roundOffAmount(totalPrice)
@@ -375,30 +388,38 @@ class CustomDisplay(
                 binding.txtOrderTotal?.visible()
 
 
-                if (MethodUtils.isEnableCashDiscount(context) && prefProvider.getValue(ORDER_TYPE, TAKEOUT) != Constants.GIFT_CARD) {
+                if (MethodUtils.isEnableCashDiscount(context) && prefProvider.getValue(
+                        ORDER_TYPE,
+                        TAKEOUT
+                    ) != Constants.GIFT_CARD
+                ) {
 
                     if (prefProvider.getValue(
                             Constants.OPTION_TYPE,
                             "CashDiscount"
                         ) == "CashDiscount"
                     ) {
-                        if(isInsideCheckout){
+                        if (isInsideCheckout) {
                             binding.txtOrderTotal?.text = getCashDiscountedPrice(totalPrice)
-                        }else{
+                        } else {
                             binding.txtOrderTotal?.text = MethodUtils.roundOffAmount(totalPrice)
                         }
 
-                        binding.txtCashDiscountSurchargeCard?.text = "-"+MethodUtils.roundOffAmount(cashdiscountAmount)
+                        binding.txtCashDiscountSurchargeCard?.text =
+                            "-" + MethodUtils.roundOffAmount(cashdiscountAmount)
                     } else {
-                        if(isInsideCheckout){
+                        if (isInsideCheckout) {
                             binding.txtOrderTotal?.text = getSurchargedPrice(totalPrice)
-                        }else{
+                        } else {
                             binding.txtOrderTotal?.text = MethodUtils.roundOffAmount(totalPrice)
                         }
                         binding.txtCashDiscountSurchargeCard?.text =
                             MethodUtils.roundOffAmount(cashdiscountAmount)
                     }
 
+                }
+            }
+        }
     }
 
     private fun getCashDiscountedPrice(amount: Double): String {
@@ -445,7 +466,8 @@ class CustomDisplay(
 
             binding.txtSubTotal.text = MethodUtils.roundOffAmount(subTotalPrice)
             binding.txtTax.text = MethodUtils.roundOffAmount(totalTax)
-            binding.txtServiceCharge.text = MethodUtils.roundOffAmount(totalServiceCharge)
+            binding.txtServiceCharge.text =
+                MethodUtils.roundOffAmount(totalServiceCharge)
             binding.txtDiscount.text = "-" + MethodUtils.roundOffAmount(totalDiscount)
             binding.txtNoncashAdj.text = MethodUtils.roundOffAmount(cashdiscountAmount)
             //showSurcharge(true)
@@ -466,7 +488,8 @@ class CustomDisplay(
                                 "%.2f", redeemLoyaltyInfo.usedLoyaltyAmount
                             )
                         }"
-                        binding.txtLoyaltyPoints.text = "${redeemLoyaltyInfo.usedLoyaltyPoints}"
+                        binding.txtLoyaltyPoints.text =
+                            "${redeemLoyaltyInfo.usedLoyaltyPoints}"
                     } else {
                         binding.liinearInfoLayout.layoutParams.height =
                             resources.getDimension(R.dimen._60sdp).toInt()
@@ -574,7 +597,8 @@ class CustomDisplay(
     }
 
     private fun TimeDetailsResponse?.removeWhiteSpaces(): CharSequence? {
-        return this?.data?.date?.replace("\n", "")?.replace("  ", "")?.replace(",", ", ")
+        return this?.data?.date?.replace("\n", "")?.replace("  ", "")
+            ?.replace(",", ", ")
     }
 
     override fun onItemClickListener(view: View?, data: TbItem, position: Int) {}
@@ -631,7 +655,12 @@ class CustomDisplay(
 
             binding.currentTime.text = response.data.time
             binding.currentDate.text = response.removeWhiteSpaces()
-        }.runCatching { Log.d("CustomDisplay", "onLogOutOrClockOutWithApiService: Some Exception") }
+        }.runCatching {
+            Log.d(
+                "CustomDisplay",
+                "onLogOutOrClockOutWithApiService: Some Exception"
+            )
+        }
     }
 
     fun onLogOutOrClockOut() {
@@ -782,7 +811,8 @@ class CustomDisplay(
                                     item.categoryId = it.categoryId
                                     item.guestItemId = guestItem[j].id
 
-                                    var listTaxes: java.util.ArrayList<TaxData> = arrayListOf()
+                                    var listTaxes: java.util.ArrayList<TaxData> =
+                                        arrayListOf()
                                     it.orderItemTaxes.forEach {
                                         listTaxes.add(
                                             TaxData(
@@ -807,7 +837,8 @@ class CustomDisplay(
                                     }
                                     item.taxes = listTaxes
                                     if (it.orderItemModifiers.isNotEmpty()) {
-                                        var modifiers: java.util.ArrayList<Modifier> = arrayListOf()
+                                        var modifiers: java.util.ArrayList<Modifier> =
+                                            arrayListOf()
                                         it.orderItemModifiers.forEach { mod ->
                                             val model = Modifier()
                                             model.id = mod.modifierId
@@ -821,7 +852,8 @@ class CustomDisplay(
 
 
                                             if (mod.orderItemTaxes.isNotEmpty()) {
-                                                model.orderItemTaxes = mod.orderItemTaxes
+                                                model.orderItemTaxes =
+                                                    mod.orderItemTaxes
                                             }
 
                                             modifiers.add(model)
@@ -889,7 +921,7 @@ class CustomDisplay(
                                                         itemTaxPrice
                                                         // MethodUtils.getTwoDecimal(itemTaxPrice)
                                                         /* String.format("%.2f", itemTaxPrice)
-                                                             .toDouble()*/
+                                                 .toDouble()*/
 
 
                                                     } else {
@@ -977,7 +1009,7 @@ class CustomDisplay(
                                                 itemTaxPrice
 
                                                 /*  String.format("%.2f", itemTaxPrice)
-                                                      .toDouble()*/
+                                          .toDouble()*/
                                             } else {
                                                 if (totalPrice <= 0.0) {
                                                     String.format("%.2f", 0.00)
@@ -985,16 +1017,17 @@ class CustomDisplay(
                                                 } else {
                                                     tax.rate * oi.quantity
                                                     /*String.format(
-                                                        "%.2f",
-                                                        tax.rate * oi.quantity
-                                                    )
-                                                        .toDouble()*/
+                                            "%.2f",
+                                            tax.rate * oi.quantity
+                                        )
+                                            .toDouble()*/
                                                 }
                                             }
 
                                         }
                                     }
-                                    totalTaxWT = String.format("%.2f", totalTaxWT).toDouble()
+                                    totalTaxWT =
+                                        String.format("%.2f", totalTaxWT).toDouble()
 
                                 }
                                 serviceChargeWT = 0.0
@@ -1038,7 +1071,10 @@ class CustomDisplay(
                                     totalPriceWT / (baseResponse.guestAttributes.size - 1)
                                 LogUtil.logE("TODO", "subTotalWT:  ${subTotalWT}")
                                 LogUtil.logE("TODO", "totalTaxWT:  ${totalTaxWT}")
-                                LogUtil.logE("TODO", "serviceChargeWT:  ${serviceChargeWT}")
+                                LogUtil.logE(
+                                    "TODO",
+                                    "serviceChargeWT:  ${serviceChargeWT}"
+                                )
 
                             }
 
@@ -1061,7 +1097,11 @@ class CustomDisplay(
                 update_order_Discount = baseResponse.totalDiscount - totalItemDiscount
             }
             totalServiceChargeAmount = 0.0
-            if (prefProvider.getValueboolean(Constants.SERVICECHARGE_DINEIN_ORDER, false)) {
+            if (prefProvider.getValueboolean(
+                    Constants.SERVICECHARGE_DINEIN_ORDER,
+                    false
+                )
+            ) {
                 var isApplied = false
                 serviceChargeList.forEach {
                     if (it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
@@ -1090,7 +1130,8 @@ class CustomDisplay(
 
             totalSubTotal = MethodUtils.getTwoDecimal(totalSubTotal)
             totalTaxAmount = MethodUtils.getTwoDecimal(totalTaxAmount)
-            totalServiceChargeAmount = MethodUtils.getTwoDecimal(totalServiceChargeAmount)
+            totalServiceChargeAmount =
+                MethodUtils.getTwoDecimal(totalServiceChargeAmount)
 
             Log.e("JAN2023", "totalSubTotal  ${totalSubTotal}")
             Log.e("JAN2023", "totalTaxAmount  ${totalTaxAmount}")
@@ -1141,12 +1182,12 @@ class CustomDisplay(
                 }
             }
             /*   for (i in 0 until dineInList.size) {
-                   if (i != 0 && dineInList.size > i + 1) {
-                       if (dineInList.get(i + 1).item != null && dineInList.get(i + 1).item?.isPaid == true) {
-                           paidGuestCount++
-                       }
-                   }
-               }*/
+       if (i != 0 && dineInList.size > i + 1) {
+           if (dineInList.get(i + 1).item != null && dineInList.get(i + 1).item?.isPaid == true) {
+               paidGuestCount++
+           }
+       }
+   }*/
             LogUtil.logE("Customerdiaply", "paidGuestCount:  ${paidGuestCount}")
             if (paidGuestCount > 0) {
 
@@ -1202,7 +1243,8 @@ class CustomDisplay(
 
                 }
 
-                var unpaidCount = (baseResponse.guestAttributes.size - 1) - paidGuestCount
+                var unpaidCount =
+                    (baseResponse.guestAttributes.size - 1) - paidGuestCount
 
                 if (paidGuestCount > 0) {
                     var tempTax = totalTaxWT / (baseResponse.guestAttributes.size - 1)
@@ -1230,7 +1272,10 @@ class CustomDisplay(
                 "checkGuestPayFlag",
                 "checkGuestPayFlag:  ${dashBoardCategoryViewModel.getIsGuestPay()}"
             )
-            if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN && prefProvider.getValueboolean(
+            if (prefProvider.getValue(
+                    ORDER_TYPE,
+                    ""
+                ) == DINE_IN && prefProvider.getValueboolean(
                     Constants.IS_PAYMENT_SCREEN,
                     false
                 ) == true
@@ -1280,7 +1325,11 @@ class CustomDisplay(
                 )
             }
 
-            if (prefProvider.getValueboolean(Constants.CASHDIS_SURCHARGEENABLE, false)) {
+            if (prefProvider.getValueboolean(
+                    Constants.CASHDIS_SURCHARGEENABLE,
+                    false
+                )
+            ) {
 
                 cashDiscountGlobal = MethodUtils.calculateCashDiscount(
                     finalAmount,
@@ -1305,8 +1354,13 @@ class CustomDisplay(
 
     }
 
-    fun showTipsAddedNew(tipAmountForCard: Double, tipAmountForCash: Double, WholetotalPrice: Double, isSplitCase: Boolean = false) {
-        if(isSplitCase){
+    fun showTipsAddedNew(
+        tipAmountForCard: Double,
+        tipAmountForCash: Double,
+        WholetotalPrice: Double,
+        isSplitCase: Boolean = false
+    ) {
+        if (isSplitCase) {
             //clear tip selection in CustomerDisplay
             activeTipsListAdapter.clearSelectedItem()
             shouldHighlightNoTipLayout(false)
@@ -1320,11 +1374,13 @@ class CustomDisplay(
                 binding.txtTipLabel?.text = "Tip"
                 binding.txtTipCash?.visible()
                 binding.txtTipCard?.visible()
-                binding.txtTipCash?.text = "" + MethodUtils.roundOffAmount(tipAmountForCash)
-                binding.txtTipCard?.text = "" + MethodUtils.roundOffAmount(tipAmountForCard)
+                binding.txtTipCash?.text =
+                    "" + MethodUtils.roundOffAmount(tipAmountForCash)
+                binding.txtTipCard?.text =
+                    "" + MethodUtils.roundOffAmount(tipAmountForCard)
 
             }
-        }else{
+        } else {
             if (tipAmountForCash == 0.00) {
                 binding.lnrLayoutTip?.gone()
             } else {
@@ -1336,15 +1392,16 @@ class CustomDisplay(
                     )
                 )
 
-                    binding.txtTipLabel?.text = "Tip ($percentageTip%)"
-                    binding.txtTipCash?.invisible()
-                    binding.txtTipCard?.visible()
-                    binding.txtTipCard?.text = "" + MethodUtils.roundOffAmount(tipAmountForCash)
-
-                }
+                binding.txtTipLabel?.text = "Tip ($percentageTip%)"
+                binding.txtTipCash?.invisible()
+                binding.txtTipCard?.visible()
+                binding.txtTipCard?.text =
+                    "" + MethodUtils.roundOffAmount(tipAmountForCash)
 
             }
+
         }
+    }
 
     private fun setupActiveTipsList(tipListViewModel: TipListViewModel) {
         activeTipsListAdapter = ActiveTipsListAdapter()
@@ -1369,7 +1426,8 @@ class CustomDisplay(
                 it.data.forEach { data ->
                     data.isChecked = false
                 }
-                binding.rvActiveTipsList.layoutManager = GridLayoutManager(context, it.data.size)
+                binding.rvActiveTipsList.layoutManager =
+                    GridLayoutManager(context, it.data.size)
                 activeTipsListAdapter.setList(it.data, wholeTotalPrice)
                 activeTipsListAdapter.setListner(this)
                 lifecycleOwner.lifecycleScope.launch {
@@ -1399,14 +1457,20 @@ class CustomDisplay(
             thankYouLayout.gone()
 
             addTipKeypadLayout.visible()
-            binding.edtAmount.addTextChangedListener(AmountTextWatcher(binding.edtAmount, true))
+            binding.edtAmount.addTextChangedListener(
+                AmountTextWatcher(
+                    binding.edtAmount,
+                    true
+                )
+            )
             setKeyPad()
 
             edtAmount.setText(MethodUtils.roundOffAmountString(0.00))
 
             txtContinue.setOnClickListener {
 
-                tippedAmount = edtAmount.text.toString().replace("$", "").trim().toDouble()
+                tippedAmount =
+                    edtAmount.text.toString().replace("$", "").trim().toDouble()
 
                 if (mIsCardPayment) {
                     if (mIsSignatureRequired) {
@@ -1573,7 +1637,8 @@ class CustomDisplay(
         mTipListViewModel = tipListViewModel
         mOrderID = orderId
         mIsCardPayment = isCardPayment
-        mIsSignatureRequired = prefProvider.getValueboolean(CUSTOMER_SIGN_REQUIRED_ON_CD, false)
+        mIsSignatureRequired =
+            prefProvider.getValueboolean(CUSTOMER_SIGN_REQUIRED_ON_CD, false)
         mTransactionViewModel = transactionViewModel
         mPaymentViewModel = paymentViewModel
         magensaResponse = mPaymentViewModel.magensaResponse ?: ""
@@ -1660,22 +1725,22 @@ class CustomDisplay(
         }
     }
 
-    private fun shouldHighlightNoTipLayout(isHighlight: Boolean){
-        if(isHighlight){
+    private fun shouldHighlightNoTipLayout(isHighlight: Boolean) {
+        if (isHighlight) {
             binding.noTipRootLayout.setBackgroundColor(Color.parseColor("#ED5950"))
             binding.txtNoTipLabel.setTextColor(Color.parseColor("#FFFFFF"))
-        }else{
+        } else {
             binding.noTipRootLayout.setBackgroundColor(Color.parseColor("#363636"))
             binding.txtNoTipLabel.setTextColor(Color.parseColor("#ED5950"))
         }
 
     }
 
-    private fun shouldHighlightOtherTipLayout(isHighlight: Boolean){
-        if(isHighlight){
+    private fun shouldHighlightOtherTipLayout(isHighlight: Boolean) {
+        if (isHighlight) {
             binding.otherRootLayout.setBackgroundColor(Color.parseColor("#ED5950"))
             binding.txtOtherLabel.setTextColor(Color.parseColor("#FFFFFF"))
-        }else{
+        } else {
             binding.otherRootLayout.setBackgroundColor(Color.parseColor("#363636"))
             binding.txtOtherLabel.setTextColor(Color.parseColor("#ED5950"))
             binding.txtOtherLabel.text = "Other"
@@ -1693,7 +1758,11 @@ class CustomDisplay(
     private fun callUpdateTip() {
         lifecycleOwner.lifecycleScope.launch {
             showProgress()
-            mTransactionViewModel.updateTipWithSignature(mOrderID, signatureInBase64, tippedAmount)
+            mTransactionViewModel.updateTipWithSignature(
+                mOrderID,
+                signatureInBase64,
+                tippedAmount
+            )
             mTransactionViewModel.updateTipData.observe(lifecycleOwner) { event ->
                 event.getContentIfNotHandled()?.let {
                     if (it.status == 200) {
@@ -1727,7 +1796,11 @@ class CustomDisplay(
         }
     }
 
-    override fun selectedItem(model: GetTipReponse.Data, pos: Int, wholeTotalPrice: Double) {
+    override fun selectedItem(
+        model: GetTipReponse.Data,
+        pos: Int,
+        wholeTotalPrice: Double
+    ) {
         tipRate = model.rate
         tippedAmount = MethodUtils.percentageCalculation(wholeTotalPrice, model.rate)
         if ((mIsCardPayment && !mIsSignatureRequired) || (!mIsCardPayment)) {
@@ -1765,21 +1838,21 @@ class CustomDisplay(
 
                     // commented by Mansi for task > Tip to be captured through RAPID CONNECT
                     /*if (model != null) {
-                        jsonArray =
-                            model.transactionOutput.token.let { it1 ->
-                                tippedAmount.times(100).let {
-                                    magtekRequestUtils.processTokenFirstData(
-                                        it,
-                                        it1,
-                                        model.customerTransactionID ?: "",
-                                        model.transactionOutput.transactionOutputDetails[0].value,
-                                        Constants.CAPTURE
-                                    )
-                                }
-                            }
+            jsonArray =
+                model.transactionOutput.token.let { it1 ->
+                    tippedAmount.times(100).let {
+                        magtekRequestUtils.processTokenFirstData(
+                            it,
+                            it1,
+                            model.customerTransactionID ?: "",
+                            model.transactionOutput.transactionOutputDetails[0].value,
+                            Constants.CAPTURE
+                        )
+                    }
+                }
 
-                        networkCall(jsonArray, 0, apiModule1)
-                    }*/
+            networkCall(jsonArray, 0, apiModule1)
+        }*/
                     callUpdateTip()
                 }
 
@@ -1806,7 +1879,9 @@ class CustomDisplay(
                         wholeTotalPrice.times(100).let {
                             magtekRequestUtils.processReferenceIDEPXForce(
                                 it,
-                                model.customerTransactionID ?: "", it1, Constants.CAPTURE,
+                                model.customerTransactionID ?: "",
+                                it1,
+                                Constants.CAPTURE,
                                 (tippedAmount * 100).toString()
                             )
                         }
@@ -1896,21 +1971,21 @@ class CustomDisplay(
 
                     // commented by Mansi for task > Tip to be captured through RAPID CONNECT
                     /*if (model != null) {
-                        jsonArray =
-                            model.transactionOutput?.token?.let { it1 ->
-                                tippedAmount.times(100).let {
-                                    magtekRequestUtils.processTokenFirstData(
-                                        it,
-                                        it1,
-                                        model.customerTransactionID ?: "",
-                                        model.transactionOutput.transactionOutputDetails[0].value,
-                                        Constants.CAPTURE
-                                    )
-                                }
-                            }
+            jsonArray =
+                model.transactionOutput?.token?.let { it1 ->
+                    tippedAmount.times(100).let {
+                        magtekRequestUtils.processTokenFirstData(
+                            it,
+                            it1,
+                            model.customerTransactionID ?: "",
+                            model.transactionOutput.transactionOutputDetails[0].value,
+                            Constants.CAPTURE
+                        )
+                    }
+                }
 
-                        networkCall(jsonArray, 0, apiModule1)
-                    }*/
+            networkCall(jsonArray, 0, apiModule1)
+        }*/
                     callUpdateTip()
                 }
 
@@ -1937,7 +2012,9 @@ class CustomDisplay(
                         wholeTotalPrice.times(100).let {
                             magtekRequestUtils.processReferenceIDEPXForce(
                                 it,
-                                model.customerTransactionID ?: "", it1, Constants.CAPTURE,
+                                model.customerTransactionID ?: "",
+                                it1,
+                                Constants.CAPTURE,
                                 (tippedAmount * 100).toString()
                             )
                         }
@@ -2068,10 +2145,10 @@ class CustomDisplay(
                 ) == "CashDiscount"
             ) {
                 binding.txtOrderTotal?.text = cashTotal
-            }else{
+            } else {
                 binding.txtOrderTotal?.text = cardTotal
             }
-        }else{
+        } else {
             binding.txtTotalCash?.text = cashTotal
             binding.txtTotalCard?.text = cardTotal
         }

@@ -63,7 +63,6 @@ import com.android.pos.data.remote.Constants.REPORT_START_TIME
 import com.android.pos.data.remote.Constants.SERVICECHARGE_DINEIN_ORDER
 import com.android.pos.data.remote.Constants.SERVICECHARGE_TAKEOUT_OPENORDER
 import com.android.pos.data.remote.Constants.SHOW_CASH_CREDIT_PRICE_ON_CUSTOMER_DISPLAY
-import com.android.pos.data.remote.Constants.SHOW_TIP_SCREEN_BEFORE_PAYMENT
 import com.android.pos.data.remote.Constants.SYNC_SETTING_TIME_STAMP
 import com.android.pos.data.remote.Constants.SYNC_TIME_STAMP
 import com.android.pos.data.remote.Constants.SYSTEM_TIMEZONE
@@ -2834,12 +2833,12 @@ class DashBoardCategoryViewModel @Inject constructor(
                     }
 
                     order_note = cartList[0].note
-                    serviceChargeCalculation(cartList)
                     subTotalPrice -= cartList[0].discountPrice
 
                     if (subTotalPrice < 0) {
                         subTotalPrice = 0.0
                     }
+                    serviceChargeCalculation(cartList)
 
 
                     totalDiscount += cartList[0].discountPrice
@@ -3039,11 +3038,11 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                     }
                     String.format("%.2f", totalTax).toDouble()
-                    serviceChargeCalculationModel(cartModel)
-                    subTotalPrice -= totalDiscount
+                    subTotalPrice -= cartModel.discountPrice
                     if (subTotalPrice < 0) {
                         subTotalPrice = 0.0
                     }
+                    serviceChargeCalculationModel(cartModel)
 
                     totalDiscount += cartModel.discountPrice
                     order_note = cartModel.note
@@ -3119,13 +3118,13 @@ class DashBoardCategoryViewModel @Inject constructor(
                     //   String.format("%.2f", totalTax).toDouble()
 //                    taxDynamicList = cartModel.taxlistDynamic!!.toCollection(ArrayList())
                     Log.d(TAG, "itemCalculationCartModel: " + taxDynamicList)
-                    serviceChargeCalculationModel(cartModel)
 
                     subTotalPrice -= cartModel.discountPrice
                     Log.d(TAG, "itemCalculationCartModel: " + subTotalPrice)
                     if (subTotalPrice < 0) {
                         subTotalPrice = 0.0
                     }
+                    serviceChargeCalculationModel(cartModel)
 
                     totalDiscount += cartModel.discountPrice
 
@@ -5196,11 +5195,6 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     it.settingData.data.show_cash_credit_price_on_customer_display
                                 )
 
-                                prefProvider.setValueboolean(
-                                    SHOW_TIP_SCREEN_BEFORE_PAYMENT,
-                                    it.settingData.data.show_tip_screen_before_payment
-                                )
-
                                 prefProvider.setValue(
                                     BUSINESS_WEBSITE,
                                     it.settingData.data.businessWebsite.toString()
@@ -5683,12 +5677,12 @@ class DashBoardCategoryViewModel @Inject constructor(
                 }
 
                 order_note = cartModel.note
-                serviceChargeCalculationModel(cartModel)
                 subTotalPrice -= cartModel.discountPrice
 
                 if (subTotalPrice < 0) {
                     subTotalPrice = 0.0
                 }
+                serviceChargeCalculationModel(cartModel)
 
 
 
