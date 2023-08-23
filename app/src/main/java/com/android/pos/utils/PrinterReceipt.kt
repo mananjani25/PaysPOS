@@ -3699,7 +3699,7 @@ fun addOrderItemOnlineOrderSunmiInner(
 
         PrintSunmiUtils.normalText(
             padLineCustomerItem(
-                obj.quantity.toString() + "x " + getItemNameToShow(obj.itemName),
+                obj.quantity.toString() + " " + getItemNameToShow(obj.itemName),
                 getItemPriceToShow(totalPriceOnlineOrder(obj)),
                 if (font == Constants.LARGE) {
                     23
