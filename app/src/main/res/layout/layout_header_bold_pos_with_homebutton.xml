@@ -168,6 +168,7 @@
                 android:layout_gravity="center"
                 android:layout_marginEnd="@dimen/_5sdp"
                 android:padding="@dimen/_4sdp"
+                android:visibility="gone"
                 android:src="@drawable/ic_lock"
                 app:tint="@color/txtColor" />
             <TextView
