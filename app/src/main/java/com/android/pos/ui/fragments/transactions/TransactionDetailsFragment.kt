@@ -1501,7 +1501,6 @@ class TransactionDetailsFragment : Fragment() {
                             enabled,
                             1000
                         )
-                        printer?.setStatusChangeEventCallback(this)
                     } catch (e: Exception) {
                         //  printerDialog.dismiss()
                         printer = null
