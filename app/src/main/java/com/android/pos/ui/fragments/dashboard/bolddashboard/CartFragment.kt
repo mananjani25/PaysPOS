@@ -307,10 +307,8 @@ class CartFragment(
         LogUtil.logE("Customer Name", name)
         if (name.isNotEmpty() && name != null) {
             binding.txtAddCustomer.text = name
-           // binding.txtAddCustomer.gravity = Gravity.START
         } else {
             binding.txtAddCustomer.text = getString(R.string.add_customer2)
-           // binding.txtAddCustomer.gravity = Gravity.END
         }
 
     }
@@ -1056,7 +1054,11 @@ class CartFragment(
                             cartlist = it as ArrayList<CartModel>
                             if (isFromPayment) {
 
-                                if (MethodUtils.isEnableCashDiscount(requireContext()) && prefProvider.getValue(ORDER_TYPE, TAKEOUT) != Constants.GIFT_CARD) {
+                                if (MethodUtils.isEnableCashDiscount(requireContext()) && prefProvider.getValue(
+                                        ORDER_TYPE,
+                                        TAKEOUT
+                                    ) != Constants.GIFT_CARD
+                                ) {
                                     binding.linearCashDiscount.visible()
                                     if (prefProvider.getValue(
                                             OPTION_TYPE,
@@ -2056,9 +2058,12 @@ class CartFragment(
                             ) { _, _ ->
                             }
                         } else {
-                            Log.e(TAG,".destroyedListRelPR:  ${viewModel.destroyedList.size}")
-                            Log.e("IssueBIS777","getITems:  ${viewModel.cartModel?.items?.size}")
-                            Log.e("IssueBIS777","getITemsFromScreen:  ${viewModel.cartModel?.items?.size}")
+                            Log.e(TAG, ".destroyedListRelPR:  ${viewModel.destroyedList.size}")
+                            Log.e("IssueBIS777", "getITems:  ${viewModel.cartModel?.items?.size}")
+                            Log.e(
+                                "IssueBIS777",
+                                "getITemsFromScreen:  ${viewModel.cartModel?.items?.size}"
+                            )
 
                             if (cartlist[0] != null) {
 
