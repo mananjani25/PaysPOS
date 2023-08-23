@@ -205,8 +205,20 @@ open class PaymentViewModel @Inject constructor(
                                     //Added by Dharmesh Basapati to avoid crash due to empty payments array
                                     if (response.data.order.payments.isNotEmpty()) {
                                         if (createOrderResponse.data.order.orderType != "Dine In" && response.data.order.payments[response.data.order.payments.size - 1].paymentType != "Card") {
-                                            cashLogApi(createOrderResponse, "in")
-                                            LogUtil.logE("QueueCheck", "CashLogAPI")
+
+                                           if (response.data.order.payments[0].payableType != "GiftCardRedeem"){
+                                               cashLogApi(createOrderResponse, "in")
+                                           }else {
+                                               val order = createOrderResponse.data.order
+
+                                               if (order.payments.isNotEmpty()) {
+                                                   if (order.payments[order.payments.size - 1].amount + order.payments[order.payments.size - 1].tips == totalPayAmounts) {
+                                                       _data.value = Event(createOrderResponse)
+                                                   } else {
+                                                       cashOutApi(createOrderResponse, "out")
+                                                   }
+                                               }
+                                           }
                                         } else {
                                             _data.value = Event(createOrderResponse)
                                             LogUtil.logE("QueueCheck", "CreateOrderData")
