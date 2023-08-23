@@ -591,10 +591,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             }
                             if (custom_paymentAmount != 0.0 && isSelectedCount != 1) {
                                 var splitChange = 0.0
-                                splitChange = custom_paymentAmount - paymentAmount
+                                splitChange = custom_paymentAmount - (paymentAmount + tipAmount)
                                 bundle.putDouble(
                                     "splitChange", String.format("%.2f", splitChange).toDouble()
                                 )
+                                splitChange = custom_paymentAmount - (paymentAmount)
                                 remainingValue = wholePrice - (custom_paymentAmount - splitChange)
                                 bundle.putDouble(
                                     "remainingAmount",
@@ -773,7 +774,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             )
                             wholePrice - String.format(
                                 "%.2f",
-                                paymentAmount - (cashDiscountSurcharge)
+                                paymentAmount - (cashDiscountSurcharge / isSelectedCount)
                             ).toDouble()
                         } else {
                             wholePrice - paymentAmount
