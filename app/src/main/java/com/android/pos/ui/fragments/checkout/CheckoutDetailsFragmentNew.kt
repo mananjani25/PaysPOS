@@ -767,16 +767,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                         var remainingValue = 0.0
                         remainingValue = if (cashDiscountType == "SurCharge") {
-                            Log.d(
-                                TAG,
-                                "observeData: " + wholePrice + " " + String.format(
-                                    "%.2f",
-                                    paymentAmount - (cashDiscountSurcharge)
-                                ).toDouble()
-                            )
                             wholePrice - String.format(
                                 "%.2f",
-                                paymentAmount - (cashDiscountSurcharge/isSelectedCount)
+                                paymentAmount - (cashDiscountSurcharge)
                             ).toDouble()
                         } else {
                             wholePrice - paymentAmount
