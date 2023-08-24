@@ -5919,14 +5919,14 @@ class AllOrdersListingFragment(
 
             if (kitchenSettingModel.showOrderType) {
                 PrintSunmiUtils.headerText(orderData.orderTypeName.toString())
-                SunmiPrinterApi.getInstance().lineWrap(1)
+                SunmiPrintHelper.getInstance().lineWrap(1)
 
                 if ((orderData.orderType.equals(Constants.PHONE_ORDER, true) ||
                             orderData.orderType.equals("OnlineWebOrder", true) ||
                             orderData.orderType.equals("Online Order", true) ||
                             orderData.orderType.equals("OnlineOrder", true)) && orderData.deliveryType != null) {
                     PrintSunmiUtils.headerText(orderData.deliveryType.toString())
-                    SunmiPrinterApi.getInstance().lineWrap(1)
+                    SunmiPrintHelper.getInstance().lineWrap(1)
                 }
             }
 
