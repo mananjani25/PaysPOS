@@ -211,6 +211,7 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
             val report = ReportRequest()
             report.TransType = report.ParseTransType("LOCALDETAILREPORT") //recommend
             report.EDCType = report.ParseEDCType("CREDIT")
+            report.RefNum = ""
 //        report.PaymentType = report.ParseTransType("SALE")
             posLink.ReportRequest = report
             val result = posLink.ProcessTrans()
@@ -228,10 +229,6 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                 Log.d("Params:", "Report $resultCode $resultTxt ${response.ExtData}  ${Gson().toJson(response)}")
             }
         }
-    }
-
-    private fun tokenizeRefund() {
-
     }
 
     private fun refundViaPAX() {
