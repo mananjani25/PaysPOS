@@ -517,7 +517,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         binding.txtPaymentAmount.text =
                             "" + MainApplication.getInstance()!!
                                 .getText(R.string.symbole) + MethodUtils.roundOffAmountDown(
-                                paidAmount + tipAmount
+                                paidAmount
                             ).toDouble().toPrecision(2) + " payment successful"
 
                         LogUtil.logE("Change 1", binding.txtChangeAmount.text.toString())
@@ -577,7 +577,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         binding.txtPaymentAmount.text =
                             "" + MainApplication.getInstance()!!
                                 .getText(R.string.symbole) + MethodUtils.roundOffAmountDown(
-                                paidAmount + tipAmount
+                                paidAmount
                             ).toDouble().toPrecision(2) + " payment successful"
                     } else {
                         binding.txtPaymentAmount.text =
@@ -5978,8 +5978,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     }
 
     private fun moveToDashboard() {
-
-
+        prefProvider.setValueboolean(Constants.TIP_ADDED, false)
         if (isSpilt) {
             if (isDineIn) {
                 val navController = findNavController()
