@@ -183,24 +183,18 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
 
             var totalServiceCharge = 0.0
 
+
+
+            if (totalItemPrice >= orderDiscount) {
+                totalItemPrice -= orderDiscount
+            }
+
             serviceChargeList.forEach {
                 totalServiceCharge += (totalItemPrice * it.percentage) / 100
             }
             String.format("%.2f", totalServiceCharge)
                 .toDouble()
-            Log.d(
-                "yash",
-                "bind: [$absoluteAdapterPosition] totalServiceCharge : $totalServiceCharge"
-            )
-
             totalItemPrice += (totalTax + totalServiceCharge)
-            if (totalItemPrice >= orderDiscount) {
-                totalItemPrice -= orderDiscount
-            }
-            Log.d(
-                "yash",
-                "bind: [$absoluteAdapterPosition] totalItemPrice : $totalItemPrice"
-            )
 
             var cashDiscountDivide = 0.0
             if (cash_discount_or_surcharge > 0.0) {

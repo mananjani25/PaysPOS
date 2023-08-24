@@ -423,13 +423,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                     temp_totalPrice += (modifiers.price * modifiers.quantity)
                 }
 
-//                item serviceCharge
-                if (serviceChargesList?.isNotEmpty() == true) {
-                    serviceChargesList?.forEach {
-                        itemServiceCharge += (temp_totalPrice * it.percentage) / 100
-                    }
-                }
-                totalServiceCharge += itemServiceCharge
+
                 // order Discount Divide calculation
 
                 selectedOrderDiscountDivided += (temp_totalPrice * orderDiscount) / (paymentOrderDetailsResponse.data.sub_total + orderDiscount)
@@ -445,6 +439,13 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                             (temp_totalPrice * orderDiscount) / (paymentOrderDetailsResponse.data.sub_total + orderDiscount)
                     }
                 }
+                //                item serviceCharge
+                if (serviceChargesList?.isNotEmpty() == true) {
+                    serviceChargesList?.forEach {
+                        itemServiceCharge += ((temp_totalPrice - itemwiseOrderDiscount)* it.percentage) / 100
+                    }
+                }
+                totalServiceCharge += itemServiceCharge
 
 
                 // loyalty point
