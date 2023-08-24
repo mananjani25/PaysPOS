@@ -13,7 +13,7 @@
 
     <item
         android:id="@+id/menu_order_note"
-        android:title="@string/add_note"
+        android:title="@string/add_order_note"
         tools:ignore="HardcodedText" />
 
     <item

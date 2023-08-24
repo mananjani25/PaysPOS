@@ -32,7 +32,7 @@
                 android:layout_centerInParent="true"
                 android:layout_gravity="center"
                 android:gravity="center"
-                android:text="Add Note"
+                android:text="@string/add_order_note"
                 android:textSize="@dimen/_7mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -85,7 +85,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/background_square_border_grey"
-                android:hint="@string/add_a_note"
+                android:hint="@string/add_a_order_note"
                 android:imeOptions="actionDone"
                 android:digits="@string/character_digits_String"
                 android:maxLength="60"
