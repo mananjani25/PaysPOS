@@ -137,11 +137,7 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
             }*/
             if (referenceNo.isNullOrEmpty()) {
                 doneClick()
-            } else if (referenceNo.isNullOrEmpty() && prefProvider.getValueboolean(
-                    Constants.IS_PAX_CONNECTED,
-                    false
-                )
-            ) {
+            } else if(!referenceNo.isNullOrEmpty() && prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)) {
                 refundViaPAX()
             } else if (!referenceNo.isNullOrEmpty() && !prefProvider.getValueboolean(
                     Constants.IS_PAX_CONNECTED,
@@ -272,7 +268,16 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                     } else {
                         CoroutineScope(Dispatchers.Main).launch {
                             ProgressUtils.dismissProgressDialog()
-                            if (result.Msg.toString() == "CONNECT ERROR" || result.Msg.toString() == "TIME OUT") {
+                            AlertUtils.showCustomAlertWithListenerWithOKCancel(
+                                requireContext(),
+                                getString(R.string.pax_connect_error), getString(R.string.reconnect),
+                            )
+                            { _, _ ->
+                                // Add connect to PAX logic
+                                magtekProViewModel.initPOSLink(requireContext())
+                            }
+
+                            /*if (result.Msg.toString() == "CONNECT ERROR" || result.Msg.toString() == "TIME OUT") {
                                 AlertUtils.showCustomAlertWithListenerWithOKCancel(
                                     requireContext(),
                                     getString(R.string.pax_connect_error),
@@ -282,18 +287,18 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                                     // Add connect to PAX logic
                                     magtekProViewModel.initPOSLink(requireContext())
                                 }
-                                /*Toast.makeText(
-                                        requireContext(),
-                                        R.string.pax_connect_error,
-                                        Toast.LENGTH_LONG
-                                    ).show()*/
+                            /*Toast.makeText(
+                                    requireContext(),
+                                    R.string.pax_connect_error,
+                                    Toast.LENGTH_LONG
+                                ).show()*/
                             } else {
                                 Toast.makeText(
                                     requireContext(),
                                     "getMerchantDetails Failed ${result.Code} ${result.Msg}",
                                     Toast.LENGTH_LONG
                                 ).show()
-                            }
+                            }*/
                         }
                     }
                 }

@@ -1768,7 +1768,18 @@ class CustomDisplay(
 
                 signatureInBase64 = bitmapToBase64(signaturePad.signatureBitmap)
 
-                magtekCall(wholeTotalPrice)
+//                magtekCall(wholeTotalPrice)
+
+                if (mPaymentViewModel.paxReferenceNo.isNullOrEmpty()) {
+                    magtekCall(wholeTotalPrice)
+                } else if(!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)){
+                    adjustPaxTips()
+                } else if(!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && !prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)){
+                    AlertUtils.showCustomAlert(
+                        context,
+                        "Please connect to PAX device"
+                    )
+                }
 
             }
 
@@ -1847,8 +1858,19 @@ class CustomDisplay(
     override fun selectedItem(model: GetTipReponse.Data, pos: Int, wholeTotalPrice: Double) {
         tipRate = model.rate
         tippedAmount = MethodUtils.percentageCalculation(wholeTotalPrice, model.rate)
+        Log.d("selectedItem: ","tip params $tipRate $tippedAmount")
         if ((mIsCardPayment && !mIsSignatureRequired) || (!mIsCardPayment)) {
-            callUpdateTip()
+//            callUpdateTip()
+            if (mPaymentViewModel.paxReferenceNo.isNullOrEmpty()) {
+                callUpdateTip()
+            } else if(!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)){
+                adjustPaxTips()
+            } else if(!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && !prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)){
+                AlertUtils.showCustomAlert(
+                    context,
+                    "Please connect to PAX device"
+                )
+            }
         }
         if (!binding.signaturePad.isEmpty) {
             enableConfirmButton()
