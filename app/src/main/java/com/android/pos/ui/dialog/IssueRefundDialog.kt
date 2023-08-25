@@ -491,7 +491,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
         val rounded: String = nf1.format(selectedTipDivided)
         selectedTipDivided = rounded.toDouble()
 
-        if (paymentOrderDetailsResponse.data.payment_type == "Card") {
+        /*if (paymentOrderDetailsResponse.data.payment_type == "Card") {
             if (totalItemPrice >= selectedTipDivided) {
                 totalItemPrice += selectedTipDivided
             } else if (totalItemPrice == 0.0) {
@@ -499,7 +499,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
             } else {
                 totalItemPrice += paymentOrderDetailsResponse.data.tips
             }
-        }
+        }*/
         val nf3: NumberFormat = NumberFormat.getNumberInstance()
         nf3.maximumFractionDigits = 2
         val rounded3: String = nf3.format(selectedLoyaltyPointDivided)
