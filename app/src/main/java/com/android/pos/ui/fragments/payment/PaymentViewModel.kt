@@ -962,6 +962,8 @@ open class PaymentViewModel @Inject constructor(
         globalUID: String = "",
         refNum: String = "",
         extData: String = "",
+        ECRRefNumber: String = "",
+        PAXtoken: String = "",
         cardLastDigits: String = "",
         totalServiceChargeM: Double = 0.0,
         totalDiscountM: Double = 0.0
@@ -1075,6 +1077,8 @@ open class PaymentViewModel @Inject constructor(
                 globalUID,
                 refNum,
                 extData,
+                ECRRefNumber,
+                PAXtoken,
                 cardLastDigits
             )
         } else {
@@ -1848,6 +1852,8 @@ open class PaymentViewModel @Inject constructor(
         globalUID: String = "",
         refNum: String = "",
         extData: String = "",
+        ECRRefNumber: String = "",
+        PAXtoken: String = "",
         cardLastDigits: String = ""
     ): PaymentAttributes {
         return PaymentAttributes().apply {
@@ -1926,6 +1932,8 @@ open class PaymentViewModel @Inject constructor(
             ext_data = extData
             global_uniq_id = globalUID
             ref_num = refNum
+            ecr_ref_num = ECRRefNumber
+            pax_transaction_token = PAXtoken
             cardNumber = cardLastDigits.ifEmpty { "" }
 
             magensa_response = magensaResponse.toString()

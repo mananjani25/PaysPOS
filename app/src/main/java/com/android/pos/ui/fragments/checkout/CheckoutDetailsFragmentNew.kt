@@ -147,6 +147,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     var EDCType = ""
     var GlobalUID = ""
     var RefNumber = ""
+    var ECRRefNumber = ""
+    var PAXtoken = ""
     var ExtData = ""
 
     private var cartList: CartModel? = null
@@ -2104,6 +2106,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             posLink.SetCommSetting(SettingINI.getCommSettingFromFile("/storage/emulated/0/Download/"+ SettingINI.FILENAME))
             val amt = ((paymentAmount-tipAmount)*100).toInt()
             val tip_amt = (tipAmount*100).toInt()
+            ECRRefNumber = System.currentTimeMillis().toString()
             Log.d("Amt: ","amt $amt tip $tip_amt")
 
             CoroutineScope(Dispatchers.Main).launch {
@@ -2114,9 +2117,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             mPaymentRequest.TenderType = mPaymentRequest.ParseTenderType("CREDIT")
             mPaymentRequest.Amount = amt.toString()
             mPaymentRequest.TipAmt = tip_amt.toString()
-            mPaymentRequest.ECRRefNum = System.currentTimeMillis().toString()
+            mPaymentRequest.ECRRefNum = ECRRefNumber
             mPaymentRequest.ExtData = "<Force>T</Force><TokenRequest>1</TokenRequest>"
-            Log.d("ECRRefNum", "ECRRefNum: ${System.currentTimeMillis().toString()}")
+            Log.d("ECRRefNum", "ECRRefNum: $ECRRefNumber")
 
             posLink.PaymentRequest = mPaymentRequest
             val result = posLink.ProcessTrans()
@@ -2142,7 +2145,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 //                prefProvider.setValue(Constants.GLOBAL_ID, globalUID!!)
 
                 //implementation("org.dom4j:dom4j:2.1.3")
-                response.PaymentTransInfo.Token
+                PAXtoken = response.PaymentTransInfo.Token
+                Log.d("token:", "token $PAXtoken")
                 Log.d(
                     "Payment Details: ",
                     "$ExtData $resultCode $resultTxt $GlobalUID $RefNumber"
@@ -2749,6 +2753,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 GlobalUID,
                 RefNumber,
                 ExtData,
+                ECRRefNumber,
+                PAXtoken,
                 cardLastDigits
             )
         }
