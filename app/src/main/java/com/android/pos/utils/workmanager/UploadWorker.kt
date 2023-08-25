@@ -55,10 +55,8 @@ import com.hosopy.actioncable.Consumer
 import com.hosopy.actioncable.Subscription
 import com.sunmi.externalprinterlibrary2.ConnectCallback
 import com.sunmi.externalprinterlibrary2.ResultCallback
-import com.sunmi.externalprinterlibrary2.StatusCallback
 import com.sunmi.externalprinterlibrary2.printer.CloudPrinter
 import com.sunmi.externalprinterlibrary2.printer.CloudPrinterBuilder
-
 import com.sunmi.externalprinterlibrary2.style.AlignStyle
 import com.sunmi.externalprinterlibrary2.style.CloudPrinterStatus
 import com.sunmi.externalprinterlibrary2.style.UnderlineStyle
@@ -359,8 +357,12 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                     ) {
 
                         sendNotification("Please check your Network Connectivity.")
-                        consumer?.connect()
+                        try {
+                            consumer?.connect()
 
+                        }catch (e:Exception){
+                            e.printStackTrace()
+                        }
 
                     }
 
@@ -2542,14 +2544,18 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
             TAG,
             "getTransaction  " + Gson().toJson(cloudPrinter?.cloudPrinterInfo) + "isCloudConnected:  ${cloudPrinter?.isConnected}"
         )
-        cloudPrinter?.getDeviceState(object : StatusCallback {
-            override fun onResult(p0: CloudPrinterStatus?) {
-                Log.e(TAG, "cloudPrinterStatus:   ${Gson().toJson(p0)}")
+
+        var isFirstTimeInfo = false
+        cloudPrinter?.getDeviceState {p0->
+            Log.e(TAG, "cloudPrinterStatus:   ${Gson().toJson(p0)}")
+            if (isFirstTimeInfo==false) {
+                isFirstTimeInfo = true
                 if (p0?.name.equals("OUT_PAPER", true) || p0?.name.equals(
                         "UNKNOWN",
                         true
                     ) || p0?.name.equals("COVER", true)
                 ) {
+
                     cloudPrinter.clearTransBuffer()
                     cloudPrinter.release(mContext)
                     isQueueRunning = false
@@ -2594,18 +2600,26 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                 } else {
                     try {
 
+                        Log.e(
+                            TAG,
+                            "isPrinterquueRin ${isQueueRunning}  printerRnning  ${isPrinterRunning}"
+                        )
                         cloudPrinter.commitTransBuffer(
                             this@UploadWorker
                         )
 
                     } catch (e: Exception) {
+
+                        cloudPrinter.clearTransBuffer()
+                        cloudPrinter.release(mContext)
+                        isQueueRunning = false
                         e.printStackTrace()
                     }
                 }
-
             }
 
-        })
+        }
+
 
 
     }

@@ -3505,7 +3505,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 } else {
                     binding.maskLayout?.gone()
                     //ProgressUtils.dismissProgressDialog()
-                    getConnectedPrinters()
+                    //getConnectedPrinters()
                 }
             }
         }
@@ -3860,10 +3860,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         }
 
         val createPrinter = CreatePrinterRequestModel(
-            name = innerPrinterModel.printerName,
+            name = innerPrinterModel.modelName,
             terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, 0),
             macAddress = innerPrinterModel.deviceModel?.macAddress,
-            modalName = innerPrinterModel.deviceModel?.printerName,
+            modalName = innerPrinterModel.modelName,
             terminalIds = listOf(prefProvider.getValueInt(Constants.TERMINAL_ID, 1)),
             status = true,
             locationId = prefProvider.getValueInt(Constants.LOCATION_ID, 1),
