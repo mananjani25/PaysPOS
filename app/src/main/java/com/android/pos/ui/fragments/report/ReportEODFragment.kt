@@ -2775,7 +2775,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 SunmiPrintHelper.getInstance().lineWrap(1)
 
                 eodReportData?.clockInClockOut?.forEach {
-                    it.filter { it.key == "Total Working Hour" }.forEach { data ->
+                    it.forEach { data ->
                         if (data.key != "Total") {
                             PrintSunmiUtils.normalText(
                                 padLine(
