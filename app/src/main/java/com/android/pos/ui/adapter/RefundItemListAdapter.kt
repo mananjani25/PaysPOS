@@ -227,36 +227,36 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
                 "bind: [" + absoluteAdapterPosition + "] loyaltyAmountPerItem : " + loyaltyAmountPerItem
             )
 
-            var tip_divided = 0.0
-            if (totalItemPrice == 0.0) {
-                if (final_Amount == 0.0) {
-                    tip_divided = tipValue / noteList.size
-                } else {
-                    tip_divided = (totalItemPrice * tipValue) / final_Amount
-                }
-            } else {
-                if (cashdiscountType == "SurCharge") {
-                    tip_divided =
-                        (totalItemPrice * tipValue) / (final_Amount + cash_discount_or_surcharge)
-                } else {
-                    tip_divided = (totalItemPrice * tipValue) / (final_Amount)
-                }
-            }
+            /* var tip_divided = 0.0
+             if (totalItemPrice == 0.0) {
+                 if (final_Amount == 0.0) {
+                     tip_divided = tipValue / noteList.size
+                 } else {
+                     tip_divided = (totalItemPrice * tipValue) / final_Amount
+                 }
+             } else {
+                 if (cashdiscountType == "SurCharge") {
+                     tip_divided =
+                         (totalItemPrice * tipValue) / (final_Amount + cash_discount_or_surcharge)
+                 } else {
+                     tip_divided = (totalItemPrice * tipValue) / (final_Amount)
+                 }
+             }
 
-            val nf1: NumberFormat = NumberFormat.getNumberInstance()
-            nf1.maximumFractionDigits = 2
-            val rounded: String = nf1.format(tip_divided)
-            tip_divided = rounded.replace(",","").toDouble()
-            if (paymentType == "Card") {
-                    if (totalItemPrice >= tip_divided) {
-                        // Commented by Mansi to remove tip from refund
-//                        totalItemPrice += tip_divided
-                    } else if (totalItemPrice == 0.0) {
-                        totalItemPrice += tipValue / noteList.size
-                    } else {
-                        totalItemPrice += tipValue
-                    }
-            }
+             val nf1: NumberFormat = NumberFormat.getNumberInstance()
+             nf1.maximumFractionDigits = 2
+             val rounded: String = nf1.format(tip_divided)
+             tip_divided = rounded.replace(",","").toDouble()
+             if (paymentType == "Card") {
+                     if (totalItemPrice >= tip_divided) {
+                         // Commented by Mansi to remove tip from refund
+ //                        totalItemPrice += tip_divided
+                     } else if (totalItemPrice == 0.0) {
+                         totalItemPrice += tipValue / noteList.size
+                     } else {
+                         totalItemPrice += tipValue
+                     }
+             }
 
 
 
@@ -264,7 +264,7 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
             Log.d(
                 "yash",
                 "bind: [$absoluteAdapterPosition] tip_divided : $tip_divided"
-            )
+            )*/
 
             if (totalItemPrice >= loyaltyAmountPerItem) {
                 totalItemPrice -= loyaltyAmountPerItem
