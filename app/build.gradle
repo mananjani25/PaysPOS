@@ -13,11 +13,11 @@ android {
     buildToolsVersion "30.0.3"
 
     defaultConfig {
-        applicationId "com.internetsoft.pos_pax"
+        applicationId "com.internetsoft.pos"
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 44
-        versionName "3.22"
+        versionCode 45
+        versionName "3.22.1"
 
 
         sourceSets { main { jniLibs.srcDirs = ['src/main/jniLibs/'] } }
