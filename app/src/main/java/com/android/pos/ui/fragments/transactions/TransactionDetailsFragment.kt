@@ -9,6 +9,7 @@ import android.os.*
 import android.util.Base64
 import android.util.Log
 import android.view.*
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
@@ -38,16 +39,17 @@ import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.OrderDetailsItemListAdapter
 import com.android.pos.ui.adapter.boldpos.TaxBirfurcationAdapter
 import com.android.pos.ui.fragments.magtek.MagtekRequestUtils
+import com.android.pos.ui.fragments.magtek.MagtekViewModel
 import com.android.pos.ui.fragments.magtek.PaymentResponse
 import com.android.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
 import com.android.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.android.pos.utils.*
 import com.android.pos.utils.TimeFormatUtils.convertCurrentDate
 import com.android.pos.utils.TimeFormatUtils.convertCurrentTime
-import com.android.pos.utils.extensions.gone
-import com.android.pos.utils.extensions.liveSnackBar
-import com.android.pos.utils.extensions.showAlert
-import com.android.pos.utils.extensions.visible
+import com.android.pos.utils.extensions.*
+import com.android.pos.utils.paxUtils.AppThreadPool
+import com.android.pos.utils.paxUtils.POSLinkCreatorWrapper
+import com.android.pos.utils.paxUtils.SettingINI
 import com.android.pos.utils.printer.PrinterClass
 import com.android.pos.utils.statusUtils.Status
 import com.epson.eposprint.Builder
@@ -55,12 +57,14 @@ import com.epson.eposprint.Print
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.google.gson.JsonArray
+import com.pax.poslink.PaymentRequest
+import com.pax.poslink.PosLink
+import com.pax.poslink.ProcessTransResult
 import com.sunmi.externalprinterlibrary.api.ConnectCallback
 import com.sunmi.externalprinterlibrary.api.SunmiPrinter
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -73,6 +77,7 @@ class TransactionDetailsFragment : Fragment() {
 
     private lateinit var binding: FragmentTransactionDetailsBinding
     private val viewModel by viewModels<TransactionDetailsViewModel>()
+    private val magtekProViewModel by viewModels<MagtekViewModel>()
 
     private lateinit var orderDetailsItemAdapter: OrderDetailsItemListAdapter
     private lateinit var taxBirfurcationAdapter: TaxBirfurcationAdapter
@@ -102,6 +107,13 @@ class TransactionDetailsFragment : Fragment() {
     private var taxlistbirfurcation: ArrayList<TaxData>? = arrayListOf()
     private var isSplitPayment = false
 
+    // PAX variables
+    private lateinit var mPaymentRequest: PaymentRequest
+    private var posLink: PosLink = PosLink()
+    var CARDBIN = ""
+    var cardLastDigits = ""
+    var CardName = ""
+    var EDCType = ""
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -142,7 +154,8 @@ class TransactionDetailsFragment : Fragment() {
             acceptedAndDeclineOrder()
         }
 
-
+        initPOSLink()
+        getMerchantDataObserver()
 
 
         return binding.root
@@ -271,7 +284,17 @@ class TransactionDetailsFragment : Fragment() {
             }
 
             if (paymentDetailsResponse.data?.payment_type == "Card") {
-                magtekCall(tipAmount)
+                Log.d("RefNum11: ","RefNum ${paymentDetailsResponse.data?.ref_num}")
+                if (paymentDetailsResponse.data?.ref_num.isNullOrEmpty()) {
+                    magtekCall(tipAmount)
+                } else if(!paymentDetailsResponse.data?.ref_num.isNullOrEmpty() && prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)){
+                    adjustPaxTips()
+                } else if(!paymentDetailsResponse.data?.ref_num.isNullOrEmpty() && !prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)){
+                    AlertUtils.showCustomAlert(
+                        requireContext(),
+                        "Please connect to PAX device"
+                    )
+                }
             } else {
                 tipCall(false)
             }
@@ -384,6 +407,126 @@ class TransactionDetailsFragment : Fragment() {
         binding.txtEmailReceipt.setOnClickListener {
             // 1 : email
             openReceiptDialog(2)
+
+        }
+    }
+
+    private fun initPOSLink() {
+        POSLinkCreatorWrapper.createSync(
+            context!!,
+            object : AppThreadPool.FinishInMainThreadCallback<PosLink?> {
+                override fun onFinish(result: PosLink?) {
+                    posLink = result!!
+                    Log.d("initPOSLink: ","onFinish")
+                }
+            })
+    }
+
+    private fun getMerchantDataObserver() {
+        magtekProViewModel.merchantData.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let { response ->
+                Log.d("merchantData: ","merchantData observe")
+                val resultCode = response.resultCode
+                val status = response.resultTxt
+                val mID = response.VarValue
+                prefProvider.setValueboolean(Constants.IS_PAX_CONNECTED, true)
+                prefProvider.setValue(
+                    Constants.MERCHANT_ID,
+                    mID
+                )
+                CoroutineScope(Dispatchers.Main).launch {
+                    ProgressUtils.dismissProgressDialog()
+                    adjustPaxTips()
+//                    AlertUtils.showCustomAlert(requireContext(), "Merchant $mID is connected successfully")
+                }
+                Log.d("Merchant Details: ", mID + " " + resultCode + "  " + status)
+            }
+        }
+    }
+
+    private fun adjustPaxTips() {
+        GlobalScope.launch {
+            posLink.SetCommSetting(SettingINI.getCommSettingFromFile(Constants.FILE_PATH + SettingINI.FILENAME))
+            val tip_amt = (tipAmount*100).toInt()
+            Log.d("Amt: ","tip $tip_amt RefNo ${paymentDetailsResponse.data?.ref_num}")
+
+            CoroutineScope(Dispatchers.Main).launch {
+                ProgressUtils.showProgressDialog(requireActivity())
+            }
+            mPaymentRequest = PaymentRequest()
+            mPaymentRequest.TransType = mPaymentRequest.ParseTransType("ADJUST")
+            mPaymentRequest.TenderType = mPaymentRequest.ParseTenderType("CREDIT")
+            mPaymentRequest.Amount = tip_amt.toString()
+            mPaymentRequest.OrigRefNum = paymentDetailsResponse.data?.ref_num
+            mPaymentRequest.ExtData = "<Force>T</Force>"
+
+            posLink.PaymentRequest = mPaymentRequest
+            val result = posLink.ProcessTrans()
+            Log.d("result: ", result.Code.toString() + " " + result.Msg)
+            if (result.Code === ProcessTransResult.ProcessTransResultCode.OK) {
+                val msg = Message()
+                msg.what = Constants.TRANSACTION_SUCCESSED
+                msg.obj = posLink.PaymentResponse
+
+                val response = msg.obj as com.pax.poslink.PaymentResponse
+                val resultCode = response.ResultCode
+                val resultTxt = response.ResultTxt
+                val approvedAmount = response.ApprovedAmount
+                val ExtData = response.ExtData
+
+                cardLastDigits = response.BogusAccountNum
+                EDCType = response.CardType
+                CARDBIN = response.CardInfo.CardBin
+                var tipAmount = response.ApprovedTipAmount
+                val globalUID = response.PaymentTransInfo.GlobalUid
+
+                Log.d(
+                    "Payment Details: ",
+                    "$ExtData $resultCode $resultTxt $globalUID"
+                )
+                Log.d("Payment Details: ", "$cardLastDigits $approvedAmount $CARDBIN $EDCType $tipAmount ${Gson().toJson(response)}")
+
+                if (resultCode == "000000") {
+                    CoroutineScope(Dispatchers.Main).launch {
+                        ProgressUtils.dismissProgressDialog()
+                        coroutineScope {
+//                            makePaymentCreditCard()
+                            tipCall(true)
+                        }
+                    }
+                } else {
+                    CoroutineScope(Dispatchers.Main).launch {
+                        ProgressUtils.dismissProgressDialog()
+                        requireActivity().toast("$resultCode $resultTxt", Toast.LENGTH_LONG)
+                    }
+                }
+            } else {
+                CoroutineScope(Dispatchers.Main).launch {
+                    ProgressUtils.dismissProgressDialog()
+                    AlertUtils.showCustomAlertWithListenerWithOKCancel(
+                        requireContext(),
+                        getString(R.string.pax_connect_error), getString(R.string.reconnect),
+                    )
+                    { _, _ ->
+                        // Add connect to PAX logic
+                        magtekProViewModel.initPOSLink(requireContext())
+                    }
+
+                    /*if (result.Msg.toString() == "CONNECT ERROR" || result.Msg.toString() == "TIME OUT"){
+                        AlertUtils.showCustomAlertWithListenerWithOKCancel(
+                            requireContext(),
+                            getString(R.string.pax_connect_error), getString(R.string.reconnect),
+                        )
+                        { _, _ ->
+                            // Add connect to PAX logic
+                            magtekProViewModel.initPOSLink(requireContext())
+                        }
+//                        Toast.makeText(requireContext(), R.string.pax_connect_error, Toast.LENGTH_LONG).show()
+                    } else {
+                        Toast.makeText(requireContext(), "getMerchantDetails Failed ${result.Code} ${result.Msg}", Toast.LENGTH_LONG).show()
+                    }*/
+                }
+            }
 
         }
     }

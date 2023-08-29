@@ -34,6 +34,8 @@ object Constants {
     const val SUNMIBRAND = "Sunmi"
     const val EPSONBRAND = "TM"
 
+    const val FILE_PATH = "/storage/emulated/0/Download/"
+
     // payment magtek
 
     const val TSYS_PRODUCTION = "TSYS - Production"
@@ -137,6 +139,11 @@ object Constants {
 
     const val PICK_UP = "Pickup"
     const val DELIVERY = "Delivery"
+    const val IS_PAX_CONNECTED = "isPAXConnected"
+    const val PAX_SERIAL_NO = "SerialNo"
+    const val PAX_TERMINAL_ID = "TerminalID"
+    const val PAX_IP = "IPAddress"
+    const val PAX_PORT = "Port"
 
     const val DELIVERY_TYPE = "Delivery_Type"
     const val OPEN_ORDER_ITEMS = "Open_Order_Items"
@@ -150,6 +157,7 @@ object Constants {
     const val CLOCK_OUT = "employee_activities/clock_out"
     const val LOGOUT = "users/log_out"
     const val FORGOT_PASSWORD = "users/forgot_password"
+    const val PAX_DETAILS = "GetDeviceLocalIP"
 
     const val EMPLOYEES = "employees"
     const val CUSTOMERS = "customers"
@@ -399,6 +407,12 @@ object Constants {
     const val ONLINE_ORDER_TAB = "OnlineWebOrder"
     const val THIRD_PARTY_ORDER_TAB = "OnlineOrder"
 
+    //PAX
+    const val TRANSACTION_SUCCESSED = 100 //transaction success
+    const val TRANSACTION_FAILURE = 101 //transaction failure
+    const val TRANSACTION_TIMEOOUT = 102 //transaction timeout
+    const val TRANSACTION_STATUS = 103 //transaction timeout
+    const val MERCHANT_ID = "merchant_id"
 
     fun createRequestModelForUpdatePritnerType(
         oldList: ArrayList<PrinterResponse.Data.OrderTypes>?,

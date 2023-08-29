@@ -84,6 +84,10 @@ data class VenueDetailsResponse(
         val wastageReasons: List<WastageReason>,
         @SerializedName("time_zone")
         val timeZone: String,
+        @SerializedName("sr_no")
+        val SerialNo: String,
+        @SerializedName("tid")
+        val PAXTerminalID: String,
         @SerializedName("user_id")
         val userId: Int,
         @SerializedName("is_printer_queue_enable")

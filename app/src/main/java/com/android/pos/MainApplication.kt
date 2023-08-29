@@ -3,15 +3,21 @@ package com.android.pos
 import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.content.Context
 import android.os.Build
 import android.os.Handler
 import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
+import com.android.pos.utils.paxUtils.Convenience
+import com.android.pos.utils.paxUtils.SettingINI
 import com.android.pos.utils.scanner.helpers.AvailableScanner
 import com.android.pos.utils.scanner.helpers.Barcode
 import com.android.pos.utils.scanner.helpers.Foreground
 import com.android.pos.utils.scanner.helpers.ScannerAppEngine
 import com.google.firebase.FirebaseApp
+import com.pax.poslink.CommSetting
+import com.pax.poslink.LogSetting
+import com.pax.poslink.POSLinkAndroid
 import com.testfairy.TestFairy
 import com.zebra.scannercontrol.DCSScannerInfo
 import com.zebra.scannercontrol.SDKHandler
@@ -26,14 +32,22 @@ class MainApplication : Application() {
         FirebaseApp.initializeApp(this)
         //bhumit.bhadani@bacancy.com = 10Ce70901@
         //TestFairy.begin(this, "SDK-SrnpgIU9"); // vishal.j.patel+103@bacancy.com/Pos@2022
+        //TestFairy.begin(this, "SDK-tk8IVNOn") // urmit
+        TestFairy.begin(this, "SDK-0JX1sKj9") // mansi.kothari@bacancy.com
         instance = this
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
 
         Foreground.init(this)
         createNotificationChannel()
         sdkHandler = SDKHandler(this, true)
+        init()
+    }
 
-
+    fun init(){
+        val commSetting: CommSetting = setupSetting(applicationContext)
+        POSLinkAndroid.init(applicationContext, commSetting)
+        Log.i("DEBUG", "Start Application")
+        Convenience.init(applicationContext)
     }
 
     companion object {
@@ -152,5 +166,44 @@ class MainApplication : Application() {
         }
     }
 
+    private fun setupSetting(context: Context): CommSetting {
+        val settingIniFile = context.filesDir.absolutePath + "/" + SettingINI.FILENAME
+        val commSetting: CommSetting = SettingINI.getCommSettingFromFile(settingIniFile)
+        disableProxyForThisVersion(commSetting, settingIniFile)
+
+        //initialization value  for comsetting's attribute
+        commSetting.type = CommSetting.TCP
+        commSetting.timeOut = "-1"
+        commSetting.baudRate = "9600"
+//        commSetting.serialPort = "COM1"
+        commSetting.isEnableProxy = false
+        commSetting.macAddr = ""
+        commSetting.destIP = "127.0.0.1"
+        commSetting.destPort = "10009"
+        /*val selectedHost = "UNKNOWN"
+        Convenience.setHost(context, commSetting, selectedHost)*/
+        SettingINI.saveCommSettingToFile(settingIniFile, commSetting)
+
+        Log.i(
+            "TAG", "coms.CommType = " + commSetting.type + "; coms.TimeOut=" + commSetting.timeOut
+                    + "; SerialPort=" + commSetting.serialPort + "; coms.BaudRate=" + commSetting.baudRate
+                    + "; coms.DestIP=" + commSetting.destIP + "; coms.DestPort=" + commSetting.destPort + "; coms.MacAddr=" + commSetting.macAddr + "; coms.EnableProxy=" + commSetting.isEnableProxy
+        )
+
+        if (!SettingINI.loadSettingFromFile(settingIniFile)) {
+            //String LogOutputFile = getApplicationContext().getFilesDir().getAbsolutePath() + "/POSLog.txt";
+            val LogOutputFile = context.getExternalFilesDir(null)!!.path
+            LogSetting.setLogMode(true)
+            LogSetting.setLevel(LogSetting.LOGLEVEL.DEBUG)
+            LogSetting.setOutputPath(LogOutputFile)
+            SettingINI.saveLogSettingToFile(settingIniFile)
+        }
+        return SettingINI.getCommSettingFromFile(settingIniFile)
+    }
+
+    private fun disableProxyForThisVersion(commSetting: CommSetting, settingIniFile: String) {
+        commSetting.isEnableProxy = false
+        SettingINI.saveCommSettingToFile(settingIniFile, commSetting)
+    }
 
 }

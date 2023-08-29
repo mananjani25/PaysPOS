@@ -68,6 +68,8 @@
 
     <string name="variation_name_validate">Please enter Variation Name</string>
 
+    <string name="pax_connect_error">Please check your internet connection.\nPlease ensure your Card Reader is on same network.</string>
+
     <string name="category_name_validate">Please enter Category Name</string>
     <string name="modifier_name_validate">Please enter Modifier Name</string>
     <string name="modifier_set_name_validate">All modifier names must be different</string>
@@ -753,6 +755,7 @@
     <string name="virtual_tether_notification_channel_description">Virtual Tether Notification Channel is used to alarm the user when the virtual tether event occurs.</string>
     <string name="scan_gun_list">Scan Gun List</string>
     <string name="connect">Connect</string>
+    <string name="reconnect">Reconnect your Card Reader</string>
     <string name="disconnect">Disconnect</string>
     <string name="connected_devices">Connected Devices</string>
     <string name="no_scanner_found">No scanner found.</string>
