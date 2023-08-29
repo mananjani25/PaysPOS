@@ -32,6 +32,7 @@ import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.settings.business.AutoCompleteAdapter
 import com.android.pos.utils.*
 import com.android.pos.utils.callback.AddressTextChangeListner
+import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.liveSnackBar
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.net.FetchPlaceRequest
@@ -444,6 +445,7 @@ class AddEditCustomer : Fragment(), AddressTextChangeListner {
             showDatePicker()
 
         }
+        binding.relativeDeliveryaddress.visibility=View.GONE
 
         setTextWatcherForAddressField(false)
 

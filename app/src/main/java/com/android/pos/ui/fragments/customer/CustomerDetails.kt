@@ -184,10 +184,10 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
             } else if (customerModel.addresses.size == 2) {
                 if (customerModel.addresses[0].type_of_address == "Shipping") {
                     address.append("Delivery" + " : " + customerModel.addresses[0].full_address + "\n")
-                    address.append(customerModel.addresses[1].type_of_address + " : " + customerModel.addresses[1].full_address)
+                    //address.append(customerModel.addresses[1].type_of_address + " : " + customerModel.addresses[1].full_address)
                 } else {
                     address.append("Delivery" + " : " + customerModel.addresses[1].full_address + "\n")
-                    address.append(customerModel.addresses[0].type_of_address + " : " + customerModel.addresses[0].full_address)
+                    //address.append(customerModel.addresses[0].type_of_address + " : " + customerModel.addresses[0].full_address)
                 }
             }
             address.also {
