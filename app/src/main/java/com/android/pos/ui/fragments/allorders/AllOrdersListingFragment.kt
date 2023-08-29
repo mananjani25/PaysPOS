@@ -1485,7 +1485,7 @@ class AllOrdersListingFragment(
                 builder.addText(receiptModel?.orderTypeName + "\n")
             }
 
-            /*if (receiptModel?.orderType?.lowercase() == Constants.OPEN_ORDER.lowercase()
+            if (receiptModel?.orderType?.lowercase() == Constants.PHONE_ORDER.lowercase()
                 || receiptModel?.orderType?.lowercase() == Constants.OPEN_ORDER.lowercase()
             ) {
 
@@ -1503,10 +1503,10 @@ class AllOrdersListingFragment(
                     Builder.COLOR_1
                 )
                 builder.addTextAlign(Builder.ALIGN_CENTER)
-//                builder.addText(receiptModel?.deliveryType + "\n")
+               builder.addText(receiptModel?.deliveryType + "\n")
 
 
-            }*/
+            }
 
 
 
@@ -2590,6 +2590,7 @@ class AllOrdersListingFragment(
         receiptModel: OnlineOrderResponseModel.Data,
         printType: String
     ) {
+        Log.e("orderdetails",receiptModel.toString());
         try {
 
             PrintSunmiUtils.fontSize(customerSettingModel.fonts)
@@ -2642,11 +2643,11 @@ class AllOrdersListingFragment(
             }
 
 
-            if (receiptModel?.orderType?.lowercase() == Constants.OPEN_ORDER.lowercase()
+            if (receiptModel?.orderType?.lowercase() == Constants.PHONE_ORDER.lowercase()
              || receiptModel?.orderType?.lowercase() == Constants.OPEN_ORDER.lowercase()
             ) {
 
-//                PrintSunmiUtils.deliveryType(receiptModel?.deliveryType)
+                PrintSunmiUtils.deliveryType(receiptModel?.deliveryType?.trim())
 
             }
 
@@ -5342,10 +5343,10 @@ class AllOrdersListingFragment(
             }
 
 
-            if (receiptModel?.orderType?.lowercase() == Constants.OPEN_ORDER.lowercase()
+            if (receiptModel?.orderType?.lowercase() == Constants.PHONE_ORDER.lowercase()
                 || receiptModel?.orderType?.lowercase() == Constants.OPEN_ORDER.lowercase()
             ) {
-//                PrintSunmiUtils.headerText(receiptModel?.deliveryType)
+               PrintSunmiUtils.headerText(receiptModel?.deliveryType)
 
             }
             SunmiPrintHelper.getInstance().lineWrap(1)
