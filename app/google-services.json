@@ -38,7 +38,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:1020959643373:android:2a8fdc508c54a21fcf9ee4",
         "android_client_info": {
-          "package_name": "com.internetsoft.pos_5"
+          "package_name": "com.internetsoft.pos"
         }
       },
       "oauth_client": [
@@ -46,7 +46,7 @@
           "client_id": "1020959643373-adf4e7o0untv9i3n0is2tjci7qur6d7j.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.internetsoft.pos_5",
+            "package_name": "com.internetsoft.pos",
             "certificate_hash": "966563d66a127adf0bc9956af06b863ff2aebfec"
           }
         },
