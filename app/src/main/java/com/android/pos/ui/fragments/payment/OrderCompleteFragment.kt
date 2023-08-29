@@ -484,12 +484,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 val title = "Split "
                 viewModel.addSplitToDatabase(
                     title,
-                    (paidAmount + tipAmount) - splitChange,
+                    ( if(!isCustomCash) paidAmount + tipAmount else paidAmount) - splitChange,
                     remainingAmount
                 )
                 binding.txtTitle.text =
                     MethodUtils.roundOffAmountDown(
-                        paidAmount + tipAmount
+                        if(!isCustomCash) paidAmount + tipAmount else paidAmount
                     ).toDouble().toPrecision(2)
 
 

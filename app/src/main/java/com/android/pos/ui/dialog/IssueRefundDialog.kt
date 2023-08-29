@@ -25,6 +25,7 @@ import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.databinding.DialogIssueRefundBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.RefundItemListAdapter
+import com.android.pos.ui.fragments.magtek.MagtekRequestUtils
 import com.android.pos.ui.fragments.transactions.TransactionDetailsViewModel
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.LogUtil
@@ -33,6 +34,7 @@ import com.android.pos.utils.MethodUtils.Companion.toPrecision
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.NumberFormat
 import java.util.*
+import javax.inject.Inject
 
 
 @AndroidEntryPoint
@@ -58,6 +60,8 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
     private var serviceChargesList: List<TbServiceCharge>? = arrayListOf()
     private var isSplitPayment = false
     private var guestCount: Int = 0
+    @Inject
+    lateinit var magtekRequestUtils: MagtekRequestUtils
 
     companion object {
         fun newInstance() = IssueRefundDialog()
@@ -98,7 +102,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
             if (mData.order.refund_detail.refunded_amount.equals(0.0)) {
 
                 if (mData.payment_type == "Card") {
-                    val totalamount_tip = mData.amount + mData.tips
+                    val totalamount_tip = mData.amount + tipCalculation(mData.tips)
                     MethodUtils.setRefundPriceTextView(
                         binding.tvTotalRefundAmount,
                         (totalamount_tip)
@@ -115,7 +119,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
             } else {
                 if (mData.payment_type == "Card") {
                     val price =
-                        (mData.amount + mData.tips) - mData.order.refund_detail.refunded_amount
+                        (mData.amount + tipCalculation(mData.tips)) - mData.order.refund_detail.refunded_amount
                     MethodUtils.setRefundPriceTextView(
                         binding.tvTotalRefundAmount,
                         price
@@ -170,7 +174,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                 if (mData.order.refund_detail.refunded_amount.equals(0.0)) {
 
                     if (mData.payment_type == "Card") {
-                        var totalamount_tip = mData.amount
+                        var totalamount_tip = mData.amount + tipCalculation(mData.tips)
                         MethodUtils.setRefundPriceTextView(
                             binding.tvTotalRefundAmount,
                             (totalamount_tip)
@@ -188,7 +192,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                 } else {
                     if (mData.payment_type == "Card") {
                         val price =
-                            (mData.amount + mData.tips) - mData.order.refund_detail.refunded_amount
+                            (mData.amount + tipCalculation(mData.tips)) - mData.order.refund_detail.refunded_amount
                         MethodUtils.setRefundPriceTextView(
                             binding.tvTotalRefundAmount,
                             price
@@ -423,13 +427,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                     temp_totalPrice += (modifiers.price * modifiers.quantity)
                 }
 
-//                item serviceCharge
-                if (serviceChargesList?.isNotEmpty() == true) {
-                    serviceChargesList?.forEach {
-                        itemServiceCharge += (temp_totalPrice * it.percentage) / 100
-                    }
-                }
-                totalServiceCharge += itemServiceCharge
+
                 // order Discount Divide calculation
 
                 selectedOrderDiscountDivided += (temp_totalPrice * orderDiscount) / (paymentOrderDetailsResponse.data.sub_total + orderDiscount)
@@ -445,6 +443,13 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                             (temp_totalPrice * orderDiscount) / (paymentOrderDetailsResponse.data.sub_total + orderDiscount)
                     }
                 }
+                //                item serviceCharge
+                if (serviceChargesList?.isNotEmpty() == true) {
+                    serviceChargesList?.forEach {
+                        itemServiceCharge += ((temp_totalPrice - itemwiseOrderDiscount)* it.percentage) / 100
+                    }
+                }
+                totalServiceCharge += itemServiceCharge
 
 
                 // loyalty point
@@ -490,7 +495,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
         val rounded: String = nf1.format(selectedTipDivided)
         selectedTipDivided = rounded.toDouble()
 
-        if (paymentOrderDetailsResponse.data.payment_type == "Card") {
+        /*if (paymentOrderDetailsResponse.data.payment_type == "Card") {
             if (totalItemPrice >= selectedTipDivided) {
                 totalItemPrice += selectedTipDivided
             } else if (totalItemPrice == 0.0) {
@@ -498,7 +503,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
             } else {
                 totalItemPrice += paymentOrderDetailsResponse.data.tips
             }
-        }
+        }*/
         val nf3: NumberFormat = NumberFormat.getNumberInstance()
         nf3.maximumFractionDigits = 2
         val rounded3: String = nf3.format(selectedLoyaltyPointDivided)
@@ -597,9 +602,10 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
             if (paymentOrderDetailsResponse.data.order.refund_detail.refunded_amount.equals(0.0)) {
                 if (paymentOrderDetailsResponse.data.payment_type == "Card") {
                     if (binding.edtAmount.text.toString()
-                            .toDouble() > paymentOrderDetailsResponse.data.amount + paymentOrderDetailsResponse.data.tips
+                            .toDouble() > paymentOrderDetailsResponse.data.amount + tipCalculation(paymentOrderDetailsResponse.data.tips)
                     ) {
-                        binding.edtAmount.setText(MethodUtils.roundOffAmountString((paymentOrderDetailsResponse.data.amount).toDouble()))
+                        var finalRefund: Double = paymentOrderDetailsResponse.data.amount + tipCalculation(paymentOrderDetailsResponse.data.tips)
+                        binding.edtAmount.setText(MethodUtils.roundOffAmountString((finalRefund).toDouble()))
                     }
                 } else {
                     if (binding.edtAmount.text.toString()
@@ -612,7 +618,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
             } else {
                 val newPrice: Double =
                     if (paymentOrderDetailsResponse.data.payment_type == "Card") {
-                        (paymentOrderDetailsResponse.data.amount + paymentOrderDetailsResponse.data.tips) - paymentOrderDetailsResponse.data.order.refund_detail.refunded_amount
+                        (paymentOrderDetailsResponse.data.amount + tipCalculation(paymentOrderDetailsResponse.data.tips)) - paymentOrderDetailsResponse.data.order.refund_detail.refunded_amount
                     } else {
                         paymentOrderDetailsResponse.data.amount - paymentOrderDetailsResponse.data.order.refund_detail.refunded_amount
                     }
@@ -626,6 +632,10 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
 
             binding.edtAmount.addTextChangedListener(this)
         }
+    }
+
+    fun tipCalculation(tip: Double): Double {
+        return if (magtekRequestUtils.gatewayName() == Constants.TSYS_GATEWAY) tip else 0.0
     }
 
     override fun afterTextChanged(s: Editable?) {
