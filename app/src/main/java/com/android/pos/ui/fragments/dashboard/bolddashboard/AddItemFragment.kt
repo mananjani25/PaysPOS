@@ -23,6 +23,7 @@ import com.android.pos.data.remote.Constants.DELETE
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
 import com.android.pos.data.remote.Constants.MAX_ITEM_QUANTITY
+import com.android.pos.data.remote.Constants.MAX_ITEM_QUANTITY_FOR_MANUAL_SALES
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.SERVICECHARGE_TAKEOUT_OPENORDER
 import com.android.pos.data.remote.Constants.TAKEOUT
@@ -165,7 +166,11 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                     }
                     binding.edttxtQuantity.setSelection(binding.edttxtQuantity.text!!.length)
                 } else {
-                    qty = 1
+                    try {
+                        qty = binding.edttxtQuantity.text!!.toString().toInt()
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
                     binding.edttxtQuantity.setSelection(binding.edttxtQuantity.text!!.length)
                 }
 
@@ -276,12 +281,17 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 
                     if (modifiers?.isNotEmpty() == true) {
                         modifiers.forEach {
-                            item.modifiers.forEach { it1 ->
-                                if (it.id == it1.id) {
-                                    // it1.itemQuantity = it.itemQuantity
-                                    it.orderModifierId = it1.orderModifierId
+                            if (item.modifiers.isNotEmpty()) {
+                                item.modifiers.forEach { it1 ->
+                                    if (it.id == it1.id) {
+                                        // it1.itemQuantity = it.itemQuantity
+                                        it.orderModifierId = it1.orderModifierId
 
+                                    }
+                                    it.itemQuantity = qty
                                 }
+                            } else {
+                                it.itemQuantity = qty
                             }
                         }
                         item.modifiers = modifiers
