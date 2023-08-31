@@ -13,6 +13,7 @@ import com.android.pos.R
 import com.android.pos.data.entities.TbOrderType
 import com.android.pos.data.model.PrinterListModel
 import com.android.pos.data.model.responseModel.PrinterResponse
+import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.CUSTOMER
 import com.android.pos.data.remote.Constants.KITCHEN
 import com.android.pos.data.remote.Constants.KITCHENANDCUSTOMER
@@ -153,6 +154,25 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
     }
 
     private fun setSpinnnerAdapter() {
+
+
+        if (prefProvider.getValueboolean(Constants.IS_PRINTER_QUEUE_ENABLE, false)){
+
+            if (prefProvider.getValueboolean(Constants.IS_MASTER_TERMINAL, false)){
+                if (printerModel?.printerName?.startsWith("CloudPrint", true) == true) {
+                    list.clear()
+                    list.add(KITCHEN)
+                }else {
+                    list.clear()
+                    list.add(CUSTOMER)
+                }
+            }else {
+                list.clear()
+                list.add(CUSTOMER)
+            }
+
+        }
+
         binding.spnPrinterCat.adapter = arrayAdapter
         list.forEachIndexed { index, s ->
             LogUtil.logE(TAG, "gotIndexNAme ${s.lowercase()}")
