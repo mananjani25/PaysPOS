@@ -258,7 +258,7 @@ class PhoneOrderFragment : Fragment() {
             } else {
 
 
-                val phonesList: ArrayList<TbPhones> =
+               /* val phonesList: ArrayList<TbPhones> =
                     arrayListOf()
 
                 if (binding.edtPhoneNo.text?.isNotEmpty()!!) {
@@ -308,10 +308,8 @@ class PhoneOrderFragment : Fragment() {
                     "",
                     phonesList,
                     list
-                )
+                )*/
 
-
-                if (customerID == null) {
 
                     var listAddress: ArrayList<CreateCustomerRequestModel.Customer.Addresses> =
                         arrayListOf()
@@ -321,9 +319,11 @@ class PhoneOrderFragment : Fragment() {
                         data?.first_name = MethodUtils.getText(binding.edtFName)
                         data?.last_name = MethodUtils.getText(binding.edtLName)
                         data?.email = MethodUtils.getText(binding.edtEmail)
+                        data?.enroll_to_loyalty = selectedCustomer?.enroll_to_loyalty ?: false
+                        data?.final_reward = selectedCustomer?.final_reward ?: 0
 
                         val phone = CreateCustomerRequestModel.Customer.Phone(
-                            id = phoneId,
+                            id = selectedCustomer?.phones?.get(0)?.id ?: phoneId,
                             phone_number = binding.edtPhoneNo.text.toString().trim().replace(
                                 ("[\\D]").toRegex(),
                                 ""
@@ -336,34 +336,90 @@ class PhoneOrderFragment : Fragment() {
 
                         listAddress = arrayListOf()
                         if (binding.edtStreet.text.toString().trim().isNotEmpty()) {
-                            listAddress.add(
-                                CreateCustomerRequestModel.Customer.Addresses(
-                                    null,
-                                    binding.edtStreet.text.toString(),
-                                    binding.edtSuite.text.toString(),
-                                    binding.edtCity.text.toString(),
-                                    binding.edtState.text.toString(),
-                                    "United States",
-                                    binding.edtZip.text.toString(),
-                                    "Shipping",
-                                    0.0,
-                                    0.0,
-                                    "false"
+
+                            if (selectedCustomer != null) {
+                                // to update existing data in selected customer
+                                if ((selectedCustomer?.addresses?.size ?: 0) > 0) {
+                                    selectedCustomer?.addresses?.forEach { address ->
+                                        if (address.type_of_address == "Shipping") {
+                                            listAddress.add(
+                                                CreateCustomerRequestModel.Customer.Addresses(
+                                                    address.id,
+                                                    binding.edtStreet.text.toString().trim(),
+                                                    binding.edtSuite.text.toString().trim(),
+                                                    binding.edtCity.text.toString().trim(),
+                                                    binding.edtState.text.toString().trim(),
+                                                    address.country,
+                                                    binding.edtZip.text.toString().trim(),
+                                                    address.type_of_address,
+                                                    0.0,
+                                                    0.0,
+                                                    "false",
+                                                )
+                                            )
+                                        } else {
+                                            listAddress.add(
+                                                CreateCustomerRequestModel.Customer.Addresses(
+                                                    address.id,
+                                                    address.address1,
+                                                    address.address2,
+                                                    address.city,
+                                                    address.state,
+                                                    address.country,
+                                                    address.postcode,
+                                                    address.type_of_address,
+                                                    0.0,
+                                                    0.0,
+                                                    "false"
+                                                )
+                                            )
+                                        }
+                                    }
+                                } else {
+                                    listAddress.add(
+                                        CreateCustomerRequestModel.Customer.Addresses(
+                                            null,
+                                            binding.edtStreet.text.toString(),
+                                            binding.edtSuite.text.toString(),
+                                            binding.edtCity.text.toString(),
+                                            binding.edtState.text.toString(),
+                                            "United States",
+                                            binding.edtZip.text.toString(),
+                                            "Shipping",
+                                            0.0,
+                                            0.0,
+                                            "false"
+                                        )
+                                    )
+                                }
+                            } else {
+                                // to add new data for new customer
+                                listAddress.add(
+                                    CreateCustomerRequestModel.Customer.Addresses(
+                                        null,
+                                        binding.edtStreet.text.toString(),
+                                        binding.edtSuite.text.toString(),
+                                        binding.edtCity.text.toString(),
+                                        binding.edtState.text.toString(),
+                                        "United States",
+                                        binding.edtZip.text.toString(),
+                                        "Shipping",
+                                        0.0,
+                                        0.0,
+                                        "false"
+                                    )
                                 )
-                            )
+                            }
                         }
 
                         data?.addresses_attributes = listAddress
                     }
 
-
+                if (customerID == null) {
                     viewModel.createCustomer(addCustomerData)
-
-
-
-
                 } else {
-                    redirectToMain(customer)
+                    viewModel.createCustomer(addCustomerData, customerID!!, true)
+//                    redirectToMain(customer)
                 }
             }
         }
@@ -404,11 +460,8 @@ class PhoneOrderFragment : Fragment() {
 
 
         viewModel.dataCustomer.observe(viewLifecycleOwner) { event ->
-            event.getContentIfNotHandled()?.let {
-                if (it) {
-
-                    redirectToMain(customer)
-                }
+            event.getContentIfNotHandled()?.let {customer ->
+                redirectToMain(customer)
             }
         }
 
