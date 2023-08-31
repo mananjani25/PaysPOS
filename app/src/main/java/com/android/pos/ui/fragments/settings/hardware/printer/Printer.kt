@@ -1905,40 +1905,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                     }
 
                     CUSTOMER -> {
-                        for (i in 0 until orderTypeList.size) {
-                            list.add(
-                                CreatePrinterRequestModel.PrinterSettingsAttributes(
-                                    printType = CUSTOMER,
-                                    orderTypeId = orderTypeList.get(i).id
-                                )
-                            )
-
-                        }
-                        //ip address for bg printer
-                        //if (printerListModel.connectionType == WIFI) "TCP:" + printerListModel.deviceModel?.ipAddress else "BT:" + printerListModel.deviceModel?.ipAddress
-                        val createPrinter = CreatePrinterRequestModel(
-                            name = printerListModel.printerName,
-                            terminalId = prefProvider.getValueInt(TERMINAL_ID, 0),
-                            macAddress = printerListModel.deviceModel?.macAddress,
-                            modalName = printerListModel.printerName,
-                            terminalIds = listOf(prefProvider.getValueInt(TERMINAL_ID, 1)),
-                            status = true,
-                            locationId = prefProvider.getValueInt(LOCATION_ID, 1),
-                            receiptPrintType = CUSTOMER,
-                            printer_type = printerListModel.connectionType,
-                            ip_address = printerListModel.deviceModel?.ipAddress,
-                            printerSettingsAttributes = list
-
-                        )
-
-                        viewModel.createPrinter(createPrinter)
-                        availableNetworkAdapter.removeItemAt(layoutPosition)
-                        /*  Handler(Looper.getMainLooper()).postDelayed({
-                              syncPrinterList()
-                          },1000)*/
-
-                        viewModel.createPrinter(createPrinter)
-                        availableNetworkAdapter.removeItemAt(layoutPosition)
+                        ifCustomerPrinterSelected(list, printerListModel, layoutPosition)
 
                     }
 
@@ -1989,18 +1956,23 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
             }
 
-            var list: ArrayList<CreatePrinterRequestModel.PrinterSettingsAttributes> = arrayListOf()
-            if (printerListModel.printerName == "TM-U220" || printerListModel.printerName == "TM-U220B" || printerListModel.printerName?.startsWith(
-                    "Cloud",
-                    true
-                ) == true && prefProvider.getValueboolean(
-                    IS_MASTER_TERMINAL, false
-                ) == true
-            ) {
-                ifKitchenPrinterSelected(list, printerListModel, layoutPosition)
-            } else {
+            val list: ArrayList<CreatePrinterRequestModel.PrinterSettingsAttributes> = arrayListOf()
+            if(prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)){
+                if (printerListModel.printerName?.startsWith(
+                        "Cloud",
+                        true
+                    ) == true && prefProvider.getValueboolean(
+                        IS_MASTER_TERMINAL, false
+                    )
+                ) {
+                    ifKitchenPrinterSelected(list, printerListModel, layoutPosition)
+                } else {
+                    ifCustomerPrinterSelected(list, printerListModel, layoutPosition)
+                }
+            }else{
                 findNavController().navigate(R.id.action_printer_to_printerTypeSelection)
             }
+
         }
 
 
@@ -2058,6 +2030,40 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         syncPrinterList()
     }
 
+    private fun ifCustomerPrinterSelected(list: ArrayList<CreatePrinterRequestModel.PrinterSettingsAttributes>,
+                                          printerListModel: PrinterListModel,
+                                          layoutPosition: Int){
+        for (i in 0 until orderTypeList.size) {
+            list.add(
+                CreatePrinterRequestModel.PrinterSettingsAttributes(
+                    printType = CUSTOMER,
+                    orderTypeId = orderTypeList.get(i).id
+                )
+            )
+
+        }
+        //ip address for bg printer
+        //if (printerListModel.connectionType == WIFI) "TCP:" + printerListModel.deviceModel?.ipAddress else "BT:" + printerListModel.deviceModel?.ipAddress
+        val createPrinter = CreatePrinterRequestModel(
+            name = printerListModel.printerName,
+            terminalId = prefProvider.getValueInt(TERMINAL_ID, 0),
+            macAddress = printerListModel.deviceModel?.macAddress,
+            modalName = printerListModel.printerName,
+            terminalIds = listOf(prefProvider.getValueInt(TERMINAL_ID, 1)),
+            status = true,
+            locationId = prefProvider.getValueInt(LOCATION_ID, 1),
+            receiptPrintType = CUSTOMER,
+            printer_type = printerListModel.connectionType,
+            ip_address = printerListModel.deviceModel?.ipAddress,
+            printerSettingsAttributes = list
+
+        )
+
+        viewModel.createPrinter(createPrinter)
+        availableNetworkAdapter.clearList()
+//        availableNetworkAdapter.removeItemAt(layoutPosition)
+        syncPrinterList()
+    }
 
     override fun onEditSelected(printerListModel: PrinterListModel) {
         LogUtil.logE(TAG, "printerListModel:  ${Gson().toJson(printerListModel)}")
