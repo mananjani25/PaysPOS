@@ -71,6 +71,7 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
     private var referenceNo: String? = null
     private var paxECRreferenceNo: String? = null
     private var paxToken: String? = null
+    private var paxExtData = ""
     private var magensa_response_data: String = ""
     private var refundAmount: Double = 0.0
     private lateinit var binding: DialogRefundReasonBinding
@@ -114,8 +115,9 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
         paymentType = arguments?.getString("paymentType").toString()
         referenceNo = arguments?.getString("pax_ref_num").toString()
         paxToken = arguments?.getString("pax_token").toString()
+        paxExtData = arguments?.getString("pax_ext_data").toString()
         paxECRreferenceNo = arguments?.getString("pax_ecrref_num").toString()
-        Log.d("PAX params:","pax params: paxECRreferenceNo-$paxToken paxECRreferenceNo-$paxECRreferenceNo referenceNo-$referenceNo")
+        Log.d("PAX params:","pax params: paxECRreferenceNo-$paxToken paxECRreferenceNo-$paxECRreferenceNo referenceNo-$referenceNo paxExtData-${Gson().toJson(paxExtData)}")
 
         binding.txtTitle.text = paymentType
 
@@ -262,11 +264,23 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                     /*CoroutineScope(Dispatchers.Main).launch {
                         ProgressUtils.showProgressDialog(requireActivity())
                     }*/
+
+                    val response11 = paxExtData
+                    val regex = Regex("<ExpDate>(\\d{4})</ExpDate>")
+                    val matchResult = regex.find(response11)
+                    val expDateValue = matchResult?.groupValues?.getOrNull(1)
+
+                    if (expDateValue != null) {
+                        println("ExpDate value: $expDateValue")
+                    } else {
+                        println("ExpDate value not found")
+                    }
+
                     val amt = (refundAmount * 100).toInt()
                     val refund = PaymentRequest()
                     refund.TenderType = refund.ParseTenderType("CREDIT")
                     refund.TransType = refund.ParseTransType("RETURN")
-                    refund.ExtData = "<Token>$paxToken</Token>"
+                    refund.ExtData = "<ExpDate>$expDateValue</ExpDate><Token>$paxToken</Token>"
 
                     refund.Amount = amt.toString()
                     posLink.PaymentRequest = refund

@@ -272,6 +272,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                         putString("pax_ref_num", paymentOrderDetailsResponse.data.ref_num)
                         putString("pax_ecrref_num", paymentOrderDetailsResponse.data.ecr_ref_num)
                         putString("pax_token", paymentOrderDetailsResponse.data.pax_transaction_token)
+                        putString("pax_ext_data", paymentOrderDetailsResponse.data.ext_data)
                         putString("paymentType", paymentOrderDetailsResponse.data.payment_type)
                         putString(
                             "magensa_response_data",
