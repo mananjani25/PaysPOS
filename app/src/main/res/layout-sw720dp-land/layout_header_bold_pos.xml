@@ -91,7 +91,7 @@
                     android:paddingVertical="@dimen/_5sdp"
                     android:text="@string/all_orders"
                     android:textAllCaps="true"
-                    android:textColor="@color/txtColor"
+                    android:textColor="@color/btnColor"
                     android:textSize="@dimen/_6mdpi" />
 
                 <TextView
