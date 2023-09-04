@@ -198,9 +198,10 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
+                        android:textColor="@color/txtColorGray"
+                        android:textSize="@dimen/text_size_normal"
                         android:text="@string/_phone"
-                        android:textColor="@color/txtColor"
-                        android:textSize="@dimen/text_size_normal" />
+                        />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txtPhone"
@@ -229,12 +230,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/tv_jobs"
-
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/text_size_large"
+                    android:textSize="@dimen/_7mdpi"
                     android:layout_marginTop="@dimen/_10sdp"/>
-
-
 
                 <LinearLayout
                     android:visibility="gone"
