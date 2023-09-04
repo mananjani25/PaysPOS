@@ -202,9 +202,11 @@ class PrinterViewModel @Inject constructor(
         }
     }
 
-    fun createPrinter(data: CreatePrinterRequestModel) {
+    fun createPrinter(data: CreatePrinterRequestModel, showLoader:Boolean = true) {
 
-        _showProgress.value = Event(true)
+        if (showLoader){
+            _showProgress.value = Event(true)
+        }
 
 
         viewModelScope.launch {
@@ -214,7 +216,9 @@ class PrinterViewModel @Inject constructor(
 
             when (resource.status) {
                 Status.LOADING -> {
-                    _showProgress.value = Event(true)
+                    if (showLoader){
+                        _showProgress.value = Event(true)
+                    }
 
                 }
                 Status.ERROR -> {

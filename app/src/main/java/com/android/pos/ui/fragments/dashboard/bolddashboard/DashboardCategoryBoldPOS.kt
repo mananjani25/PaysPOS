@@ -1678,7 +1678,16 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
         if (data.name.startsWith("CloudPrint", true)) {
 
-            SunmiPrinterApi.getInstance().setPrinter(SunmiPrinter.SunmiBlueToothPrinter, data.ipAddress)
+            try {
+                SunmiPrinterApi.getInstance().setPrinter(SunmiPrinter.SunmiBlueToothPrinter,data.ipAddress)
+                Log.d("initKitchenPrinter","SunmiBlueToothPrinter is ${data.ipAddress}")
+
+            }catch (e:Exception){
+                SunmiPrinterApi.getInstance().setPrinter(SunmiPrinter.SunmiNetPrinter,data.ipAddress)
+                Log.d("initKitchenPrinter","SunmiNetPrinter")
+
+            }
+
 
             if (!SunmiPrinterApi.getInstance().isConnected) {
                 SunmiPrinterApi.getInstance()

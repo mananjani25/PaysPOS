@@ -6089,35 +6089,18 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                     ) {
 
                                         var noItem: Boolean = false
-                                        Log.e(
-                                            TAG,
-                                            "checkUpdateORder  ${
-                                                prefProvider.getValueboolean(
-                                                    OPEN_ORDER_UPDATE_FOR_PRINT,
-                                                    false
-                                                )
-                                            }"
-                                        )
+
                                         if (prefProvider.getValueboolean(
                                                 OPEN_ORDER_UPDATE_FOR_PRINT,
                                                 false
                                             ) == true
                                         ) {
                                             var list = checkOrderItemsForOpenORderUpdate()
-                                            Log.e(TAG, "checkEmpy:  ${list.size}")
                                             if (list.isEmpty()) {
                                                 noItem = true
                                             }
                                         }
-                                        Log.e(
-                                            TAG,
-                                            "checkOrderType  ${
-                                                prefProvider.getValue(
-                                                    ORDER_TYPE,
-                                                    ""
-                                                )
-                                            }"
-                                        )
+
                                         if (kitchenPrinterList.isNotEmpty() && noItem == false) {
                                             for (i in 0 until kitchenPrinterList.size) {
                                                 if (kitchenPrinterList[i].status) {
@@ -6143,15 +6126,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                         )
                                                                     ) {
 
-                                                                        Log.e(
-                                                                            TAG,
-                                                                            "checkIsUpdateORder:  ${viewModelDashBoard.isOrderUpdate}"
-                                                                        )
-
-                                                                        LogUtil.logE(
-                                                                            TAG,
-                                                                            "InsidePrinterKitchen"
-                                                                        )
                                                                         initKitchenPrinter(
                                                                             kitchenPrinterList.get(i),
                                                                             KITCHEN
@@ -8812,83 +8786,55 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         type: String
     ) {
 
-        if (data.name.startsWith(SUNMI_PRINTER, true)) {
-0
+        Log.d("initKitchenPrinter","SunmiBlueToothPrinter is ${data.name}")
 
-            Log.d("sunmiPrinterInit","sunmiPrinterInit 3 ")
+        if (data.name.startsWith(SUNMI_PRINTER, true)) {
+
             try {
                 SunmiPrinterApi.getInstance().setPrinter(SunmiPrinter.SunmiBlueToothPrinter,data.ipAddress)
+                Log.d("initKitchenPrinter","SunmiBlueToothPrinter is ${data.ipAddress}")
 
-                if (!SunmiPrinterApi.getInstance().isConnected) {
-                    SunmiPrinterApi.getInstance()
-                        .connectPrinter(requireContext(), object : ConnectCallback {
-
-                            override fun onFound() {
-                                println("onFound")
-                            }
-
-                            override fun onUnfound() {
-                                println("onUnfound")
-                            }
-
-                            override fun onConnect() {
-                                println("onConnect")
-
-                                viewLifecycleOwner.lifecycleScope.launch {
-                                    delay(200)
-                                    generateKitchenReceiptSunmi(data, type)
-                                }
-
-
-                            }
-
-                            override fun onDisconnect() {
-                                println("onDisconnect")
-                            }
-
-                        })
-                } else {
-                    viewLifecycleOwner.lifecycleScope.launch {
-                        delay(200)
-                        generateKitchenReceiptSunmi(data, type)
-                    }
-                }
             }catch (e:Exception){
                 SunmiPrinterApi.getInstance().setPrinter(SunmiPrinter.SunmiNetPrinter,data.ipAddress)
-                if (!SunmiPrinterApi.getInstance().isConnected) {
-                    SunmiPrinterApi.getInstance()
-                        .connectPrinter(requireContext(), object : ConnectCallback {
+                Log.d("initKitchenPrinter","SunmiNetPrinter")
 
-                            override fun onFound() {
-                                println("onFound")
-                            }
+            }
 
-                            override fun onUnfound() {
-                                println("onUnfound")
-                            }
+            if (!SunmiPrinterApi.getInstance().isConnected) {
+                SunmiPrinterApi.getInstance()
+                    .connectPrinter(requireContext(), object : ConnectCallback {
 
-                            override fun onConnect() {
-                                println("onConnect")
+                        override fun onFound() {
+                            println("onFound")
+                        }
 
-                                viewLifecycleOwner.lifecycleScope.launch {
-                                    delay(200)
-                                    generateKitchenReceiptSunmi(data, type)
-                                }
+                        override fun onUnfound() {
+                            println("onUnfound")
+                        }
+
+                        override fun onConnect() {
+                            println("onConnect")
+                            generateKitchenReceiptSunmi(data, type)
+
+                     /*       viewLifecycleOwner.lifecycleScope.launch {
+                                delay(200)
+
+                            }*/
 
 
-                            }
+                        }
 
-                            override fun onDisconnect() {
-                                println("onDisconnect")
-                            }
+                        override fun onDisconnect() {
+                            println("onDisconnect")
+                        }
 
-                        })
-                }else{
-                    viewLifecycleOwner.lifecycleScope.launch {
-                        delay(200)
-                        generateKitchenReceiptSunmi(data, type)
-                    }
-                }
+                    })
+            } else {
+                generateKitchenReceiptSunmi(data, type)
+               /* viewLifecycleOwner.lifecycleScope.launch {
+                    delay(200)
+
+                }*/
             }
 
         } else if (data.name.startsWith(SUNMI_INNER_PRINTER, true)) {
