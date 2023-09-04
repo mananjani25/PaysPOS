@@ -51,10 +51,10 @@
                             style="@style/CustomFontSemiBold"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/first_name"
-                            android:textColor="@color/color65"
+                            android:text="@string/business_name_"
+                            android:textColor="@color/txtColor"
                             android:textSize="@dimen/_5mdpi"
-                            android:visibility="gone" />
+                            android:visibility="visible" />
 
                         <androidx.appcompat.widget.AppCompatEditText
                             android:id="@+id/edtBusinessName"
