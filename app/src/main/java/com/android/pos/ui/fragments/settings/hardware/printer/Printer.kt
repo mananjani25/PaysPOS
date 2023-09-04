@@ -476,7 +476,6 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     private fun onCreatePrinterObserve() {
         viewModel.printerCreatedSucces.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { data ->
-                LogUtil.logE(TAG, "deleteSuccess")
                 /* viewModel.printerList()
                  viewModel.getKitchenPrinters()*/
                 syncPrinterList()

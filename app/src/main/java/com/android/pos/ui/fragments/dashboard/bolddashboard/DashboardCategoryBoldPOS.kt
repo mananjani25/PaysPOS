@@ -1678,8 +1678,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
         if (data.name.startsWith("CloudPrint", true)) {
 
-            SunmiPrinterApi.getInstance()
-                .setPrinter(SunmiPrinter.SunmiBlueToothPrinter, data.ipAddress)
+            SunmiPrinterApi.getInstance().setPrinter(SunmiPrinter.SunmiBlueToothPrinter, data.ipAddress)
 
             if (!SunmiPrinterApi.getInstance().isConnected) {
                 SunmiPrinterApi.getInstance()
@@ -3505,7 +3504,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 } else {
                     binding.maskLayout?.gone()
                     //ProgressUtils.dismissProgressDialog()
-                    //getConnectedPrinters()
+                    getConnectedPrinters()
                 }
             }
         }

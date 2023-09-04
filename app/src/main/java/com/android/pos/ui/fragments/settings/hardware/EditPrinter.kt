@@ -300,7 +300,13 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
     }
 
     private fun setPrinterData() {
-        binding.txtPrinterName.setText(printerModel?.modelName)
+        if (printerModel?.printerName!=""){
+            binding.txtPrinterName.setText(printerModel?.printerName)
+
+        }else {
+            printerModel?.printerName = "InnerPrinter"
+            binding.txtPrinterName.setText(printerModel?.printerName)
+        }
         binding.txtMacAddress.setText(printerModel?.deviceModel?.macAddress)
         binding.txtPrntType.setText(printerModel?.type)
         binding.txtPrntModel.setText(printerModel?.deviceModel?.deviceName)
@@ -457,4 +463,5 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
 
 
     }
+
 }

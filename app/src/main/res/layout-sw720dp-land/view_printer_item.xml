@@ -24,7 +24,7 @@
             android:layout_gravity="center"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="@{model.modelName}"
+            android:text="@{model.printerName}"
             android:textColor="@color/txtColor"
             android:textSize="@dimen/_6mdpi" />
 

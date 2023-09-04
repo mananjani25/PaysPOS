@@ -1389,7 +1389,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
         } else if (customerReceiptPrinters.name.startsWith(SUNMI_INNER_PRINTER, true)) {
-
             SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
             setService(
                 paymentType,
@@ -3578,7 +3577,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
         } else if (customerReceiptPrinters.name.startsWith(SUNMI_INNER_PRINTER, true)) {
-
             SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
 
             viewLifecycleOwner.lifecycleScope.launch {
@@ -6081,7 +6079,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
 
-                        Log.e(TAG,"checkPrinterQueueStatus:  ${prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)}")
                         if (prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false) == false) {
                             if (!requireArguments().getBoolean("isSpilt")) {
                                 if (!requireArguments().getBoolean("isDineIn") && !requireArguments().getBoolean(
@@ -6379,12 +6376,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     }
 
     private fun getCustomerPrinters(autoPrintCheck: Boolean) {
-
         viewModel.getCustomerPrinterList().observe(viewLifecycleOwner) {
             when (it.status) {
                 Status.SUCCESS -> {
                     ProgressUtils.dismissProgressDialog()
-                    if (it.data != null && isPrint == true) {
+                    if (it.data!=null  && isPrint) {
                         val customerList = it.data
 
                         Log.e(TAG,"IS_GIFT_CARD_TYPE:  ${IS_GIFT_CARD_TYPE}")
@@ -6407,7 +6403,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                             .equals(CUSTOMER.lowercase()) && it.autoPrinting
                                                     ) {
 
-
                                                         initPrinter(cus, CUSTOMER, autoPrintCheck)
 
 
@@ -6418,6 +6413,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                     }
 
                                 }
+
                             } else {
                                 customerList.forEach {
                                     if (it.status) {
@@ -6458,7 +6454,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             customerReceiptPrinters.ipAddress?.let { sunmiPrinterInit(it,isAutoPrint) }
 
         } else if (customerReceiptPrinters.name.startsWith(SUNMI_INNER_PRINTER, true)) {
-
             SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
             viewLifecycleOwner.lifecycleScope.launch {
                 delay(100)
@@ -8818,47 +8813,85 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     ) {
 
         if (data.name.startsWith(SUNMI_PRINTER, true)) {
+0
 
-            SunmiPrinterApi.getInstance()
-                .setPrinter(SunmiPrinter.SunmiBlueToothPrinter, data.ipAddress)
+            Log.d("sunmiPrinterInit","sunmiPrinterInit 3 ")
+            try {
+                SunmiPrinterApi.getInstance().setPrinter(SunmiPrinter.SunmiBlueToothPrinter,data.ipAddress)
 
-            if (!SunmiPrinterApi.getInstance().isConnected) {
-                SunmiPrinterApi.getInstance()
-                    .connectPrinter(requireContext(), object : ConnectCallback {
+                if (!SunmiPrinterApi.getInstance().isConnected) {
+                    SunmiPrinterApi.getInstance()
+                        .connectPrinter(requireContext(), object : ConnectCallback {
 
-                        override fun onFound() {
-                            println("onFound")
-                        }
-
-                        override fun onUnfound() {
-                            println("onUnfound")
-                        }
-
-                        override fun onConnect() {
-                            println("onConnect")
-
-                            viewLifecycleOwner.lifecycleScope.launch {
-                                delay(200)
-                                generateKitchenReceiptSunmi(data, type)
+                            override fun onFound() {
+                                println("onFound")
                             }
 
+                            override fun onUnfound() {
+                                println("onUnfound")
+                            }
 
-                        }
+                            override fun onConnect() {
+                                println("onConnect")
 
-                        override fun onDisconnect() {
-                            println("onDisconnect")
-                        }
+                                viewLifecycleOwner.lifecycleScope.launch {
+                                    delay(200)
+                                    generateKitchenReceiptSunmi(data, type)
+                                }
 
-                    })
-            } else {
-                viewLifecycleOwner.lifecycleScope.launch {
-                    delay(200)
-                    generateKitchenReceiptSunmi(data, type)
+
+                            }
+
+                            override fun onDisconnect() {
+                                println("onDisconnect")
+                            }
+
+                        })
+                } else {
+                    viewLifecycleOwner.lifecycleScope.launch {
+                        delay(200)
+                        generateKitchenReceiptSunmi(data, type)
+                    }
+                }
+            }catch (e:Exception){
+                SunmiPrinterApi.getInstance().setPrinter(SunmiPrinter.SunmiNetPrinter,data.ipAddress)
+                if (!SunmiPrinterApi.getInstance().isConnected) {
+                    SunmiPrinterApi.getInstance()
+                        .connectPrinter(requireContext(), object : ConnectCallback {
+
+                            override fun onFound() {
+                                println("onFound")
+                            }
+
+                            override fun onUnfound() {
+                                println("onUnfound")
+                            }
+
+                            override fun onConnect() {
+                                println("onConnect")
+
+                                viewLifecycleOwner.lifecycleScope.launch {
+                                    delay(200)
+                                    generateKitchenReceiptSunmi(data, type)
+                                }
+
+
+                            }
+
+                            override fun onDisconnect() {
+                                println("onDisconnect")
+                            }
+
+                        })
+                }else{
+                    viewLifecycleOwner.lifecycleScope.launch {
+                        delay(200)
+                        generateKitchenReceiptSunmi(data, type)
+                    }
                 }
             }
 
         } else if (data.name.startsWith(SUNMI_INNER_PRINTER, true)) {
-
             SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
             viewLifecycleOwner.lifecycleScope.launch {
                 delay(200)
@@ -10677,6 +10710,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     private fun sunmiPrinterInit(ipAddress: String, isAutoPrint: Boolean) {
 
+
         SunmiPrinterApi.getInstance().setPrinter(SunmiPrinter.SunmiBlueToothPrinter, ipAddress)
 
         connect()
@@ -11740,9 +11774,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     private fun sunmiPrintInner(isAutoPrint: Boolean) {
 
-
         try {
-
             PrintSunmiUtils.fontSizeInner(customerSettingModel.fonts)
 
             SunmiPrintHelper.getInstance().initPrinter()
@@ -12821,11 +12853,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.FoundSunmiPrinter) {
 
-            LogUtil.logE("SunmiPrintHelper1", "FoundSunmiPrinter")
-
             if (!BluetoothUtil.isBlueToothPrinter) {
-
-                LogUtil.logE("SunmiPrintHelpe1r", "isBlueToothPrinter")
 
                 if (IS_GIFT_CARD_TYPE) {
                     sunmiInnerPrintForGiftCard()
@@ -12839,12 +12867,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             Handler(Looper.getMainLooper()).postDelayed({
                 setService1(isAutoPrint)
             }, 2000)
-            LogUtil.logE("SunmiPrintHelper", "CheckSunmiPrinter")
         } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.LostSunmiPrinter) {
 
-            LogUtil.logE("SunmiPrintHelper", "LostSunmiPrinter")
-        } else {
-            LogUtil.logE("SunmiPrintHelper", "ELSE")
         }
     }
 

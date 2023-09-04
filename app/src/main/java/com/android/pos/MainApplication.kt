@@ -34,6 +34,8 @@ class MainApplication : Application() {
         //TestFairy.begin(this, "SDK-SrnpgIU9"); // vishal.j.patel+103@bacancy.com/Pos@2022
         //TestFairy.begin(this, "SDK-tk8IVNOn") // urmit
         //TestFairy.begin(this, "SDK-0JX1sKj9") // mansi.kothari@bacancy.com
+        //TestFairy.begin(this, "SDK-eS14HOhs");
+
         instance = this
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
 
