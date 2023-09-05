@@ -197,19 +197,27 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
 
     private fun checkMasterTerminal() {
-        if (prefProvider.getValueboolean(
-                IS_MASTER_TERMINAL,
-                false
-            ) == false && prefProvider.getValueboolean(
-                IS_PRINTER_QUEUE_ENABLE, false
-            ) == true
-        ) {
-            binding.txtLabel2.gone()
-            binding.linearKitchenPrntData?.gone()
-            binding.rvKitchenPrinter.gone()
-
-
+        if (prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)) {
+            if(prefProvider.getValueboolean(IS_MASTER_TERMINAL, false)){
+                binding.txtLabel2.visible()
+                binding.linearKitchenPrntData?.visible()
+                binding.rvKitchenPrinter.visible()
+            }else{
+                binding.txtLabel2.gone()
+                binding.linearKitchenPrntData?.gone()
+                binding.rvKitchenPrinter.gone()
+            }
+        }else{
+            binding.txtLabel2.visible()
+            binding.linearKitchenPrntData?.visible()
+            binding.rvKitchenPrinter.visible()
         }
+
+//        if (!prefProvider.getValueboolean(IS_MASTER_TERMINAL, false) && prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)) {
+//            binding.txtLabel2.gone()
+//            binding.linearKitchenPrntData?.gone()
+//            binding.rvKitchenPrinter.gone()
+//        }
     }
 
     private fun setUpHeader() {
