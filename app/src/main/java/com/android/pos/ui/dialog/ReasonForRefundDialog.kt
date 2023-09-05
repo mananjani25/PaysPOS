@@ -237,7 +237,7 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
 
                 if (versionName?.contains("TSYS") == true) {
                     Log.d("versionName:", "versionName $versionName")
-                    refundViaPAXTSYS()
+
                 } else if (versionName?.contains("Rapid") == true) {
                     Log.d("versionName:", "versionName $versionName")
                     refundViaPAX()
