@@ -517,7 +517,6 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     private fun onDeleteObserve() {
         viewModel.deletePrinter.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { data ->
-                LogUtil.logE(TAG, "deleteSuccess")
                 viewModel.printerList()
                 viewModel.getKitchenPrinters()
                 syncPrinterList()
@@ -2037,15 +2036,15 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
         if (printerListModel.type.lowercase() == KITCHENANDCUSTOMER.lowercase()) {
             if (printerListModel.currentPrinterType == KITCHEN) {
-                deletePrinter(printerListModel.id!!, CUSTOMER)
+                deletePrinter(printerListModel, CUSTOMER)
 
             } else {
-                deletePrinter(printerListModel.id!!, KITCHEN)
+                deletePrinter(printerListModel, KITCHEN)
 
             }
 
         } else {
-            deletePrinter(printerListModel.id!!)
+            deletePrinter(printerListModel)
         }
         syncPrinterList()
     }
@@ -2966,16 +2965,20 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         }
     }
 
-    private fun deletePrinter(id: Int, type: String? = null) {
+    private fun deletePrinter(printerListModel: PrinterListModel, type: String? = null) {
+        Log.d("deletePrinter","type = $type")
+        Log.d("deletePrinter","id = $id")
         alert(
             getString(R.string.tv_pos),
             getString(R.string.delete_printer_message)
         ) {
             positiveButton(getString(R.string.tv_delete)) {
                 if (type != null) {
-                    viewModel.deletePrinter(id, type)
+                    viewModel.deletePrinter(printerListModel, type)
+                    Log.d("deletePrinter","delete type = $type")
                 } else {
-                    viewModel.deletePrinter(id)
+                    viewModel.deletePrinter(printerListModel)
+                    Log.d("deletePrinter","delete id = $id")
                 }
 
             }

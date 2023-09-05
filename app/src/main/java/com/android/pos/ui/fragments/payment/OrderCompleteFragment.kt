@@ -224,10 +224,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private var splitList: ArrayList<SplitDetailListModel> = arrayListOf()
     private lateinit var printerDialog: PrinterDialog
     private var isGuestPaymentTotal = false
+    private var isNotPrinted = true
     private var cartList: CartModel? = null
     private var paidAmount: Double = 0.0
     private var noCashAdjGlobal: Double = 0.0
     private  var pd: Dialog?=null
+
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -247,6 +249,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        Log.d("kitchenPrintTMM","oncreated")
+        isNotPrinted = true
         binding = FragmentOrderCompletBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
         isPrint = true
@@ -359,8 +363,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             if (it != null) {
                 kitchenSettingModel = it
                 LogUtil.logE(TAG, "isFromCustomer:  ${isFromCustomer}")
-
-                LogUtil.logE(TAG, "getREceiptModel  ${Gson().toJson(receiptModel)}")
+                Log.e("getKitchenPrinters", "size of kitchen print list ${Gson().toJson(receiptModel)}")
                 if (!isFromCustomer) {
                     getKitchenPrinters()
                 }
@@ -975,6 +978,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 /*  binding.llPrint.background = resources.getDrawable(R.drawable.button_selected)
                   binding.llPrint.setTextColor(resources.getColor(R.color.white))*/
 
+                isNotPrinted = true
                 isPrint = true
 
                 binding.llEmail.background =
@@ -6067,8 +6071,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     if (it.data != null && isPrint == true) {
 
 
-                        Log.e(TAG, "CheckORderRypoe ${prefProvider.getValue(ORDER_TYPE, "")}")
                         kitchenPrinterList = it.data
+                        Log.e("getKitchenPrinters", "size of kitchen print list ${kitchenPrinterList.size}")
+
                         val remain = requireArguments().getDouble("remainingAmount")
                         if (requireArguments().getBoolean("isDineIn")) {
                             customerPrintWholeOrder(true)
@@ -6350,6 +6355,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     }
 
     private fun getCustomerPrinters(autoPrintCheck: Boolean) {
+
         viewModel.getCustomerPrinterList().observe(viewLifecycleOwner) {
             when (it.status) {
                 Status.SUCCESS -> {
@@ -8786,9 +8792,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         type: String
     ) {
 
-        Log.d("initKitchenPrinter","SunmiBlueToothPrinter is ${data.name}")
+
 
         if (data.name.startsWith(SUNMI_PRINTER, true)) {
+
 
             try {
                 SunmiPrinterApi.getInstance().setPrinter(SunmiPrinter.SunmiBlueToothPrinter,data.ipAddress)
@@ -8816,10 +8823,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             println("onConnect")
                             generateKitchenReceiptSunmi(data, type)
 
-                     /*       viewLifecycleOwner.lifecycleScope.launch {
-                                delay(200)
+                            /*       viewLifecycleOwner.lifecycleScope.launch {
+                                       delay(200)
 
-                            }*/
+                                   }*/
 
 
                         }
@@ -8831,11 +8838,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     })
             } else {
                 generateKitchenReceiptSunmi(data, type)
-               /* viewLifecycleOwner.lifecycleScope.launch {
-                    delay(200)
+                /* viewLifecycleOwner.lifecycleScope.launch {
+                     delay(200)
 
-                }*/
+                 }*/
             }
+
 
         } else if (data.name.startsWith(SUNMI_INNER_PRINTER, true)) {
             SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
@@ -8846,113 +8854,119 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         } else {
 
-            if (!data.name.substring(0, 6).toString().lowercase().contains("TM-m".lowercase())) {
-                Log.e(TAG, "YesInsideU220")
+            if (isNotPrinted){
+                isNotPrinted = false
+                if (!data.name.substring(0, 6).toString().lowercase().contains("TM-m".lowercase())) {
+                    Log.e(TAG, "YesInsideU220")
 
-                var mPrinter = if (data.name.substring(0, 6).toString().lowercase()
-                        .contains("TM-m".lowercase())
-                ) {
-                    Log.e(TAG, "YesContains")
-                    Printer(
-                        Printer.TM_M30,
-                        Printer.MODEL_ANK, requireContext()
-                    )
-                } else {
-                    Printer(
-                        Printer.TM_U220,
-                        Printer.MODEL_ANK, requireContext()
-                    )
+                    var mPrinter = if (data.name.substring(0, 6).toString().lowercase()
+                            .contains("TM-m".lowercase())
+                    ) {
+                        Log.e(TAG, "YesContains")
+                        Printer(
+                            Printer.TM_M30,
+                            Printer.MODEL_ANK, requireContext()
+                        )
+                    } else {
+                        Printer(
+                            Printer.TM_U220,
+                            Printer.MODEL_ANK, requireContext()
+                        )
 
 
-                }
+                    }
 
-                mPrinter.setReceiveEventListener { printer, i, printerStatusInfo, s ->
+                    mPrinter.setReceiveEventListener { printer, i, printerStatusInfo, s ->
 
-                    Log.e(
-                        TAG,
-                        "PrinterEvent  ${Gson().toJson(printerStatusInfo)} other1 ${s}  other2 ${i}"
-                    )
-                    if (printerStatusInfo.connection == 1) {
-                        try {
-                            printer.disconnect()
+                        Log.e(
+                            TAG,
+                            "PrinterEvent  ${Gson().toJson(printerStatusInfo)} other1 ${s}  other2 ${i}"
+                        )
+                        if (printerStatusInfo.connection == 1) {
+                            try {
+                                printer.disconnect()
 
-                        } catch (e: java.lang.Exception) {
-                            e.printStackTrace()
+                            } catch (e: java.lang.Exception) {
+                                e.printStackTrace()
+                            }
                         }
                     }
-                }
-                try {
-                    Log.e(TAG, "printerDataType:  ${data.printer_type}")
-
-                    var printerAdd =
-                        if (data.printer_type == BLUETOOTH) "BT:" + data.macAddress else "TCP:" + data.ipAddress
-                    if (mPrinter.status.connection == 0) {
-
-                        mPrinter.connect(
-                            printerAdd,
-                            Printer.PARAM_DEFAULT
-                        )
-                        // mPrinter.disconnect()
-                    }
-
-                    //  mPrinter.startMonitor()
-
-                    generateReceiptForU220(mPrinter, data, type)
-
-                } catch (e: java.lang.Exception) {
-                    e.printStackTrace()
-                }
-
-
-            } else {
-
-
-                PrinterClass.closePrinter()
-                if (PrinterClass.getPrinter() == null) {
-                    //  printerDialog.show(requireContext())
-
-                    var printer: Print? = Print(requireContext())
-                    /*if (printer != null) {
-                   printer.setStatusChangeEventCallback(this)
-                   printer.setBatteryStatusChangeEventCallback(this)
-               }*/
-
-
-                    val enabled = Print.FALSE
-
                     try {
+                        Log.e(TAG, "printerDataType:  ${data.printer_type}")
 
-                        printer?.openPrinter(
-                            if (data.printer_type == BLUETOOTH) {
-                                Print.DEVTYPE_BLUETOOTH
-                            } else {
-                                Print.DEVTYPE_TCP
-                            },
-                            data.ipAddress,
-                            enabled,
-                            1000
-                        )
-                        printer?.setStatusChangeEventCallback(this)
+                        var printerAdd =
+                            if (data.printer_type == BLUETOOTH) "BT:" + data.macAddress else "TCP:" + data.ipAddress
+                        if (mPrinter.status.connection == 0) {
 
-                    } catch (e: Exception) {
-                        //  printerDialog.dismiss()
-                        LogUtil.logE(TAG, "PrinterException: " + e.message)
-                        printer = null
-                        return
+                            mPrinter.connect(
+                                printerAdd,
+                                Printer.PARAM_DEFAULT
+                            )
+                            // mPrinter.disconnect()
+                        }
+
+                        //  mPrinter.startMonitor()
+
+                        generateReceiptForU220(mPrinter, data, type)
+
+                    } catch (e: java.lang.Exception) {
+                        e.printStackTrace()
                     }
 
-                    if (printer != null) {
-                        PrinterClass.setPrinter(printer)
-
-
-                        generateKitchenReceipt(data, type)
-
-                    }
 
                 } else {
-                    LogUtil.logE(TAG, "PrinterIsNotNull:")
+
+
+                    PrinterClass.closePrinter()
+                    if (PrinterClass.getPrinter() == null) {
+                        //  printerDialog.show(requireContext())
+
+                        var printer: Print? = Print(requireContext())
+                        /*if (printer != null) {
+                       printer.setStatusChangeEventCallback(this)
+                       printer.setBatteryStatusChangeEventCallback(this)
+                   }*/
+
+
+                        val enabled = Print.FALSE
+
+                        try {
+
+                            printer?.openPrinter(
+                                if (data.printer_type == BLUETOOTH) {
+                                    Print.DEVTYPE_BLUETOOTH
+                                } else {
+                                    Print.DEVTYPE_TCP
+                                },
+                                data.ipAddress,
+                                enabled,
+                                1000
+                            )
+                            printer?.setStatusChangeEventCallback(this)
+
+                        } catch (e: Exception) {
+                            //  printerDialog.dismiss()
+                            LogUtil.logE(TAG, "PrinterException: " + e.message)
+                            printer = null
+                            return
+                        }
+
+                        if (printer != null) {
+                            PrinterClass.setPrinter(printer)
+
+
+                            generateKitchenReceipt(data, type)
+
+                        }
+
+                    } else {
+                        LogUtil.logE(TAG, "PrinterIsNotNull:")
+                    }
                 }
             }
+            Log.e("kitchenPrintTMM", "printer name = ${data.name}")
+
+
         }
     }
 
@@ -10095,10 +10109,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     timeOut, status, battery
                 )
 
-                Handler(Looper.getMainLooper()).postDelayed(Runnable {
-
-                }, 100)
-                //printerDialog.dismiss()
                 PrinterClass.closePrinter()
 
                 //PrinterClass.getPrinter()?.sendData(builder, 0, status, battery)

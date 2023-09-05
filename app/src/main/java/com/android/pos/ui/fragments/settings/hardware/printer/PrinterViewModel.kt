@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.data.db.AppDatabase
+import com.android.pos.data.model.PrinterListModel
 import com.android.pos.data.model.requestModel.CreatePrinterRequestModel
 import com.android.pos.data.model.requestModel.OrderRequestModel
 import com.android.pos.data.model.responseModel.CreateOrderResponse
@@ -17,7 +18,6 @@ import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.statusUtils.Status
-import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -157,29 +157,28 @@ class PrinterViewModel @Inject constructor(
 
     }
 
-    fun deletePrinter(id: Int, status: String? = null) {
+    fun deletePrinter(printerListModel: PrinterListModel, status: String? = null) {
         _showProgress.value = Event(true)
         viewModelScope.launch {
             val resource: com.android.pos.utils.statusUtils.Resource<DeletePrinterResponseModel> =
-                posRepository.deletePrinter(id, status)
+                posRepository.deletePrinter(printerListModel.id!!, status)
 
             when (resource.status) {
                 Status.SUCCESS -> {
                     _showProgress.value = Event(false)
                     if (status != null) {
                         if (status.lowercase() == Constants.KITCHEN.lowercase()) {
-                            posRepository.deleteCustomerPrinter(id)
+                            posRepository.deleteCustomerPrinter(printerListModel.id)
                         } else {
-                            posRepository.deleteKitchenPrinter(id)
+                            posRepository.deleteKitchenPrinter(printerListModel.id)
                         }
 
                     } else {
 
                         if (resource.data?.data?.receiptPrintType == Constants.KITCHEN) {
-
-                            posRepository.deleteKitchenPrinter(id)
+                            posRepository.deleteKitchenPrinter(printerListModel.id)
                         } else if (resource.data?.data?.receiptPrintType == Constants.CUSTOMER) {
-                            posRepository.deleteCustomerPrinter(id)
+                            posRepository.deleteCustomerPrinter(printerListModel.id)
                         }
                     }
                     printerList()
