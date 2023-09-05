@@ -3513,7 +3513,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 } else {
                     binding.maskLayout?.gone()
                     //ProgressUtils.dismissProgressDialog()
-                    getConnectedPrinters()
+                    //getConnectedPrinters()
+                    printerViewModel.printerList().observe(viewLifecycleOwner) { plist ->
+                        Log.d("05SEP23", "printerList: ${Gson().toJson(plist.data)}")
+                    }
                 }
             }
         }
