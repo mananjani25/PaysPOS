@@ -261,10 +261,21 @@ abstract class AppDatabase : RoomDatabase() {
 
         }
 
+        private val MIGRATION_7_8: Migration = object : Migration(7, 8) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE PrinterQueue ADD COLUMN employeeName TEXT DEFAULT '' NOT NULL")
+                database.execSQL("ALTER TABLE PrinterQueue ADD COLUMN dateAndTime TEXT DEFAULT '' NOT NULL")
+                database.execSQL("ALTER TABLE PrinterQueue ADD COLUMN orderNote TEXT DEFAULT '' NOT NULL")
+                database.execSQL("ALTER TABLE PrinterQueue ADD COLUMN guestAttributes TEXT DEFAULT '' NOT NULL")
+            }
+
+        }
+
         private fun buildDatabase(appContext: Context) =
             Room.databaseBuilder(appContext, AppDatabase::class.java, DATABASE_NAME)
-                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7)
-                .fallbackToDestructiveMigration()
+                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7
+                    , MIGRATION_7_8
+                )
                 .build()
     }
 
