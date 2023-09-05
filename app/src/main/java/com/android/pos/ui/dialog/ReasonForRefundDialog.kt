@@ -231,16 +231,15 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
 
                 if (versionName != null) {
                     println("versionName value: $versionName")
+                    if (versionName.contains("TSYS")) {
+                        Log.d("versionName:", "versionName $versionName")
+                        refundViaPAXTSYS()
+                    } else if (versionName.contains("Rapid")) {
+                        Log.d("versionName:", "versionName $versionName")
+                        refundViaPAX()
+                    }
                 } else {
                     println("versionName value not found")
-                }
-
-                if (versionName?.contains("TSYS") == true) {
-                    Log.d("versionName:", "versionName $versionName")
-
-                } else if (versionName?.contains("Rapid") == true) {
-                    Log.d("versionName:", "versionName $versionName")
-                    refundViaPAX()
                 }
             }
         }

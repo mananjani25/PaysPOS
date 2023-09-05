@@ -24,6 +24,7 @@ import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.paxUtils.AppThreadPool
 import com.android.pos.utils.paxUtils.POSLinkCreatorWrapper
 import com.android.pos.utils.paxUtils.SettingINI
+import com.google.gson.Gson
 import com.pax.poslink.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
@@ -48,6 +49,10 @@ class MagtekViewModel @Inject constructor(
     private val _merchantData = MutableLiveData<Event<ManageResponse?>>()
     val merchantData: LiveData<Event<ManageResponse?>> = _merchantData
 
+    init {
+        checkBroadPOSVersion()
+    }
+
     fun addCardReader(tbCardReader: TbCardReader) {
         viewModelScope.launch {
 
@@ -68,6 +73,44 @@ class MagtekViewModel @Inject constructor(
 
         viewModelScope.launch {
             posRepository.deleteTable()
+        }
+    }
+
+    private fun checkBroadPOSVersion() {
+        GlobalScope.launch {
+            posLink.SetCommSetting(SettingINI.getCommSettingFromFile(Constants.FILE_PATH + SettingINI.FILENAME))
+
+            val manageRequest = ManageRequest()
+            manageRequest.TransType = manageRequest.ParseTransType("INIT")
+            posLink.ManageRequest = manageRequest
+            val result = posLink.ProcessTrans()
+            Log.d("result: ", result.Code.toString() + " " + result.Msg)
+            if (result.Code === ProcessTransResult.ProcessTransResultCode.OK) {
+                val msg = Message()
+                msg.what = Constants.TRANSACTION_SUCCESSED
+                msg.obj = posLink.ManageResponse
+
+                val response = msg.obj as ManageResponse
+                response.ResultCode
+                response.resultTxt
+
+                val response11 = response.ExtData
+                Log.d("response11: ","response11-${Gson().toJson(response11)}")
+                val regex = Regex("<AppName>(.*?)</AppName>")
+                val matchResult = regex.find(response11)
+                val versionName = matchResult?.groupValues?.getOrNull(1)
+
+                if (versionName != null) {
+                    println("versionName value: $versionName")
+                    prefProvider.setValue(
+                        Constants.BROADPOS_VERSION,
+                        versionName
+                    )
+                } else {
+                    println("versionName value not found")
+                }
+
+            }
         }
     }
 
