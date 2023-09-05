@@ -46,10 +46,7 @@ import com.epson.epos2.printer.Printer
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.google.gson.JsonArray
-import com.pax.poslink.PaymentRequest
-import com.pax.poslink.PosLink
-import com.pax.poslink.ProcessTransResult
-import com.pax.poslink.ReportRequest
+import com.pax.poslink.*
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -199,10 +196,52 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                 )
                 CoroutineScope(Dispatchers.Main).launch {
                     ProgressUtils.dismissProgressDialog()
-                    refundViaPAX()
+                    checkBroadPOSVersion()
+//                    refundViaPAX()
 //                    AlertUtils.showCustomAlert(requireContext(), "Merchant $mID is connected successfully")
                 }
                 Log.d("Merchant Details: ", mID + " " + resultCode + "  " + status)
+            }
+        }
+    }
+
+    private fun checkBroadPOSVersion() {
+        GlobalScope.launch {
+            posLink.SetCommSetting(SettingINI.getCommSettingFromFile(Constants.FILE_PATH + SettingINI.FILENAME))
+
+            val manageRequest = ManageRequest()
+            manageRequest.TransType = manageRequest.ParseTransType("INIT")
+            posLink.ManageRequest = manageRequest
+            val result = posLink.ProcessTrans()
+            Log.d("result: ", result.Code.toString() + " " + result.Msg)
+            if (result.Code === ProcessTransResult.ProcessTransResultCode.OK) {
+                val msg = Message()
+                msg.what = Constants.TRANSACTION_SUCCESSED
+                msg.obj = posLink.ManageResponse
+
+                val response = msg.obj as ManageResponse
+                response.ResultCode
+                response.resultTxt
+
+                val response11 = response.ExtData
+                Log.d("response11: ","response11-${Gson().toJson(response11)}")
+                val regex = Regex("<AppName>(.*?)</AppName>")
+                val matchResult = regex.find(response11)
+                val versionName = matchResult?.groupValues?.getOrNull(1)
+
+                if (versionName != null) {
+                    println("versionName value: $versionName")
+                } else {
+                    println("versionName value not found")
+                }
+
+                if (versionName?.contains("TSYS") == true) {
+                    Log.d("versionName:", "versionName $versionName")
+                    refundViaPAXTSYS()
+                } else if (versionName?.contains("Rapid") == true) {
+                    Log.d("versionName:", "versionName $versionName")
+                    refundViaPAX()
+                }
             }
         }
     }
@@ -238,11 +277,8 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                     voidViaPAX()
                 } else if (resultCode == "100023") {
                     //Transaction not found in current batch
-                    refundViaPAX()
-                    /*CoroutineScope(Dispatchers.Main).launch {
-                        ProgressUtils.dismissProgressDialog()
-                        refundViaPAX()
-                    }*/
+                    //refundViaPAX()
+                    checkBroadPOSVersion()
                 } else {
                     CoroutineScope(Dispatchers.Main).launch {
                         ProgressUtils.dismissProgressDialog()
@@ -253,6 +289,63 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                 Log.d("Params:", "Report $resultCode $resultTxt ${response.ExtData}  ${Gson().toJson(response)}")
             }
         }
+    }
+
+    private fun refundViaPAXTSYS() {
+        if (refundAmount != 0.0 || refundAmount > 0.0) {
+            if (paymentType == "Card") {
+                GlobalScope.launch {
+                    posLink.SetCommSetting(SettingINI.getCommSettingFromFile(Constants.FILE_PATH + SettingINI.FILENAME))
+
+                    val amt = (refundAmount * 100).toInt()
+                    val refund = PaymentRequest()
+                    refund.TenderType = refund.ParseTenderType("CREDIT")
+                    refund.TransType = refund.ParseTransType("RETURN")
+
+                    refund.Amount = amt.toString()
+                    posLink.PaymentRequest = refund
+                    val result = posLink.ProcessTrans()
+                    Log.d("result: ", result.Code.toString() + " " + result.Msg)
+                    if (result.Code === ProcessTransResult.ProcessTransResultCode.OK) {
+                        val msg = Message()
+                        msg.what = Constants.TRANSACTION_SUCCESSED
+                        msg.obj = posLink.PaymentResponse
+
+                        val response = msg.obj as com.pax.poslink.PaymentResponse
+                        val resultCode = response.ResultCode
+                        val resultTxt = response.ResultTxt
+
+                        if (resultCode == "000000") {
+                            CoroutineScope(Dispatchers.Main).launch {
+                                refundCall()
+                            }
+                        } else {
+                            CoroutineScope(Dispatchers.Main).launch {
+                                ProgressUtils.dismissProgressDialog()
+                                requireActivity().toast("$resultCode $resultTxt", Toast.LENGTH_LONG)
+                            }
+                        }
+                    } else {
+                        CoroutineScope(Dispatchers.Main).launch {
+                            ProgressUtils.dismissProgressDialog()
+                            AlertUtils.showCustomAlertWithListenerWithOKCancel(
+                                requireContext(),
+                                getString(R.string.pax_connect_error), getString(R.string.reconnect),
+                            )
+                            { _, _ ->
+                                // Add connect to PAX logic
+                                magtekProViewModel.initPOSLink(requireContext())
+                            }
+                        }
+                    }
+                }
+            } else {
+                refundCall()
+            }
+        } else {
+            AlertUtils.showCustomAlert(requireActivity(), getString(R.string.msg_amount_refund))
+        }
+
     }
 
     private fun refundViaPAX() {
