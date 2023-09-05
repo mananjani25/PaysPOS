@@ -887,6 +887,7 @@
     <string name="lbl_add_customer_to_gift_card">Add Customer To Gift Card</string>
     <string name="lbl_add_value">Add Value</string>
     <string name="lbl_balance_inquiry">Balance Inquiry</string>
+    <string name="lbl_gift_card_balance_inquiry">Gift Card Balance Inquiry</string>
     <string name="hint_enter_your_gift_card_number">Enter Your Gift Card Number</string>
     <string name="hint_enter_your_gift_card_amount">Enter Your Gift Card Amount</string>
     <string name="msg_balance_inquiry_results">Balance Inquiry Results</string>

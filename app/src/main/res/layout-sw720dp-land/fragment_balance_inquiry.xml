@@ -29,7 +29,7 @@
             android:layout_centerInParent="true"
             android:layout_gravity="center"
             android:gravity="center"
-            android:text="@string/lbl_balance_inquiry"
+            android:text="@string/lbl_gift_card_balance_inquiry"
             android:textColor="@color/txtColor"
             android:textSize="@dimen/_7mdpi" />
 
@@ -98,7 +98,7 @@
                     android:layout_height="match_parent"
                     android:gravity="center"
                     android:background="@null"
-                    android:hint="@string/_1234_xxxx"
+                    android:hint="@string/_xxxx_xxxx"
                     android:importantForAutofill="no"
                     android:inputType="number"
                     android:padding="@dimen/_3sdp"
