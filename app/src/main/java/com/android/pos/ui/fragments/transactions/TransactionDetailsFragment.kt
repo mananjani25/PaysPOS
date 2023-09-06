@@ -1747,7 +1747,6 @@ class TransactionDetailsFragment : Fragment() {
                 }
                 var tmps = "Open Order".toString().trim()
                     .toString().lowercase()
-                LogUtil.logE(TAG, "LowerCAse ${tmps.trimmedLength()}")
 
                 if (paymentDetailsResponse.data.order.order_type.equals(PHONE_ORDER, true) ||
                     paymentDetailsResponse.data.order.order_type.equals("OnlineWebOrder", true) ||
@@ -2060,7 +2059,6 @@ class TransactionDetailsFragment : Fragment() {
                 }
                 var tmps = "Open Order".toString().trim()
                     .toString().lowercase()
-                LogUtil.logE(TAG, "LowerCAse ${tmps.trimmedLength()}")
 
 
 
@@ -2588,7 +2586,6 @@ class TransactionDetailsFragment : Fragment() {
         }
         var tmps = "Open Order".toString().trim()
             .toString().lowercase()
-        LogUtil.logE(TAG, "LowerCAse ${tmps.trimmedLength()}")
 
         if (paymentDetailsResponse.data.order.order_type_name.equals(PHONE_ORDER, true) ||
             paymentDetailsResponse.data.order.order_type_name.equals("OnlineWebOrder", true) ||
