@@ -22,6 +22,9 @@ interface PrinterDao {
     @get:Query("select * from TbKitchenPrint")
     val kitchenPrintList: LiveData<List<PrinterResponse.Data.KitchenReceiptPrinters>>
 
+    @Query("select * from TbKitchenPrint")
+    suspend fun getKitchenPrinterList() : List<PrinterResponse.Data.KitchenReceiptPrinters>
+
     @Query("DELETE FROM TbCustomerPrint where TbCustomerPrint.id  = :id")
     suspend fun deleteCustomerPrinterById(id: Int)
 
@@ -39,5 +42,6 @@ interface PrinterDao {
 
     @Query("DELETE FROM TbCustomerPrint")
     suspend fun deleteCustomerPrinters()
+
 
 }

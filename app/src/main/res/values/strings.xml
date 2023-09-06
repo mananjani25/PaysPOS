@@ -68,6 +68,8 @@
 
     <string name="variation_name_validate">Please enter Variation Name</string>
 
+    <string name="pax_connect_error">Please check your internet connection.\nPlease ensure your Card Reader is on same network.</string>
+
     <string name="category_name_validate">Please enter Category Name</string>
     <string name="modifier_name_validate">Please enter Modifier Name</string>
     <string name="modifier_set_name_validate">All modifier names must be different</string>
@@ -179,6 +181,7 @@
     <string name="search_modifiers">Search Modifiers</string>
     <string name="create_modifier_set">Create Modifier Set</string>
     <string name="tv_home">Home</string>
+    <string name="tv_clear_queue">Clear Printer Queue</string>
     <string name="tv_add_new">Add New</string>
     <string name="tv_price">Price</string>
     <string name="tv_quantity">Quantity</string>
@@ -518,6 +521,7 @@
     <string name="marketing">Marketing</string>
     <string name="team_member">Employee</string>
     <string name="reports">Reports</string>
+    <string name="printer_queue">Printer Queue</string>
     <string name="customer_details">Customer Details</string>
     <string name="delivery_address">Delivery Address</string>
     <string name="delivery_address_">Delivery Address<font color='#E90C0C'>*</font></string>
@@ -545,6 +549,8 @@
     <string name="printer_name">Printer Name</string>
     <string name="test_print">Test Print</string>
     <string name="connection_type">Connection Type</string>
+    <string name="orders_to_print">"Orders to be print ID</string>
+    <string name="to_be_print_count">To be print orders count</string>
     <string name="active">Active</string>
     <string name="action">Action</string>
 
@@ -749,6 +755,7 @@
     <string name="virtual_tether_notification_channel_description">Virtual Tether Notification Channel is used to alarm the user when the virtual tether event occurs.</string>
     <string name="scan_gun_list">Scan Gun List</string>
     <string name="connect">Connect</string>
+    <string name="reconnect">Reconnect your Card Reader</string>
     <string name="disconnect">Disconnect</string>
     <string name="connected_devices">Connected Devices</string>
     <string name="no_scanner_found">No scanner found.</string>

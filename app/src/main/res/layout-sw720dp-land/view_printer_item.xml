@@ -80,8 +80,8 @@
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/imgEdit"
-                android:layout_width="@dimen/_8sdp"
-                android:layout_height="wrap_content"
+                android:layout_width="@dimen/_12sdp"
+                android:layout_height="match_parent"
                 android:adjustViewBounds="true"
                 android:layout_marginEnd="@dimen/_3sdp"
                 android:src="@drawable/ic_baseline_edit_24"
@@ -89,7 +89,7 @@
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/imgDelete"
-                android:layout_width="@dimen/_8sdp"
+                android:layout_width="@dimen/_12sdp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_3sdp"
                 android:src="@drawable/ic_baseline_delete_24"

@@ -15,11 +15,15 @@ class OrderAttributeRequestModel {
     @SerializedName("date")
     var date: String = ""
 
+
     @SerializedName("delivery_type")
     var deliveryType: String = ""
 
     @SerializedName("employee_id")
     var employeeId: Int = 0
+
+    @SerializedName("mac_address")
+    var macAddress: String = ""
 
 
     @SerializedName("future_delivery_date")
@@ -629,4 +633,14 @@ class PaymentAttributes : Parcelable {
 
     @SerializedName("gift_card_redeemed_amount")
     var gift_card_redeemed_amount: Double? = 0.0
+
+    @SerializedName("global_uniq_id")
+    var global_uniq_id: String = ""
+
+    @SerializedName("ref_num")
+    var ref_num: String = ""
+
+    @SerializedName("ext_data")
+    var ext_data: String = ""
+
 }

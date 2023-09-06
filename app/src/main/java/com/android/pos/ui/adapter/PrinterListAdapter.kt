@@ -1,6 +1,7 @@
 package com.android.pos.ui.adapter
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +12,7 @@ import com.android.pos.data.remote.Constants.AVAILABLE
 import com.android.pos.data.remote.Constants.WIFI
 import com.android.pos.databinding.ViewPrinterItemBinding
 
+
 class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>() {
 
     private var list: ArrayList<PrinterListModel> = arrayListOf()
@@ -19,6 +21,14 @@ class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>
     inner class MyViewHolder(private val binding: ViewPrinterItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(model: PrinterListModel?) {
+
+            if (model?.printerName !=""){
+                binding.txtPrinterName.text =  model?.printerName
+            }else {
+                model.printerName = "InnerPrinter"
+            }
+
+
             if (list[layoutPosition].connectionType == WIFI) {
                 binding.imgConnectionType.setImageDrawable(
                     binding.root.context.getDrawable(
@@ -76,9 +86,13 @@ class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>
             }
 
             binding.imgEdit.setOnClickListener {
-                if (list[layoutPosition].type != AVAILABLE) {
-                    listner.onEditSelected(list[layoutPosition])
-                }
+               try {
+                   if (list[layoutPosition].type != AVAILABLE) {
+                       listner.onEditSelected(list[layoutPosition])
+                   }
+               }catch (e:Exception){
+                   Log.d("layoutPosition","Error : ${e.message}")
+               }
 
             }
 
@@ -113,6 +127,7 @@ class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>
     }
 
     override fun getItemCount(): Int {
+
         return list.size
     }
 
@@ -125,12 +140,17 @@ class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>
     }
 
 
+    fun getList():List<PrinterListModel>{
+        return list
+    }
+
 
 
 
     @SuppressLint("NotifyDataSetChanged")
     fun addItem(model: PrinterListModel) {
         list.add(model)
+         notifyItemRangeInserted(0,list.size)
         notifyDataSetChanged()
 
     }
@@ -152,6 +172,7 @@ class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>
     fun clearList() {
         val size = list.size
         this.list.clear()
+        list = arrayListOf()
         notifyItemRangeRemoved(0, size)
         notifyDataSetChanged()
     }
@@ -159,5 +180,10 @@ class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>
     fun removeItemAt(pos: Int) {
         list.removeAt(pos)
         notifyItemRangeRemoved(pos, list.size)
+    }
+
+    fun addAll(tempAvailableList: java.util.ArrayList<PrinterListModel>) {
+        list.addAll(tempAvailableList)
+        notifyDataSetChanged()
     }
 }

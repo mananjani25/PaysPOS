@@ -448,7 +448,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                         val builder = java.lang.StringBuilder()
 
 
-                        for (i in layoutPosition + 1 until list.size) {
+                        for (i in bindingAdapterPosition + 1 until list.size) {
 
                             if (list.get(i).isHeader == 1) {
                                 list[i].item?.let { listItem.add(it) }

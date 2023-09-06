@@ -29,11 +29,20 @@ import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
+import androidx.work.Data
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkManager
 import com.android.pos.R
 import com.android.pos.data.model.PrinterQueueModel
+import com.android.pos.data.model.TmpPrinterModel
 import com.android.pos.data.model.responseModel.GetKitchenReceiptSettingsResponse
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.IS_MASTER_TERMINAL
+import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
+import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_STARTS
+import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.remote.Constants.UNIQUE_ID
 import com.android.pos.data.repositories.UserRepository
 import com.android.pos.databinding.ParentActivityBinding
@@ -49,10 +58,10 @@ import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.ui.fragments.payment.OrderCompleteViewModel
 import com.android.pos.ui.fragments.settings.hardware.Hardware
 import com.android.pos.utils.*
-import com.android.pos.utils.MethodUtils.Companion.toPrecision
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.statusUtils.Status
 import com.android.pos.utils.workmanager.ThreadPoolManager
+import com.android.pos.utils.workmanager.UploadWorker
 import com.epson.epos2.ConnectionListener
 import com.epson.epos2.printer.Printer
 import com.epson.epos2.printer.PrinterStatusInfo
@@ -62,6 +71,7 @@ import com.epson.eposprint.Builder
 import com.felhr.usbserial.BuildConfig.APPLICATION_ID
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.gson.Gson
+import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
 import com.hosopy.actioncable.ActionCable
 import com.hosopy.actioncable.Channel
@@ -81,8 +91,10 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     StatusChangeListener {
+    private var printerList: List<PrinterResponse.Data.KitchenReceiptPrinters> = arrayListOf()
     private val dashboardViewModel: DashBoardCategoryViewModel by viewModels()
     private val passcodeViewModel: PasscodeViewModel by viewModels()
+    private var globalListPrinters: ArrayList<TmpPrinterModel> = arrayListOf()
     private var printerQueueModelGlobal: PrinterQueueModel? = null
     private var isPrinterQueueRun: Boolean = false
     private var kitchenPrinterList: List<PrinterResponse.Data.KitchenReceiptPrinters> =
@@ -104,6 +116,8 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     private var kitchenSettingModel = GetKitchenReceiptSettingsResponse.Data()
     var mPrinter: Printer? = null
     var arrayItems: ArrayList<PrinterQueueModel> = arrayListOf()
+    var isKitchenFlag: Boolean = false
+    var isPrinterOnline = false
 
     private val dashBoardCategoryViewModel by viewModels<DashBoardCategoryViewModel>()
 
@@ -176,6 +190,26 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         }
 
     }
+
+    private var masterTerminal = object : BroadcastReceiver() {
+        override fun onReceive(p0: Context?, p1: Intent?) {
+
+            Log.e(
+                "checkMAsterTeminal",
+                "check  ${prefProvider?.getValueboolean(IS_MASTER_TERMINAL, false)}"
+            )
+            if (prefProvider?.getValueboolean(IS_MASTER_TERMINAL, false) == true && prefProvider?.getValueboolean(Constants.IS_PRINTER_QUEUE_STARTS,false) == false && prefProvider?.getValueboolean(
+                    IS_PRINTER_QUEUE_ENABLE,false) == true) {
+                prefProvider?.setValueboolean(Constants.IS_PRINTER_QUEUE_STARTS,true)
+                getKitOne()
+
+            } else if (prefProvider?.getValueboolean(IS_MASTER_TERMINAL, false) == false){
+                WorkManager.getInstance(this@MainActivity).cancelAllWork()
+            }
+        }
+
+    }
+
     private var syncFloorPlan = object : BroadcastReceiver() {
         override fun onReceive(p0: Context?, p1: Intent?) {
             Log.e("SyncFloorPlan", "onReceiveSync")
@@ -208,7 +242,6 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         }
 
     }
-
 
 
     var broadCastReceiverPrinterQueueDataGet = object : BroadcastReceiver() {
@@ -334,16 +367,16 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 )
                 LogUtil.logE(TAG, "PrinterID ${kitchenPrinterList[i].id}")
                 if (printerQueueModel.printSuccessData.isNotEmpty()) {
-                    for (k in 0 until printerQueueModel.printSuccessData.size) {
+                    /*    for (k in 0 until printerQueueModel.printSuccessData.size) {
 
-                        if (printerQueueModel.printSuccessData[k].toInt() == kitchenPrinterList[i].id) {
-                            containsFlag = true
-                            break
-                        } else {
-                            containsFlag = false
-                        }
+                            if (printerQueueModel.printSuccessData[k].toInt() == kitchenPrinterList[i].id) {
+                                containsFlag = true
+                                break
+                            } else {
+                                containsFlag = false
+                            }
 
-                    }
+                        }*/
 
                     /* if (printerQueueModel.printSuccessData.contains(kitchenPrinterList[i].id)) {
                          containsFlag = true
@@ -377,10 +410,12 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                                             fontSizeH = 1
                                             fontSizeW = 1
                                         }
+
                                         Constants.MEDIUM -> {
                                             fontSizeH = 1
                                             fontSizeW = 2
                                         }
+
                                         Constants.LARGE -> {
                                             fontSizeH = 2
                                             fontSizeW = 2
@@ -611,12 +646,12 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                                     TAG,
                                     "connectionPrinter   ${mPrinter?.status?.connection}"
                                 )
-/*
-                                    try {
-                                        mPrinter?.disconnect()
-                                    } catch (e: Exception) {
-                                        e.printStackTrace()
-                                    }*/
+                                /*
+                                                                    try {
+                                                                        mPrinter?.disconnect()
+                                                                    } catch (e: Exception) {
+                                                                        e.printStackTrace()
+                                                                    }*/
                                 try {
 
                                     lifecycleScope.launch {
@@ -698,7 +733,49 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
     }
 
-    private fun getCustomerPrinters() {
+    @SuppressLint("RestrictedApi")
+    private fun getKitOne() {
+
+        /*prefProvider?.setValue(
+            Constants.KITCHEN_PRINTER_LIST_PREF,
+            Gson().toJson(it.data).toString()
+        )*/
+        if (prefProvider?.getValueboolean(
+                Constants.IS_MASTER_TERMINAL,
+                false
+            ) == true
+        ) {
+            val data = Data.Builder()
+                //.putString("kitchenPrinterList", Gson().toJson(kitchenPrinterList))
+                // .put("kitchenSettingData", Gson().toJson(kitchenSettingModel))
+                .put("location_id", prefProvider?.getValueInt(LOCATION_ID, 0))
+                .put("base_url", prefProvider?.getValue(Constants.BASE_URL_NEW, ""))
+                .build()
+
+            val uploadWorkRequest =
+                OneTimeWorkRequest.Builder(
+                    UploadWorker::class.java
+                ).addTag(Constants.PRINTER_QUEUE_BACKGROUND)
+                    .setInputData(data)
+                    .build()
+
+
+            val workManager = WorkManager.getInstance(this)
+            try {
+
+                workManager.enqueueUniqueWork(
+                    Constants.PRINTER_QUEUE_BACKGROUND, ExistingWorkPolicy.REPLACE,
+                    uploadWorkRequest
+                )
+            } catch (e: java.lang.Exception) {
+                LogUtil.logE(TAG, "printerQueueLog  ${e.message.toString()}")
+                e.printStackTrace()
+            }
+
+        }
+    }
+
+    private fun getKitchenPrinters() {
         viewModelPrinter.getKitchenPrinterList().observe(this) {
             when (it.status) {
                 Status.SUCCESS -> {
@@ -706,15 +783,24 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                     if (it.data != null) {
                         kitchenPrinterList = emptyList()
                         kitchenPrinterList = it.data
+                        if (prefProvider?.getValueboolean(
+                                Constants.IS_MASTER_TERMINAL,
+                                false
+                            ) == true
+                        ) {
+                            //  getKitOne()
+                        }
 
                         LogUtil.logE("getCustomerPrinters", Gson().toJson(kitchenPrinterList))
                     }
 
                 }
+
                 Status.ERROR -> {
                     ProgressUtils.dismissProgressDialog()
 
                 }
+
                 Status.LOADING -> {
                     ProgressUtils.showProgressDialog(this)
                 }
@@ -770,6 +856,12 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN)
 
 
+        //demoPrinterQueue()
+        if (prefProvider?.getValueboolean(IS_PRINTER_QUEUE_STARTS, false) == true) {
+            getKitOne()
+        }
+
+
         // connectionActionCable()
         val intentFilter = IntentFilter("PrinterQueue")
         registerReceiver(wifiStateReceiver, intentFilter)
@@ -785,7 +877,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         consumer = ActionCable.createConsumer(uri)
         getPrinterQueueData()
 
-        getCustomerPrinters()
+        getKitchenPrinters()
 
 
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this)
@@ -810,6 +902,11 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         registerReceiver(
             syncFloorPlan,
             IntentFilter(Constants.SYNC_FLOORPLAN)
+        )
+
+        registerReceiver(
+            masterTerminal,
+            IntentFilter(Constants.MASTER_TEMINAL_CHANGED)
         )
 
         registerReceiver(
@@ -865,16 +962,19 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                     navController?.navigate(R.id.action_global_dashboardCategory)
                     return@setNavigationItemSelectedListener true
                 }
+
                 R.id.menuHardware -> {
                     disableDrawer()
                     navController?.navigate(R.id.hardware)
                     return@setNavigationItemSelectedListener true
                 }
+
                 R.id.menuOrders -> {
                     disableDrawer()
                     navController?.navigate(R.id.action_global_orders)
                     return@setNavigationItemSelectedListener true
                 }
+
                 R.id.menuTransactions -> {
                     disableDrawer()
                     if (rolePermission.hasTransactionPermission(binding.root)) {
@@ -882,6 +982,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                         return@setNavigationItemSelectedListener true
                     }
                 }
+
                 R.id.menuCashLog -> {
                     disableDrawer()
                     if (rolePermission.hasCashLogPermission(binding.root)) {
@@ -889,6 +990,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                         return@setNavigationItemSelectedListener true
                     }
                 }
+
                 R.id.menuReports -> {
                     disableDrawer()
                     navController?.navigate(R.id.action_global_reports)
@@ -902,11 +1004,13 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                         return@setNavigationItemSelectedListener true
                     }
                 }
+
                 R.id.menuTeam -> {
                     disableDrawer()
                     navController?.navigate(R.id.action_global_teamList)
                     return@setNavigationItemSelectedListener true
                 }
+
                 R.id.memuInventory -> {
                     disableDrawer()
                     if (rolePermission.hasInventoryPermission(binding.root)) {
@@ -914,11 +1018,13 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                         return@setNavigationItemSelectedListener true
                     }
                 }
+
                 R.id.menuSettings -> {
                     disableDrawer()
                     navController?.navigate(R.id.action_global_settings)
                     return@setNavigationItemSelectedListener true
                 }
+
                 R.id.menuSupport -> {
                     disableDrawer()
                     return@setNavigationItemSelectedListener true
@@ -940,34 +1046,255 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
     }
 
+    private fun demoPrinterQueue() {
+
+        viewModelPrinter.getKitchenPrinterList().observe(this) {
+            when (it.status) {
+                Status.SUCCESS -> {
+                    if (isKitchenFlag == false) {
+                        isKitchenFlag = true
+
+
+                        globalListPrinters = arrayListOf()
+
+                        globalListPrinters.add(TmpPrinterModel("Chicken Masala", 0))
+                        globalListPrinters.add(TmpPrinterModel("Chicken Masala", 0))
+                        globalListPrinters.add(TmpPrinterModel("Chicken Masala", 0))
+                        globalListPrinters.add(TmpPrinterModel("Chicken Masala", 0))
+                        globalListPrinters.add(TmpPrinterModel("Chicken Masala", 0))
+                        globalListPrinters.add(TmpPrinterModel("Chicken Masala", 0))
+                        globalListPrinters.add(TmpPrinterModel("Chicken Masala", 0))
+                        globalListPrinters.add(TmpPrinterModel("Chicken Masala", 0))
+                        globalListPrinters.add(TmpPrinterModel("Chicken Masala", 0))
+                        globalListPrinters.add(TmpPrinterModel("Chicken Masala", 0))
+                        globalListPrinters.add(TmpPrinterModel("Chicken Masala", 0))
+                        globalListPrinters.add(TmpPrinterModel("Chicken Masala", 0))
+                        globalListPrinters.add(TmpPrinterModel("Chicken Masala", 0))
+
+                        //list.add(TmpPrinterModel("Chicken Paneer", 0))
+                        /* list.add(TmpPrinterModel("Chicken Cheese", 1))
+                         list.add(TmpPrinterModel("Chicken Naan", 1))
+                         list.add(TmpPrinterModel("Chicken Lababdar", 1))*/
+
+
+                        printerList = it.data ?: arrayListOf()
+
+                        Log.e("checkPrinterListSize", "printerListSize  ${printerList.size}")
+                        Log.e("checkPrinterListSize", "datalist size  ${globalListPrinters.size}")
+
+                        val printer = Printer(Printer.TM_U220, Printer.MODEL_ANK, this)
+                        if (globalListPrinters.isNotEmpty() && printerList.isNotEmpty()) {
+                            generateReceipt(
+                                printer,
+                                printerList[printerList.size - 1],
+                                globalListPrinters[globalListPrinters.size - 1],
+                                globalListPrinters.size - 1
+                            )
+                        }
+
+                        /* globalListPrinters.forEach {
+
+                             generateReceipt(
+                                 printer,
+                                 printerList[printerList.size - 1],
+                                 it,
+                                 0
+                             )
+                         }*/
+//                        Thread.sleep(5000)
+
+                        /*  for (i in 0 until list.size) {
+                              for (j in 0 until printerList.size) {
+                                  Log.e("checkPrinterListSize","dataentryPrint ${i}  and new ${j}")
+
+
+
+
+
+                              }
+
+
+                          }*/
+                    }
+
+
+                }
+
+                Status.ERROR -> {
+
+
+                }
+
+                Status.LOADING -> {
+
+                }
+
+
+            }
+        }
+
+    }
+
+    private fun generateReceipt(
+        printer: Printer,
+        kitchenReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
+        tmpPrinterModel: TmpPrinterModel,
+        orderId: Int
+    ) {
+        Log.e("checkId", "orderId:  ${orderId}")
+
+
+
+
+        try {
+            Log.e(
+                "checkIpaddress",
+                "receivedIpAddress  ${kitchenReceiptPrinters.ipAddress}  and checkaddress ${isPrinterOnline}"
+            )
+
+            var printerAdd =
+                if (kitchenReceiptPrinters.printer_type == Constants.BLUETOOTH) "BT:" + kitchenReceiptPrinters.macAddress else "TCP:" + kitchenReceiptPrinters.ipAddress
+
+
+            Log.e("checkPrinterConnection", "checkStatus  ${Gson().toJson(printer.status)}")
+            if (isPrinterOnline == false) {
+
+
+                printer.connect(
+                    printerAdd,
+                    Printer.PARAM_DEFAULT
+                )
+
+            }
+            printer.startMonitor()
+
+
+
+
+            printer.setReceiveEventListener { printer, i, printerStatusInfo, s ->
+
+                Log.e(
+                    TAG,
+                    "PrinterEvent  ${Gson().toJson(printerStatusInfo)} other1 ${s}  other2 ${i}"
+                )
+
+
+                if (printerStatusInfo.errorStatus == 0) {
+                    printer.endTransaction()
+                    printer.clearCommandBuffer()
+                    globalListPrinters.removeAt(orderId)
+                    makeCallReumeQueuePrint(printer)
+                }
+
+                /*if (printerStatusInfo.online == 1) {
+                    try {
+                        printer.disconnect()
+
+                    } catch (e: java.lang.Exception) {
+                        e.printStackTrace()
+                    }
+                }*/
+            }
+
+
+            isPrinterOnline = true
+
+
+
+            printer.addFeedUnit(30)
+            printer.addFeedLine(2)
+
+            printer.addTextFont(Builder.FONT_E)
+            printer.addTextAlign(Builder.ALIGN_CENTER)
+            printer.addTextLang(Builder.LANG_EN)
+            printer.addTextSize(2, 2)
+            printer.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.TRUE,
+                Builder.COLOR_1
+            )
+
+            printer.addText("OrderID:" + orderId + 1)
+            printer.addFeedLine(1)
+            printer.addFeedUnit(30)
+            printer.addFeedLine(1)
+
+
+            printer.addTextFont(Builder.FONT_E)
+            printer.addTextAlign(Builder.ALIGN_LEFT)
+            printer.addTextLang(Builder.LANG_EN)
+            printer.addTextSize(2, 2)
+            printer.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.TRUE,
+                Builder.COLOR_1
+            )
+
+
+            printer.addText(tmpPrinterModel.ItemName)
+            printer.addFeedLine(1)
+            printer.addFeedUnit(30)
+            printer.addFeedLine(1)
+            printer.addCut(Builder.CUT_FEED)
+
+            printer.beginTransaction()
+            try {
+                Log.e("SendDataHowMuchTime", "checkTimePrin")
+                printer.sendData(Printer.PARAM_DEFAULT)
+            } catch (e: java.lang.Exception) {
+                e.printStackTrace()
+            }
+
+
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
+
+    }
+
+    private fun makeCallReumeQueuePrint(printer: Printer) {
+        if (globalListPrinters.isNotEmpty() && printerList.isNotEmpty()) {
+            generateReceipt(
+                printer,
+                printerList[printerList.size - 1],
+                globalListPrinters[globalListPrinters.size - 1],
+                globalListPrinters.size - 1
+            )
+        }
+
+
+    }
+
     private fun connectionActionCable() {
         val uri = URI("wss://hugepos.com/cable")
         consumer = ActionCable.createConsumer(uri)
 
-        val appearanceChannel = Channel("printer_queue_channel")
+        val appearanceChannel = Channel("KitchenChannel")
         subscription = consumer?.subscriptions?.create(appearanceChannel)
 
         if (subscription != null) {
             subscription?.onConnected {
-                ToastUtil.showNormalToast(this, "Connected")
+
                 Log.e(TAG, "onActionConnected")
+                val params = JsonObject()
+                params.addProperty("id", prefProvider?.getValueInt(LOCATION_ID, 0))
+                params.addProperty("url", BASE_URL + Constants.CREATE_QUEUE_PRINTER)
+                subscription?.perform("received", params)
 
 
             }?.onRejected {
-                ToastUtil.showNormalToast(this, "Connected")
                 Log.e(TAG, "onActiononRejected")
 
             }?.onReceived {
-                ToastUtil.showNormalToast(this, "Connected")
                 Log.e(TAG, "onActiononReceived  " + Gson().toJson(it))
 
 
             }?.onDisconnected {
-                ToastUtil.showNormalToast(this, "Connected")
                 Log.e(TAG, "onActiononDisconnected")
 
             }?.onFailed {
-                ToastUtil.showNormalToast(this, "Connected")
                 Log.e(TAG, "onActiononFailed")
                 //subscription = consumer?.subscriptions?.create(appearanceChannel)
                 try {
@@ -1230,6 +1557,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                     //permission with request code 1 was not granted
                     LogUtil.logE("!_@_", "Permission not granted")
                 }
+
             else -> super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         }
     }
@@ -1271,9 +1599,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             LogUtil.logE(TAG, "UpdateGetloag ${flag}")
             if (flag == false) {
                 var listIds: ArrayList<Int> =
-                    printerQueueModelGlobal!!.printSuccessData.toCollection(
-                        arrayListOf()
-                    )
+                    arrayListOf()
                 listIds.add(kitchenPrinterList[currentIndex].id)
 
                 LogUtil.logE(TAG, "listIds  ${Gson().toJson(listIds)}")

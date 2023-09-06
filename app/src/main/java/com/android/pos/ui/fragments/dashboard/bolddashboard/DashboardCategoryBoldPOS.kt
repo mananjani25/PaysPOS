@@ -1678,8 +1678,16 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
         if (data.name.startsWith("CloudPrint", true)) {
 
-            SunmiPrinterApi.getInstance()
-                .setPrinter(SunmiPrinter.SunmiBlueToothPrinter, data.ipAddress)
+            try {
+                SunmiPrinterApi.getInstance().setPrinter(SunmiPrinter.SunmiBlueToothPrinter,data.ipAddress)
+                Log.d("initKitchenPrinter","SunmiBlueToothPrinter is ${data.ipAddress}")
+
+            }catch (e:Exception){
+                SunmiPrinterApi.getInstance().setPrinter(SunmiPrinter.SunmiNetPrinter,data.ipAddress)
+                Log.d("initKitchenPrinter","SunmiNetPrinter")
+
+            }
+
 
             if (!SunmiPrinterApi.getInstance().isConnected) {
                 SunmiPrinterApi.getInstance()
@@ -3505,7 +3513,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 } else {
                     binding.maskLayout?.gone()
                     //ProgressUtils.dismissProgressDialog()
-                    getConnectedPrinters()
+                    //getConnectedPrinters()
+                    printerViewModel.printerList().observe(viewLifecycleOwner) { plist ->
+                        Log.d("05SEP23", "printerList: ${Gson().toJson(plist.data)}")
+                    }
                 }
             }
         }
@@ -3860,10 +3871,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         }
 
         val createPrinter = CreatePrinterRequestModel(
-            name = innerPrinterModel.printerName,
+            name = innerPrinterModel.modelName,
             terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, 0),
             macAddress = innerPrinterModel.deviceModel?.macAddress,
-            modalName = innerPrinterModel.deviceModel?.printerName,
+            modalName = innerPrinterModel.modelName,
             terminalIds = listOf(prefProvider.getValueInt(Constants.TERMINAL_ID, 1)),
             status = true,
             locationId = prefProvider.getValueInt(Constants.LOCATION_ID, 1),

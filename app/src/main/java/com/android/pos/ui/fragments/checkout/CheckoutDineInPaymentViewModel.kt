@@ -1736,7 +1736,7 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
                 orderItemsAttribute.isDestroy = item.isDestroy
                 LogUtil.logE(TAG, "Passes: ${item.isDestroy}")
                 orderItemsAttribute.isPaid = item.isPaid
-                orderItemsAttribute.isPrinted = true
+                orderItemsAttribute.isPrinted = false
                 orderItemsAttribute.isTaxRemoved = false
                 orderItemsAttribute.itemId =
                     if (item.isManualSales) item.itemId else item.itemId

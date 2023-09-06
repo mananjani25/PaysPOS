@@ -80,10 +80,10 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                     sendBroadcast(intent)
 
                 } else {
-                    val intent = Intent()
+                   /* val intent = Intent()
                     intent.putExtra("printer_queue", "rem")
                     intent.action = "PrinterQueue"
-                    sendBroadcast(intent)
+                    sendBroadcast(intent)*/
 
                 }
             }

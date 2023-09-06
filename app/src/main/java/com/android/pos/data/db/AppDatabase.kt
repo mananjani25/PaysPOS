@@ -59,6 +59,7 @@ import com.android.pos.data.entities.TbOrderType
 import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.data.entities.TbTimeZones
 import com.android.pos.data.entities.TeamRole
+import com.android.pos.data.entities.TypeConvertersQueueDineIn
 import com.android.pos.data.model.CharacterModel
 import com.android.pos.data.model.PrinterQueueModel
 import com.android.pos.data.model.ShiftRportConfiguration
@@ -106,7 +107,7 @@ import com.android.pos.data.typeconvert.TypeConvertorPhone
         GetCustomerReceiptSettingsResponse.Data::class, LoyaltyProgramsModel::class, SplitDetailListModel::class,
         CashDiscountModel::class, TbCountryList::class, TbCardReader::class, VenueDetailsResponse.Data.CancelOrderReason::class,
         DineInCartModel::class, ShiftRportConfiguration::class, TbBusinessDetails::class, TbTimeZones::class, PrinterQueueModel::class, VenueDetailsResponse.Data.WastageReason::class],
-    version = 8
+    version = 9
 )
 @TypeConverters(
     TypeConvertersIds::class,
@@ -131,7 +132,8 @@ import com.android.pos.data.typeconvert.TypeConvertorPhone
     TCBusiness::class,
     TCPrinterQueueData::class,
     TCOrderItemsPrinter::class,
-    TCPrinterQueueSuucessModel::class
+    TCPrinterQueueSuucessModel::class,
+    TypeConvertersQueueDineIn::class
 )
 
 
@@ -259,7 +261,17 @@ abstract class AppDatabase : RoomDatabase() {
 
         }
 
-        val MIGRATION_7_8: Migration = object : Migration(7, 8) {
+        private val MIGRATION_7_8: Migration = object : Migration(7, 8) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE PrinterQueue ADD COLUMN employeeName TEXT DEFAULT '' NOT NULL")
+                database.execSQL("ALTER TABLE PrinterQueue ADD COLUMN dateAndTime TEXT DEFAULT '' NOT NULL")
+                database.execSQL("ALTER TABLE PrinterQueue ADD COLUMN orderNote TEXT DEFAULT '' NOT NULL")
+                database.execSQL("ALTER TABLE PrinterQueue ADD COLUMN guestAttributes TEXT DEFAULT '' NOT NULL")
+            }
+
+        }
+
+        private val MIGRATION_8_9: Migration = object : Migration(8, 9) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 try {
                     database.execSQL("ALTER TABLE EodShiftReport ADD COLUMN isItemWiseSales INTEGER DEFAULT 0 NOT NULL")
@@ -272,7 +284,9 @@ abstract class AppDatabase : RoomDatabase() {
 
         private fun buildDatabase(appContext: Context) =
             Room.databaseBuilder(appContext, AppDatabase::class.java, DATABASE_NAME)
-                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8)
+                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7
+                    , MIGRATION_7_8, MIGRATION_8_9
+                )
                 .build()
     }
 

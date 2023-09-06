@@ -40,6 +40,7 @@ import com.android.pos.data.remote.Constants.DECREASE_ONGOING_ORDER_COUNTER
 import com.android.pos.data.remote.Constants.DELETE_ALL_QUEUE_PRINTER
 import com.android.pos.data.remote.Constants.DELETE_QUEUE_PRINTER
 import com.android.pos.data.remote.Constants.DELETE_UPDATE_PRINTER
+import com.android.pos.data.remote.Constants.DESTROY_QUEUE
 import com.android.pos.data.remote.Constants.DISCOUNTS
 import com.android.pos.data.remote.Constants.DISCOUNTS_ACTIVE
 import com.android.pos.data.remote.Constants.DISCOUNTS_UPDATE_DELETE
@@ -189,6 +190,9 @@ interface ApiService {
         @Query("terminal_id") terminalId: Int,
         @Query("time_stamp") timeStamp: String = ""
     ): VenueDataResponse
+
+    @POST(DESTROY_QUEUE)
+    suspend fun destroyQueue(@Query("location_id") locationId: Int): BaseResponse
 
     @GET(GET_PRINTERS)
     suspend fun getPrinterList(@Query("terminal_id") terminalId: Int): PrinterResponse
@@ -853,7 +857,11 @@ interface ApiService {
 
     @FormUrlEncoded
     @PUT(UPDATE_TIP_WITH_SIGNATURE)
-    suspend fun updateTipWithSignature(@Field("id") id: Int, @Field("signature") signature: String, @Field("tips") tip: Double): BaseResponse
+    suspend fun updateTipWithSignature(
+        @Field("id") id: Int,
+        @Field("signature") signature: String,
+        @Field("tips") tip: Double
+    ): BaseResponse
 
     @PUT(FIRE_ITEM_TO_KITCHEN)
     suspend fun updateKitchenFireStatus(
@@ -917,7 +925,7 @@ interface ApiService {
     suspend fun getFloorPlanTableDetails(): GetFloorPlanDetailResponse
 
     @GET(Constants.AVAILABLE_TRANSFER_TABLE_LIST)
-    suspend fun getAvailableTransferTableList(@Query("employee_id")employeeId:Int): AvailableTransferTableList
+    suspend fun getAvailableTransferTableList(@Query("employee_id") employeeId: Int): AvailableTransferTableList
 
 
     @GET(REPORT_SUMMARY)

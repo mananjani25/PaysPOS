@@ -19,6 +19,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.android.pos.BuildConfig
 import com.android.pos.R
+import com.android.pos.data.model.responseModel.PosLinkResult
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.AUTH_TOKEN
 import com.android.pos.data.remote.Constants.IS_CLOCKOUT
@@ -28,21 +29,26 @@ import com.android.pos.data.remote.Constants.LOGIN_REMEMBER
 import com.android.pos.data.remote.Constants.ORDER_COMPLETED
 import com.android.pos.databinding.FragmentLoginBinding
 import com.android.pos.di.ApiModule.BASE_URL
+import com.android.pos.di.ApiModule2
 import com.android.pos.di.HostSelectionInterceptor
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
 import com.android.pos.ui.fragments.dinein.DineInOrderTableViewModel
-import com.android.pos.utils.AdvertisingInfo
-import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.*
 import com.android.pos.utils.extensions.liveSnackBar
-import com.android.pos.utils.getCustomerDisplay
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import org.xmlpull.v1.XmlPullParser
+import org.xmlpull.v1.XmlPullParserFactory
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import java.io.StringReader
 import javax.inject.Inject
 
 
@@ -64,7 +70,11 @@ class LoginFragment : Fragment() {
     @set:Inject
     internal var prefProvider: PrefProvider? = null
 
+    @Inject
+    lateinit var apiModule2: ApiModule2
+
     private val dineInViewModel by viewModels<DineInOrderTableViewModel>()
+
     @set:Inject
     var hostSelectionInterceptor: HostSelectionInterceptor? = null
 
@@ -75,6 +85,7 @@ class LoginFragment : Fragment() {
     ): View? {
 
 //       determineAdvertisingInfo()
+//        paxNetworkCall()
 
         if (prefProvider?.getValue(AUTH_TOKEN, "").toString().isNotEmpty()) {
             if (!prefProvider?.getValueboolean(IS_CLOCKOUT, false)!!) {
@@ -168,11 +179,47 @@ class LoginFragment : Fragment() {
         return binding.root
     }
 
+    private fun paxNetworkCall() {
+        ProgressUtils.showProgressDialog("Please wait...s", requireActivity())
+
+        var call: Call<PosLinkResult>? =
+            apiModule2.getRetrofit2().getPAXDetails("NFAC0YS6", "1850067558", "")
+        call!!.enqueue(object : Callback<PosLinkResult> {
+
+            override fun onResponse(
+                call: Call<PosLinkResult>,
+                response: Response<PosLinkResult>
+            ) {
+                ProgressUtils.dismissProgressDialog()
+
+                if (response.isSuccessful) {
+                    LogUtil.logE("onResponse", response.body().toString() + response.body()!!.ipAddress)
+                   var ipAddress = response.body()!!.ipAddress
+                   var port = response.body()!!.port
+                    Log.d("Pax Params: ", "pax $ipAddress $port")
+                }
+            }
+
+            override fun onFailure(
+                call: Call<PosLinkResult>,
+                t: Throwable
+            ) {
+
+                ProgressUtils.dismissProgressDialog()
+
+                AlertUtils.showCustomAlert(requireContext(), t.message)
+                Log.d("onFailure: ", "Message-> ${t.message}")
+            }
+        })
+    }
+
+
+
     override fun onResume() {
         super.onResume()
-        if(this::presentation.isInitialized){
-           // presentation.show()
-           // presentation.onLogOutOrClockOut()
+        if (this::presentation.isInitialized) {
+            presentation.show()
+            presentation.onLogOutOrClockOut()
         }
     }
 

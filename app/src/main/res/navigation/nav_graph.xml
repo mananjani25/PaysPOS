@@ -1495,6 +1495,13 @@
         android:id="@+id/menuFragment"
         android:name="com.android.pos.ui.fragments.posmenu.MenuFragment"
         android:label="MenuFragment">
+
+        <action
+            android:id="@+id/action_menuFragment_to_printerQueueList"
+            app:destination="@id/printerQueueList"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:popUpToInclusive="true" />
+
         <action
             android:id="@+id/action_menuFragment_to_settings"
             app:destination="@id/settings"
@@ -1763,6 +1770,18 @@
         <action
             android:id="@+id/action_phoneOrderFragment_to_assignCustomerOrderFragment"
             app:destination="@id/assignCustomerOrderFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/printerQueueList"
+        android:name="com.android.pos.ui.fragments.printerqueue.PrinterQueue"
+        android:label="PrinterQueue" >
+
+        <action
+            android:id="@+id/action_printer_queue_to_dashboardCategoryNew"
+            app:destination="@id/dashboardCategoryBoldPOS"
+            app:popUpTo="@id/printerQueueList"
+            app:popUpToInclusive="true" />
+
     </fragment>
     <fragment android:id="@+id/addCustomerToGiftCard"
         android:name="com.android.pos.ui.fragments.eGiftCard.AddCustomerToGiftCardFragment"

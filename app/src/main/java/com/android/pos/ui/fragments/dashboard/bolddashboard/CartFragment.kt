@@ -2308,6 +2308,7 @@ class CartFragment(
 
                 }
                 if (cartAdapter.cartList.isNotEmpty()) {
+                    prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER, false)
                     prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
 
                     prefProvider.setValue(ORDER_TYPE, prefProvider.getValue(ORDER_TYPE, ""))

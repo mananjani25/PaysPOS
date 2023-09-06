@@ -2,6 +2,7 @@ package com.android.pos.ui.fragments.dashboard
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.StrictMode
@@ -51,6 +52,8 @@ import com.android.pos.data.remote.Constants.IS_SYNC_MARKUP
 import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER
 import com.android.pos.data.remote.Constants.LOCK_SCREEN_TRANSACTION
 import com.android.pos.data.remote.Constants.LOYALTY_ADDED
+import com.android.pos.data.remote.Constants.MANUAL_SALE_CATEGORY_ID
+import com.android.pos.data.remote.Constants.MANUAL_SALE_ITEM_ID
 import com.android.pos.data.remote.Constants.MAX_ITEM_QUANTITY
 import com.android.pos.data.remote.Constants.ONLINE_ORDER_ENABLE
 import com.android.pos.data.remote.Constants.ONLY_SHOW_PRICE_GREATER_THAN_ZERO
@@ -58,6 +61,8 @@ import com.android.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.ORDER_TYPE_ID
 import com.android.pos.data.remote.Constants.ORDER_TYPE_NAME
+import com.android.pos.data.remote.Constants.PAX_SERIAL_NO
+import com.android.pos.data.remote.Constants.PAX_TERMINAL_ID
 import com.android.pos.data.remote.Constants.REPORT_END_TIME
 import com.android.pos.data.remote.Constants.REPORT_START_TIME
 import com.android.pos.data.remote.Constants.SERVICECHARGE_DINEIN_ORDER
@@ -697,10 +702,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                         } else if (mod.id == modifier.id && mod.modifier_quantity != modifier.modifier_quantity) {
                                                             item.id += 1
                                                             isBreak = false
-                                                            Log.e(
-                                                                TAG,
-                                                                "newCartLogicModifier: isBreak"
-                                                            )
+                                                            Log.e(TAG, "newCartLogicModifier: isBreak")
 
                                                             return@forEach
                                                         }
@@ -742,7 +744,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 }
                             }
 
-                            if (!isDineInItem1000) {
+                            if(!isDineInItem1000){
                                 list.forEach {
                                     if (it.id == item?.id && it.itemId == item.itemId) {
                                         item.id += 1
@@ -4237,7 +4239,15 @@ class DashBoardCategoryViewModel @Inject constructor(
                 orderItemsAttribute.isEdited = item.isEdited
                 orderItemsAttribute.isDestroy = item.isDestroy
                 orderItemsAttribute.isPaid = item.isPaid
-                orderItemsAttribute.isPrinted = true
+                orderItemsAttribute.isPrinted = if (prefProvider.getValueboolean(
+                        DINE_IN_UPDATE,
+                        false
+                    ) == true && item.isEdited == true
+                ) false else if (prefProvider.getValueboolean(
+                        DINE_IN_UPDATE,
+                        false
+                    ) == true && item.isEdited == false
+                ) true else false
                 orderItemsAttribute.isTaxRemoved = false
                 orderItemsAttribute.itemId =
                     if (item.isManualSales) item.itemId else item.itemId
@@ -4949,6 +4959,10 @@ class DashBoardCategoryViewModel @Inject constructor(
                             val itemModifierSetList = ArrayList<ItemModifierSets>()
 
                             mCategory.forEach { category ->
+
+                                if (category.name.lowercase() == "Manual Sales".lowercase()) {
+                                    prefProvider.setValueInt(MANUAL_SALE_CATEGORY_ID, category.id)
+                                }
                                 val model = TbCategory().apply {
                                     createdAt = ""
                                     id = category.id
@@ -4965,6 +4979,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 categoryModelList.add(model)
 
                                 category.items.forEach {
+                                    if (it.name?.lowercase() == "Manual Sales".lowercase()) {
+                                        prefProvider.setValueInt(MANUAL_SALE_ITEM_ID, it.id)
+                                    }
 
                                     it.modifierSets.forEach { modifierset ->
                                         val itemModifierSets = ItemModifierSets().apply {
@@ -5120,6 +5137,24 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                                 }
 
+                                if (it.settingData.data.isMasterTeminal) {
+
+                                    prefProvider.setValueboolean(Constants.IS_MASTER_TERMINAL, true)
+                                } else {
+                                    prefProvider.setValueboolean(
+                                        Constants.IS_PRINTER_QUEUE_STARTS,
+                                        false
+                                    )
+                                    prefProvider.setValueboolean(
+                                        Constants.IS_MASTER_TERMINAL,
+                                        false
+                                    )
+                                }
+
+                                val intent = Intent()
+                                intent.action = Constants.MASTER_TEMINAL_CHANGED
+                                MainApplication.getInstance()?.baseContext?.sendBroadcast(intent)
+
 
                                 try {
 
@@ -5161,6 +5196,14 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     e.printStackTrace()
                                 }
 
+                                prefProvider.setValue(
+                                    PAX_SERIAL_NO,
+                                    it.settingData.data.SerialNo?: ""
+                                )
+                                prefProvider.setValue(
+                                    PAX_TERMINAL_ID,
+                                    it.settingData.data.PAXTerminalID?:""
+                                )
 
                                 prefProvider.setValue(
                                     BUSINESS_NAME,

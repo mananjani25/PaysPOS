@@ -101,6 +101,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     private lateinit var presentation: CustomDisplay
     private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
     private val passcodeViewModel by activityViewModels<PasscodeViewModel>()
+    private var fireItemsList: ArrayList<TbItem> = arrayListOf()
 
     private var passSCTotal: Double = 0.0
     private var passDiscountTotal: Double = 0.0
@@ -198,11 +199,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         setupSnackbar()
         getCustomerList()
         observeServiceCharge()
-        singleItemFireObserver()
+        //singleItemFireObserver()
         getCustomerPrinterList()
         getCustomerReceiptSettings()
         getKitchenReceiptSettings()
-        observeFireAll()
+        //observeFireAll()
         observeQueueCreated()
 
         observeTipsList()
@@ -2088,7 +2089,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         for (i in 0 until kitchenPrinterList.size) {
             if (kitchenPrinterList[i].status) {
 
-                initKitchenPrinter(kitchenPrinterList.get(i), Constants.KITCHEN, listItem)
+                // initKitchenPrinter(kitchenPrinterList.get(i), Constants.KITCHEN, listItem)
             }
         }
 
@@ -9936,6 +9937,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                 var orderRequest = OrderAttributeRequestModel()
 
+                orderRequest.orderItemsAttributes = orderItemsAttributes
                 orderRequest.orderTypeId = prefProvider.getValueInt(ORDER_TYPE_ID, 0)
                 orderRequest.totalAmount = getOrderDetailsResponse?.totalAmount ?: 0.0
 
@@ -9954,6 +9956,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                 )
                 viewModel.createQueuePrinter(createQueueRequest)
+                fireItemsList.clear()
+                fireItemsList = arrayListOf()
             }
 
         }
@@ -10023,10 +10027,14 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         val builder = ArrayList<String>()
         var listItem: ArrayList<TbItem> = arrayListOf()
 //        LogUtil.logE(TAG, "dineInList:  ${Gson().toJson(list)}")
+        var firedItemsList: ArrayList<TbItem> = arrayListOf()
+        LogUtil.logE(TAG, "dineInList:  ${Gson().toJson(list)}")
+        fireItemsList = arrayListOf()
         list.forEach {
             if (it.isHeader == 1) {
                 it.item?.let {
                     if (!it.isFired) {
+                        fireItemsList.add(it)
                         listItem.add(it)
                     }
                 }
@@ -10150,7 +10158,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                         ) {
                                             LogUtil.logE(TAG, "printerName  ${kit.name} ")
                                             autoPrintEnable = true
-                                            initKitchenPrinter(kit, Constants.KITCHEN, listItem)
+                                            // initKitchenPrinter(kit, Constants.KITCHEN, listItem)
                                         }
                                     }
                                 }
@@ -10158,7 +10166,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                         }
                     } else {
-                        initKitchenPrinter(kit, Constants.KITCHEN, listItem)
+                        //initKitchenPrinter(kit, Constants.KITCHEN, listItem)
 
                     }
                 }

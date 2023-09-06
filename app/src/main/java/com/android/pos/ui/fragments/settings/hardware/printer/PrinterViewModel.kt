@@ -1,11 +1,15 @@
 package com.android.pos.ui.fragments.settings.hardware.printer
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.data.db.AppDatabase
+import com.android.pos.data.model.PrinterListModel
 import com.android.pos.data.model.requestModel.CreatePrinterRequestModel
+import com.android.pos.data.model.requestModel.OrderRequestModel
+import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.model.responseModel.DeletePrinterResponseModel
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
@@ -31,11 +35,17 @@ class PrinterViewModel @Inject constructor(
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
 
+    private val _printerQueueDelete = MutableLiveData<Event<String>>()
+    val printerQueueDeleteScenario:LiveData<Event<String>> = _printerQueueDelete
+
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
     private var _delete = MutableLiveData<Event<String>>()
     val deletePrinter: LiveData<Event<String>> = _delete
+
+    private var _printerCreated = MutableLiveData<Event<PrinterResponse.Data>>()
+    val printerCreatedSucces:LiveData<Event<PrinterResponse.Data>> = _printerCreated
 
     private var _update = MutableLiveData<Event<String>>()
     val updatePrinter: LiveData<Event<String>> = _update
@@ -51,6 +61,38 @@ class PrinterViewModel @Inject constructor(
         return posRepository.getKitchenPrinters()
     }
 
+    suspend fun getKitchenPrintersList(): List<PrinterResponse.Data.KitchenReceiptPrinters> {
+        return posRepository.getKitchenPrintersList()
+    }
+
+
+    fun createPrinterQueueTestOrder(orderRequest: OrderRequestModel){
+
+        _showProgress.value = Event(true)
+        viewModelScope.launch {
+
+            val resource: com.android.pos.utils.statusUtils.Resource<CreateOrderResponse> =
+                posRepository.createOrder(orderRequest)
+
+            when (resource.status) {
+                Status.LOADING -> {
+
+                    _showProgress.value = Event(true)
+                }
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message)
+                    _showProgress.value = Event(false)
+
+                }
+                Status.SUCCESS -> {
+
+                    _showProgress.value = Event(false)
+                }
+            }
+
+        }
+
+    }
 
     fun updatePrinterStatus(type: String, id: Int, terminal_id: Int, status: Boolean) {
         _showProgress.value = Event(true)
@@ -115,29 +157,28 @@ class PrinterViewModel @Inject constructor(
 
     }
 
-    fun deletePrinter(id: Int, status: String? = null) {
+    fun deletePrinter(printerListModel: PrinterListModel, status: String? = null) {
         _showProgress.value = Event(true)
         viewModelScope.launch {
             val resource: com.android.pos.utils.statusUtils.Resource<DeletePrinterResponseModel> =
-                posRepository.deletePrinter(id, status)
+                posRepository.deletePrinter(printerListModel.id!!, status)
 
             when (resource.status) {
                 Status.SUCCESS -> {
                     _showProgress.value = Event(false)
                     if (status != null) {
                         if (status.lowercase() == Constants.KITCHEN.lowercase()) {
-                            posRepository.deleteCustomerPrinter(id)
+                            posRepository.deleteCustomerPrinter(printerListModel.id)
                         } else {
-                            posRepository.deleteKitchenPrinter(id)
+                            posRepository.deleteKitchenPrinter(printerListModel.id)
                         }
 
                     } else {
 
                         if (resource.data?.data?.receiptPrintType == Constants.KITCHEN) {
-
-                            posRepository.deleteKitchenPrinter(id)
+                            posRepository.deleteKitchenPrinter(printerListModel.id)
                         } else if (resource.data?.data?.receiptPrintType == Constants.CUSTOMER) {
-                            posRepository.deleteCustomerPrinter(id)
+                            posRepository.deleteCustomerPrinter(printerListModel.id)
                         }
                     }
                     printerList()
@@ -145,6 +186,8 @@ class PrinterViewModel @Inject constructor(
                 }
                 Status.ERROR -> {
                     _snackbarText.value = Event(resource.message)
+                    Log.e("checkPrinterQueueDelete","messageResource   ${resource.message.toString()}")
+                    _printerQueueDelete.value = Event(resource.message.toString())
                     _showProgress.value = Event(false)
 
                 }
@@ -158,9 +201,11 @@ class PrinterViewModel @Inject constructor(
         }
     }
 
-    fun createPrinter(data: CreatePrinterRequestModel) {
+    fun createPrinter(data: CreatePrinterRequestModel, showLoader:Boolean = true) {
 
-        _showProgress.value = Event(true)
+        if (showLoader){
+            _showProgress.value = Event(true)
+        }
 
 
         viewModelScope.launch {
@@ -170,7 +215,9 @@ class PrinterViewModel @Inject constructor(
 
             when (resource.status) {
                 Status.LOADING -> {
-                    _showProgress.value = Event(true)
+                    if (showLoader){
+                        _showProgress.value = Event(true)
+                    }
 
                 }
                 Status.ERROR -> {
@@ -180,6 +227,9 @@ class PrinterViewModel @Inject constructor(
                 }
                 Status.SUCCESS -> {
                     _showProgress.value = Event(false)
+                    resource.data?.data?.let {
+                        _printerCreated.value = Event(it)
+                    }
                     printerList()
 
                 }

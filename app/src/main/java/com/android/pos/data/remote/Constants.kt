@@ -8,8 +8,11 @@ import com.android.pos.di.PrefProvider
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.TimeFormatUtils
 import com.google.gson.Gson
+import com.sunmi.externalprinterlibrary2.printer.CloudPrinter
+import com.sunmi.externalprinterlibrary2.printer.CloudPrinterBuilder
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Locale
+import java.util.TimeZone
 
 object Constants {
 
@@ -23,11 +26,22 @@ object Constants {
     const val ARG_PARAM1 = "param1"
     const val ARG_PARAM2 = "param2"
     const val ARG_PARAM3 = "param2"
+    const val PRINTER_QUEUE_BACKGROUND = "printer_queue_background"
 
     const val CURRENT_VERSION = 1
 
+    const val KITCHEN_PRINTER_LIST_PREF = "kitchen_printer_list_pref"
+
+    const val IS_MASTER_TERMINAL = "is_master_terminal"
+    const val IS_PRINTER_QUEUE_STARTS = "is_printer_queue_starts"
+
     const val MAX_ITEM_QUANTITY = 1000
     const val MAX_ITEM_QUANTITY_FOR_MANUAL_SALES = 15
+
+    const val SUNMIBRAND = "Sunmi"
+    const val EPSONBRAND = "TM"
+
+    const val FILE_PATH = "/storage/emulated/0/Download/"
 
     // payment magtek
 
@@ -112,6 +126,7 @@ object Constants {
 
     const val TAKEOUT = "TakeOut"
     const val DINE_IN = "DineIn"
+    const val DINE_IN_SPACE = "Dine In"
     const val PHONE_ORDER = "PhoneOrder"
     const val PHONE_ORDER_ = "Phone Order"
     const val DINE_IN_UPDATE = "DineInUpdate"
@@ -133,6 +148,11 @@ object Constants {
 
     const val PICK_UP = "Pickup"
     const val DELIVERY = "Delivery"
+    const val IS_PAX_CONNECTED = "isPAXConnected"
+    const val PAX_SERIAL_NO = "SerialNo"
+    const val PAX_TERMINAL_ID = "TerminalID"
+    const val PAX_IP = "IPAddress"
+    const val PAX_PORT = "Port"
 
     const val DELIVERY_TYPE = "Delivery_Type"
     const val OPEN_ORDER_ITEMS = "Open_Order_Items"
@@ -146,6 +166,7 @@ object Constants {
     const val CLOCK_OUT = "employee_activities/clock_out"
     const val LOGOUT = "users/log_out"
     const val FORGOT_PASSWORD = "users/forgot_password"
+    const val PAX_DETAILS = "GetDeviceLocalIP"
 
     const val EMPLOYEES = "employees"
     const val CUSTOMERS = "customers"
@@ -169,6 +190,7 @@ object Constants {
     const val SYNC_VENUE_DETAILS = "locations/setting_data"
     const val ORDER_TYPES = "order_types"
     const val GET_PRINTERS = "printers"
+    const val DESTROY_QUEUE = "printer_queues/clear_printer_queue"
     const val DELETE_UPDATE_PRINTER = "printers/{id}"
     const val DELETE_QUEUE_PRINTER = "printer_queues/{id}"
     const val DELETE_ALL_QUEUE_PRINTER = "printer_queues/delete_all"
@@ -176,6 +198,9 @@ object Constants {
     const val UPDATE_PRINTER_STATUS = "printers/{id}/update_printer_status"
     const val UPDATE_SERVICECHARGE = "locations/{id}/enable_service_charge"
     const val CREATE_QUEUE_PRINTER = "printer_queues"
+    const val CREATE_QUEUE_PRINTER_PHASE3 = "printer_queues/index_v2"
+    const val DELETE_QUEUE_ORDER_PHASE3 = "printer_queues/destroy_v2?order_id="
+    const val UPDATE_PRITNER_QUEUE_TRACK = "update_printer_queue_track"
 
     const val INCREASE_ONGOING_ORDER_COUNTER = "locations/increase_ongoing_order_counter"
     const val DECREASE_ONGOING_ORDER_COUNTER = "locations/decrease_ongoing_order_counter"
@@ -392,6 +417,12 @@ object Constants {
     const val ONLINE_ORDER_TAB = "OnlineWebOrder"
     const val THIRD_PARTY_ORDER_TAB = "OnlineOrder"
 
+    //PAX
+    const val TRANSACTION_SUCCESSED = 100 //transaction success
+    const val TRANSACTION_FAILURE = 101 //transaction failure
+    const val TRANSACTION_TIMEOOUT = 102 //transaction timeout
+    const val TRANSACTION_STATUS = 103 //transaction timeout
+    const val MERCHANT_ID = "merchant_id"
 
     fun createRequestModelForUpdatePritnerType(
         oldList: ArrayList<PrinterResponse.Data.OrderTypes>?,
@@ -667,6 +698,7 @@ object Constants {
     const val SYNC_SETTING_NOTIFICATION = "sync_setting_notification"
     const val SYNC_MARKUP = "MarkupSync"
     const val IS_SYNC_MARKUP = "is_markup_sync"
+    const val MASTER_TEMINAL_CHANGED = "master_teminal_changed"
 
 
     // dinein
@@ -756,4 +788,13 @@ object Constants {
     const val BALANCE_INQUIRY = "Balance Inquiry"
     const val GIFT_CARD_CATEGORY = "GIFT CARD"
     const val IS_LAST_ITEM_DELETE = "IS_LAST_ITEM_DELETE"
+
+    fun createCloudPrinter(ipAddress:String,portNo:Int):CloudPrinter{
+        return CloudPrinterBuilder.buildPrinter(ipAddress,portNo)
+    }
+
+    fun createCloudPrinterWithName(name:String,ipAddress:String,portNo:Int):CloudPrinter{
+        return CloudPrinterBuilder.buildPrinter(name,ipAddress,portNo)
+    }
+
 }

@@ -2,6 +2,32 @@ package com.android.pos.data.remote
 
 import com.android.pos.data.entities.TbBusinessDetails
 import com.android.pos.data.entities.VariationsAttribute
+import com.android.pos.data.model.requestModel.CashInOutModel
+import com.android.pos.data.model.requestModel.CashLogRequest
+import com.android.pos.data.model.requestModel.CreateCategoryRequestModel
+import com.android.pos.data.model.requestModel.CreateCustomerRequestModel
+import com.android.pos.data.model.requestModel.CreateDiscountRequestModel
+import com.android.pos.data.model.requestModel.CreateEmployeeRequestModel
+import com.android.pos.data.model.requestModel.CreateItemRequestModel
+import com.android.pos.data.model.requestModel.CreateModifierRequest
+import com.android.pos.data.model.requestModel.CreateNoteRequest
+import com.android.pos.data.model.requestModel.CreateOptionRequestModel
+import com.android.pos.data.model.requestModel.CreatePrinterRequestModel
+import com.android.pos.data.model.requestModel.CreateQueuePrinterRequestModel
+import com.android.pos.data.model.requestModel.CreateServiceChargeRequestModel
+import com.android.pos.data.model.requestModel.CreateTaxRequestModel
+import com.android.pos.data.model.requestModel.CreateTeamRoleRequestModel
+import com.android.pos.data.model.requestModel.CreateTipRequestModel
+import com.android.pos.data.model.requestModel.GuestPaymentRequest
+import com.android.pos.data.model.requestModel.LoyaltyPointRequest
+import com.android.pos.data.model.requestModel.MergeTableRequest
+import com.android.pos.data.model.requestModel.OrderCancelRequest
+import com.android.pos.data.model.requestModel.OrderRequestModel
+import com.android.pos.data.model.requestModel.RefundRequestModel
+import com.android.pos.data.model.requestModel.RefundRequestModelOnlineOrder
+import com.android.pos.data.model.requestModel.SpitByOrderRequestModel
+import com.android.pos.data.model.requestModel.UpdateCustomerReceiptRequestModel
+import com.android.pos.data.model.requestModel.UpdateKitchenReceiptRequestModel
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.requestModel.giftCard.request.GiftCardAddValueRequest
 import com.android.pos.data.model.requestModel.giftCard.request.GiftCardCheckBalanceRequest
@@ -34,6 +60,8 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
 
     suspend fun syncVenueData(terminalId: Int, timeStamp: String) =
         getResult { apiService.syncVenueData(terminalId, timeStamp) }
+
+    suspend fun clearPrinterQueue(locationId:Int) = getResult { apiService.destroyQueue(locationId) }
 
     suspend fun getPrinterData(terminalId: Int) =
         getResult { apiService.getPrinterList(terminalId) }

@@ -288,14 +288,14 @@ class OrderCompleteViewModel @Inject constructor(
         if (printerQueue != null) {
             if (printerQueueModel.printSuccessData.isNotEmpty()) {
 
-                for (i in 0 until printerQueue!!.printSuccessData?.size) {
+              /*  for (i in 0 until printerQueue!!.printSuccessData?.size) {
                     if (printerQueue!!.printSuccessData.contains(printerQueue!!.printSuccessData[i])) {
                         return true
                         break
                     } else {
                         return false
                     }
-                }
+                }*/
                 printerQueueModel.printSuccessData.forEach {
                     if (printerQueue!!.printSuccessData.contains(it)) {
 

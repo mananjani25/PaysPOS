@@ -12,6 +12,7 @@ import androidx.core.graphics.drawable.DrawableCompat
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.data.model.GetPaymentOrderDetailsResponse
+import com.android.pos.data.model.GuestAttrQueue
 import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.model.responseModel.EodReportResponse
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
@@ -27,6 +28,7 @@ import com.android.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.epson.epos2.printer.Printer
 import com.epson.eposprint.Builder
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
+import com.sunmi.externalprinterlibrary2.printer.CloudPrinter
 
 val TAG = "PrinterReceipt"
 
@@ -1053,7 +1055,7 @@ fun addItemsInOrderSalesDetails(
     details: EodReportResponse.Data.OrderSalesDetails.Details
 ) {
 
-    var data  = details.orderId
+    var data = details.orderId
     data += repeat(" ", 10 - details.orderId.length) + MethodUtils.roundOffAmount(details.tip)
     data += repeat(" ", 18 - data.length) + MethodUtils.roundOffAmount(details.serviceCharge)
     data += repeat(" ", 27 - data.length) + details.payType
@@ -1472,6 +1474,179 @@ fun addHorizontalLineEODP(builder: Printer): Printer {
 fun addHorizontalLineNew(printer: Printer): Printer {
     var str: String = ""
     for (i in 0 until 48) {
+        str += "-"
+    }
+    LogUtil.logE("strLine", "strLine  $str")
+    printer.addText(str)
+
+    return printer
+}
+
+
+fun printGuestByItemForQueue(guestAttributes: List<GuestAttrQueue>, printer: Printer): Printer {
+
+    guestAttributes.forEach {
+        printer.addFeedLine(1)
+        printer.addTextFont(Builder.FONT_C)
+        printer.addTextAlign(Builder.ALIGN_LEFT)
+        printer.addTextLang(Builder.LANG_EN)
+        printer.addTextSize(1, 1)
+        printer.addTextStyle(
+            Builder.FALSE,
+            Builder.FALSE,
+            Builder.TRUE,
+            Builder.COLOR_1
+        )
+
+        printer.addText(it.name)
+
+
+        it.listOfItems.forEach { obj ->
+
+            printer.addFeedLine(1)
+            printer.addTextFont(Builder.FONT_E)
+            printer.addTextAlign(Builder.ALIGN_LEFT)
+            printer.addTextLang(Builder.LANG_EN)
+            printer.addTextSize(1, 1)
+            printer.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.TRUE,
+                Builder.COLOR_1
+            )
+            if (obj.timestamp.isNotEmpty()) {
+                var msg = "(" + obj.timestamp + ")"
+                printer.addText("" + obj.quantity + " " + obj.itemName + "  " + msg)
+
+            } else {
+
+                printer.addText("" + obj.quantity + " " + obj.itemName)
+            }
+
+            if (obj.orderItemModifiers.isNotEmpty()) {
+                obj.orderItemModifiers.forEach { mod ->
+
+                    printer.addFeedLine(1)
+                    printer.addTextFont(Builder.FONT_E)
+                    printer.addTextAlign(Builder.ALIGN_LEFT)
+                    printer.addTextLang(Builder.LANG_EN)
+                    printer.addTextSize(1, 1)
+                    printer.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.TRUE,
+                        Builder.COLOR_1
+                    )
+
+                    printer.addText(
+                        "  " + if (mod.modifierQuantity == 1) {
+                            "   "
+                        } else {
+                            "" + mod.modifierQuantity + "x "
+                        } + mod.name
+                    )
+
+
+                }
+
+
+            }
+
+
+        }
+
+    }
+
+    return  printer
+
+
+}
+
+fun printGuestByItemForSunmiQueue(guestAttributes: List<GuestAttrQueue>, printer: CloudPrinter): CloudPrinter {
+
+    guestAttributes.forEach {
+        printer.lineFeed(1)
+        addDotLineForSunmiQueue(printer)
+        printer.setCharacterSize(2,2)
+        printer.setBoldMode(true)
+
+        printer.printText(it.name)
+
+
+        printer.setBoldMode(false)
+        addDotLineForSunmiQueue(printer)
+        it.listOfItems.forEach { obj ->
+
+           // printer.lineFeed(1)
+            printer.setCharacterSize(2,2)
+            printer.setBoldMode(false)
+
+            if (obj.timestamp.isNotEmpty()) {
+                var msg = "(" + obj.timestamp + ")"
+                printer.printText("" + obj.quantity + " " + obj.itemName + "  " + msg)
+
+            } else {
+
+                printer.printText("" + obj.quantity + " " + obj.itemName)
+            }
+
+            if (obj.orderItemModifiers.isNotEmpty()) {
+                obj.orderItemModifiers.forEach { mod ->
+
+                    //printer.lineFeed(1)
+                    printer.setCharacterSize(2,2)
+
+
+                    printer.printText(
+                        "  " + if (mod.modifierQuantity == 1) {
+                            "   "
+                        } else {
+                            "" + mod.modifierQuantity + "x "
+                        } + mod.name
+                    )
+
+
+                }
+
+
+            }
+
+
+        }
+
+    }
+
+    return  printer
+
+
+}
+
+fun addDotLineForSunmiQueue(cloudPrinter: CloudPrinter):CloudPrinter{
+    cloudPrinter.setCharacterSize(1,1)
+    cloudPrinter.setBoldMode(true)
+    var str:String=""
+    for (i in 0 until 48){
+        str+= "-"
+    }
+    cloudPrinter.printText(str)
+    return cloudPrinter
+}
+
+fun addDoubleDotLineForSunmiQueue(cloudPrinter: CloudPrinter):CloudPrinter{
+    cloudPrinter.setCharacterSize(2,1)
+    cloudPrinter.setBoldMode(true)
+    var str:String=""
+    for (i in 0 until 48){
+        str+= "-"
+    }
+    cloudPrinter.printText(str)
+    return cloudPrinter
+}
+
+
+fun addHorizontalLineNewU220(printer: Printer): Printer {
+    var str: String = ""
+    for (i in 0 until 30) {
         str += "-"
     }
     LogUtil.logE("strLine", "strLine  $str")
@@ -2108,6 +2283,8 @@ fun addOrdersForKitchenOnlineOrderU220(
             }
         }
     }
+
+
     return builder
 }
 

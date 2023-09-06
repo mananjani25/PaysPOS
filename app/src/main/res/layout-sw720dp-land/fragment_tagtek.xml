@@ -103,6 +103,47 @@
             android:layout_height="1dp"
             android:background="@color/view" />
 
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvPax"
+            style="@style/CustomFontSemiBold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/_5sdp"
+            android:layout_marginTop="@dimen/_3sdp"
+            android:background="@drawable/button_action_hover"
+            android:gravity="center"
+            android:paddingHorizontal="@dimen/padding_home_button"
+            android:paddingStart="@dimen/_10sdp"
+            android:paddingTop="@dimen/_8sdp"
+            android:paddingEnd="@dimen/_10sdp"
+            android:paddingBottom="@dimen/_8sdp"
+            android:text="Connect to PAX"
+            android:layout_gravity="end"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_7mdpi"
+            app:textAllCaps="true" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvDisconnectPax"
+            style="@style/CustomFontSemiBold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/_5sdp"
+            android:layout_marginTop="@dimen/_3sdp"
+            android:background="@drawable/button_action_hover"
+            android:gravity="center"
+            android:visibility="gone"
+            android:paddingHorizontal="@dimen/padding_home_button"
+            android:paddingStart="@dimen/_10sdp"
+            android:paddingTop="@dimen/_8sdp"
+            android:paddingEnd="@dimen/_10sdp"
+            android:paddingBottom="@dimen/_8sdp"
+            android:text="Disconnect PAX"
+            android:layout_gravity="end"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_7mdpi"
+            app:textAllCaps="true" />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvDeviceList"
             android:layout_width="match_parent"

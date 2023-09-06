@@ -5,20 +5,63 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.db.IDataManager
-import com.android.pos.data.entities.*
+import com.android.pos.data.entities.CartModel
+import com.android.pos.data.entities.CashDiscountModel
+import com.android.pos.data.entities.DineInCartModel
+import com.android.pos.data.entities.Employee
+import com.android.pos.data.entities.ItemModifierSets
+import com.android.pos.data.entities.LoyaltyProgramsModel
 import com.android.pos.data.entities.ModifierSet
+import com.android.pos.data.entities.OptionSet
+import com.android.pos.data.entities.TaxData
+import com.android.pos.data.entities.TbBusinessDetails
+import com.android.pos.data.entities.TbCardReader
+import com.android.pos.data.entities.TbCategory
+import com.android.pos.data.entities.TbCountryList
+import com.android.pos.data.entities.TbCustomer
+import com.android.pos.data.entities.TbItem
+import com.android.pos.data.entities.TbOrderType
+import com.android.pos.data.entities.TbTimeZones
+import com.android.pos.data.entities.TeamRole
 import com.android.pos.data.model.PrinterQueueModel
 import com.android.pos.data.model.ShiftRportConfiguration
 import com.android.pos.data.model.SplitDetailListModel
-import com.android.pos.data.model.requestModel.*
+import com.android.pos.data.model.requestModel.CashInOutModel
+import com.android.pos.data.model.requestModel.CashLogRequest
+import com.android.pos.data.model.requestModel.CreateCategoryRequestModel
+import com.android.pos.data.model.requestModel.CreateCustomerRequestModel
+import com.android.pos.data.model.requestModel.CreateEmployeeRequestModel
+import com.android.pos.data.model.requestModel.CreateItemRequestModel
+import com.android.pos.data.model.requestModel.CreateModifierRequest
+import com.android.pos.data.model.requestModel.CreateNoteRequest
+import com.android.pos.data.model.requestModel.CreateOptionRequestModel
+import com.android.pos.data.model.requestModel.CreatePrinterRequestModel
+import com.android.pos.data.model.requestModel.CreateQueuePrinterRequestModel
+import com.android.pos.data.model.requestModel.GuestPaymentRequest
+import com.android.pos.data.model.requestModel.MergeTableRequest
+import com.android.pos.data.model.requestModel.OrderCancelRequest
+import com.android.pos.data.model.requestModel.OrderRequestModel
+import com.android.pos.data.model.requestModel.RefundRequestModelOnlineOrder
+import com.android.pos.data.model.requestModel.SpitByOrderRequestModel
+import com.android.pos.data.model.requestModel.WastageItemRequest
 import com.android.pos.data.model.requestModel.giftCard.request.GiftCardAddValueRequest
 import com.android.pos.data.model.requestModel.giftCard.request.GiftCardCheckBalanceRequest
 import com.android.pos.data.model.requestModel.giftCard.request.SellGiftCardRequestModel
-import com.android.pos.data.model.responseModel.*
+import com.android.pos.data.model.responseModel.BaseResponse
+import com.android.pos.data.model.responseModel.GetCustomerReceiptSettingsResponse
+import com.android.pos.data.model.responseModel.GetKitchenReceiptSettingsResponse
+import com.android.pos.data.model.responseModel.NoteResponse
+import com.android.pos.data.model.responseModel.OnlineOrderResponseModel
+import com.android.pos.data.model.responseModel.OnlineOrderStatusUpdateResponse
+import com.android.pos.data.model.responseModel.OpenOrderResponse
+import com.android.pos.data.model.responseModel.PrinterResponse
+import com.android.pos.data.model.responseModel.VenueDataResponse
+import com.android.pos.data.model.responseModel.VenueDetailsResponse
 import com.android.pos.data.remote.ApiHelper
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
+import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.remote.Constants.SYNC_SETTING_TIME_STAMP
 import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.di.PrefProvider
@@ -68,10 +111,9 @@ class PosRepository @Inject constructor(
     suspend fun updateCustomerPrinterStatus(status: Boolean, id: Int) =
         appDatabase.printerDao().updateCustomerStatus(status, id)
 
-    fun getPrinters() = performGetOperation(
-        databaseQuery = {
-            appDatabase.printerDao().customerPrintList
-        },
+    fun getPrinters() = performGetOperation(databaseQuery = {
+        appDatabase.printerDao().customerPrintList
+    },
         networkCall = { apiHelperNew.getPrinterData(prefProvider.getValueInt(TERMINAL_ID, 0)) },
         saveCallResult = {
             appDatabase.printerDao().addCustomerPrinterList(it.data.customerReceiptPrinters)
@@ -91,15 +133,29 @@ class PosRepository @Inject constructor(
         appDatabase.cancelOrderReasonDao().addAllCancelOrderReasonsSuspend(cancelOrderReason)
     }
 
+    fun getKitchenPrinters() = performGetOperation(databaseQuery = {
+        appDatabase.printerDao().kitchenPrintList
+    },
+        networkCall = { apiHelperNew.getPrinterData(prefProvider.getValueInt(TERMINAL_ID, 0)) },
+        saveCallResult = {
+            appDatabase.printerDao().addCustomerPrinterList(it.data.customerReceiptPrinters)
+            it.data.kitchenReceiptPrinters?.let { it1 ->
+                appDatabase.printerDao().addKitchenPrinterList(
+                    it1
+                )
+            }
+        }
+
+    )
+
+    suspend fun getKitchenPrintersList() =  appDatabase.printerDao().getKitchenPrinterList()
+
     suspend fun addWastageReasonInDb(wastageReasonsList: List<VenueDetailsResponse.Data.WastageReason>) {
         appDatabase.wastageReasonsDao().addAllWastageReasons(wastageReasonsList)
     }
 
     fun getWastageReasonsListFromDb() =
         performGetOperationDatabase(databaseQuery = { appDatabase.wastageReasonsDao().allWastageReasons })
-
-    fun getKitchenPrinters() =
-        performGetOperationDatabase { appDatabase.printerDao().kitchenPrintList }
 
     fun getCustomerPrinters() =
         performGetOperationDatabase { appDatabase.printerDao().customerPrintList }
@@ -117,11 +173,9 @@ class PosRepository @Inject constructor(
         return liveData
     }
 
-    suspend fun createPrinter(data: CreatePrinterRequestModel) =
-        apiHelperNew.createPrinter(data)
+    suspend fun createPrinter(data: CreatePrinterRequestModel) = apiHelperNew.createPrinter(data)
 
-    suspend fun checkPermissionRole(passcode: String) =
-        apiHelperNew.checkPermissionRole(passcode)
+    suspend fun checkPermissionRole(passcode: String) = apiHelperNew.checkPermissionRole(passcode)
 
     suspend fun createQueuePrinter(createQueuePrinterRequest: CreateQueuePrinterRequestModel) =
         apiHelperNew.createQueuePrinter(createQueuePrinterRequest)
@@ -142,12 +196,11 @@ class PosRepository @Inject constructor(
     suspend fun updatePrinterStatus(id: Int, terminal_id: Int, status: Boolean) =
         apiHelperNew.updatePrinterStatus(id, terminal_id, status)
 
-  /*  suspend fun updatePrinterStatusKitchen(id: Int, terminal_id: Int, status: Boolean) =
-        apiHelperNew.updatePrinterStatusKitchen(id, terminal_id, status)
+    /*  suspend fun updatePrinterStatusKitchen(id: Int, terminal_id: Int, status: Boolean) =
+          apiHelperNew.updatePrinterStatusKitchen(id, terminal_id, status)
 
-    suspend fun updatePrinterStatusCustomer(id: Int, terminal_id: Int, status: Boolean) =
-        apiHelperNew.updatePrinterStatusCustomer(id, terminal_id, status)*/
-    /*fun syncVenueDetails() =
+      suspend fun updatePrinterStatusCustomer(id: Int, terminal_id: Int, status: Boolean) =
+          apiHelperNew.updatePrinterStatusCustomer(id, terminal_id, status)*//*fun syncVenueDetails() =
         performGetOperationNew(networkCall = { apiHelperNew.syncVenueDetails() })*/
 
     suspend fun syncVenueDetails() = apiHelperNew.syncVenueDetails(
@@ -161,6 +214,12 @@ class PosRepository @Inject constructor(
 
     suspend fun syncInventory(terminalId: Int, timeStamp: String) =
         apiHelperNew.syncVenueData(terminalId, timeStamp)
+
+    suspend fun clearPrinterQueue() = apiHelperNew.clearPrinterQueue(
+        prefProvider.getValueInt(
+            LOCATION_ID, 0
+        )
+    )
 
 
     suspend fun updateTransactionLockScreen(lock_screen_after_each_transaction: Boolean) =
@@ -460,8 +519,8 @@ class PosRepository @Inject constructor(
 
     suspend fun deleteNoteDatabase(noteId: Int) = appDatabase.notesDao().deleteNotesById(noteId)
 
-/*fun employeesList(locationId: Int) =
-    performGetOperationNew(networkCall = { apiHelperNew.employeesList(locationId) })*/
+    /*fun employeesList(locationId: Int) =
+        performGetOperationNew(networkCall = { apiHelperNew.employeesList(locationId) })*/
 
     fun employeesList(locationId: Int) = performGetOperation(
         databaseQuery = { appDatabase.employeeDao().allEmployee },

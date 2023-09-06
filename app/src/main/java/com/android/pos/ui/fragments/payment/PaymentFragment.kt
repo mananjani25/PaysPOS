@@ -41,10 +41,7 @@ import com.android.pos.data.remote.Constants.TOTAL_PRICE_ACTUAL
 import com.android.pos.data.remote.Constants.TOTAL_SERVICE_CHARGE_ACTUAL
 import com.android.pos.databinding.PaymentFragmentBinding
 import com.android.pos.di.PrefProvider
-import com.android.pos.utils.AlertUtils
-import com.android.pos.utils.LogUtil
-import com.android.pos.utils.MethodUtils
-import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.*
 import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.visible
 import com.google.gson.Gson
@@ -1208,7 +1205,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     cashDiscountSurcharge / splitValue,
                     true,
                     paymentType, cashDiscountType,
-                    tipID,
+                    "tipID",
                     totalServiceChargeM = totalServiceCharge,
                     totalDiscountM =  totalDiscount
 
@@ -1259,7 +1256,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                         true,
                         paymentType,
                         cashDiscountType,
-                        tipID
+                        "tipID"
                     )
                 }
                 if (myRequest != null) {
@@ -1310,7 +1307,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     cashDiscountSurcharge,
                     true,
                     paymentType, cashDiscountType,
-                    tipID
+                    "tipID"
                 )
             }
             if (myRequest != null) {

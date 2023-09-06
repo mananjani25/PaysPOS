@@ -13,6 +13,7 @@ import com.android.pos.R
 import com.android.pos.data.entities.TbOrderType
 import com.android.pos.data.model.PrinterListModel
 import com.android.pos.data.model.responseModel.PrinterResponse
+import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.CUSTOMER
 import com.android.pos.data.remote.Constants.KITCHEN
 import com.android.pos.data.remote.Constants.KITCHENANDCUSTOMER
@@ -62,7 +63,7 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
         arrayAdapter =
             ArrayAdapter(binding.root.context, android.R.layout.simple_spinner_item, list)
         arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        makeEditAableFalse()
+        //makeEditAableFalse()
         observeShowProgress()
         updateDate()
         getOrderTypes()
@@ -153,6 +154,25 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
     }
 
     private fun setSpinnnerAdapter() {
+
+
+        if (prefProvider.getValueboolean(Constants.IS_PRINTER_QUEUE_ENABLE, false)){
+
+            if (prefProvider.getValueboolean(Constants.IS_MASTER_TERMINAL, false)){
+                if (printerModel?.printerName?.startsWith("CloudPrint", true) == true) {
+                    list.clear()
+                    list.add(KITCHEN)
+                }else {
+                    list.clear()
+                    list.add(CUSTOMER)
+                }
+            }else {
+                list.clear()
+                list.add(CUSTOMER)
+            }
+
+        }
+
         binding.spnPrinterCat.adapter = arrayAdapter
         list.forEachIndexed { index, s ->
             LogUtil.logE(TAG, "gotIndexNAme ${s.lowercase()}")
@@ -280,7 +300,13 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
     }
 
     private fun setPrinterData() {
-        binding.txtPrinterName.setText(printerModel?.printerName)
+        if (printerModel?.printerName!=""){
+            binding.txtPrinterName.setText(printerModel?.printerName)
+
+        }else {
+            printerModel?.printerName = "InnerPrinter"
+            binding.txtPrinterName.setText(printerModel?.printerName)
+        }
         binding.txtMacAddress.setText(printerModel?.deviceModel?.macAddress)
         binding.txtPrntType.setText(printerModel?.type)
         binding.txtPrntModel.setText(printerModel?.deviceModel?.deviceName)
@@ -323,6 +349,16 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
             findNavController().popBackStack()
         }
         binding.header.txtSave.setOnClickListener {
+
+            if (binding.txtPrinterName.text.trim().isEmpty()){
+                AlertUtils.showCustomAlertWithListenerWithOK(
+                    requireContext(), "Printer Name can't be empty."
+                ) { _, _ ->
+
+                }
+
+                return@setOnClickListener
+            }
             val listCategories = categoryAdapter.getList()
             var listIds = ArrayList<Int>()
             listCategories.forEach {
@@ -353,9 +389,10 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
                 model.receiptPrintType = type
                 model.locationId = prefProvider.getValueInt(LOCATION_ID, 1)
                 model.terminalIds = listOf(prefProvider.getValueInt(TERMINAL_ID, 0))
-                model.name = binding.txtPrinterName.text.toString()
+                model.modalName = binding.txtPrinterName.text.toString()
                 model.categoryIds = listIds
                 model.terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
+                model.ip_address = printerModel?.deviceModel?.ipAddress
 
                 viewModel.updatePrinter(
                     printerModel?.id!!, model
@@ -371,9 +408,10 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
                 model.receiptPrintType = type
                 model.locationId = prefProvider.getValueInt(LOCATION_ID, 1)
                 model.terminalIds = listOf(prefProvider.getValueInt(TERMINAL_ID, 0))
-                model.name = binding.txtPrinterName.text.toString()
+                model.modalName = binding.txtPrinterName.text.toString()
                 model.categoryIds = listIds
                 model.terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
+                model.ip_address = printerModel?.deviceModel?.ipAddress
 
                 viewModel.updatePrinter(
                     printerModel?.id!!, model
@@ -425,4 +463,5 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
 
 
     }
+
 }

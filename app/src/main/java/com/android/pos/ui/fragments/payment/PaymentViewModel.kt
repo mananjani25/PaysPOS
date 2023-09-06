@@ -117,6 +117,8 @@ open class PaymentViewModel @Inject constructor(
     public var actual_CardAmount: Double = 0.0
 
     public var magensaResponse: String? = null
+    var paxReferenceNo: String? = null
+    var paxGlobalID: String? = null
     public var magensaResponseDataClass: MagensaResponse? = null
 
     fun cardReaderList() = posRepository.cardReaderActiveList()
@@ -179,6 +181,7 @@ open class PaymentViewModel @Inject constructor(
                                         )
                                     )
                                 }
+
                                 LogUtil.logE(TAG, "isOnlySave:  ${onlySave}")
                                 LogUtil.logE(
                                     TAG,
@@ -189,10 +192,10 @@ open class PaymentViewModel @Inject constructor(
                                         )
                                     }"
                                 )
-                                if (prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)) {
+                             /*   if (prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)) {
                                     LogUtil.logE(TAG, "QueueStart")
                                     _queueStartSaveOrder.value = Event(createOrderResponse)
-                                }
+                                }*/
                                 if (onlySave) {
                                     LogUtil.logE("QueueCheck", "OnlySave")
 
@@ -508,6 +511,7 @@ open class PaymentViewModel @Inject constructor(
         offlineId: String = "",
         totalServiceChargeM: Double = 0.0,
         totalDiscountM: Double = 0.0
+
     ): OrderRequestModel {
 
         val orderAttributeRequestModel = OrderAttributeRequestModel()
@@ -525,13 +529,16 @@ open class PaymentViewModel @Inject constructor(
         orderAttributeRequestModel.openOrderType =
             prefProvider.getValue(Constants.ORDER_TYPE, "")
 
-        if (order_type_id == -1 && prefProvider.getValue(
-                Constants.ORDER_TYPE,
-                TAKEOUT
-            ) == Constants.OPEN_ORDER
-        ) {
+        Log.e("checkOrderTypeID","getOrderTypeID  ${prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)}")
+        Log.e("checkOrderTypeID","getOrderTypeIDVARTE  ${order_type_id}")
+        if (order_type_id == -1 && prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT) == Constants.OPEN_ORDER)
+        {
             order_type_id = prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)
         }
+        else if (prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT) == Constants.DINE_IN && orderId != 0){
+            order_type_id = prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)
+        }
+
 
         if (order_type_id == -1 && prefProvider.getValue(
                 Constants.ORDER_TYPE,
@@ -954,8 +961,13 @@ open class PaymentViewModel @Inject constructor(
         finaldiscount: Double,
         needToAddPaymentAttributes: Boolean?,
         paymentType: String,
+        cardNumberValue :String,
         cashdiscountType: String,
         tipID: Int? = null,
+        globalUID: String = "",
+        refNum: String = "",
+        extData: String = "",
+        cardLastDigits: String = "",
         totalServiceChargeM: Double = 0.0,
         totalDiscountM: Double = 0.0
     ): OrderRequestModel {
@@ -1035,13 +1047,7 @@ open class PaymentViewModel @Inject constructor(
         orderAttributeRequestModel.totalDiscount = actual_TotalDiscount
         orderAttributeRequestModel.totalServiceCharges = actual_TotalServiceCharge
         orderAttributeRequestModel.totalTaxAmount = actual_TotalTax
-        //Deduct the SurCharge % amount from tipAmount and then go ahead
-        //As discussed with Rohan - we have to avoid loss of merchant on
-        // processing fees of any order while card payment
-        //This is done by Dharmesh Basapati in BIS-957 task
-        val rateOrAmount = prefProvider.getValue(Constants.RATE_OR_AMOUNT, "0")
-        val newTipAmountAfterSurChargeDeduction = tipAmount - percentageCalculation(tipAmount,rateOrAmount.toDouble())
-        orderAttributeRequestModel.totalTips = MethodUtils.roundOffAmountDouble(newTipAmountAfterSurChargeDeduction)
+        orderAttributeRequestModel.totalTips = tipAmount
 
         orderAttributeRequestModel.is_loyalty_applied = redeemLoyaltyInfo?.needToApplyLoyalty
         if (orderAttributeRequestModel.is_loyalty_applied == true) {
@@ -1060,6 +1066,7 @@ open class PaymentViewModel @Inject constructor(
         }
 
 
+        Log.d("paymentAttributesCard:", "globalUID $globalUID refNum $refNum extData $extData")
         orderAttributeRequestModel.paymentAttributes = if (needToAddPaymentAttributes == true) {
             paymentAttributesForCard(
                 cartModel,
@@ -1071,9 +1078,13 @@ open class PaymentViewModel @Inject constructor(
                 tipAmount,
                 splitValue,
                 finaldiscount,
-                paymentType,
+                paymentType,cardNumberValue,
                 orderAttributeRequestModel.cash_discount_type,
-                redeemLoyaltyInfo = redeemLoyaltyInfo
+                redeemLoyaltyInfo = redeemLoyaltyInfo,
+                globalUID,
+                refNum,
+                extData,
+                cardLastDigits
             )
         } else {
             null
@@ -1112,157 +1123,6 @@ open class PaymentViewModel @Inject constructor(
 
         return orderRequestModel
     }
-
-
-    fun createOrderRequestForCardNew(
-        cartModel: CartModel,
-        subTotalPrice: Double,
-        totalPrice: Double,
-        totalServiceCharge: Double,
-        totalTax: Double,
-        ORDER_TYPE: String,
-        future_delivery_date: String,
-        future_delivery_time: String,
-        isPaid: Boolean,
-        totalDiscount: Double,
-        tipAmount: Double,
-        splitValue: Int,
-        redeemLoyaltyInfo: RedeemLoyaltyInfo?,
-        finaldiscount: Double,
-        needToAddPaymentAttributes: Boolean?,
-        paymentType: String,
-        cardNumberValue :String,
-        cashdiscountType: String,
-        tipID: Int? = null,
-        totalServiceChargeM: Double = 0.0,
-        totalDiscountM: Double = 0.0
-    ): OrderRequestModel {
-
-        val orderAttributeRequestModel = OrderAttributeRequestModel()
-
-
-        if (isUpdateOrder)
-            orderAttributeRequestModel.id = orderId
-
-
-
-        orderAttributeRequestModel.openOrderType =
-            prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT)
-
-        orderAttributeRequestModel.orderTypeId = order_type_id
-        orderAttributeRequestModel.date = TimeFormatUtils.getCurrentDate()
-        if (future_delivery_date.isNotEmpty())
-            orderAttributeRequestModel.futureDeliveryDate = future_delivery_date
-
-        if (future_delivery_time.isNotEmpty())
-            orderAttributeRequestModel.futureDeliveryTime = future_delivery_time
-
-        if (cartModel.openOrderType.isNotEmpty() && cartModel.openOrderType != null) {
-            orderAttributeRequestModel.deliveryType = cartModel.openOrderType
-        } else {
-            orderAttributeRequestModel.deliveryType = cartModel.deliveryType
-        }
-        if (cartModel.orderType == PHONE_ORDER) {
-            orderAttributeRequestModel.deliveryType =
-                prefProvider.getValue(Constants.DELIVERY_TYPE, PICK_UP)
-        }
-        orderAttributeRequestModel.employeeId = cartModel.employeeID
-        orderAttributeRequestModel.locationId = cartModel.locationId
-        orderAttributeRequestModel.terminalId = cartModel.terminalId
-        orderAttributeRequestModel.note = cartModel.note
-        if (paymentType == "Card") {
-            if (cashdiscountType == "SurCharge") {
-                orderAttributeRequestModel.cash_discount_or_surcharge = actual_CashDiscountSurCharge
-                orderAttributeRequestModel.cash_discount_type = cashdiscountType
-                orderAttributeRequestModel.totalAmount =
-                    actual_CardAmount + actual_CashDiscountSurCharge
-            } else if (cashdiscountType == "CashDiscount") {
-                orderAttributeRequestModel.cash_discount_type = ""
-                orderAttributeRequestModel.cash_discount_or_surcharge = 0.0
-                orderAttributeRequestModel.totalAmount = actual_CardAmount
-            } else {
-                orderAttributeRequestModel.cash_discount_or_surcharge = 0.0
-                orderAttributeRequestModel.cash_discount_type = ""
-                orderAttributeRequestModel.totalAmount = actual_CardAmount
-            }
-        }
-        cartModel.taxlistDynamic?.forEach { taxData ->
-            if (taxData.taxType == "Percentage") {
-                taxData.percentage_value =
-                    MethodUtils.roundOffAmountDouble(taxData.rate)
-            } else {
-                taxData.percentage_value =
-                    MethodUtils.roundOffAmountDouble((100 * taxData.totalTaxTypePrice) / taxData.subTotalAmount!!)
-            }
-        }
-        orderAttributeRequestModel.tax_bifurcation_data = Gson().toJson(cartModel.taxlistDynamic)
-        orderAttributeRequestModel.magensaResponse = magensaResponseDataClass
-       orderAttributeRequestModel.offlineId =
-            if (isUpdateOrder) orderOfflineId.toString() else MethodUtils.randomOfflineId(
-                prefProvider.getValueInt(Constants.LOCATION_ID, -1).toString()
-            )
-
-        orderAttributeRequestModel.paymentStatus = if (isPaid) 1 else 0
-        orderAttributeRequestModel.serviceChargeEnabled = true
-        orderAttributeRequestModel.taxEnabled = true
-        orderAttributeRequestModel.subTotal = actual_SubTotal
-
-        if (cartModel.discountId != null && cartModel.discountId != -1)
-            orderAttributeRequestModel.discount_id = cartModel.discountId
-        orderAttributeRequestModel.totalDiscount = actual_TotalDiscount
-        orderAttributeRequestModel.totalServiceCharges = actual_TotalServiceCharge
-        orderAttributeRequestModel.totalTaxAmount = actual_TotalTax
-        orderAttributeRequestModel.totalTips = tipAmount
-
-        orderAttributeRequestModel.is_loyalty_applied = redeemLoyaltyInfo?.needToApplyLoyalty
-        if (orderAttributeRequestModel.is_loyalty_applied == true) {
-            orderAttributeRequestModel.loyalty_program_id =
-                "${redeemLoyaltyInfo?.loyaltyProgramsModel?.id}"
-            orderAttributeRequestModel.loyalty_amount = redeemLoyaltyInfo?.usedLoyaltyAmount
-            orderAttributeRequestModel.used_reward_points = redeemLoyaltyInfo?.usedLoyaltyPoints
-        }
-
-        val customerId = prefProvider.getValueInt(Constants.CUSTOMER_ID, -1)
-        if (customerId != -1) {
-            orderAttributeRequestModel.customer_id = "" + customerId
-        }
-
-        orderAttributeRequestModel.paymentAttributes = if (needToAddPaymentAttributes == true) {
-            paymentAttributesForCardNew(
-                cartModel,
-                totalPrice,
-                subTotalPrice,
-                totalServiceCharge,
-                totalTax,
-                totalDiscount,
-                tipAmount,
-                splitValue,
-                finaldiscount,
-                paymentType,cardNumberValue,
-                orderAttributeRequestModel.cash_discount_type,
-                redeemLoyaltyInfo = redeemLoyaltyInfo
-            )
-        } else {
-            null
-        }
-
-        if (cartModel.orderType == DINE_IN) {
-            orderAttributeRequestModel.orderServiceChargesAttributes = serviceChargeListApplied
-        } else {
-            orderAttributeRequestModel.orderServiceChargesAttributes =
-                orderServiceChargesAttributes(cartModel, subTotalPrice)
-        }
-        if (cartModel.orderType == DINE_IN) {
-            orderAttributeRequestModel.guestsAttributes = getGuestsAttributes(cartModel)
-            orderAttributeRequestModel.orderItemsAttributes = dineInOrderItemAttributed(cartModel)
-        } else {
-            orderAttributeRequestModel.orderItemsAttributes = orderItemsAttributes(cartModel)
-        }
-        val orderRequestModel = OrderRequestModel(isPaid, orderAttributeRequestModel)
-
-        return orderRequestModel
-    }
-
 
     private fun getGuestsAttributes(cartModel: CartModel): List<GuestsAttributes> {
         val orderItemsAttributeList: ArrayList<GuestsAttributes> = arrayListOf()
@@ -1528,7 +1388,7 @@ open class PaymentViewModel @Inject constructor(
             orderItemsAttribute.isEdited = item.isEdited
             orderItemsAttribute.isDestroy = item.isDestroy
             orderItemsAttribute.isPaid = false
-            orderItemsAttribute.isPrinted = true
+            orderItemsAttribute.isPrinted = if (isUpdateOrder && item.isEdited == true) false else if (isUpdateOrder && item.isEdited == false) true else false
             orderItemsAttribute.isTaxRemoved = false
             orderItemsAttribute.itemId = item.itemId
             orderItemsAttribute.is_manual_sales = item.isManualSales
@@ -1954,8 +1814,6 @@ open class PaymentViewModel @Inject constructor(
             taxAmount = MethodUtils.roundOffAmountDouble(totalTax)
             terminalId = cartModel.terminalId
             tips = MethodUtils.roundOffAmountDouble(tipAmount)
-            //Actual Tip without any deduction of surcharge(for backend usage)
-            tipWithSurchargePercentage = MethodUtils.roundOffAmountDouble(tipAmount)
             tipsAdjusted = false
             totalDiscount = MethodUtils.roundOffAmountDouble(totalDis)
             tipID?.let { tipId = it }
@@ -1993,9 +1851,13 @@ open class PaymentViewModel @Inject constructor(
         tipAmount: Double,
         splitValue: Int,
         finalcashdiscount: Double,
-        paymentTypeStatus: String,
+        paymentTypeStatus: String,cardNumber1 :String,
         cashdiscountType: String,
-        redeemLoyaltyInfo: RedeemLoyaltyInfo?
+        redeemLoyaltyInfo: RedeemLoyaltyInfo?,
+        globalUID: String = "",
+        refNum: String = "",
+        extData: String = "",
+        cardLastDigits: String = ""
     ): PaymentAttributes {
         return PaymentAttributes().apply {
 //            if (isUpdateOrder)
@@ -2009,145 +1871,8 @@ open class PaymentViewModel @Inject constructor(
                     magensaResponse,
                     PaymentResponse.PaymentResponseItem::class.java
                 )
-                LogUtil.logE("magensaResponse", Gson().toJson(model))
-
-
                 if (model.dataOutput != null) {
-                    LogUtil.logE("dataOutput", Gson().toJson(model))
-                    cardNumber = model.dataOutput.PANLast4
                     var cardN = ""
-                    model.dataOutput.additionalOutputData?.forEach {
-                        LogUtil.logE("additionalOutputData", it.key)
-                        if (it.key == "CardType") {
-                            cardN = it.value
-                        }
-                    }
-                    cardName = cardN
-
-
-                }
-
-                if (model.cardSwipeOutput != null) {
-                    LogUtil.logE("cardSwipeOutput", Gson().toJson(model))
-                    cardNumber = model.cardSwipeOutput.pANLast4
-                    var cardN = ""
-                    model.cardSwipeOutput.additionalOutputData?.forEach {
-                        if (it.key == "CardType") {
-                            cardN = it.value
-                        }
-                    }
-
-                    cardName = cardN
-                }
-
-
-                if (model.transactionOutput?.transactionOutputDetails?.isNotEmpty() == true) {
-                    var CardType = ""
-                    model.transactionOutput.transactionOutputDetails.forEach {
-                        if (it.key == "CardType") {
-                            CardType = it.value
-                        }
-                    }
-
-                    cardName = CardType
-                    cardNumber =
-                        if (cardNumberLast4.isNotEmpty()) cardNumberLast4.takeLast(4) else ""
-                }
-
-
-                transactionId = model.transactionOutput?.transactionID.toString()
-                cardType = 0
-            }
-//            cardName = ""
-//            cardNumber = ""
-//            cardType = 0
-            if (cashdiscountType.isNotEmpty()) {
-                cash_discount_or_surcharge = finalcashdiscount
-                total_cash_discount = finalcashdiscount
-            } else {
-                cash_discount_or_surcharge = 0.0
-                total_cash_discount = 0.0
-            }
-
-
-            magensa_response = magensaResponse.toString()
-            cashDiscountFee = 0.0
-            cash_discount_type = cashdiscountType
-            employeeId = cartModel.employeeID
-            offlineId =
-                if (isUpdateOrder) paymentOfflineId.toString() else MethodUtils.randomOfflineId(
-                    prefProvider.getValueInt(Constants.LOCATION_ID, -1).toString()
-                )
-            payableType = "Order"
-            paymentType = paymentTypeStatus
-            serviceChargeAmount = totalServiceCharge
-            subTotal = subTotalPrice
-            taxAmount = totalTax
-            terminalId = cartModel.terminalId
-
-            //Deduct the SurCharge % amount from tipAmount and then go ahead
-            //As discussed with Rohan - we have to avoid loss of merchant on
-            // processing fees of any order while card payment
-            //This is done by Dharmesh Basapati in BIS-957 task
-            val rateOrAmount = prefProvider.getValue(Constants.RATE_OR_AMOUNT, "0")
-            val newTipAmountAfterSurChargeDeduction = tipAmount - percentageCalculation(tipAmount,rateOrAmount.toDouble())
-            tips = MethodUtils.roundOffAmountDouble(newTipAmountAfterSurChargeDeduction)
-
-            //Actual Tip on Total only(for backend usage)
-            tipWithSurchargePercentage = tipAmount
-            tipsAdjusted = false
-            totalDiscount = totalDis
-
-
-            if (isUpdateOrder && orderId != null) {
-                order_id = orderId
-            }
-            //           transactionId = ""
-            is_loyalty_applied = redeemLoyaltyInfo?.needToApplyLoyalty
-            if (is_loyalty_applied == true) {
-                loyalty_program_id = "${redeemLoyaltyInfo?.loyaltyProgramsModel?.id}"
-                loyalty_amount =
-                    if (splitValue == -1) redeemLoyaltyInfo?.usedLoyaltyAmount else redeemLoyaltyInfo?.usedLoyaltyAmount?.div(
-                        splitValue
-                    )
-                used_reward_points =
-                    if (splitValue == -1) redeemLoyaltyInfo?.usedLoyaltyPoints else redeemLoyaltyInfo?.usedLoyaltyPoints?.div(
-                        splitValue
-                    )
-                is_loyalty_applied = redeemLoyaltyInfo?.needToApplyLoyalty
-            }
-
-        }
-    }
-
-
-    private fun paymentAttributesForCardNew(
-        cartModel: CartModel,
-        totalPrice: Double,
-        subTotalPrice: Double,
-        totalServiceCharge: Double,
-        totalTax: Double,
-        totalDis: Double,
-        tipAmount: Double,
-        splitValue: Int,
-        finalcashdiscount: Double,
-        paymentTypeStatus: String,cardNumber1 :String,
-        cashdiscountType: String,
-        redeemLoyaltyInfo: RedeemLoyaltyInfo?
-    ): PaymentAttributes {
-        return PaymentAttributes().apply {
-            val totalPP = MethodUtils.roundOffAmountDouble(totalPrice)
-            val totalDC = MethodUtils.roundOffAmountDouble(tipAmount)
-            val totalAM = totalPP /*- totalDC*/
-            amount = totalAM
-
-           if (magensaResponse != null) {
-                val model = Gson().fromJson(
-                    magensaResponse,
-                    PaymentResponse.PaymentResponseItem::class.java
-                )
-                if (model.dataOutput != null) {
-                   var cardN = ""
                     model.dataOutput.additionalOutputData?.forEach {
                         if (it.key == "CardType") {
                             cardN = it.value
@@ -2192,6 +1917,9 @@ open class PaymentViewModel @Inject constructor(
                 transactionId = model.transactionOutput?.transactionID.toString()
                 cardType = 0
             }
+//            cardName = ""
+//            cardNumber = ""
+//            cardType = 0
             if (cashdiscountType.isNotEmpty()) {
                 cash_discount_or_surcharge = finalcashdiscount
                 total_cash_discount = finalcashdiscount
@@ -2200,6 +1928,11 @@ open class PaymentViewModel @Inject constructor(
                 total_cash_discount = 0.0
             }
 
+            //PAX Details
+            ext_data = extData
+            global_uniq_id = globalUID
+            ref_num = refNum
+            cardNumber = cardLastDigits.ifEmpty { "" }
 
             magensa_response = magensaResponse.toString()
             cashDiscountFee = 0.0
@@ -2216,6 +1949,7 @@ open class PaymentViewModel @Inject constructor(
             taxAmount = totalTax
             terminalId = cartModel.terminalId
             tips = MethodUtils.roundOffAmountDouble(tipAmount)
+
             tipsAdjusted = false
             totalDiscount = totalDis
 
@@ -2223,6 +1957,7 @@ open class PaymentViewModel @Inject constructor(
             if (isUpdateOrder && orderId != null) {
                 order_id = orderId
             }
+            //           transactionId = ""
             is_loyalty_applied = redeemLoyaltyInfo?.needToApplyLoyalty
             if (is_loyalty_applied == true) {
                 loyalty_program_id = "${redeemLoyaltyInfo?.loyaltyProgramsModel?.id}"
@@ -2239,6 +1974,7 @@ open class PaymentViewModel @Inject constructor(
 
         }
     }
+
 
     fun totalPayAmount(paymentAmount: Double) {
 
@@ -2305,6 +2041,7 @@ open class PaymentViewModel @Inject constructor(
                                     )
                                 }
 
+                                println("onlySave : $onlySave")
                                 if (onlySave) {
                                     _data.value = Event(createOrderResponse)
                                 } else {
@@ -2394,6 +2131,13 @@ open class PaymentViewModel @Inject constructor(
 
         magensaResponse = response
         cardNumberLast4 = cardNumber1
+
+    }
+
+    fun setPAXData(ref_num: String, global_id: String) {
+
+        paxReferenceNo = ref_num
+        paxGlobalID = global_id
 
     }
 

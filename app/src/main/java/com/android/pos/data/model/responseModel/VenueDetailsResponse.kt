@@ -26,6 +26,8 @@ data class VenueDetailsResponse(
     )
 
     data class Data(
+        @SerializedName("is_master_terminal")
+        val isMasterTeminal: Boolean = false,
         @SerializedName("business_name")
         val businessName: String,
         @SerializedName("business_website")
@@ -82,6 +84,10 @@ data class VenueDetailsResponse(
         val wastageReasons: List<WastageReason>,
         @SerializedName("time_zone")
         val timeZone: String,
+        @SerializedName("sr_no")
+        val SerialNo: String,
+        @SerializedName("tid")
+        val PAXTerminalID: String,
         @SerializedName("user_id")
         val userId: Int,
         @SerializedName("is_printer_queue_enable")
