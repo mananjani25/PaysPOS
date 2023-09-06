@@ -6068,11 +6068,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             when (it.status) {
                 Status.SUCCESS -> {
                     ProgressUtils.dismissProgressDialog()
+                    Log.e("getKitchenPrinters", "size of kitchen print list ${kitchenPrinterList.size}")
                     if (it.data != null && isPrint == true) {
+                        isPrint = false
 
 
                         kitchenPrinterList = it.data
-                        Log.e("getKitchenPrinters", "size of kitchen print list ${kitchenPrinterList.size}")
+
 
                         val remain = requireArguments().getDouble("remainingAmount")
                         if (requireArguments().getBoolean("isDineIn")) {
