@@ -865,7 +865,7 @@
                     android:layout_marginStart="@dimen/_10sdp"
                     android:layout_weight="4"
                     android:background="@null"
-                    android:hint="@string/enter_card_number_here"
+                    android:hint="@string/_xxxx_xxxx"
                     android:importantForAutofill="no"
                     android:inputType="number"
                     android:maxLength="15"

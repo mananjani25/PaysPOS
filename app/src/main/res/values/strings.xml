@@ -811,6 +811,7 @@
     <string name="mm_yy">MM/YY</string>
     <string name="_1234_5678_xxxx_1121">1234 5678 XXXX 1121</string>
     <string name="_1234_xxxx">1234 XXXX</string>
+    <string name="_xxxx_xxxx">XXXX-XXXX</string>
     <string name="enter_card_number_here">Enter Card Number Here</string>
     <string name="charge">Charge</string>
     <string name="add_tip_">Add Tip(%)<font color='#E90C0C'>*</font></string>
