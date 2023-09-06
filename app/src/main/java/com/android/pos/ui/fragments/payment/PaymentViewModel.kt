@@ -1916,10 +1916,14 @@ open class PaymentViewModel @Inject constructor(
 
                 transactionId = model.transactionOutput?.transactionID.toString()
                 cardType = 0
+            } else {
+                //PAX Details
+                ext_data = extData
+                global_uniq_id = globalUID
+                ref_num = refNum
+                cardNumber = cardLastDigits.ifEmpty { "" }
             }
-//            cardName = ""
-//            cardNumber = ""
-//            cardType = 0
+
             if (cashdiscountType.isNotEmpty()) {
                 cash_discount_or_surcharge = finalcashdiscount
                 total_cash_discount = finalcashdiscount
@@ -1928,11 +1932,7 @@ open class PaymentViewModel @Inject constructor(
                 total_cash_discount = 0.0
             }
 
-            //PAX Details
-            ext_data = extData
-            global_uniq_id = globalUID
-            ref_num = refNum
-            cardNumber = cardLastDigits.ifEmpty { "" }
+
 
             magensa_response = magensaResponse.toString()
             cashDiscountFee = 0.0
