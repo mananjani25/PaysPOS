@@ -109,7 +109,7 @@ class PrinterQueue : Fragment() {
     }
 
     private fun connectActionCable() {
-        val uri = URI("wss://hugepos.com/cable")
+        val uri = URI(Constants.PRINTER_QUEUE_CONNECTION_URL_SNACKPOS)
         consumer = ActionCable.createConsumer(uri)
 
         // 2. Create subscription

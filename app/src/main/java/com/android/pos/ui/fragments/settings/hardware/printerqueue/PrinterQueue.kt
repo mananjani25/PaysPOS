@@ -101,11 +101,11 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
     private fun connectActionCable() {
         // 1. Setup
         var requestURL = prefProvider.getValue(Constants.BASE_URL_NEW, "") + CREATE_QUEUE_PRINTER
-        val uri = URI("wss://hugepos.com/cable")
+        val uri = URI(Constants.PRINTER_QUEUE_CONNECTION_URL_SNACKPOS)
         consumer = ActionCable.createConsumer(uri)
 
         // 2. Create subscription
-        val appearanceChannel = Channel("KitchenChannel")
+        val appearanceChannel = Channel("printer_queue_data_channel_")
         // appearanceChannel.addParam("id",prefProvider.getValueInt(LOCATION_ID,0))
         subscription = consumer?.subscriptions?.create(appearanceChannel)
 
