@@ -429,6 +429,8 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
             mPaymentRequest.TenderType = mPaymentRequest.ParseTenderType("CREDIT")
             mPaymentRequest.Amount = tip_amt.toString()
             mPaymentRequest.OrigRefNum = singleTransaction?.ref_num
+            //Added for TSYS ADJUST issue
+            mPaymentRequest.ECRRefNum = singleTransaction?.ref_num
             mPaymentRequest.ExtData = "<Force>T</Force>"
 
             posLink.PaymentRequest = mPaymentRequest

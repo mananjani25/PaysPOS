@@ -457,6 +457,8 @@ class TransactionDetailsFragment : Fragment() {
             mPaymentRequest.TransType = mPaymentRequest.ParseTransType("ADJUST")
             mPaymentRequest.TenderType = mPaymentRequest.ParseTenderType("CREDIT")
             mPaymentRequest.Amount = tip_amt.toString()
+            //Added for TSYS ADJUST issue
+            mPaymentRequest.ECRRefNum = paymentDetailsResponse.data?.ref_num
             mPaymentRequest.OrigRefNum = paymentDetailsResponse.data?.ref_num
             mPaymentRequest.ExtData = "<Force>T</Force>"
 
