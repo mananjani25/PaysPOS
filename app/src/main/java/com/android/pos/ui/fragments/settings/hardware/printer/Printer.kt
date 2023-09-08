@@ -198,16 +198,16 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
     private fun checkMasterTerminal() {
         if (prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)) {
-            if(prefProvider.getValueboolean(IS_MASTER_TERMINAL, false)){
+            if (prefProvider.getValueboolean(IS_MASTER_TERMINAL, false)) {
                 binding.txtLabel2.visible()
                 binding.linearKitchenPrntData?.visible()
                 binding.rvKitchenPrinter.visible()
-            }else{
+            } else {
                 binding.txtLabel2.gone()
                 binding.linearKitchenPrntData?.gone()
                 binding.rvKitchenPrinter.gone()
             }
-        }else{
+        } else {
             binding.txtLabel2.visible()
             binding.linearKitchenPrntData?.visible()
             binding.rvKitchenPrinter.visible()
@@ -1847,7 +1847,13 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         LogUtil.logE(TAG, "printerListModel: ${Gson().toJson(printerListModel)}")
 
 
-        if (prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false) && prefProvider.getValueboolean(IS_MASTER_TERMINAL, false)) {
+        if (prefProvider.getValueboolean(
+                IS_PRINTER_QUEUE_ENABLE,
+                false
+            ) && prefProvider.getValueboolean(IS_MASTER_TERMINAL, false)
+        ) {
+
+            Log.e(TAG, "printerListModel:  ${Gson().toJson(printerListModel)}")
 
             var list: ArrayList<CreatePrinterRequestModel.PrinterSettingsAttributes> =
                 arrayListOf()
@@ -1857,11 +1863,11 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                     true
                 ) == true && prefProvider.getValueboolean(
                     IS_MASTER_TERMINAL, false
-                )
+                ) && printerListModel.connectionType.equals(WIFI, true)
             ) {
                 ifKitchenPrinterSelected(list, printerListModel, layoutPosition)
 
-            }else {
+            } else {
 
                 ifCustomerPrinterSelected(list, printerListModel, layoutPosition)
 
@@ -1988,9 +1994,11 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         syncPrinterList()
     }
 
-    private fun ifCustomerPrinterSelected(list: ArrayList<CreatePrinterRequestModel.PrinterSettingsAttributes>,
-                                          printerListModel: PrinterListModel,
-                                          layoutPosition: Int){
+    private fun ifCustomerPrinterSelected(
+        list: ArrayList<CreatePrinterRequestModel.PrinterSettingsAttributes>,
+        printerListModel: PrinterListModel,
+        layoutPosition: Int
+    ) {
         for (i in 0 until orderTypeList.size) {
             list.add(
                 CreatePrinterRequestModel.PrinterSettingsAttributes(
@@ -2966,8 +2974,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     }
 
     private fun deletePrinter(printerListModel: PrinterListModel, type: String? = null) {
-        Log.d("deletePrinter","type = $type")
-        Log.d("deletePrinter","id = $id")
+        Log.d("deletePrinter", "type = $type")
+        Log.d("deletePrinter", "id = $id")
         alert(
             getString(R.string.tv_pos),
             getString(R.string.delete_printer_message)
@@ -2975,10 +2983,10 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             positiveButton(getString(R.string.tv_delete)) {
                 if (type != null) {
                     viewModel.deletePrinter(printerListModel, type)
-                    Log.d("deletePrinter","delete type = $type")
+                    Log.d("deletePrinter", "delete type = $type")
                 } else {
                     viewModel.deletePrinter(printerListModel)
-                    Log.d("deletePrinter","delete id = $id")
+                    Log.d("deletePrinter", "delete id = $id")
                 }
 
             }
@@ -3028,74 +3036,127 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     }
 
     override fun onFound(p0: CloudPrinter?) {
-        Log.e(TAG, "onFound:  ${Gson().toJson(p0)}")
-        lifecycleScope.launch {
+        Log.e(
+            TAG,
+            "onFound:  ${Gson().toJson(p0)}  checkPrinterqueue  ${
+                prefProvider.getValueboolean(
+                    IS_PRINTER_QUEUE_ENABLE,
+                    false
+                )
+            }"
+        )
+        if (prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false) == true) {
+            lifecycleScope.launch {
 
-            delay(2000)
 
+
+
+                Log.e(
+                    TAG,
+                    "sunmiCheckMasterTeminal  ${
+                        prefProvider.getValueboolean(
+                            IS_MASTER_TERMINAL,
+                            false
+                        )
+                    }"
+                )
+                if (prefProvider.getValueboolean(
+                        IS_MASTER_TERMINAL,
+                        false
+                    ) == true && checkIsU220() == false
+                ) {
+                    var tmpInd = -1
+
+                    for (i in 0 until availableNetworkAdapter.getList().size) {
+                        val obj = availableNetworkAdapter.getList().get(i)
+                        if (obj.printerName.equals(p0?.cloudPrinterInfo?.name, true)) {
+                            tmpInd = i
+
+                        }
+
+
+                    }
+                    if (tmpInd != -1) {
+                        availableNetworkAdapter.removeItemAt(tmpInd)
+                    }
+
+                    delay(2000)
+
+                    var contains: Boolean = false
+                    kitchenAdapter.getList().forEach {
+                        if (it.printerName.equals(p0?.cloudPrinterInfo?.name, true)) {
+                            contains = true
+                            return@forEach
+                        }
+
+                    }
+
+                    var inAvail: Boolean = false
+                    availableNetworkAdapter.getList().forEach {
+                        if (it.printerName.equals(
+                                p0?.cloudPrinterInfo?.name,
+                                true
+                            ) && it.connectionType?.equals(WIFI, true) == true
+                        ) {
+                            inAvail = true
+
+
+                        }
+
+
+                    }
+
+                    if (contains == false && inAvail == false) {
+                        // checkBluetoothPrinter(p0, availableNetworkAdapter.getList())
+                        availableNetworkAdapter.addItem(
+                            PrinterListModel(
+                                printerName = p0?.cloudPrinterInfo?.name,
+                                connectionType = WIFI,
+                                deviceModel = DeviceInfo(
+                                    DevType.TCP,
+                                    p0?.cloudPrinterInfo?.name,
+                                    p0?.cloudPrinterInfo?.name,
+                                    p0?.cloudPrinterInfo?.address,
+                                    p0?.cloudPrinterInfo?.address
+                                ),
+                                type = AVAILABLE,
+                                uuid = UUID.randomUUID(),
+                                modelName = p0?.cloudPrinterInfo?.name,
+                                portNo = p0?.cloudPrinterInfo?.port
+
+                            )
+                        )
+
+
+                    }
+                }
+
+
+            }
+        }
+
+    }
+
+    private fun checkBluetoothPrinter(p0: CloudPrinter?, list: List<PrinterListModel>) {
+        for (i in 0 until list.size) {
+
+            val obj = list.get(i)
 
             Log.e(
                 TAG,
-                "sunmiCheckMasterTeminal  ${
-                    prefProvider.getValueboolean(
-                        IS_MASTER_TERMINAL,
-                        false
-                    )
-                }"
+                "macAddressObj:  ${obj.printerName}  macAddress  ${p0?.cloudPrinterInfo?.name}"
             )
-            if (prefProvider.getValueboolean(
-                    IS_MASTER_TERMINAL,
-                    false
-                ) == true && checkIsU220() == false
-            ) {
-
-                var contains: Boolean = false
-                kitchenAdapter.getList().forEach {
-                    if (it.printerName.equals(p0?.cloudPrinterInfo?.name, true)) {
-                        contains = true
-                        return@forEach
-                    }
-
-                }
-
-                var inAvail: Boolean = false
-                availableNetworkAdapter.getList().forEach {
-                    if (it.printerName.equals(
-                            p0?.cloudPrinterInfo?.name,
-                            true
-                        ) && it.connectionType?.equals(WIFI, true) == true
-                    ) {
-                        inAvail = true
-
-
-                    }
-                }
-
-                if (contains == false && inAvail == false) {
-                    availableNetworkAdapter.addItem(
-                        PrinterListModel(
-                            printerName = p0?.cloudPrinterInfo?.name,
-                            connectionType = WIFI,
-                            deviceModel = DeviceInfo(
-                                DevType.TCP,
-                                p0?.cloudPrinterInfo?.name,
-                                p0?.cloudPrinterInfo?.name,
-                                p0?.cloudPrinterInfo?.address,
-                                p0?.cloudPrinterInfo?.address
-                            ),
-                            type = AVAILABLE,
-                            uuid = UUID.randomUUID(),
-                            modelName = p0?.cloudPrinterInfo?.name,
-                            portNo = p0?.cloudPrinterInfo?.port
-
-                        )
-                    )
-                }
+            if (obj.printerName.equals(p0?.getCloudPrinterInfo()?.name, true) == true) {
+                Log.e(TAG, "checkDataInside")
+                availableNetworkAdapter.removeItem(obj)
             }
+
+        }
+        lifecycleScope.launch {
+            delay(400)
 
 
         }
-
     }
 
     fun checkIsU220(): Boolean {
