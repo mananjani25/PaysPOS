@@ -640,6 +640,12 @@ class PaymentAttributes : Parcelable {
     @SerializedName("ref_num")
     var ref_num: String = ""
 
+    @SerializedName("ecr_ref_num")
+    var ecr_ref_num: String = ""
+
+    @SerializedName("pax_transaction_token")
+    var pax_transaction_token: String = ""
+
     @SerializedName("ext_data")
     var ext_data: String = ""
 
