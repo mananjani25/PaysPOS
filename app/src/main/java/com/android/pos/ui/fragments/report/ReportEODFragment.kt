@@ -749,7 +749,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     builder.addText(
                         padLine(
                             it.key,
-                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            it.showData(),
                             48
                         )
                     )
@@ -1022,7 +1022,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     builder.addText(
                         padLine(
                             it.key,
-                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            it.showData(),
                             48
                         )
                     )
@@ -1160,7 +1160,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     builder.addText(
                         padLine(
                             it.key,
-                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            it.showData(),
                             48
                         )
                     )
@@ -1223,7 +1223,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     builder.addText(
                         padLine(
                             it.key,
-                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            it.showData(),
                             48
                         )
                     )
@@ -1286,7 +1286,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     builder.addText(
                         padLine(
                             it.key,
-                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            it.showData(),
                             48
                         )
                     )
@@ -1348,7 +1348,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     builder.addText(
                         padLine(
                             it.key,
-                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            it.showData(),
                             48
                         )
                     )
@@ -1410,7 +1410,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     builder.addText(
                         padLine(
                             it.key,
-                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            it.showData(),
                             48
                         )
                     )
@@ -1937,7 +1937,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     PrintSunmiUtils.orderTime(
                         padLine(
                             it.key,
-                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            it.showData(),
                             48
                         ).toString()
                     )
@@ -1960,7 +1960,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     PrintSunmiUtils.orderTime(
                         padLine(
                             it.key,
-                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            it.showData(),
                             48
                         ).toString()
                     )
@@ -2043,7 +2043,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     PrintSunmiUtils.orderTime(
                         padLine(
                             it.key,
-                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            it.showData(),
                             48
                         ).toString()
                     )
@@ -2092,7 +2092,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     PrintSunmiUtils.orderTime(
                         padLine(
                             it.key,
-                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            it.showData(),
                             48
                         ).toString()
                     )
@@ -2110,7 +2110,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     PrintSunmiUtils.orderTime(
                         padLine(
                             it.key,
-                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            it.showData(),
                             48
                         ).toString()
                     )
@@ -2129,7 +2129,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     PrintSunmiUtils.orderTime(
                         padLine(
                             it.key,
-                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            it.showData(),
                             48
                         ).toString()
                     )
@@ -2147,7 +2147,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     PrintSunmiUtils.orderTime(
                         padLine(
                             it.key,
-                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            it.showData(),
                             48
                         ).toString()
                     )
@@ -2164,7 +2164,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     PrintSunmiUtils.orderTime(
                         padLine(
                             it.key,
-                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            it.showData(),
                             48
                         ).toString()
                     )
@@ -2416,7 +2416,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     PrintSunmiUtils.normalText(
                         padLine(
                             it.key,
-                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            it.showData(),
                             48
                         ).toString()
                     )
@@ -2439,7 +2439,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     PrintSunmiUtils.normalText(
                         padLine(
                             it.key,
-                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            it.showData(),
                             48
                         ).toString()
                     )
@@ -2522,7 +2522,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     PrintSunmiUtils.normalText(
                         padLine(
                             it.key,
-                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            it.showData(),
                             48
                         ).toString()
                     )
@@ -2571,7 +2571,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     PrintSunmiUtils.normalText(
                         padLine(
                             it.key,
-                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            it.showData(),
                             48
                         ).toString()
                     )
@@ -2589,7 +2589,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     PrintSunmiUtils.normalText(
                         padLine(
                             it.key,
-                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            it.showData(),
                             48
                         ).toString()
                     )
@@ -2608,7 +2608,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     PrintSunmiUtils.normalText(
                         padLine(
                             it.key,
-                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            it.showData(),
                             48
                         ).toString()
                     )
@@ -2626,7 +2626,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     PrintSunmiUtils.normalText(
                         padLine(
                             it.key,
-                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            it.showData(),
                             48
                         ).toString()
                     )
@@ -2643,7 +2643,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     PrintSunmiUtils.normalText(
                         padLine(
                             it.key,
-                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            it.showData(),
                             48
                         ).toString()
                     )
@@ -3105,9 +3105,6 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
                 eodReportData = it
 
-
-
-
                 Log.d(TAG, "BEFORE JOB: CALLED")
                 runOnUiThread(Runnable {
                 ProgressUtils.showProgressDialog(requireActivity())
@@ -3116,14 +3113,12 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 updateData(it)
                 Handler(Looper.getMainLooper()).postDelayed(Runnable {
 
-
                     runOnUiThread(Runnable {
                     ProgressUtils.dismissProgressDialog()
                     })
 
 
                 }, 4000)
-
 
                 Log.d(TAG, "AFTER JOB: CALLED")
             }

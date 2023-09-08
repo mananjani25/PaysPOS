@@ -173,14 +173,14 @@ fun addPaymentDetailsThreeData(builder: Builder, keyValue: java.util.ArrayList<K
 
         if (it.key.toString().toLowerCase().contains("Refund".toLowerCase())) {
             refund = if (it.value?.isNotEmpty() == true) {
-                MethodUtils.roundOffAmount(it.value.toString().toDouble())
+                it.showData()
             }else{
                 "$0.00"
             }
         } else {
             title = it.key.toString()
             amount = if (it.value?.isNotEmpty() == true) {
-                MethodUtils.roundOffAmount(it.value.toString().toDouble())
+                it.showData()
             }else{
                 "$0.00"
             }
@@ -265,11 +265,11 @@ fun addPaymentDetailsThreeData(keyValue: java.util.ArrayList<KeyValue>) {
 
 
         if (it.key.toString().toLowerCase().contains("Refund".toLowerCase())) {
-            refund = MethodUtils.roundOffAmount(it.value?.toDouble() ?: 0.0)
+            refund = it.showData()
         } else {
             title = it.key.toString()
             amount = if (it.value?.isNotEmpty() == true) {
-                MethodUtils.roundOffAmount(it.value.toString().toDouble())
+                it.showData()
             }else{
                 "$0.00"
             }
@@ -300,11 +300,11 @@ fun addPaymentDetailsThreeDataInner(keyValue: java.util.ArrayList<KeyValue>) {
 
 
         if (it.key.toString().toLowerCase().contains("Refund".toLowerCase())) {
-            refund = "$" + it.value
+            refund = it.showData()
         } else {
             title = it.key.toString()
             amount = if (it.value?.isNotEmpty() == true) {
-                MethodUtils.roundOffAmount(it.value.toString().toDouble())
+               it.showData()
             }else{
                 "$0.00"
             }
@@ -435,7 +435,7 @@ fun addPaymentDetailsTwoData(builder: Builder, keyValue: KeyValue): Builder {
     builder.addText(
         padLine(
             keyValue.key,
-            MethodUtils.roundOffAmount(keyValue.value.toString().toDouble() ?: 0.0),
+           keyValue.showData(),
             48
         )
     )
@@ -471,7 +471,7 @@ fun addPaymentDetailsTwoData(keyValue: KeyValue) {
     PrintSunmiUtils.orderTime(
         padLine(
             keyValue.key,
-            MethodUtils.roundOffAmount(keyValue.value.toString().toDouble() ?: 0.0),
+            keyValue.showData(),
             48
         ).toString()
     )
@@ -485,7 +485,7 @@ fun addPaymentDetailsTwoDataInner(keyValue: KeyValue) {
     PrintSunmiUtils.normalText(
         padLine(
             keyValue.key,
-            if (keyValue.value?.isNotEmpty() == true)MethodUtils.roundOffAmount(keyValue.value.toString().toDouble() ?: 0.0) else "$0.00",
+            keyValue.showData(),
             48
         ).toString()
     )
@@ -907,8 +907,8 @@ fun addCreditCardBreakDownData(
         " ",
         28 - creditCardBreakdown.key.length
     ) + MethodUtils.roundOffAmount(creditCardBreakdown.tips)
-    var lastPart = 48 - pOne.length
-    var amount = MethodUtils.roundOffAmount(creditCardBreakdown.value)
+    val lastPart = 48 - pOne.length
+    val amount =creditCardBreakdown.showData()
     var spaceLast = 0
     if (lastPart > 1 && amount.length < lastPart) {
         spaceLast = lastPart - amount.length
@@ -961,7 +961,7 @@ fun addCreditCardBreakDownData(
         28 - creditCardBreakdown.key.length
     ) + MethodUtils.roundOffAmount(creditCardBreakdown.tips)
     var lastPart = 48 - pOne.length
-    var amount = MethodUtils.roundOffAmount(creditCardBreakdown.value)
+    var amount = creditCardBreakdown.showData()
     var spaceLast = 0
     if (lastPart > 1 && amount.length < lastPart) {
         spaceLast = lastPart - amount.length
@@ -981,7 +981,7 @@ fun addCreditCardBreakDownDataInner(
         28 - creditCardBreakdown.key.length
     ) + MethodUtils.roundOffAmount(creditCardBreakdown.tips)
     var lastPart = 48 - pOne.length
-    var amount = MethodUtils.roundOffAmount(creditCardBreakdown.value)
+    var amount = creditCardBreakdown.showData()
     var spaceLast = 0
     if (lastPart > 1 && amount.length < lastPart) {
         spaceLast = lastPart - amount.length
