@@ -114,7 +114,7 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
         paxToken = arguments?.getString("pax_token").toString()
         paxExtData = arguments?.getString("pax_ext_data").toString()
         paxECRreferenceNo = arguments?.getString("pax_ecrref_num").toString()
-        Log.d("PAX params:","pax params: paxECRreferenceNo-$paxToken paxECRreferenceNo-$paxECRreferenceNo referenceNo-$referenceNo paxExtData-${Gson().toJson(paxExtData)}")
+        Log.d("PAX params:","pax params: paxToken-$paxToken paxECRreferenceNo-$paxECRreferenceNo referenceNo-$referenceNo paxExtData-${Gson().toJson(paxExtData)}")
 
         binding.txtTitle.text = paymentType
 
@@ -300,6 +300,8 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                     val refund = PaymentRequest()
                     refund.TenderType = refund.ParseTenderType("CREDIT")
                     refund.TransType = refund.ParseTransType("RETURN")
+                    //Added for TSYS RETURN 100003 issue
+                    refund.ECRRefNum = paxECRreferenceNo
 
                     refund.Amount = amt.toString()
                     posLink.PaymentRequest = refund
