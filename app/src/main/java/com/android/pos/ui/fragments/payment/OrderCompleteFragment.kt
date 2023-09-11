@@ -10692,7 +10692,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private fun sunmiPrinterInit(ipAddress: String, isAutoPrint: Boolean) {
 
 
-        SunmiPrinterApi.getInstance().setPrinter(SunmiPrinter.SunmiBlueToothPrinter, ipAddress)
+        try {
+            SunmiPrinterApi.getInstance().setPrinter(SunmiPrinter.SunmiBlueToothPrinter, ipAddress)
+        }catch (e:Exception){
+            SunmiPrinterApi.getInstance().setPrinter(SunmiPrinter.SunmiNetPrinter, ipAddress)
+        }
 
         connect()
 
