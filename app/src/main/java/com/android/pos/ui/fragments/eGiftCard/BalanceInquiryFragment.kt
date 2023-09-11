@@ -52,7 +52,7 @@ class BalanceInquiryFragment : Fragment() {
                 if(it.data!=null){
                     AlertUtils.showCustomAlertWithTitleListenerWithOK(
                         requireContext(),
-                        title = getString(R.string.msg_balance_inquiry_results),
+                        title = getString(R.string.msg_remaining_balance),
                         message = "$${it.data.amount.toPrecision(2)}"
                     ) { _, _ ->
                     }
