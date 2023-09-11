@@ -114,6 +114,7 @@ class AllOrdersListingFragment(
     var ordertypelist: ArrayList<TbOrderType> = arrayListOf()
     private var isEmployeeAtoZ: Boolean = false
     private var isStationAtoZ: Boolean = false
+    private var isPrint: Boolean = true
     private val viewModel by viewModels<AllOrdersViewModel>()
     private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
     private val activeOrderViewModel by viewModels<ActiveOrderViewModel>()
@@ -776,6 +777,7 @@ class AllOrdersListingFragment(
         val order = adapter.getItem(pos)
         when (status) {
             "accepted" -> {
+                isPrint = true
                 if (findNavController().currentDestination?.id == R.id.allOrdersFragment) {
                     findNavController().navigate(
                         R.id.action_allOrders_to_addOnlneTime,
@@ -3567,23 +3569,26 @@ class AllOrdersListingFragment(
             when (it.status) {
                 Status.SUCCESS -> {
                     ProgressUtils.dismissProgressDialog()
-                    it.data?.forEach {
-                        if (it.status && checkItemsforPrinterOnlineOrder(
-                                data.orderItems, it.printerCategories.toCollection(
-                                    arrayListOf()
+                    if (isPrint){
+                        isPrint = false
+                        it.data?.forEach {
+                            Log.d("getKitchenPrinterList","print id = ${it.id} / ip address = ${it.ipAddress}")
+                            if (it.status && checkItemsforPrinterOnlineOrder(
+                                    data.orderItems, it.printerCategories.toCollection(
+                                        arrayListOf()
+                                    )
                                 )
-                            )
-                        ) {
+                            ) {
 
-                            initKitchenPrinter(
-                                it,
-                                Constants.KITCHEN,
-                                data
-                            )
+                                initKitchenPrinter(
+                                    it,
+                                    Constants.KITCHEN,
+                                    data
+                                )
+                            }
+
                         }
-
                     }
-
 
                 }
 
@@ -3609,8 +3614,11 @@ class AllOrdersListingFragment(
     ) {
         if (data.name.startsWith(SUNMI_PRINTER, true)) {
 
-            SunmiPrinterApi.getInstance()
-                .setPrinter(SunmiPrinter.SunmiBlueToothPrinter, data.ipAddress)
+            try {
+                SunmiPrinterApi.getInstance().setPrinter(SunmiPrinter.SunmiBlueToothPrinter, data.ipAddress)
+            }catch (e:Exception){
+                SunmiPrinterApi.getInstance().setPrinter(SunmiPrinter.SunmiNetPrinter, data.ipAddress)
+            }
 
             if (!SunmiPrinterApi.getInstance().isConnected) {
                 SunmiPrinterApi.getInstance()
