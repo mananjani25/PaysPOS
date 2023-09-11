@@ -1,5 +1,6 @@
 package com.android.pos.ui.fragments.settings.tax
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -15,6 +16,7 @@ import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.TaxData
 import com.android.pos.data.entities.TbItem
+import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ADD_TAX
 import com.android.pos.data.remote.Constants.CREATE_TAX
 import com.android.pos.data.remote.Constants.DIALOG_KEY
@@ -280,11 +282,19 @@ class CreateTax : Fragment() {
                         it, createTaxResponse.message
                     ) { _, _ ->
                         backPressManage()
+                        callSyncAPI()
                     }
                 }
 
             }
         })
+    }
+
+    private fun callSyncAPI() {
+        val intent = Intent()
+        intent.action = Constants.SYNC_NOTIFICATION
+        requireContext().sendBroadcast(intent)
+
     }
 
     private fun setupSnackbar() {
