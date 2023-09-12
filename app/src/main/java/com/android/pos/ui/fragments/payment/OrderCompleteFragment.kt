@@ -6318,7 +6318,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                     arrayItems.forEachIndexed { index, orderItemJ ->
 
-                        if (orderItemJ.itemId == orderItem.itemId && orderItemJ.timestamp == orderItem.timestamp) {
+                        if (orderItemJ.itemId == orderItem.itemId) {
                             if (orderItemJ.quantity != orderItem.quantity) {
                                 if (orderItem.quantity > orderItemJ.quantity) {
                                     orderItem.quantity =
