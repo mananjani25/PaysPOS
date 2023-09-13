@@ -86,10 +86,18 @@ class CashLogFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
 
         binding.txtHome.setOnClickListener {
-            findNavController().navigate(R.id.action_cashLogFragment_to_dashboardCategoryNew)
+            try {
+                findNavController().navigate(R.id.action_cashLogFragment_to_dashboardCategoryNew)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
         binding.imgDrawer.setOnClickListener {
-            findNavController().navigate(R.id.action_cashlogfragment_to_menuFragment)
+            try {
+                findNavController().navigate(R.id.action_cashlogfragment_to_menuFragment)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 
