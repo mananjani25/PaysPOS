@@ -928,6 +928,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                 }
 
                             } else if (it.data[i].name.startsWith(SUNMI_INNER_PRINTER, true) == true) {
+                                SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
 
                                 if (woyouService != null) {
                                     woyouService!!.sendRAWData(byteArrayOf(0x1B, 0x45, 0x01), this)
@@ -942,7 +943,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
 
                                     try {
-                                        SunmiPrinterApi.getInstance().sendRawData(aa)
+                                        SunmiPrintHelper.getInstance().sendRawData(aa)
                                     } catch (e: java.lang.Exception) {
                                         e.printStackTrace()
                                     }
