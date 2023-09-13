@@ -53,7 +53,7 @@ class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
 
     private var ORDER_TAB_TYPE_ID: String = ""
     private lateinit var ordertypelist: java.util.ArrayList<TbOrderType>
-    private lateinit var ORDER_TAB: String
+    private var ORDER_TAB: String = ALL_ORDER_TAB
     private lateinit var binding: FragmentAllOrdersCountsBinding
 
     @Inject
