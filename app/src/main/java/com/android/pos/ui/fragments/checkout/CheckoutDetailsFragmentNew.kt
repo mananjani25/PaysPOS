@@ -85,6 +85,7 @@ import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
+import kotlin.math.roundToInt
 
 
 @AndroidEntryPoint
@@ -2097,8 +2098,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         GlobalScope.launch {
             Log.d("getCommSettingFromFile ","getCommSettingFromFile: "+Gson().toJson(SettingINI.getCommSettingFromFile("/storage/emulated/0/Download/"+ SettingINI.FILENAME)))
             posLink.SetCommSetting(SettingINI.getCommSettingFromFile("/storage/emulated/0/Download/"+ SettingINI.FILENAME))
-            val amt = ((paymentAmount-tipAmount)*100).toInt()
-            val tip_amt = (tipAmount*100).toInt()
+            val amt = ((paymentAmount-tipAmount) * 100).roundToInt()
+            val tip_amt = (tipAmount * 100).roundToInt()
             ECRRefNumber = System.currentTimeMillis().toString()
             Log.d("Amt: ","amt $amt tip $tip_amt")
 
