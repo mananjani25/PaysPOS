@@ -1486,6 +1486,8 @@ class CustomDisplay(
             mPaymentRequest.TenderType = mPaymentRequest.ParseTenderType("CREDIT")
             mPaymentRequest.Amount = tip_amt.toString()
             mPaymentRequest.OrigRefNum = mPaymentViewModel.paxReferenceNo
+            //Added for TSYS ADJUST issue
+            mPaymentRequest.ECRRefNum = mPaymentViewModel.paxReferenceNo
             mPaymentRequest.ExtData = "<Force>T</Force>"
 
             posLink.PaymentRequest = mPaymentRequest

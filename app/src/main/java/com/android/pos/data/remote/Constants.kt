@@ -153,6 +153,7 @@ object Constants {
     const val PAX_TERMINAL_ID = "TerminalID"
     const val PAX_IP = "IPAddress"
     const val PAX_PORT = "Port"
+    const val BROADPOS_VERSION = "broadPOS_version"
 
     const val DELIVERY_TYPE = "Delivery_Type"
     const val OPEN_ORDER_ITEMS = "Open_Order_Items"

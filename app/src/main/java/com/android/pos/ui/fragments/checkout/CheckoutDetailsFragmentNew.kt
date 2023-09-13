@@ -2102,6 +2102,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             val tip_amt = (tipAmount * 100).roundToInt()
             ECRRefNumber = System.currentTimeMillis().toString()
             Log.d("Amt: ","amt $amt tip $tip_amt")
+            var broadPOS_version = prefProvider.getValue(
+                Constants.BROADPOS_VERSION,
+                ""
+            )
 
             CoroutineScope(Dispatchers.Main).launch {
                 ProgressUtils.showProgressDialog(requireActivity())
@@ -2112,7 +2116,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             mPaymentRequest.Amount = amt.toString()
             mPaymentRequest.TipAmt = tip_amt.toString()
             mPaymentRequest.ECRRefNum = ECRRefNumber
-            mPaymentRequest.ExtData = "<Force>T</Force><TokenRequest>1</TokenRequest>"
+            if (broadPOS_version.contains("TSYS")) {
+                mPaymentRequest.ExtData = "<Force>T</Force>"
+            } else if (broadPOS_version.contains("Rapid")) {
+                mPaymentRequest.ExtData = "<Force>T</Force><TokenRequest>1</TokenRequest>"
+            }
+
             Log.d("ECRRefNum", "ECRRefNum: $ECRRefNumber")
 
             posLink.PaymentRequest = mPaymentRequest
