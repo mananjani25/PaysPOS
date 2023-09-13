@@ -501,7 +501,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
         val nf1: NumberFormat = NumberFormat.getNumberInstance()
         nf1.maximumFractionDigits = 2
         val rounded: String = nf1.format(selectedTipDivided)
-        selectedTipDivided = rounded.toDouble()
+        selectedTipDivided = rounded.replace(",", "").toDouble()
 
         /*if (paymentOrderDetailsResponse.data.payment_type == "Card") {
             if (totalItemPrice >= selectedTipDivided) {
