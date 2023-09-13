@@ -642,8 +642,12 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
         }
     }
 
-    fun tipCalculation(tip: Double): Double {
-        return if (magtekRequestUtils.gatewayName() == Constants.TSYS_GATEWAY) tip else 0.0
+    private fun tipCalculation(tip: Double): Double {
+        return if (paymentOrderDetailsResponse.data.global_uniq_id != "") {
+            tip
+        } else {
+            if (magtekRequestUtils.gatewayName() == Constants.TSYS_GATEWAY) tip else 0.0
+        }
     }
 
     override fun afterTextChanged(s: Editable?) {
