@@ -1863,10 +1863,10 @@ class CustomDisplay(
         tipRate = model.rate
         tippedAmount = MethodUtils.percentageCalculation(wholeTotalPrice, model.rate)
         Log.d("selectedItem: ","tip params $tipRate $tippedAmount")
-        if ((mIsCardPayment && !mIsSignatureRequired) || (!mIsCardPayment)) {
+        if (mIsCardPayment && !mIsSignatureRequired) {
 //            callUpdateTip()
             if (mPaymentViewModel.paxReferenceNo.isNullOrEmpty()) {
-                callUpdateTip()
+                magtekCall(wholeTotalPrice)
             } else if(!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)){
                 adjustPaxTips()
             } else if(!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && !prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)){
@@ -1875,6 +1875,8 @@ class CustomDisplay(
                     "Please connect to PAX device"
                 )
             }
+        } else if (!mIsCardPayment) {
+            callUpdateTip()
         }
         if (!binding.signaturePad.isEmpty) {
             enableConfirmButton()
