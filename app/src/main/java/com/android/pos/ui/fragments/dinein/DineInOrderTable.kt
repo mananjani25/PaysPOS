@@ -10158,7 +10158,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                         ) {
                                             LogUtil.logE(TAG, "printerName  ${kit.name} ")
                                             autoPrintEnable = true
-                                            // initKitchenPrinter(kit, Constants.KITCHEN, listItem)
+                                            if (!prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)) {
+                                                initKitchenPrinter(kit, Constants.KITCHEN, listItem)
+                                            }
                                         }
                                     }
                                 }
