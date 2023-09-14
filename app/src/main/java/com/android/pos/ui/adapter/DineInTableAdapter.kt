@@ -443,12 +443,13 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 if (buttonView.isPressed) {
                     if (isChecked) {
                         var listItem: ArrayList<TbItem> = arrayListOf()
+                        var listItemWithGuest:HashMap<String,ArrayList<TbItem>> = hashMapOf()
 
 
                         val builder = java.lang.StringBuilder()
 
 
-                        for (i in bindingAdapterPosition + 1 until list.size) {
+                        for (i in layoutPosition + 1 until list.size) {
 
                             if (list.get(i).isHeader == 1) {
                                 list[i].item?.let { listItem.add(it) }
@@ -468,8 +469,9 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
                         }
                         if (builder.isNotEmpty()) {
+                            listItemWithGuest.set(list.get(layoutPosition).title.toString(),listItem)
 
-                            listner.onWholeTableToKitchen(builder.toString(), listItem)
+                            listner.onWholeTableToKitchen(builder.toString(), listItem,listItemWithGuest)
                         }
                         binding.chkIsFired.isChecked = true
                         binding.chkIsFired.isEnabled = false
@@ -571,17 +573,31 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
                     if (isChecked) {
                         if (list.get(layoutPosition).item != null) {
+                            var listItemWithGuest:HashMap<String,ArrayList<TbItem>> = hashMapOf()
                             var itemsNew = list[bindingAdapterPosition].item
                             var ids: String? = null
                             itemsNew?.orderItemId?.let { ids = it.toString() }
                             itemsNew?.isFired = true
+
+                            for (i in bindingAdapterPosition downTo  0){
+                                if (list.get(i).isHeader == 0){
+                                    var listITems:ArrayList<TbItem> = arrayListOf()
+                                    list[bindingAdapterPosition].item?.let { listITems.add(it) }
+                                    listItemWithGuest.set(list.get(i).title.toString(),listITems)
+
+                                    break
+
+                                }
+
+                            }
 
 
                             ids?.let {
                                 list[bindingAdapterPosition].item?.let { it1 ->
                                     listner.singleItemFired(
                                         it, layoutPosition,
-                                        it1
+                                        it1,
+                                        listItemWithGuest
                                     )
                                 }
                             }
@@ -752,8 +768,8 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         )
 
         fun onSendItemToKitchen(item: TbItem)
-        fun onWholeTableToKitchen(ids: String, listItems: ArrayList<TbItem>)
-        fun singleItemFired(id: String, position: Int, item: TbItem)
+        fun onWholeTableToKitchen(ids: String, listItems: ArrayList<TbItem>,listItemWithGuest: HashMap<String, ArrayList<TbItem>>)
+        fun singleItemFired(id: String, position: Int, item: TbItem,listItemWithGuest: HashMap<String, ArrayList<TbItem>>)
         fun onGuestPrint(
             listItem: ArrayList<TbItem>,
             guestName: String,

@@ -2069,17 +2069,19 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
     }
 
-    override fun onWholeTableToKitchen(ids: String, list: ArrayList<TbItem>) {
+    override fun onWholeTableToKitchen(ids: String, list: ArrayList<TbItem>,listItemWithGuest: HashMap<String, ArrayList<TbItem>>) {
         LogUtil.logE(TAG, "WholeTableITem")
         viewModel.fireItemToKitchen(orderId ?: 0, true, ids, true)
         for (i in 0 until kitchenPrinterList.size) {
             if (kitchenPrinterList[i].status) {
-                initKitchenPrinter(kitchenPrinterList.get(i), Constants.KITCHEN, list)
+                if (!prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)) {
+                    initKitchenPrinter(kitchenPrinterList.get(i), Constants.KITCHEN, list, listItemWithGuest)
+                }
             }
         }
     }
 
-    override fun singleItemFired(id: String, position: Int, item: TbItem) {
+    override fun singleItemFired(id: String, position: Int, item: TbItem, listItemWithGuest: HashMap<String, ArrayList<TbItem>>) {
 
         clickedPos = position
         viewModel.fireItemToKitchen(orderId ?: 0, true, id, false, item)
@@ -2088,8 +2090,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         listItem.add(item)
         for (i in 0 until kitchenPrinterList.size) {
             if (kitchenPrinterList[i].status) {
-
-                // initKitchenPrinter(kitchenPrinterList.get(i), Constants.KITCHEN, listItem)
+                if (!prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)) {
+                    initKitchenPrinter(
+                        kitchenPrinterList.get(i), Constants.KITCHEN, listItem, listItemWithGuest
+                    )
+                }
             }
         }
 
@@ -2898,7 +2903,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                             presentation.onDisplayChanged()
                             presentation.showTableDetails(baseResponse)
                         }
-                        if(!isFromWastage) {
+                        if (!isFromWastage) {
                             checkForAutoFire(true)
                         }
 
@@ -8512,7 +8517,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     private fun initKitchenPrinter(
         data: PrinterResponse.Data.KitchenReceiptPrinters,
         type: String,
-        item: ArrayList<TbItem>
+        item: ArrayList<TbItem>,
+        listItemWithGuest: HashMap<String, ArrayList<TbItem>> = hashMapOf()
 
     ) {
 
@@ -8545,7 +8551,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                             println("onConnect")
                             Log.d("###17MAR23", "SunmiPrinterConnect: Called")
                             //ProgressUtils.dismissProgressDialog()
-                            generateKitchenReceiptSunmi(data, type, item)
+                            generateKitchenReceiptSunmi(data, type, item, listItemWithGuest)
 
                         }
 
@@ -8558,7 +8564,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             } else {
 
                 if (SunmiPrinterApi.getInstance().isConnected)
-                    generateKitchenReceiptSunmi(data, type, item)
+                    generateKitchenReceiptSunmi(data, type, item, listItemWithGuest)
             }
 
         } else if (data.name.startsWith(SUNMI_INNER_PRINTER, true)) {
@@ -8566,7 +8572,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
             viewLifecycleOwner.lifecycleScope.launch {
                 delay(100)
-                setService(data, type, item)
+                setService(data, type, item,listItemWithGuest)
             }
         } else {
 
@@ -8657,7 +8663,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     if (printer != null) {
                         PrinterClass.setPrinter(printer)
 
-                        generateKitchenReceipt(data, type, item)
+                        generateKitchenReceipt(data, type, item,listItemWithGuest)
 
                     }
 
@@ -9110,7 +9116,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     private fun generateKitchenReceipt(
         customerReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
         type: String,
-        item: ArrayList<TbItem>
+        item: ArrayList<TbItem>,
+        listItemWithGuest: HashMap<String, ArrayList<TbItem>>
     ) {
         var builder: Builder? = null
         try {
@@ -9276,6 +9283,19 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                 addHorizontalKitchenLine(builder)
 
+                builder.addTextFont(Builder.FONT_B)
+                //builder.addTextLineSpace(20)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(fontSizeH, fontSizeW)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+
+                addHorizontalKitchenLine(builder)
+
 
                 addOrdersForKitchenDineIn(
                     builder,
@@ -9284,7 +9304,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     fontSizeW,
                     customerReceiptPrinters.printerCategories.toCollection(
                         arrayListOf()
-                    )
+                    ),
+                    listItemWithGuest
                 )
 
                 if (getOrderDetailsResponse?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
@@ -9471,7 +9492,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                 addHorizontalLine(builder)
 
-
                 addOrdersForKitchenCustoemrPrinter(
                     builder,
                     item,
@@ -9479,7 +9499,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     fontSizeW,
                     customerReceiptPrinters.printerCategories.toCollection(
                         arrayListOf()
-                    )
+                    ),
+                    kitchenSettingModel.fonts,
+                    listItemWithGuest
                 )
 
                 if (getOrderDetailsResponse?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
@@ -9567,7 +9589,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     private fun setService(
         data: PrinterResponse.Data.KitchenReceiptPrinters,
         type: String,
-        item: ArrayList<TbItem>
+        item: ArrayList<TbItem>,
+        listItemWithGuest: HashMap<String, ArrayList<TbItem>>
     ) {
         if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.FoundSunmiPrinter) {
 
@@ -9577,14 +9600,14 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                 LogUtil.logE("SunmiPrintHelpe1r", "isBlueToothPrinter")
 
-                generateKitchenReceiptSunmiInner(data, type, item)
+                generateKitchenReceiptSunmiInner(data, type, item,listItemWithGuest)
 
 
             }
 
         } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.CheckSunmiPrinter) {
             Handler(Looper.getMainLooper()).postDelayed({
-                setService(data, type, item)
+                setService(data, type, item,listItemWithGuest)
             }, 2000)
             LogUtil.logE("SunmiPrintHelper", "CheckSunmiPrinter")
         } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.LostSunmiPrinter) {
@@ -9688,7 +9711,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     private fun generateKitchenReceiptSunmi(
         customerReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
         type: String,
-        item: ArrayList<TbItem>
+        item: ArrayList<TbItem>,
+        listItemWithGuest: HashMap<String, ArrayList<TbItem>> = hashMapOf()
     ) {
         try {
             //ProgressUtils.showProgressDialog(requireActivity())
@@ -9756,14 +9780,23 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 ).toString()
             )
 
-            PrintSunmiUtils.addHorizontal()
+            SunmiPrinterApi.getInstance().enableUnderline(false)
+            SunmiPrinterApi.getInstance().enableBold(false)
+            SunmiPrinterApi.getInstance()
+                .printText(addHorizontalKitchenLineSunmi(PrintSunmiUtils.fontSize))
+            //  SunmiPrinterApi.getInstance().lineWrap(1)
+            SunmiPrinterApi.getInstance().enableUnderline(false)
+            SunmiPrinterApi.getInstance().enableBold(false)
+            SunmiPrinterApi.getInstance()
+                .printText(addHorizontalKitchenLineSunmiForLastHeaderLine(PrintSunmiUtils.fontSize))
+            SunmiPrinterApi.getInstance().lineWrap(2)
 
-            SunmiPrinterApi.getInstance().lineWrap(1)
+
 
             addOrdersForKitchenDineIn(
                 item, customerReceiptPrinters.printerCategories.toCollection(
                     arrayListOf()
-                )
+                ),listItemWithGuest
             )
 
             if (getOrderDetailsResponse?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
@@ -9784,7 +9817,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     private fun generateKitchenReceiptSunmiInner(
         customerReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
         type: String,
-        item: ArrayList<TbItem>
+        item: ArrayList<TbItem>,
+        listItemWithGuest: HashMap<String, ArrayList<TbItem>>
     ) {
         try {
 
@@ -9829,10 +9863,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             )
 
             PrintSunmiUtils.addHorizontalInner()
+            PrintSunmiUtils.addHorizontalInner()
 
             SunmiPrintHelper.getInstance().lineWrap(1)
 
-            addOrdersForKitchenDineInInner(item)
+            addOrdersForKitchenDineInInner(item,listItemWithGuest)
 
             if (getOrderDetailsResponse?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
 
@@ -10026,8 +10061,39 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         list = dineInTableAdapter.getList() ?: arrayListOf()
         val builder = ArrayList<String>()
         var listItem: ArrayList<TbItem> = arrayListOf()
-//        LogUtil.logE(TAG, "dineInList:  ${Gson().toJson(list)}")
-        var firedItemsList: ArrayList<TbItem> = arrayListOf()
+        var listItemWithGuest: LinkedHashMap<String, ArrayList<TbItem>> = linkedMapOf()
+
+        for (i in 0 until list.size) {
+
+            if (list[i].isHeader == 0) {
+                if (i < list.size - 1 && list[i + 1].isHeader == 1) {
+                    Log.e(TAG, "checkInsideEdge 1 ")
+                    var listItemLocal: ArrayList<TbItem> = arrayListOf()
+                    for (j in i + 1 until list.size) {
+                        if (list[j].isHeader == 1) {
+                            Log.e(TAG, "checkInsideEdge 2 ")
+                            list[j].item?.let { listItemLocal.add(it) }
+                            if (j == list.size-1){
+                                list[i].title?.let { listItemWithGuest.put(it, listItemLocal) }
+                                break
+                            }
+
+                        } else if (list[j].isHeader == 0) {
+                            Log.e(TAG, "checkInsideEdge 3 ")
+
+                            if (listItemLocal.isNotEmpty()) {
+                                list[i].title?.let { listItemWithGuest.put(it, listItemLocal) }
+                            }
+                            break
+                        }
+
+
+                    }
+
+                }
+            }
+        }
+        Log.e(TAG, "getListOfHash  ${Gson().toJson(listItemWithGuest)}")
         LogUtil.logE(TAG, "dineInList:  ${Gson().toJson(list)}")
         fireItemsList = arrayListOf()
         list.forEach {
@@ -10072,7 +10138,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             }
 
             arrayItems.forEachIndexed { index, orderItem ->
-                if (getOrderDetailsResponse?.orderItems?.size!!.minus(1) >= index) {
+                if ((getOrderDetailsResponse?.orderItems?.size?.minus(1) ?: -1) >= index) {
                     if (itemIds.contains(getOrderDetailsResponse?.orderItems?.get(index)?.id)) {
                         LogUtil.logE("InsideLoop", "Inside")
                         if (getOrderDetailsResponse?.orderItems?.get(index)?.quantity != orderItem.quantity) {
@@ -10132,7 +10198,39 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             prefProvider.setValue(DINE_IN_UPDATE_LIST, "")
         }
 
+
+
         if (listItem.isNotEmpty()) {
+            var orderItemsIds: ArrayList<Int> = arrayListOf()
+            listItem.forEach {
+                it.orderItemId?.let { it1 -> orderItemsIds.add(it1) }
+            }
+            listItemWithGuest.forEach {
+                it.value.forEach { it1 ->
+                    var orderITemId = it1.orderItemId
+                    if (orderItemsIds.contains(it1.orderItemId) == false) {
+                        var listNewITems: ArrayList<TbItem> = arrayListOf()
+                        listNewITems.addAll(it.value)
+                        if (listNewITems.isNotEmpty()) {
+                            for (k in it.value.indices) {
+                                if (it.value[k].orderItemId == orderITemId) {
+                                    listNewITems.remove(it.value[k])
+                                }
+                            }
+                            listItemWithGuest.put(it.key, listNewITems)
+                        }
+                    }
+                }
+            }
+
+            // remove guest with no items
+            val it: MutableIterator<Map.Entry<String, ArrayList<TbItem>>> = listItemWithGuest.entries.iterator()
+            while (it.hasNext()) {
+                if (it.next().value.isEmpty()) {
+                    it.remove()
+                }
+            }
+
             var autoPrintEnable = false
             kitchenPrinterList.forEach { kit ->
                 if (kit.status) {
@@ -10159,7 +10257,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                             LogUtil.logE(TAG, "printerName  ${kit.name} ")
                                             autoPrintEnable = true
                                             if (!prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)) {
-                                                initKitchenPrinter(kit, Constants.KITCHEN, listItem)
+                                                initKitchenPrinter(kit, Constants.KITCHEN, listItem,listItemWithGuest)
                                             }
                                         }
                                     }
@@ -10168,7 +10266,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                         }
                     } else {
-                        //initKitchenPrinter(kit, Constants.KITCHEN, listItem)
+                        if (!prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)) {
+                            initKitchenPrinter(kit, Constants.KITCHEN, listItem, listItemWithGuest)
+                        }
 
                     }
                 }
