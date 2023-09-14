@@ -2396,17 +2396,36 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         cartList = viewModel.cartModel
 
-        //Added (&& condition to check name) by Dharmesh to resolve issue BIS-352
+        //Updated the condition to set order type ID from selected orderType
+        //By Dharmesh Basapati for CS-44
+        var hasOrderTypeInList = false
         viewModel.ordertypelist.forEach {
             if (prefProvider.getOrderTypeName(
-                    Constants.ORDER_TYPE, DEFAULT_ORDER
+                    Constants.ORDER_TYPE, TAKEOUT
                 ) == it.orderType && prefProvider.getOrderTypeName(
                     Constants.ORDER_TYPE_NAME, DEFAULT_ORDER
                 ) == it.name
             ) {
-                paymentviewModel.setOrderTypeId(it.id)
+                hasOrderTypeInList = true
             }
-
+        }
+        if(!hasOrderTypeInList){
+            val filterOrderTypes = viewModel.ordertypelist.filter { prefProvider.getOrderTypeName(
+                Constants.ORDER_TYPE, TAKEOUT
+            ) == it.orderType }
+            if(filterOrderTypes.isNotEmpty()){
+                paymentviewModel.setOrderTypeId(filterOrderTypes[0].id)
+            }
+        }else{
+            viewModel.ordertypelist.forEach {
+                if (prefProvider.getOrderTypeName(
+                        Constants.ORDER_TYPE, TAKEOUT
+                ) == it.orderType && prefProvider.getOrderTypeName(
+                        Constants.ORDER_TYPE_NAME, DEFAULT_ORDER
+                ) == it.name) {
+                    paymentviewModel.setOrderTypeId(it.id)
+                }
+            }
         }
 
         paymentviewModel.saveActualValue(
