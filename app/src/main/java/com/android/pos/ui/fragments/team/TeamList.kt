@@ -42,6 +42,7 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
     private var isEmptyString = true
     var count = 0
     var isFromSearch: Boolean = false
+
     @Inject
     lateinit var rolePermission: RolePermission
     override fun onCreateView(
@@ -123,7 +124,7 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
                 if (adapter.getPeople()?.isNotEmpty() == true) {
                     empObject = adapter.getPeople()?.get(0)
                 }
-                loadTeamDetails (empObject)
+                loadTeamDetails(empObject)
 
 
             }
@@ -141,20 +142,20 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
 
 
         object : SwipeHelper(activity, binding.rvEmployeeList) {
-/*
-            override fun getMovementFlags(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder
-            ): Int {
+            /*
+                        override fun getMovementFlags(
+                            recyclerView: RecyclerView,
+                            viewHolder: RecyclerView.ViewHolder
+                        ): Int {
 
-                LogUtil.logE("makeMovementFlags", viewHolder.itemView.tag.toString())
-                if (viewHolder.itemView.tag.toString() == "header") {
-                    return 0
-                }
-                return makeMovementFlags(0, ItemTouchHelper.LEFT)
+                            LogUtil.logE("makeMovementFlags", viewHolder.itemView.tag.toString())
+                            if (viewHolder.itemView.tag.toString() == "header") {
+                                return 0
+                            }
+                            return makeMovementFlags(0, ItemTouchHelper.LEFT)
 
-            }
-*/
+                        }
+            */
 
             override fun instantiateUnderlayButton(
                 viewHolder: RecyclerView.ViewHolder?,
@@ -200,7 +201,7 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
 
                         if (resource.data != null && resource.data.isNotEmpty())
                             binding.noEmployeeData?.visibility = View.GONE
-                            adapter.setSelected(selectedPos)
+                        adapter.setSelected(selectedPos)
 
 
                         count = resource.data?.size!!
@@ -208,6 +209,10 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
                             resource.data as MutableList<Employee>,
                             requireActivity()
                         )
+
+                        //  initially show first employee selected
+                        selectedPos = adapter.getPeople()?.get(0)?.id!!
+                        adapter.setSelected(selectedPos)
 
                         if (selectedPos != -1)
                             resource.data.forEach {
@@ -225,15 +230,17 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
                             loadTeamDetails(null)
                         }
                     }
+
                     Status.ERROR -> {
-                        if(!isFromSearch) {
+                        if (!isFromSearch) {
                             ProgressUtils.dismissProgressDialog()
                         }
                         binding.root.showAlert(resource.message)
 
                     }
+
                     Status.LOADING -> {
-                        if(!isFromSearch) {
+                        if (!isFromSearch) {
                             ProgressUtils.showProgressDialog(requireActivity())
                         }
                     }
@@ -262,17 +269,19 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
                     "null",
                     ignoreCase = true
                 )
-            ) { var final_string =
-                data.firstName.toString().substring(0, 1)
-                    .uppercase(Locale.getDefault()) + data.firstName.toString()
-                    .substring(1, data.firstName.toString().length) + " " +
-                        data.lastName.toString().substring(0, 1)
-                            .uppercase(Locale.getDefault()) + data.lastName.toString()
-                    .substring(1, data.lastName.toString().length)
+            ) {
+                var final_string =
+                    data.firstName.toString().substring(0, 1)
+                        .uppercase(Locale.getDefault()) + data.firstName.toString()
+                        .substring(1, data.firstName.toString().length) + " " +
+                            data.lastName.toString().substring(0, 1)
+                                .uppercase(Locale.getDefault()) + data.lastName.toString()
+                        .substring(1, data.lastName.toString().length)
                 binding.layoutTool.txtSubTitle.setText(final_string)
             } else {
                 var final_string =
-                    data.firstName.toString().substring(0,1).uppercase(Locale.getDefault()) + data.firstName.toString()
+                    data.firstName.toString().substring(0, 1)
+                        .uppercase(Locale.getDefault()) + data.firstName.toString()
                         .substring(1, data.firstName.toString().length)
                 binding.layoutTool.txtSubTitle.setText(final_string)
             }
@@ -369,7 +378,7 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
                             isFromSearch = true
                             loadTeams()
                         }
-                 }
+                    }
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
@@ -407,9 +416,11 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
                             binding.noEmployeeData?.visibility = View.VISIBLE
                         }
                     }
+
                     Status.ERROR -> {
                         binding.root.showAlert(resource.message)
                     }
+
                     Status.LOADING -> {
                     }
                 }

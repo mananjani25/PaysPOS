@@ -1,5 +1,6 @@
 package com.android.pos.ui.fragments.settings.teamrole
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -220,7 +221,7 @@ class TeamMemberSheetViewModel @Inject constructor(
                     _showProgress.value = Event(false)
                     resource.data.let {
                         if (it?.status == 200) {
-
+                            Log.d("responseMessage", "sendEmailTimeSheet: "+it.message)
                             if (emailId.isEmpty()) {
                                 _sendTimeSheet.postValue(Event(it.message))
                             } else {
