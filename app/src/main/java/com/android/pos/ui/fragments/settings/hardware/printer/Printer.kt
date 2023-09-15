@@ -124,7 +124,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     StatusChangeEventListener, BatteryStatusChangeEventListener, ICallback,
-    SearchCallback {
+    SearchCallback,UpdatePrinters {
     private var cloudPrinter: CloudPrinter? = null
     private var woyouService: IWoyouService? = null
     private lateinit var binding: FragmentPrinterBinding
@@ -180,9 +180,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     ): View? {
         binding = FragmentPrinterBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
-
-
-
+        updatePrinter = this
         printerList = ArrayList()
 
         getOrderTypes()
@@ -197,7 +195,6 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
         return binding.root
     }
-
 
 
     private fun checkMasterTerminal() {
@@ -294,8 +291,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Binding()
+        updatePrinter = this
         hideLoaderAfterDelay()
-
 
         try {
             SunmiPrinterManager.getInstance()
@@ -531,7 +528,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         }
     }
 
-    private fun syncPrinterList(saved: Boolean = false) {
+    private fun syncPrinterList(saved: Boolean = false,isProgressShow : Boolean = false) {
+
         allPrinterlist.clear()
         addedCustomerPrinters = false
         addedKitchenPrinters = false
@@ -685,13 +683,10 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     }
 
     private fun getAllKitchenPrintersListFromDB() {
-
         viewModel.viewModelScope.launch {
             ProgressUtils.showProgressDialog(requireActivity())
             try {
                 var kitchenData = viewModel.getKitchenPrintersList()
-                Log.d("kitchenPrintersList","befoer kitchenData size = ${kitchenData.size}")
-
                 requireActivity()
 
                 Log.e("checkData", "kitchenList  ${kitchenData.size}")
@@ -3169,6 +3164,24 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         } else {
             return false
         }
+    }
+
+    override fun updatePrinters() {
+        Log.d("updatePrinters","updatePrinters()")
+        viewModel.updatePrinter()
+    }
+
+    override fun reloadAdapter() {
+        syncPrinterList()
+    }
+
+    companion object{
+        var updatePrinter: UpdatePrinters? = null
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        updatePrinter = null
     }
 
 }

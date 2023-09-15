@@ -32,6 +32,7 @@ import com.android.pos.utils.*
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.printer.PrinterClass
 import com.android.pos.utils.statusUtils.Status
+import com.android.pos.utils.workmanager.PrinterRefreshWorker
 import com.android.pos.utils.workmanager.UploadWorker
 import com.epson.eposprint.BatteryStatusChangeEventListener
 import com.epson.eposprint.Builder
@@ -323,8 +324,14 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
                     .setInputData(data)
                     .build()
 
+            val refreshPrinterWorkRequest =
+                PeriodicWorkRequest.Builder(PrinterRefreshWorker::class.java, 5, TimeUnit.SECONDS)
+                    .setInputData(data)
+                    .build()
+
 
             val workManager = WorkManager.getInstance(requireActivity().applicationContext)
+            val workManager2 = WorkManager.getInstance(requireActivity().applicationContext)
             try {
 
 
@@ -333,6 +340,14 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
                     ExistingPeriodicWorkPolicy.REPLACE,
                     uploadWorkRequest
                 )
+
+                workManager2.enqueueUniquePeriodicWork(
+                    "refresh",
+                    ExistingPeriodicWorkPolicy.REPLACE,
+                    refreshPrinterWorkRequest
+                )
+
+
             } catch (e: java.lang.Exception) {
                 LogUtil.logE(TAG, "printerQueueLog  ${e.message.toString()}")
                 e.printStackTrace()
