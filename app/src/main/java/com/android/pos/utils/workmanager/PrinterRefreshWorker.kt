@@ -2,17 +2,12 @@ package com.android.pos.utils.workmanager
 
 import android.content.Context
 import android.util.Log
-import androidx.lifecycle.viewModelScope
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.android.pos.data.remote.Constants
-import com.android.pos.data.repositories.PosRepository
-import com.android.pos.data.repositories.UserRepository
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.fragments.settings.hardware.printer.Printer
-import com.android.pos.utils.Event
 import com.android.pos.utils.LogUtil
-import com.android.pos.utils.statusUtils.Status
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
@@ -21,12 +16,9 @@ import com.hosopy.actioncable.Channel
 import com.hosopy.actioncable.Consumer
 import com.hosopy.actioncable.Subscription
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.annotations.NotNull
 import java.net.URI
-import javax.inject.Inject
 
 class PrinterRefreshWorker(@NotNull context: Context, @NotNull params: WorkerParameters):CoroutineWorker(context,params) {
 
@@ -62,7 +54,7 @@ class PrinterRefreshWorker(@NotNull context: Context, @NotNull params: WorkerPar
 
         Log.d("PrinterRefreshWorker","requestURL = $requestURL")
 
-        val uri = URI(Constants.PRINTER_QUEUE_CONNECTION_URL_HUGEPOS)
+        val uri = URI(Constants.PRINTER_QUEUE_CONNECTION_URL_SNACKPOS)
         consumer = ActionCable.createConsumer(uri)
 
         Log.d("PrinterRefreshWorker","uri = $uri")
