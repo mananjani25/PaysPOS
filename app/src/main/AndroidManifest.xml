@@ -53,6 +53,7 @@
         android:theme="@style/Theme.POSAndroid"
         android:usesCleartextTraffic="true"
         tools:replace="android:allowBackup">
+        <uses-library android:name="org.apache.http.legacy" android:required="false"/>
 
         <service
             android:name=".ui.firebase.MyFirebaseMessagingService"

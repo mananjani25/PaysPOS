@@ -121,7 +121,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
                 locationId = inputData.getInt("location_id", 0)
                 baseUrl = inputData.getString("base_url").toString()
-                isPrinterQueueEnable = inputData.getBoolean(IS_PRINTER_QUEUE_ENABLE,false)
+                isPrinterQueueEnable = inputData.getBoolean(IS_PRINTER_QUEUE_ENABLE, false)
 
 
                 var serializeObjKitchenPrinters = mContext.getSharedPreferences(
@@ -225,6 +225,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
 
 
+                Log.e(TAG, "isPrinterQueueEnable:  ${isPrinterQueueEnable}")
                 if (isPrinterQueueEnable) {
                     LogUtil.logE(TAG, "onActionCableStarts")
                     connectActionCable()
@@ -278,6 +279,10 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                 }
             }?.onReceived {
                 LogUtil.logE(TAG, "onActiononReceived  " + Gson().toJson(it))
+
+                Log.e(TAG,"ListOfORinteDataClear 22")
+                listOfPrintersData.clear()
+                listOfPrintersData = arrayListOf()
 
                 if (mContext.getSharedPreferences(
                         mContext.resources.getString(R.string.app_name),
@@ -675,9 +680,6 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                     }
 
 
-                    delay(2000)
-                    listOfPrintersData.clear()
-                    listOfPrintersData = arrayListOf()
 
                     dataList.forEach {
 
@@ -1090,9 +1092,8 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                 } else {
 
 
-                    listOfPrintersData.clear()
-                    listOfPrintersData = arrayListOf()
-                    delay(2000)
+                    Log.e(TAG, "ListOfORinteDataClear 11")
+
 
                     dataList.forEach {
 
@@ -4536,8 +4537,13 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
             } else {
                 if (listOfPrintersData.size - 1 < currentPrinterIndex) {
 
+                    Log.e(
+                        TAG,
+                        "checkListOfPRinter  ${Gson().toJson(listOfPrintersData)}  currentPrinterIndex: ${currentPrinterIndex}"
+                    )
                     currentOrderIndex = 0
                     currentPrinterIndex = currentPrinterIndex + 1
+
                     if (listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.isNotEmpty()) {
                         runBlocking {
                             sendDataToPrintToSunmi(
