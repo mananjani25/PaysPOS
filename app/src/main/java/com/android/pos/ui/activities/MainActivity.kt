@@ -80,7 +80,6 @@ import com.hosopy.actioncable.Channel
 import com.hosopy.actioncable.Consumer
 import com.hosopy.actioncable.Subscription
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.File
@@ -753,11 +752,13 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 false
             ) == true
         ) {
+            Log.e(TAG,"CheckHere DAta:")
             val data = Data.Builder()
                 //.putString("kitchenPrinterList", Gson().toJson(kitchenPrinterList))
                 // .put("kitchenSettingData", Gson().toJson(kitchenSettingModel))
                 .put("location_id", prefProvider?.getValueInt(LOCATION_ID, 0))
                 .put("base_url", prefProvider?.getValue(Constants.BASE_URL_NEW, ""))
+                .put(IS_PRINTER_QUEUE_ENABLE,prefProvider?.getValueboolean(IS_PRINTER_QUEUE_ENABLE,false))
                 .build()
 
             val uploadWorkRequest =
@@ -775,7 +776,6 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
 
             val workManager = WorkManager.getInstance(this)
-            val workManager2 = WorkManager.getInstance(this)
 
             try {
 
@@ -783,12 +783,6 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                     Constants.PRINTER_QUEUE_BACKGROUND, ExistingWorkPolicy.REPLACE,
                     uploadWorkRequest
                 )
-
-                workManager2.enqueueUniqueWork(
-                    Constants.PRINTER_QUEUE_BACKGROUND, ExistingWorkPolicy.REPLACE,
-                    refreshWorkRequest
-                )
-
 
             } catch (e: java.lang.Exception) {
                 LogUtil.logE(TAG, "printerQueueLog  ${e.message.toString()}")

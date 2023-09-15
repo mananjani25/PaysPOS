@@ -41,13 +41,13 @@ class PrinterRefreshWorker(@NotNull context: Context, @NotNull params: WorkerPar
             LogUtil.logE(TAG,"locationId = $locationId")
             LogUtil.logE(TAG,"baseUrl = $baseUrl")
 
-            connectActionCable()
+            connectActionCableSYNCSETTINGS()
         }
 
         return Result.success()
     }
 
-    suspend fun connectActionCable() {
+    suspend fun connectActionCableSYNCSETTINGS() {
         // 1. Setup
         var requestURL =
             baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3
