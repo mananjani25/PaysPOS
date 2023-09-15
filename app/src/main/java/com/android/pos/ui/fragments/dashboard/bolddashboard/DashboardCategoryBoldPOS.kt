@@ -1064,6 +1064,19 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         )
     }
 
+    private fun getInitialTakeOutOrderType() {
+        var hasOrderTypeInList =
+            viewModel.ordertypelist.filter { it.name == Constants.DEFAULT_ORDER } ?: emptyList()
+        if (hasOrderTypeInList.isEmpty()) {
+            val filterOrderTypes = viewModel.ordertypelist.filter {
+                prefProvider.getOrderTypeName(ORDER_TYPE, TAKEOUT) == it.orderType
+            }
+            if (filterOrderTypes.isNotEmpty()) {
+                prefProvider.setValue(Constants.ORDER_TYPE, filterOrderTypes[0].orderType)
+                prefProvider.setValue(Constants.ORDER_TYPE_NAME, filterOrderTypes[0].name)
+            }
+        }
+    }
 
     override fun onItemSelected(item: TbItem) {
 
@@ -1087,7 +1100,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             }
             else -> {
                 item.timeStamp = randomOfflineId()
-
+                getInitialTakeOutOrderType()
                 Log.e("viewModel.cartModel",Gson().toJson(viewModel.cartModel))
 
                 prefProvider.setValue(Constants.REDIRECT_FROM, "")
