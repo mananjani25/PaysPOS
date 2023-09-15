@@ -771,6 +771,7 @@
     <string name="please_enter_passcode">Please enter passcode</string>
     <string name="please_enter_passcode_length">Please enter 4 digit passcode</string>
     <string name="character_digits_String">"aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyY zZ0123456789"</string>
+    <string name="character_digits_String_with_dot">".aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyY zZ0123456789"</string>
     <string name="character_digits_without_space_String">"aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ0123456789"</string>
     <string name="character_String">"qwertzuiopasdfghjklyxcvbnmQWERTZUIOPASDFGHJKLYXCVBNM "</string>
     <string name="rename">Rename</string>
