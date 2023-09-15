@@ -77,9 +77,18 @@ class OrderHistoryAdapter(val callBack: (View, Orders) -> Unit) :
                 binding.txtLoyaltyPoints.visibility = View.GONE
             }
 
-            //Reorder
-            binding.txtReorder.setOnClickListener {
-                myOnclickedListner.onclickedReorder(arrayList[absoluteAdapterPosition])
+            if (arrayList[absoluteAdapterPosition].orderType == "OnlineWebOrder"
+                || arrayList[absoluteAdapterPosition].orderType == "OnlineOrder" ||
+                arrayList[absoluteAdapterPosition].orderType == "Online Order"
+            ) {
+                binding.txtReorder.setTextColor(binding.root.resources.getColor(R.color.gray_color))
+                binding.txtReorder.setOnClickListener(null)
+            } else {
+                //Reorder
+                binding.txtReorder.setTextColor(binding.root.resources.getColor(R.color.txt_color_blue))
+                binding.txtReorder.setOnClickListener {
+                    myOnclickedListner.onclickedReorder(arrayList[absoluteAdapterPosition])
+                }
             }
         }
 
