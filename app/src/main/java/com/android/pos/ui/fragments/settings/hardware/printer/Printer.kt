@@ -37,6 +37,7 @@ import com.android.pos.data.model.requestModel.CreatePrinterRequestModel
 import com.android.pos.data.model.requestModel.OrderAttributeRequestModel
 import com.android.pos.data.model.requestModel.OrderItemsAttribute
 import com.android.pos.data.model.requestModel.OrderRequestModel
+import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.AVAILABLE
 import com.android.pos.data.remote.Constants.BLUETOOTH
@@ -180,6 +181,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         binding = FragmentPrinterBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
 
+
+
         printerList = ArrayList()
 
         getOrderTypes()
@@ -194,6 +197,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
         return binding.root
     }
+
 
 
     private fun checkMasterTerminal() {
@@ -291,6 +295,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         super.onViewCreated(view, savedInstanceState)
         Binding()
         hideLoaderAfterDelay()
+
 
         try {
             SunmiPrinterManager.getInstance()
@@ -680,10 +685,13 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     }
 
     private fun getAllKitchenPrintersListFromDB() {
+
         viewModel.viewModelScope.launch {
             ProgressUtils.showProgressDialog(requireActivity())
             try {
                 var kitchenData = viewModel.getKitchenPrintersList()
+                Log.d("kitchenPrintersList","befoer kitchenData size = ${kitchenData.size}")
+
                 requireActivity()
 
                 Log.e("checkData", "kitchenList  ${kitchenData.size}")
@@ -693,69 +701,24 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                     var kitchenPrintersList: ArrayList<PrinterListModel> = arrayListOf()
                     if (kitchenData != null) {
                         for (i in kitchenData.indices) {
-                            kitchenPrintersList.add(
-                                PrinterListModel(
-                                    id = kitchenData[i].id,
-                                    printerName = kitchenData[i].name,
-                                    modelName = kitchenData[i].modalName,
-                                    connectionType = if (kitchenData[i].printer_type == BLUETOOTH) {
-                                        BLUETOOTH
-                                    } else {
-                                        WIFI
-                                    },
-                                    isActive = kitchenData[i].status,
-                                    type = kitchenData[i].receiptPrintType,
-                                    deviceModel = DeviceInfo(
-                                        if (kitchenData[i].printer_type == BLUETOOTH) {
-                                            DevType.BLUETOOTH
-                                        } else {
-                                            DevType.TCP
-                                        },
-                                        kitchenData[i].ipAddress,
-                                        kitchenData[i].name,
-                                        kitchenData[i].ipAddress,
-                                        kitchenData[i].macAddress
-                                    ),
-                                    printerModel = kitchenData[i].orderTypes,
-                                    currentPrinterType = KITCHEN,
-                                    printerCategories = kitchenData[i].printerCategories
 
 
-                                )
-                            )
+                            if (prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false) && prefProvider.getValueboolean(IS_MASTER_TERMINAL, false)){
+                                if (kitchenData[i].printer_type == Constants.BLUETOOTH){
+                                    viewModel.deleteKitchenPrinter(kitchenData[i].id)
+                                }else {
+                                   addPrinters(kitchenPrintersList,kitchenData,i)
+                                }
+                            }else {
+                                if (kitchenData[i].printer_type == Constants.WIFI){
+                                    viewModel.deleteKitchenPrinter(kitchenData[i].id)
+                                }else {
+                                    addPrinters(kitchenPrintersList,kitchenData,i)
+                                }
+                            }
 
-
-                            /*allPrinterlist.add(
-                            PrinterListModel(
-
-                                id = kitchenData[i].id,
-                                printerName = kitchenData[i].name,
-                                modelName = kitchenData[i].modalName,
-                                connectionType = if (kitchenData[i].printer_type == BLUETOOTH) {
-                                    BLUETOOTH
-                                } else {
-                                    WIFI
-                                },
-                                isActive = kitchenData[i].status,
-                                type = kitchenData[i].receiptPrintType,
-                                deviceModel = DeviceInfo(
-                                    if (kitchenData[i].printer_type == BLUETOOTH) {
-                                        DevType.BLUETOOTH
-                                    } else {
-                                        DevType.TCP
-                                    },
-                                    kitchenData[i].ipAddress,
-                                    kitchenData[i].name,
-                                    kitchenData[i].ipAddress,
-                                    kitchenData[i].macAddress
-                                ),
-                                printerModel = kitchenData[i].orderTypes,
-                                printerCategories = kitchenData[i].printerCategories
-
-
-                            )
-                        )*/
                         }
+                        Log.d("kitchenPrintersList","kitchenPrintersList size = ${kitchenPrintersList.size}")
                         kitchenAdapter.setList(kitchenPrintersList)
                         allPrinterlist.addAll(kitchenPrintersList)
                         addedKitchenPrinters = true
@@ -784,6 +747,44 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                 ProgressUtils.dismissProgressDialog()
             }
         }
+    }
+
+    private fun addPrinters(
+        kitchenPrintersList: ArrayList<PrinterListModel>,
+        kitchenData: List<PrinterResponse.Data.KitchenReceiptPrinters>,
+        i: Int
+    ) {
+
+        kitchenPrintersList.add(
+            PrinterListModel(
+                id = kitchenData[i].id,
+                printerName = kitchenData[i].name,
+                modelName = kitchenData[i].modalName,
+                connectionType = if (kitchenData[i].printer_type == BLUETOOTH) {
+                    BLUETOOTH
+                } else {
+                    WIFI
+                },
+                isActive = kitchenData[i].status,
+                type = kitchenData[i].receiptPrintType,
+                deviceModel = DeviceInfo(
+                    if (kitchenData[i].printer_type == BLUETOOTH) {
+                        DevType.BLUETOOTH
+                    } else {
+                        DevType.TCP
+                    },
+                    kitchenData[i].ipAddress,
+                    kitchenData[i].name,
+                    kitchenData[i].ipAddress,
+                    kitchenData[i].macAddress
+                ),
+                printerModel = kitchenData[i].orderTypes,
+                currentPrinterType = KITCHEN,
+                printerCategories = kitchenData[i].printerCategories
+
+
+            )
+        )
     }
 
     @SuppressLint("MissingPermission")
@@ -3126,9 +3127,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
                             )
                         )
-
-
                     }
+
                 }
 
 

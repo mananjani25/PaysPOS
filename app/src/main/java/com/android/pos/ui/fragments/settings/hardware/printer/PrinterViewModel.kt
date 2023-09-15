@@ -284,5 +284,13 @@ class PrinterViewModel @Inject constructor(
 
     }
 
+    fun deleteKitchenPrinter(id: Int) {
+        viewModelScope.launch {
+            posRepository.deleteKitchenPrinter(id)
+
+        }
+
+    }
+
 }
 
