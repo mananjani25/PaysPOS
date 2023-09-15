@@ -24,6 +24,7 @@ import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.DINE_IN_SPACE
 import com.android.pos.data.remote.Constants.IS_MASTER_TERMINAL
 import com.android.pos.data.remote.Constants.PRINTER_QUEUE_CONNECTION_URL_SNACKPOS
+import com.android.pos.data.remote.Constants.PRINTER_QUEUE_CONNECTION_URL_HUGEPOS
 import com.android.pos.data.remote.Constants.createCloudPrinterWithName
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.addBuilderText
@@ -236,7 +237,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
         var requestURL =
             baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3
 
-        val uri = URI(PRINTER_QUEUE_CONNECTION_URL_SNACKPOS)
+        val uri = URI(PRINTER_QUEUE_CONNECTION_URL_HUGEPOS)
         consumer = ActionCable.createConsumer(uri)
 
         // 2. Create subscription
