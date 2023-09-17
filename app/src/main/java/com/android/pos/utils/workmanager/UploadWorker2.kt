@@ -150,6 +150,8 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                             Log.e(TAG,"callActionCalledRun 3")
 
                             isQueueRunning = false
+                            currentOrderIndex=0
+                            currentPrinterIndex = 0
                             delay(2000)
 
                             val params = JsonObject()
@@ -459,7 +461,6 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                         break
                     }
                 }
-
                 if (isDataGot) {
 
                     if (listOfPrintersData.get(0).printerName.contains("CloudPrint_", true)) {
@@ -471,6 +472,8 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                         runBlocking {
                             isQueueRunning = false
 
+                            currentOrderIndex=0
+                            currentPrinterIndex = 0
                             Log.e(TAG,"callActionCalledRun 4")
                             delay(2000)
 
@@ -492,6 +495,8 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
 
                         Log.e(TAG,"callActionCalledRun 5")
                         isQueueRunning = false
+                        currentOrderIndex=0
+                        currentPrinterIndex = 0
                         delay(2000)
 
                         val params = JsonObject()
@@ -507,6 +512,8 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                 runBlocking {
                     Log.e(TAG,"callActionCalledRun 6")
                     isQueueRunning = false
+                    currentOrderIndex=0
+                    currentPrinterIndex = 0
                     delay(5000)
                     val params = JsonObject()
                     params.addProperty("id", locationId)
@@ -519,6 +526,8 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
             runBlocking {
                 Log.e(TAG,"callActionCalledRun 6")
                 isQueueRunning = false
+                currentOrderIndex=0
+                currentPrinterIndex = 0
                 delay(5000)
                 val params = JsonObject()
                 params.addProperty("id", locationId)
@@ -759,7 +768,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                         subscription?.perform("delete_order", params)
 
                         runBlocking {
-                            delay(2000)
+                            delay(1000)
                             checkForNextOrder()
 
                         }
@@ -833,6 +842,8 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
 
                         Log.e(TAG,"callActionCalledRun 1")
                         isQueueRunning = false
+                        currentOrderIndex=0
+                        currentPrinterIndex = 0
                         delay(2000)
 
                         val params = JsonObject()
@@ -853,6 +864,8 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
 
                     Log.e(TAG,"callActionCalledRun 2")
                     isQueueRunning = false
+                    currentOrderIndex=0
+                    currentPrinterIndex = 0
                     delay(2000)
 
                     val params = JsonObject()
