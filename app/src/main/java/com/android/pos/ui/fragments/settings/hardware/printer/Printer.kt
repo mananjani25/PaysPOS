@@ -187,6 +187,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
         setUpHeader()
         onDeleteObserve()
+        observePrinterStatus()
         onCreatePrinterObserve()
         onDeleteQueueObserve()
 
@@ -3182,6 +3183,16 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     override fun onDestroy() {
         super.onDestroy()
         updatePrinter = null
+    }
+
+    fun observePrinterStatus(){
+        viewModel.snackbarText.observe(viewLifecycleOwner,{
+            AlertUtils.showCustomAlertWithListenerWithOK(requireContext(), it.getContentIfNotHandled().toString()) { _, _ ->
+
+            }
+
+
+        })
     }
 
 }

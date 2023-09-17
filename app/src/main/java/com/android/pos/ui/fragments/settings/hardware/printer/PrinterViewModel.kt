@@ -32,8 +32,8 @@ class PrinterViewModel @Inject constructor(
 
     private val TAG = "PrinterViewModel"
 
-    private val _snackbarText = MutableLiveData<Event<Any?>>()
-    val snackbarText: LiveData<Event<Any?>> = _snackbarText
+    private val _snackbarText = MutableLiveData<Event<String?>>()
+    val snackbarText: LiveData<Event<String?>> = _snackbarText
 
     private val _printerQueueDelete = MutableLiveData<Event<String>>()
     val printerQueueDeleteScenario:LiveData<Event<String>> = _printerQueueDelete
@@ -111,7 +111,7 @@ class PrinterViewModel @Inject constructor(
                     _showProgress.value = Event(true)
                 }
                 Status.ERROR -> {
-                    _snackbarText.value = Event(resource.message)
+                    _snackbarText.value = Event(resource.message.toString())
                     _showProgress.value = Event(false)
 
                 }
