@@ -64,6 +64,7 @@ import com.android.pos.utils.statusUtils.Status
 import com.android.pos.utils.workmanager.PrinterRefreshWorker
 import com.android.pos.utils.workmanager.ThreadPoolManager
 import com.android.pos.utils.workmanager.UploadWorker
+import com.android.pos.utils.workmanager.UploadWorker2
 import com.epson.epos2.ConnectionListener
 import com.epson.epos2.printer.Printer
 import com.epson.epos2.printer.PrinterStatusInfo
@@ -763,7 +764,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
             val uploadWorkRequest =
                 OneTimeWorkRequest.Builder(
-                    UploadWorker::class.java
+                    UploadWorker2::class.java
                 ).addTag(Constants.PRINTER_QUEUE_BACKGROUND)
                     .setInputData(data)
                     .build()
