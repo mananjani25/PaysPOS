@@ -187,9 +187,9 @@ class DineInFragment : Fragment() {
         }
         binding.layoutHeader.txthome.setOnClickListener {
 
-            dashBoardCategoryViewModel.cartModel = null
-            prefProvider.setValue(Constants.ORDER_TYPE, "")
-            prefProvider.setValue(Constants.ORDER_TYPE_NAME, "")
+//            dashBoardCategoryViewModel.cartModel = null
+//            prefProvider.setValue(Constants.ORDER_TYPE, "")
+//            prefProvider.setValue(Constants.ORDER_TYPE_NAME, "")
             findNavController().popBackStack()
         }
         binding.layoutHeader.imgDrawer.setOnClickListener {
