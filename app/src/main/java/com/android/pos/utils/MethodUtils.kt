@@ -392,18 +392,6 @@ class MethodUtils {
             return prefProvider.getValueboolean(Constants.CASHDIS_SURCHARGEENABLE, false)
         }
 
-        fun getLatestCashDiscountOrSurCharge(totalAmount: Double, prefProvider: PrefProvider, context: Context): Double{
-            return if (isEnableCashDiscount(context)) {
-                roundOffAmountDouble(calculateCashDiscount(
-                    totalAmount,
-                    prefProvider,
-                    context
-                ))
-            } else {
-                0.0
-            }
-        }
-
         fun calculateCashDiscount(
             finalAmount: Double,
             prefProvider: PrefProvider,

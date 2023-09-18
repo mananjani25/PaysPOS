@@ -542,9 +542,6 @@ class TransactionDetailsFragment : Fragment() {
     }
 
     private fun tipCall(isCard: Boolean) {
-        if (isCard && prefProvider.getValue(Constants.OPTION_TYPE, "CashDiscount") == "SurCharge") {
-            tipAmount = MethodUtils.roundOffAmountDouble(tipAmount - MethodUtils.getLatestCashDiscountOrSurCharge(tipAmount, prefProvider, requireContext()))
-        }
         paymentDetailsResponse.data.let { viewModel.orderUpdateTip(it.id, tipAmount, isCard) }
     }
 

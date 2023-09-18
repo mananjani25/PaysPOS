@@ -504,9 +504,6 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
     }
 
     private fun tipCall(isCard: Boolean) {
-        if (isCard && prefProvider.getValue(Constants.OPTION_TYPE, "CashDiscount") == "SurCharge") {
-            tipAmount = MethodUtils.roundOffAmountDouble(tipAmount - MethodUtils.getLatestCashDiscountOrSurCharge(tipAmount, prefProvider, requireContext()))
-        }
         singleTransaction?.let { viewModel.orderUpdateTip(it.id, tipAmount, isCard) }
     }
 
