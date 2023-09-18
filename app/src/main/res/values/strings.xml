@@ -884,6 +884,7 @@
     <string name="hint_enter_your_gift_card_number">Enter Your Gift Card Number</string>
     <string name="hint_enter_your_gift_card_amount">Enter Your Gift Card Amount</string>
     <string name="msg_balance_inquiry_results">Balance Inquiry Results</string>
+    <string name="msg_remaining_balance">Remaining Balance</string>
     <string name="hint_gift_card_pin">Enter Gift Card PIN</string>
     <string name="lbl_check_balance">Check Balance</string>
     <string name="msg_insufficient_gift_card_balance">You have insufficient gift card balance, please proceed to pay with cash or card.</string>
