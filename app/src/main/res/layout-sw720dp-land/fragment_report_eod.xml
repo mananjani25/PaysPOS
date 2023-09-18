@@ -18,6 +18,7 @@
         android:orientation="vertical">
 
         <RelativeLayout
+            android:id="@+id/rlHeader"
             android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -53,7 +54,7 @@
                 android:layout_marginRight="@dimen/_10sdp"
                 android:gravity="center"
                 android:padding="@dimen/_4sdp"
-                android:text="@string/end_of_day_Report"
+                android:text="@string/order_sales_eport"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi" />
 
@@ -63,6 +64,7 @@
                 android:layout_alignParentEnd="true"
                 android:gravity="center"
                 android:orientation="horizontal"
+                android:visibility="gone"
                 tools:ignore="RelativeOverlap">
 
                 <TextView

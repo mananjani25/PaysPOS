@@ -122,7 +122,8 @@ import javax.inject.Inject
 import kotlin.math.abs
 
 @AndroidEntryPoint
-class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
+class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
+    AdapterView.OnItemSelectedListener {
 
     private var eodReportConfiguration: ShiftRportConfiguration? = null
     var eodReportData: EodReportResponse.Data? = null
@@ -193,6 +194,11 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        if (showHeader) {
+            binding.rlHeader.visibility = View.VISIBLE
+        } else {
+            binding.rlHeader.visibility = View.GONE
+        }
         try {
             eodReportSettings()
             initControls()

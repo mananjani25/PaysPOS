@@ -678,6 +678,7 @@
     <string name="employee_report">Employee Report</string>
     <string name="team_membet_report_summary">Employee Report Summary</string>
     <string name="end_of_day_Report">End of Day Report</string>
+    <string name="order_sales_eport">Order Sales report</string>
     <string name="other_details">Other Details</string>
     <string name="service_charge_details">Service Charge Details</string>
     <string name="tips_details">Tips Details</string>

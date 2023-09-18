@@ -82,7 +82,7 @@ class Reports : Fragment() {
 
         binding.txtEodReport.setOnClickListener {
             selectedPosition(2)
-            val frag: Fragment = ReportEODFragment()
+            val frag: Fragment = ReportEODFragment(showHeader = false)
             loadFragment(frag)
 
         }
