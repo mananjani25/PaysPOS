@@ -61,11 +61,12 @@ data class KeyValue(
             key?.trim().equals("Refund SC by Cash") -> {
                 showFormattedValueMinus()
             }
+            key?.trim().equals("Total Refunds") -> {
+                showFormattedValueMinus()
+            }
             else -> {
                 showFormattedValue()
             }
-
-
         }
 
 

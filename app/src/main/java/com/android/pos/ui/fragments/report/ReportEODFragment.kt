@@ -755,7 +755,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                     builder.addText(
                         padLine(
                             it.key,
-                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            it.showData(),
                             48
                         )
                     )
@@ -1028,7 +1028,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                     builder.addText(
                         padLine(
                             it.key,
-                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            it.showData(),
                             48
                         )
                     )
@@ -1166,7 +1166,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                     builder.addText(
                         padLine(
                             it.key,
-                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            it.showData(),
                             48
                         )
                     )
@@ -1229,7 +1229,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                     builder.addText(
                         padLine(
                             it.key,
-                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            it.showData(),
                             48
                         )
                     )
@@ -1292,7 +1292,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                     builder.addText(
                         padLine(
                             it.key,
-                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            it.showData(),
                             48
                         )
                     )
@@ -1354,7 +1354,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                     builder.addText(
                         padLine(
                             it.key,
-                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            it.showData(),
                             48
                         )
                     )
@@ -1416,7 +1416,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                     builder.addText(
                         padLine(
                             it.key,
-                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            it.showData(),
                             48
                         )
                     )
@@ -1943,7 +1943,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                     PrintSunmiUtils.orderTime(
                         padLine(
                             it.key,
-                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            it.showData(),
                             48
                         ).toString()
                     )
@@ -1966,7 +1966,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                     PrintSunmiUtils.orderTime(
                         padLine(
                             it.key,
-                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            it.showData(),
                             48
                         ).toString()
                     )
@@ -2049,7 +2049,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                     PrintSunmiUtils.orderTime(
                         padLine(
                             it.key,
-                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            it.showData(),
                             48
                         ).toString()
                     )
@@ -2098,7 +2098,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                     PrintSunmiUtils.orderTime(
                         padLine(
                             it.key,
-                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            it.showData(),
                             48
                         ).toString()
                     )
@@ -2116,7 +2116,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                     PrintSunmiUtils.orderTime(
                         padLine(
                             it.key,
-                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            it.showData(),
                             48
                         ).toString()
                     )
@@ -2135,7 +2135,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                     PrintSunmiUtils.orderTime(
                         padLine(
                             it.key,
-                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            it.showData(),
                             48
                         ).toString()
                     )
@@ -2153,7 +2153,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                     PrintSunmiUtils.orderTime(
                         padLine(
                             it.key,
-                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            it.showData(),
                             48
                         ).toString()
                     )
@@ -2170,7 +2170,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                     PrintSunmiUtils.orderTime(
                         padLine(
                             it.key,
-                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            it.showData(),
                             48
                         ).toString()
                     )
@@ -2422,7 +2422,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                     PrintSunmiUtils.normalText(
                         padLine(
                             it.key,
-                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            it.showData(),
                             48
                         ).toString()
                     )
@@ -2445,7 +2445,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                     PrintSunmiUtils.normalText(
                         padLine(
                             it.key,
-                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            it.showData(),
                             48
                         ).toString()
                     )
@@ -2528,7 +2528,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                     PrintSunmiUtils.normalText(
                         padLine(
                             it.key,
-                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            it.showData(),
                             48
                         ).toString()
                     )
@@ -2577,7 +2577,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                     PrintSunmiUtils.normalText(
                         padLine(
                             it.key,
-                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            it.showData(),
                             48
                         ).toString()
                     )
@@ -2595,7 +2595,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                     PrintSunmiUtils.normalText(
                         padLine(
                             it.key,
-                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            it.showData(),
                             48
                         ).toString()
                     )
@@ -2614,7 +2614,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                     PrintSunmiUtils.normalText(
                         padLine(
                             it.key,
-                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            it.showData(),
                             48
                         ).toString()
                     )
@@ -2632,7 +2632,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                     PrintSunmiUtils.normalText(
                         padLine(
                             it.key,
-                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            it.showData(),
                             48
                         ).toString()
                     )
@@ -2649,7 +2649,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                     PrintSunmiUtils.normalText(
                         padLine(
                             it.key,
-                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            it.showData(),
                             48
                         ).toString()
                     )
@@ -3111,9 +3111,6 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
 
                 eodReportData = it
 
-
-
-
                 Log.d(TAG, "BEFORE JOB: CALLED")
                 runOnUiThread(Runnable {
                 ProgressUtils.showProgressDialog(requireActivity())
@@ -3122,14 +3119,12 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                 updateData(it)
                 Handler(Looper.getMainLooper()).postDelayed(Runnable {
 
-
                     runOnUiThread(Runnable {
                     ProgressUtils.dismissProgressDialog()
                     })
 
 
                 }, 4000)
-
 
                 Log.d(TAG, "AFTER JOB: CALLED")
             }
