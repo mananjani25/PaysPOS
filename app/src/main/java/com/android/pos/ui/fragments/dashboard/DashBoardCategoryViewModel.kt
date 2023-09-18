@@ -5355,6 +5355,14 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         it1
                                     )
                                 }
+
+                                 if(it.settingData.data.loyaltyPrograms.isNotEmpty()) {
+                                     it.settingData.data.loyaltyPrograms.forEach {
+                                         if(it.isEnable && !it.isDeleted ) {
+                                             prefProvider.saveActiveLoyaltyData(it)
+                                         }
+                                     }
+                                 }
                                 if (it.settingData.data.cash_discounts.isNotEmpty()) {
                                     it.settingData.data.cash_discounts.forEach {
                                         if (it.is_active) {
