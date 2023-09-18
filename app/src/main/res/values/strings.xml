@@ -849,7 +849,7 @@
     <string name="toast_6">Bluetooth connect failed!</string>
     <string name="no_categories_available">No categories available</string>
     <string name="add_guest">Add Guest</string>
-    <string name="search_customer_by_name_amp_phone_number"><![CDATA[Search customer by name & phone number]]></string>
+    <string name="search_customer_by_name_amp_phone_number"><![CDATA[Search customer by name & phone number & email]]></string>
     <string name="select_your_order_type">Select your order type</string>
     <string name="phone_orders">Phone Orders</string>
     <string name="add_reason">Add Reason</string>
