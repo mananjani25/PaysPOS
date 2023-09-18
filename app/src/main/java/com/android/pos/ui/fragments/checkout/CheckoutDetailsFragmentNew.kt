@@ -292,6 +292,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     }
 
     private fun setUpManualCardFocusChanged() {
+        binding.edtCardNumber.transformationMethod = null
+        binding.edtMMYY.transformationMethod = null
         binding.edtCardNumber.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
 
