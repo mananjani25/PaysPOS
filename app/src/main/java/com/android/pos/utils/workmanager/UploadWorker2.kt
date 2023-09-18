@@ -17,6 +17,8 @@ import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.model.responseModel.GetKitchenReceiptSettingsResponse
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
+import com.android.pos.ui.activities.MainActivity
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.addDoubleDotLineForSunmiQueue
 import com.android.pos.utils.printGuestByItemForSunmiQueue
 import com.epson.epos2.ConnectionListener
@@ -90,8 +92,11 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
             isPrinterQueueEnable = inputData.getBoolean(Constants.IS_PRINTER_QUEUE_ENABLE, false)
 
 
+            if (isPrinterQueueEnable) {
+                connectActionCable()
+            }
 
-            connectActionCable()
+            connectActionCableSYNCSETTINGS()
 
         } catch (e: Exception) {
             e.printStackTrace()
@@ -147,10 +152,10 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                     } else {
 
                         runBlocking {
-                            Log.e(TAG,"callActionCalledRun 3")
+                            Log.e(TAG, "callActionCalledRun 3")
 
                             isQueueRunning = false
-                            currentOrderIndex=0
+                            currentOrderIndex = 0
                             currentPrinterIndex = 0
                             delay(2000)
 
@@ -472,9 +477,9 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                         runBlocking {
                             isQueueRunning = false
 
-                            currentOrderIndex=0
+                            currentOrderIndex = 0
                             currentPrinterIndex = 0
-                            Log.e(TAG,"callActionCalledRun 4")
+                            Log.e(TAG, "callActionCalledRun 4")
                             delay(2000)
 
                             val params = JsonObject()
@@ -493,9 +498,9 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
 
                     runBlocking {
 
-                        Log.e(TAG,"callActionCalledRun 5")
+                        Log.e(TAG, "callActionCalledRun 5")
                         isQueueRunning = false
-                        currentOrderIndex=0
+                        currentOrderIndex = 0
                         currentPrinterIndex = 0
                         delay(2000)
 
@@ -507,12 +512,12 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
 
                 }
 
-            }else{
+            } else {
 
                 runBlocking {
-                    Log.e(TAG,"callActionCalledRun 6")
+                    Log.e(TAG, "callActionCalledRun 6")
                     isQueueRunning = false
-                    currentOrderIndex=0
+                    currentOrderIndex = 0
                     currentPrinterIndex = 0
                     delay(5000)
                     val params = JsonObject()
@@ -524,9 +529,9 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
 
         } else {
             runBlocking {
-                Log.e(TAG,"callActionCalledRun 6")
+                Log.e(TAG, "callActionCalledRun 6")
                 isQueueRunning = false
-                currentOrderIndex=0
+                currentOrderIndex = 0
                 currentPrinterIndex = 0
                 delay(5000)
                 val params = JsonObject()
@@ -741,7 +746,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
         var flagIsComplete: Boolean = false
 
         if (checkConnect(cloudPrinter)) {
-            Log.e(TAG,"checkCommitResultForCloud")
+            Log.e(TAG, "checkCommitResultForCloud")
             cloudPrinter.commitTransBuffer(object : ResultCallback {
                 override fun onComplete() {
                     //isQueueRunning = false
@@ -840,9 +845,9 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                     runBlocking {
 
 
-                        Log.e(TAG,"callActionCalledRun 1")
+                        Log.e(TAG, "callActionCalledRun 1")
                         isQueueRunning = false
-                        currentOrderIndex=0
+                        currentOrderIndex = 0
                         currentPrinterIndex = 0
                         delay(2000)
 
@@ -862,9 +867,9 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                 runBlocking {
 
 
-                    Log.e(TAG,"callActionCalledRun 2")
+                    Log.e(TAG, "callActionCalledRun 2")
                     isQueueRunning = false
-                    currentOrderIndex=0
+                    currentOrderIndex = 0
                     currentPrinterIndex = 0
                     delay(2000)
 
@@ -923,4 +928,86 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
         }
         return true
     }
+
+    fun connectActionCableSYNCSETTINGS() {
+        // 1. Setup
+        var requestURL =
+            baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3
+
+        Log.d("PrinterRefreshWorker", "requestURL = $requestURL")
+
+        val uri = URI(Constants.PRINTER_QUEUE_CONNECTION_URL_SNACKPOS)
+        consumer2 = ActionCable.createConsumer(uri)
+
+        Log.d("PrinterRefreshWorker", "uri = $uri")
+
+        // 2. Create subscription
+        val appearanceChannel = Channel("SyncChannel")
+        appearanceChannel.addParam("id", locationId)
+        // appearanceChannel.addParam("id",prefProvider.getValueInt(LOCATION_ID,0))
+        subscription2 = consumer2?.subscriptions?.create(appearanceChannel)
+
+        if (subscription2 != null) {
+            subscription2?.onConnected {
+                Log.e(TAG2, "onActionConnected")
+                val params = JsonObject()
+                params.addProperty("location_id", locationId)
+                //  params.addProperty("url", requestURL)
+                subscription2?.perform("received", params)
+            }?.onRejected {
+                Log.e(TAG2, "onRejected")
+
+            }?.onReceived {
+                Log.e(TAG2, "onReceived  " + Gson().toJson(it))
+
+                handleUpdatedData(it)
+
+
+            }?.onDisconnected {
+                Log.e(TAG2, "onDisconnected")
+                val params = JsonObject()
+                params.addProperty("location_id", locationId)
+                //  params.addProperty("url", requestURL)
+                subscription2?.perform("received", params)
+
+            }?.onFailed {
+                val params = JsonObject()
+                LogUtil.logE(TAG2, "onFaied")
+                params.addProperty("location_id", locationId)
+                //  params.addProperty("url", requestURL)
+                subscription2?.perform("received", params)
+            }
+        }
+
+
+        // 3. Establish connection
+        consumer2?.connect()
+
+
+    }
+
+    private fun handleUpdatedData(it: JsonElement) {
+
+        try {
+            if (it.asJsonObject.has("setting_data")) {
+
+                val setting_data = it.asJsonObject.get("setting_data")
+                Log.e(TAG2, "call setting_data API")
+
+                if (setting_data.toString() == "true") {
+                    if (com.android.pos.ui.fragments.settings.hardware.printer.Printer.updatePrinter == null) {
+
+                        MainActivity.updatePrinter?.updatePrinters()
+
+                    } else {
+                        com.android.pos.ui.fragments.settings.hardware.printer.Printer.updatePrinter?.updatePrinters()
+                    }
+
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(TAG2, "Exception")
+        }
+    }
+
 }

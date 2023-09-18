@@ -61,7 +61,6 @@ import com.android.pos.ui.fragments.settings.hardware.printer.UpdatePrinters
 import com.android.pos.utils.*
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.statusUtils.Status
-import com.android.pos.utils.workmanager.PrinterRefreshWorker
 import com.android.pos.utils.workmanager.ThreadPoolManager
 import com.android.pos.utils.workmanager.UploadWorker
 import com.android.pos.utils.workmanager.UploadWorker2
@@ -767,12 +766,6 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                     UploadWorker2::class.java
                 ).addTag(Constants.PRINTER_QUEUE_BACKGROUND)
                     .setInputData(data)
-                    .build()
-
-            val refreshWorkRequest =
-                OneTimeWorkRequest.Builder(
-                    PrinterRefreshWorker::class.java,
-                ).setInputData(data)
                     .build()
 
 

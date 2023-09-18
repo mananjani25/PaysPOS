@@ -32,7 +32,6 @@ import com.android.pos.utils.*
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.printer.PrinterClass
 import com.android.pos.utils.statusUtils.Status
-import com.android.pos.utils.workmanager.PrinterRefreshWorker
 import com.android.pos.utils.workmanager.UploadWorker
 import com.epson.eposprint.BatteryStatusChangeEventListener
 import com.epson.eposprint.Builder
