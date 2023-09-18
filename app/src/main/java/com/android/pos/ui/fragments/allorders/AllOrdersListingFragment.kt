@@ -2590,7 +2590,6 @@ class AllOrdersListingFragment(
         receiptModel: OnlineOrderResponseModel.Data,
         printType: String
     ) {
-        Log.e("orderdetails",receiptModel.toString());
         try {
 
             PrintSunmiUtils.fontSize(customerSettingModel.fonts)
@@ -4121,7 +4120,6 @@ class AllOrdersListingFragment(
                     )
                     builder.addTextAlign(Builder.ALIGN_CENTER)
 
-                    addBuilderTextForU220(builder, "Online Order")
                     addBuilderTextForU220(builder, orderData.orderTypeName.toString())
 
                     if ((orderData.orderType.equals(Constants.PHONE_ORDER, true) ||

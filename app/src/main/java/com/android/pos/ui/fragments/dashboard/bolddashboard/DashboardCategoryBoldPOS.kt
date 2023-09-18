@@ -1951,6 +1951,28 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     builder.addTextAlign(Builder.ALIGN_CENTER)
 
                     addBuilderTextForU220(builder, receiptModel?.order?.orderTypeName)
+
+                    if ((receiptModel.order.orderType.equals(Constants.PHONE_ORDER, true) ||
+                                receiptModel.order.orderType.equals("OnlineWebOrder", true) ||
+                                receiptModel.order.orderType.equals("Online Order", true) ||
+                                receiptModel.order.orderType.equals("OnlineOrder", true)) &&
+                        receiptModel.order.deliveryType != null
+                    ) {
+                        builder.addFeedLine(1)
+                        builder.addTextFont(Builder.FONT_E)
+                        builder.addTextLang(Builder.LANG_EN)
+                        builder.addTextSize(fontSizeH, fontSizeW)
+                        builder.addTextStyle(
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.TRUE,
+                            Builder.COLOR_1
+                        )
+                        builder.addTextAlign(Builder.ALIGN_CENTER)
+
+                        addBuilderTextForU220(builder, receiptModel?.order?.deliveryType)
+                        builder.addFeedLine(1)
+                    }
                 }
 
                 /* if (receiptModel?.order?.orderType.trim().lowercase() == "OpenOrder".trim()
@@ -2522,6 +2544,28 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     builder.addTextAlign(Builder.ALIGN_CENTER)
 
                     addBuilderText(builder, receiptModel?.order?.orderTypeName?.toString())
+
+
+                    if ((receiptModel.order.orderType.equals(Constants.PHONE_ORDER, true) ||
+                                receiptModel.order.orderType.equals("OnlineWebOrder", true) ||
+                                receiptModel.order.orderType.equals("Online Order", true) ||
+                                receiptModel.order.orderType.equals("OnlineOrder", true)) &&
+                        receiptModel.order.deliveryType != null
+                    ) {
+                        builder.addFeedLine(1)
+                        builder.addTextFont(Builder.FONT_E)
+                        builder.addTextLang(Builder.LANG_EN)
+                        builder.addTextSize(fontSizeH, fontSizeW)
+                        builder.addTextStyle(
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.TRUE,
+                            Builder.COLOR_1
+                        )
+                        builder.addTextAlign(Builder.ALIGN_CENTER)
+                        addBuilderText(builder, receiptModel.order.deliveryType?.toString())
+                        builder.addFeedLine(1)
+                    }
                 }
 
                 /* if (receiptModel?.order?.orderType.trim().lowercase() == "OpenOrder".trim()
@@ -2859,6 +2903,28 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     builder.addTextAlign(Builder.ALIGN_CENTER)
 
                     addBuilderText(builder, receiptModel?.order?.orderType.toString())
+
+                    if ((receiptModel.order.orderType.equals(Constants.PHONE_ORDER, true) ||
+                                receiptModel.order.orderType.equals("OnlineWebOrder", true) ||
+                                receiptModel.order.orderType.equals("Online Order", true) ||
+                                receiptModel.order.orderType.equals("OnlineOrder", true)) &&
+                        receiptModel.order.deliveryType != null
+                    ) {
+                        builder.addFeedLine(1)
+                        builder.addTextFont(Builder.FONT_E)
+                        builder.addTextLang(Builder.LANG_EN)
+                        builder.addTextSize(fontSizeH, fontSizeW)
+                        builder.addTextStyle(
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.TRUE,
+                            Builder.COLOR_1
+                        )
+                        builder.addTextAlign(Builder.ALIGN_CENTER)
+
+                        addBuilderText(builder, receiptModel?.order?.deliveryType.toString())
+                        builder.addFeedLine(1)
+                    }
                 }
 
                 /* if (receiptModel?.order?.orderType.trim().lowercase() == "OpenOrder".trim()
@@ -3216,6 +3282,17 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
             if (kitchenSettingModel.showOrderType) {
                 PrintSunmiUtils.printOrderType(receiptModel?.order?.orderTypeName?.toString())
+
+                if ((receiptModel.order.orderType.equals(Constants.PHONE_ORDER, true) ||
+                    receiptModel.order.orderType.equals("OnlineWebOrder", true) ||
+                    receiptModel.order.orderType.equals("Online Order", true) ||
+                    receiptModel.order.orderType.equals("OnlineOrder", true)) &&
+                    receiptModel.order.deliveryType != null
+                ) {
+                    SunmiPrinterApi.getInstance().lineWrap(1)
+                    PrintSunmiUtils.printOrderType(receiptModel.order.deliveryType)
+                    SunmiPrinterApi.getInstance().lineWrap(1)
+                }
             }
             //    PrintSunmiUtils.printOrderType(receiptModel?.order?.deliveryType.toString())
 
@@ -3372,6 +3449,15 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             if (kitchenSettingModel.showOrderType) {
 
                 PrintSunmiUtils.headerText(receiptModel?.order?.orderTypeName)
+
+                if ((receiptModel.order.orderType.equals(Constants.PHONE_ORDER, true) ||
+                            receiptModel.order.orderType.equals("OnlineWebOrder", true) ||
+                            receiptModel.order.orderType.equals("Online Order", true) ||
+                            receiptModel.order.orderType.equals("OnlineOrder", true)) &&
+                    receiptModel.order.deliveryType != null
+                ) {
+                    PrintSunmiUtils.headerText(receiptModel.order.deliveryType)
+                }
             }
             //   PrintSunmiUtils.headerText(receiptModel?.order?.deliveryType.toString())
 
