@@ -48,8 +48,8 @@ class LoginViewModel @Inject constructor(
     private val _data = MutableLiveData<Event<Boolean?>>()
     val data: LiveData<Event<Boolean?>> = _data
 
-    private val _dataCustomer = MutableLiveData<Event<Boolean?>>()
-    val dataCustomer: LiveData<Event<Boolean?>> = _dataCustomer
+    private val _dataCustomer = MutableLiveData<Event<TbCustomer>>()
+    val dataCustomer: LiveData<Event<TbCustomer>> = _dataCustomer
 
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
@@ -177,13 +177,17 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    fun createCustomer(addCustomerData: CreateCustomerRequestModel) {
+    fun createCustomer(addCustomerData: CreateCustomerRequestModel, customerID: Int = -1, isEdit: Boolean = false) {
 
         _showProgress.value = Event(true)
 
         viewModelScope.launch {
+            val resource = if (isEdit) {
+                posRepository.updateCustomer(customerID, addCustomerData)
+            } else {
 
-            val resource = posRepository.createCustomer(addCustomerData)
+                posRepository.createCustomer(addCustomerData)
+            }
             when (resource.status) {
                 Status.SUCCESS -> {
                     _showProgress.value = Event(false)
@@ -217,7 +221,7 @@ class LoginViewModel @Inject constructor(
                                     )
                                 }
 
-                                _dataCustomer.value = Event(true)
+                                _dataCustomer.value = Event(model)
 
                             }
                         } else {
