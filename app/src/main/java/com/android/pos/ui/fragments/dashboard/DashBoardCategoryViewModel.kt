@@ -5296,7 +5296,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     )
                                 }
 
-                                 if(it.settingData.data.loyaltyPrograms.isEmpty()) {
+                                 if(it.settingData.data.loyaltyPrograms.isNotEmpty()) {
                                      it.settingData.data.loyaltyPrograms.forEach {
                                          if(it.isEnable && !it.isDeleted ) {
                                              prefProvider.saveActiveLoyaltyData(it)
