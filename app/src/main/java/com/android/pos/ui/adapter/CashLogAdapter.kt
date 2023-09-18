@@ -42,7 +42,7 @@ class CashLogAdapter(val context: Context?, val prefProvider: PrefProvider) :
             if (item.reason.isNotEmpty()) {
                 binding.txtReason.text = item.reason
             } else {
-                binding.txtReason.text = "-"
+                binding.txtReason.text = "Refund Initiated"
             }
 
 
