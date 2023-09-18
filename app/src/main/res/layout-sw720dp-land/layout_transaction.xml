@@ -268,7 +268,7 @@
                     android:layout_gravity="center_vertical"
                     android:layout_marginEnd="@dimen/_5sdp"
                     android:background="@null"
-                    android:digits="@string/character_digits_String"
+                    android:digits="@string/character_digits_String_with_dot"
                     android:ellipsize="end"
                     android:fontFamily="@font/sf_pro_display_regular"
                     android:hint="@string/search_by_customer_name_order_id_receipt_id_amount"
