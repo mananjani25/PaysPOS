@@ -14,12 +14,15 @@
             name="viewModel"
             type="com.android.pos.ui.fragments.transactions.TransactionDetailsViewModel" />
     </data>
-
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
     <LinearLayout
         android:id="@+id/linearCompact"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/bg_color"
+        android:layout_alignParentTop="true"
         android:orientation="vertical">
 
         <LinearLayout
@@ -85,13 +88,13 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:background="@color/bg_color"
             android:orientation="horizontal">
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_weight="1.5"
                 android:orientation="vertical"
                 android:weightSum="2">
@@ -101,6 +104,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="@dimen/_7sdp"
+                    android:id="@+id/txtOrderDetails"
+                    android:layout_alignParentTop="true"
                     android:text="@{orderDetails.data.order.order_items.size > 1 ? `Order List ( `+orderDetails.data.order.order_items.size()+` Items )` : `Order List ( `+orderDetails.data.order.order_items.size()+` Item )` }"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi" />
@@ -108,12 +113,16 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
+                    android:id="@+id/viewLine1"
+                    android:layout_below="@+id/txtOrderDetails"
                     android:background="@color/view" />
 
                 <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/linearlayoutheader"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="1dp"
+                    android:layout_below="@+id/viewLine1"
                     android:layout_marginRight="0.5dp"
                     android:background="@color/grayBackgroundColor"
                     android:orientation="horizontal"
@@ -169,15 +178,18 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
+                    android:id="@+id/viewLine2"
+                    android:layout_below="@+id/linearlayoutheader"
                     android:background="@color/view" />
 
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvOrderItems"
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
+                    android:layout_height="@dimen/_132sdp"
                     android:layout_marginRight="0.5dp"
-                    android:layout_weight="2.1"
+                    android:layout_below="@+id/viewLine2"
+                    android:isScrollContainer="false"
                     android:background="@color/grayBackgroundColor"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:listitem="@layout/view_order_item_list" />
@@ -185,23 +197,28 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
+                    android:id="@+id/viewLine3"
+                    android:layout_below="@+id/rvOrderItems"
                     android:background="@color/view" />
 
                 <LinearLayout
                     android:id="@+id/linear_summary"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/_100sdp"
+                    android:layout_below="@id/viewLine3"
+                    android:layout_alignParentBottom="true"
+                    android:layout_height="@dimen/_94sdp"
                     android:orientation="horizontal"
                     android:weightSum="2">
 
                     <ScrollView
                         android:layout_width="0dp"
                         android:layout_weight="1"
+                        android:isScrollContainer="false"
                         android:layout_height="wrap_content">
 
                         <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
+                            android:layout_height="wrap_content"
                             android:layout_marginHorizontal="@dimen/_3sdp"
                             android:orientation="vertical">
 
@@ -556,9 +573,7 @@
                         android:layout_height="wrap_content"
                         android:background="@color/view" />
                 </LinearLayout>
-
-
-            </LinearLayout>
+            </RelativeLayout>
 
 
             <View
@@ -568,7 +583,7 @@
 
             <RelativeLayout
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_weight="1.3">
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -591,8 +606,7 @@
                 <LinearLayout
                     android:id="@+id/liinear_info"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_above="@id/linear_paymentinfo"
+                    android:layout_height="@dimen/_150sdp"
                     android:layout_below="@id/view1"
                     android:background="@color/grayBackgroundColor"
                     android:orientation="vertical">
@@ -854,6 +868,8 @@
                     android:id="@+id/linear_paymentinfo"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/_94sdp"
+                    android:isScrollContainer="false"
+                    android:layout_below="@+id/liinear_info"
                     android:layout_alignParentBottom="true"
                     android:orientation="vertical">
 
@@ -1109,5 +1125,7 @@
         </LinearLayout>
 
 
+
     </LinearLayout>
+</RelativeLayout>
 </layout>
