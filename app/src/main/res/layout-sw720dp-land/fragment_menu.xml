@@ -293,6 +293,7 @@
                             android:layout_marginEnd="@dimen/_15sdp"
                             android:background="@drawable/menu_hover"
                             android:gravity="center"
+                            android:visibility="gone"
                             android:orientation="horizontal"
                             android:paddingVertical="@dimen/_8sdp">
 
