@@ -28,7 +28,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 
 @AndroidEntryPoint
-class LoyaltyPointFragment : Fragment() ,ItemCallback{
+class LoyaltyPointFragment : Fragment(), ItemCallback {
 
     private lateinit var binding: LoyaltyPointFragmentBinding
 
@@ -88,15 +88,17 @@ class LoyaltyPointFragment : Fragment() ,ItemCallback{
                         ProgressUtils.dismissProgressDialog()
                         binding.rvServiceCharge.visibility = View.VISIBLE
                         resource.data?.let { taxList ->
-                        Collections.reverse(taxList)
+                            Collections.reverse(taxList)
                             setTaxData(taxList)
                         }
                     }
+
                     Status.ERROR -> {
                         ProgressUtils.dismissProgressDialog()
                         binding.rvServiceCharge.visibility = View.VISIBLE
                         binding.root.showAlert(resource.message)
                     }
+
                     Status.LOADING -> {
                         ProgressUtils.showProgressDialog(requireActivity())
                         binding.rvServiceCharge.visibility = View.GONE
@@ -174,12 +176,17 @@ class LoyaltyPointFragment : Fragment() ,ItemCallback{
                         bundle
                     )
                 }
+
                 R.id.menu_delete -> {
                     position = pos
 
                     alert(
                         getString(R.string.app_name),
-                        getString(R.string.delete_loyalty_message)
+                        if (loyaltyPointAdapter.getItem(pos).isEnable) {
+                            getString(R.string.delete_active_loyalty_message)
+                        } else {
+                            getString(R.string.delete_loyalty_message)
+                        }
                     ) {
                         positiveButton(getString(R.string.tv_delete)) {
                             // Do positive stuff here

@@ -162,11 +162,13 @@ class Notes : Fragment(), ItemCallback {
                             setTaxData(taxList)
                         }
                     }
+
                     Status.ERROR -> {
                         ProgressUtils.dismissProgressDialog()
                         binding.rvNoteLise.visibility = View.VISIBLE
                         binding.root.showAlert(resource.message)
                     }
+
                     Status.LOADING -> {
                         ProgressUtils.showProgressDialog(requireActivity())
                         binding.rvNoteLise.visibility = View.GONE
@@ -212,7 +214,7 @@ class Notes : Fragment(), ItemCallback {
     private fun setTaxData(taxList: List<NoteResponse.Data>) {
         taxList.sortedWith(compareBy { it.sort })
         Collections.reverse(taxList)
-        Log.d(TAG, "setTaxData: "+Gson().toJson(taxList))
+        Log.d(TAG, "setTaxData: " + Gson().toJson(taxList))
         noteListUpdateDelete = taxList as ArrayList<NoteResponse.Data>
         noteListadapter.apply {
             addNotes(taxList)
@@ -247,12 +249,17 @@ class Notes : Fragment(), ItemCallback {
                     //     var bundle= bundleOf()
                     findNavController().navigate(R.id.action_settings_to_createNote, bundle)
                 }
+
                 R.id.menu_delete -> {
                     position = pos
 
                     alert(
                         getString(R.string.app_name),
-                        getString(R.string.delete_note_message)
+                        if (noteListadapter.getItem(pos).isActive) {
+                            getString(R.string.delete_active_note_message)
+                        } else {
+                            getString(R.string.delete_note_message)
+                        }
                     ) {
                         positiveButton(getString(R.string.tv_delete)) {
                             // Do positive stuff here
