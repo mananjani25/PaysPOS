@@ -591,7 +591,7 @@ open class PaymentViewModel @Inject constructor(
                 orderAttributeRequestModel.cash_discount_or_surcharge = actual_CashDiscountSurCharge
                 orderAttributeRequestModel.cash_discount_type = cashdiscountType
 
-                orderAttributeRequestModel.totalAmount = totalPrice - actual_CashDiscountSurCharge
+                orderAttributeRequestModel.totalAmount = totalPrice
             } else {
                 orderAttributeRequestModel.cash_discount_or_surcharge = 0.0
                 orderAttributeRequestModel.cash_discount_type = ""

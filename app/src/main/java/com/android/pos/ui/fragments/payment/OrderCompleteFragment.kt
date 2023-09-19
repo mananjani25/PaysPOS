@@ -457,6 +457,28 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         }
         setLabelData()
 
+//        var finalAmt: Double = (receiptModel?.order?.subTotal
+//            ?: 0.0).plus(receiptModel?.order?.totalTaxAmount ?: 0.0)
+//            .plus(receiptModel?.order?.totalServiceCharges ?: 0.0).plus(
+//                receiptModel?.order?.payments?.get(
+//                    receiptModel?.order?.payments?.size?.minus(1) ?: 0
+//                )?.tips ?: 0.0
+//            )
+//
+//        if(receiptModel?.order?.payments?.get(0)?.isLoyaltyApplied == true && receiptModel?.order?.payments!![0].loyaltyUSedPoints != 0){
+//            finalAmt -= receiptModel?.order?.loyaltyAmount ?: 0.0
+//        }
+//
+//        if (receiptModel?.order?.cash_discount_type?.lowercase() == "CashDiscount".lowercase()) {
+//            finalAmt -= receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size?.minus(1) ?: 0)?.cash_discount_or_surcharge ?: 0.0
+//        } else if(receiptModel?.order?.cash_discount_type?.lowercase() == "SurCharge".lowercase()){
+//            finalAmt += receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size?.minus(1) ?: 0)?.cash_discount_or_surcharge ?: 0.0
+//        }
+//
+//        Log.d("3057", "onViewCreated: TOTAL PRICE = $finalAmt")
+//        Log.d("3057", "onViewCreated: PAID AMOUNT = $paidAmount")
+
+
         binding.edtEmail.setOnFocusChangeListener { v, hasFocus ->
             if (hasFocus) {
                 binding.edtEmail.setHint("")
@@ -7308,6 +7330,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                 receiptModel?.order?.payments?.size?.minus(1) ?: 0
                             )?.tips ?: 0.0
                         )
+
+                    if (receiptModel?.order?.payments?.isNotEmpty() == true) {
+                        if (receiptModel?.order?.payments?.get(0)?.isLoyaltyApplied == true && receiptModel?.order?.payments!![0].loyaltyUSedPoints != 0) {
+                            finalAmt -= receiptModel?.order?.loyaltyAmount ?: 0.0
+                        }
+                    }
+
                     //PLZCHECK
                     if (receiptModel?.order?.cash_discount_type?.lowercase() == "CashDiscount".lowercase()) {
                         builder.addText(
@@ -7358,6 +7387,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         )
 
                     totalfamount = finalAmt
+
+                    if (receiptModel?.order?.payments?.isNotEmpty() == true) {
+                        if (receiptModel?.order?.payments?.get(0)?.isLoyaltyApplied == true && receiptModel?.order?.payments!![0].loyaltyUSedPoints != 0) {
+                            finalAmt -= receiptModel?.order?.loyaltyAmount ?: 0.0
+                        }
+                    }
 
                     if (receiptModel?.order?.cash_discount_type?.lowercase() == "SurCharge".lowercase()) {
 
@@ -11490,6 +11525,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                 receiptModel?.order?.payments?.size?.minus(1) ?: 0
                             )?.tips ?: 0.0
                         )
+
+                    if (receiptModel?.order?.payments?.isNotEmpty() == true) {
+                        if (receiptModel?.order?.payments?.get(0)?.isLoyaltyApplied == true && receiptModel?.order?.payments!![0].loyaltyUSedPoints != 0) {
+                            finalAmt -= receiptModel?.order?.loyaltyAmount ?: 0.0
+                        }
+                    }
+
                     //PLZCHECK
                     if (receiptModel?.order?.cash_discount_type?.lowercase() == "CashDiscount".lowercase()) {
 
@@ -11535,6 +11577,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         )
 
                     totalfamount = finalAmt
+
+                    if (receiptModel?.order?.payments?.isNotEmpty() == true) {
+                        if (receiptModel?.order?.payments?.get(0)?.isLoyaltyApplied == true && receiptModel?.order?.payments!![0].loyaltyUSedPoints != 0) {
+                            finalAmt -= receiptModel?.order?.loyaltyAmount ?: 0.0
+                        }
+                    }
 
                     if (receiptModel?.order?.cash_discount_type?.lowercase() == "SurCharge".lowercase()) {
 
@@ -12147,6 +12195,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                 receiptModel?.order?.payments?.size?.minus(1) ?: 0
                             )?.tips ?: 0.0
                         )
+
+                    if (receiptModel?.order?.payments?.isNotEmpty() == true) {
+                        if (receiptModel?.order?.payments?.get(0)?.isLoyaltyApplied == true && receiptModel?.order?.payments!![0].loyaltyUSedPoints != 0) {
+                            finalAmt -= receiptModel?.order?.loyaltyAmount ?: 0.0
+                        }
+                    }
+
                     //PLZCHECK
                     if (receiptModel?.order?.cash_discount_type?.lowercase() == "CashDiscount".lowercase()) {
 
@@ -12192,6 +12247,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         )
 
                     totalfamount = finalAmt
+
+                    if (receiptModel?.order?.payments?.isNotEmpty() == true) {
+                        if (receiptModel?.order?.payments?.get(0)?.isLoyaltyApplied == true && receiptModel?.order?.payments!![0].loyaltyUSedPoints != 0) {
+                            finalAmt -= receiptModel?.order?.loyaltyAmount ?: 0.0
+                        }
+                    }
 
                     if (receiptModel?.order?.cash_discount_type?.lowercase() == "SurCharge".lowercase()) {
 
