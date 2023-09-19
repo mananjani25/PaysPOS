@@ -8227,11 +8227,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 )
 
                 builder.addText(
-                    "ReceiptID:" + giftCardReceiptModel?.gift_card?.id
-                /*"ReceiptID:" + giftCardReceiptModel?.gift_card?.payments?.get(
+                    //"ReceiptID:" + giftCardReceiptModel?.gift_card?.id
+                "ReceiptID:" + giftCardReceiptModel?.gift_card?.payments?.get(
                     giftCardReceiptModel?.gift_card?.payments?.size?.minus(1) ?: 0
                 )?.offline_id
-                */)
+                )
 
                 if (customerSettingModel.showTeam) {
                     builder.addTextLineSpace(30)
@@ -8328,12 +8328,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 Log.d("giftCardReceiptModel","model = ${Gson().toJson(giftCardReceiptModel)}")
                 builder.addText(
                     padLine(
-                        "ReceiptID:" + giftCardReceiptModel?.gift_card?.id,
-                        ""
-                        /*"ReceiptID:" + giftCardReceiptModel?.gift_card?.payments?.get(
+                        /*"ReceiptID:" + giftCardReceiptModel?.gift_card?.id,
+                        ""*/
+                        "ReceiptID:" + giftCardReceiptModel?.gift_card?.payments?.get(
                             giftCardReceiptModel?.gift_card?.payments?.size?.minus(1) ?: 0
                         )?.offline_id,
-                        ""*/,
+                        "",
                         if (customerSettingModel.fonts == LARGE) {
                             24
                         } else {
@@ -10868,10 +10868,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         if (customerSettingModel.fonts == LARGE) {
 
             PrintSunmiUtils.receiptID(
-                "ReceiptID:" + giftCardReceiptModel?.gift_card?.id
-                /*"ReceiptID:" + giftCardReceiptModel?.gift_card?.payments?.get(
+                //"ReceiptID:" + giftCardReceiptModel?.gift_card?.id
+                "ReceiptID:" + giftCardReceiptModel?.gift_card?.payments?.get(
                     giftCardReceiptModel?.gift_card?.payments?.size?.minus(1) ?: 0
-                )?.offline_id*/
+                )?.offline_id
             )
 
             if (customerSettingModel.showTeam) {
@@ -10909,12 +10909,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
             val str = padLine(
-                "ReceiptID:" + giftCardReceiptModel?.gift_card?.id
-                /*"ReceiptID:" + giftCardReceiptModel?.gift_card?.payments?.get(
+                //"ReceiptID:" + giftCardReceiptModel?.gift_card?.id
+                "ReceiptID:" + giftCardReceiptModel?.gift_card?.payments?.get(
                     giftCardReceiptModel?.gift_card?.payments?.size?.minus(
                         1
                     ) ?: 0
-                )?.offline_id*/,
+                )?.offline_id,
                 "",
                 if (customerSettingModel.fonts == LARGE) 23 else 48
             ).toString().trim()
@@ -12605,10 +12605,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             if (customerSettingModel.fonts == LARGE) {
 
                 PrintSunmiUtils.normalText(
-                     "ReceiptID:" + giftCardReceiptModel?.gift_card?.id
-                   /* "ReceiptID:" + giftCardReceiptModel?.gift_card?.payments?.get(
+                     //"ReceiptID:" + giftCardReceiptModel?.gift_card?.id
+                    "ReceiptID:" + giftCardReceiptModel?.gift_card?.payments?.get(
                         giftCardReceiptModel?.gift_card?.payments?.size?.minus(1) ?: 0
-                    )?.offline_id*/
+                    )?.offline_id
                 )
 
                 if (customerSettingModel.showTeam) {
@@ -12639,10 +12639,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             } else {
 
                 PrintSunmiUtils.normalText(
-                     "ReceiptID:" + giftCardReceiptModel?.gift_card?.id
-                 /*   "ReceiptID:" + giftCardReceiptModel?.gift_card?.payments?.get(
+                     //"ReceiptID:" + giftCardReceiptModel?.gift_card?.id
+                    "ReceiptID:" + giftCardReceiptModel?.gift_card?.payments?.get(
                         giftCardReceiptModel?.gift_card?.payments?.size?.minus(1) ?: 0
-                    )?.offline_id*/
+                    )?.offline_id
                 )
 
                 if (customerSettingModel.showTeam) {

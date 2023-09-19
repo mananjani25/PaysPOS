@@ -178,6 +178,16 @@ class TransactionAdapter(val viewModel: TransactionViewModel, val prefProvider: 
                 itemBinding.txtTransactionId.text = model.giftCardId.toString()
             }
 
+            if (model.payableType == GIFT_CARD_AMOUNT_TAB  || model.payableType == GIFT_CARD) {
+                if(model.offlineId != null && model.offlineId.isNotEmpty()) {
+                    itemBinding.txtReceiptId.text = model.offlineId
+                }
+            }else{
+                if(model.orderDetails.receiptId != null && model.orderDetails.receiptId.isNotEmpty()){
+                    itemBinding.txtReceiptId.text = model.orderDetails.receiptId
+                }
+            }
+
             itemBinding.executePendingBindings()
 
             itemBinding.txtTip.setOnClickListener {
