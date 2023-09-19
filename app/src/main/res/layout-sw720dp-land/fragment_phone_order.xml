@@ -98,6 +98,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_100sdp"
                 android:layout_marginEnd="@dimen/_100sdp"
+                android:paddingBottom="@dimen/_10sdp"
                 android:orientation="vertical">
 
                 <androidx.appcompat.widget.LinearLayoutCompat
