@@ -204,11 +204,11 @@
                     tools:text="" />
 
                 <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtReceiptId"
                     style="@style/CustomFontBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:alpha="0.6"
-                    android:text="@{`#`+itemSheetModel.orderDetails.receiptId == null ? `` : itemSheetModel.orderDetails.receiptId}"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/text_size_medium"
                     tools:text="$AAAAAAA" />
