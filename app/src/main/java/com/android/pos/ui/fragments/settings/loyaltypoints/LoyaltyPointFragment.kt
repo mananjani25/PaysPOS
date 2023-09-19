@@ -28,7 +28,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 
 @AndroidEntryPoint
-class LoyaltyPointFragment : Fragment(), ItemCallback {
+class LoyaltyPointFragment : Fragment() ,ItemCallback{
 
     private lateinit var binding: LoyaltyPointFragmentBinding
 
@@ -88,17 +88,15 @@ class LoyaltyPointFragment : Fragment(), ItemCallback {
                         ProgressUtils.dismissProgressDialog()
                         binding.rvServiceCharge.visibility = View.VISIBLE
                         resource.data?.let { taxList ->
-                            Collections.reverse(taxList)
+                        Collections.reverse(taxList)
                             setTaxData(taxList)
                         }
                     }
-
                     Status.ERROR -> {
                         ProgressUtils.dismissProgressDialog()
                         binding.rvServiceCharge.visibility = View.VISIBLE
                         binding.root.showAlert(resource.message)
                     }
-
                     Status.LOADING -> {
                         ProgressUtils.showProgressDialog(requireActivity())
                         binding.rvServiceCharge.visibility = View.GONE
@@ -176,7 +174,6 @@ class LoyaltyPointFragment : Fragment(), ItemCallback {
                         bundle
                     )
                 }
-
                 R.id.menu_delete -> {
                     position = pos
 
