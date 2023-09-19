@@ -18,7 +18,6 @@ import com.android.pos.data.model.responseModel.GetKitchenReceiptSettingsRespons
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.ui.activities.MainActivity
-import com.android.pos.utils.LogUtil
 import com.android.pos.utils.addDoubleDotLineForSunmiQueue
 import com.android.pos.utils.printGuestByItemForSunmiQueue
 import com.epson.epos2.ConnectionListener
@@ -956,6 +955,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                 subscription2?.perform("received", params)
             }?.onRejected {
                 Log.e(TAG2, "onRejected")
+                consumer2?.connect()
 
             }?.onReceived {
                 Log.e(TAG2, "onReceived  " + Gson().toJson(it))
@@ -965,17 +965,10 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
 
             }?.onDisconnected {
                 Log.e(TAG2, "onDisconnected")
-                val params = JsonObject()
-                params.addProperty("location_id", locationId)
-                //  params.addProperty("url", requestURL)
-                subscription2?.perform("received", params)
+                consumer2?.connect()
 
             }?.onFailed {
-                val params = JsonObject()
-                LogUtil.logE(TAG2, "onFaied")
-                params.addProperty("location_id", locationId)
-                //  params.addProperty("url", requestURL)
-                subscription2?.perform("received", params)
+                consumer2?.connect()
             }
         }
 
@@ -1003,6 +996,13 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                         com.android.pos.ui.fragments.settings.hardware.printer.Printer.updatePrinter?.updatePrinters()
                     }
 
+                }
+                else{
+
+                    if (it.asJsonObject.has("message")){
+
+                        sendNotification(it.asJsonObject.get("message").asString)
+                    }
                 }
             }
         } catch (e: Exception) {

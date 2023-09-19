@@ -57,6 +57,10 @@ class PrinterViewModel @Inject constructor(
     val orderTypes = posRepository.getORderTypesListDatabase()
 
 
+    suspend fun deleteAllKitchenPrinters(){
+        posRepository.deleteKitchenPrinters()
+    }
+
     fun printerList(): LiveData<com.android.pos.utils.statusUtils.Resource<List<PrinterResponse.Data.CustomerReceiptPrinters>>> {
         return posRepository.getPrinters()
     }

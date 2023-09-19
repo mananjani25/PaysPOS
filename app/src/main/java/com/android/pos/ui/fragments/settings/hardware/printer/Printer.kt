@@ -180,6 +180,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     ): View? {
         binding = FragmentPrinterBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
+        deleteAllPrinters()
         updatePrinter = this
         printerList = ArrayList()
 
@@ -195,6 +196,12 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
 
         return binding.root
+    }
+
+    private fun deleteAllPrinters() {
+        lifecycleScope.launch {
+            viewModel.deleteAllKitchenPrinters()
+        }
     }
 
 

@@ -117,10 +117,15 @@ class PosRepository @Inject constructor(
         networkCall = { apiHelperNew.getPrinterData(prefProvider.getValueInt(TERMINAL_ID, 0)) },
         saveCallResult = {
             appDatabase.printerDao().addCustomerPrinterList(it.data.customerReceiptPrinters)
-            it.data.kitchenReceiptPrinters?.let { it1 ->
-                appDatabase.printerDao().addKitchenPrinterList(
-                    it1
-                )
+            if (it.data.kitchenReceiptPrinters?.isEmpty() == true || it.data.kitchenReceiptPrinters?.size == 0) {
+                appDatabase.printerDao().deleteKitchenPrinters()
+
+            } else {
+                it.data.kitchenReceiptPrinters?.let { it1 ->
+                    appDatabase.printerDao().addKitchenPrinterList(
+                        it1
+                    )
+                }
             }
         }
 
@@ -148,7 +153,7 @@ class PosRepository @Inject constructor(
 
     )
 
-    suspend fun getKitchenPrintersList() =  appDatabase.printerDao().getKitchenPrinterList()
+    suspend fun getKitchenPrintersList() = appDatabase.printerDao().getKitchenPrinterList()
 
     suspend fun addWastageReasonInDb(wastageReasonsList: List<VenueDetailsResponse.Data.WastageReason>) {
         appDatabase.wastageReasonsDao().addAllWastageReasons(wastageReasonsList)
@@ -183,7 +188,7 @@ class PosRepository @Inject constructor(
     suspend fun deletePrinter(id: Int, status: String? = null) =
         apiHelperNew.deletePrinter(id, status)
 
-  suspend fun textPaySplit(id: Int) =
+    suspend fun textPaySplit(id: Int) =
         apiHelperNew.textPaySplit(id)
 
     suspend fun deleteQueuePrinter(id: Int) = apiHelperNew.deleteQueuePrinter(id)
@@ -539,8 +544,8 @@ class PosRepository @Inject constructor(
         performGetOperationDatabase(databaseQuery = { appDatabase.orderTypeDao().orderTypes })
 
 
-/*fun employeesTimeSheet(startDate: String, endDate: String, teamRoleId: String) =
-    performGetOperationNew(networkCall = { apiHelperNew.employeesTimeSheet(startDate, endDate, teamRoleId) })*/
+    /*fun employeesTimeSheet(startDate: String, endDate: String, teamRoleId: String) =
+        performGetOperationNew(networkCall = { apiHelperNew.employeesTimeSheet(startDate, endDate, teamRoleId) })*/
 
     suspend fun employeesTimeSheet(startDate: String, endDate: String, teamRoleId: String) =
         apiHelperNew.employeesTimeSheet(startDate, endDate, teamRoleId)
@@ -548,8 +553,8 @@ class PosRepository @Inject constructor(
     suspend fun employeesTimeSheetDetails(startDate: String, endDate: String, teamRoleId: String) =
         apiHelperNew.employeesTimeSheetDetails(startDate, endDate, teamRoleId)
 
-/*fun employeesTimeSheetDetails(startDate: String, endDate: String, teamId: String) =
-    performGetOperationNew(networkCall = { apiHelperNew.employeesTimeSheetDetails(startDate, endDate, teamId) })*/
+    /*fun employeesTimeSheetDetails(startDate: String, endDate: String, teamId: String) =
+        performGetOperationNew(networkCall = { apiHelperNew.employeesTimeSheetDetails(startDate, endDate, teamId) })*/
 
 
     fun customerList() = performGetOperation(
@@ -630,7 +635,9 @@ class PosRepository @Inject constructor(
         apiHelperNew.searchCustomers(query)
 
     fun searchEmployeesDatabase(query: String) =
-        performGetOperationDatabase(databaseQuery = { appDatabase.employeeDao().getEmployeeSearchResults(query) })
+        performGetOperationDatabase(databaseQuery = {
+            appDatabase.employeeDao().getEmployeeSearchResults(query)
+        })
 
     suspend fun deleteEmployeeDatabase(employeeId: Int) =
         appDatabase.employeeDao().deleteEmployeeById(employeeId)
@@ -1056,10 +1063,10 @@ class PosRepository @Inject constructor(
     ) =
         apiHelperNew.orderUpdateTip(orderId, customerId, is_captured, data)
 
-    suspend fun updateTipWithSignature(orderId: Int, signatureInBase64: String, tip: Double)=
+    suspend fun updateTipWithSignature(orderId: Int, signatureInBase64: String, tip: Double) =
         apiHelperNew.updateTipWithSignature(orderId, signatureInBase64, tip)
 
-    suspend fun updateTipWithSignatureFM(option: HashMap<String, Any>)=
+    suspend fun updateTipWithSignatureFM(option: HashMap<String, Any>) =
         apiHelperNew.updateTipWithSignatureFM(option)
 
     suspend fun updateKitchenFireStatus(
@@ -1137,7 +1144,8 @@ class PosRepository @Inject constructor(
         email: String
     ) =
         apiHelperNew.getReportEOD(startDate, endDate, terminalId, employee_id, email)
-   suspend fun getEmployeeTip(
+
+    suspend fun getEmployeeTip(
         startDate: String,
         endDate: String
     ) =
@@ -1188,7 +1196,13 @@ class PosRepository @Inject constructor(
     }
 
     fun orderCounts(startDate: String?, endDate: String?, isOpenOrder: Boolean) =
-        performGetOperationNew(networkCall = { apiHelperNew.orderCounts(startDate, endDate,isOpenOrder) })
+        performGetOperationNew(networkCall = {
+            apiHelperNew.orderCounts(
+                startDate,
+                endDate,
+                isOpenOrder
+            )
+        })
 
     fun onlineOrderCounts(startDate: String?, endDate: String?) =
         performGetOperationNew(networkCall = { apiHelperNew.onlineOrderCounts(startDate, endDate) })
