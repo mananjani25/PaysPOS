@@ -323,7 +323,7 @@ class PhoneOrderFragment : Fragment() {
                         data?.final_reward = selectedCustomer?.final_reward ?: 0
 
                         val phone = CreateCustomerRequestModel.Customer.Phone(
-                            id = selectedCustomer?.phones?.get(0)?.id ?: phoneId,
+                            id = if((selectedCustomer?.phones?.size ?: 0) > 0) {selectedCustomer?.phones?.get(0)?.id ?: phoneId} else {phoneId},
                             phone_number = binding.edtPhoneNo.text.toString().trim().replace(
                                 ("[\\D]").toRegex(),
                                 ""
