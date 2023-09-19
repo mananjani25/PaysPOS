@@ -47,21 +47,16 @@ class CategoriesListAdapter(private val isChoose: Boolean) :
                 } else {
                     binding.imageCheck.setImageResource(R.drawable.ic_uncheck_circle)
                 }
-                    //added by Nikita for BIS 1190
-                if(item.name == GIFT_CARD_CATEGORY) {
-                    binding.imageCheck.invisible()
-                } else {
-                    binding.imageCheck.visible()
-                }
-                //
             } else {
                 binding.imageCheck.setImageResource(R.drawable.ic_baseline_menu)
             }
 
-            if(item.name == GIFT_CARD_CATEGORY) {
-                binding.layoutMenu.imgOrderMenu.gone()
-            } else {
-                binding.layoutMenu.imgOrderMenu.visible()
+            if (!isChoose) {
+                if (item.name == GIFT_CARD_CATEGORY) {
+                    binding.layoutMenu.imgOrderMenu.gone()
+                } else {
+                    binding.layoutMenu.imgOrderMenu.visible()
+                }
             }
         }
 

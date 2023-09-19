@@ -290,7 +290,7 @@ class PosRepository @Inject constructor(
     }
 
     fun getCategoryListAll() =
-        performGetOperationDatabase(databaseQuery = { appDatabase.categoryDao().all() })
+        performGetOperationDatabase(databaseQuery = { appDatabase.categoryDao().allWithoutGiftCard() })
 
     fun getCategoryListIWCAll() = performGetOperationDatabase(databaseQuery = {
         appDatabase.categoryDao().allCatWithoutItem()
