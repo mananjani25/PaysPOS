@@ -13,6 +13,7 @@ import com.android.pos.data.remote.Constants.GIFT_CARD_CATEGORY
 import com.android.pos.databinding.ViewCategoryBinding
 import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.extensions.gone
+import com.android.pos.utils.extensions.invisible
 import com.android.pos.utils.extensions.setOnSingleClickListener
 import com.android.pos.utils.extensions.visible
 import java.util.*
@@ -46,6 +47,13 @@ class CategoriesListAdapter(private val isChoose: Boolean) :
                 } else {
                     binding.imageCheck.setImageResource(R.drawable.ic_uncheck_circle)
                 }
+                    //added by Nikita for BIS 1190
+                if(item.name == GIFT_CARD_CATEGORY) {
+                    binding.imageCheck.invisible()
+                } else {
+                    binding.imageCheck.visible()
+                }
+                //
             } else {
                 binding.imageCheck.setImageResource(R.drawable.ic_baseline_menu)
             }
