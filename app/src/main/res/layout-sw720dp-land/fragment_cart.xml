@@ -479,7 +479,7 @@
                                     android:gravity="start|center"
                                     android:layout_toStartOf="@+id/txtLoyaltyAmount"
                                     android:layout_marginEnd="@dimen/_2sdp"
-                                    android:text="@string/used_loyalty_amount"
+                                    android:text="@string/applied_loyalty_balance"
                                     android:textColor="@color/dark_gray"
                                     android:textSize="@dimen/_6mdpi"
                                     android:visibility="visible" />
@@ -494,7 +494,7 @@
                                     android:gravity="start"
                                     android:layout_toStartOf="@+id/txtLoyaltyAmount"
                                     android:layout_marginEnd="@dimen/_2sdp"
-                                    android:text="@string/used_loyalty_amount"
+                                    android:text="@string/applied_loyalty_balance"
                                     android:textColor="@color/dark_gray"
                                     android:textSize="@dimen/_6mdpi"
                                     android:visibility="gone" />
@@ -528,7 +528,7 @@
                                     android:layout_height="wrap_content"
                                     android:layout_alignParentStart="true"
                                     android:layout_marginStart="@dimen/_3sdp"
-                                    android:text="@string/used_loyalty_points"
+                                    android:text="@string/applied_loyalty_points"
                                     android:textColor="@color/dark_gray"
                                     android:textSize="@dimen/_6mdpi" />
 
