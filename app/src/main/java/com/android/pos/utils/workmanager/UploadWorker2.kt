@@ -980,6 +980,8 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
 
 
             }?.onDisconnected {
+
+
                 Log.e(TAG2, "onDisconnected")
                 consumer2?.connect()
 
