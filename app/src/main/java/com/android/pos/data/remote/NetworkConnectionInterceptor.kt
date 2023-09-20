@@ -5,14 +5,9 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
 import com.android.pos.R
-import com.android.pos.di.ApiModule
 import com.android.pos.utils.extensions.NoInternetException
-import okhttp3.HttpUrl
-import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.Interceptor
-import okhttp3.Request
 import okhttp3.Response
-import java.net.URISyntaxException
 
 
 class NetworkConnectionInterceptor(
@@ -25,8 +20,10 @@ class NetworkConnectionInterceptor(
     //hidden by zeeshan
     override fun intercept(chain: Interceptor.Chain): Response {
         if (!isInternetAvailable())
+            try {
 
-            throw NoInternetException(applicationContext.getString(R.string.no_internet))
+                throw NoInternetException(applicationContext.getString(R.string.no_internet))
+            }catch (e:Exception){e.printStackTrace()}
         return chain.proceed(chain.request())
     }
 

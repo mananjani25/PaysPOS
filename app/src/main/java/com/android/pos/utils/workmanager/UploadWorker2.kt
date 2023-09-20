@@ -5,6 +5,8 @@ import android.app.NotificationManager
 import android.content.Context
 import android.media.RingtoneManager
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.work.CoroutineWorker
@@ -91,6 +93,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
             isPrinterQueueEnable = inputData.getBoolean(Constants.IS_PRINTER_QUEUE_ENABLE, false)
 
 
+
             if (isPrinterQueueEnable) {
                 connectActionCable()
             }
@@ -130,6 +133,10 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                 subscription?.perform("received", params)
 
             }?.onRejected {
+                Log.e(TAG, "onRejected ")
+                Handler(Looper.getMainLooper()).postDelayed(Runnable {
+                    consumer?.connect()
+                }, 10000)
 
             }?.onReceived {
                 Log.e(TAG, "onActionReceived:  ${Gson().toJson(it)}")
@@ -177,8 +184,18 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
 
 
             }?.onDisconnected {
+                Log.e(TAG, "onDisconnected")
+
+                Handler(Looper.getMainLooper()).postDelayed(Runnable {
+                    consumer?.connect()
+                }, 6000)
 
             }?.onFailed {
+                Log.e(TAG, "onFailed")
+                Handler(Looper.getMainLooper()).postDelayed(Runnable {
+                    consumer?.connect()
+                }, 6000)
+
 
             }
 
@@ -495,19 +512,18 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                 } else {
                     //call action cable again here
 
-                    runBlocking {
 
-                        Log.e(TAG, "callActionCalledRun 5")
-                        isQueueRunning = false
-                        currentOrderIndex = 0
-                        currentPrinterIndex = 0
-                        delay(2000)
+                    Log.e(TAG, "callActionCalledRun 5")
+                    isQueueRunning = false
+                    currentOrderIndex = 0
+                    currentPrinterIndex = 0
 
-                        val params = JsonObject()
-                        params.addProperty("id", locationId)
-                        params.addProperty("url", baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3)
-                        subscription?.perform("received", params)
-                    }
+
+                    val params = JsonObject()
+                    params.addProperty("id", locationId)
+                    params.addProperty("url", baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3)
+                    subscription?.perform("received", params)
+
 
                 }
 
@@ -968,6 +984,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                 consumer2?.connect()
 
             }?.onFailed {
+                Log.e(TAG2, "onFailed")
                 consumer2?.connect()
             }
         }
@@ -996,10 +1013,9 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                         com.android.pos.ui.fragments.settings.hardware.printer.Printer.updatePrinter?.updatePrinters()
                     }
 
-                }
-                else{
+                } else {
 
-                    if (it.asJsonObject.has("message")){
+                    if (it.asJsonObject.has("message")) {
 
                         sendNotification(it.asJsonObject.get("message").asString)
                     }
