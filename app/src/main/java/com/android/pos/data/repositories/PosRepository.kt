@@ -116,7 +116,9 @@ class PosRepository @Inject constructor(
     },
         networkCall = { apiHelperNew.getPrinterData(prefProvider.getValueInt(TERMINAL_ID, 0)) },
         saveCallResult = {
-            appDatabase.printerDao().addCustomerPrinterList(it.data.customerReceiptPrinters)
+            if (it.data.customerReceiptPrinters?.isEmpty() == true || it.data.customerReceiptPrinters?.size == 0) {appDatabase.printerDao().deleteCustomerPrinters()}else {
+                appDatabase.printerDao().addCustomerPrinterList(it.data.customerReceiptPrinters)
+            }
             if (it.data.kitchenReceiptPrinters?.isEmpty() == true || it.data.kitchenReceiptPrinters?.size == 0) {
                 appDatabase.printerDao().deleteKitchenPrinters()
 
