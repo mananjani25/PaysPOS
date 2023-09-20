@@ -1009,6 +1009,8 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
 
 
             }?.onDisconnected {
+
+
                 Log.e(TAG2, "onDisconnected")
                 if (isInternetAvailable()){
                     consumer2?.connect()
