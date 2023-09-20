@@ -71,7 +71,9 @@ class GiftCardViewModel @Inject constructor(
                 card_number = "",
                 employee_id = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0),
                 magensa_response = "",
-                offline_id = "",
+                offline_id = MethodUtils.randomOfflineId(
+                    prefProvider.getValueInt(Constants.LOCATION_ID, -1).toString()
+                ),
                 payable_type = "GiftCard",
                 payment_type = "Cash",
                 sub_total = giftCardPurchaseAmount.toDouble(),
@@ -264,7 +266,9 @@ class GiftCardViewModel @Inject constructor(
                 card_number = "",
                 employee_id = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0),
                 magensa_response = "",
-                offline_id = "",
+                offline_id = MethodUtils.randomOfflineId(
+                    prefProvider.getValueInt(Constants.LOCATION_ID, -1).toString()
+                ),
                 payable_type = "GiftCardAmountTab",
                 payment_type = "Cash",
                 sub_total = giftCardPurchaseAmount.toDouble(),
