@@ -4,6 +4,8 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.media.RingtoneManager
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
@@ -95,10 +97,21 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
 
 
             if (isPrinterQueueEnable) {
-                connectActionCable()
+
+                if (isInternetAvailable()){
+                    connectActionCable()
+                }else {
+                    // show popup for network
+                    sendNotification("Please check your Network Connectivity.")
+                }
             }
 
-            connectActionCableSYNCSETTINGS()
+            if (isInternetAvailable()){
+                connectActionCableSYNCSETTINGS()
+            }else {
+                sendNotification("Please check your Network Connectivity.")
+            }
+
 
         } catch (e: Exception) {
             e.printStackTrace()
@@ -135,7 +148,11 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
             }?.onRejected {
                 Log.e(TAG, "onRejected ")
                 Handler(Looper.getMainLooper()).postDelayed(Runnable {
-                    consumer?.connect()
+                    if (isInternetAvailable()){
+                        consumer?.connect()
+                    }else {
+                        sendNotification("Please check your Network Connectivity.")
+                    }
                 }, 10000)
 
             }?.onReceived {
@@ -187,13 +204,21 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                 Log.e(TAG, "onDisconnected")
 
                 Handler(Looper.getMainLooper()).postDelayed(Runnable {
-                    consumer?.connect()
+                    if (isInternetAvailable()){
+                        consumer?.connect()
+                    }else {
+                        sendNotification("Please check your Network Connectivity.")
+                    }
                 }, 6000)
 
             }?.onFailed {
                 Log.e(TAG, "onFailed")
                 Handler(Looper.getMainLooper()).postDelayed(Runnable {
-                    consumer?.connect()
+                    if (isInternetAvailable()){
+                        consumer?.connect()
+                    }else {
+                        sendNotification("Please check your Network Connectivity.")
+                    }
                 }, 6000)
 
 
@@ -971,7 +996,11 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                 subscription2?.perform("received", params)
             }?.onRejected {
                 Log.e(TAG2, "onRejected")
-                consumer2?.connect()
+                if (isInternetAvailable()){
+                    consumer2?.connect()
+                }else {
+                    sendNotification("Please check your Network Connectivity.")
+                }
 
             }?.onReceived {
                 Log.e(TAG2, "onReceived  " + Gson().toJson(it))
@@ -981,11 +1010,20 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
 
             }?.onDisconnected {
                 Log.e(TAG2, "onDisconnected")
-                consumer2?.connect()
+                if (isInternetAvailable()){
+                    consumer2?.connect()
+                }else {
+                    sendNotification("Please check your Network Connectivity.")
+                }
 
             }?.onFailed {
                 Log.e(TAG2, "onFailed")
-                consumer2?.connect()
+                if (isInternetAvailable()){
+                    consumer2?.connect()
+                }else {
+                    sendNotification("Please check your Network Connectivity.")
+                }
+
             }
         }
 
@@ -1024,6 +1062,31 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
         } catch (e: Exception) {
             Log.e(TAG2, "Exception")
         }
+    }
+
+    private fun isInternetAvailable(): Boolean {
+        var result: Boolean
+        val connectivityManager =
+            applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+        connectivityManager.let {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                it.getNetworkCapabilities(connectivityManager.activeNetwork)?.apply {
+                    result = when {
+                        hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+                        hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+                        hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
+                        else -> false
+                    }
+                    return result
+                }
+            } else {
+                connectivityManager.activeNetworkInfo.also {
+                    return it != null && it.isConnected
+                }
+            }
+        }
+        return false
     }
 
 }

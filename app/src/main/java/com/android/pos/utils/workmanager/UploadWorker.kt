@@ -234,6 +234,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                         connectActionCable()
                     }else {
                         // show popup for network
+                        sendNotification("Please check your Network Connectivity.")
                     }
                 }
 
