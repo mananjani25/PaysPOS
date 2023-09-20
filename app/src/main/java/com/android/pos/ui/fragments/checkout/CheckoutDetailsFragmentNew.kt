@@ -1687,8 +1687,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             String.format("%.2f", totalServiceCharge / isSelectedCount).toDouble()
         totalTax = String.format("%.2f", totalTax / isSelectedCount).toDouble()
         totalDiscount = String.format("%.2f", totalDiscount / isSelectedCount).toDouble()
-        cashDiscountSurcharge =
-            String.format("%.2f", MethodUtils.getLatestCashDiscountOrSurCharge(WholetotalPrice, prefProvider, requireContext()) / isSelectedCount).toDouble()
+        cashDiscountSurcharge = if(prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD){
+            0.0
+        }else{
+            MethodUtils.getLatestCashDiscountOrSurCharge(WholetotalPrice, prefProvider, requireContext()) / isSelectedCount
+        }
         if (cashDiscountType == "CashDiscount") {
             paymentAmount -= cashDiscountSurcharge
         }
@@ -1747,8 +1750,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 String.format("%.2f", totalServiceCharge / isSelectedCount).toDouble()
             totalTax = String.format("%.2f", totalTax / isSelectedCount).toDouble()
             totalDiscount = String.format("%.2f", totalDiscount / isSelectedCount).toDouble()
-            cashDiscountSurcharge =
-                String.format("%.2f", MethodUtils.getLatestCashDiscountOrSurCharge(WholetotalPrice, prefProvider, requireContext()) / isSelectedCount).toDouble()
+            cashDiscountSurcharge = if(prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD){
+                0.0
+            }else{
+                MethodUtils.getLatestCashDiscountOrSurCharge(WholetotalPrice, prefProvider, requireContext()) / isSelectedCount
+            }
             paymentAmount = String.format("%.2f", WholetotalPrice / isSelectedCount).toDouble()
             Log.d(TAG, "paymentClick: cashDiscountSurcharge " + cashDiscountSurcharge)
             Log.d(TAG, "paymentClick: paymentAmount  " + paymentAmount)
@@ -1873,7 +1879,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 String.format("%.2f", totalServiceCharge / isSelectedCount).toDouble()
             totalTax = String.format("%.2f", totalTax / isSelectedCount).toDouble()
             totalDiscount = String.format("%.2f", totalDiscount / isSelectedCount).toDouble()
-            cashDiscountSurcharge = MethodUtils.getLatestCashDiscountOrSurCharge(WholetotalPrice / isSelectedCount, prefProvider, requireContext())
+            cashDiscountSurcharge = if(prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD){
+                0.0
+            }else{
+                MethodUtils.getLatestCashDiscountOrSurCharge(WholetotalPrice/isSelectedCount, prefProvider, requireContext())
+            }
             paymentAmount = String.format("%.2f", WholetotalPrice / isSelectedCount).toDouble()
             Log.d(TAG, "paymentClick: cashDiscountSurcharge " + cashDiscountSurcharge)
             Log.d(TAG, "paymentClick: paymentAmount  " + paymentAmount)
@@ -2298,8 +2308,14 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         } else {
             tipAmount = prefProvider.getValue(Constants.TIP, "").toDouble()
         }
-        cashDiscountSurcharge = MethodUtils.getLatestCashDiscountOrSurCharge(WholetotalPrice/isSelectedCount, prefProvider, requireContext())
-            prefProvider.setValue(
+
+        cashDiscountSurcharge = if(prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD){
+            0.0
+        }else{
+            MethodUtils.getLatestCashDiscountOrSurCharge(WholetotalPrice/isSelectedCount, prefProvider, requireContext())
+        }
+
+        prefProvider.setValue(
                 Constants.CASH_DISCOUNT_SURCHARGE,
                 String.format("%.2f", cashDiscountSurcharge)
         )
@@ -2480,7 +2496,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     private fun getCalCashDiscWithAmount(totalprice: Double, isCash: Boolean): Double {
         return if (isCash) {
-            if (cashDiscountType == "CashDiscount") {
+            if (cashDiscountType == "CashDiscount" && prefProvider.getValue(ORDER_TYPE, TAKEOUT) != GIFT_CARD) {
                 if (totalprice - MethodUtils.getLatestCashDiscountOrSurCharge(totalprice, prefProvider, requireContext()) < 0.0) {
                     0.0
                 } else {
@@ -2490,7 +2506,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 totalprice
             }
         } else {
-            if (cashDiscountType == "SurCharge") {
+            if (cashDiscountType == "SurCharge" && prefProvider.getValue(ORDER_TYPE, TAKEOUT) != GIFT_CARD) {
                 totalprice + MethodUtils.getLatestCashDiscountOrSurCharge(totalprice, prefProvider, requireContext())
             } else {
                 totalprice
@@ -2627,7 +2643,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         isSplitScreen = false
         binding.paymentLinearLayout.visibility = View.VISIBLE
         binding.splitLinearLayout.visibility = View.GONE
-        cashDiscountSurcharge = MethodUtils.getLatestCashDiscountOrSurCharge(WholetotalPrice/isSelectedCount, prefProvider, requireContext())
+        cashDiscountSurcharge = if(prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD){
+            0.0
+        }else{
+            MethodUtils.getLatestCashDiscountOrSurCharge(WholetotalPrice/isSelectedCount, prefProvider, requireContext())
+        }
     }
 
     private fun makePaymentCreditCard() {
