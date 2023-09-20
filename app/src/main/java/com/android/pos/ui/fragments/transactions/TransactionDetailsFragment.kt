@@ -80,6 +80,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class TransactionDetailsFragment : Fragment() {
 
+    private var isPrintCustomer = false
     private lateinit var binding: FragmentTransactionDetailsBinding
     private val viewModel by viewModels<TransactionDetailsViewModel>()
     private var isPrint: Boolean = false
@@ -233,6 +234,7 @@ class TransactionDetailsFragment : Fragment() {
         }
 
         binding.txtPrintReceipt.setOnClickListener {
+            isPrintCustomer = true
             getCustomerPrinters()
 
         }
@@ -1297,11 +1299,15 @@ class TransactionDetailsFragment : Fragment() {
                     if (it.data != null) {
                         val customerList = it.data
 
-                        customerList.forEach {
-                            if (it.status) {
-                                initPrinter(it, Constants.CUSTOMER)
+                        if(isPrintCustomer){
+                            isPrintCustomer = false
+                            customerList.forEach {
+                                if (it.status) {
+                                    initPrinter(it, Constants.CUSTOMER)
+                                }
                             }
                         }
+
                     }
                 }
 
@@ -1322,7 +1328,7 @@ class TransactionDetailsFragment : Fragment() {
                 Status.SUCCESS -> {
                      ProgressUtils.dismissProgressDialog()
                     if (it.data != null && isPrint == true) {
-
+                        isPrint = false
                         kitchenPrinterList = it.data
                         val remain = requireArguments().getDouble("remainingAmount")
 

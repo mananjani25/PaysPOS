@@ -111,6 +111,7 @@ class AllOrdersListingFragment(
 ) : Fragment(),
     OrderCallBack, StatusChangeEventListener {
 
+    private var isPrintCustomer = false
     private var isPrint = false
     var ordertypelist: ArrayList<TbOrderType> = arrayListOf()
     private var isEmployeeAtoZ: Boolean = false
@@ -1123,10 +1124,12 @@ class AllOrdersListingFragment(
             }
 
             Constants.PRINT_UNPAID -> {
+                isPrintCustomer = true
                 getCustomerPrinters(order, status)
             }
 
             Constants.PRINT_PAID -> {
+                isPrintCustomer = true
                 getCustomerPrinters(order, status)
             }
 
@@ -1164,13 +1167,17 @@ class AllOrdersListingFragment(
                     if (it.data != null) {
                         val customerList = it.data
 
-                        customerList.forEach {
-                            if (it.status) {
-                                initPrinter(it, Constants.CUSTOMER, order, type)
+                        if (isPrintCustomer == true) {
+                            isPrintCustomer = false
+                            customerList.forEach {
+                                if (it.status) {
+                                    initPrinter(it, Constants.CUSTOMER, order, type)
+                                }
+
+
                             }
-
-
                         }
+
 
 
                     }
