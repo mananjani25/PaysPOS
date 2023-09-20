@@ -111,6 +111,7 @@ class AllOrdersListingFragment(
 ) : Fragment(),
     OrderCallBack, StatusChangeEventListener {
 
+    private var isPrint = false
     var ordertypelist: ArrayList<TbOrderType> = arrayListOf()
     private var isEmployeeAtoZ: Boolean = false
     private var isStationAtoZ: Boolean = false
@@ -1148,6 +1149,7 @@ class AllOrdersListingFragment(
             }
 
             "REPRINT_KITCHEN_RECEIPT" -> {
+                isPrint = true
                 getKitchenPrinters(order)
             }
         }
@@ -3568,24 +3570,27 @@ class AllOrdersListingFragment(
             when (it.status) {
                 Status.SUCCESS -> {
                     ProgressUtils.dismissProgressDialog()
-                    it.data?.forEach {
-                        if (it.status && checkItemsforPrinterOnlineOrder(
-                                data.orderItems, it.printerCategories.toCollection(
-                                    arrayListOf()
+
+                    if (isPrint){
+                        isPrint = false
+                        it.data?.forEach {
+                            if (it.status && checkItemsforPrinterOnlineOrder(
+                                    data.orderItems, it.printerCategories.toCollection(
+                                        arrayListOf()
+                                    )
                                 )
-                            )
-                        ) {
+                            ) {
 
-                            initKitchenPrinter(
-                                it,
-                                Constants.KITCHEN,
-                                data
-                            )
-                        }
+                                Log.d("getKitchenPrinterList","getKitchenPrinterList mmm")
 
-                    }
+                                initKitchenPrinter(
+                                    it,
+                                    Constants.KITCHEN,
+                                    data
+                                )
 
-
+                            }
+                    } }
                 }
 
                 Status.LOADING -> {
@@ -3610,8 +3615,13 @@ class AllOrdersListingFragment(
     ) {
         if (data.name.startsWith(SUNMI_PRINTER, true)) {
 
-            SunmiPrinterApi.getInstance()
-                .setPrinter(SunmiPrinter.SunmiBlueToothPrinter, data.ipAddress)
+           try {
+               SunmiPrinterApi.getInstance()
+                   .setPrinter(SunmiPrinter.SunmiBlueToothPrinter, data.ipAddress)
+           }catch (e:Exception){
+               SunmiPrinterApi.getInstance()
+                   .setPrinter(SunmiPrinter.SunmiNetPrinter, data.ipAddress)
+           }
 
             if (!SunmiPrinterApi.getInstance().isConnected) {
                 SunmiPrinterApi.getInstance()
