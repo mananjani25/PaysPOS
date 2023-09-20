@@ -5,6 +5,8 @@ import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.media.RingtoneManager
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
@@ -228,10 +230,20 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                 Log.e(TAG, "isPrinterQueueEnable:  ${isPrinterQueueEnable}")
                 if (isPrinterQueueEnable) {
                     LogUtil.logE(TAG, "onActionCableStarts")
-                    connectActionCable()
+                    if (isInternetAvailable()){
+                        connectActionCable()
+                    }else {
+                        // show popup for network
+                    }
                 }
 
-                connectActionCableSYNCSETTINGS()
+                if (isInternetAvailable()){
+                    connectActionCableSYNCSETTINGS()
+                }else {
+                    // show popup for network
+                    sendNotification("Please check your Network Connectivity.")
+                }
+
 
             }
             return Result.success()
@@ -355,10 +367,16 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                         Context.MODE_PRIVATE
                     ).getBoolean(IS_MASTER_TERMINAL, false) == true
                 ) {
-                    subscription = consumer?.subscriptions?.create(appearanceChannel)
-                    val params = JsonObject()
-                    params.addProperty("id", locationId)
-                    subscription?.perform("received", params)
+
+                    if (isInternetAvailable()){
+                        subscription = consumer?.subscriptions?.create(appearanceChannel)
+                        val params = JsonObject()
+                        params.addProperty("id", locationId)
+                        subscription?.perform("received", params)
+                    }else {
+                        sendNotification("Please check your Network Connectivity.")
+                    }
+
                 }
             }?.onFailed {
                 LogUtil.logE(TAG, "onActiononFailed")
@@ -375,9 +393,14 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                         ).getBoolean(IS_MASTER_TERMINAL, false) == true
                     ) {
 
-                        sendNotification("Please check your Network Connectivity.")
+
                         try {
-                            consumer?.connect()
+                            if (isInternetAvailable()){
+                                consumer?.connect()
+                            }else {
+                                sendNotification("Please check your Network Connectivity.")
+                            }
+
 
                         } catch (e: Exception) {
                             e.printStackTrace()
@@ -3367,7 +3390,12 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
             consumer?.disconnect()
             isPrinterRunning = false
             delay(1000)
-            connectActionCable()
+            if (isInternetAvailable()){
+                connectActionCable()
+            }else{
+                sendNotification("Please check your Network Connectivity.")
+            }
+
 
             return
         }
@@ -4783,6 +4811,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
             }?.onFailed {
                 LogUtil.logE(TAG2, "onFailed")
+
             }
         }
 
@@ -4815,6 +4844,32 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
         } catch (e: Exception) {
             Log.e(TAG2, "Exception")
         }
+    }
+
+
+    private fun isInternetAvailable(): Boolean {
+        var result: Boolean
+        val connectivityManager =
+            applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+        connectivityManager.let {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                it.getNetworkCapabilities(connectivityManager.activeNetwork)?.apply {
+                    result = when {
+                        hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+                        hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+                        hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
+                        else -> false
+                    }
+                    return result
+                }
+            } else {
+                connectivityManager.activeNetworkInfo.also {
+                    return it != null && it.isConnected
+                }
+            }
+        }
+        return false
     }
 
 }
