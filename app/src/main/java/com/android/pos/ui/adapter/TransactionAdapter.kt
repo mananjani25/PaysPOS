@@ -240,11 +240,11 @@ class TransactionAdapter(val viewModel: TransactionViewModel, val prefProvider: 
                             (it.customer != null && it.customer.lastName != null && it.customer.lastName.lowercase(Locale.getDefault())
                                 .contains(charString.lowercase(Locale.getDefault()))) ||
                             (it.customer != null && it.customer.firstName != null && it.customer.lastName != null && (it.customer.firstName.lowercase(
-                                Locale.getDefault()) + " " + it.customer.lastName.lowercase())
+                                Locale.getDefault()) + " " + it.customer.lastName.lowercase(Locale.getDefault()))
                                 .contains(charString.lowercase(Locale.getDefault()))) ||
-                            it.employeeName != null && it.employeeName != null && it.employeeName.lowercase()
+                            it.employeeName != null && it.employeeName != null && it.employeeName.lowercase(Locale.getDefault())
                                 .contains(charString.lowercase(Locale.getDefault())) ||
-                            (it.orderDetails != null && it.orderDetails.receiptId != null && it.orderDetails.receiptId.lowercase()
+                            (it.orderDetails != null && it.orderDetails.receiptId != null && it.orderDetails.receiptId.lowercase(Locale.getDefault())
                                 .contains(charString.lowercase(Locale.getDefault()))) ||
                             String.format(context.getString(R.string.format), it.totalAmount)
                                 .contains(charString.lowercase(Locale.getDefault()))
