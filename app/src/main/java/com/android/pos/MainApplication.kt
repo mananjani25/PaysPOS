@@ -18,7 +18,6 @@ import com.google.firebase.FirebaseApp
 import com.pax.poslink.CommSetting
 import com.pax.poslink.LogSetting
 import com.pax.poslink.POSLinkAndroid
-import com.testfairy.TestFairy
 import com.zebra.scannercontrol.DCSScannerInfo
 import com.zebra.scannercontrol.SDKHandler
 import dagger.hilt.android.HiltAndroidApp
@@ -31,7 +30,7 @@ class MainApplication : Application() {
         super.onCreate()
         FirebaseApp.initializeApp(this)
         //bhumit.bhadani@bacancy.com = 10Ce70901@
-        TestFairy.begin(this, "SDK-SrnpgIU9"); // vishal.j.patel+103@bacancy.com/Pos@2022
+        //TestFairy.begin(this, "SDK-SrnpgIU9"); // vishal.j.patel+103@bacancy.com/Pos@2022
         instance = this
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
 
