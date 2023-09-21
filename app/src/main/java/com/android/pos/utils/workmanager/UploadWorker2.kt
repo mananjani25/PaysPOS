@@ -21,6 +21,7 @@ import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.model.responseModel.GetKitchenReceiptSettingsResponse
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.AUTH_TOKEN
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.utils.addDoubleDotLineForSunmiQueue
 import com.android.pos.utils.printGuestByItemForSunmiQueue
@@ -85,6 +86,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
     private var mContext: Context = context
     private var isPrinterRunning: Boolean = false
     private var printerBGRunning: Boolean = false
+    private var isCancelWork: Boolean = true
 
 
     override suspend fun doWork(): Result {
@@ -93,22 +95,35 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
             locationId = inputData.getInt("location_id", 0)
             baseUrl = inputData.getString("base_url").toString()
             isPrinterQueueEnable = inputData.getBoolean(Constants.IS_PRINTER_QUEUE_ENABLE, false)
+            isCancelWork = inputData.getBoolean("is_cancel_work", false)
 
 
+            Log.e(
+                TAG,
+                "checkIsCancelWork:  ${isCancelWork}  isPrinterQueueEnable  ${isPrinterQueueEnable}"
+            )
 
-            if (isPrinterQueueEnable) {
-
-                if (isInternetAvailable()){
+            if (isPrinterQueueEnable && mContext.getSharedPreferences(
+                    mContext.resources.getString(R.string.app_name),
+                    Context.MODE_PRIVATE
+                ).getString(AUTH_TOKEN, "")?.isEmpty() == false
+            ) {
+                Log.e(TAG, "checkIsdws")
+                if (isInternetAvailable()) {
                     connectActionCable()
-                }else {
+                } else {
                     // show popup for network
                     sendNotification("Please check your Network Connectivity.")
                 }
+            } else {
+                Log.e(TAG, "fsfkiwoorm")
+                consumer?.disconnect()
+                consumer?.subscriptions?.remove(subscription)
             }
 
-            if (isInternetAvailable()){
+            if (isInternetAvailable()) {
                 connectActionCableSYNCSETTINGS()
-            }else {
+            } else {
                 sendNotification("Please check your Network Connectivity.")
             }
 
@@ -143,82 +158,103 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                 val params = JsonObject()
                 params.addProperty("id", locationId)
                 params.addProperty("url", requestURL)
-                Log.e(TAG,"checkID 8: ${locationId}  checkURL 8:  ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}")
+                Log.e(
+                    TAG,
+                    "checkID 8: ${locationId}  checkURL 8:  ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}"
+                )
                 subscription?.perform("received", params)
 
             }?.onRejected {
                 Log.e(TAG, "onRejected ")
                 Handler(Looper.getMainLooper()).postDelayed(Runnable {
-                    if (isInternetAvailable()){
+                    if (isInternetAvailable()) {
                         consumer?.connect()
-                    }else {
+                    } else {
                         sendNotification("Please check your Network Connectivity.")
                     }
                 }, 10000)
 
             }?.onReceived {
                 Log.e(TAG, "onActionReceived:  ${Gson().toJson(it)}")
+                Log.e(TAG, "onActionReceived checkCancelWeok:  ${isCancelWork}")
+
+                if (mContext.getSharedPreferences(
+                        mContext.resources.getString(R.string.app_name),
+                        Context.MODE_PRIVATE
+                    ).getString(AUTH_TOKEN, "")?.isEmpty() == true
+                ) {
+                    Log.e(TAG, "checkCancelWork")
+                    consumer?.disconnect()
+                } else {
+
+                    if (it != null && isQueueRunning == false) {
+                        isQueueRunning = true
+                        listOfPrintersData.clear()
+                        listOfPrintersData = arrayListOf()
+
+                        if (it.asJsonObject.has("printer_queue")) {
+                            isPrinterRunning = true
+                            globalPrinterQueue = it.asJsonObject.get("printer_queue")
+                            runBlocking {
+                                getQueueDataResponse(it.asJsonObject.get("printer_queue"))
+                            }
 
 
-                if (it != null && isQueueRunning == false) {
-                    isQueueRunning = true
-                    listOfPrintersData.clear()
-                    listOfPrintersData = arrayListOf()
+                        } else {
 
-                    if (it.asJsonObject.has("printer_queue")) {
-                        isPrinterRunning = true
-                        globalPrinterQueue = it.asJsonObject.get("printer_queue")
-                        runBlocking {
-                            getQueueDataResponse(it.asJsonObject.get("printer_queue"))
-                        }
+                            runBlocking {
+                                Log.e(TAG, "callActionCalledRun 3")
 
+                                isQueueRunning = false
+                                currentOrderIndex = 0
+                                currentPrinterIndex = 0
+                                delay(5000)
 
-                    } else {
+                                val params = JsonObject()
+                                params.addProperty("id", locationId)
+                                params.addProperty("url", requestURL)
+                                Log.e(TAG, "checkID: ${locationId}  checkURL:  ${requestURL}")
 
-                        runBlocking {
-                            Log.e(TAG, "callActionCalledRun 3")
+                                subscription?.perform("received", params)
 
-                            isQueueRunning = false
-                            currentOrderIndex = 0
-                            currentPrinterIndex = 0
-                            delay(5000)
-
-                            val params = JsonObject()
-                            params.addProperty("id", locationId)
-                            params.addProperty("url", requestURL)
-                            Log.e(TAG,"checkID: ${locationId}  checkURL:  ${requestURL}")
-                            subscription?.perform("received", params)
-                        }
+                            }
 
 
-                        /*val intent = Intent()
+                            /*val intent = Intent()
                     intent.putExtra(Constants.DATA, "")
                     intent.action = PRINTER_QUEUE_DATA_RECEIVED
                     mContext.sendBroadcast(intent)*/
 
 
-                    }
+                        }
 
+                    }
                 }
 
 
             }?.onDisconnected {
                 Log.e(TAG, "onDisconnected")
+                if (mContext.getSharedPreferences(
+                        mContext.resources.getString(R.string.app_name),
+                        Context.MODE_PRIVATE
+                    ).getString(AUTH_TOKEN, "")?.isEmpty() == false
+                ) {
 
-                Handler(Looper.getMainLooper()).postDelayed(Runnable {
-                    if (isInternetAvailable()){
-                        consumer?.connect()
-                    }else {
-                        sendNotification("Please check your Network Connectivity.")
-                    }
-                }, 6000)
+                    Handler(Looper.getMainLooper()).postDelayed(Runnable {
+                        if (isInternetAvailable()) {
+                            consumer?.connect()
+                        } else {
+                            sendNotification("Please check your Network Connectivity.")
+                        }
+                    }, 6000)
+                }
 
             }?.onFailed {
                 Log.e(TAG, "onFailed")
                 Handler(Looper.getMainLooper()).postDelayed(Runnable {
-                    if (isInternetAvailable()){
+                    if (isInternetAvailable()) {
                         consumer?.connect()
-                    }else {
+                    } else {
                         sendNotification("Please check your Network Connectivity.")
                     }
                 }, 6000)
@@ -230,7 +266,13 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
 
 
         // 3. Establish connection
-        consumer?.connect()
+        if (mContext.getSharedPreferences(
+                mContext.resources.getString(R.string.app_name),
+                Context.MODE_PRIVATE
+            ).getString(AUTH_TOKEN, "")?.isEmpty() == false
+        ) {
+            consumer?.connect()
+        }
 
     }
 
@@ -531,8 +573,13 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                                 "url",
                                 baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3
                             )
-                            Log.e(TAG,"checkID 2: ${locationId}  checkURL 2:  ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}")
+                            Log.e(
+                                TAG,
+                                "checkID 2: ${locationId}  checkURL 2:  ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}"
+                            )
+
                             subscription?.perform("received", params)
+
                         }
 
                     }
@@ -541,11 +588,10 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                     //call action cable again here
 
 
-
-                        Log.e(TAG, "callActionCalledRun 5")
-                        isQueueRunning = false
-                        currentOrderIndex = 0
-                        currentPrinterIndex = 0
+                    Log.e(TAG, "callActionCalledRun 5")
+                    isQueueRunning = false
+                    currentOrderIndex = 0
+                    currentPrinterIndex = 0
 
                     runBlocking {
                         delay(4000)
@@ -553,7 +599,10 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                         val params = JsonObject()
                         params.addProperty("id", locationId)
                         params.addProperty("url", baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3)
-                        Log.e(TAG,"checkID 3: ${locationId}  checkURL 3:  ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}")
+                        Log.e(
+                            TAG,
+                            "checkID 3: ${locationId}  checkURL 3:  ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}"
+                        )
                         subscription?.perform("received", params)
                     }
 
@@ -571,7 +620,10 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                     val params = JsonObject()
                     params.addProperty("id", locationId)
                     params.addProperty("url", baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3)
-                    Log.e(TAG,"checkID 4: ${locationId}  checkURL 4:  ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}")
+                    Log.e(
+                        TAG,
+                        "checkID 4: ${locationId}  checkURL 4:  ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}"
+                    )
                     subscription?.perform("received", params)
                 }
             }
@@ -586,7 +638,10 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                 val params = JsonObject()
                 params.addProperty("id", locationId)
                 params.addProperty("url", baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3)
-                Log.e(TAG,"checkID 5: ${locationId}  checkURL 5:  ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}")
+                Log.e(
+                    TAG,
+                    "checkID 5: ${locationId}  checkURL 5:  ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}"
+                )
                 subscription?.perform("received", params)
             }
         }
@@ -907,7 +962,10 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                             "url",
                             baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3
                         )
-                        Log.e(TAG,"checkID 6: ${locationId}  checkURL 6:  ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}")
+                        Log.e(
+                            TAG,
+                            "checkID 6: ${locationId}  checkURL 6:  ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}"
+                        )
                         subscription?.perform("received", params)
                     }
                 }
@@ -930,7 +988,10 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                         "url",
                         baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3
                     )
-                    Log.e(TAG,"checkID 7: ${locationId}  checkURL 7:  ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}")
+                    Log.e(
+                        TAG,
+                        "checkID 7: ${locationId}  checkURL 7:  ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}"
+                    )
                     subscription?.perform("received", params)
                 }
 
@@ -1008,9 +1069,9 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                 subscription2?.perform("received", params)
             }?.onRejected {
                 Log.e(TAG2, "onRejected")
-                if (isInternetAvailable()){
+                if (isInternetAvailable()) {
                     consumer2?.connect()
-                }else {
+                } else {
                     sendNotification("Please check your Network Connectivity.")
                 }
 
@@ -1024,17 +1085,17 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
 
 
                 Log.e(TAG2, "onDisconnected")
-                if (isInternetAvailable()){
+                if (isInternetAvailable()) {
                     consumer2?.connect()
-                }else {
+                } else {
                     sendNotification("Please check your Network Connectivity.")
                 }
 
             }?.onFailed {
                 Log.e(TAG2, "onFailed")
-                if (isInternetAvailable()){
+                if (isInternetAvailable()) {
                     consumer2?.connect()
-                }else {
+                } else {
                     sendNotification("Please check your Network Connectivity.")
                 }
 

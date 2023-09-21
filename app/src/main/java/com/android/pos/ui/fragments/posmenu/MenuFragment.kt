@@ -1,5 +1,6 @@
 package com.android.pos.ui.fragments.posmenu
 
+import android.annotation.SuppressLint
 import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,6 +11,10 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.work.Data
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkManager
 import com.android.pos.BuildConfig
 import com.android.pos.R
 import com.android.pos.data.remote.ApiService
@@ -29,6 +34,7 @@ import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.getCustomerDisplay
+import com.android.pos.utils.workmanager.UploadWorker2
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -115,12 +121,47 @@ class MenuFragment : DialogFragment() {
         observeShowProgress()
     }
 
+    @SuppressLint("RestrictedApi")
     private fun observeShowProgress() {
         viewModel.logout.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
 
+                    WorkManager.getInstance(requireActivity()).cancelAllWork()
+                    val data = Data.Builder()
+                        //.putString("kitchenPrinterList", Gson().toJson(kitchenPrinterList))
+                        // .put("kitchenSettingData", Gson().toJson(kitchenSettingModel))
+                        .put("location_id", prefProvider?.getValueInt(Constants.LOCATION_ID, 0))
+                        .put("base_url", prefProvider?.getValue(Constants.BASE_URL_NEW, ""))
+                        .put(
+                            Constants.IS_PRINTER_QUEUE_ENABLE, prefProvider?.getValueboolean(
+                                Constants.IS_PRINTER_QUEUE_ENABLE, false
+                            )
+                        )
+                        .put("is_cancel_work",true)
+                        .build()
 
+                    val uploadWorkRequest =
+                        OneTimeWorkRequest.Builder(
+                            UploadWorker2::class.java
+                        ).addTag(Constants.PRINTER_QUEUE_BACKGROUND)
+                            .setInputData(data)
+                            .build()
+
+
+                    val workManager = WorkManager.getInstance(requireContext())
+
+                    try {
+
+                        workManager.enqueueUniqueWork(
+                            Constants.PRINTER_QUEUE_BACKGROUND, ExistingWorkPolicy.REPLACE,
+                            uploadWorkRequest
+                        )
+
+                    } catch (e: java.lang.Exception) {
+
+                        e.printStackTrace()
+                    }
                     dashBoardCategoryViewModel.cartModel = null
                     viewModel.destroyedList = arrayListOf()
                     viewModel.clearTable()

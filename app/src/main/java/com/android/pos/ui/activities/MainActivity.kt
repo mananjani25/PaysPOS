@@ -62,7 +62,6 @@ import com.android.pos.utils.*
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.statusUtils.Status
 import com.android.pos.utils.workmanager.ThreadPoolManager
-import com.android.pos.utils.workmanager.UploadWorker
 import com.android.pos.utils.workmanager.UploadWorker2
 import com.epson.epos2.ConnectionListener
 import com.epson.epos2.printer.Printer
@@ -759,6 +758,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 .put("location_id", prefProvider?.getValueInt(LOCATION_ID, 0))
                 .put("base_url", prefProvider?.getValue(Constants.BASE_URL_NEW, ""))
                 .put(IS_PRINTER_QUEUE_ENABLE,prefProvider?.getValueboolean(IS_PRINTER_QUEUE_ENABLE,false))
+                .put("is_cancel_work",false)
                 .build()
 
             val uploadWorkRequest =
