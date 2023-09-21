@@ -174,13 +174,13 @@ class DineInFragment : Fragment() {
                 e.printStackTrace()
             }
         }
-        binding.layoutHeader.ivLock.setOnClickListener {
+       /* binding.layoutHeader.ivLock.setOnClickListener {
             try {
                 findNavController().navigate(R.id.action_dineInFragment_to_reportEODFragmeent)
             } catch (e: Exception) {
                 e.printStackTrace()
             }
-        }
+        }*/
         binding.layoutHeader.txtMerge.setOnClickListener {
             if (MethodUtils.isDoubleClick()) return@setOnClickListener
             loadFloorPlanDetails()
