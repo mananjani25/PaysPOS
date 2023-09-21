@@ -143,6 +143,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                 val params = JsonObject()
                 params.addProperty("id", locationId)
                 params.addProperty("url", requestURL)
+                Log.e(TAG,"checkID 8: ${locationId}  checkURL 8:  ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}")
                 subscription?.perform("received", params)
 
             }?.onRejected {
@@ -180,11 +181,12 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                             isQueueRunning = false
                             currentOrderIndex = 0
                             currentPrinterIndex = 0
-                            delay(2000)
+                            delay(5000)
 
                             val params = JsonObject()
                             params.addProperty("id", locationId)
                             params.addProperty("url", requestURL)
+                            Log.e(TAG,"checkID: ${locationId}  checkURL:  ${requestURL}")
                             subscription?.perform("received", params)
                         }
 
@@ -529,6 +531,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                                 "url",
                                 baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3
                             )
+                            Log.e(TAG,"checkID 2: ${locationId}  checkURL 2:  ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}")
                             subscription?.perform("received", params)
                         }
 
@@ -538,16 +541,21 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                     //call action cable again here
 
 
-                    Log.e(TAG, "callActionCalledRun 5")
-                    isQueueRunning = false
-                    currentOrderIndex = 0
-                    currentPrinterIndex = 0
 
+                        Log.e(TAG, "callActionCalledRun 5")
+                        isQueueRunning = false
+                        currentOrderIndex = 0
+                        currentPrinterIndex = 0
 
-                    val params = JsonObject()
-                    params.addProperty("id", locationId)
-                    params.addProperty("url", baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3)
-                    subscription?.perform("received", params)
+                    runBlocking {
+                        delay(4000)
+
+                        val params = JsonObject()
+                        params.addProperty("id", locationId)
+                        params.addProperty("url", baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3)
+                        Log.e(TAG,"checkID 3: ${locationId}  checkURL 3:  ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}")
+                        subscription?.perform("received", params)
+                    }
 
 
                 }
@@ -563,6 +571,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                     val params = JsonObject()
                     params.addProperty("id", locationId)
                     params.addProperty("url", baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3)
+                    Log.e(TAG,"checkID 4: ${locationId}  checkURL 4:  ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}")
                     subscription?.perform("received", params)
                 }
             }
@@ -577,6 +586,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                 val params = JsonObject()
                 params.addProperty("id", locationId)
                 params.addProperty("url", baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3)
+                Log.e(TAG,"checkID 5: ${locationId}  checkURL 5:  ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}")
                 subscription?.perform("received", params)
             }
         }
@@ -897,6 +907,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                             "url",
                             baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3
                         )
+                        Log.e(TAG,"checkID 6: ${locationId}  checkURL 6:  ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}")
                         subscription?.perform("received", params)
                     }
                 }
@@ -919,6 +930,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                         "url",
                         baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3
                     )
+                    Log.e(TAG,"checkID 7: ${locationId}  checkURL 7:  ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}")
                     subscription?.perform("received", params)
                 }
 
