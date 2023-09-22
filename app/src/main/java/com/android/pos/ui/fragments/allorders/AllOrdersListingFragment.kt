@@ -112,7 +112,6 @@ class AllOrdersListingFragment(
     OrderCallBack, StatusChangeEventListener {
 
     private var isPrintCustomer = false
-    private var isPrint = false
     var ordertypelist: ArrayList<TbOrderType> = arrayListOf()
     private var isEmployeeAtoZ: Boolean = false
     private var isStationAtoZ: Boolean = false
@@ -779,7 +778,7 @@ class AllOrdersListingFragment(
         val order = adapter.getItem(pos)
         when (status) {
             "accepted" -> {
-                isPrintAccepted = true
+                isPrint = true
                 if (findNavController().currentDestination?.id == R.id.allOrdersFragment) {
                     findNavController().navigate(
                         R.id.action_allOrders_to_addOnlneTime,
