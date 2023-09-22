@@ -7,6 +7,7 @@ import com.android.pos.MainApplication
 import com.android.pos.R
 import com.android.pos.data.model.SplitDetailListModel
 import com.android.pos.databinding.ViewSplitListBinding
+import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.MethodUtils.Companion.toPrecision
 
 class SplitListAdapter() : RecyclerView.Adapter<SplitListAdapter.MyViewHolder>() {
@@ -24,9 +25,9 @@ class SplitListAdapter() : RecyclerView.Adapter<SplitListAdapter.MyViewHolder>()
             binding.model = model
             binding.executePendingBindings()
             binding.txtSplitAmount.text =""+
-                MainApplication.getInstance()!!.getText(R.string.symbole) + list.get(bindingAdapterPosition).amount.toDouble().toPrecision(2)
+                MainApplication.getInstance()!!.getText(R.string.symbole) + MethodUtils.roundOffAmountString(list.get(bindingAdapterPosition).amount)
             binding.txtRemainingAmount.text =
-                ""+MainApplication.getInstance()!!.getText(R.string.symbole) + list.get(bindingAdapterPosition).remainingAmt.toDouble().toPrecision(2)
+                ""+MainApplication.getInstance()!!.getText(R.string.symbole) + MethodUtils.roundOffAmountString(list.get(bindingAdapterPosition).remainingAmt)
             binding.txtTitle.text =
                 list[bindingAdapterPosition].title + " " + (bindingAdapterPosition + 1)
 
