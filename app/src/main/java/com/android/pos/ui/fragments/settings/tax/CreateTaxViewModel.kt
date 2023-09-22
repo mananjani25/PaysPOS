@@ -84,9 +84,11 @@ class CreateTaxViewModel @Inject constructor(
                 oldItemIds.forEach {
                     if (!itemIds.contains(it)) {
                         val item: TbItem? = posRepository.getSingleItem(it)
-                        tempTaxData = item?.taxes as ArrayList<TaxData>
-                        tempTaxData.removeIf { t-> t.id == tax.id }
-                        posRepository.updateTaxDataForItem(tempTaxData, it)
+                        if (item != null) {
+                            tempTaxData = item.taxes as ArrayList<TaxData> ?: arrayListOf()
+                            tempTaxData.removeIf { t -> t.id == tax.id }
+                            posRepository.updateTaxDataForItem(tempTaxData, it)
+                        }
                     }
                 }
 
@@ -94,14 +96,23 @@ class CreateTaxViewModel @Inject constructor(
                 itemIds.forEach {
                     if (!oldItemIds.contains(it)) {
                         val item: TbItem? = posRepository.getSingleItem(it)
-                        tempTaxData = (item?.taxes as ArrayList<TaxData>?)!!
-                        if (tempTaxData.isNotEmpty() && !tempTaxData.contains(element = tax)) {
-                            tempTaxData.add(tax)
-                            posRepository.updateTaxDataForItem(tempTaxData, it)
-                        } else {
-                            tempTaxData.add(tax)
+                        if (item != null) {
+                            tempTaxData = item.taxes as ArrayList<TaxData> ?: arrayListOf()
+                            if (!tempTaxData.contains(element = tax)) {
+                                tempTaxData.add(tax)
+                            }
                             posRepository.updateTaxDataForItem(tempTaxData, it)
                         }
+                    }
+                }
+
+                // Update Tax data in items if tax name or value is changed. (BIS-2667)
+                tax.itemIds.forEach {
+                    val item: TbItem? = posRepository.getSingleItem(it)
+                    if (item != null && !item.taxes.isNullOrEmpty()) {
+                        tempTaxData = item.taxes as ArrayList<TaxData> ?: arrayListOf()
+                        tempTaxData.add(tax)
+                        posRepository.updateTaxDataForItem(tempTaxData, it)
                     }
                 }
             } catch (e: Exception) {
@@ -173,7 +184,7 @@ class CreateTaxViewModel @Inject constructor(
             viewModelScope.launch {
                 val taxDataFromDb: TaxData? = taxServiceChargeRepository.getItemsListOfTax(taxId)
 
-                val oldItemIds: List<Int>? = taxDataFromDb?.itemIds
+                val oldItemIds: List<Int> = taxDataFromDb?.itemIds ?: arrayListOf()
                 if (isEdit) {
                     resource = taxServiceChargeRepository.updateTax(taxId, taxData)
                 } else {
@@ -203,9 +214,8 @@ class CreateTaxViewModel @Inject constructor(
                                          updatedAt = createTaxResponse.data.updatedAt
                                      )*/
 
-                                    if (oldItemIds != null) {
-                                        updateTaxDataInItem(tax, taxData.itemIds as ArrayList<Int>, oldItemIds)
-                                    }
+                                    updateTaxDataInItem(tax, taxData.itemIds as ArrayList<Int>, oldItemIds)
+
                                     taxServiceChargeRepository.createTaxDatabase(tax)
 
                                     itemIdsViewModel = ArrayList()
