@@ -153,6 +153,7 @@
                 android:layout_height="@dimen/_18sdp"
                 android:contentDescription="@string/clock"
                 android:layout_gravity="center_vertical"
+                android:layout_marginEnd="@dimen/_5sdp"
                 android:orientation="horizontal">
 
                 <ImageView
@@ -179,7 +180,7 @@
                     android:textSize="@dimen/_6mdpi" />
             </LinearLayout>
 
-            <View
+            <!--<View
                 android:layout_width="0.5dp"
                 android:layout_height="match_parent"
                 android:layout_marginVertical="@dimen/_5sdp"
@@ -195,7 +196,7 @@
                 android:layout_marginEnd="@dimen/_5sdp"
                 android:padding="@dimen/_4sdp"
                 android:src="@drawable/ic_lock"
-                app:tint="@color/txtColor" />
+                app:tint="@color/txtColor" />-->
 
 
             <!--  <TextView
