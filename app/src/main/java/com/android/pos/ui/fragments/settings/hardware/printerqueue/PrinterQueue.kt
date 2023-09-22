@@ -311,18 +311,14 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
                 .put("kitchenSettingData", Gson().toJson(kitchenSettingModel))
                 .put("location_id", prefProvider.getValueInt(LOCATION_ID, 0))
                 .put("base_url", prefProvider.getValue(Constants.BASE_URL_NEW, ""))
+                .put(Constants.IS_PRINTER_QUEUE_ENABLE,prefProvider?.getValueboolean(Constants.IS_PRINTER_QUEUE_ENABLE,false))
                 .build()
-
-
-            /*val uploadWorkRequest =
-                OneTimeWorkRequest.Builder(UploadWorker::class.java).setInputData(data).build()*/
 
 
             val uploadWorkRequest =
                 PeriodicWorkRequest.Builder(UploadWorker::class.java, 5, TimeUnit.SECONDS)
                     .setInputData(data)
                     .build()
-
 
             val workManager = WorkManager.getInstance(requireActivity().applicationContext)
             try {
@@ -333,6 +329,8 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
                     ExistingPeriodicWorkPolicy.REPLACE,
                     uploadWorkRequest
                 )
+
+
             } catch (e: java.lang.Exception) {
                 LogUtil.logE(TAG, "printerQueueLog  ${e.message.toString()}")
                 e.printStackTrace()

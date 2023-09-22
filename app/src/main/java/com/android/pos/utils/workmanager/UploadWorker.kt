@@ -5,6 +5,8 @@ import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.media.RingtoneManager
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
@@ -23,8 +25,10 @@ import com.android.pos.data.remote.Constants.DELETE_QUEUE_ORDER_PHASE3
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.DINE_IN_SPACE
 import com.android.pos.data.remote.Constants.IS_MASTER_TERMINAL
+import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.android.pos.data.remote.Constants.PRINTER_QUEUE_CONNECTION_URL_SNACKPOS
 import com.android.pos.data.remote.Constants.createCloudPrinterWithName
+import com.android.pos.ui.activities.MainActivity
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.addBuilderText
 import com.android.pos.utils.addDoubleDotLineForSunmiQueue
@@ -76,9 +80,12 @@ import java.time.format.DateTimeFormatter
 class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters) :
     CoroutineWorker(context, params), StatusChangeListener, ReceiveListener, ConnectionListener,
     ResultCallback {
+    private var isPrinterQueueEnable: Boolean = false
+    private var currentCloudPrinter: CloudPrinter? = null
     private var printerQueueData: Boolean = false
     private var globalPrinterQueue: JsonElement? = null
     private val TAG = UploadWorker::class.java.name
+    private val TAG2 = "SYNCSETTINGS"
     private var isConnectedU220: Boolean = false
     val printerQueueModel: PrinterQueueModel = PrinterQueueModel()
     private var printerObjList: HashMap<String, Any> = hashMapOf()
@@ -93,7 +100,9 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
     val mgr = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
     private var subscription: Subscription? = null
+    private var subscription2: Subscription? = null
     private var consumer: Consumer? = null
+    private var consumer2: Consumer? = null
     private var locationId: Int = 0
     private var baseUrl = ""
     private var kitchenPrinterList: List<PrinterResponse.Data.KitchenReceiptPrinters> = listOf()
@@ -114,6 +123,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
                 locationId = inputData.getInt("location_id", 0)
                 baseUrl = inputData.getString("base_url").toString()
+                isPrinterQueueEnable = inputData.getBoolean(IS_PRINTER_QUEUE_ENABLE, false)
 
 
                 var serializeObjKitchenPrinters = mContext.getSharedPreferences(
@@ -217,8 +227,24 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
 
 
-                LogUtil.logE(TAG, "onActionCableStarts")
-                connectActionCable()
+                Log.e(TAG, "isPrinterQueueEnable:  ${isPrinterQueueEnable}")
+                if (isPrinterQueueEnable) {
+                    LogUtil.logE(TAG, "onActionCableStarts")
+                    if (isInternetAvailable()){
+                        connectActionCable()
+                    }else {
+                        // show popup for network
+                        sendNotification("Please check your Network Connectivity.")
+                    }
+                }
+
+                if (isInternetAvailable()){
+                    connectActionCableSYNCSETTINGS()
+                }else {
+                    // show popup for network
+                    sendNotification("Please check your Network Connectivity.")
+                }
+
 
             }
             return Result.success()
@@ -266,6 +292,10 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                 }
             }?.onReceived {
                 LogUtil.logE(TAG, "onActiononReceived  " + Gson().toJson(it))
+
+                Log.e(TAG,"ListOfORinteDataClear 22")
+                listOfPrintersData.clear()
+                listOfPrintersData = arrayListOf()
 
                 if (mContext.getSharedPreferences(
                         mContext.resources.getString(R.string.app_name),
@@ -338,10 +368,16 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                         Context.MODE_PRIVATE
                     ).getBoolean(IS_MASTER_TERMINAL, false) == true
                 ) {
-                    subscription = consumer?.subscriptions?.create(appearanceChannel)
-                    val params = JsonObject()
-                    params.addProperty("id", locationId)
-                    subscription?.perform("received", params)
+
+                    if (isInternetAvailable()){
+                        subscription = consumer?.subscriptions?.create(appearanceChannel)
+                        val params = JsonObject()
+                        params.addProperty("id", locationId)
+                        subscription?.perform("received", params)
+                    }else {
+                        sendNotification("Please check your Network Connectivity.")
+                    }
+
                 }
             }?.onFailed {
                 LogUtil.logE(TAG, "onActiononFailed")
@@ -358,11 +394,16 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                         ).getBoolean(IS_MASTER_TERMINAL, false) == true
                     ) {
 
-                        sendNotification("Please check your Network Connectivity.")
-                        try {
-                            consumer?.connect()
 
-                        }catch (e:Exception){
+                        try {
+                            if (isInternetAvailable()){
+                                consumer?.connect()
+                            }else {
+                                sendNotification("Please check your Network Connectivity.")
+                            }
+
+
+                        } catch (e: Exception) {
                             e.printStackTrace()
                         }
 
@@ -663,9 +704,6 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                     }
 
 
-                    delay(2000)
-                    listOfPrintersData.clear()
-                    listOfPrintersData = arrayListOf()
 
                     dataList.forEach {
 
@@ -893,10 +931,16 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                                     if (it.asJsonObject.has("customer_details")) {
 
                                         if (it.asJsonObject.get("customer_details").isJsonObject) {
-                                            var objCustomer = it.asJsonObject.get("customer_details").asJsonObject
-                                            modelOrder.customerName = objCustomer.get("first_name").asString+" "+objCustomer.get("last_name").asString
-                                            modelOrder.customerPhoneNo = objCustomer.get("mobile_number").asString
-                                            modelOrder.customerAddress = objCustomer.get("address").asString
+                                            var objCustomer =
+                                                it.asJsonObject.get("customer_details").asJsonObject
+                                            modelOrder.customerName =
+                                                objCustomer.get("first_name").asString + " " + objCustomer.get(
+                                                    "last_name"
+                                                ).asString
+                                            modelOrder.customerPhoneNo =
+                                                objCustomer.get("mobile_number").asString
+                                            modelOrder.customerAddress =
+                                                objCustomer.get("address").asString
 
                                         }
 
@@ -1072,8 +1116,8 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                 } else {
 
 
-                    listOfPrintersData.clear()
-                    listOfPrintersData = arrayListOf()
+                    Log.e(TAG, "ListOfORinteDataClear 11")
+
 
                     dataList.forEach {
 
@@ -1298,10 +1342,16 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                                     if (it.asJsonObject.has("customer_details")) {
 
                                         if (it.asJsonObject.get("customer_details").isJsonObject) {
-                                            var objCustomer = it.asJsonObject.get("customer_details").asJsonObject
-                                            modelOrder.customerName = objCustomer.get("first_name").asString+" "+objCustomer.get("last_name").asString
-                                            modelOrder.customerPhoneNo = objCustomer.get("mobile_number").asString
-                                            modelOrder.customerAddress = objCustomer.get("address").asString
+                                            var objCustomer =
+                                                it.asJsonObject.get("customer_details").asJsonObject
+                                            modelOrder.customerName =
+                                                objCustomer.get("first_name").asString + " " + objCustomer.get(
+                                                    "last_name"
+                                                ).asString
+                                            modelOrder.customerPhoneNo =
+                                                objCustomer.get("mobile_number").asString
+                                            modelOrder.customerAddress =
+                                                objCustomer.get("address").asString
 
                                         }
 
@@ -1334,6 +1384,10 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                     "checkFirstIndexdataAraay  ${listOfPrintersData.get(0).printerQueueModelList.size}"
                 )*/
 
+                    Log.e(
+                        TAG,
+                        "listOfPrintersDataStartCable:  ${Gson().toJson(listOfPrintersData)}"
+                    )
                     printerSize = listOfPrintersData.size
                     orderSize = listOfPrintersData.get(0).printerQueueModelList.size
 
@@ -1357,7 +1411,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                         if (orderSize != 0) {
 
                             sendDataToPrintToSunmi(
-                                listOfPrintersData,
+                                listOfPrintersDataIN = listOfPrintersData,
                                 currentPrinterIndex,
                                 printerObjList.get(listOfPrintersData[currentPrinterIndex].macAddress) as CloudPrinter?,
                                 listOfPrintersData.get(currentPrinterIndex).printerQueueModelList,
@@ -1720,7 +1774,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
     }
 
     private fun sendDataToPrintToSunmi(
-        listOfPrintersData: ArrayList<PrinterJSONElementData>,
+        listOfPrintersDataIN: ArrayList<PrinterJSONElementData>,
         currentPrinterIndexF: Int,
         cloudPrinter: CloudPrinter?,
         printerQueueModelList: ArrayList<PrinterQueueModel>,
@@ -1754,8 +1808,16 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                         Log.e(TAG, "checkFailed")
 
                         isQueueRunning = false
+                        Log.e(
+                            TAG,
+                            "CheckCurrentsewe   currentPrinterIndex:${currentPrinterIndexF}  listOfPrintersData:-${listOfPrintersData.size}"
+                        )
                         if (listOfPrintersData.size - 1 == currentPrinterIndex) {
-                            sendNotification("Printer - ${listOfPrintersData[currentPrinterIndex].modelName} is Offline.")
+                            if (currentCloudPrinter != null) {
+                                sendNotification("Printer - ${currentCloudPrinter?.cloudPrinterInfo?.name} is Offline.")
+                            } else {
+                                sendNotification("Printer - ${listOfPrintersData[currentPrinterIndexF].modelName} is Offline.")
+                            }
 
                             /*  Log.e(
                                   TAG,
@@ -1824,13 +1886,13 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                             }
 
                         } else if (listOfPrintersData.size - 1 > currentPrinterIndex) {
-                            sendNotification("Printer - ${listOfPrintersData[currentPrinterIndex].modelName} is Offline.")
-                            /* Log.e(
-                                 TAG,
-                                 "checkLog: ${currentPrinterIndex}  orderIndex: ${
-                                     listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size - 1
-                                 }  currentOrderInd: ${currentOrderIndex}"
-                             )*/
+                            sendNotification("Printer - ${listOfPrintersData[currentPrinterIndexF].modelName} is Offline.")
+                            Log.e(
+                                TAG,
+                                "checkLog: ${currentPrinterIndex}  orderIndex: ${
+                                    listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size - 1
+                                }  currentOrderInd: ${currentOrderIndex}"
+                            )
                             if (listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size - 1 == currentOrderIndex) {
 
 
@@ -2091,7 +2153,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                         Log.e(TAG, "checkFailed")
 
                         if (listOfPrintersData.size - 1 == currentPrinterIndex) {
-                            sendNotification("Printer - ${listOfPrintersData[currentPrinterIndex].modelName} is Offline.")
+                            sendNotification("Printer - ${listOfPrintersData[currentPrinterIndexF].modelName} is Offline.")
                             /*  Log.e(
                                   TAG,
                                   "listOfPrinerData:   ${listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size}"
@@ -2159,7 +2221,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                             }
 
                         } else if (listOfPrintersData.size - 1 > currentPrinterIndex) {
-                            sendNotification("Printer - ${listOfPrintersData[currentPrinterIndex].modelName} is Offline.")
+                            sendNotification("Printer - ${listOfPrintersData[currentPrinterIndexF].modelName} is Offline.")
                             /* Log.e(
                                  TAG,
                                  "checkLog: ${currentPrinterIndex}  orderIndex: ${
@@ -2415,7 +2477,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
 
             //delay(3000)
-            val params = JsonObject()
+            /*val params = JsonObject()
             params.addProperty("id", locationId)
             params.addProperty("url", baseUrl + CREATE_QUEUE_PRINTER_PHASE3)
             Log.e(
@@ -2423,20 +2485,21 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                 "checkReuestURL: ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}  locationID: ${locationId}"
             )
             subscription?.perform("received", params)
-
+*/
         }
 
     }
 
     private fun sendDataToCloudPrint(
         listOfPrintersData: ArrayList<PrinterJSONElementData>,
-        currentPrinterIndex: Int,
+        currentPrinterIndexIn: Int,
         cloudPrinter: CloudPrinter?,
         printerQueueModelList: ArrayList<PrinterQueueModel>,
         macAddress: String,
         currentOrderIndex: Int
     ) {
         isQueueRunning = true
+        currentCloudPrinter = cloudPrinter
         var obj = printerQueueModelList.get(currentOrderIndex)
         cloudPrinter?.lineFeed(1)
         cloudPrinter?.setUnderlineMode(UnderlineStyle.EMPTY)
@@ -2511,12 +2574,12 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
             }
         }
 
-        if (obj.orderNote.isNotEmpty()){
+        if (obj.orderNote.isNotEmpty()) {
 
             cloudPrinter?.lineFeed(1)
-            cloudPrinter?.setCharacterSize(2,1)
+            cloudPrinter?.setCharacterSize(2, 1)
             cloudPrinter?.setBoldMode(true)
-            cloudPrinter?.printText("Order Note:-"+obj.orderNote)
+            cloudPrinter?.printText("Order Note:-" + obj.orderNote)
         }
 
         Log.e(TAG, "customerName:  ${obj.customerName}")
@@ -2548,9 +2611,9 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
         )
 
         var isFirstTimeInfo = false
-        cloudPrinter?.getDeviceState {p0->
+        cloudPrinter?.getDeviceState { p0 ->
             Log.e(TAG, "cloudPrinterStatus:   ${Gson().toJson(p0)}")
-            if (isFirstTimeInfo==false) {
+            if (isFirstTimeInfo == false) {
                 isFirstTimeInfo = true
                 if (p0?.name.equals("OUT_PAPER", true) || p0?.name.equals(
                         "UNKNOWN",
@@ -2562,13 +2625,12 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                     cloudPrinter.release(mContext)
                     isQueueRunning = false
 
+
                     if (p0?.name.equals("OUT_PAPER", true)) {
                         try {
                             sendNotification(
                                 "Please fill the Paper in ${
-                                    listOfPrintersData.get(
-                                        currentPrinterIndex
-                                    ).modelName
+                                    cloudPrinter?.cloudPrinterInfo?.name
                                 }."
                             )
                         } catch (e: java.lang.Exception) {
@@ -2580,9 +2642,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                         try {
                             sendNotification(
                                 "Please close the cover of ${
-                                    listOfPrintersData.get(
-                                        currentPrinterIndex
-                                    ).modelName
+                                    cloudPrinter?.cloudPrinterInfo?.name
                                 }."
                             )
                         } catch (e: java.lang.Exception) {
@@ -2592,9 +2652,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                     } else if (p0?.name.equals("OUT_PAPER", true)) {
                         sendNotification(
                             "Please check the Printer- ${
-                                listOfPrintersData.get(
-                                    currentPrinterIndex
-                                ).modelName
+                                cloudPrinter?.cloudPrinterInfo?.name
                             }."
                         )
 
@@ -2606,9 +2664,11 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                             TAG,
                             "isPrinterquueRin ${isQueueRunning}  printerRnning  ${isPrinterRunning}"
                         )
-                        cloudPrinter.commitTransBuffer(
-                            this@UploadWorker
-                        )
+                        if (cloudPrinter.isConnected) {
+                            cloudPrinter.commitTransBuffer(
+                                this@UploadWorker
+                            )
+                        }
 
                     } catch (e: Exception) {
 
@@ -2621,7 +2681,6 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
             }
 
         }
-
 
 
     }
@@ -3332,7 +3391,12 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
             consumer?.disconnect()
             isPrinterRunning = false
             delay(1000)
-            connectActionCable()
+            if (isInternetAvailable()){
+                connectActionCable()
+            }else{
+                sendNotification("Please check your Network Connectivity.")
+            }
+
 
             return
         }
@@ -4449,16 +4513,43 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                      listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size - 1
                  }  currentOrderInd: ${currentOrderIndex}"
              )*/
-            Log.e(
-                TAG,
-                "cehckereCurrent  ${listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size}"
-            )
-            if (listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size - 1 == currentOrderIndex) {
 
 
-                currentOrderIndex = 0
-                currentPrinterIndex = currentPrinterIndex + 1
-                if (listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.isNotEmpty()) {
+            if (listOfPrintersData.isNotEmpty() && listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.isNotEmpty()) {
+                if (listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.size - 1 == currentOrderIndex) {
+
+
+                    currentOrderIndex = 0
+                    currentPrinterIndex = currentPrinterIndex + 1
+                    if (listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.isNotEmpty()) {
+                        runBlocking {
+                            sendDataToPrintToSunmi(
+                                listOfPrintersData,
+                                currentPrinterIndex,
+                                printerObjList.get(listOfPrintersData.get(currentPrinterIndex).macAddress) as CloudPrinter?,
+                                listOfPrintersData.get(currentPrinterIndex).printerQueueModelList,
+                                listOfPrintersData.get(currentPrinterIndex).macAddress,
+                                currentOrderIndex
+
+                            )
+                        }
+                    } else {
+                        runBlocking {
+                            delay(3000)
+                            val params = JsonObject()
+                            params.addProperty("id", locationId)
+                            params.addProperty("url", baseUrl + CREATE_QUEUE_PRINTER_PHASE3)
+                            Log.e(
+                                TAG,
+                                "checkReuestURL: ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}  locationID: ${locationId}"
+                            )
+                            subscription?.perform("received", params)
+                        }
+                    }
+
+                } else {
+
+                    currentOrderIndex = currentOrderIndex + 1
                     runBlocking {
                         sendDataToPrintToSunmi(
                             listOfPrintersData,
@@ -4470,6 +4561,45 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
                         )
                     }
+
+                }
+            } else {
+                if (listOfPrintersData.size - 1 < currentPrinterIndex) {
+
+                    Log.e(
+                        TAG,
+                        "checkListOfPRinter  ${Gson().toJson(listOfPrintersData)}  currentPrinterIndex: ${currentPrinterIndex}"
+                    )
+                    currentOrderIndex = 0
+                    currentPrinterIndex = currentPrinterIndex + 1
+
+                    if (listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.isNotEmpty()) {
+                        runBlocking {
+                            sendDataToPrintToSunmi(
+                                listOfPrintersData,
+                                currentPrinterIndex,
+                                printerObjList.get(listOfPrintersData.get(currentPrinterIndex).macAddress) as CloudPrinter?,
+                                listOfPrintersData.get(currentPrinterIndex).printerQueueModelList,
+                                listOfPrintersData.get(currentPrinterIndex).macAddress,
+                                currentOrderIndex
+
+                            )
+                        }
+                    } else {
+                        runBlocking {
+                            delay(3000)
+                            val params = JsonObject()
+                            params.addProperty("id", locationId)
+                            params.addProperty("url", baseUrl + CREATE_QUEUE_PRINTER_PHASE3)
+                            Log.e(
+                                TAG,
+                                "checkReuestURL: ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}  locationID: ${locationId}"
+                            )
+                            subscription?.perform("received", params)
+                        }
+                    }
+
+
                 } else {
                     runBlocking {
                         delay(3000)
@@ -4483,22 +4613,6 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                         subscription?.perform("received", params)
                     }
                 }
-
-            } else {
-
-                currentOrderIndex = currentOrderIndex + 1
-                runBlocking {
-                    sendDataToPrintToSunmi(
-                        listOfPrintersData,
-                        currentPrinterIndex,
-                        printerObjList.get(listOfPrintersData.get(currentPrinterIndex).macAddress) as CloudPrinter?,
-                        listOfPrintersData.get(currentPrinterIndex).printerQueueModelList,
-                        listOfPrintersData.get(currentPrinterIndex).macAddress,
-                        currentOrderIndex
-
-                    )
-                }
-
             }
 
         } else {
@@ -4545,29 +4659,48 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
 
             if (p0?.name.equals("UNKNOWN", true)) {
-                sendNotification("Printer - ${listOfPrintersData[currentPrinterIndex].modelName} is Offline.")
+                sendNotification(
+                    "Printer - ${
+                        listOfPrintersData.get(
+                            currentPrinterIndex
+                        ).modelName
+                    } is Offline."
+                )
 
 
             } else if (p0?.name.equals("OUT_PAPER", true)) {
 
+                if (currentCloudPrinter != null) {
+                    sendNotification(
+                        "Please fill the Paper in ${currentCloudPrinter?.cloudPrinterInfo?.name}."
+                    )
 
-                sendNotification(
-                    "Please fill the Paper in ${
-                        listOfPrintersData.get(
-                            currentPrinterIndex
-                        ).modelName
-                    }."
-                )
+                } else {
+
+                    sendNotification(
+                        "Please fill the Paper in ${
+                            listOfPrintersData.get(
+                                currentPrinterIndex
+                            ).modelName
+                        }."
+                    )
+                }
 
 
             } else if (p0?.name.equals("COVER", true)) {
-                sendNotification(
-                    "Please close the cover of ${
-                        listOfPrintersData.get(
-                            currentPrinterIndex
-                        ).modelName
-                    }."
-                )
+                if (currentCloudPrinter != null) {
+                    sendNotification(
+                        "Please close the cover of ${currentCloudPrinter?.cloudPrinterInfo?.name}."
+                    )
+                } else {
+                    sendNotification(
+                        "Please close the cover of ${
+                            listOfPrintersData.get(
+                                currentPrinterIndex
+                            ).modelName
+                        }."
+                    )
+                }
             }
 
 
@@ -4637,6 +4770,107 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
         }
 
 
+    }
+
+
+    suspend fun connectActionCableSYNCSETTINGS() {
+        // 1. Setup
+        var requestURL =
+            baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3
+
+        Log.d("PrinterRefreshWorker", "requestURL = $requestURL")
+
+        val uri = URI(Constants.PRINTER_QUEUE_CONNECTION_URL_SNACKPOS)
+        consumer2 = ActionCable.createConsumer(uri)
+
+        Log.d("PrinterRefreshWorker", "uri = $uri")
+
+        // 2. Create subscription
+        val appearanceChannel = Channel("SyncChannel")
+        appearanceChannel.addParam("id", locationId)
+        // appearanceChannel.addParam("id",prefProvider.getValueInt(LOCATION_ID,0))
+        subscription2 = consumer2?.subscriptions?.create(appearanceChannel)
+
+        if (subscription2 != null) {
+            subscription2?.onConnected {
+                Log.e(TAG2, "onActionConnected")
+                val params = JsonObject()
+                params.addProperty("location_id", locationId)
+                //  params.addProperty("url", requestURL)
+                subscription2?.perform("received", params)
+            }?.onRejected {
+                Log.e(TAG2, "onRejected")
+
+            }?.onReceived {
+                Log.e(TAG2, "onReceived  " + Gson().toJson(it))
+
+                handleUpdatedData(it)
+
+
+            }?.onDisconnected {
+                Log.e(TAG2, "onDisconnected")
+
+            }?.onFailed {
+                LogUtil.logE(TAG2, "onFailed")
+
+            }
+        }
+
+
+        // 3. Establish connection
+        consumer2?.connect()
+
+
+    }
+
+    private fun handleUpdatedData(it: JsonElement) {
+
+        try {
+            if (it.asJsonObject.has("setting_data")) {
+
+                val setting_data = it.asJsonObject.get("setting_data")
+                Log.e(TAG2, "call setting_data API")
+
+                if (setting_data.toString() == "true") {
+                    if (com.android.pos.ui.fragments.settings.hardware.printer.Printer.updatePrinter == null) {
+
+                        MainActivity.updatePrinter?.updatePrinters()
+
+                    } else {
+                        com.android.pos.ui.fragments.settings.hardware.printer.Printer.updatePrinter?.updatePrinters()
+                    }
+
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(TAG2, "Exception")
+        }
+    }
+
+
+    private fun isInternetAvailable(): Boolean {
+        var result: Boolean
+        val connectivityManager =
+            applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+        connectivityManager.let {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                it.getNetworkCapabilities(connectivityManager.activeNetwork)?.apply {
+                    result = when {
+                        hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+                        hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+                        hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
+                        else -> false
+                    }
+                    return result
+                }
+            } else {
+                connectivityManager.activeNetworkInfo.also {
+                    return it != null && it.isConnected
+                }
+            }
+        }
+        return false
     }
 
 }

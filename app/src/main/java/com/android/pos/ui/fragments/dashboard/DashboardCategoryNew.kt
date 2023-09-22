@@ -31,6 +31,10 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.work.Data
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkManager
 import com.android.pos.R
 import com.android.pos.data.entities.*
 import com.android.pos.data.model.CategorySearchData
@@ -94,6 +98,7 @@ import com.android.pos.utils.printer.PrinterClass
 import com.android.pos.utils.scanner.helpers.ScannerAppEngine
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
+import com.android.pos.utils.workmanager.UploadWorker2
 import com.epson.eposprint.Builder
 import com.epson.eposprint.Print
 import com.google.android.material.snackbar.Snackbar
@@ -2271,6 +2276,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         return maxCount <= totalMinMax
     }
 
+    @SuppressLint("RestrictedApi")
     private fun observeShowProgress() {
 
         viewModel.showProgress.observe(viewLifecycleOwner, { event ->
@@ -2332,6 +2338,41 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         viewModel.logout.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
+                    WorkManager.getInstance(requireActivity()).cancelAllWork()
+                    val data = Data.Builder()
+                        //.putString("kitchenPrinterList", Gson().toJson(kitchenPrinterList))
+                        // .put("kitchenSettingData", Gson().toJson(kitchenSettingModel))
+                        .put("location_id", prefProvider?.getValueInt(Constants.LOCATION_ID, 0))
+                        .put("base_url", prefProvider?.getValue(Constants.BASE_URL_NEW, ""))
+                        .put(
+                            Constants.IS_PRINTER_QUEUE_ENABLE, prefProvider?.getValueboolean(
+                                Constants.IS_PRINTER_QUEUE_ENABLE, false
+                            )
+                        )
+                        .put("is_cancel_work",true)
+                        .build()
+
+                    val uploadWorkRequest =
+                        OneTimeWorkRequest.Builder(
+                            UploadWorker2::class.java
+                        ).addTag(Constants.PRINTER_QUEUE_BACKGROUND)
+                            .setInputData(data)
+                            .build()
+
+
+                    val workManager = WorkManager.getInstance(requireContext())
+
+                    try {
+
+                        workManager.enqueueUniqueWork(
+                            Constants.PRINTER_QUEUE_BACKGROUND, ExistingWorkPolicy.REPLACE,
+                            uploadWorkRequest
+                        )
+
+                    } catch (e: java.lang.Exception) {
+
+                        e.printStackTrace()
+                    }
                     prefProvider.setClear()
                     viewModel.clearTable()
                     prefProvider.setValue(Constants.AUTH_TOKEN, "")

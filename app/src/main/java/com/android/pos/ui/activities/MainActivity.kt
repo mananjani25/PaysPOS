@@ -57,11 +57,12 @@ import com.android.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.ui.fragments.payment.OrderCompleteViewModel
 import com.android.pos.ui.fragments.settings.hardware.Hardware
+import com.android.pos.ui.fragments.settings.hardware.printer.UpdatePrinters
 import com.android.pos.utils.*
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.statusUtils.Status
 import com.android.pos.utils.workmanager.ThreadPoolManager
-import com.android.pos.utils.workmanager.UploadWorker
+import com.android.pos.utils.workmanager.UploadWorker2
 import com.epson.epos2.ConnectionListener
 import com.epson.epos2.printer.Printer
 import com.epson.epos2.printer.PrinterStatusInfo
@@ -90,7 +91,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
-    StatusChangeListener {
+    StatusChangeListener, UpdatePrinters {
     private var printerList: List<PrinterResponse.Data.KitchenReceiptPrinters> = arrayListOf()
     private val dashboardViewModel: DashBoardCategoryViewModel by viewModels()
     private val passcodeViewModel: PasscodeViewModel by viewModels()
@@ -130,6 +131,11 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     @Inject
     lateinit var rolePermission: RolePermission
     var currentIndex: Int = 0
+
+
+    companion object{
+        var updatePrinter: UpdatePrinters? = null
+    }
 
     @Inject
     lateinit var repo: UserRepository
@@ -745,28 +751,33 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 false
             ) == true
         ) {
+            Log.e(TAG,"CheckHere DAta:")
             val data = Data.Builder()
                 //.putString("kitchenPrinterList", Gson().toJson(kitchenPrinterList))
                 // .put("kitchenSettingData", Gson().toJson(kitchenSettingModel))
                 .put("location_id", prefProvider?.getValueInt(LOCATION_ID, 0))
                 .put("base_url", prefProvider?.getValue(Constants.BASE_URL_NEW, ""))
+                .put(IS_PRINTER_QUEUE_ENABLE,prefProvider?.getValueboolean(IS_PRINTER_QUEUE_ENABLE,false))
+                .put("is_cancel_work",false)
                 .build()
 
             val uploadWorkRequest =
                 OneTimeWorkRequest.Builder(
-                    UploadWorker::class.java
+                    UploadWorker2::class.java
                 ).addTag(Constants.PRINTER_QUEUE_BACKGROUND)
                     .setInputData(data)
                     .build()
 
 
             val workManager = WorkManager.getInstance(this)
+
             try {
 
                 workManager.enqueueUniqueWork(
                     Constants.PRINTER_QUEUE_BACKGROUND, ExistingWorkPolicy.REPLACE,
                     uploadWorkRequest
                 )
+
             } catch (e: java.lang.Exception) {
                 LogUtil.logE(TAG, "printerQueueLog  ${e.message.toString()}")
                 e.printStackTrace()
@@ -832,6 +843,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
     override fun onDestroy() {
         super.onDestroy()
+        updatePrinter = null
         unregisterReceiver(broadcastReceiver)
         unregisterReceiver(broadcastReceiveronlineOrder)
     }
@@ -853,6 +865,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        updatePrinter = this
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN)
 
 
@@ -1389,6 +1402,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
     override fun onResume() {
         super.onResume()
+        updatePrinter = this
         if (this::presentation.isInitialized) {
             presentation.show()
             presentation.onDisplayChanged()
@@ -1659,6 +1673,14 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         LogUtil.logE(TAG, "OnStatusChanged ${p1}")
     }
 
+    override fun updatePrinters() {
+
+        viewModel.updatePrintersData()
+    }
+
+    override fun reloadAdapter() {
+
+    }
 
 }
 
@@ -1676,6 +1698,8 @@ private fun isPrintable(status: PrinterStatusInfo?): Boolean {
     }
     return true
 }
+
+
 
 private fun makeErrorMessage(status: PrinterStatusInfo): String? {
     var msg = ""

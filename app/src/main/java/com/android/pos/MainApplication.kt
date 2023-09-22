@@ -18,7 +18,6 @@ import com.google.firebase.FirebaseApp
 import com.pax.poslink.CommSetting
 import com.pax.poslink.LogSetting
 import com.pax.poslink.POSLinkAndroid
-import com.testfairy.TestFairy
 import com.zebra.scannercontrol.DCSScannerInfo
 import com.zebra.scannercontrol.SDKHandler
 import dagger.hilt.android.HiltAndroidApp

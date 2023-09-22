@@ -1,8 +1,10 @@
 package com.android.pos.ui.activities
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import com.android.pos.data.model.responseModel.CashLogResponse
 import com.android.pos.data.remote.Constants
@@ -19,7 +21,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val posRepository: PosRepository,
-    private val prefProvider: PrefProvider
+    val prefProvider: PrefProvider
 
 ) : ViewModel() {
 
@@ -107,6 +109,40 @@ class MainViewModel @Inject constructor(
 
         viewModelScope.launch {
             posRepository.clearTable()
+        }
+    }
+
+    fun updatePrintersData() {
+
+
+        viewModelScope.launch {
+            val resource = posRepository.syncVenueDetails()
+
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    Log.e("PrinterRefreshWorker", "call syncVenueDetails success")
+                    resource.data.let { venueDetailsResponse ->
+                        if (venueDetailsResponse?.status == 200) {
+
+                            resource.data?.let {
+                                posRepository.deleteCustomerPrinters()
+                                posRepository.deleteKitchenPrinters()
+                                posRepository.addKitchenPrinter(it.settingData.data.printers.kitchenPrinterList)
+                                posRepository.addCustomerPrinter(it.settingData.data.printers.customerPrinterList)
+
+                            }
+                        }
+                    }
+                }
+
+                Status.ERROR -> {
+                    Log.e("PrinterRefreshWorker", "call syncVenueDetails error")
+                }
+
+                Status.LOADING -> {
+                    Log.e("PrinterRefreshWorker", "call syncVenueDetails loading")
+                }
+            }
         }
     }
 

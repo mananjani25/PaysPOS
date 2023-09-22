@@ -6312,7 +6312,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                     arrayItems.forEachIndexed { index, orderItemJ ->
 
-                        if (orderItemJ.itemId == orderItem.itemId && orderItemJ.timestamp == orderItem.timestamp) {
+                        if (orderItemJ.itemId == orderItem.itemId) {
                             if (orderItemJ.quantity != orderItem.quantity) {
                                 if (orderItem.quantity > orderItemJ.quantity) {
                                     orderItem.quantity =
@@ -10749,7 +10749,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private fun sunmiPrinterInit(ipAddress: String, isAutoPrint: Boolean) {
 
 
-        SunmiPrinterApi.getInstance().setPrinter(SunmiPrinter.SunmiBlueToothPrinter, ipAddress)
+        try {
+            SunmiPrinterApi.getInstance().setPrinter(SunmiPrinter.SunmiBlueToothPrinter, ipAddress)
+        }catch (e:Exception){
+            SunmiPrinterApi.getInstance().setPrinter(SunmiPrinter.SunmiNetPrinter, ipAddress)
+        }
 
         connect()
 

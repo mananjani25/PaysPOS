@@ -116,6 +116,7 @@ class AllOrdersListingFragment(
     var ordertypelist: ArrayList<TbOrderType> = arrayListOf()
     private var isEmployeeAtoZ: Boolean = false
     private var isStationAtoZ: Boolean = false
+    private var isPrint: Boolean = true
     private val viewModel by viewModels<AllOrdersViewModel>()
     private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
     private val activeOrderViewModel by viewModels<ActiveOrderViewModel>()
@@ -778,6 +779,7 @@ class AllOrdersListingFragment(
         val order = adapter.getItem(pos)
         when (status) {
             "accepted" -> {
+                isPrintAccepted = true
                 if (findNavController().currentDestination?.id == R.id.allOrdersFragment) {
                     findNavController().navigate(
                         R.id.action_allOrders_to_addOnlneTime,
@@ -3621,13 +3623,11 @@ class AllOrdersListingFragment(
     ) {
         if (data.name.startsWith(SUNMI_PRINTER, true)) {
 
-           try {
-               SunmiPrinterApi.getInstance()
-                   .setPrinter(SunmiPrinter.SunmiBlueToothPrinter, data.ipAddress)
-           }catch (e:Exception){
-               SunmiPrinterApi.getInstance()
-                   .setPrinter(SunmiPrinter.SunmiNetPrinter, data.ipAddress)
-           }
+            try {
+                SunmiPrinterApi.getInstance().setPrinter(SunmiPrinter.SunmiBlueToothPrinter, data.ipAddress)
+            }catch (e:Exception){
+                SunmiPrinterApi.getInstance().setPrinter(SunmiPrinter.SunmiNetPrinter, data.ipAddress)
+            }
 
             if (!SunmiPrinterApi.getInstance().isConnected) {
                 SunmiPrinterApi.getInstance()

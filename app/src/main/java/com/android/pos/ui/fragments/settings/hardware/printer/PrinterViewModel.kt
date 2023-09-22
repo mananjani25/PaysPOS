@@ -32,8 +32,8 @@ class PrinterViewModel @Inject constructor(
 
     private val TAG = "PrinterViewModel"
 
-    private val _snackbarText = MutableLiveData<Event<Any?>>()
-    val snackbarText: LiveData<Event<Any?>> = _snackbarText
+    private val _snackbarText = MutableLiveData<Event<String?>>()
+    val snackbarText: LiveData<Event<String?>> = _snackbarText
 
     private val _printerQueueDelete = MutableLiveData<Event<String>>()
     val printerQueueDeleteScenario:LiveData<Event<String>> = _printerQueueDelete
@@ -44,6 +44,10 @@ class PrinterViewModel @Inject constructor(
     private var _delete = MutableLiveData<Event<String>>()
     val deletePrinter: LiveData<Event<String>> = _delete
 
+    private var _deleteKitchen = MutableLiveData<Event<Int>>()
+    val deleteKitchenPrinter: LiveData<Event<Int>> = _deleteKitchen
+
+
     private var _printerCreated = MutableLiveData<Event<PrinterResponse.Data>>()
     val printerCreatedSucces:LiveData<Event<PrinterResponse.Data>> = _printerCreated
 
@@ -52,6 +56,10 @@ class PrinterViewModel @Inject constructor(
 
     val orderTypes = posRepository.getORderTypesListDatabase()
 
+
+    suspend fun deleteAllKitchenPrinters(){
+        posRepository.deleteKitchenPrinters()
+    }
 
     fun printerList(): LiveData<com.android.pos.utils.statusUtils.Resource<List<PrinterResponse.Data.CustomerReceiptPrinters>>> {
         return posRepository.getPrinters()
@@ -107,7 +115,7 @@ class PrinterViewModel @Inject constructor(
                     _showProgress.value = Event(true)
                 }
                 Status.ERROR -> {
-                    _snackbarText.value = Event(resource.message)
+                    _snackbarText.value = Event(resource.message.toString())
                     _showProgress.value = Event(false)
 
                 }
@@ -168,9 +176,12 @@ class PrinterViewModel @Inject constructor(
                     _showProgress.value = Event(false)
                     if (status != null) {
                         if (status.lowercase() == Constants.KITCHEN.lowercase()) {
-                            posRepository.deleteCustomerPrinter(printerListModel.id)
-                        } else {
+                            Log.e("PrinterDelete","Printer ID: ${printerListModel.id}")
+
                             posRepository.deleteKitchenPrinter(printerListModel.id)
+                        } else {
+
+                            posRepository.deleteCustomerPrinter(printerListModel.id)
                         }
 
                     } else {
@@ -240,7 +251,7 @@ class PrinterViewModel @Inject constructor(
     }
 
 
-    private fun syncSettingModule() {
+    private fun syncSettingModule(isFromUpdate : Boolean = false) {
         viewModelScope.launch {
             val resource = posRepository.syncVenueDetails()
 
@@ -255,6 +266,11 @@ class PrinterViewModel @Inject constructor(
                                 posRepository.deleteKitchenPrinters()
                                 posRepository.addKitchenPrinter(it.settingData.data.printers.kitchenPrinterList)
                                 posRepository.addCustomerPrinter(it.settingData.data.printers.customerPrinterList)
+
+                                if (isFromUpdate){
+                                    Printer.updatePrinter?.reloadAdapter()
+                                }
+
                             }
                             _showProgress.value = Event(false)
                             prefProvider.setValueboolean(Constants.SYNC_DATA, true)
@@ -282,6 +298,18 @@ class PrinterViewModel @Inject constructor(
 
         }
 
+    }
+
+    fun deleteKitchenPrinter(id: Int) {
+        viewModelScope.launch {
+            posRepository.deleteKitchenPrinter(id)
+
+        }
+
+    }
+
+    fun updatePrinter(){
+        syncSettingModule(isFromUpdate = true)
     }
 
 }
