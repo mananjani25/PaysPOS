@@ -115,6 +115,14 @@ class PhoneOrderFragment : Fragment() {
         }
     }
 
+    private fun clearAddressFields() {
+        binding.edtStreet.text?.clear()
+        binding.edtSuite.text?.clear()
+        binding.edtCity.text?.clear()
+        binding.edtState.text?.clear()
+        binding.edtZip.text?.clear()
+    }
+
     private fun setupCustomer(customer: TbCustomer) {
 
         customerID = customer.id
@@ -127,8 +135,11 @@ class PhoneOrderFragment : Fragment() {
             customer.first_name + " " + customer.last_name
         )
 
-        if (customer.phones.isNotEmpty())
+        if (customer.phones.isNotEmpty()) {
             binding.edtPhoneNo.setText(AlertUtils.usNumberFormat(customer.phones[0].phone_number))
+        }else{
+            binding.edtPhoneNo.text?.clear()
+        }
         binding.edtEmail.setText(customer.email)
 
         if (customer.addresses.isNotEmpty()) {
@@ -137,6 +148,8 @@ class PhoneOrderFragment : Fragment() {
             binding.edtCity.setText(customer.addresses[0].city)
             binding.edtState.setText(customer.addresses[0].state)
             binding.edtZip.setText(customer.addresses[0].postcode)
+        }else{
+            clearAddressFields()
         }
 
 
@@ -149,6 +162,7 @@ class PhoneOrderFragment : Fragment() {
             isDelivey = false
             binding.txtPickup.setBackgroundResource(R.drawable.button_action_hover)
             binding.txtDelivery.setBackgroundResource(R.drawable.background_square_border_grey)
+            prefProvider?.setValue(Constants.DELIVERY_TYPE, orderType)
             binding.txtAddress.gone()
         } else {
             orderType = DELIVERY
@@ -157,6 +171,7 @@ class PhoneOrderFragment : Fragment() {
             binding.txtPickup.setBackgroundResource(R.drawable.background_square_border_grey)
             binding.txtDelivery.setBackgroundResource(R.drawable.button_action_hover)
             binding.txtAddress.visible()
+            prefProvider?.setValue(Constants.DELIVERY_TYPE, orderType)
         }
     }
 
