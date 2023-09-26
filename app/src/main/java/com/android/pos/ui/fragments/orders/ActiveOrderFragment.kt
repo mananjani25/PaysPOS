@@ -1768,7 +1768,7 @@ class ActiveOrderFragment(
                 if (receiptModel.payments.isNotEmpty() && receiptModel.payments.get(receiptModel.payments.size - 1).paymentType.lowercase() == "Card".lowercase()) {
                     builder.addText(
                         padLine(
-                            "SurCharge",
+                            "Surcharge",
                             "$" + MethodUtils.roundOffAmountString(receiptModel.cash_discount_or_surcharge!!),
                             if (customerSettingModel.fonts == Constants.LARGE) {
                                 24
@@ -2734,7 +2734,7 @@ class ActiveOrderFragment(
                 if (receiptModel.payments.isNotEmpty() && receiptModel.payments.get(receiptModel.payments.size - 1).paymentType.lowercase() == "Card".lowercase()) {
 
                     val str8 = padLine(
-                        "SurCharge",
+                        "Surcharge",
                         "$" + MethodUtils.roundOffAmountString(receiptModel.cash_discount_or_surcharge!!),
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             23
@@ -3351,7 +3351,7 @@ class ActiveOrderFragment(
                 if (receiptModel.payments.isNotEmpty() && receiptModel.payments.get(receiptModel.payments.size - 1).paymentType.lowercase() == "Card".lowercase()) {
 
                     val str8 = padLine(
-                        "SurCharge",
+                        "Surcharge",
                         "$" + MethodUtils.roundOffAmountString(receiptModel.cash_discount_or_surcharge!!),
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             23
