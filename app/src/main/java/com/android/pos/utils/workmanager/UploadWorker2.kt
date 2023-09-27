@@ -22,6 +22,7 @@ import com.android.pos.data.model.responseModel.GetKitchenReceiptSettingsRespons
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.AUTH_TOKEN
+import com.android.pos.data.remote.Constants.CHECK_QUEUE_CANCEL
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.utils.addDoubleDotLineForSunmiQueue
 import com.android.pos.utils.printGuestByItemForSunmiQueue
@@ -102,12 +103,19 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                 TAG,
                 "checkIsCancelWork:  ${isCancelWork}  isPrinterQueueEnable  ${isPrinterQueueEnable}"
             )
+            Log.e(TAG,"CheckQueueCancel  ${mContext.getSharedPreferences(
+                mContext.resources.getString(R.string.app_name),
+                Context.MODE_PRIVATE
+            ).getBoolean(CHECK_QUEUE_CANCEL, false)}")
 
             if (isPrinterQueueEnable && mContext.getSharedPreferences(
                     mContext.resources.getString(R.string.app_name),
                     Context.MODE_PRIVATE
                 ).getString(AUTH_TOKEN, "")?.isEmpty() == false
-            ) {
+                && mContext.getSharedPreferences(
+                    mContext.resources.getString(R.string.app_name),
+                    Context.MODE_PRIVATE
+                ).getBoolean(CHECK_QUEUE_CANCEL, false) == false ) {
                 Log.e(TAG, "checkIsdws")
                 if (isInternetAvailable()) {
                     connectActionCable()
@@ -181,7 +189,10 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                 if (mContext.getSharedPreferences(
                         mContext.resources.getString(R.string.app_name),
                         Context.MODE_PRIVATE
-                    ).getString(AUTH_TOKEN, "")?.isEmpty() == true
+                    ).getString(AUTH_TOKEN, "")?.isEmpty() == true || mContext.getSharedPreferences(
+                        mContext.resources.getString(R.string.app_name),
+                        Context.MODE_PRIVATE
+                    ).getBoolean(CHECK_QUEUE_CANCEL, false) == true
                 ) {
                     Log.e(TAG, "checkCancelWork")
                     consumer?.disconnect()
@@ -242,7 +253,17 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
 
                     Handler(Looper.getMainLooper()).postDelayed(Runnable {
                         if (isInternetAvailable()) {
-                            consumer?.connect()
+
+
+                            if (mContext.getSharedPreferences(
+                                    mContext.resources.getString(R.string.app_name),
+                                    Context.MODE_PRIVATE
+                                ).getBoolean(CHECK_QUEUE_CANCEL, false) == false) {
+                                consumer?.connect()
+                            }
+                            else{
+                                consumer?.subscriptions?.remove(subscription)
+                            }
                         } else {
                             sendNotification("Please check your Network Connectivity.")
                         }
@@ -269,7 +290,10 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
         if (mContext.getSharedPreferences(
                 mContext.resources.getString(R.string.app_name),
                 Context.MODE_PRIVATE
-            ).getString(AUTH_TOKEN, "")?.isEmpty() == false
+            ).getString(AUTH_TOKEN, "")?.isEmpty() == false && mContext.getSharedPreferences(
+                mContext.resources.getString(R.string.app_name),
+                Context.MODE_PRIVATE
+            ).getBoolean(CHECK_QUEUE_CANCEL, false) == false
         ) {
             consumer?.connect()
         }

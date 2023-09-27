@@ -5189,6 +5189,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                                 if (it.settingData.data.isMasterTeminal) {
 
+                                    prefProvider.setValueboolean(Constants.CHECK_QUEUE_CANCEL,false)
                                     prefProvider.setValueboolean(Constants.IS_MASTER_TERMINAL, true)
                                 } else {
                                     prefProvider.setValueboolean(

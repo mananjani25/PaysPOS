@@ -73,6 +73,7 @@ object Constants {
 
     //SharedPref Keys
     const val AUTH_TOKEN = "authToken"
+    const val CHECK_QUEUE_CANCEL = "check_queue_cancel"
     const val TERMINAL_ID = "terminalId"
     const val SYNC_TIME_STAMP = "SyncTimeStamp"
     const val SYNC_SETTING_TIME_STAMP = "SyncSettingTimeStamp"
@@ -203,8 +204,8 @@ object Constants {
     const val DELETE_QUEUE_ORDER_PHASE3 = "printer_queues/destroy_v2?order_id="
     const val UPDATE_PRITNER_QUEUE_TRACK = "update_printer_queue_track"
 
-    const val PRINTER_QUEUE_CONNECTION_URL_SNACKPOS = "wss://snackhq.com/cable"
-    //const val PRINTER_QUEUE_CONNECTION_URL_SNACKPOS = "wss://hugepos.com/cable"
+    //const val PRINTER_QUEUE_CONNECTION_URL_SNACKPOS = "wss://snackhq.com/cable"
+    const val PRINTER_QUEUE_CONNECTION_URL_SNACKPOS = "wss://hugepos.com/cable"
 
     const val INCREASE_ONGOING_ORDER_COUNTER = "locations/increase_ongoing_order_counter"
     const val DECREASE_ONGOING_ORDER_COUNTER = "locations/decrease_ongoing_order_counter"
