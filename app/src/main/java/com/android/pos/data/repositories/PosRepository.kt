@@ -1238,8 +1238,8 @@ class PosRepository @Inject constructor(
 
     suspend fun deleteDineInCart() = appDatabase.cartDao().deleteDineInCart()
 
-    fun timeDetails() =
-        performGetOperationNew(networkCall = { apiHelperNew.timeDetails() })
+    fun timeDetails(terminalId: Int) =
+        performGetOperationNew(networkCall = { apiHelperNew.timeDetails(terminalId) })
 
     suspend fun deleteCustomerPrinters() {
         appDatabase.printerDao().deleteCustomerPrinters()

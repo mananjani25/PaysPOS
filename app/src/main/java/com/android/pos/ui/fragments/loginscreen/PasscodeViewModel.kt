@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.model.responseModel.BaseResponse
+import com.android.pos.data.model.responseModel.TimeDetailsResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
@@ -19,6 +20,7 @@ import com.android.pos.data.repositories.UserRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
 import com.android.pos.utils.Event
+import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
 import com.android.pos.utils.workmanager.ThreadPoolManager
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -50,8 +52,6 @@ class PasscodeViewModel @Inject constructor(
     private val _data1 = MutableLiveData<Event<Boolean>>()
     val data1: LiveData<Event<Boolean>> = _data1
 
-    val timeDetails = posRepository.timeDetails()
-
     fun isDashboardData(isDashboard: Boolean) {
         this.isDashboard = isDashboard
     }
@@ -61,6 +61,10 @@ class PasscodeViewModel @Inject constructor(
         viewModelScope.launch {
             posRepository.deleteAllCart()
         }
+    }
+
+    fun getTimeDetails(terminalId: Int): LiveData<Resource<TimeDetailsResponse>> {
+        return posRepository.timeDetails(terminalId)
     }
 
     fun defaultTerminalCall(device_token: String, deviceId: String) {

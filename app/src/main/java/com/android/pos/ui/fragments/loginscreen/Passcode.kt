@@ -24,6 +24,8 @@ import com.android.pos.BuildConfig
 import com.android.pos.R
 import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants.ORDER_TYPE
+import com.android.pos.data.remote.Constants.TERMINAL_ID
+import com.android.pos.data.remote.Constants.TERMINAL_NAME
 import com.android.pos.databinding.FragmentPasscodeBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.activities.MainActivity
@@ -141,12 +143,18 @@ class Passcode : Fragment() {
 
     private fun setTimeAndDate() {
 
-        viewModel.timeDetails.observe(requireActivity()) {
+        Log.d("terminalId", "setTimeAndDate: "+prefProvider.getValueInt(TERMINAL_ID,-1))
+        viewModel.getTimeDetails(prefProvider.getValueInt(TERMINAL_ID,-1)).observe(requireActivity()) {
             it.data?.let {
                 LogUtil.logE("TAG", "timeDetails ${it.data}")
                 binding.currentTime.text = it.data.time
                 binding.currentDate.text = it.data.date
                 binding.txtLocationName?.text = it.data.locationName
+                prefProvider.setValue(TERMINAL_NAME,it.data.terminalName)
+                if (prefProvider.getValue(TERMINAL_NAME,"").isNotEmpty() && prefProvider.getValue(TERMINAL_NAME,"").isNotBlank()) {
+                    binding.llStationName?.visibility  = View.VISIBLE
+                    binding.txtStationName?.text = prefProvider.getValue(TERMINAL_NAME,"")
+                }
             }
         }
     }
