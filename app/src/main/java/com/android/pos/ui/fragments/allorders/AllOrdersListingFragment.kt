@@ -25,7 +25,6 @@ import android.view.WindowManager
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.os.bundleOf
-import androidx.core.text.trimmedLength
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -52,7 +51,6 @@ import com.android.pos.data.model.responseModel.GetCustomerReceiptSettingsRespon
 import com.android.pos.data.model.responseModel.GetKitchenReceiptSettingsResponse
 import com.android.pos.data.model.responseModel.GetTipReponse
 import com.android.pos.data.model.responseModel.OnlineOrderResponseModel
-import com.android.pos.data.model.responseModel.OnlineOrderStatusUpdateResponse
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ALL_ORDER_TAB
@@ -76,7 +74,7 @@ import com.android.pos.utils.*
 import com.android.pos.utils.callback.OrderCallBack
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.gone
-import com.android.pos.utils.extensions.printLog
+import com.android.pos.utils.extensions.runOnUiThread
 import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.printer.PrinterClass
@@ -97,7 +95,6 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 import kotlin.math.abs
 
 @AndroidEntryPoint
@@ -761,6 +758,7 @@ class AllOrdersListingFragment(
                 if (s.toString() == " ") {
                     binding.autoSearch.setText("")
                 }
+
             }
 
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
@@ -1157,6 +1155,21 @@ class AllOrdersListingFragment(
                 getKitchenPrinters(order)
             }
         }
+    }
+
+    override fun noDataAvailableFilter() {
+
+        runOnUiThread(Runnable {
+            binding.llNoData.visible()
+            binding.txtNodata.text = requireContext().getText(R.string.no_data_available)
+        })
+
+        Log.d("noDataAvailableFilter","no data available")
+    }
+
+    override fun hideNoDataAvailable() {
+        binding.llNoData.gone()
+        Log.d("noDataAvailableFilter","hide")
     }
 
     private fun getCustomerPrinters(order: OnlineOrderResponseModel.Data, type: String) {
