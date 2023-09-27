@@ -695,6 +695,7 @@
     <string name="amount">Amount</string>
     <string name="edit_order">Update Order</string>
     <string name="customer_order_history">Customer Order History</string>
+    <string name="gift_card_order_history">Gift Card Order History</string>
     <string name="order_id_nstatus">Order ID &amp; Status</string>
     <string name="date_time">Date/ Time</string>
     <string name="order_details">Order Details</string>

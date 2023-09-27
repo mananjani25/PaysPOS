@@ -51,6 +51,9 @@ public class CustomerListViewModel @Inject constructor(
     private val _orderHistory = MutableLiveData<Event<List<Orders>?>>()
     val orderHistory: LiveData<Event<List<Orders>?>> = _orderHistory
 
+    private val _giftCardOrderHistory = MutableLiveData<Event<List<Orders>?>>()
+    val giftCardOrderHistory: LiveData<Event<List<Orders>?>> = _giftCardOrderHistory
+
     val serviceCharges = posRepository.serviceChargeList()
 
     var itemlist = posRepository.getWholeItemFromPos()
@@ -181,6 +184,7 @@ public class CustomerListViewModel @Inject constructor(
                     }
                     resourceReport.data.let {
                         _orderHistory.postValue(Event(it?.data?.ordersList))
+                        _giftCardOrderHistory.postValue(Event(it?.data?.ordersList))
                     }
                 }
 

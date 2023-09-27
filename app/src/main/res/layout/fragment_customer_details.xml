@@ -18,8 +18,8 @@
         android:layout_marginLeft="@dimen/_15sdp"
         android:layout_marginTop="@dimen/_15sdp"
         android:layout_marginRight="@dimen/_15sdp"
-        android:orientation="vertical"
         android:background="@color/bg_color"
+        android:orientation="vertical"
         tools:context=".ui.activity.StartActivity">
 
         <androidx.appcompat.widget.LinearLayoutCompat
@@ -107,8 +107,8 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_marginTop="@dimen/_5sdp">
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:orientation="vertical">
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontSemiBold"
@@ -126,18 +126,18 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_marginBottom="@dimen/_3sdp"
+                        android:maxLength="30"
                         android:text="@{model.first_name +' '+model.last_name}"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_6sdp"
-                        android:maxLength="30"/>
+                        android:textSize="@dimen/_6sdp" />
 
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_marginTop="@dimen/_5sdp">
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:orientation="vertical">
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontSemiBold"
@@ -146,8 +146,7 @@
                         android:layout_gravity="center"
                         android:hint="@string/phone_number"
                         android:textColorHint="@color/hint_color"
-                        android:textSize="@dimen/_5sdp"
-                        />
+                        android:textSize="@dimen/_5sdp" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txtPhoneNo"
@@ -166,9 +165,8 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
                     android:layout_marginTop="@dimen/_5sdp"
-                    >
+                    android:orientation="vertical">
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontSemiBold"
@@ -197,8 +195,8 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_marginTop="@dimen/_5sdp">
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:orientation="vertical">
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontSemiBold"
@@ -224,8 +222,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    >
+                    android:orientation="vertical">
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontSemiBold"
@@ -254,8 +251,8 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_marginTop="@dimen/_5sdp">
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:orientation="vertical">
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontSemiBold"
@@ -277,7 +274,6 @@
                         android:text="@{model.birth_date}"
                         android:textColor="@color/txtColor"
                         android:textSize="@dimen/_6mdpi" />
-
 
 
                     <androidx.appcompat.widget.LinearLayoutCompat
@@ -320,18 +316,42 @@
                     android:orientation="vertical"
                     android:visibility="gone">
 
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/txtTitle"
-                        style="@style/CustomFontBold"
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:id="@+id/llHistoryTabs"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:background="@drawable/background_gray_with_border"
-                        android:gravity="center"
-                        android:padding="@dimen/_5sdp"
-                        android:text="@string/customer_order_history"
-                        android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:orientation="horizontal"
+                        android:visibility="visible">
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/txtCustomerOrderHistoryTab"
+                            style="@style/CustomFontBold"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_weight="1"
+                            android:background="@drawable/background_gray_with_border"
+                            android:gravity="center"
+                            android:padding="@dimen/_5sdp"
+                            android:text="@string/customer_order_history"
+                            android:textColor="@color/txtColor"
+                            android:textSize="@dimen/_6mdpi" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/txtGiftCardOrderHistoryTab"
+                            style="@style/CustomFontBold"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_weight="1"
+                            android:background="@drawable/background_gray_with_border"
+                            android:gravity="center"
+                            android:padding="@dimen/_5sdp"
+                            android:text="@string/gift_card_order_history"
+                            android:textColor="@color/txtColor"
+                            android:textSize="@dimen/_6mdpi" />
+                    </androidx.appcompat.widget.LinearLayoutCompat>
 
                     <include
                         android:id="@+id/layout_header"
@@ -345,6 +365,15 @@
                         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                         tools:itemCount="9"
                         tools:listitem="@layout/view_order_history" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvGiftCardOrderHistory"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                        tools:itemCount="9"
+                        tools:listitem="@layout/view_gift_card_order_history" />
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
             </LinearLayout>
