@@ -20,7 +20,6 @@ import com.android.pos.data.repositories.UserRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
 import com.android.pos.utils.Event
-import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
 import com.android.pos.utils.workmanager.ThreadPoolManager
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -43,6 +42,9 @@ class PasscodeViewModel @Inject constructor(
     private val _data = MutableLiveData<Event<BaseResponse>>()
     val data: LiveData<Event<BaseResponse>> = _data
 
+    private val _timeData = MutableLiveData<Event<TimeDetailsResponse>>()
+    val timeData: LiveData<Event<TimeDetailsResponse>> = _timeData
+
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
@@ -63,8 +65,34 @@ class PasscodeViewModel @Inject constructor(
         }
     }
 
-    fun getTimeDetails(terminalId: Int): LiveData<Resource<TimeDetailsResponse>> {
-        return posRepository.timeDetails(terminalId)
+    fun getTimeDetails(terminalId: Int){
+        _showProgress.value = Event(true)
+        viewModelScope.launch {
+            val timeDetails =
+                posRepository.timeDetails(terminalId)
+            when (timeDetails.status) {
+                Status.SUCCESS -> {
+                    _showProgress.value = Event(false)
+                    timeDetails.data.let { timeResponse ->
+                        if (timeResponse?.status == 200) {
+                            _timeData.value = Event(timeResponse)
+                            prefProvider.setValue(Constants.TERMINAL_NAME,timeResponse.data.terminalName)
+                        } else {
+                            _data1.value = Event(false)
+                            _snackbarText.value = Event(timeDetails.message.toString())
+                        }
+                    }
+                }
+                Status.ERROR -> {
+                    _snackbarText.value = Event(timeDetails.message.toString())
+                    _showProgress.value = Event(false)
+                }
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+                }
+            }
+
+        }
     }
 
     fun defaultTerminalCall(device_token: String, deviceId: String) {

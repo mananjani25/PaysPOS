@@ -144,13 +144,14 @@ class Passcode : Fragment() {
     private fun setTimeAndDate() {
 
         Log.d("terminalId", "setTimeAndDate: "+prefProvider.getValueInt(TERMINAL_ID,-1))
-        viewModel.getTimeDetails(prefProvider.getValueInt(TERMINAL_ID,-1)).observe(requireActivity()) {
-            it.data?.let {
+        viewModel.getTimeDetails(prefProvider.getValueInt(TERMINAL_ID,-1))
+
+        viewModel.timeData.observe(requireActivity()){
+            it.getContentIfNotHandled()?.let {
                 LogUtil.logE("TAG", "timeDetails ${it.data}")
                 binding.currentTime.text = it.data.time
                 binding.currentDate.text = it.data.date
                 binding.txtLocationName?.text = it.data.locationName
-                prefProvider.setValue(TERMINAL_NAME,it.data.terminalName)
                 if (prefProvider.getValue(TERMINAL_NAME,"").isNotEmpty() && prefProvider.getValue(TERMINAL_NAME,"").isNotBlank()) {
                     binding.llStationName?.visibility  = View.VISIBLE
                     binding.txtStationName?.text = prefProvider.getValue(TERMINAL_NAME,"")
