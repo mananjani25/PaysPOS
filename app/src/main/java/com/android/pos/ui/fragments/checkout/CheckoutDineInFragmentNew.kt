@@ -1828,7 +1828,8 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 paymentType,
                 cardNumber,
                 cashDiscountType,
-                tipID
+                tipID,
+                cardTypeOfTransaction = EDCType
             )
         }
         if (myRequest != null) {

@@ -24,7 +24,6 @@ import com.android.pos.ui.fragments.magtek.PaymentResponse
 import com.android.pos.utils.Event
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
-import com.android.pos.utils.MethodUtils.Companion.percentageCalculation
 import com.android.pos.utils.TimeFormatUtils
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
@@ -983,7 +982,8 @@ open class PaymentViewModel @Inject constructor(
         PAXtoken: String = "",
         cardLastDigits: String = "",
         totalServiceChargeM: Double = 0.0,
-        totalDiscountM: Double = 0.0
+        totalDiscountM: Double = 0.0,
+        cardTypeOfTransaction: String = "",
     ): OrderRequestModel {
 
         val orderAttributeRequestModel = OrderAttributeRequestModel()
@@ -1100,7 +1100,8 @@ open class PaymentViewModel @Inject constructor(
                 extData,
                 ECRRefNumber,
                 PAXtoken,
-                cardLastDigits
+                cardLastDigits,
+                cardTypeOfTransaction
             )
         } else {
             null
@@ -1867,7 +1868,7 @@ open class PaymentViewModel @Inject constructor(
         tipAmount: Double,
         splitValue: Int,
         finalcashdiscount: Double,
-        paymentTypeStatus: String,cardNumber1 :String,
+        paymentTypeStatus: String, cardNumber1: String,
         cashdiscountType: String,
         redeemLoyaltyInfo: RedeemLoyaltyInfo?,
         globalUID: String = "",
@@ -1875,7 +1876,8 @@ open class PaymentViewModel @Inject constructor(
         extData: String = "",
         ECRRefNumber: String = "",
         PAXtoken: String = "",
-        cardLastDigits: String = ""
+        cardLastDigits: String = "",
+        cardTypeOfTransaction: String = ""
     ): PaymentAttributes {
         return PaymentAttributes().apply {
 //            if (isUpdateOrder)
@@ -1942,8 +1944,8 @@ open class PaymentViewModel @Inject constructor(
                 ecr_ref_num = ECRRefNumber
                 pax_transaction_token = PAXtoken
                 cardNumber = cardLastDigits.ifEmpty { "" }
+                cardName = cardTypeOfTransaction
             }
-
             if (cashdiscountType.isNotEmpty()) {
                 cash_discount_or_surcharge = finalcashdiscount
                 total_cash_discount = finalcashdiscount
