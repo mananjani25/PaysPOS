@@ -793,6 +793,8 @@ object Constants {
     const val GIFT_CARD_CATEGORY = "GIFT CARD"
     const val IS_LAST_ITEM_DELETE = "IS_LAST_ITEM_DELETE"
 
+    const val SURCHARGE_TEXT = "Surcharge"
+
     fun createCloudPrinter(ipAddress:String,portNo:Int):CloudPrinter{
         return CloudPrinterBuilder.buildPrinter(ipAddress,portNo)
     }

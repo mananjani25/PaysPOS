@@ -1643,9 +1643,9 @@ class CartFragment(
         val amountType = prefProvider.getValue(Constants.AMOUNT_TYPE, "")
         val rateOrAmount = prefProvider.getValue(Constants.RATE_OR_AMOUNT, "0")
         if (amountType == "Percentage") {
-            binding.labelCashSurcharge.text = "Surcharge (${rateOrAmount}%)"
+            binding.labelCashSurcharge.text = "${Constants.SURCHARGE_TEXT} (${rateOrAmount}%)"
         } else {
-            binding.labelCashSurcharge.text = "Surcharge"
+            binding.labelCashSurcharge.text = Constants.SURCHARGE_TEXT
         }
     }
 

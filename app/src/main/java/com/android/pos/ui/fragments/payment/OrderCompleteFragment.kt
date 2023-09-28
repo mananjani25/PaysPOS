@@ -2070,7 +2070,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     ) {
                         builder.addText(
                             padLine(
-                                "Surcharge",
+                                Constants.SURCHARGE_TEXT,
                                 if (noCashAdjGlobal == 0.0) {
                                     "$" + MethodUtils.roundOffAmountString(noCashAdjGlobal)
                                 } else {
@@ -2892,7 +2892,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 ) {
 
                     val str8 = padLine(
-                        "Surcharge",
+                        Constants.SURCHARGE_TEXT,
                         if (noCashAdjGlobal == 0.0) {
                             "$" + MethodUtils.roundOffAmountString(noCashAdjGlobal)
                         } else {
@@ -3342,7 +3342,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 ) {
 
                     val str8 = padLine(
-                        "Surcharge",
+                        Constants.SURCHARGE_TEXT,
                         if (noCashAdjGlobal == 0.0) {
                             "$" + MethodUtils.roundOffAmountString(noCashAdjGlobal)
                         } else {
@@ -4255,7 +4255,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     )
                     builder.addText(
                         padLine(
-                            "Surcharge",
+                            Constants.SURCHARGE_TEXT,
                             "" + MethodUtils.roundOffAmount(
                                 receiptModel?.order?.payments?.get(
                                     receiptModel?.order?.payments?.size!! - 1
@@ -5159,7 +5159,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
                 val str8 = padLine(
-                    "Surcharge",
+                    Constants.SURCHARGE_TEXT,
                     "" + MethodUtils.roundOffAmount(
                         receiptModel?.order?.payments?.get(
                             receiptModel?.order?.payments?.size!! - 1
@@ -5703,7 +5703,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
                 val str8 = padLine(
-                    "Surcharge",
+                    Constants.SURCHARGE_TEXT,
                     "" + MethodUtils.roundOffAmount(
                         receiptModel?.order?.payments?.get(
                             receiptModel?.order?.payments?.size!! - 1
@@ -7140,7 +7140,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                         builder.addText(
                             padLine(
-                                "Surcharge",
+                                Constants.SURCHARGE_TEXT,
                                 "$" + MethodUtils.roundOffAmountString(
                                     receiptModel?.order?.payments?.get(
                                         receiptModel?.order?.payments?.size?.minus(1) ?: 0
@@ -11413,7 +11413,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
                         val str8 = padLine(
-                            "Surcharge",
+                            Constants.SURCHARGE_TEXT,
                             "$" + MethodUtils.roundOffAmountString(
                                 receiptModel?.order?.payments?.get(
                                     receiptModel?.order?.payments?.size?.minus(1) ?: 0
@@ -12083,7 +12083,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
                         val str8 = padLine(
-                            "Surcharge",
+                            Constants.SURCHARGE_TEXT,
                             "$" + MethodUtils.roundOffAmountString(
                                 receiptModel?.order?.payments?.get(
                                     receiptModel?.order?.payments?.size?.minus(1) ?: 0

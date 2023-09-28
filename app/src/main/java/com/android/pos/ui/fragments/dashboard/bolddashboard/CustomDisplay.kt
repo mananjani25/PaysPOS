@@ -317,7 +317,7 @@ class CustomDisplay(
                 ) {
                     binding.txtCashDiscountSurchargeLabel?.text = "Cash Discount"
                 } else {
-                    binding.txtCashDiscountSurchargeLabel?.text = "Surcharge"
+                    binding.txtCashDiscountSurchargeLabel?.text = Constants.SURCHARGE_TEXT
                 }
             } else {
                 binding.lnrLayoutCashDiscountSurcharge?.gone()
