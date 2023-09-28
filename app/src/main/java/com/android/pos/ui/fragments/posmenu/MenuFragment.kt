@@ -169,6 +169,7 @@ class MenuFragment : DialogFragment() {
                     prefProvider.setClear()
                     prefProvider.setValue(Constants.AUTH_TOKEN, "")
                     prefProvider.setValue(Constants.BASE_URL_NEW, BASE_URL)
+                    prefProvider.setValueboolean(Constants.CHECK_QUEUE_CANCEL,true)
 
 
                     findNavController().navigate(R.id.action_global_login)
