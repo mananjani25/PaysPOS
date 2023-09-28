@@ -2362,6 +2362,10 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                     val workManager = WorkManager.getInstance(requireContext())
 
+
+                    prefProvider.setClear()
+                    viewModel.clearTable()
+                    prefProvider.setValueboolean(Constants.CHECK_QUEUE_CANCEL,true)
                     try {
 
                         workManager.enqueueUniqueWork(
@@ -2373,8 +2377,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                         e.printStackTrace()
                     }
-                    prefProvider.setClear()
-                    viewModel.clearTable()
                     prefProvider.setValue(Constants.AUTH_TOKEN, "")
                     findNavController().navigate(R.id.action_global_login)
 

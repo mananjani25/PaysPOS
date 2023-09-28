@@ -21,7 +21,7 @@ import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.model.responseModel.GetKitchenReceiptSettingsResponse
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
-import com.android.pos.data.remote.Constants.AUTH_TOKEN
+import com.android.pos.data.remote.Constants.CHECK_QUEUE_CANCEL
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.utils.addDoubleDotLineForSunmiQueue
 import com.android.pos.utils.printGuestByItemForSunmiQueue
@@ -102,12 +102,15 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                 TAG,
                 "checkIsCancelWork:  ${isCancelWork}  isPrinterQueueEnable  ${isPrinterQueueEnable}"
             )
+            Log.e(TAG,"CheckQueueCancel  ${mContext.getSharedPreferences(
+                mContext.resources.getString(R.string.app_name),
+                Context.MODE_PRIVATE
+            ).getBoolean(CHECK_QUEUE_CANCEL, false)}")
 
-            if (isPrinterQueueEnable && mContext.getSharedPreferences(
+            if ( mContext.getSharedPreferences(
                     mContext.resources.getString(R.string.app_name),
                     Context.MODE_PRIVATE
-                ).getString(AUTH_TOKEN, "")?.isEmpty() == false
-            ) {
+                ).getBoolean(CHECK_QUEUE_CANCEL, false) == false ) {
                 Log.e(TAG, "checkIsdws")
                 if (isInternetAvailable()) {
                     connectActionCable()
@@ -178,10 +181,10 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                 Log.e(TAG, "onActionReceived:  ${Gson().toJson(it)}")
                 Log.e(TAG, "onActionReceived checkCancelWeok:  ${isCancelWork}")
 
-                if (mContext.getSharedPreferences(
+                if ( mContext.getSharedPreferences(
                         mContext.resources.getString(R.string.app_name),
                         Context.MODE_PRIVATE
-                    ).getString(AUTH_TOKEN, "")?.isEmpty() == true
+                    ).getBoolean(CHECK_QUEUE_CANCEL, false) == true
                 ) {
                     Log.e(TAG, "checkCancelWork")
                     consumer?.disconnect()
@@ -234,20 +237,26 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
 
             }?.onDisconnected {
                 Log.e(TAG, "onDisconnected")
-                if (mContext.getSharedPreferences(
-                        mContext.resources.getString(R.string.app_name),
-                        Context.MODE_PRIVATE
-                    ).getString(AUTH_TOKEN, "")?.isEmpty() == false
-                ) {
+
 
                     Handler(Looper.getMainLooper()).postDelayed(Runnable {
                         if (isInternetAvailable()) {
-                            consumer?.connect()
+
+
+                            if (mContext.getSharedPreferences(
+                                    mContext.resources.getString(R.string.app_name),
+                                    Context.MODE_PRIVATE
+                                ).getBoolean(CHECK_QUEUE_CANCEL, false) == false) {
+                                consumer?.connect()
+                            }
+                            else{
+                                consumer?.subscriptions?.remove(subscription)
+                            }
                         } else {
                             sendNotification("Please check your Network Connectivity.")
                         }
                     }, 6000)
-                }
+
 
             }?.onFailed {
                 Log.e(TAG, "onFailed")
@@ -266,10 +275,10 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
 
 
         // 3. Establish connection
-        if (mContext.getSharedPreferences(
+        if ( mContext.getSharedPreferences(
                 mContext.resources.getString(R.string.app_name),
                 Context.MODE_PRIVATE
-            ).getString(AUTH_TOKEN, "")?.isEmpty() == false
+            ).getBoolean(CHECK_QUEUE_CANCEL, false) == false
         ) {
             consumer?.connect()
         }
