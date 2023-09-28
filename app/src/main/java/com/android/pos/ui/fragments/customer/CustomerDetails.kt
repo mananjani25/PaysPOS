@@ -131,6 +131,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
                 rvOrderHistory.visible()
                 layoutHeader.txtReorder.visible()
                 rvGiftCardOrderHistory.gone()
+                layoutHeader.txtPartType.text = requireContext().getString(R.string.pay_type)
                 if (customerModel.enroll_to_loyalty == true) {
                     layoutHeader.txtLoyaltyPoints.visible()
                     layoutHeader.txtUsedLoyaltyPoints.visible()
@@ -146,6 +147,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
                 layoutHeader.txtLoyaltyPoints.gone()
                 layoutHeader.txtUsedLoyaltyPoints.gone()
                 layoutHeader.txtReorder.gone()
+                layoutHeader.txtPartType.text = requireContext().getString(R.string.amount)
                 rvOrderHistory.gone()
                 rvGiftCardOrderHistory.visible()
             }
