@@ -41,6 +41,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
 
+    private var isCustomerOrderHistorySelected = true
     private lateinit var binding: FragmentCustomerDetailsBinding
     lateinit var customerModel: TbCustomer
     val TAG = "CustomerDetails"
@@ -110,17 +111,19 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
         binding.apply {
 
             txtCustomerOrderHistoryTab.setOnClickListener {
-                updateHistoryUI(true)
+                isCustomerOrderHistorySelected = true
+                updateHistoryUI()
             }
 
             txtGiftCardOrderHistoryTab.setOnClickListener {
-                updateHistoryUI(false)
+                isCustomerOrderHistorySelected = false
+                updateHistoryUI()
             }
 
         }
     }
 
-    private fun updateHistoryUI(isCustomerOrderHistorySelected: Boolean){
+    private fun updateHistoryUI(){
         if(isCustomerOrderHistorySelected){
             binding.apply {
                 binding.txtCustomerOrderHistoryTab.background = AppCompatResources.getDrawable(requireContext(), R.drawable.background_orange_with_border)
@@ -258,7 +261,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
 
     private fun initObservers() {
         binding.root.liveSnackBar(this, viewModel.snackbarText, Snackbar.LENGTH_SHORT)
-        updateHistoryUI(true)
+        updateHistoryUI()
 
         viewModel.itemlist.observe(viewLifecycleOwner) { itemlist ->
             if (itemlist.data?.isNotEmpty() == true) {
@@ -283,22 +286,26 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
             if (data?.isNotEmpty() == true) {
                 observerServiceCharge()
                 binding.txtCustomerOrderHistoryTab.visible()
-                binding.llOrderHistory.visible()
+                binding.rvOrderHistory.visible()
+                binding.layoutHeader.root.visible()
                 orderHistoryAdapter.add(data)
             } else {
                 binding.txtCustomerOrderHistoryTab.gone()
-                binding.llOrderHistory.gone()
+                binding.rvOrderHistory.gone()
             }
         })
         viewModel.giftCardOrderHistory.observe(viewLifecycleOwner, EventObserver { data ->
             if (data?.isNotEmpty() == true) {
                 observerServiceCharge()
                 binding.txtGiftCardOrderHistoryTab.visible()
-                binding.llOrderHistory.visible()
+                if(!isCustomerOrderHistorySelected){//for hiding it on the first time
+                    binding.rvGiftCardOrderHistory.visible()
+                }
+                binding.layoutHeader.root.visible()
                 giftCardOrderHistoryAdapter.add(data)
             } else {
                 binding.txtGiftCardOrderHistoryTab.gone()
-                binding.llOrderHistory.gone()
+                binding.rvGiftCardOrderHistory.visible()
             }
         })
         viewModel.orderResponse.observe(viewLifecycleOwner, EventObserver { order ->

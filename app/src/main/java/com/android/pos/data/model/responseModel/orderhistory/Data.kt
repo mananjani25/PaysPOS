@@ -1,5 +1,6 @@
 package com.android.pos.data.model.responseModel.orderhistory
 
+import com.android.pos.data.model.responseModel.giftCardOrderHistory.GiftCardRecord
 import com.google.gson.annotations.SerializedName
 
 data class Data(
@@ -23,6 +24,8 @@ data class Data(
     val lastName: String?,
     @SerializedName("orders_list")
     val ordersList: List<Orders>?,
+    @SerializedName("gift_cards_list")
+    val giftCardsList: List<GiftCardRecord>?,
     @SerializedName("phones")
     val phones: List<Phone>?
 )

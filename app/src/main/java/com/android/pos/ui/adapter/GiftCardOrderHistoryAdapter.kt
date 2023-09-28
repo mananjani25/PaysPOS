@@ -6,24 +6,21 @@ import android.text.SpannableStringBuilder
 import android.text.TextUtils
 import android.text.style.TextAppearanceSpan
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.MainApplication
 import com.android.pos.R
-import com.android.pos.data.model.responseModel.orderhistory.Orders
+import com.android.pos.data.model.responseModel.giftCardOrderHistory.GiftCardRecord
 import com.android.pos.data.model.responseModel.orderhistory.PaymentDetail
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.ViewGiftCardOrderHistoryBinding
-import com.android.pos.databinding.ViewOrderHistoryBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.MethodUtils.Companion.getFormattedDateTime
-import com.android.pos.utils.Pref
 
 class GiftCardOrderHistoryAdapter :
     RecyclerView.Adapter<GiftCardOrderHistoryAdapter.MyViewHolder>() {
     lateinit var myOnclickedListner: MyOnclickedListner
-    private var arrayList = ArrayList<Orders>()
+    private var arrayList = ArrayList<GiftCardRecord>()
 
     var prefProvider: PrefProvider? = null
     fun setPrefrenceData(temp_prefrence: PrefProvider) {
@@ -39,32 +36,33 @@ class GiftCardOrderHistoryAdapter :
         RecyclerView.ViewHolder(binding.root) {
 
         @SuppressLint("SetTextI18n")
-        fun bind(order: Orders) {
+        fun bind(order: GiftCardRecord) {
 
             //Date Time
-            setupDateTime(order.createdAt)
+            setupDateTime(order.created_at)
 
             //details
-            binding.txtOrderDetails.text = "${order.itemDetails}"
+            binding.txtOrderDetails.text = order.item_details
 
             //Id and status
 
-            if (prefProvider?.getValueboolean(
+            /*if (prefProvider?.getValueboolean(
                     Constants.ORDER_NUMBER_STARTING_FROM_ONE,
                     false
                 ) == true
             ) {
                 setupIdAndStatus(order.custom_order_id, order.paymentStatus)
-            } else {
-                setupIdAndStatus(order.id, order.paymentStatus)
-            }
+            } else {*/
+                setupIdAndStatus(order.id, order.event)
+            //}
 
 
             //amount and pay type
-            if (order.paymentDetails?.isNotEmpty() == true) {
+            /*if (order.paymentDetails?.isNotEmpty() == true) {
                 setupAmountPayType(order.total, order.paymentDetails)
-            }
-            setupAmountPayType(order.total, order.paymentDetails)
+            }*/
+            //setupAmountPayType(order.amount.toDouble(), "Cash")
+            binding.txtPayType.text = "$${order.amount}"
         }
 
         private fun setupAmountPayType(total: Double?, paymentDetails: List<PaymentDetail>?) {
@@ -184,7 +182,7 @@ class GiftCardOrderHistoryAdapter :
         return arrayList.size
     }
 
-    fun add(arrayList: List<Orders>?) {
+    fun add(arrayList: List<GiftCardRecord>?) {
         this.arrayList.clear()
         if (arrayList?.isNotEmpty() == true) {
             this.arrayList.addAll(arrayList)
@@ -193,6 +191,6 @@ class GiftCardOrderHistoryAdapter :
     }
 
     interface MyOnclickedListner {
-        fun onclickedReorder(orders: Orders)
+        fun onclickedReorder(orders: GiftCardRecord)
     }
 }

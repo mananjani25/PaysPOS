@@ -8,6 +8,7 @@ import com.android.pos.data.entities.TbCustomer
 import com.android.pos.data.model.CustomerSearchList
 import com.android.pos.data.model.responseModel.BaseResponse
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
+import com.android.pos.data.model.responseModel.giftCardOrderHistory.GiftCardRecord
 import com.android.pos.data.model.responseModel.orderhistory.Orders
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.repositories.PosRepository
@@ -51,8 +52,8 @@ public class CustomerListViewModel @Inject constructor(
     private val _orderHistory = MutableLiveData<Event<List<Orders>?>>()
     val orderHistory: LiveData<Event<List<Orders>?>> = _orderHistory
 
-    private val _giftCardOrderHistory = MutableLiveData<Event<List<Orders>?>>()
-    val giftCardOrderHistory: LiveData<Event<List<Orders>?>> = _giftCardOrderHistory
+    private val _giftCardOrderHistory = MutableLiveData<Event<List<GiftCardRecord>?>>()
+    val giftCardOrderHistory: LiveData<Event<List<GiftCardRecord>?>> = _giftCardOrderHistory
 
     val serviceCharges = posRepository.serviceChargeList()
 
@@ -184,7 +185,7 @@ public class CustomerListViewModel @Inject constructor(
                     }
                     resourceReport.data.let {
                         _orderHistory.postValue(Event(it?.data?.ordersList))
-                        _giftCardOrderHistory.postValue(Event(it?.data?.ordersList))
+                        _giftCardOrderHistory.postValue(Event(it?.data?.giftCardsList))
                     }
                 }
 
