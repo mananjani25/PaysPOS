@@ -914,6 +914,7 @@ class AllOrdersListingFragment(
                         it.discountAmount =
                             MethodUtils.roundOffAmountDouble(it.discountAmount / it.quantity)
                     }
+                    it.orderItemOriginalModifiers = it.orderItemModifiers
                 }
                 LogUtil.logE(TAG, "itemDiscountTotal:  ${itemDiscountTotal}")
                 LogUtil.logE(TAG, "totalOrderDiscount  ${order.totalDiscount}")
@@ -3232,6 +3233,7 @@ class AllOrdersListingFragment(
             var itemDiscount = 0.0
             items?.forEach {
                 itemDiscount += it.discountPrice
+                it.itemOriginalModifiersList = it.modifiers
             }
             discountPrice = order.totalDiscount
             deliveryType = order.deliveryType ?: ""

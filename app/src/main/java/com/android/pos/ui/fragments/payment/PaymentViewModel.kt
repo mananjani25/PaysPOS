@@ -1491,6 +1491,7 @@ open class PaymentViewModel @Inject constructor(
                 quantity = it.itemQuantity
                 modifier_quantity = it.modifier_quantity
                 order_item_taxes_attributes = arrayListOf()
+                _destroy = it._destroy
             }
             orderItemModifierAttributeList.add(orderItemModifierAttribute)
         }
@@ -1521,6 +1522,7 @@ open class PaymentViewModel @Inject constructor(
                 quantity = it.itemQuantity
                 order_item_taxes_attributes = arrayListOf()
                 modifier_quantity = it.modifier_quantity
+                _destroy = it._destroy
             }
             orderItemModifierAttributeList.add(orderItemModifierAttribute)
         }

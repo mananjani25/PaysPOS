@@ -7,6 +7,7 @@ import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.android.pos.data.model.responseModel.category.Category
 import com.android.pos.data.model.responseModel.item.Item
+import com.android.pos.data.typeconvert.TCModifier
 import com.android.pos.data.typeconvert.TypeConvertersIds
 import com.android.pos.data.typeconvert.TypeConvertersTax
 import com.google.gson.Gson
@@ -15,7 +16,7 @@ import kotlinx.parcelize.Parcelize
 import java.util.*
 
 
-@TypeConverters(TypeConvertersTax::class, TypeConvertersIds::class)
+@TypeConverters(TypeConvertersTax::class, TypeConvertersIds::class, TCModifier::class)
 @Entity(tableName = "TbItem")
 @Parcelize
 class TbItem : Parcelable {
@@ -77,6 +78,7 @@ class TbItem : Parcelable {
     var manualSaleId: String = UUID.randomUUID().toString()
     var isDeleted: Boolean = false
     var headerPositionDinein = 0
+    var itemOriginalModifiersList: List<Modifier>? = emptyList()
 //    @SerializedName("price_without_markup")
 //    var price_without_markup = 0.0
     fun convertToItem(item: Item, category: Category?): TbItem {

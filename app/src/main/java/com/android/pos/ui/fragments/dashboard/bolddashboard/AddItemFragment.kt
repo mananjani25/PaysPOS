@@ -68,6 +68,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
     private var intArray: IntArray? = null
     private var mainModifiersId: ArrayList<Int> = arrayListOf()
     private var mainVariationId: ArrayList<Int> = arrayListOf()
+    private var originalModifiersList: ArrayList<Modifier> = arrayListOf()
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -277,9 +278,34 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
             if (item.modifier_set_ids.isNotEmpty() && itemModifiersAdapter != null) {
                 if (minMaxValidationCheck(itemModifiersAdapter)) {
 
-                    val modifiers = itemModifiersAdapter?.getSelectedModifiers()
+                    val modifiers = itemModifiersAdapter?.getSelectedModifiers() ?: arrayListOf()
+                    if (isUpdateItem && originalModifiersList.isNotEmpty()) {
+                        var updatedModifiersList: ArrayList<Modifier> = arrayListOf()
+                        updatedModifiersList.addAll(modifiers)
+                        try {
+                            // get removed modifiers from list
+                            for (originalMod in originalModifiersList) {
+                                var removedModifier: Modifier?
+                                removedModifier =
+                                    modifiers.find { updatedMod -> originalMod.id == updatedMod.id }
+                                if (removedModifier == null) {
+                                    originalMod.apply {
+                                        _destroy = true
+                                        isChecked = false
+                                    }
+                                    if (!updatedModifiersList.contains(originalMod)) {
+                                        updatedModifiersList.add(originalMod)
+                                    }
+                                }
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                        modifiers.clear()
+                        modifiers.addAll(updatedModifiersList)
+                    }
 
-                    if (modifiers?.isNotEmpty() == true) {
+                    if (modifiers.isNotEmpty()) {
                         modifiers.forEach {
                             if (item.modifiers.isNotEmpty()) {
                                 item.modifiers.forEach { it1 ->
@@ -538,8 +564,10 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
     }
 
     private fun getData() {
+        originalModifiersList.clear()
         item = requireArguments().getParcelable<TbItem>("item") ?: TbItem()
         Log.e(TAG, "getMainItemAdd  ${Gson().toJson(item)}")
+        originalModifiersList = item.itemOriginalModifiersList as ArrayList<Modifier>
         if (item.modifiers.isNotEmpty()) {
             item.modifiers.forEach {
                 mainModifiersId.add(it.id ?: 0)
@@ -566,18 +594,19 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                 it?.let { resource ->
                     when (resource.status) {
                         Status.SUCCESS -> {
-                            it.data?.let {
+                            it.data?.let {it1 ->
                                 Log.e(TAG, "getItemForMos  ${Gson().toJson(it)}")
 
 
                                 binding.rvVariationList.visibility = View.VISIBLE
-
-                                intArray = IntArray(it.modifier_set_ids.size) { i ->
-                                    it.modifier_set_ids[i]
+                                intArray = IntArray(it1.modifier_set_ids.size) { i ->
+                                    it1.modifier_set_ids[i]
                                 }
 
-
-                                variationAdapter.addVariations(it.variationsAttributes.filter { !it.isDeleted })
+                                if(isUpdateItem) {
+                                    item.modifier_set_ids = it1.modifier_set_ids
+                                }
+                                variationAdapter.addVariations(it1.variationsAttributes.filter { !it.isDeleted })
                                 val variationList = ArrayList<VariationsAttribute>()
                                 Log.e(
                                     TAG,
@@ -674,7 +703,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                                 it.data.forEach { modifierSet ->
                                                     modifierSet.modifiers.forEach { modifier ->
                                                         item.modifiers.forEach { oldmodifier ->
-                                                            if (oldmodifier.id == modifier.id) {
+                                                            if (oldmodifier.id == modifier.id && !oldmodifier._destroy) {
                                                                 modifier.isChecked = true
                                                                 modifier.itemQuantity =
                                                                     oldmodifier.itemQuantity
@@ -715,7 +744,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                             }
                                             var dataMod =
                                                 MethodUtils.convertSortListForModifierSet(
-                                                    item.modifier_set_ids, it.data.toCollection(
+                                                    it1.modifier_set_ids, it.data.toCollection(
                                                         arrayListOf()
                                                     )
                                                 )

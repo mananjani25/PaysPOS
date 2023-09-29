@@ -2592,17 +2592,20 @@ class DashBoardCategoryViewModel @Inject constructor(
 
         if (tbItem.modifiers.isNotEmpty()) {
             tbItem.modifiers.forEach {
-                tbMod.put(it.id ?: 0, it.modifier_quantity)
-                listOfDataMod.add(it.id ?: 0)
+                if(!it._destroy) {
+                    tbMod.put(it.id ?: 0, it.modifier_quantity)
+                    listOfDataMod.add(it.id ?: 0)
+                }
             }
         }
 
         var listOfDataModSelected: ArrayList<Int> = arrayListOf()
         if (item.modifiers.isNotEmpty()) {
             item.modifiers.forEach {
-
-                itemMod.put(it.id ?: 0, it.modifier_quantity)
-                listOfDataModSelected.add(it.id ?: 0)
+                if(!it._destroy) {
+                    itemMod.put(it.id ?: 0, it.modifier_quantity)
+                    listOfDataModSelected.add(it.id ?: 0)
+                }
 
             }
         }
@@ -4480,6 +4483,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 order_item_taxes_attributes =
                     orderModifierTaxesAttributes(item, it, terminalId)
                 modifier_quantity = it.modifier_quantity
+                _destroy = it._destroy
             }
             orderItemModifierAttributeList.add(orderItemModifierAttribute)
         }
