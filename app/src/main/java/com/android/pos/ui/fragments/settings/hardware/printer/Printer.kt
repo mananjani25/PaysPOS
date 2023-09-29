@@ -179,8 +179,9 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentPrinterBinding.inflate(inflater, container, false)
+        binding.maskLayout?.visible()
+       // deleteAllPrinters()
         binding.lifecycleOwner = this
-        deleteAllPrinters()
         updatePrinter = this
         printerList = ArrayList()
 
@@ -195,12 +196,16 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         checkMasterTerminal()
 
 
+
+
         return binding.root
     }
 
     private fun deleteAllPrinters() {
         lifecycleScope.launch {
             viewModel.deleteAllKitchenPrinters()
+            delay(1000)
+            getAllKitchenPrintersListFromDB()
         }
     }
 
@@ -300,7 +305,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         super.onViewCreated(view, savedInstanceState)
         Binding()
         updatePrinter = this
-        hideLoaderAfterDelay()
+        //hideLoaderAfterDelay()
 
         try {
             SunmiPrinterManager.getInstance()
@@ -683,9 +688,9 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             }
 
         }
-        getAllKitchenPrintersListFromDB()
+       // getAllKitchenPrintersListFromDB()
         lifecycleScope.launch {
-            delay(1500)
+            delay(2000)
             getAllKitchenPrintersListFromDB()
         }
     }
@@ -745,6 +750,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                     SunmiPrinterManager.getInstance()
                         .searchCloudPrinter(requireContext(), SearchMethod.LAN, this@Printer)
                 }
+
+                hideLoaderAfterDelay()
                 ProgressUtils.dismissProgressDialog()
             } catch (e: Exception) {
                 ProgressUtils.dismissProgressDialog()
