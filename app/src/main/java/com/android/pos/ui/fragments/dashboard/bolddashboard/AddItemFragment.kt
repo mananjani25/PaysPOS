@@ -68,7 +68,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
     private var intArray: IntArray? = null
     private var mainModifiersId: ArrayList<Int> = arrayListOf()
     private var mainVariationId: ArrayList<Int> = arrayListOf()
-    private var originalModifiersList: ArrayList<Modifier> = arrayListOf()
+    private var originalModifiersList: List<Modifier> = arrayListOf()
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -564,10 +564,10 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
     }
 
     private fun getData() {
-        originalModifiersList.clear()
+        originalModifiersList = arrayListOf()
         item = requireArguments().getParcelable<TbItem>("item") ?: TbItem()
         Log.e(TAG, "getMainItemAdd  ${Gson().toJson(item)}")
-        originalModifiersList = item.itemOriginalModifiersList as ArrayList<Modifier>
+        originalModifiersList = item.itemOriginalModifiersList ?: arrayListOf()
         if (item.modifiers.isNotEmpty()) {
             item.modifiers.forEach {
                 mainModifiersId.add(it.id ?: 0)

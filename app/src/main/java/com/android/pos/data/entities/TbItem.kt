@@ -14,6 +14,7 @@ import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 @TypeConverters(TypeConvertersTax::class, TypeConvertersIds::class, TCModifier::class)
@@ -78,7 +79,7 @@ class TbItem : Parcelable {
     var manualSaleId: String = UUID.randomUUID().toString()
     var isDeleted: Boolean = false
     var headerPositionDinein = 0
-    var itemOriginalModifiersList: List<Modifier>? = emptyList()
+    var itemOriginalModifiersList: List<Modifier>? = arrayListOf()
 //    @SerializedName("price_without_markup")
 //    var price_without_markup = 0.0
     fun convertToItem(item: Item, category: Category?): TbItem {
