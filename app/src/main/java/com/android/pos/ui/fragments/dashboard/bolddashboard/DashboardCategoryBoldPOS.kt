@@ -797,7 +797,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             try {
                 if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
                     prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
-                    if (isupdate){
+                    if (isupdate || prefProvider.getValueboolean(Constants.DINE_IN_UPDATE, false)){
                         prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
                         prefProvider.setValue(Constants.REDIRECT_FROM, "")
                         if (prefProvider.getValue(ORDER_TYPE, "").toString() == Constants.DINE_IN) {
