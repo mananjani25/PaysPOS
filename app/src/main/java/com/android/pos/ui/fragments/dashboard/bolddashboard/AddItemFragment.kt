@@ -73,18 +73,21 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
     @Inject
     lateinit var prefProvider: PrefProvider
     private var qty = 1
+    private var itemPosition = -1
 
     companion object {
         fun newInstance(
             item: TbItem,
             callback: ItemListner,
             cartListModel: ArrayList<CartModel>,
-            isItemUpdate: Boolean
+            isItemUpdate: Boolean,
+            itemPosition: Int = -1
         ): AddItemFragment {
             val bundle: Bundle = Bundle()
             bundle.putParcelable("item", item)
             bundle.putBoolean(Constants.IS_UPDATE_ITEM, isItemUpdate)
             bundle.putSerializable("cartList", cartListModel)
+            bundle.putInt("itemPosition", itemPosition)
             val frag = AddItemFragment(callback)
             frag.arguments = bundle
             return frag
@@ -398,13 +401,13 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                     if (checkVar()) {
 
                         LogUtil.logE("NewItem", "ItemSame ${Gson().toJson(item)}")
-                        viewModel.newCartLogicModifier(cartList, item, Constants.UPDATE, false)
+                        viewModel.newCartLogicModifier(cartList, item, Constants.UPDATE, false, position = itemPosition)
 
                     } else {
 
                         LogUtil.logE("NewItem", "ItemSameNot")
                         item.orderItemId = null
-                        viewModel.newCartLogicModifier(cartList, item, Constants.UPDATE, false)
+                        viewModel.newCartLogicModifier(cartList, item, Constants.UPDATE, false, position = itemPosition)
                     }
 
 
@@ -579,6 +582,9 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
             }
         }
         mainItem = requireArguments().getParcelable<TbItem>("item") ?: TbItem()
+        if (requireArguments().containsKey("itemPosition")) {
+            itemPosition = requireArguments().getInt("itemPosition") ?: -1
+        }
         LogUtil.logE(TAG, "getIrem  ${Gson().toJson(item)}")
         cartList = requireArguments().getSerializable("cartList") as ArrayList<CartModel>
         setData()
