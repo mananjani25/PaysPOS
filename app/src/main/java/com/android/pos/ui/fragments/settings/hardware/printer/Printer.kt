@@ -179,9 +179,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentPrinterBinding.inflate(inflater, container, false)
-        binding.maskLayout?.visible()
-       // deleteAllPrinters()
         binding.lifecycleOwner = this
+        binding.maskLayout?.visible()
         updatePrinter = this
         printerList = ArrayList()
 
@@ -196,16 +195,12 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         checkMasterTerminal()
 
 
-
-
         return binding.root
     }
 
     private fun deleteAllPrinters() {
         lifecycleScope.launch {
             viewModel.deleteAllKitchenPrinters()
-            delay(1000)
-            getAllKitchenPrintersListFromDB()
         }
     }
 
@@ -688,9 +683,9 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             }
 
         }
-       // getAllKitchenPrintersListFromDB()
+        getAllKitchenPrintersListFromDB()
         lifecycleScope.launch {
-            delay(2000)
+            delay(1500)
             getAllKitchenPrintersListFromDB()
         }
     }
@@ -819,6 +814,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
                 }
 
+                Log.e(TAG,"checkAdded  ${isAdded}")
                 if (isAdded == false) {
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
