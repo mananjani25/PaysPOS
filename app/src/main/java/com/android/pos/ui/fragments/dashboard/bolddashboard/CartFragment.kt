@@ -2256,6 +2256,10 @@ class CartFragment(
             }
             prefProvider.setValueboolean(Constants.TIP_ADDED, false)
 
+            if (prefProvider.getValueboolean(OPEN_ORDER_UPDATE_FOR_PRINT, false)) {
+                prefProvider.setValue(Constants.OPEN_ORDER_ITEMS, Gson().toJson(cartAdapter.cartList))
+            }
+
             if (cartAdapter.cartList.isNotEmpty()) {
                 prefProvider.setValue(ORDER_TYPE, prefProvider.getValue(ORDER_TYPE, ""))
                 prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)

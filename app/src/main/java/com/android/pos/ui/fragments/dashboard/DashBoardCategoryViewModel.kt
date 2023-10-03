@@ -1429,6 +1429,27 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     list.add(item)
                                 }
                             } else {
+                                //For BIS-3219 issue
+                                //This is for adding the item after deleting it after coming from all orders update order click
+                                var newItem: TbItem? = null
+                                var indexToRemove = -1
+                                list.forEachIndexed { index, tbItem ->
+                                    if(tbItem.isDestroy && tbItem.itemId == item?.itemId){
+                                        newItem = tbItem
+                                        indexToRemove = index
+                                    }
+                                }
+
+                                if(indexToRemove != -1){
+                                    list.removeAt(indexToRemove)
+                                }
+
+                                if(newItem != null){
+                                    newItem?.itemQuantity = 1
+                                    newItem?.isDestroy = false
+                                    list.add(newItem!!)
+                                }
+
                                 Log.e("DashViewModModel", "getIndexThird  ${index}")
 
                             }
