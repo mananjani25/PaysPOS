@@ -642,6 +642,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
         binding.edtAmount.removeTextChangedListener(this)
         binding.edtAmount.setText(MethodUtils.roundOffAmountString(discount))
+        binding.edtAmount.addTextChangedListener(this)
         selectedListPos = pos
     }
 
