@@ -1538,7 +1538,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     )
                     addBuilderText(
                         builder,
-                        MethodUtils.getUSFormatNumber(
+                        MethodUtils.formatPhoneNumber(
                             prefProvider.getValue(Constants.BUSINESS_PHONE_NO, "").toString()
                         )
                     )
@@ -3731,7 +3731,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 )
                 addBuilderText(
                     builder,
-                    MethodUtils.getUSFormatNumber(
+                    MethodUtils.formatPhoneNumber(
                         prefProvider.getValue(
                             Constants.BUSINESS_PHONE_NO,
                             ""
@@ -6657,7 +6657,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 )
                 addBuilderText(
                     builder,
-                    MethodUtils.getUSFormatNumber(
+                    MethodUtils.formatPhoneNumber(
                         prefProvider.getValue(BUSINESS_PHONE_NO, "").toString()
                     )
                 )
@@ -7844,7 +7844,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                 }
                                 builder.addText(
                                     padLine(
-                                        MethodUtils.getUSFormatNumber(phone.toString()),
+                                        MethodUtils.formatPhoneNumber(phone.toString()),
                                         "",
                                         if (customerSettingModel.fonts == LARGE) {
                                             24
@@ -8142,7 +8142,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 )
                 addBuilderText(
                     builder,
-                    MethodUtils.getUSFormatNumber(
+                    MethodUtils.formatPhoneNumber(
                         prefProvider.getValue(BUSINESS_PHONE_NO, "").toString()
                     )
                 )
@@ -8747,7 +8747,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                 }
                                 builder.addText(
                                     padLine(
-                                        MethodUtils.getUSFormatNumber(phone.toString()),
+                                        MethodUtils.formatPhoneNumber(phone.toString()),
                                         "",
                                         if (customerSettingModel.fonts == LARGE) {
                                             24
@@ -9328,7 +9328,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             Builder.COLOR_1
                         )
                         mPrinter.addText(
-                            MethodUtils.getUSFormatNumber(
+                            MethodUtils.formatPhoneNumber(
                                 receiptModel?.order?.customer?.phones?.get(
                                     0
                                 )?.phoneNumber.toString()
@@ -9729,7 +9729,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                     Builder.COLOR_1
                                 )
                                 builder.addText(
-                                    MethodUtils.getUSFormatNumber(
+                                    MethodUtils.formatPhoneNumber(
                                         receiptModel?.order?.customer?.phones?.get(
                                             0
                                         )?.phoneNumber.toString()
@@ -10094,7 +10094,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                     Builder.COLOR_1
                                 )
                                 builder.addText(
-                                    MethodUtils.getUSFormatNumber(
+                                    MethodUtils.formatPhoneNumber(
                                         receiptModel?.order?.customer?.phones?.get(
                                             0
                                         )?.phoneNumber.toString()
@@ -10346,7 +10346,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                             receiptModel?.order?.customer?.phones?.get(0)?.phoneNumber?.let {
                                 PrintSunmiUtils.customerPhone(
-                                    MethodUtils.getUSFormatNumber(it)
+                                    MethodUtils.formatPhoneNumber(it)
                                 )
                             }
                         }
@@ -10479,7 +10479,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                             receiptModel?.order?.customer?.phones?.get(0)?.phoneNumber?.let {
                                 PrintSunmiUtils.normalTextLarge(
-                                    MethodUtils.getUSFormatNumber(it)
+                                    MethodUtils.formatPhoneNumber(it)
                                 )
                             }
                         }
@@ -11077,7 +11077,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         }
                         PrintSunmiUtils.customerPhone(
                             padLine(
-                                number?.let { MethodUtils.getUSFormatNumber(it) },
+                                number?.let { MethodUtils.formatPhoneNumber(it) },
                                 "",
                                 if (customerSettingModel.fonts == LARGE) 23 else 48
                             ).toString()
@@ -11745,7 +11745,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             }
                             PrintSunmiUtils.customerPhone(
                                 padLine(
-                                    number?.let { MethodUtils.getUSFormatNumber(it) },
+                                    number?.let { MethodUtils.formatPhoneNumber(it) },
                                     "",
                                     if (customerSettingModel.fonts == LARGE) 23 else 48
                                 ).toString()
@@ -12411,7 +12411,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             }
                             PrintSunmiUtils.normalText(
                                 padLine(
-                                    phone?.let { MethodUtils.getUSFormatNumber(it) },
+                                    phone?.let { MethodUtils.formatPhoneNumber(it) },
                                     "",
                                     if (customerSettingModel.fonts == LARGE) 23 else 48
                                 ).toString()
@@ -12799,7 +12799,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                 }
                             PrintSunmiUtils.normalText(
                                 padLine(
-                                    phone?.let { MethodUtils.getUSFormatNumber(it) },
+                                    phone?.let { MethodUtils.formatPhoneNumber(it) },
                                     "",
                                     if (customerSettingModel.fonts == LARGE) 23 else 48
                                 ).toString()
