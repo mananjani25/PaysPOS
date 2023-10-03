@@ -195,6 +195,10 @@ class DashBoardCategoryViewModel @Inject constructor(
         this.isSelectCount = selectcount
     }
 
+    fun getSplitCount():Int{
+        return this.isSelectCount
+    }
+
     fun orderTypes(): LiveData<Resource<List<TbOrderType>>> {
         return posRepository.orderTypesDb()
     }

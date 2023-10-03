@@ -165,6 +165,7 @@ class CartFragment(
     var cashDiscountSurcharge = 0.0
 
     private var orderTypeAdapter: OrderTypeAdapter? = null
+    var splitValue = -1
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -340,6 +341,12 @@ class CartFragment(
         addObserver()
         setupTaxAdapter()
         getOrderTypes()
+
+        findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Bundle>("data")
+            ?.observe(viewLifecycleOwner) {
+                Log.d(TAG, "splitDetector onCreateView: "+it.getInt("splitvalue"))
+                splitValue = it.getInt("splitvalue")
+            }
 
 
         if (taxBirfurcationAdapter.taxlist.size == 0) {
@@ -2122,6 +2129,12 @@ class CartFragment(
                     AlertUtils.showCustomAlertWithListenerWithOK(
                         requireActivity(),
                         "You can not change customer from checkout when loyalty points added. Please go back and change customer."
+                    ) { _, _ ->
+                    }
+                }else if (viewModel.getSplitCount() > 1 || splitValue > 1){
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        requireActivity(),
+                        "Customer can not be changed during split payment."
                     ) { _, _ ->
                     }
                 } else {
