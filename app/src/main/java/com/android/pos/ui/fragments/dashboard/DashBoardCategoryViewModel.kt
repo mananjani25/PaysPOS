@@ -102,6 +102,7 @@ import java.net.URL
 import java.text.NumberFormat
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 import kotlin.collections.set
 import kotlin.math.ceil
 
@@ -577,7 +578,8 @@ class DashBoardCategoryViewModel @Inject constructor(
         type: String,
         isManualSales: Boolean,
         dineInList: List<DineInModel> = arrayListOf(),
-        isFromDineInScreen: Boolean = false
+        isFromDineInScreen: Boolean = false,
+        position: Int = -1
     ) {
         prefProvider.setValueboolean(
             IS_LAST_ITEM_DELETE,
@@ -1491,7 +1493,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                             "CheckUpdate",
                                             "newCartLogicModifier: position of selected Item " + item.id
                                         )
-                                        var indexJ = -1
+                                        /*var indexJ = -1
 
                                         for (j in 0 until listTmp.size) {
                                             if (listTmp[j].id == item.id
@@ -1500,12 +1502,13 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                 break
                                             }
 
-                                        }
+                                        }*/
                                         var ttempllist =
                                             ArrayList(listTmp).apply {
-                                                if (indexJ != -1) {
-                                                    Log.e("CheckUpdate", "GETIndexJ  ${indexJ}")
-                                                    removeAt(indexJ)
+                                                if (position != -1) {
+                                                    Log.e("CheckUpdate", "GETIndexJ  ${position}")
+                                                    this[position].isDestroy = true
+//                                                    removeAt(indexJ)
                                                 }
                                             }
                                         list.addAll(ttempllist.toMutableList())
@@ -1536,7 +1539,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                         "CheckUpdate",
                                                         "newCartLogicModifier: position of selected Item " + item.id
                                                     )
-                                                    var indexJ = -1
+                                                    /*var indexJ = -1
 
                                                     for (j in 0 until listTmp.size) {
                                                         if (listTmp[j].id == item.id
@@ -1545,15 +1548,16 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                             break
                                                         }
 
-                                                    }
+                                                    }*/
                                                     var ttempllist =
                                                         ArrayList(listTmp).apply {
-                                                            if (indexJ != -1) {
+                                                            if (position != -1) {
                                                                 Log.e(
                                                                     "CheckUpdate",
-                                                                    "GETIndexJ  ${indexJ}"
+                                                                    "GETIndexJ  ${position}"
                                                                 )
-                                                                removeAt(indexJ)
+                                                                this[position].isDestroy = true
+//                                                                removeAt(indexJ)
                                                             }
                                                         }
                                                     list.addAll(ttempllist.toMutableList())

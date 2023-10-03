@@ -1683,7 +1683,7 @@ class CartFragment(
         LogUtil.logE(TAG, "itemClicked  ${Gson().toJson(data)}")
 
 
-        itemClickListner?.onItemUpdate(data)
+        itemClickListner?.onItemUpdate(data, position)
 
 
     }
@@ -1702,7 +1702,7 @@ class CartFragment(
         viewModel.dineInSelectedItemHeaderPos = headerPosition
 
         item.headerPositionDinein = headerPosition
-        itemClickListner?.onItemUpdate(item)
+        itemClickListner?.onItemUpdate(item, position)
         /* if (prefProvider.getValue(ORDER_TYPE, "") == Constants.DINE_IN) {
              val dineinList = dineInCartAdapter.getList()
              dineinList.get(0).selectedPosition = viewModel.dineInHeaderPosition
