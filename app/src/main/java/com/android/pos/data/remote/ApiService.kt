@@ -1003,5 +1003,5 @@ interface ApiService {
     suspend fun inventoryCounts(): InventoryCountsResponse
 
     @GET(TIME_DETAILS)
-    suspend fun getTimeDetails(): TimeDetailsResponse
+    suspend fun getTimeDetails(@Query("terminal_id") terminalId: Int): TimeDetailsResponse
 }

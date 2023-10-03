@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.model.responseModel.BaseResponse
+import com.android.pos.data.model.responseModel.TimeDetailsResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
@@ -41,6 +42,9 @@ class PasscodeViewModel @Inject constructor(
     private val _data = MutableLiveData<Event<BaseResponse>>()
     val data: LiveData<Event<BaseResponse>> = _data
 
+    private val _timeData = MutableLiveData<Event<TimeDetailsResponse>>()
+    val timeData: LiveData<Event<TimeDetailsResponse>> = _timeData
+
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
@@ -50,8 +54,6 @@ class PasscodeViewModel @Inject constructor(
     private val _data1 = MutableLiveData<Event<Boolean>>()
     val data1: LiveData<Event<Boolean>> = _data1
 
-    val timeDetails = posRepository.timeDetails()
-
     fun isDashboardData(isDashboard: Boolean) {
         this.isDashboard = isDashboard
     }
@@ -60,6 +62,36 @@ class PasscodeViewModel @Inject constructor(
     fun deleteCart() {
         viewModelScope.launch {
             posRepository.deleteAllCart()
+        }
+    }
+
+    fun getTimeDetails(terminalId: Int){
+        _showProgress.value = Event(true)
+        viewModelScope.launch {
+            val timeDetails =
+                posRepository.timeDetails(terminalId)
+            when (timeDetails.status) {
+                Status.SUCCESS -> {
+                    _showProgress.value = Event(false)
+                    timeDetails.data.let { timeResponse ->
+                        if (timeResponse?.status == 200) {
+                            _timeData.value = Event(timeResponse)
+                            prefProvider.setValue(Constants.TERMINAL_NAME,timeResponse.data.terminalName)
+                        } else {
+                            _data1.value = Event(false)
+                            _snackbarText.value = Event(timeDetails.message.toString())
+                        }
+                    }
+                }
+                Status.ERROR -> {
+                    _snackbarText.value = Event(timeDetails.message.toString())
+                    _showProgress.value = Event(false)
+                }
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+                }
+            }
+
         }
     }
 
