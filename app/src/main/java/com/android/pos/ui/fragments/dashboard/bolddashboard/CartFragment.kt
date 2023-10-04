@@ -61,6 +61,7 @@ import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.ORDER_TYPE_ID
 import com.android.pos.data.remote.Constants.ORDER_TYPE_NAME
 import com.android.pos.data.remote.Constants.PHONE_ORDER
+import com.android.pos.data.remote.Constants.PICK_UP
 import com.android.pos.data.remote.Constants.REDIRECT_FROM
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.remote.Constants.WHOLE_AMOUNT
@@ -2620,7 +2621,7 @@ class CartFragment(
 
         Log.e(TAG, "checkOrderType  ${model?.orderType}")
 
-        prefProvider.setValue(DELIVERY_TYPE, "")
+        prefProvider.setValue(DELIVERY_TYPE, PICK_UP)
 
         prefProvider.setValue(Constants.REDIRECT_FROM, "")
 
@@ -2633,7 +2634,7 @@ class CartFragment(
             findNavController().navigate(
                 R.id.action_dashboardCategoryBoldPOS_to_phoneOrderFragment
             )
-
+            model.orderType.let { prefProvider.setValue(ORDER_TYPE, it) }
 
         } else {
             Log.e(TAG, "InsideDine inNoDine")
