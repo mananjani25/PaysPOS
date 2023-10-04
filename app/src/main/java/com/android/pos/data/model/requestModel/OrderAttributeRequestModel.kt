@@ -470,6 +470,9 @@ class OrderItemModifierAttribute : Parcelable {
     @SerializedName("modifier_set_id")
     var modifier_set_id: Int = 0
 
+    @SerializedName("_destroy")
+    var _destroy: Boolean = false
+
     @SerializedName("order_item_taxes_attributes")
     var order_item_taxes_attributes: List<OrderModifierTaxesAttribute> = emptyList()
 

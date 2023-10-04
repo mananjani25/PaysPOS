@@ -161,6 +161,8 @@ data class OnlineOrderResponseModel(
             val orderId: Int,
             @SerializedName("order_item_modifiers")
             val orderItemModifiers: List<OrderItemModifier>,
+            @SerializedName("order_item_original_modifiers")
+            var orderItemOriginalModifiers: List<OrderItemModifier>,
             @SerializedName("order_item_taxes")
             val orderItemTax: List<OrderItemTax>,
             @SerializedName("price")

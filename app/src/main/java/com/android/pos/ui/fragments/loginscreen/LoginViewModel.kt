@@ -18,6 +18,7 @@ import com.android.pos.data.remote.Constants.EMAIL
 import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.remote.Constants.LOCATION_NAME
 import com.android.pos.data.remote.Constants.TERMINAL_ID
+import com.android.pos.data.remote.Constants.TERMINAL_NAME
 import com.android.pos.data.remote.Constants.USERNAME
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.data.repositories.UserRepository
@@ -148,6 +149,7 @@ class LoginViewModel @Inject constructor(
                                 terminalResponse.terminalData.enabled_for_receiving_web_order!!
                             )
                             prefProvider.setValueInt(TERMINAL_ID, terminalResponse.terminalData.id)
+                            prefProvider.setValue(TERMINAL_NAME, terminalResponse.terminalData.name)
                             _data.value = Event(true)
 
 

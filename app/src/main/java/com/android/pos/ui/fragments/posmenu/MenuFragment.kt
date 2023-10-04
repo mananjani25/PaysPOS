@@ -164,12 +164,15 @@ class MenuFragment : DialogFragment() {
                     }
                     dashBoardCategoryViewModel.cartModel = null
                     viewModel.destroyedList = arrayListOf()
+                    // To refrain from disconnecting PAX after logout
+                    val paxConnectionStatus = prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)
+
                     viewModel.clearTable()
                     viewModel.deleteCart()
                     prefProvider.setClear()
                     prefProvider.setValue(Constants.AUTH_TOKEN, "")
                     prefProvider.setValue(Constants.BASE_URL_NEW, BASE_URL)
-
+                    prefProvider.setValueboolean(Constants.IS_PAX_CONNECTED, paxConnectionStatus)
 
                     findNavController().navigate(R.id.action_global_login)
 

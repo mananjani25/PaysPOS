@@ -1419,10 +1419,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     }
 
 
-    override fun onItemUpdate(item: TbItem) {
+    override fun onItemUpdate(item: TbItem, position: Int) {
         prefProvider.setValueInt(Constants.CAT_ID_SELECTED, item.categoryId)
         val backStateName: String = AddItemFragment.javaClass.getName()
-        val fragment = AddItemFragment.newInstance(item, this, cartList, true)
+        val fragment = AddItemFragment.newInstance(item, this, cartList, true, position)
         val fm: FragmentManager = requireActivity().supportFragmentManager
         fm.beginTransaction().add(binding.frameLayout.id, fragment).setReorderingAllowed(true)
             .addToBackStack(backStateName).commit()

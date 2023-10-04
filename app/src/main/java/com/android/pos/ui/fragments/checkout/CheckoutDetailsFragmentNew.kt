@@ -52,7 +52,6 @@ import com.android.pos.ui.fragments.magtekPro.SessionManager
 import com.android.pos.ui.fragments.payment.PaymentBoldPosFragment
 import com.android.pos.ui.fragments.payment.PaymentViewModel
 import com.android.pos.ui.fragments.settings.tip.TipListViewModel
-import com.android.pos.ui.fragments.transactions.TransactionViewModel
 import com.android.pos.utils.*
 import com.android.pos.utils.MethodUtils.Companion.toPrecision
 import com.android.pos.utils.callback.DeleteOptionCallback
@@ -72,13 +71,9 @@ import com.pax.poslink.PosLink
 import com.pax.poslink.ProcessTransResult
 import com.pax.poslink.aidl.BasePOSLinkCallback
 import com.pax.poslink.broadpos.BroadPOSCommunicator
-import com.pax.poslink.broadpos.BroadPOSCommunicator.StartListenerCallBack
 import com.pax.poslink.fullIntegration.InputAccount
 import com.pax.poslink.fullIntegration.InputAccount.InputAccountCallback
 import dagger.hilt.android.AndroidEntryPoint
-import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
 import kotlinx.coroutines.*
 import retrofit2.Call
 import retrofit2.Callback
@@ -2694,7 +2689,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 ExtData,
                 ECRRefNumber,
                 PAXtoken,
-                cardLastDigits
+                cardLastDigits,
+                cardTypeOfTransaction = EDCType
             )
         }
         LogUtil.logE(TAG, "myRequestOriginal ${Gson().toJson(myRequest)}")

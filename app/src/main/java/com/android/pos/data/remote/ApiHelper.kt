@@ -737,8 +737,8 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
         getResult { apiService.allOrderCounts(startDate, endDate) }
 
 
-    suspend fun timeDetails() =
-        getResult { apiService.getTimeDetails() }
+    suspend fun timeDetails(terminalId: Int) =
+        getResult { apiService.getTimeDetails(terminalId) }
 
     suspend fun addItemToWastage(data: WastageItemRequest) =
         getResult { apiService.addItemToWastage(data) }

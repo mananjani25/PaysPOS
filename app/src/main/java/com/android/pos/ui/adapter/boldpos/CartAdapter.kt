@@ -65,13 +65,14 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
                 binding.txtNote.visibility = View.VISIBLE
                 binding.txtNote.text = "Note: " + item.note
             }
-
-            if (item.modifiers.isNotEmpty()) {
+            var updatedModifiers = item.modifiers.filter {
+                !it._destroy
+            } ?: arrayListOf()
+            if (updatedModifiers.isNotEmpty()) {
                 binding.rvModifiers.visibility = View.VISIBLE
                 val adapter = CartItemModifierAdapter()
                 binding.rvModifiers.adapter = adapter
-                LogUtil.logE(TAG, "dineinMod  ${Gson().toJson(item.modifiers)}")
-                adapter.addAll(item.modifiers)
+                adapter.addAll(updatedModifiers)
             } else {
                 binding.rvModifiers.visibility = View.GONE
             }
