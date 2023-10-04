@@ -180,7 +180,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     ): View? {
         binding = FragmentPrinterBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
-        deleteAllPrinters()
+        binding.maskLayout?.visible()
         updatePrinter = this
         printerList = ArrayList()
 
@@ -300,7 +300,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         super.onViewCreated(view, savedInstanceState)
         Binding()
         updatePrinter = this
-        hideLoaderAfterDelay()
+        //hideLoaderAfterDelay()
 
         try {
             SunmiPrinterManager.getInstance()
@@ -745,6 +745,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                     SunmiPrinterManager.getInstance()
                         .searchCloudPrinter(requireContext(), SearchMethod.LAN, this@Printer)
                 }
+
+                hideLoaderAfterDelay()
                 ProgressUtils.dismissProgressDialog()
             } catch (e: Exception) {
                 ProgressUtils.dismissProgressDialog()
@@ -812,6 +814,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
                 }
 
+                Log.e(TAG,"checkAdded  ${isAdded}")
                 if (isAdded == false) {
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {

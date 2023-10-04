@@ -198,6 +198,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     }
 
     private var masterTerminal = object : BroadcastReceiver() {
+        @SuppressLint("RestrictedApi")
         override fun onReceive(p0: Context?, p1: Intent?) {
 
             Log.e(
@@ -207,10 +208,41 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             if (prefProvider?.getValueboolean(IS_MASTER_TERMINAL, false) == true && prefProvider?.getValueboolean(Constants.IS_PRINTER_QUEUE_STARTS,false) == false && prefProvider?.getValueboolean(
                     IS_PRINTER_QUEUE_ENABLE,false) == true) {
                 prefProvider?.setValueboolean(Constants.IS_PRINTER_QUEUE_STARTS,true)
+                prefProvider?.setValueboolean(Constants.CHECK_QUEUE_CANCEL,false)
                 getKitOne()
 
             } else if (prefProvider?.getValueboolean(IS_MASTER_TERMINAL, false) == false){
                 WorkManager.getInstance(this@MainActivity).cancelAllWork()
+                val data = Data.Builder()
+                    //.putString("kitchenPrinterList", Gson().toJson(kitchenPrinterList))
+                    // .put("kitchenSettingData", Gson().toJson(kitchenSettingModel))
+                    .put("location_id", prefProvider?.getValueInt(LOCATION_ID, 0))
+                    .put("base_url", prefProvider?.getValue(Constants.BASE_URL_NEW, ""))
+                    .put(IS_PRINTER_QUEUE_ENABLE,prefProvider?.getValueboolean(IS_PRINTER_QUEUE_ENABLE,false))
+                    .put("is_cancel_work",true)
+                    .build()
+                prefProvider?.setValueboolean(Constants.CHECK_QUEUE_CANCEL,true)
+                val uploadWorkRequest =
+                    OneTimeWorkRequest.Builder(
+                        UploadWorker2::class.java
+                    ).addTag(Constants.PRINTER_QUEUE_BACKGROUND)
+                        .setInputData(data)
+                        .build()
+
+
+                val workManager = WorkManager.getInstance(this@MainActivity)
+
+                try {
+
+                    workManager.enqueueUniqueWork(
+                        Constants.PRINTER_QUEUE_BACKGROUND, ExistingWorkPolicy.REPLACE,
+                        uploadWorkRequest
+                    )
+
+                } catch (e: java.lang.Exception) {
+                    LogUtil.logE(TAG, "printerQueueLog  ${e.message.toString()}")
+                    e.printStackTrace()
+                }
             }
         }
 
@@ -760,6 +792,8 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 .put(IS_PRINTER_QUEUE_ENABLE,prefProvider?.getValueboolean(IS_PRINTER_QUEUE_ENABLE,false))
                 .put("is_cancel_work",false)
                 .build()
+
+            prefProvider?.setValueboolean(Constants.CHECK_QUEUE_CANCEL,false)
 
             val uploadWorkRequest =
                 OneTimeWorkRequest.Builder(

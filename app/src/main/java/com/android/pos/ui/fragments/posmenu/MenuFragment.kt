@@ -2,10 +2,13 @@ package com.android.pos.ui.fragments.posmenu
 
 import android.annotation.SuppressLint
 import android.app.Dialog
+import android.content.ClipboardManager
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -109,6 +112,8 @@ class MenuFragment : DialogFragment() {
 
         binding.txtVersion?.text =
             "Version : " + BuildConfig.VERSION_NAME + "(" + BuildConfig.VERSION_CODE + ")"
+
+        binding.txtTerminal.text = "Terminal Login ID (Tap to copy Unique id) : "+prefProvider.getUniqueId()
     }
 
     override fun getTheme(): Int {
@@ -169,6 +174,7 @@ class MenuFragment : DialogFragment() {
                     prefProvider.setClear()
                     prefProvider.setValue(Constants.AUTH_TOKEN, "")
                     prefProvider.setValue(Constants.BASE_URL_NEW, BASE_URL)
+                    prefProvider.setValueboolean(Constants.CHECK_QUEUE_CANCEL,true)
 
 
                     findNavController().navigate(R.id.action_global_login)
@@ -210,6 +216,10 @@ class MenuFragment : DialogFragment() {
 
 
     private fun onClick() {
+        binding.txtTerminal.setOnClickListener {
+            copy()
+        }
+
         binding.linearPrinterQueue.setOnClickListener {
             findNavController().navigate(R.id.action_menuFragment_to_printerQueueList)
         }
@@ -324,6 +334,16 @@ class MenuFragment : DialogFragment() {
 
     private fun closeDialog(dialog: Dialog?) {
         dialog?.dismiss()
+    }
+
+    private fun copy() {
+
+        println(binding.txtTerminal.text.toString().trim())
+
+        val cm: ClipboardManager =
+            requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        cm.text = prefProvider.getUniqueId()
+        Toast.makeText(context, "Copied to clipboard", Toast.LENGTH_SHORT).show()
     }
 
 
