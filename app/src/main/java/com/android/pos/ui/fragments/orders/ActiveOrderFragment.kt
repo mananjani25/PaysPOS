@@ -50,7 +50,10 @@ import com.android.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
 import com.android.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.android.pos.utils.*
 import com.android.pos.utils.callback.OrderCallBack
+import com.android.pos.utils.extensions.gone
+import com.android.pos.utils.extensions.runOnUiThread
 import com.android.pos.utils.extensions.showAlert
+import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.printer.PrinterClass
 import com.android.pos.utils.statusUtils.Status
 import com.epson.eposprint.Builder
@@ -608,6 +611,21 @@ class ActiveOrderFragment(
             }
         }
 
+    }
+
+    override fun noDataAvailableFilter() {
+
+        runOnUiThread(Runnable {
+            binding.llNoData.visible()
+            binding.txtNodata.text = requireContext().getText(R.string.no_data_available)
+        })
+
+        Log.d("noDataAvailableFilter","no data available")
+    }
+
+    override fun hideNoDataAvailable() {
+        binding.llNoData.gone()
+        Log.d("noDataAvailableFilter","hide")
     }
 
     private fun cartModel(order: OpenOrderResponse.Data.Order): CartModel {

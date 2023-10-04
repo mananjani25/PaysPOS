@@ -396,6 +396,8 @@ class AllOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
         return object : Filter() {
             override fun performFiltering(charSequence: CharSequence): FilterResults {
                 val charString = charSequence.toString()
+
+
                 filterList = if (charString.isEmpty()) {
                     orderList
                 } else {
@@ -451,6 +453,11 @@ class AllOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
                     fList
                 }
 
+                if (filterList.size == 0){
+                    mCallback?.noDataAvailableFilter()
+                }else {
+                    mCallback?.hideNoDataAvailable()
+                }
                 return FilterResults().apply { values = filterList }
             }
 

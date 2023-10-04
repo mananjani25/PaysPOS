@@ -55,7 +55,10 @@ import com.android.pos.utils.addOrdersForKitchenOnlineOrderU220
 import com.android.pos.utils.callback.OrderCallBack
 import com.android.pos.utils.checkItemsforPrinterOnlineOrder
 import com.android.pos.utils.extensions.alert
+import com.android.pos.utils.extensions.gone
+import com.android.pos.utils.extensions.runOnUiThread
 import com.android.pos.utils.extensions.showAlert
+import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.padLine
 import com.android.pos.utils.printer.PrinterClass
 import com.android.pos.utils.statusUtils.Status
@@ -712,6 +715,21 @@ class OnlineDetailFragment(
 
             }
         }
+    }
+
+    override fun noDataAvailableFilter() {
+
+        runOnUiThread(Runnable {
+            binding.llNoData.visible()
+            binding.txtNodata.text = requireContext().getText(R.string.no_data_available)
+        })
+
+        Log.d("noDataAvailableFilter","no data available")
+    }
+
+    override fun hideNoDataAvailable() {
+        binding.llNoData.gone()
+        Log.d("noDataAvailableFilter","hide")
     }
 
     private fun getKitchenReceiptSettings() {

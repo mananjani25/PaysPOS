@@ -1,12 +1,6 @@
 package com.android.pos.utils
 
-import android.content.Context
 import android.util.Log
-import android.view.Gravity
-import android.widget.Toast
-import android.view.LayoutInflater
-import android.widget.TextView
-import androidx.room.PrimaryKey
 
 
 /**
@@ -22,4 +16,18 @@ object LogUtil {
     fun logEN(key: String, message: String) {
         Log.e(key, message)
     }
+}
+
+object LongLog {
+
+    fun log(TAG: String?, message: String) {
+        val maxLogSize = 2000
+        for (i in 0..message.length / maxLogSize) {
+            val start = i * maxLogSize
+            var end = (i + 1) * maxLogSize
+            end = if (end > message.length) message.length else end
+            Log.d(TAG, message.substring(start, end))
+        }
+    }
+
 }

@@ -916,6 +916,8 @@
     <string name="item_wise_sales">Item Wise Sales</string>
     <string name="employee_tip_summary">Employee Tip Summary</string>
     <string name="add_a_order_note">Add a Order Note</string>
+    <string name="no_data_available">No Data Available</string>
+    <string name="pending_order_will_be_appear_here">Pending order will appear here</string>
 
 </resources>
 
