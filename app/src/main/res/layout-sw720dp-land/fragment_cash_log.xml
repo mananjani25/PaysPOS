@@ -80,7 +80,7 @@
                 android:id="@+id/txtHome"
                 style="@style/CustomFontBold"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="@dimen/height_home_button"
                 android:gravity="center"
                 android:layout_gravity="center"
                 android:text="@string/tv_home"
@@ -89,6 +89,7 @@
                 android:textSize="@dimen/_6mdpi"
                 android:background="@drawable/button_action_hover"
                 android:paddingHorizontal="@dimen/padding_home_button"
+                android:paddingVertical="@dimen/vertical_padding_home_button"
                 android:visibility="visible" />
         </LinearLayout>
 
