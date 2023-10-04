@@ -73,6 +73,7 @@ object Constants {
 
     //SharedPref Keys
     const val AUTH_TOKEN = "authToken"
+    const val CHECK_QUEUE_CANCEL = "check_queue_cancel"
     const val TERMINAL_ID = "terminalId"
     const val TERMINAL_NAME = "terminalName"
     const val SYNC_TIME_STAMP = "SyncTimeStamp"

@@ -293,9 +293,9 @@
                             android:layout_marginEnd="@dimen/_15sdp"
                             android:background="@drawable/menu_hover"
                             android:gravity="center"
-                            android:visibility="gone"
                             android:orientation="horizontal"
-                            android:paddingVertical="@dimen/_8sdp">
+                            android:paddingVertical="@dimen/_8sdp"
+                            android:visibility="gone">
 
                             <ImageView
                                 android:layout_width="@dimen/_14sdp"
@@ -390,7 +390,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/_20sdp"
-                    android:layout_marginTop="@dimen/_15sdp"
+                    android:layout_marginTop="@dimen/_10sdp"
                     android:layout_marginEnd="@dimen/_20sdp"
                     android:background="@drawable/button_action_hover"
                     android:gravity="center"
@@ -447,22 +447,44 @@
 
                 </LinearLayout>
 
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/txtVersion"
-                    style="@style/CustomFontBold"
-                    android:layout_width="wrap_content"
+                <RelativeLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentBottom="true"
                     android:layout_centerInParent="true"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="@dimen/_5sdp"
-                    android:gravity="bottom|center"
-                    android:textColor="@color/btnColor"
-                    android:textSize="@dimen/_7mdpi"
-                    android:visibility="visible"
-                    tools:text="Version : 2.0(22)" />
+                    android:layout_marginStart="@dimen/_20sdp"
+                    android:layout_marginEnd="@dimen/_20sdp"
+                    android:paddingVertical="@dimen/_5sdp">
 
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtVersion"
+                        style="@style/CustomFontBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentBottom="true"
+                        android:layout_centerInParent="true"
+                        android:layout_gravity="center"
+                        android:textColor="@color/btnColor"
+                        android:textSize="@dimen/_7mdpi"
+                        android:visibility="visible"
+                        tools:text="Version : 2.0(22)" />
+
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtTerminal"
+                        style="@style/CustomFontBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentBottom="true"
+                        android:layout_centerInParent="true"
+                        android:layout_gravity="center"
+                        android:textColor="@color/btnColor"
+                        android:textSize="@dimen/_7mdpi"
+                        android:visibility="visible" />
+
+
+                </RelativeLayout>
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
