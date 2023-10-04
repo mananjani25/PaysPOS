@@ -32,7 +32,7 @@ class ItemModifierAdapter(
             } else {
                 binding.txtModifierQnt.visible()
             }
-            if (list[position].isChecked) {
+            if (list[position].isChecked && !list[position]._destroy) {
                 if (list[position].itemQuantity == 0) {
                     binding.txtModifierQnt.gone()
                 } else {

@@ -259,6 +259,24 @@ class MethodUtils {
             return outPutNumber
         }
 
+        /**
+         * This is the new method created for formatting a
+         * 10-digit number into US phone number format i.e (XXX) XXX-XXXX
+         * By Dharmesh Basapati
+         * */
+        fun formatPhoneNumber(phoneNumber: String): String {
+            if (phoneNumber.length != 10) {
+                // Handle invalid input (must be 10 digits)
+                return "Invalid phone number"
+            }
+
+            val areaCode = phoneNumber.substring(0, 3)
+            val firstPart = phoneNumber.substring(3, 6)
+            val secondPart = phoneNumber.substring(6)
+
+            return "($areaCode) $firstPart-$secondPart"
+        }
+
         fun generateItemRequest(data: CreateItemRequestModel): HashMap<String, RequestBody> {
             val createItemRequestMap = HashMap<String, RequestBody>()
             createItemRequestMap["active"] = data.active.toString().toMultiPartRequestBody()

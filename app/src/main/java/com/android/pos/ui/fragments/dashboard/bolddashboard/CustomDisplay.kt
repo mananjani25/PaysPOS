@@ -31,6 +31,7 @@ import com.android.pos.data.remote.Constants.MANUAL_SALE
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.REDIRECT_FROM
 import com.android.pos.data.remote.Constants.TAKEOUT
+import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.databinding.ViewCustomDisplayBinding
 import com.android.pos.di.ApiModule1
 import com.android.pos.di.PrefProvider
@@ -317,7 +318,7 @@ class CustomDisplay(
                 ) {
                     binding.txtCashDiscountSurchargeLabel?.text = "Cash Discount"
                 } else {
-                    binding.txtCashDiscountSurchargeLabel?.text = "SurCharge"
+                    binding.txtCashDiscountSurchargeLabel?.text = Constants.SURCHARGE_TEXT
                 }
             } else {
                 binding.lnrLayoutCashDiscountSurcharge?.gone()
@@ -599,7 +600,7 @@ class CustomDisplay(
 
     private fun callTimeApi(apiService: ApiService) {
         lifecycleOwner.lifecycleScope.launch {
-            val response = apiService.getTimeDetails()
+            val response = apiService.getTimeDetails(prefProvider.getValueInt(TERMINAL_ID,-1))
 
             binding.currentTime.text = response.data.time
             binding.currentDate.text = response.removeWhiteSpaces()

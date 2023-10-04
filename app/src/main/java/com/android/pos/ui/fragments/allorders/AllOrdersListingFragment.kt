@@ -914,6 +914,7 @@ class AllOrdersListingFragment(
                         it.discountAmount =
                             MethodUtils.roundOffAmountDouble(it.discountAmount / it.quantity)
                     }
+                    it.orderItemOriginalModifiers = it.orderItemModifiers
                 }
                 LogUtil.logE(TAG, "itemDiscountTotal:  ${itemDiscountTotal}")
                 LogUtil.logE(TAG, "totalOrderDiscount  ${order.totalDiscount}")
@@ -1927,7 +1928,7 @@ class AllOrdersListingFragment(
                 if (receiptModel.payments.isNotEmpty() && receiptModel.payments.get(receiptModel.payments.size - 1).paymentType.lowercase() == "Card".lowercase()) {
                     builder.addText(
                         padLine(
-                            "SurCharge",
+                            Constants.SURCHARGE_TEXT,
                             "$" + MethodUtils.roundOffAmountString(receiptModel.cash_discount_or_surcharge!!),
                             if (customerSettingModel.fonts == Constants.LARGE) {
                                 24
@@ -2907,7 +2908,7 @@ class AllOrdersListingFragment(
                 if (receiptModel.payments.isNotEmpty() && receiptModel.payments.get(receiptModel.payments.size - 1).paymentType.lowercase() == "Card".lowercase()) {
 
                     val str8 = padLine(
-                        "SurCharge",
+                        Constants.SURCHARGE_TEXT,
                         "$" + MethodUtils.roundOffAmountString(receiptModel.cash_discount_or_surcharge!!),
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             23
@@ -3232,6 +3233,7 @@ class AllOrdersListingFragment(
             var itemDiscount = 0.0
             items?.forEach {
                 itemDiscount += it.discountPrice
+                it.itemOriginalModifiersList = it.modifiers
             }
             discountPrice = order.totalDiscount
             deliveryType = order.deliveryType ?: ""
@@ -5588,7 +5590,7 @@ class AllOrdersListingFragment(
                 if (receiptModel.payments.isNotEmpty() && receiptModel.payments.get(receiptModel.payments.size - 1).paymentType.lowercase() == "Card".lowercase()) {
 
                     val str8 = padLine(
-                        "SurCharge",
+                        Constants.SURCHARGE_TEXT,
                         "$" + MethodUtils.roundOffAmountString(receiptModel.cash_discount_or_surcharge!!),
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             23

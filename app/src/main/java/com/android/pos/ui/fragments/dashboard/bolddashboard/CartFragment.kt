@@ -1643,9 +1643,9 @@ class CartFragment(
         val amountType = prefProvider.getValue(Constants.AMOUNT_TYPE, "")
         val rateOrAmount = prefProvider.getValue(Constants.RATE_OR_AMOUNT, "0")
         if (amountType == "Percentage") {
-            binding.labelCashSurcharge.text = "SurCharge (${rateOrAmount}%)"
+            binding.labelCashSurcharge.text = "${Constants.SURCHARGE_TEXT} (${rateOrAmount}%)"
         } else {
-            binding.labelCashSurcharge.text = "SurCharge"
+            binding.labelCashSurcharge.text = Constants.SURCHARGE_TEXT
         }
     }
 
@@ -1683,7 +1683,7 @@ class CartFragment(
         LogUtil.logE(TAG, "itemClicked  ${Gson().toJson(data)}")
 
 
-        itemClickListner?.onItemUpdate(data)
+        itemClickListner?.onItemUpdate(data, position)
 
 
     }
@@ -1702,7 +1702,7 @@ class CartFragment(
         viewModel.dineInSelectedItemHeaderPos = headerPosition
 
         item.headerPositionDinein = headerPosition
-        itemClickListner?.onItemUpdate(item)
+        itemClickListner?.onItemUpdate(item, position)
         /* if (prefProvider.getValue(ORDER_TYPE, "") == Constants.DINE_IN) {
              val dineinList = dineInCartAdapter.getList()
              dineinList.get(0).selectedPosition = viewModel.dineInHeaderPosition
@@ -2255,6 +2255,10 @@ class CartFragment(
                 prefProvider.setValueboolean(OPEN_ORDER_DIRECT_PAY, true)
             }
             prefProvider.setValueboolean(Constants.TIP_ADDED, false)
+
+            if (prefProvider.getValueboolean(OPEN_ORDER_UPDATE_FOR_PRINT, false)) {
+                prefProvider.setValue(Constants.OPEN_ORDER_ITEMS, Gson().toJson(cartAdapter.cartList))
+            }
 
             if (cartAdapter.cartList.isNotEmpty()) {
                 prefProvider.setValue(ORDER_TYPE, prefProvider.getValue(ORDER_TYPE, ""))

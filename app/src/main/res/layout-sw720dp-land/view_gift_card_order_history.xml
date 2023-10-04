@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingDefaultResource">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/txtOrderId"
+            style="@style/HistoryItemText"
+            android:textAllCaps="true"
+            tools:text="4708\n(Paid)"
+            android:textColor="@color/txtColor"
+            android:background="@drawable/background_square_border_grey"/>
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/txtDateTime"
+            style="@style/HistoryItemText"
+            android:layout_weight="1.5"
+            tools:text="11/01/2021\n03:00 PM"
+            android:textColor="@color/txtColor"
+            android:background="@drawable/background_square_border_grey"/>
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/txtOrderDetails"
+            style="@style/HistoryItemText"
+            android:layout_weight="3"
+            android:background="@drawable/background_square_border_grey"
+            tools:text="Digital Gift Card" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/txtPayType"
+            style="@style/HistoryItemText"
+            android:gravity="center"
+            tools:text="Cash"
+            android:background="@drawable/background_square_border_grey"/>
+
+    </LinearLayout>
+</layout>
