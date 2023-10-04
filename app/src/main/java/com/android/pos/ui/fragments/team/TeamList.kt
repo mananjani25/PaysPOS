@@ -177,6 +177,10 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
                             requireActivity()
                         )
 
+                        //  initially show first employee selected
+                        selectedPos = adapter.getPeople()?.get(0)?.id!!
+                        adapter.setSelected(selectedPos)
+
                         if (selectedPos != -1)
                             resource.data.forEach {
                                 if (it.id == selectedPos) {
