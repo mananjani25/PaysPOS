@@ -72,6 +72,7 @@ import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
+import kotlin.math.roundToInt
 
 @AndroidEntryPoint
 class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : Fragment(),
@@ -141,6 +142,8 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
     var EDCType = ""
     var GlobalUID = ""
     var RefNumber = ""
+    var ECRRefNumber = ""
+    var PAXtoken = ""
     var ExtData = ""
 
     private var cartList: CartModel? = null
@@ -1164,6 +1167,8 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                     prefProvider.setValueboolean(Constants.IS_PAX_CONNECTED, false)
                 } else if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false) && !mSessionManager.isConnected) {
                     makePaxPaymentRequest()
+                } else {
+                    errorDisplay("Please connect a payment device.")
                 }
             } else {
                 errorDisplay("Payment Amount is zero.")
@@ -1294,10 +1299,16 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
     private fun makePaxPaymentRequest() {
         GlobalScope.launch {
-            posLink.SetCommSetting(SettingINI.getCommSettingFromFile(Constants.FILE_PATH + SettingINI.FILENAME))
-            val amt = ((paymentAmount-tipAmount)*100).toInt()
-            val tip_amt = (tipAmount*100).toInt()
+            Log.d("getCommSettingFromFile ","getCommSettingFromFile: "+Gson().toJson(SettingINI.getCommSettingFromFile("/storage/emulated/0/Download/"+ SettingINI.FILENAME)))
+            posLink.SetCommSetting(SettingINI.getCommSettingFromFile("/storage/emulated/0/Download/"+ SettingINI.FILENAME))
+            val amt = ((paymentAmount-tipAmount) * 100).roundToInt()
+            val tip_amt = (tipAmount * 100).roundToInt()
+            ECRRefNumber = System.currentTimeMillis().toString()
             Log.d("Amt: ","amt $amt tip $tip_amt")
+            var broadPOS_version = prefProvider.getValue(
+                Constants.BROADPOS_VERSION,
+                ""
+            )
 
             CoroutineScope(Dispatchers.Main).launch {
                 ProgressUtils.showProgressDialog(requireActivity())
@@ -1307,9 +1318,14 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             mPaymentRequest.TenderType = mPaymentRequest.ParseTenderType("CREDIT")
             mPaymentRequest.Amount = amt.toString()
             mPaymentRequest.TipAmt = tip_amt.toString()
-            mPaymentRequest.ECRRefNum = System.currentTimeMillis().toString()
-            mPaymentRequest.ExtData = "<Force>T</Force>"
-            Log.d("ECRRefNum", "ECRRefNum: ${System.currentTimeMillis().toString()}")
+            mPaymentRequest.ECRRefNum = ECRRefNumber
+            if (broadPOS_version.contains("TSYS")) {
+                mPaymentRequest.ExtData = "<Force>T</Force>"
+            } else if (broadPOS_version.contains("Rapid")) {
+                mPaymentRequest.ExtData = "<Force>T</Force><TokenRequest>1</TokenRequest>"
+            }
+
+            Log.d("ECRRefNum", "ECRRefNum: $ECRRefNumber")
 
             posLink.PaymentRequest = mPaymentRequest
             val result = posLink.ProcessTrans()
@@ -1335,6 +1351,8 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 //                prefProvider.setValue(Constants.GLOBAL_ID, globalUID!!)
 
                 //implementation("org.dom4j:dom4j:2.1.3")
+                PAXtoken = response.PaymentTransInfo.Token
+                Log.d("token:", "token $PAXtoken")
                 Log.d(
                     "Payment Details: ",
                     "$ExtData $resultCode $resultTxt $GlobalUID $RefNumber"
@@ -1352,6 +1370,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                     CoroutineScope(Dispatchers.Main).launch {
                         ProgressUtils.dismissProgressDialog()
                         requireActivity().toast("$resultCode $resultTxt", Toast.LENGTH_LONG)
+//                        connectBP()
                     }
                 }
             } else {
@@ -1365,6 +1384,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                         // Add connect to PAX logic
                         magtekProViewModel.initPOSLink(requireContext())
                     }
+
                     /*if (result.Msg.toString() == "CONNECT ERROR" || result.Msg.toString() == "TIME OUT"){
                         AlertUtils.showCustomAlertWithListenerWithOKCancel(
                             requireContext(),
@@ -1829,6 +1849,12 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 cardNumber,
                 cashDiscountType,
                 tipID,
+                GlobalUID,
+                RefNumber,
+                ExtData,
+                ECRRefNumber,
+                PAXtoken,
+                cardLastDigits,
                 cardTypeOfTransaction = EDCType
             )
         }
