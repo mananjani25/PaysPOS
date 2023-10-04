@@ -277,7 +277,7 @@ class CartFragment(
 
             if (isFromDashboard!!) {
                 val builder = SpannableStringBuilder()
-                val str1 = SpannableString(getString(R.string.current_order) + " : ")
+                val str1 = SpannableString(getString(R.string.current_order) + ": ")
                 str1.setSpan(ForegroundColorSpan(getColor(R.color.txtColor)), 0, str1.length, 0)
                 builder.append(str1)
                 val str2 = SpannableString(prefProvider.getValue(ORDER_TYPE_NAME, ""))
@@ -293,7 +293,7 @@ class CartFragment(
                 }
             } else {
                 binding.orderTypeDisplay.text =
-                    getString(R.string.current_order) + " : " + prefProvider.getValue(
+                    getString(R.string.current_order) + ": " + prefProvider.getValue(
                         ORDER_TYPE_NAME,
                         ""
                     )

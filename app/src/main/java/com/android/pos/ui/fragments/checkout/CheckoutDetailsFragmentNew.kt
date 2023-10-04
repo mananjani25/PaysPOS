@@ -2193,7 +2193,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             Log.e("AmtviewModeltotalPrice", "totalPrice  ${viewModel.totalPrice}")
             viewModel.totalServiceCharge =
                 String.format("%.2f", viewModel.totalServiceCharge).toDouble()
-            WholetotalPrice = viewModel.subTotalPrice + viewModel.totalTax + String.format(
+            WholetotalPrice = MethodUtils.getTwoDecimal(viewModel.subTotalPrice).toPrecision(2).toDouble() + viewModel.totalTax + String.format(
                 "%.2f",
                 viewModel.totalServiceCharge
             ).toDouble()
