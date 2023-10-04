@@ -257,7 +257,11 @@ class TipsList : Fragment(), ItemCallback {
 
                     alert(
                         getString(R.string.app_name),
-                        getString(R.string.delete_tip_message)
+                        if (tipListadapter.getItem(pos).isActive) {
+                            getString(R.string.delete_active_tip_message)
+                        }else{
+                            getString(R.string.delete_tip_message)
+                        }
                     ) {
                         positiveButton(getString(R.string.tv_delete)) {
                             // Do positive stuff here
