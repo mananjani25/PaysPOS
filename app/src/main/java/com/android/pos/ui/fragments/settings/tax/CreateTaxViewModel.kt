@@ -203,9 +203,7 @@ class CreateTaxViewModel @Inject constructor(
                                          updatedAt = createTaxResponse.data.updatedAt
                                      )*/
 
-                                    if (oldItemIds != null) {
-                                        updateTaxDataInItem(tax, taxData.itemIds as ArrayList<Int>, oldItemIds)
-                                    }
+//                                    updateTaxDataInItem(tax, taxData.itemIds as ArrayList<Int>, oldItemIds)
                                     taxServiceChargeRepository.createTaxDatabase(tax)
 
                                     itemIdsViewModel = ArrayList()
