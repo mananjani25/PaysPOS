@@ -99,7 +99,6 @@ class CreateTaxViewModel @Inject constructor(
                         if (item != null) {
                             tempTaxData = item.taxes as ArrayList<TaxData> ?: arrayListOf()
                             if (!tempTaxData.contains(element = tax)) {
-                                tempTaxData.removeIf { taxData-> taxData.id == tax.id }
                                 tempTaxData.add(tax)
                             }
                             posRepository.updateTaxDataForItem(tempTaxData, it)
@@ -112,6 +111,7 @@ class CreateTaxViewModel @Inject constructor(
                     val item: TbItem? = posRepository.getSingleItem(it)
                     if (item != null && !item.taxes.isNullOrEmpty()) {
                         tempTaxData = item.taxes as ArrayList<TaxData> ?: arrayListOf()
+                        tempTaxData.removeIf { taxData-> taxData.id == tax.id }
                         tempTaxData.add(tax)
                         posRepository.updateTaxDataForItem(tempTaxData, it)
                     }
