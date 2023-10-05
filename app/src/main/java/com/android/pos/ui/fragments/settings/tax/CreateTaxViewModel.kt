@@ -99,6 +99,7 @@ class CreateTaxViewModel @Inject constructor(
                         if (item != null) {
                             tempTaxData = item.taxes as ArrayList<TaxData> ?: arrayListOf()
                             if (!tempTaxData.contains(element = tax)) {
+                                tempTaxData.removeIf { taxData-> taxData.id == tax.id }
                                 tempTaxData.add(tax)
                             }
                             posRepository.updateTaxDataForItem(tempTaxData, it)
