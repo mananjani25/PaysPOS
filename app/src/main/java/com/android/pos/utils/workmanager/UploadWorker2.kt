@@ -97,11 +97,8 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
             isPrinterQueueEnable = inputData.getBoolean(Constants.IS_PRINTER_QUEUE_ENABLE, false)
             isCancelWork = inputData.getBoolean("is_cancel_work", false)
 
+            Log.d("isPrinterQueueEnable","isPrinterQueueEnable = $isPrinterQueueEnable")
 
-            Log.e(
-                TAG,
-                "checkIsCancelWork:  ${isCancelWork}  isPrinterQueueEnable  ${isPrinterQueueEnable}"
-            )
             Log.e(TAG,"CheckQueueCancel  ${mContext.getSharedPreferences(
                 mContext.resources.getString(R.string.app_name),
                 Context.MODE_PRIVATE
@@ -113,7 +110,9 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                 ).getBoolean(CHECK_QUEUE_CANCEL, false) == false ) {
                 Log.e(TAG, "checkIsdws")
                 if (isInternetAvailable()) {
-                    connectActionCable()
+                    if (isPrinterQueueEnable){
+                        connectActionCable()
+                    }
                 } else {
                     // show popup for network
                     sendNotification("Please check your Network Connectivity.")
@@ -674,6 +673,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
     }
 
     private fun sendNotification(messageBody: String) {
+        Log.d("sendNotification","message = $messageBody")
 
 
         val channelId = mContext.getString(R.string.default_notification_channel_id)
