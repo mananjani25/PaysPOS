@@ -988,6 +988,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             }
         }
 
+        paymentviewModel.snackbarText.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let {
+                AlertUtils.showAlert(requireActivity(), it.toString())
+            }
+        }
+
         giftCardViewModel.giftCardData.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
 
