@@ -1,5 +1,6 @@
 package com.android.pos.ui.fragments.settings.tax
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -15,6 +16,7 @@ import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.TaxData
 import com.android.pos.data.entities.TbItem
+import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ADD_TAX
 import com.android.pos.data.remote.Constants.CREATE_TAX
 import com.android.pos.data.remote.Constants.DIALOG_KEY
@@ -22,6 +24,7 @@ import com.android.pos.data.remote.Constants.DIALOG_KEY_TAX
 import com.android.pos.data.remote.Constants.INCLUDE_TAX
 import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.databinding.DialogCreateNewTaxBinding
+import com.android.pos.di.PrefProvider
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
@@ -30,6 +33,7 @@ import com.android.pos.utils.extensions.getNavigationResultLiveData
 import com.android.pos.utils.extensions.liveSnackBar
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class CreateTax : Fragment() {
@@ -42,7 +46,10 @@ class CreateTax : Fragment() {
 
     var isEdit: Boolean = false
     private lateinit var taxData: TaxData
-    private lateinit var taxDataTmp:TaxData
+    private lateinit var taxDataTmp: TaxData
+
+    @set:Inject
+    internal var prefProvider: PrefProvider? = null
 
 
     override fun onCreateView(
@@ -185,7 +192,7 @@ class CreateTax : Fragment() {
                 itemIds.add(it.itemId)
             }
 
-             viewModel.setItemIds(itemIds)
+            viewModel.setItemIds(itemIds)
         }
 
         val resultDialogKeyTax = getNavigationResultLiveData<String>(DIALOG_KEY_TAX)
@@ -215,10 +222,10 @@ class CreateTax : Fragment() {
 
     private fun backPressManage() {
 
-     /*   Log.e("itemIdsSizeFrag","itemIdsSize ${taxDataTmp.itemIds.size}")
-        viewModel.setItemIds(taxDataTmp.itemIds.toCollection(arrayListOf()))
-        viewModel.setTaxData(taxDataTmp)
-*/
+        /*   Log.e("itemIdsSizeFrag","itemIdsSize ${taxDataTmp.itemIds.size}")
+           viewModel.setItemIds(taxDataTmp.itemIds.toCollection(arrayListOf()))
+           viewModel.setTaxData(taxDataTmp)
+   */
 
         val navController = findNavController()
         navController.previousBackStackEntry?.savedStateHandle?.set(
@@ -279,6 +286,15 @@ class CreateTax : Fragment() {
                     AlertUtils.showCustomAlertWithListenerWithOK(
                         it, createTaxResponse.message
                     ) { _, _ ->
+                        if (prefProvider?.getValue("device_token", "")?.trim()?.isEmpty() == true) {
+                            val intent = Intent()
+                            intent.action = Constants.SYNC_SETTING_NOTIFICATION
+                            requireContext().sendBroadcast(intent)
+
+                            val intent2 = Intent()
+                            intent2.action = Constants.SYNC_NOTIFICATION
+                            requireContext().sendBroadcast(intent2)
+                        }
                         backPressManage()
                     }
                 }
