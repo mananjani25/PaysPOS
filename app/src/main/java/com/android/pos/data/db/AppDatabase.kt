@@ -7,59 +7,8 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.android.pos.data.dao.BusinessDetailsDao
-import com.android.pos.data.dao.CancelOrderReasonsDao
-import com.android.pos.data.dao.CartDao
-import com.android.pos.data.dao.CashDiscountsDao
-import com.android.pos.data.dao.CategoryDao
-import com.android.pos.data.dao.CountryListDao
-import com.android.pos.data.dao.CustomerDao
-import com.android.pos.data.dao.CustomerSettingsDao
-import com.android.pos.data.dao.DBItemDao
-import com.android.pos.data.dao.DiscountDao
-import com.android.pos.data.dao.EODReportDao
-import com.android.pos.data.dao.EmployeeDao
-import com.android.pos.data.dao.ItemModifierSetsDao
-import com.android.pos.data.dao.KitchenSettingsDao
-import com.android.pos.data.dao.LoyaltyProgramsDao
-import com.android.pos.data.dao.ModifierSetDao
-import com.android.pos.data.dao.ModuleDao
-import com.android.pos.data.dao.NotesDao
-import com.android.pos.data.dao.OptionSetDao
-import com.android.pos.data.dao.OrderTypeDao
-import com.android.pos.data.dao.PrinterDao
-import com.android.pos.data.dao.PrinterQueueDao
-import com.android.pos.data.dao.ServiceChargeDao
-import com.android.pos.data.dao.SplitListDao
-import com.android.pos.data.dao.TaxDao
-import com.android.pos.data.dao.TeamRoleDao
-import com.android.pos.data.dao.TerminalsDao
-import com.android.pos.data.dao.TimeZonesDao
-import com.android.pos.data.dao.TipsDao
-import com.android.pos.data.dao.WastageReasonsDao
-import com.android.pos.data.dao.cardReaderDao
-import com.android.pos.data.entities.CartModel
-import com.android.pos.data.entities.CashDiscountModel
-import com.android.pos.data.entities.DineInCartModel
-import com.android.pos.data.entities.Employee
-import com.android.pos.data.entities.ItemModifierSets
-import com.android.pos.data.entities.LoyaltyProgramsModel
-import com.android.pos.data.entities.ModifierSet
-import com.android.pos.data.entities.ModulePermission
-import com.android.pos.data.entities.OptionSet
-import com.android.pos.data.entities.TaxData
-import com.android.pos.data.entities.TbBusinessDetails
-import com.android.pos.data.entities.TbCardReader
-import com.android.pos.data.entities.TbCategory
-import com.android.pos.data.entities.TbCountryList
-import com.android.pos.data.entities.TbCustomer
-import com.android.pos.data.entities.TbDiscount
-import com.android.pos.data.entities.TbItem
-import com.android.pos.data.entities.TbOrderType
-import com.android.pos.data.entities.TbServiceCharge
-import com.android.pos.data.entities.TbTimeZones
-import com.android.pos.data.entities.TeamRole
-import com.android.pos.data.entities.TypeConvertersQueueDineIn
+import com.android.pos.data.dao.*
+import com.android.pos.data.entities.*
 import com.android.pos.data.model.CharacterModel
 import com.android.pos.data.model.PrinterQueueModel
 import com.android.pos.data.model.ShiftRportConfiguration
@@ -105,7 +54,7 @@ import com.android.pos.data.typeconvert.TypeConvertorPhone
         ItemModifierSets::class, OptionSet::class, PrinterResponse.Data.CustomerReceiptPrinters::class,
         PrinterResponse.Data.KitchenReceiptPrinters::class, GetKitchenReceiptSettingsResponse.Data::class,
         GetCustomerReceiptSettingsResponse.Data::class, LoyaltyProgramsModel::class, SplitDetailListModel::class,
-        CashDiscountModel::class, TbCountryList::class, TbCardReader::class, VenueDetailsResponse.Data.CancelOrderReason::class,
+        CashDiscountModel::class, TbCountryList::class, TbCardReader::class, PAXData::class, VenueDetailsResponse.Data.CancelOrderReason::class,
         DineInCartModel::class, ShiftRportConfiguration::class, TbBusinessDetails::class, TbTimeZones::class, PrinterQueueModel::class, VenueDetailsResponse.Data.WastageReason::class],
     version = 9
 )
@@ -165,6 +114,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun cashDiscountDao(): CashDiscountsDao
     abstract fun countryListDao(): CountryListDao
     abstract fun cardReaderDao(): cardReaderDao
+    abstract fun PAXDao():PAXDao
     abstract fun cancelOrderReasonDao(): CancelOrderReasonsDao
     abstract fun eodReportSettings(): EODReportDao
     abstract fun businessDetailsDao(): BusinessDetailsDao

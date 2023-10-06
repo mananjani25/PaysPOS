@@ -5,24 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.db.IDataManager
-import com.android.pos.data.entities.CartModel
-import com.android.pos.data.entities.CashDiscountModel
-import com.android.pos.data.entities.DineInCartModel
-import com.android.pos.data.entities.Employee
-import com.android.pos.data.entities.ItemModifierSets
-import com.android.pos.data.entities.LoyaltyProgramsModel
-import com.android.pos.data.entities.ModifierSet
-import com.android.pos.data.entities.OptionSet
-import com.android.pos.data.entities.TaxData
-import com.android.pos.data.entities.TbBusinessDetails
-import com.android.pos.data.entities.TbCardReader
-import com.android.pos.data.entities.TbCategory
-import com.android.pos.data.entities.TbCountryList
-import com.android.pos.data.entities.TbCustomer
-import com.android.pos.data.entities.TbItem
-import com.android.pos.data.entities.TbOrderType
-import com.android.pos.data.entities.TbTimeZones
-import com.android.pos.data.entities.TeamRole
+import com.android.pos.data.entities.*
 import com.android.pos.data.model.PrinterQueueModel
 import com.android.pos.data.model.ShiftRportConfiguration
 import com.android.pos.data.model.SplitDetailListModel
@@ -1214,6 +1197,17 @@ class PosRepository @Inject constructor(
 
     fun inventoryCounts() =
         performGetOperationNew(networkCall = { apiHelperNew.inventoryCounts() })
+
+    suspend fun addPAXData(paxData: PAXData) {
+        appDatabase.PAXDao().add(paxData)
+    }
+
+    fun getPAXDetails() =
+        performGetOperationDatabase { appDatabase.PAXDao().getPAXDetails() }
+
+    suspend fun deletePAXTable() {
+        appDatabase.PAXDao().delete()
+    }
 
     suspend fun addCardReader(tbCardReader: TbCardReader) {
         appDatabase.cardReaderDao().add(tbCardReader)
