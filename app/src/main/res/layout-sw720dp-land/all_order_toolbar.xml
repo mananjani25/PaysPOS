@@ -118,6 +118,7 @@
             android:layout_height="@dimen/height_home_button"
             android:background="@drawable/button_action_hover"
             android:gravity="center"
+            android:fontFamily="@font/sf_pro_display_semibold"
             android:paddingHorizontal="@dimen/padding_home_button"
             android:paddingVertical="@dimen/vertical_padding_home_button"
             android:text="@string/tv_home"
