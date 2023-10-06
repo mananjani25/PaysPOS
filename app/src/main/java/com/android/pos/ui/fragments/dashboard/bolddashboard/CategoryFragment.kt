@@ -10,7 +10,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.PagingData
-import androidx.paging.filter
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.PagerSnapHelper
@@ -439,6 +438,7 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
         binding.rvItemList.setHasFixedSize(true)
         binding.rvItemList.layoutManager = GridLayoutManager(requireContext(), 4)
         binding.rvItemList.adapter = itemAdapter
+        binding.rvItemList.isFocusable = false
         //   binding.rvItemList.layoutManager = GridLayoutManager(requireContext(),4)
 
         //  binding.rvItemList.setHasFixedSize(true)
@@ -525,12 +525,10 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
                 itemAdapter.setPos(-2)
 
 
-                it.filter {
-                    it.isHide
-                }.let { it1 ->
+
                     edtSearch?.text?.clear()
                     if (prefProvider.getValueInt(Constants.CAT_ID_SELECTED, 0) == 0) {
-                        itemAdapter.submitData(it1)
+                        itemAdapter.submitData(it)
                         binding.rvCategoryParent.scrollToPosition(0)
 
                     } else {
@@ -538,9 +536,9 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
                     }
 
 
-                    itemAdapter.submitData(it1)
+                    itemAdapter.submitData(it)
 
-                }
+
             }
 
 

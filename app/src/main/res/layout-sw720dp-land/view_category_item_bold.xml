@@ -26,7 +26,6 @@
             android:paddingEnd="@dimen/_5sdp"
             android:paddingBottom="@dimen/_2sdp"
             tools:text="FOOD"
-            android:background="@drawable/item_selector"
             android:textColor="@drawable/text_selector"
             android:textSize="@dimen/_6mdpi" />
 

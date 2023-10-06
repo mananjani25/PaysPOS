@@ -102,7 +102,6 @@ import java.net.URL
 import java.text.NumberFormat
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 import kotlin.collections.set
 import kotlin.math.ceil
 
@@ -195,7 +194,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         this.isSelectCount = selectcount
     }
 
-    fun getSplitCount():Int{
+    fun getSplitCount(): Int {
         return this.isSelectCount
     }
 
@@ -309,15 +308,17 @@ class DashBoardCategoryViewModel @Inject constructor(
     fun getItemByCategoryId(id: Int) = posRepository.getItemByCategoryId(id)
 
 
-    fun itemsByCat(id: Int): kotlinx.coroutines.flow.Flow<PagingData<TbItem>> = Pager(
-        config = PagingConfig(
-            pageSize = 20,
-            enablePlaceholders = false,
-            initialLoadSize = 20
-        )
-    ) {
-        appDatabase.itemDao().getItemListByCategory(id)
-    }.flow.cachedIn(viewModelScope)
+    fun itemsByCat(id: Int): kotlinx.coroutines.flow.Flow<PagingData<TbItem>> =
+        Pager(
+            config = PagingConfig(
+                pageSize = 40,
+                enablePlaceholders = false,
+                initialLoadSize = 40
+            )
+        ) {
+            appDatabase.itemDao().getItemListByCategory(id)
+
+        }.flow.cachedIn(viewModelScope)
 
 
     /*
@@ -364,11 +365,12 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun addCart(cartModel: CartModel) {
 
-        viewModelScope.launch {
-            posRepository.addItemCart(generateCombinedItems(cartModel))
-            destroyedList.clear()
-            //removeItemDineInList.clear()
-        }
+       viewModelScope.launch {
+           posRepository.addItemCart(generateCombinedItems(cartModel))
+           destroyedList.clear()
+           //removeItemDineInList.clear()
+       }
+
     }
 
     fun addOrderNote(note: String) {
@@ -428,16 +430,16 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     fun deleteCart() {
-   try {
-       prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
-       cartModel = null
-       GlobalScope.launch {
-           posRepository.deleteCart(prefProvider.getValueInt(EMPLOYEE_ID, 0))
-           destroyedList.clear()
-       }
-   }catch (e:Exception){
-       Log.d("deleteCart","Preference is null")
-   }
+        try {
+            prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
+            cartModel = null
+            GlobalScope.launch {
+                posRepository.deleteCart(prefProvider.getValueInt(EMPLOYEE_ID, 0))
+                destroyedList.clear()
+            }
+        } catch (e: Exception) {
+            Log.d("deleteCart", "Preference is null")
+        }
     }
 
 
@@ -1223,14 +1225,25 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                                             Log.e(
                                                 "checkORderUpdate",
-                                                "isOrderUpdate:  ${prefProvider.getValueboolean(IS_UPDATE_ORDER,false)}"
+                                                "isOrderUpdate:  ${
+                                                    prefProvider.getValueboolean(
+                                                        IS_UPDATE_ORDER,
+                                                        false
+                                                    )
+                                                }"
                                             )
 
-                                            if (prefProvider.getValueboolean(IS_UPDATE_ORDER,false)) {
+                                            if (prefProvider.getValueboolean(
+                                                    IS_UPDATE_ORDER,
+                                                    false
+                                                )
+                                            ) {
                                                 try {
                                                     item.isEdited = true
                                                     list[i].isEdited = true
-                                                }catch (e:java.lang.Exception){e.printStackTrace()}
+                                                } catch (e: java.lang.Exception) {
+                                                    e.printStackTrace()
+                                                }
                                             }
                                             var listTmp =
                                                 combineItem(
@@ -1259,13 +1272,24 @@ class DashBoardCategoryViewModel @Inject constructor(
                                             var isBreak: Boolean = false
                                             Log.e(
                                                 "checkORderUpdate",
-                                                "isOrderUpdate:  ${prefProvider.getValueboolean(IS_UPDATE_ORDER,false)}"
+                                                "isOrderUpdate:  ${
+                                                    prefProvider.getValueboolean(
+                                                        IS_UPDATE_ORDER,
+                                                        false
+                                                    )
+                                                }"
                                             )
-                                            if (prefProvider.getValueboolean(IS_UPDATE_ORDER,false)) {
+                                            if (prefProvider.getValueboolean(
+                                                    IS_UPDATE_ORDER,
+                                                    false
+                                                )
+                                            ) {
                                                 try {
                                                     item.isEdited = true
                                                     list[i].isEdited = true
-                                                }catch (e:java.lang.Exception){e.printStackTrace()}
+                                                } catch (e: java.lang.Exception) {
+                                                    e.printStackTrace()
+                                                }
                                             }
 
                                             list[i].modifiers.forEach { modifier ->
@@ -1444,17 +1468,17 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 var newItem: TbItem? = null
                                 var indexToRemove = -1
                                 list.forEachIndexed { index, tbItem ->
-                                    if(tbItem.isDestroy && tbItem.itemId == item?.itemId){
+                                    if (tbItem.isDestroy && tbItem.itemId == item?.itemId) {
                                         newItem = tbItem
                                         indexToRemove = index
                                     }
                                 }
 
-                                if(indexToRemove != -1){
+                                if (indexToRemove != -1) {
                                     list.removeAt(indexToRemove)
                                 }
 
-                                if(newItem != null){
+                                if (newItem != null) {
                                     newItem?.itemQuantity = 1
                                     newItem?.isDestroy = false
                                     list.add(newItem!!)
@@ -2625,7 +2649,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
         if (tbItem.modifiers.isNotEmpty()) {
             tbItem.modifiers.forEach {
-                if(!it._destroy) {
+                if (!it._destroy) {
                     tbMod.put(it.id ?: 0, it.modifier_quantity)
                     listOfDataMod.add(it.id ?: 0)
                 }
@@ -2635,7 +2659,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         var listOfDataModSelected: ArrayList<Int> = arrayListOf()
         if (item.modifiers.isNotEmpty()) {
             item.modifiers.forEach {
-                if(!it._destroy) {
+                if (!it._destroy) {
                     itemMod.put(it.id ?: 0, it.modifier_quantity)
                     listOfDataModSelected.add(it.id ?: 0)
                 }
@@ -5226,7 +5250,10 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                                 if (it.settingData.data.isMasterTeminal) {
 
-                                    prefProvider.setValueboolean(Constants.CHECK_QUEUE_CANCEL,false)
+                                    prefProvider.setValueboolean(
+                                        Constants.CHECK_QUEUE_CANCEL,
+                                        false
+                                    )
                                     prefProvider.setValueboolean(Constants.IS_MASTER_TERMINAL, true)
                                 } else {
                                     prefProvider.setValueboolean(
@@ -5433,13 +5460,13 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     )
                                 }
 
-                                 if(it.settingData.data.loyaltyPrograms.isNotEmpty()) {
-                                     it.settingData.data.loyaltyPrograms.forEach {
-                                         if(it.isEnable && !it.isDeleted ) {
-                                             prefProvider.saveActiveLoyaltyData(it)
-                                         }
-                                     }
-                                 }
+                                if (it.settingData.data.loyaltyPrograms.isNotEmpty()) {
+                                    it.settingData.data.loyaltyPrograms.forEach {
+                                        if (it.isEnable && !it.isDeleted) {
+                                            prefProvider.saveActiveLoyaltyData(it)
+                                        }
+                                    }
+                                }
                                 if (it.settingData.data.cash_discounts.isNotEmpty()) {
                                     it.settingData.data.cash_discounts.forEach {
                                         if (it.is_active) {

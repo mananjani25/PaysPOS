@@ -70,7 +70,9 @@ import com.android.pos.utils.performGetOperation
 import com.android.pos.utils.performGetOperationDatabase
 import com.android.pos.utils.performGetOperationNew
 import com.android.pos.utils.statusUtils.Resource
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
@@ -758,8 +760,9 @@ class PosRepository @Inject constructor(
     }
 
     suspend fun addItemCart(cartModel: CartModel) {
-
-        appDatabase.cartDao().add(cartModel)
+        withContext(Dispatchers.IO){
+            appDatabase.cartDao().add(cartModel)
+        }
     }
 
     suspend fun addItemCartDineIn(cartModel: DineInCartModel) {
