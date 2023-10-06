@@ -15,6 +15,7 @@ class RedeemLoyaltyInfo() : Parcelable {
     var isLoyaltyApplied: Boolean? = false
     var amountToBePaid: Double = 0.0
     var needToApplyLoyalty: Boolean = false
+    var availablePoints: Int = 0
 
     fun getAmountToBePaid(): Double? {
         return if (needToApplyLoyalty) {

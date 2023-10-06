@@ -462,14 +462,16 @@ class CustomDisplay(
         if (name.isNotEmpty()) {
             binding.txtCustomerName.visible()
             binding.txtLoyaltyPointsLabel.visible()
-            binding.tvLoyaltyBalance.visible()
-            binding.tvLoyaltyPoints.visible()
-            binding.tvLoyaltyBalance.text =
-                "${context.resources.getString(R.string.applied_loyalty_balance)}: ${dashBoardCategoryViewModel.redeemLoyaltyInfo.usedLoyaltyAmount}"
-            binding.tvLoyaltyPoints.text =
-                "${context.resources.getString(R.string.applied_loyalty_balance)}: ${dashBoardCategoryViewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
+            if (dashBoardCategoryViewModel.redeemLoyaltyInfo.needToApplyLoyalty) {
+                binding.tvLoyaltyBalance.visible()
+                binding.tvLoyaltyPoints.visible()
+                binding.tvLoyaltyBalance.text =
+                    "${context.resources.getString(R.string.applied_loyalty_balance)}: ${dashBoardCategoryViewModel.redeemLoyaltyInfo.usedLoyaltyAmount}"
+                binding.tvLoyaltyPoints.text =
+                    "${context.resources.getString(R.string.applied_loyalty_points)}: ${dashBoardCategoryViewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
+            }
             binding.txtLoyaltyPointsLabel.text =
-                "Loyalty Balance: ${dashBoardCategoryViewModel.redeemLoyaltyInfo.remainingLoyaltyPoints}"
+                "Loyalty Balance: ${dashBoardCategoryViewModel.redeemLoyaltyInfo.availablePoints}"
             binding.txtCustomerName.text = name
 
         } else {
