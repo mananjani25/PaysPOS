@@ -3,6 +3,7 @@ package com.android.pos.ui.fragments.settings.tax
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -31,9 +32,11 @@ import com.android.pos.utils.extensions.liveSnackBar
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 
+
 @AndroidEntryPoint
 class CreateTax : Fragment() {
 
+    private var previousValue: String = ""
     private lateinit var binding: DialogCreateNewTaxBinding
 
     private val viewModel by viewModels<CreateTaxViewModel>()
@@ -49,7 +52,7 @@ class CreateTax : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding =
             DataBindingUtil.inflate(inflater, R.layout.dialog_create_new_tax, container, false)
 
@@ -71,9 +74,10 @@ class CreateTax : Fragment() {
             binding.header.txtTitle.text = getString(R.string.tv_update_tax)
             viewModel.setTaxData(taxData)
 
-            binding.itemsCount.text = "" + taxData.itemIds?.size + " Items"
+            binding.itemsCount.text = "" + taxData.itemIds.size + " Items"
             binding.tvItemPricing.text = taxData.itemPricing
             binding.edtAmount.setText(String.format("%.2f", viewModel.createTaxDetails.value?.rate))
+
             binding.swtEnableTax.isChecked = taxData.isActive
             binding.swtCustomAmount.isChecked = taxData.isCustomAmount
             viewModel.isEditData(isEdit, taxData.id)
@@ -104,20 +108,51 @@ class CreateTax : Fragment() {
             }
 
             override fun afterTextChanged(s: Editable?) {
-                if (binding.swtTaxType.text == "Percentage") {
-                    val temp_rate = s.toString()
-                    if (temp_rate.isNotEmpty()) {
-                        if (temp_rate.toFloat() > 100) {
-                            AlertUtils.showCustomAlertWithListenerWithOK(
-                                requireContext(),
-                                "Please enter percentage less than or equal to 100"
-                            ) { _, _ ->
-                                binding.edtAmount.setText("")
-                            }
-                        }
-                    }
+                Log.d("addTextChangedListener","editable = ${s.toString()}")
 
-                }
+                try {
+                 if (binding.swtTaxType.text == "Percentage") {
+
+                     if(s?.length == 1 && s[0] == '.'){
+                         binding.edtAmount.setText("")
+                         return
+                     }
+
+                     if (previousValue.contains(".")){
+                         Log.d("addTextChangedListener","1 dot is already exist")
+                         val str = s.toString()
+                         val strold = str.substring(0, str.length - 1)
+                         val lastchar = str.substring(str.length - 1)
+                         if (strold.contains(".") && lastchar == ".") {
+                             val length: Int? = binding.edtAmount.text?.length
+                             if (length != null) {
+                                 if (length > 0) {
+                                     binding.edtAmount.text?.delete(length - 1, length)
+                                 }
+                             }
+                         }
+
+                         return
+                     }
+
+
+                     val temp_rate = s.toString()
+                     previousValue = temp_rate
+                     if (temp_rate.isNotEmpty()) {
+                         if (temp_rate.toFloat() > 100) {
+                             AlertUtils.showCustomAlertWithListenerWithOK(
+                                 requireContext(),
+                                 "Please enter percentage less than or equal to 100"
+                             ) { _, _ ->
+                                 binding.edtAmount.setText("")
+                             }
+                         }
+                     }
+
+                 }
+             }catch (e:Exception){
+                 Log.d("addTextChangedListener","exception = $e")
+             }
             }
 
         })
@@ -291,4 +326,5 @@ class CreateTax : Fragment() {
         binding.root.liveSnackBar(this, viewModel.snackbarText, Snackbar.LENGTH_SHORT)
 
     }
+
 }
