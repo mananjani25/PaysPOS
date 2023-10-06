@@ -113,7 +113,7 @@ class MenuFragment : DialogFragment() {
         binding.txtVersion?.text =
             "Version : " + BuildConfig.VERSION_NAME + "(" + BuildConfig.VERSION_CODE + ")"
 
-        binding.txtTerminal.text = "Terminal Login ID (Tap to copy Unique id) : "+prefProvider.getUniqueId()
+        binding.txtTerminal.text = "Terminal Login ID : "+prefProvider.getUniqueId()
     }
 
     override fun getTheme(): Int {
