@@ -111,6 +111,7 @@ class CreateTaxViewModel @Inject constructor(
                     val item: TbItem? = posRepository.getSingleItem(it)
                     if (item != null && !item.taxes.isNullOrEmpty()) {
                         tempTaxData = item.taxes as ArrayList<TaxData> ?: arrayListOf()
+                        tempTaxData.removeIf { taxData-> taxData.id == tax.id }
                         tempTaxData.add(tax)
                         posRepository.updateTaxDataForItem(tempTaxData, it)
                     }
@@ -214,8 +215,7 @@ class CreateTaxViewModel @Inject constructor(
                                          updatedAt = createTaxResponse.data.updatedAt
                                      )*/
 
-                                    updateTaxDataInItem(tax, taxData.itemIds as ArrayList<Int>, oldItemIds)
-
+//                                    updateTaxDataInItem(tax, taxData.itemIds as ArrayList<Int>, oldItemIds)
                                     taxServiceChargeRepository.createTaxDatabase(tax)
 
                                     itemIdsViewModel = ArrayList()
