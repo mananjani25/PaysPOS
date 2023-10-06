@@ -164,7 +164,7 @@
                     android:layout_marginRight="@dimen/_2sdp"
                     android:contentDescription="@string/clock"
                     android:paddingVertical="@dimen/_5sdp"
-                    android:src="@drawable/switch_user"
+                    android:src="@drawable/swipe_user_clock"
                     app:tint="@color/txtColor" />
 
                 <TextView
@@ -217,13 +217,14 @@
         <TextView
             android:id="@+id/txthome"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/_23sdp"
+            android:layout_height="@dimen/height_home_button"
             android:layout_alignParentEnd="true"
             android:layout_marginStart="@dimen/_5sdp"
             android:background="@color/btnColor"
             android:fontFamily="@font/sf_pro_display_semibold"
             android:gravity="center"
             android:paddingHorizontal="@dimen/padding_home_button"
+            android:paddingVertical="@dimen/vertical_padding_home_button"
             android:text="@string/tv_home"
             android:textAllCaps="true"
             android:textColor="@color/white"

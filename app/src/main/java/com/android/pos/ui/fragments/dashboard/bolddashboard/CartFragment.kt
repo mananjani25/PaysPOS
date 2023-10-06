@@ -61,6 +61,7 @@ import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.ORDER_TYPE_ID
 import com.android.pos.data.remote.Constants.ORDER_TYPE_NAME
 import com.android.pos.data.remote.Constants.PHONE_ORDER
+import com.android.pos.data.remote.Constants.PICK_UP
 import com.android.pos.data.remote.Constants.REDIRECT_FROM
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.remote.Constants.WHOLE_AMOUNT
@@ -165,6 +166,7 @@ class CartFragment(
     var cashDiscountSurcharge = 0.0
 
     private var orderTypeAdapter: OrderTypeAdapter? = null
+    var splitValue = -1
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -276,7 +278,7 @@ class CartFragment(
 
             if (isFromDashboard!!) {
                 val builder = SpannableStringBuilder()
-                val str1 = SpannableString(getString(R.string.current_order) + " : ")
+                val str1 = SpannableString(getString(R.string.current_order) + ": ")
                 str1.setSpan(ForegroundColorSpan(getColor(R.color.txtColor)), 0, str1.length, 0)
                 builder.append(str1)
                 val str2 = SpannableString(prefProvider.getValue(ORDER_TYPE_NAME, ""))
@@ -292,7 +294,7 @@ class CartFragment(
                 }
             } else {
                 binding.orderTypeDisplay.text =
-                    getString(R.string.current_order) + " : " + prefProvider.getValue(
+                    getString(R.string.current_order) + ": " + prefProvider.getValue(
                         ORDER_TYPE_NAME,
                         ""
                     )
@@ -340,6 +342,12 @@ class CartFragment(
         addObserver()
         setupTaxAdapter()
         getOrderTypes()
+
+        findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Bundle>("data")
+            ?.observe(viewLifecycleOwner) {
+                Log.d(TAG, "splitDetector onCreateView: "+it.getInt("splitvalue"))
+                splitValue = it.getInt("splitvalue")
+            }
 
 
         if (taxBirfurcationAdapter.taxlist.size == 0) {
@@ -1643,9 +1651,9 @@ class CartFragment(
         val amountType = prefProvider.getValue(Constants.AMOUNT_TYPE, "")
         val rateOrAmount = prefProvider.getValue(Constants.RATE_OR_AMOUNT, "0")
         if (amountType == "Percentage") {
-            binding.labelCashSurcharge.text = "SurCharge (${rateOrAmount}%)"
+            binding.labelCashSurcharge.text = "${Constants.SURCHARGE_TEXT} (${rateOrAmount}%)"
         } else {
-            binding.labelCashSurcharge.text = "SurCharge"
+            binding.labelCashSurcharge.text = Constants.SURCHARGE_TEXT
         }
     }
 
@@ -1683,7 +1691,7 @@ class CartFragment(
         LogUtil.logE(TAG, "itemClicked  ${Gson().toJson(data)}")
 
 
-        itemClickListner?.onItemUpdate(data)
+        itemClickListner?.onItemUpdate(data, position)
 
 
     }
@@ -1702,7 +1710,7 @@ class CartFragment(
         viewModel.dineInSelectedItemHeaderPos = headerPosition
 
         item.headerPositionDinein = headerPosition
-        itemClickListner?.onItemUpdate(item)
+        itemClickListner?.onItemUpdate(item, position)
         /* if (prefProvider.getValue(ORDER_TYPE, "") == Constants.DINE_IN) {
              val dineinList = dineInCartAdapter.getList()
              dineinList.get(0).selectedPosition = viewModel.dineInHeaderPosition
@@ -2124,6 +2132,12 @@ class CartFragment(
                         "You can not change customer from checkout when loyalty points added. Please go back and change customer."
                     ) { _, _ ->
                     }
+                }else if (viewModel.getSplitCount() > 1 || splitValue > 1){
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        requireActivity(),
+                        "Customer can not be changed during split payment."
+                    ) { _, _ ->
+                    }
                 } else {
                     viewModel.setIsFromAddCustomer(true)
                     findNavController().navigate(R.id.action_paymentBoldPosFragment_to_assignCustomerOrderFragment)
@@ -2255,6 +2269,10 @@ class CartFragment(
                 prefProvider.setValueboolean(OPEN_ORDER_DIRECT_PAY, true)
             }
             prefProvider.setValueboolean(Constants.TIP_ADDED, false)
+
+            if (prefProvider.getValueboolean(OPEN_ORDER_UPDATE_FOR_PRINT, false)) {
+                prefProvider.setValue(Constants.OPEN_ORDER_ITEMS, Gson().toJson(cartAdapter.cartList))
+            }
 
             if (cartAdapter.cartList.isNotEmpty()) {
                 prefProvider.setValue(ORDER_TYPE, prefProvider.getValue(ORDER_TYPE, ""))
@@ -2603,7 +2621,7 @@ class CartFragment(
 
         Log.e(TAG, "checkOrderType  ${model?.orderType}")
 
-        prefProvider.setValue(DELIVERY_TYPE, "")
+        prefProvider.setValue(DELIVERY_TYPE, PICK_UP)
 
         prefProvider.setValue(Constants.REDIRECT_FROM, "")
 
@@ -2616,7 +2634,7 @@ class CartFragment(
             findNavController().navigate(
                 R.id.action_dashboardCategoryBoldPOS_to_phoneOrderFragment
             )
-
+            model.orderType.let { prefProvider.setValue(ORDER_TYPE, it) }
 
         } else {
             Log.e(TAG, "InsideDine inNoDine")

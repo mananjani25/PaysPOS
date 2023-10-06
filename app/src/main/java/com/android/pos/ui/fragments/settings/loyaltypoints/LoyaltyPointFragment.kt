@@ -179,7 +179,11 @@ class LoyaltyPointFragment : Fragment() ,ItemCallback{
 
                     alert(
                         getString(R.string.app_name),
-                        getString(R.string.delete_loyalty_message)
+                        if (loyaltyPointAdapter.getItem(pos).isEnable) {
+                            getString(R.string.delete_active_loyalty_message)
+                        } else {
+                            getString(R.string.delete_loyalty_message)
+                        }
                     ) {
                         positiveButton(getString(R.string.tv_delete)) {
                             // Do positive stuff here

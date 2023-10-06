@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -20,6 +21,7 @@ import com.android.pos.data.remote.Constants.ORDER_TYPE_ID
 import com.android.pos.data.remote.Constants.ORDER_TYPE_NAME
 import com.android.pos.databinding.FragmentCustomerDetailsBinding
 import com.android.pos.di.PrefProvider
+import com.android.pos.ui.adapter.GiftCardOrderHistoryAdapter
 import com.android.pos.ui.adapter.OrderHistoryAdapter
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.utils.AlertUtils
@@ -27,6 +29,7 @@ import com.android.pos.utils.EventObserver
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.gone
+import com.android.pos.utils.extensions.isVisible
 import com.android.pos.utils.extensions.liveSnackBar
 import com.android.pos.utils.extensions.visible
 import com.google.android.material.snackbar.Snackbar
@@ -38,6 +41,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
 
+    private var isCustomerOrderHistorySelected = true
     private lateinit var binding: FragmentCustomerDetailsBinding
     lateinit var customerModel: TbCustomer
     val TAG = "CustomerDetails"
@@ -52,6 +56,8 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
     lateinit var listOfServiceCharge: ArrayList<TbServiceCharge>
     var isFromSearch: Boolean = false
     var activeTaxList: List<TaxData> = arrayListOf()
+
+    private lateinit var giftCardOrderHistoryAdapter: GiftCardOrderHistoryAdapter
 
     private val orderHistoryAdapter by lazy {
         OrderHistoryAdapter { view, order ->
@@ -98,6 +104,54 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
         viewModel.getReportSummary(
             isFromSearch
         )
+        setupClickListeners()
+    }
+
+    private fun setupClickListeners() {
+        binding.apply {
+
+            txtCustomerOrderHistoryTab.setOnClickListener {
+                isCustomerOrderHistorySelected = true
+                updateHistoryUI()
+            }
+
+            txtGiftCardOrderHistoryTab.setOnClickListener {
+                isCustomerOrderHistorySelected = false
+                updateHistoryUI()
+            }
+
+        }
+    }
+
+    private fun updateHistoryUI(){
+        if(isCustomerOrderHistorySelected){
+            binding.apply {
+                binding.txtCustomerOrderHistoryTab.background = AppCompatResources.getDrawable(requireContext(), R.drawable.background_orange_with_border)
+                binding.txtGiftCardOrderHistoryTab.background = AppCompatResources.getDrawable(requireContext(), R.drawable.background_gray_with_border)
+                rvOrderHistory.visible()
+                layoutHeader.txtReorder.visible()
+                rvGiftCardOrderHistory.gone()
+                layoutHeader.txtPartType.text = requireContext().getString(R.string.pay_type)
+                if (customerModel.enroll_to_loyalty == true) {
+                    layoutHeader.txtLoyaltyPoints.visible()
+                    layoutHeader.txtUsedLoyaltyPoints.visible()
+                }else{
+                    layoutHeader.txtLoyaltyPoints.gone()
+                    layoutHeader.txtUsedLoyaltyPoints.gone()
+                }
+            }
+        }else{
+            binding.apply {
+                binding.txtCustomerOrderHistoryTab.background = AppCompatResources.getDrawable(requireContext(), R.drawable.background_gray_with_border)
+                binding.txtGiftCardOrderHistoryTab.background = AppCompatResources.getDrawable(requireContext(), R.drawable.background_orange_with_border)
+                layoutHeader.txtLoyaltyPoints.gone()
+                layoutHeader.txtUsedLoyaltyPoints.gone()
+                layoutHeader.txtReorder.gone()
+                layoutHeader.txtPartType.text = requireContext().getString(R.string.amount)
+                rvOrderHistory.gone()
+                rvGiftCardOrderHistory.visible()
+            }
+        }
     }
 
     private fun observerServiceCharge() {
@@ -195,17 +249,21 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
             }
         }
 
-
-
-
+        //Setup Order History List
         binding.rvOrderHistory.adapter = orderHistoryAdapter
-        orderHistoryAdapter.setListner(this)
+        orderHistoryAdapter.setListner(this@CustomerDetails)
         orderHistoryAdapter.setPrefrenceData(PrefProvider(requireContext()))
+
+        //Setup Gift Card Order History List
+        giftCardOrderHistoryAdapter = GiftCardOrderHistoryAdapter()
+        binding.rvGiftCardOrderHistory.adapter = giftCardOrderHistoryAdapter
+        giftCardOrderHistoryAdapter.setPrefrenceData(PrefProvider(requireContext()))
+
     }
 
     private fun initObservers() {
         binding.root.liveSnackBar(this, viewModel.snackbarText, Snackbar.LENGTH_SHORT)
-
+        updateHistoryUI()
 
         viewModel.itemlist.observe(viewLifecycleOwner) { itemlist ->
             if (itemlist.data?.isNotEmpty() == true) {
@@ -229,20 +287,27 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
         viewModel.orderHistory.observe(viewLifecycleOwner, EventObserver { data ->
             if (data?.isNotEmpty() == true) {
                 observerServiceCharge()
-                binding.llOrderHistory.visible()
+                binding.txtCustomerOrderHistoryTab.visible()
+                binding.rvOrderHistory.visible()
+                binding.layoutHeader.root.visible()
                 orderHistoryAdapter.add(data)
-                /*var point = 0.0
-
-                data.forEach {
-
-                    if (it.order_loyalty_points != null)
-                        point += it.order_loyalty_points
-                }
-
-                binding.txtrewardpoint.text = "" + point*/
-
             } else {
-                binding.llOrderHistory.gone()
+                binding.txtCustomerOrderHistoryTab.gone()
+                binding.rvOrderHistory.gone()
+            }
+        })
+        viewModel.giftCardOrderHistory.observe(viewLifecycleOwner, EventObserver { data ->
+            if (data?.isNotEmpty() == true) {
+                observerServiceCharge()
+                binding.txtGiftCardOrderHistoryTab.visible()
+                if(!isCustomerOrderHistorySelected){//for hiding it on the first time
+                    binding.rvGiftCardOrderHistory.visible()
+                }
+                binding.layoutHeader.root.visible()
+                giftCardOrderHistoryAdapter.add(data)
+            } else {
+                binding.txtGiftCardOrderHistoryTab.gone()
+                binding.rvGiftCardOrderHistory.visible()
             }
         })
         viewModel.orderResponse.observe(viewLifecycleOwner, EventObserver { order ->

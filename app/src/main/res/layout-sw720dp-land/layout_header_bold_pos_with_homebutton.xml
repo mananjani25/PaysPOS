@@ -142,7 +142,7 @@
                     android:layout_marginEnd="@dimen/_2sdp"
                     android:contentDescription="@string/clock"
                     android:paddingVertical="@dimen/_5sdp"
-                    android:src="@drawable/switch_user"
+                    android:src="@drawable/swipe_user_clock"
                     app:tint="@color/txtColor" />
 
                 <TextView

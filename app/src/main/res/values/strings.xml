@@ -97,12 +97,17 @@
 
 
     <string name="delete_tax_message">Are you sure, you want to delete Tax?</string>
+    <string name="delete_active_tax_message">This is an active tax , Are you sure, you want to delete Tax?</string>
     <string name="delete_tip_message">Are you sure, you want to delete the Tip?</string>
+    <string name="delete_active_tip_message">This is an active tip , Are you sure, you want to delete the Tip?</string>
     <string name="delete_note_message">Are you sure, you want to delete Note?</string>
+    <string name="delete_active_note_message">This is an active Note, Are you sure, you want to delete the Note?</string>
     <string name="delete_discount_message">Are you sure, you want to delete Discount?</string>
+    <string name="delete_active_discount_message">This is an active discount , Are you sure, you want to delete Discount?</string>
     <string name="delete_customer_message">Are you sure, you want to delete this Customer?</string>
     <string name="delete_service_charge_message">Are you sure, you want to delete Service Charge?</string>
     <string name="delete_loyalty_message">Are you sure, you want to delete Loyalty Program?</string>
+    <string name="delete_active_loyalty_message">This is an active Loyalty program, Are you sure, you want to delete the Loyalty Program?</string>
     <string name="delete_employee_message">Are you sure, you want to delete Employee?</string>
     <string name="clockout_message">Are you sure, you want to Clockout?</string>
     <string name="delete_item_message">Are you sure, you want to delete this item?</string>
@@ -695,6 +700,7 @@
     <string name="amount">Amount</string>
     <string name="edit_order">Update Order</string>
     <string name="customer_order_history">Customer Order History</string>
+    <string name="gift_card_order_history">Gift Card Order History</string>
     <string name="order_id_nstatus">Order ID &amp; Status</string>
     <string name="date_time">Date/ Time</string>
     <string name="order_details">Order Details</string>
@@ -730,6 +736,8 @@
     <string name="loyalty_balance">Loyalty Balance</string>
     <string name="loyalty_rewards">Loyalty Rewards</string>
     <string name="used_loyalty_amount">Used Loyalty Amount</string>
+    <string name="applied_loyalty_balance">Applied Loyalty Balance</string>
+    <string name="applied_loyalty_points">Applied Loyalty Points</string>
     <string name="end_date_amp_time"><![CDATA[End Date & Time]]></string>
     <string name="start_date_amp_time"><![CDATA[Start Date & Time]]></string>
     <string name="terminal_login_id_tap_to_copy_unique_id">Terminal Login ID (Tap to copy Unique id)</string>
@@ -908,6 +916,8 @@
     <string name="item_wise_sales">Item Wise Sales</string>
     <string name="employee_tip_summary">Employee Tip Summary</string>
     <string name="add_a_order_note">Add a Order Note</string>
+    <string name="no_data_available">No Data Available</string>
+    <string name="pending_order_will_be_appear_here">Pending order will appear here</string>
 
 </resources>
 

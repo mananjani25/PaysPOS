@@ -599,6 +599,14 @@ class PhoneOrderListFragment(
 
     }
 
+    override fun noDataAvailableFilter() {
+        TODO("Not yet implemented")
+    }
+
+    override fun hideNoDataAvailable() {
+        TODO("Not yet implemented")
+    }
+
     private fun cartModel(order: OpenOrderResponse.Data.Order): CartModel {
         LogUtil.logE("futureDeliveryDate  ", Gson().toJson(order))
         return CartModel().apply {
@@ -1727,7 +1735,7 @@ class PhoneOrderListFragment(
                 if (receiptModel.payments.isNotEmpty() && receiptModel.payments.get(receiptModel.payments.size - 1).paymentType.lowercase() == "Card".lowercase()) {
                     builder.addText(
                         padLine(
-                            "SurCharge",
+                            Constants.SURCHARGE_TEXT,
                             "$" + MethodUtils.roundOffAmountString(receiptModel.cash_discount_or_surcharge!!),
                             if (customerSettingModel.fonts == Constants.LARGE) {
                                 24
@@ -2540,7 +2548,7 @@ class PhoneOrderListFragment(
                 if (receiptModel.payments.isNotEmpty() && receiptModel.payments.get(receiptModel.payments.size - 1).paymentType.lowercase() == "Card".lowercase()) {
 
                     val str8 = padLine(
-                        "SurCharge",
+                        Constants.SURCHARGE_TEXT,
                         "$" + MethodUtils.roundOffAmountString(receiptModel.cash_discount_or_surcharge!!),
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             23
@@ -3062,7 +3070,7 @@ class PhoneOrderListFragment(
                 if (receiptModel.payments.isNotEmpty() && receiptModel.payments.get(receiptModel.payments.size - 1).paymentType.lowercase() == "Card".lowercase()) {
 
                     val str8 = padLine(
-                        "SurCharge",
+                        Constants.SURCHARGE_TEXT,
                         "$" + MethodUtils.roundOffAmountString(receiptModel.cash_discount_or_surcharge!!),
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             23

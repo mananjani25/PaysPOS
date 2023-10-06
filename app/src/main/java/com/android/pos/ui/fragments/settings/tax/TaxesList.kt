@@ -189,7 +189,11 @@ class TaxesList : Fragment(), ItemCallback {
 
                     alert(
                         getString(R.string.app_name),
-                        getString(R.string.delete_tax_message)
+                        if (taxListadapter.getItem(pos).isActive) {
+                            getString(R.string.delete_active_tax_message)
+                        }else{
+                            getString(R.string.delete_tax_message)
+                        }
                     ) {
                         positiveButton(getString(R.string.tv_delete)) {
                             // Do positive stuff here

@@ -75,6 +75,7 @@ object Constants {
     const val AUTH_TOKEN = "authToken"
     const val CHECK_QUEUE_CANCEL = "check_queue_cancel"
     const val TERMINAL_ID = "terminalId"
+    const val TERMINAL_NAME = "terminalName"
     const val SYNC_TIME_STAMP = "SyncTimeStamp"
     const val SYNC_SETTING_TIME_STAMP = "SyncSettingTimeStamp"
     const val ONLINE_ORDER_ENABLE = "ONLINE_ORDER_ENABLE"
@@ -793,6 +794,8 @@ object Constants {
     const val BALANCE_INQUIRY = "Balance Inquiry"
     const val GIFT_CARD_CATEGORY = "GIFT CARD"
     const val IS_LAST_ITEM_DELETE = "IS_LAST_ITEM_DELETE"
+
+    const val SURCHARGE_TEXT = "Surcharge"
 
     fun createCloudPrinter(ipAddress:String,portNo:Int):CloudPrinter{
         return CloudPrinterBuilder.buildPrinter(ipAddress,portNo)

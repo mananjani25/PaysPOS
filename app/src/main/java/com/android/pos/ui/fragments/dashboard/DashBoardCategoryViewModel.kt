@@ -102,6 +102,7 @@ import java.net.URL
 import java.text.NumberFormat
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 import kotlin.collections.set
 import kotlin.math.ceil
 
@@ -192,6 +193,10 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun setSplitCount(selectcount: Int) {
         this.isSelectCount = selectcount
+    }
+
+    fun getSplitCount():Int{
+        return this.isSelectCount
     }
 
     fun orderTypes(): LiveData<Resource<List<TbOrderType>>> {
@@ -423,12 +428,16 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     fun deleteCart() {
-        prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
-        cartModel = null
-        GlobalScope.launch {
-            posRepository.deleteCart(prefProvider.getValueInt(EMPLOYEE_ID, 0))
-            destroyedList.clear()
-        }
+   try {
+       prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
+       cartModel = null
+       GlobalScope.launch {
+           posRepository.deleteCart(prefProvider.getValueInt(EMPLOYEE_ID, 0))
+           destroyedList.clear()
+       }
+   }catch (e:Exception){
+       Log.d("deleteCart","Preference is null")
+   }
     }
 
 
@@ -577,7 +586,8 @@ class DashBoardCategoryViewModel @Inject constructor(
         type: String,
         isManualSales: Boolean,
         dineInList: List<DineInModel> = arrayListOf(),
-        isFromDineInScreen: Boolean = false
+        isFromDineInScreen: Boolean = false,
+        position: Int = -1
     ) {
         prefProvider.setValueboolean(
             IS_LAST_ITEM_DELETE,
@@ -1429,6 +1439,27 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     list.add(item)
                                 }
                             } else {
+                                //For BIS-3219 issue
+                                //This is for adding the item after deleting it after coming from all orders update order click
+                                var newItem: TbItem? = null
+                                var indexToRemove = -1
+                                list.forEachIndexed { index, tbItem ->
+                                    if(tbItem.isDestroy && tbItem.itemId == item?.itemId){
+                                        newItem = tbItem
+                                        indexToRemove = index
+                                    }
+                                }
+
+                                if(indexToRemove != -1){
+                                    list.removeAt(indexToRemove)
+                                }
+
+                                if(newItem != null){
+                                    newItem?.itemQuantity = 1
+                                    newItem?.isDestroy = false
+                                    list.add(newItem!!)
+                                }
+
                                 Log.e("DashViewModModel", "getIndexThird  ${index}")
 
                             }
@@ -1470,7 +1501,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                             "CheckUpdate",
                                             "newCartLogicModifier: position of selected Item " + item.id
                                         )
-                                        var indexJ = -1
+                                        /*var indexJ = -1
 
                                         for (j in 0 until listTmp.size) {
                                             if (listTmp[j].id == item.id
@@ -1479,12 +1510,13 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                 break
                                             }
 
-                                        }
+                                        }*/
                                         var ttempllist =
                                             ArrayList(listTmp).apply {
-                                                if (indexJ != -1) {
-                                                    Log.e("CheckUpdate", "GETIndexJ  ${indexJ}")
-                                                    removeAt(indexJ)
+                                                if (position != -1) {
+                                                    Log.e("CheckUpdate", "GETIndexJ  ${position}")
+                                                    this[position].isDestroy = true
+//                                                    removeAt(indexJ)
                                                 }
                                             }
                                         list.addAll(ttempllist.toMutableList())
@@ -1515,7 +1547,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                         "CheckUpdate",
                                                         "newCartLogicModifier: position of selected Item " + item.id
                                                     )
-                                                    var indexJ = -1
+                                                    /*var indexJ = -1
 
                                                     for (j in 0 until listTmp.size) {
                                                         if (listTmp[j].id == item.id
@@ -1524,15 +1556,16 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                             break
                                                         }
 
-                                                    }
+                                                    }*/
                                                     var ttempllist =
                                                         ArrayList(listTmp).apply {
-                                                            if (indexJ != -1) {
+                                                            if (position != -1) {
                                                                 Log.e(
                                                                     "CheckUpdate",
-                                                                    "GETIndexJ  ${indexJ}"
+                                                                    "GETIndexJ  ${position}"
                                                                 )
-                                                                removeAt(indexJ)
+                                                                this[position].isDestroy = true
+//                                                                removeAt(indexJ)
                                                             }
                                                         }
                                                     list.addAll(ttempllist.toMutableList())
@@ -2592,17 +2625,20 @@ class DashBoardCategoryViewModel @Inject constructor(
 
         if (tbItem.modifiers.isNotEmpty()) {
             tbItem.modifiers.forEach {
-                tbMod.put(it.id ?: 0, it.modifier_quantity)
-                listOfDataMod.add(it.id ?: 0)
+                if(!it._destroy) {
+                    tbMod.put(it.id ?: 0, it.modifier_quantity)
+                    listOfDataMod.add(it.id ?: 0)
+                }
             }
         }
 
         var listOfDataModSelected: ArrayList<Int> = arrayListOf()
         if (item.modifiers.isNotEmpty()) {
             item.modifiers.forEach {
-
-                itemMod.put(it.id ?: 0, it.modifier_quantity)
-                listOfDataModSelected.add(it.id ?: 0)
+                if(!it._destroy) {
+                    itemMod.put(it.id ?: 0, it.modifier_quantity)
+                    listOfDataModSelected.add(it.id ?: 0)
+                }
 
             }
         }
@@ -4480,6 +4516,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 order_item_taxes_attributes =
                     orderModifierTaxesAttributes(item, it, terminalId)
                 modifier_quantity = it.modifier_quantity
+                _destroy = it._destroy
             }
             orderItemModifierAttributeList.add(orderItemModifierAttribute)
         }

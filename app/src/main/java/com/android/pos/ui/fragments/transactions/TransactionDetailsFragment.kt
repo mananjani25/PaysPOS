@@ -1144,7 +1144,7 @@ class TransactionDetailsFragment : Fragment() {
                     if (paymentDetailsResponse.data.payment_type == "Card") {
                         if (paymentDetailsResponse.data.cash_discount_type == "SurCharge") {
                             binding.linearCashDiscount.visibility = View.VISIBLE
-                            binding.labelCashsurcharge?.text = "SurCharge"
+                            binding.labelCashsurcharge?.text = Constants.SURCHARGE_TEXT
                             binding.txtCashAmounntDiscount.setTextColor(
                                 ContextCompat.getColor(
                                     requireContext(),
@@ -3730,7 +3730,7 @@ class TransactionDetailsFragment : Fragment() {
                 if (paymentDetailsResponse?.data?.payment_type.lowercase() == "Card".lowercase() && paymentDetailsResponse.data.cash_discount_type.lowercase() == "SurCharge".lowercase()) {
                     builder.addText(
                         padLine(
-                            "SurCharge",
+                            Constants.SURCHARGE_TEXT,
                             if (paymentDetailsResponse.data.cash_discount_or_surcharge != 0.0) {
                                 "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data?.cash_discount_or_surcharge)
                             } else {
@@ -4640,7 +4640,7 @@ class TransactionDetailsFragment : Fragment() {
                 if (paymentDetailsResponse?.data?.payment_type.lowercase() == "Card".lowercase() && paymentDetailsResponse?.data?.cash_discount_type.lowercase() == "SurCharge".lowercase()) {
                     val surCharge =
                         padLine(
-                            "SurCharge",
+                            Constants.SURCHARGE_TEXT,
                             if (paymentDetailsResponse.data.cash_discount_or_surcharge != 0.0) {
                                 "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data?.cash_discount_or_surcharge)
                             } else {
@@ -5127,7 +5127,7 @@ class TransactionDetailsFragment : Fragment() {
                 if (paymentDetailsResponse?.data?.payment_type.lowercase() == "Card".lowercase() && paymentDetailsResponse?.data?.cash_discount_type.lowercase() == "SurCharge".lowercase()) {
                     val surCharge =
                         padLine(
-                            "SurCharge",
+                            Constants.SURCHARGE_TEXT,
                             if (paymentDetailsResponse.data.cash_discount_or_surcharge != 0.0) {
                                 "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data?.cash_discount_or_surcharge)
                             } else {
