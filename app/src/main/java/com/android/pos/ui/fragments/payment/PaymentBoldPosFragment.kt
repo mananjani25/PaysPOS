@@ -341,6 +341,7 @@ class PaymentBoldPosFragment : Fragment() {
                     }else{
                         navController.popBackStack()
                     }
+                prefProvider.setValueboolean(Constants.BACK_FROM_PAYMENT,true)
 
                 } else {
                     if(prefProvider.getValueboolean(IS_FROM_ALL_ORDER,false)){
