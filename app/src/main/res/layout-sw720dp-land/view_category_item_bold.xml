@@ -44,7 +44,6 @@
             android:paddingBottom="@dimen/_5sdp"
             android:maxLines="1"
             android:text="@string/_0_00"
-            android:background="@drawable/item_selector"
             android:textColor="@drawable/text_selector"
             android:textSize="@dimen/_5mdpi" />
         <View

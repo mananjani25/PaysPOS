@@ -36,7 +36,6 @@ import com.android.pos.utils.callback.ItemListner
 import com.android.pos.utils.extensions.runOnUiThread
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -281,7 +280,7 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
 
                 itemAdapter.clearData()
                 lifecycleScope.launch {
-                    viewModel.itemsByCat(categoryList1[tabPos].category.id).collect {
+                    viewModel.itemsByCat(categoryList1[tabPos].category.id).collectLatest {
 
                         itemAdapter.submitData(it)
 
@@ -536,7 +535,7 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
                     }
 
 
-                    itemAdapter.submitData(it)
+                  //  itemAdapter.submitData(it)
 
 
             }

@@ -16,7 +16,6 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import androidx.paging.cachedIn
 import com.android.pos.MainApplication
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.entities.*
@@ -318,7 +317,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         ) {
             appDatabase.itemDao().getItemListByCategory(id)
 
-        }.flow.cachedIn(viewModelScope)
+        }.flow
 
 
     /*
@@ -365,7 +364,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun addCart(cartModel: CartModel) {
 
-       viewModelScope.launch {
+       CoroutineScope(Dispatchers.IO).launch {
            posRepository.addItemCart(generateCombinedItems(cartModel))
            destroyedList.clear()
            //removeItemDineInList.clear()
