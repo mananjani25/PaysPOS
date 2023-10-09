@@ -457,11 +457,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         }
         setLabelData()
 
-        Log.d(TAG, "onViewCreated: Business Name = ${prefProvider.getValue(Constants.BUSINESS_NAME, "")}")
-        Log.d(TAG, "onViewCreated: Business TimeZone = ${prefProvider.getValue(Constants.SYSTEM_TIMEZONE, "")}")
-        Log.d(TAG, "onViewCreated: Business PhoneNo = ${prefProvider.getValue(Constants.BUSINESS_PHONE_NO, "")}")
-        Log.d(TAG, "onViewCreated: Business Website = ${prefProvider.getValue(Constants.BUSINESS_WEBSITE, "")}")
-
         binding.edtEmail.setOnFocusChangeListener { v, hasFocus ->
             if (hasFocus) {
                 binding.edtEmail.setHint("")

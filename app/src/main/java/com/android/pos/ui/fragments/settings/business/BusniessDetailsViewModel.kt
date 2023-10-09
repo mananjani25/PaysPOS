@@ -119,25 +119,28 @@ class BusniessDetailsViewModel @Inject constructor(
                                             Constants.BUSINESS_NAME,
                                             customerListReposne.data.businessName
                                         )
+
                                         prefProvider.setValue(
                                             Constants.SYSTEM_TIMEZONE,
                                             customerListReposne.data.timeZone
                                         )
+
                                         prefProvider.setValue(
                                             Constants.BUSINESS_PHONE_NO,
                                             customerListReposne.data.phoneNumber
                                         )
+
                                         prefProvider.setValue(
                                             Constants.BUSINESS_WEBSITE,
                                             customerListReposne.data.businessWebsite
                                         )
-                                        //Need to add address in string in below prefs
-                                        /*if (it.settingData.data.address != null) {
+
+                                        if (customerListReposne.data.address!=null) {
                                             prefProvider.setValue(
                                                 Constants.BUSINESS_ADDRESS,
-                                                it.settingData.data.address
+                                                customerListReposne.data.address
                                             )
-                                        }*/
+                                        }
 
                                         val address =
                                             customerListReposne.data.addressAttributes.addressableType.let { it1 ->
