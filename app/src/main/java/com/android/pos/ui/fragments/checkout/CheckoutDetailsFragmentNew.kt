@@ -2090,7 +2090,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 } else {
                     CoroutineScope(Dispatchers.Main).launch {
                         ProgressUtils.dismissProgressDialog()
-                        requireActivity().toast("$resultCode $resultTxt", Toast.LENGTH_LONG)
+                        requireContext().showNormalToast("$resultCode $resultTxt")
 //                        connectBP()
                     }
                 }
