@@ -36,6 +36,8 @@ import com.android.pos.utils.callback.ItemListner
 import com.android.pos.utils.extensions.runOnUiThread
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -91,136 +93,160 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
 
 
     private fun setVenueData() {
+
         viewModel.venueDataLocal().observe(
             viewLifecycleOwner
         ) {
             when (it.status) {
                 Status.SUCCESS -> {
+                    CoroutineScope(Dispatchers.IO).launch {
 
-                    val tbCategory = it.data
-                    if (tbCategory != null) {
-                        tabList.clear()
-                        tabList = arrayListOf()
-                        itemList1.clear()
-                        itemList1 = arrayListOf()
-                        list.clear()
-                        list = arrayListOf()
-
-
-
-                        categoryList1 = tbCategory as ArrayList<CategoryWithInventory>
-                        if (categoryList1.isNotEmpty()) {
-
-                            var tmpTabList: ArrayList<CategoryTabModel> = arrayListOf()
-
-                            allItems.clear()
-                            allItems = arrayListOf()
-                            for (i in 0 until categoryList1.size) {
+                        val tbCategory = it.data
+                        if (tbCategory != null) {
+                            tabList.clear()
+                            tabList = arrayListOf()
+                            itemList1.clear()
+                            itemList1 = arrayListOf()
+                            list.clear()
+                            list = arrayListOf()
 
 
-                                tabList.add(
-                                    CategoryTabModel(
-                                        categoryList1[i].category.id,
-                                        categoryList1[i].category.name ?: "",
-                                        if (i == 0) true else false,
-                                        0
-                                    )
-                                )
 
-                                tmpTabList.add(
-                                    CategoryTabModel(
-                                        categoryList1[i].category.id,
-                                        categoryList1[i].category.name ?: "",
-                                        if (i == 0) true else false,
-                                        0
+                            categoryList1 = tbCategory as ArrayList<CategoryWithInventory>
+                            if (categoryList1.isNotEmpty()) {
+
+                                var tmpTabList: ArrayList<CategoryTabModel> = arrayListOf()
+
+                                allItems.clear()
+                                allItems = arrayListOf()
+                                for (i in 0 until categoryList1.size) {
+
+
+                                    tabList.add(
+                                        CategoryTabModel(
+                                            categoryList1[i].category.id,
+                                            categoryList1[i].category.name ?: "",
+                                            if (i == 0) true else false,
+                                            0
+                                        )
                                     )
 
-                                )
-                                categoryList1[i].inventoryLists?.forEach {
-                                    if (it?.isDeleted == false)
-                                        allItems.add(it)
-                                }
-                                if ((tmpTabList.size == 8) or (tabList.size > 8 && tabList.size == categoryList1.size)) {
-                                    var model = CategoryParentModel()
-                                    model.list.addAll(tmpTabList)
-                                    list.add(model)
-                                    tmpTabList.clear()
-                                    tmpTabList = arrayListOf()
+                                    tmpTabList.add(
+                                        CategoryTabModel(
+                                            categoryList1[i].category.id,
+                                            categoryList1[i].category.name ?: "",
+                                            if (i == 0) true else false,
+                                            0
+                                        )
 
-                                } else if (tmpTabList.size < 8 && tmpTabList.size == categoryList1.size) {
-                                    list.add(CategoryParentModel(tmpTabList))
-                                }
-
-
-                            }
-
-                            val tabListLine: ArrayList<CategoryTabModel> = arrayListOf()
-                            for (i in 0 until list.size) {
-                                tabListLine.add(CategoryTabModel(0, "", i == 0, 0))
-                            }
-                            categoryTabAdapter.addList(tabListLine)
-                            categoryParentAdapter.addList(list)
-
-                            categoryList1[0].inventoryLists?.filter {
-                                it!!.isHide && !it.isDeleted
-                            }?.let { it1 ->
-                                itemList1.addAll(it1)
-                            }
-
-
-
-                            searchCategory()
-
-
-                            if (list.isNotEmpty()) {
-                                if (prefProvider.getValueInt(Constants.CAT_ID_SELECTED, 0) == 0) {
-                                    Log.e("ItemAdapter", "AddedItem 1 ")
-                                    Log.e("ItemAdapter", "itemListSize  ${itemList1.size}")
-
-                                    lifecycleScope.launch {
-                                        viewModel.itemsByCat(categoryList1[0].category.id)
-                                            .collectLatest {
-                                                Log.e("CollectItems", "Collect")
-
-                                                binding.rvItemList.adapter = null
-                                                itemAdapter = ItemAdapterPagDash(listner,null,prefProvider)
-                                                binding.rvItemList.setHasFixedSize(true)
-                                                binding.rvItemList.layoutManager =
-                                                    GridLayoutManager(requireContext(), 4)
-                                                binding.rvItemList.adapter = itemAdapter
-                                                itemAdapter.submitData(it)
-                                                Log.e(
-                                                    "LoadedItems",
-                                                    "sizeOf  ${itemAdapter.snapshot().items.size}"
-                                                )
-
-                                            }
+                                    )
+                                    categoryList1[i].inventoryLists?.forEach {
+                                        if (it?.isDeleted == false)
+                                            allItems.add(it)
                                     }
-                                    binding.rvCategoryParent.scrollToPosition(0)
+                                    if ((tmpTabList.size == 8) or (tabList.size > 8 && tabList.size == categoryList1.size)) {
+                                        var model = CategoryParentModel()
+                                        model.list.addAll(tmpTabList)
+                                        list.add(model)
+                                        tmpTabList.clear()
+                                        tmpTabList = arrayListOf()
 
-                                } else {
-                                    changePositionOfCate()
+                                    } else if (tmpTabList.size < 8 && tmpTabList.size == categoryList1.size) {
+                                        list.add(CategoryParentModel(tmpTabList))
+                                    }
+
 
                                 }
 
+                                val tabListLine: ArrayList<CategoryTabModel> = arrayListOf()
+                                for (i in 0 until list.size) {
+                                    tabListLine.add(CategoryTabModel(0, "", i == 0, 0))
+                                }
+                                runOnUiThread(Runnable {
+                                    categoryTabAdapter.addList(tabListLine)
+                                    categoryParentAdapter.addList(list)
+                                })
 
+                                categoryList1[0].inventoryLists?.filter {
+                                    it!!.isHide && !it.isDeleted
+                                }?.let { it1 ->
+                                    itemList1.addAll(it1)
+                                }
+
+
+
+                                searchCategory()
+
+
+                                if (list.isNotEmpty()) {
+                                    if (prefProvider.getValueInt(
+                                            Constants.CAT_ID_SELECTED,
+                                            0
+                                        ) == 0
+                                    ) {
+                                        Log.e("ItemAdapter", "AddedItem 1 ")
+                                        Log.e("ItemAdapter", "itemListSize  ${itemList1.size}")
+
+                                        lifecycleScope.launch {
+                                            viewModel.itemsByCat(categoryList1[0].category.id)
+                                                .collectLatest {
+                                                    Log.e("CollectItems", "Collect")
+
+                                                    runOnUiThread(Runnable {
+                                                        binding.rvItemList.adapter = null
+                                                        itemAdapter = ItemAdapterPagDash(
+                                                            listner,
+                                                            null,
+                                                            prefProvider
+                                                        )
+                                                        binding.rvItemList.setHasFixedSize(true)
+                                                        binding.rvItemList.layoutManager =
+                                                            GridLayoutManager(
+                                                                requireContext(),
+                                                                4
+                                                            )
+                                                        binding.rvItemList.adapter = itemAdapter
+                                                    })
+                                                    itemAdapter.submitData(it)
+                                                    Log.e(
+                                                        "LoadedItems",
+                                                        "sizeOf  ${itemAdapter.snapshot().items.size}"
+                                                    )
+
+
+                                                }
+                                        }
+                                        runOnUiThread(Runnable {
+                                            binding.rvCategoryParent.scrollToPosition(0)
+                                        })
+
+                                    } else {
+                                        changePositionOfCate()
+
+                                    }
+
+
+                                }
+
+                            } else {
+                                Log.e("CategoryEmpty", "CategoryEmpty clearList")
+                                runOnUiThread(Runnable {
+                                    categoryParentAdapter.clearList()
+                                })
                             }
 
                         } else {
-                            Log.e("CategoryEmpty", "CategoryEmpty clearList")
-                            categoryParentAdapter.clearList()
+                            Log.e(TAG, "CCategoryEmpty")
+                            runOnUiThread {
+                                categoryParentAdapter.clearList()
+                            }
                         }
+                        ProgressUtils.dismissProgressDialog()
 
-                    } else {
-                        Log.e(TAG, "CCategoryEmpty")
-                        runOnUiThread {
-                            categoryParentAdapter.clearList()
-                        }
+
                     }
-                    ProgressUtils.dismissProgressDialog()
-
-
                 }
+
                 Status.ERROR ->
                     ProgressUtils.dismissProgressDialog()
 
@@ -229,110 +255,121 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
             }
         }
 
+
     }
 
     private fun changePositionOfCate() {
-        var tabPos = -1
-        val tabList = categoryParentAdapter.getList()
+        runOnUiThread(Runnable {
+            var tabPos = -1
+            val tabList = categoryParentAdapter.getList()
 
-        var posParent = -1
+            var posParent = -1
 
-        for (i in 0 until tabList.size) {
-            posParent++
+            for (i in 0 until tabList.size) {
+                posParent++
 
-            tabList[i].list.forEachIndexed { index, it ->
+                tabList[i].list.forEachIndexed { index, it ->
 
-                if (it.id == prefProvider.getValueInt(Constants.CAT_ID_SELECTED, 0)) {
-                    it.isSelected = true
-                    tabPos = index
-                    return@forEachIndexed
+                    if (it.id == prefProvider.getValueInt(Constants.CAT_ID_SELECTED, 0)) {
+                        it.isSelected = true
+                        tabPos = index
+                        return@forEachIndexed
 
 
-                } else {
-                    it.isSelected = false
+                    } else {
+                        it.isSelected = false
+                    }
+
                 }
 
+                if (tabPos != -1) {
+                    break
+
+                }
+
+            }
+            var itemList: ArrayList<TbItem?> = arrayListOf()
+
+            var tempV = getTabPosByParent(posParent)
+            tabPos += tempV
+
+
+            if (posParent != 0) {
+                binding.rvCategoryParent.smoothScrollToPosition(posParent)
             }
 
             if (tabPos != -1) {
-                break
+                if (tabPos < categoryList1.size) {
+                    /*  categoryList1[tabPos].inventoryLists?.filter {
+                          it!!.isHide && !it.isDeleted
+                      }?.let { it1 ->
+                          itemList.addAll(it1)
+                      }*/
 
-            }
-
-        }
-        var itemList: ArrayList<TbItem?> = arrayListOf()
-
-        var tempV = getTabPosByParent(posParent)
-        tabPos += tempV
-
-
-        if (posParent != 0) {
-            binding.rvCategoryParent.smoothScrollToPosition(posParent)
-        }
-
-        if (tabPos != -1) {
-            if (tabPos < categoryList1.size) {
-                /*  categoryList1[tabPos].inventoryLists?.filter {
-                      it!!.isHide && !it.isDeleted
-                  }?.let { it1 ->
-                      itemList.addAll(it1)
-                  }*/
-
-                itemAdapter.clearData()
-                lifecycleScope.launch {
-                    viewModel.itemsByCat(categoryList1[tabPos].category.id).collectLatest {
-
-                        itemAdapter.submitData(it)
+                    runOnUiThread(Runnable {
+                        itemAdapter.clearData()
+                    })
 
 
-                    }
+                        lifecycleScope.launch(Dispatchers.IO) {
+                            viewModel.itemsByCat(categoryList1[tabPos].category.id).collectLatest {
+
+
+                                itemAdapter.submitData(it)
+
+
+                            }
+                        }
+
+
                 }
+                Log.e("ItemAdapter", "ItermListAdded 2 ")
 
+
+                /* itemAdapter.snapshot().toCollection(arrayListOf()).addAll(itemList)
+                 itemAdapter.notifyDataSetChanged()
+     */
             }
-            Log.e("ItemAdapter", "ItermListAdded 2 ")
-
-
-            /* itemAdapter.snapshot().toCollection(arrayListOf()).addAll(itemList)
-             itemAdapter.notifyDataSetChanged()
- */
-        }
+        })
 
     }
 
     private fun searchCategory() {
-
-        searchList = arrayListOf()
-        categoryList1.forEach { categories ->
-            val itemList = categories.inventoryLists
-            itemList?.filter { it?.isHide == true }?.forEach { tbItem ->
-                searchList.add(
-                    CategorySearchData(
-                        tbItem?.itemId ?: 0,
-                        tbItem?.name ?: "",
-                        tbItem?.imageUrl.toString(),
-                        categories.category.name ?: "",
-                        categories.category.id
+        runOnUiThread(Runnable {
+            searchList = arrayListOf()
+            categoryList1.forEach { categories ->
+                val itemList = categories.inventoryLists
+                itemList?.filter { it?.isHide == true }?.forEach { tbItem ->
+                    searchList.add(
+                        CategorySearchData(
+                            tbItem?.itemId ?: 0,
+                            tbItem?.name ?: "",
+                            tbItem?.imageUrl.toString(),
+                            categories.category.name ?: "",
+                            categories.category.id
+                        )
                     )
-                )
+                }
             }
-        }
-        searchAdapter =
-            CategorySearchAdapter(
-                requireActivity(),
-                R.layout.search_category_item,
-                searchList
-            )
-        edtSearch?.threshold = 2
-        edtSearch?.setAdapter(searchAdapter)
-        edtSearch?.setOnItemClickListener { parent, _, position, _ ->
-            val model: CategorySearchData = parent.getItemAtPosition(position) as CategorySearchData
-            edtSearch.setText(model.title)
-            edtSearch.setSelection(model.title.length)
-            MethodUtils.hideKeyboard(requireActivity())
-            resetTabbySearch(model)
+            searchAdapter =
+                CategorySearchAdapter(
+                    requireActivity(),
+                    R.layout.search_category_item,
+                    searchList
+                )
+            edtSearch?.threshold = 2
+            edtSearch?.setAdapter(searchAdapter)
+            edtSearch?.setOnItemClickListener { parent, _, position, _ ->
+                val model: CategorySearchData =
+                    parent.getItemAtPosition(position) as CategorySearchData
+                edtSearch.setText(model.title)
+                edtSearch.setSelection(model.title.length)
+                MethodUtils.hideKeyboard(requireActivity())
+                resetTabbySearch(model)
 
 
-        }
+            }
+        })
     }
 
     private fun resetTabbySearch(model: CategorySearchData) {
@@ -373,14 +410,14 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
 
         binding.rvCategoryParent.smoothScrollToPosition(posParent)
         if (tabPos != -1) {
-            Log.e(TAG,"gettabPos:  ${tabPos}")
-           categoryList1[tabPos].inventoryLists?.filter {
+            Log.e(TAG, "gettabPos:  ${tabPos}")
+            categoryList1[tabPos].inventoryLists?.filter {
                 it!!.isHide
             }?.let { it1 ->
                 itemList.addAll(it1)
             }
             lifecycleScope.launch {
-                viewModel.itemsByCat(categoryList1[tabPos].category.id).collectLatest{
+                viewModel.itemsByCat(categoryList1[tabPos].category.id).collectLatest {
 
                     itemAdapter.snapshot().toCollection(arrayListOf()).clear()
 
@@ -394,7 +431,6 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
                     }
 
                     itemAdapter.notifyDataSetChanged()
-
 
 
                 }
@@ -433,7 +469,7 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
         list.add(CategoryParentModel(listCategories))
         list.add(CategoryParentModel(listCategories))
         categoryParentAdapter = CategoryParentAdapter(requireContext(), arrayListOf(), this)
-        itemAdapter = ItemAdapterPagDash(listner,null,prefProvider)
+        itemAdapter = ItemAdapterPagDash(listner, null, prefProvider)
         binding.rvItemList.setHasFixedSize(true)
         binding.rvItemList.layoutManager = GridLayoutManager(requireContext(), 4)
         binding.rvItemList.adapter = itemAdapter
@@ -449,6 +485,7 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
         binding.rvCategoryParent.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
 
+                runOnUiThread(Runnable {
                 val bindingAdapterPos =
                     (recyclerView.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
 
@@ -469,6 +506,7 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
                 categoryTabAdapter.addList(tabList)
                 categoryParentAdapter.notifyDataSetChanged()
 
+                })
 
                 super.onScrollStateChanged(recyclerView, newState)
             }
@@ -494,7 +532,7 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
     }
 
     override fun onCategorySelected(parentPosition: Int, childPosition: Int) {
-        lifecycleScope.launch {
+        lifecycleScope.launch(Dispatchers.IO) {
             itemAdapter.submitData(PagingData.empty())
         }
         Log.e(
@@ -517,7 +555,8 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
     }
 
     private fun getItemsByCategory(catId: Int) {
-        lifecycleScope.launch {
+
+        lifecycleScope.launch(Dispatchers.IO) {
             viewModel.itemsByCat(catId).collectLatest {
 
 
@@ -525,17 +564,17 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
 
 
 
-                    edtSearch?.text?.clear()
-                    if (prefProvider.getValueInt(Constants.CAT_ID_SELECTED, 0) == 0) {
-                        itemAdapter.submitData(it)
-                        binding.rvCategoryParent.scrollToPosition(0)
+                edtSearch?.text?.clear()
+                if (prefProvider.getValueInt(Constants.CAT_ID_SELECTED, 0) == 0) {
+                    itemAdapter.submitData(it)
+                    binding.rvCategoryParent.scrollToPosition(0)
 
-                    } else {
-                        changePositionOfCate()
-                    }
+                } else {
+                    changePositionOfCate()
+                }
 
 
-                  //  itemAdapter.submitData(it)
+                  itemAdapter.submitData(it)
 
 
             }

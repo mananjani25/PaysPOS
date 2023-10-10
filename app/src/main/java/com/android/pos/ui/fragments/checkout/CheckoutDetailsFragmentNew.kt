@@ -779,6 +779,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
 
                         if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
+                            clearObserver()
                             findNavController().navigate(
                                 R.id.action_paymentBoldPosFragment_to_orderComplete,
                                 bundle
@@ -886,6 +887,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         bundle.putBoolean("isFromActiveOrder", isFromOpenOrder)
 
                         if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
+                            clearObserver()
                             findNavController().navigate(
                                 R.id.action_paymentBoldPosFragment_to_orderComplete,
                                 bundle
@@ -971,6 +973,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
 
                         if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
+                            clearObserver()
                             findNavController().navigate(
                                 R.id.action_paymentBoldPosFragment_to_orderComplete,
                                 bundle
@@ -1164,6 +1167,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
 
                             if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
+                                clearObserver()
                                 findNavController().navigate(
                                     R.id.action_paymentBoldPosFragment_to_orderComplete,
                                     bundle
@@ -1278,6 +1282,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             bundle.putBoolean("isFromActiveOrder", isFromOpenOrder)
 
                             if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
+                                clearObserver()
                                 findNavController().navigate(
                                     R.id.action_paymentBoldPosFragment_to_orderComplete,
                                     bundle
@@ -1478,6 +1483,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
 
                             if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
+                                clearObserver()
                                 findNavController().navigate(
                                     R.id.action_paymentBoldPosFragment_to_orderComplete,
                                     bundle
@@ -1592,6 +1598,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             bundle.putBoolean("isFromActiveOrder", isFromOpenOrder)
 
                             if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
+                                clearObserver()
                                 findNavController().navigate(
                                     R.id.action_paymentBoldPosFragment_to_orderComplete,
                                     bundle
@@ -3430,5 +3437,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     override fun onFinish(p0: InputAccount.InputAccountResponse?) {
         Log.d("InputAccount onFinish","onFinish ${p0.toString()}")
+    }
+
+    private fun clearObserver() {
+        viewLifecycleOwnerLiveData.removeObservers(viewLifecycleOwner)
+        onDestroy()
+
     }
 }
