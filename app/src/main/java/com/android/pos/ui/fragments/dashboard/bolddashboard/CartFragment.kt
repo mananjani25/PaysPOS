@@ -1045,6 +1045,7 @@ class CartFragment(
 
 
                         if (it.isEmpty()) {
+
 //                        if (oldItemSize != null && oldItemSize != 1)
 
                             // Flag is used to update cart if last item from the cart will be deleted
@@ -1065,6 +1066,8 @@ class CartFragment(
                                 return@launch
                             }
                         }
+
+                        Log.e("checkCartSi","checkCartSi123456: ${it.get(0).items?.size}")
 
                         saveVisibility()
 
