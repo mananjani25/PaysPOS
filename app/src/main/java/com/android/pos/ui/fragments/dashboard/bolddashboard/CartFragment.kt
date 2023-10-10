@@ -1034,11 +1034,20 @@ class CartFragment(
 //                        if (oldItemSize != null && oldItemSize != 1)
 
                         // Flag is used to update cart if last item from the cart will be deleted
-                        if(prefProvider.getValueboolean(IS_LAST_ITEM_DELETE, false)) {
-                            prefProvider.setValueboolean(IS_LAST_ITEM_DELETE, false) // reset flag after updating cart
-                        } else {
-                            return@observe
+                        try {
+                            if (!this::prefProvider.isInitialized){
+                                prefProvider = PrefProvider(requireContext())
+                            }
+
+                            if(prefProvider.getValueboolean(IS_LAST_ITEM_DELETE, false)) {
+                                prefProvider.setValueboolean(IS_LAST_ITEM_DELETE, false) // reset flag after updating cart
+                            } else {
+                                return@observe
+                            }
+                        }catch (e:Exception){
+                            Log.e("CartFragment", "exception = ${e.toString()}")
                         }
+
                     } else {
                         val currentTimeMillis = System.currentTimeMillis()
 
