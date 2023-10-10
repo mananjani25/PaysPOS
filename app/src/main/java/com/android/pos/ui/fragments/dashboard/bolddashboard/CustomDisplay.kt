@@ -621,13 +621,21 @@ class CustomDisplay(
     }
 
     private fun getCustomerList() {
-        dineInViewModel.customer().observe(lifecycleOwner) { it ->
-            if (it.isNotEmpty()) {
-                allCustomerList.clear()
-                allCustomerList.addAll(it)
+
+        try {
+            dineInViewModel.customer().observe(lifecycleOwner) { it ->
+                if (it.isNotEmpty()) {
+                    allCustomerList.clear()
+                    allCustomerList.addAll(it)
+                }
             }
+        }catch (e:Exception){
+            Log.d("getCustomerList","exception : ${e.toString()}")
         }
+
+
     }
+
 
     fun showTableDetails(baseResponse: GetOrderDetailsResponse.Data) {
 
