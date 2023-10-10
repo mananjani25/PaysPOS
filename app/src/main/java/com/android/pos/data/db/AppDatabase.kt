@@ -56,7 +56,7 @@ import com.android.pos.data.typeconvert.TypeConvertorPhone
         GetCustomerReceiptSettingsResponse.Data::class, LoyaltyProgramsModel::class, SplitDetailListModel::class,
         CashDiscountModel::class, TbCountryList::class, TbCardReader::class, PAXData::class, VenueDetailsResponse.Data.CancelOrderReason::class,
         DineInCartModel::class, ShiftRportConfiguration::class, TbBusinessDetails::class, TbTimeZones::class, PrinterQueueModel::class, VenueDetailsResponse.Data.WastageReason::class],
-    version = 10
+    version = 11
 )
 @TypeConverters(
     TypeConvertersIds::class,
@@ -242,10 +242,29 @@ abstract class AppDatabase : RoomDatabase() {
 
         }
 
+        private val MIGRATION_10_11: Migration = object : Migration(10, 11) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                try {
+                    database.execSQL(
+                        "CREATE TABLE IF NOT EXISTS `PAXData` " +
+                                "(`globalUid` TEXT PRIMARY KEY NOT NULL, " +
+                                "`extData` TEXT NOT NULL, " +
+                                "`refNumber` TEXT NOT NULL, " +
+                                "`eCRRefNumber` TEXT NOT NULL, " +
+                                "`paxToken` TEXT NOT NULL, " +
+                                "`cardLastDigits` TEXT NOT NULL, " +
+                                "`EDCType` TEXT NOT NULL)"
+                    )
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
+
         private fun buildDatabase(appContext: Context) =
             Room.databaseBuilder(appContext, AppDatabase::class.java, DATABASE_NAME)
                 .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7
-                    , MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10
+                    , MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11
                 )
                 .build()
     }

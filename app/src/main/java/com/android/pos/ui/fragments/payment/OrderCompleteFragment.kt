@@ -826,6 +826,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 //            }
 //        }
 
+        // clear pax response from database
+        paymentViewModel.deletePaxPaymentData()
         if (!isSpilt) {
 
             prefProvider.setValue(Constants.ORDER_TYPE, "")

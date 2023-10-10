@@ -44,6 +44,7 @@ import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.GIFT_CARD
 import com.android.pos.data.remote.Constants.IS_FROM_ALL_ORDER
 import com.android.pos.data.remote.Constants.IS_LAST_ITEM_DELETE
+import com.android.pos.data.remote.Constants.IS_PAX_PAYMENT_FAILED
 import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER
 import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER
 import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER_ID
@@ -1623,7 +1624,11 @@ class CartFragment(
                             isSaveOrder = false
                         } else {
                             ProgressUtils.showProgressDialog(
-                                "Please wait payment under process",
+                                if (prefProvider.getValueboolean(IS_PAX_PAYMENT_FAILED, false)) {
+                                    getString(R.string.reattempting_the_payment)
+                                } else {
+                                    "Please wait payment under process"
+                                },
                                 requireActivity()
                             )
 

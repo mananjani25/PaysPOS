@@ -9,19 +9,19 @@ data class PAXData(
 
     @PrimaryKey
     @SerializedName("GlobalUid")
-    var GlobalUid: String = "",
+    var globalUid: String = "",
 
     @SerializedName("ExtData")
-    var ExtData: String = "",
+    var extData: String = "",
 
     @SerializedName("RefNumber")
-    var RefNumber: String = "",
+    var refNumber: String = "",
 
     @SerializedName("ECRRefNumber")
-    var ECRRefNumber: String = "",
+    var eCRRefNumber: String = "",
 
     @SerializedName("PAXtoken")
-    var PAXtoken: String = "",
+    var paxToken: String = "",
 
     @SerializedName("cardLastDigits")
     var cardLastDigits: String = "",

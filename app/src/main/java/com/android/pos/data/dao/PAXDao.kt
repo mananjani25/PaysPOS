@@ -14,7 +14,7 @@ interface PAXDao {
     suspend fun add(paxData: PAXData)
 
     @Query("select * from PAXData")
-    fun getPAXDetails(): LiveData<PAXData>
+    suspend fun getPAXDetails(): PAXData?
 
     @Query("DELETE FROM PAXData")
     suspend fun delete()

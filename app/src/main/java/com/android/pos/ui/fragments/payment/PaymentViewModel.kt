@@ -12,6 +12,7 @@ import com.android.pos.data.model.responseModel.BaseResponse
 import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN
+import com.android.pos.data.remote.Constants.IS_PAX_PAYMENT_FAILED
 import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.android.pos.data.remote.Constants.PAYMENT_ID
 import com.android.pos.data.remote.Constants.PAYMENT_ID_FOR_CUSTOMER_DISPLAY
@@ -63,6 +64,9 @@ open class PaymentViewModel @Inject constructor(
 
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
+
+    private val _transactionErrorText = MutableLiveData<Event<Any?>>()
+    val transactionErrorText: LiveData<Event<Any?>> = _transactionErrorText
 
     var dineInWholeDiscount: Double? = null
     var dineInWholeSC: Double? = null
@@ -230,6 +234,7 @@ open class PaymentViewModel @Inject constructor(
                                     }
                                 }
 
+                                deletePaxPaymentData()
                                 _msgText.value = Event(response.message)
 
                                 _orderCreate.value = Event(true)
@@ -238,14 +243,14 @@ open class PaymentViewModel @Inject constructor(
                             }
 
                         } else {
-                            _snackbarText.value = Event(resource.message)
+                            _transactionErrorText.value = Event(resource.message)
                         }
                     }
 
                 }
 
                 Status.ERROR -> {
-                    _snackbarText.value = Event(resource.message)
+                    _transactionErrorText.value = Event(resource.message)
 
                     if (cashPaymentType(orderRequestModel)) {
                         _showProgressCash.value = Event(false)
@@ -2075,6 +2080,7 @@ open class PaymentViewModel @Inject constructor(
                                         _data.value = Event(createOrderResponse)
                                     }
                                 }
+                                deletePaxPaymentData()
 
 
 
@@ -2085,14 +2091,14 @@ open class PaymentViewModel @Inject constructor(
                             }
 
                         } else {
-                            _snackbarText.value = Event(resource.message)
+                            _transactionErrorText.value = Event(resource.message)
                         }
                     }
 
                 }
 
                 Status.ERROR -> {
-                    _snackbarText.value = Event(resource.message)
+                    _transactionErrorText.value = Event(resource.message)
                     if (cashPaymentTypeSplit(myRequest)) {
                         _showProgressCash.value = Event(true)
                     } else
@@ -2198,7 +2204,7 @@ open class PaymentViewModel @Inject constructor(
                 Status.SUCCESS -> {
                     _showProgress.value = Event(false)
                     _textToPaySpit.value = Event(true)
-
+                    deletePaxPaymentData()
                 }
 
                 Status.LOADING -> {
@@ -2207,7 +2213,7 @@ open class PaymentViewModel @Inject constructor(
                 }
 
                 Status.ERROR -> {
-                    _snackbarText.value = Event(resource.message)
+                    _transactionErrorText.value = Event(resource.message)
                     _showProgress.value = Event(false)
                 }
             }
@@ -2215,5 +2221,21 @@ open class PaymentViewModel @Inject constructor(
 
         }
 
+    }
+
+    fun savePaxPaymentDataLocally(paxData: PAXData){
+        viewModelScope.launch {
+            posRepository.addPAXData(paxData)
+        }
+    }
+
+    suspend fun getPaxPaymentData() = posRepository.getPAXDetails()
+
+    fun deletePaxPaymentData() {
+        prefProvider.setValueboolean(IS_PAX_PAYMENT_FAILED, false)
+
+        viewModelScope.launch {
+            posRepository.deletePAXTable()
+        }
     }
 }

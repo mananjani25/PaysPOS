@@ -18,6 +18,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.CartModel
+import com.android.pos.data.entities.PAXData
 import com.android.pos.data.entities.RedeemLoyaltyInfo
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.requestModel.*
@@ -31,6 +32,7 @@ import com.android.pos.data.remote.Constants.GIFT_CARD_NUMBER
 import com.android.pos.data.remote.Constants.GIFT_CARD_PIN
 import com.android.pos.data.remote.Constants.IS_GIFT_CARD_REDEEM
 import com.android.pos.data.remote.Constants.IS_ORDER_REDEEMABLE_WITH_GIFT_CARD
+import com.android.pos.data.remote.Constants.IS_PAX_PAYMENT_FAILED
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.remote.Constants.TIP_ADDED
@@ -983,9 +985,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             }
         }
 
-        paymentviewModel.snackbarText.observe(viewLifecycleOwner) { event ->
+        paymentviewModel.transactionErrorText.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
-                AlertUtils.showAlert(requireActivity(), it.toString())
+                prefProvider.setValueboolean(IS_PAX_PAYMENT_FAILED, true)
+                AlertUtils.showCustomAlert(requireContext(), getString(R.string.pax_transaction_error_message))
             }
         }
 
@@ -1627,7 +1630,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 LogUtil.logE("observeShowProgress", it.toString())
                 if (it) {
                     ProgressUtils.showProgressDialog(
-                        "Please wait payment under process",
+                        if (prefProvider.getValueboolean(IS_PAX_PAYMENT_FAILED, false)) {
+                            getString(R.string.reattempting_the_payment)
+                        } else {
+                            "Please wait payment under process"
+                        },
                         requireActivity()
                     )
                 } else {
@@ -1654,7 +1661,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 LogUtil.logE("observeShowProgress", it.toString())
                 if (it) {
                     ProgressUtils.showProgressDialog(
-                        "Please wait payment under process",
+                        if (prefProvider.getValueboolean(IS_PAX_PAYMENT_FAILED, false)) {
+                            getString(R.string.reattempting_the_payment)
+                        } else {
+                            "Please wait payment under process"
+                        },
                         requireActivity()
                     )
                 } else {
@@ -1775,7 +1786,23 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     }
                     prefProvider.setValueboolean(Constants.IS_PAX_CONNECTED, false)
                 } else if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false) && !mSessionManager.isConnected) {
-                    makePaxPaymentRequest()
+                    CoroutineScope(Dispatchers.Main).launch {
+                        var paxData: PAXData? = paymentviewModel.getPaxPaymentData()
+                        if (paxData != null) {
+                            prefProvider.setValueboolean(IS_PAX_PAYMENT_FAILED, true)
+                            // Retry api call if we have unsuccessful pending payment stored
+                            GlobalUID = paxData.globalUid
+                            ExtData = paxData.extData
+                            RefNumber = paxData.refNumber
+                            ECRRefNumber = paxData.eCRRefNumber
+                            PAXtoken = paxData.paxToken
+                            EDCType = paxData.EDCType
+                            cardLastDigits = paxData.cardLastDigits
+                            makePaymentCreditCard()
+                        } else {
+                            makePaxPaymentRequest()
+                        }
+                    }
                 } else{
                     errorDisplay("Please connect a payment device.")
                 }
@@ -1795,11 +1822,15 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
 
         binding.lnrGiftCard.setOnSingleClickListener {
-            binding.frameLayoutId.visible()
-            binding.relativeMain.gone()
-            binding.llManualCard.gone()
-            binding.llGiftCard.visible()
-            isManualCard = false
+            if (prefProvider.getValueboolean(IS_PAX_PAYMENT_FAILED, false)) {
+                AlertUtils.showCustomAlert(requireContext(), getString(R.string.pax_transaction_error_message))
+            } else {
+                binding.frameLayoutId.visible()
+                binding.relativeMain.gone()
+                binding.llManualCard.gone()
+                binding.llGiftCard.visible()
+                isManualCard = false
+            }
         }
 
         binding.tvCash0.setOnSingleClickListener {
@@ -2082,6 +2113,18 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 Log.d("Payment Details: ", "$cardLastDigits $approvedAmount $CARDBIN $EDCType $tipAmount ${Gson().toJson(response)}")
 
                 if (resultCode == "000000") {
+                    // Store pax payment data to database
+                    val paxData = PAXData(
+                        response.PaymentTransInfo.GlobalUid,
+                        response.ExtData,
+                        response.RefNum,
+                        ECRRefNumber,
+                        response.PaymentTransInfo.Token,
+                        response.BogusAccountNum,
+                        response.CardType
+                    )
+                    paymentviewModel.savePaxPaymentDataLocally(paxData)
+
                     CoroutineScope(Dispatchers.Main).launch {
                         ProgressUtils.dismissProgressDialog()
                         coroutineScope {
@@ -2979,8 +3022,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     }
 
     private fun networkCall(jsonArray1: JsonArray?, i: Int) {
-
-        ProgressUtils.showProgressDialog("Please wait payment under process", requireActivity())
+        ProgressUtils.showProgressDialog(
+            if (prefProvider.getValueboolean(IS_PAX_PAYMENT_FAILED, false)) {
+                getString(R.string.reattempting_the_payment)
+            } else {
+                "Please wait payment under process"
+            }, requireActivity())
 
         var call: Call<PaymentResponse>? = null
         when (i) {

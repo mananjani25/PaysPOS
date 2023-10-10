@@ -1202,8 +1202,7 @@ class PosRepository @Inject constructor(
         appDatabase.PAXDao().add(paxData)
     }
 
-    fun getPAXDetails() =
-        performGetOperationDatabase { appDatabase.PAXDao().getPAXDetails() }
+    suspend fun getPAXDetails() = appDatabase.PAXDao().getPAXDetails()
 
     suspend fun deletePAXTable() {
         appDatabase.PAXDao().delete()
