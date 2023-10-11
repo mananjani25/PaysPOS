@@ -900,6 +900,13 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         updatePrinter = this
+        /*try {
+            val field: Field = CursorWindow::class.java.getDeclaredField("sCursorWindowSize")
+            field.setAccessible(true)
+            field.set(null, 10 * 1024 * 1024) //the 100MB is the new size
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }*/
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN)
 
 

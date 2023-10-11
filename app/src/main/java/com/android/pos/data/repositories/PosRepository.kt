@@ -99,7 +99,9 @@ class PosRepository @Inject constructor(
     },
         networkCall = { apiHelperNew.getPrinterData(prefProvider.getValueInt(TERMINAL_ID, 0)) },
         saveCallResult = {
-            if (it.data.customerReceiptPrinters?.isEmpty() == true || it.data.customerReceiptPrinters?.size == 0) {appDatabase.printerDao().deleteCustomerPrinters()}else {
+            if (it.data.customerReceiptPrinters?.isEmpty() == true || it.data.customerReceiptPrinters?.size == 0) {
+                appDatabase.printerDao().deleteCustomerPrinters()
+            } else {
                 appDatabase.printerDao().addCustomerPrinterList(it.data.customerReceiptPrinters)
             }
             if (it.data.kitchenReceiptPrinters?.isEmpty() == true || it.data.kitchenReceiptPrinters?.size == 0) {
@@ -123,20 +125,7 @@ class PosRepository @Inject constructor(
         appDatabase.cancelOrderReasonDao().addAllCancelOrderReasonsSuspend(cancelOrderReason)
     }
 
-    fun getKitchenPrinters() = performGetOperation(databaseQuery = {
-        appDatabase.printerDao().kitchenPrintList
-    },
-        networkCall = { apiHelperNew.getPrinterData(prefProvider.getValueInt(TERMINAL_ID, 0)) },
-        saveCallResult = {
-            appDatabase.printerDao().addCustomerPrinterList(it.data.customerReceiptPrinters)
-            it.data.kitchenReceiptPrinters?.let { it1 ->
-                appDatabase.printerDao().addKitchenPrinterList(
-                    it1
-                )
-            }
-        }
-
-    )
+    fun getKitchenPrinters() = performGetOperationDatabase { appDatabase.printerDao().kitchenPrintList }
 
     suspend fun getKitchenPrintersList() = appDatabase.printerDao().getKitchenPrinterList()
 
@@ -280,7 +269,9 @@ class PosRepository @Inject constructor(
     }
 
     fun getCategoryListAll() =
-        performGetOperationDatabase(databaseQuery = { appDatabase.categoryDao().allWithoutGiftCard() })
+        performGetOperationDatabase(databaseQuery = {
+            appDatabase.categoryDao().allWithoutGiftCard()
+        })
 
     fun getCategoryListIWCAll() = performGetOperationDatabase(databaseQuery = {
         appDatabase.categoryDao().allCatWithoutItem()
@@ -740,9 +731,13 @@ class PosRepository @Inject constructor(
         return appDatabase.categoryDao().manualCategoryId
     }
 
-    suspend fun addItemCart(cartModel: CartModel) {
+     fun addItemCart(cartModel: CartModel) {
+        synchronized(this) {
+          //  appDatabase.beginTransaction()
+            appDatabase.cartDao().addSuspended(cartModel)
+           // appDatabase.endTransaction()
+        }
 
-        appDatabase.cartDao().add(cartModel)
     }
 
     suspend fun addItemCartDineIn(cartModel: DineInCartModel) {

@@ -152,11 +152,16 @@ class ItemAdapterPagDash(
                       )
                       return@setOnClickListener
                   } else*/
+                if (lastChecked != null) {
+                    lastChecked?.isSelected = false
+                }
+                lastChecked = checkedTextView
                 if (model?.hide_status == "HideForToday" || model?.hide_status == "HideForIndefinitely") {
                     AlertUtils.showCustomAlert(binding.root.context, model.name + " is sold out.")
                     return@setOnClickListener
                 } else if(model.name == SELL_CARD || model.name == ADD_VALUE || model.name == BALANCE_INQUIRY){
                     listener.onItemSelected(model)
+                    return@setOnClickListener
                 } else {
                     try {
                         getItem(position)?.let {
@@ -169,17 +174,17 @@ class ItemAdapterPagDash(
                                 prefProvider?.setValue(Constants.ORDER_TYPE_NAME, DEFAULT_ORDER)
                                 EventBus.getDefault().post("EventBus")
                             }
+
                             listener.onItemSelected(it)
+                            return@setOnClickListener
 
 
                         }
                     } catch (e: Exception) {
+                        return@setOnClickListener
                         e.printStackTrace()
                     }
-                    if (lastChecked != null) {
-                        lastChecked?.isSelected = false
-                    }
-                    lastChecked = checkedTextView
+
                 }
 
 

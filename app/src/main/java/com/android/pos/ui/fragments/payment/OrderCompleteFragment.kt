@@ -6044,6 +6044,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         prefProvider.setValueboolean(ORDER_COMPLETED, true)
                         findNavController().navigate(R.id.action_orderCompleteFragment_to_passcode)
                     } else {
+
+                        clearObserver()
                         findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
                     }
 
@@ -6057,6 +6059,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         prefProvider.setValueboolean(ORDER_COMPLETED, true)
                         findNavController().navigate(R.id.action_orderCompleteFragment_to_passcode)
                     } else {
+
+                        clearObserver()
                         findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
                     }
                 }
@@ -13066,6 +13070,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     }
 
     override fun onRunResult(isSuccess: Boolean, code: Int, msg: String?) {
+
+    }
+
+    private fun clearObserver() {
+        viewLifecycleOwnerLiveData.removeObservers(viewLifecycleOwner)
+        onDestroy()
 
     }
 
