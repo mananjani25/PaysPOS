@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.CartModel
@@ -86,7 +87,8 @@ import kotlin.math.roundToInt
 
 @AndroidEntryPoint
 class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragment(), magtekCallback,
-    DeleteOptionCallback, IDeviceListCallback, InputAccountCallback, BasePOSLinkCallback<InputAccount.InputAccountResponse> {
+    DeleteOptionCallback, IDeviceListCallback, InputAccountCallback,
+    BasePOSLinkCallback<InputAccount.InputAccountResponse> {
     private var textToPay: Boolean = false
     private var isShow: Boolean = false
     private lateinit var presentation: CustomDisplay
@@ -238,7 +240,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             object : AppThreadPool.FinishInMainThreadCallback<PosLink?> {
                 override fun onFinish(result: PosLink?) {
                     posLink = result!!
-                    Log.d("initPOSLink: ","onFinish")
+                    Log.d("initPOSLink: ", "onFinish")
                 }
             })
     }
@@ -266,9 +268,17 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     override fun onPause() {
         super.onPause()
+        /* if (this::presentation.isInitialized) {
+             presentation.show()
+             presentation.onLogOutOrClockOutWithApiService(apiService)
+         }*/
+    }
+
+    override fun onStop() {
+        super.onStop()
         if (this::presentation.isInitialized) {
             presentation.show()
-            presentation.onLogOutOrClockOutWithApiService(apiService)
+            // presentation.onLogOutOrClockOutWithApiService(apiService)
         }
     }
 
@@ -284,6 +294,14 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         callback()
         setUpManualCardFocusChanged()
         showProgressObserver()
+        lifecycleScope.launch {
+            delay(100)
+            if (cartList == null) {
+                cartList = viewModel.cartModel
+                Log.e(TAG, "checkCartDealy:  ${Gson().toJson(cartList)}")
+            }
+
+        }
     }
 
     private fun setUpManualCardFocusChanged() {
@@ -1689,10 +1707,14 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             String.format("%.2f", totalServiceCharge / isSelectedCount).toDouble()
         totalTax = String.format("%.2f", totalTax / isSelectedCount).toDouble()
         totalDiscount = String.format("%.2f", totalDiscount / isSelectedCount).toDouble()
-        cashDiscountSurcharge = if(prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD){
+        cashDiscountSurcharge = if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
             0.0
-        }else{
-            MethodUtils.getLatestCashDiscountOrSurCharge(WholetotalPrice, prefProvider, requireContext()) / isSelectedCount
+        } else {
+            MethodUtils.getLatestCashDiscountOrSurCharge(
+                WholetotalPrice,
+                prefProvider,
+                requireContext()
+            ) / isSelectedCount
         }
         if (cashDiscountType == "CashDiscount") {
             paymentAmount -= cashDiscountSurcharge
@@ -1752,10 +1774,14 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 String.format("%.2f", totalServiceCharge / isSelectedCount).toDouble()
             totalTax = String.format("%.2f", totalTax / isSelectedCount).toDouble()
             totalDiscount = String.format("%.2f", totalDiscount / isSelectedCount).toDouble()
-            cashDiscountSurcharge = if(prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD){
+            cashDiscountSurcharge = if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
                 0.0
-            }else{
-                MethodUtils.getLatestCashDiscountOrSurCharge(WholetotalPrice, prefProvider, requireContext()) / isSelectedCount
+            } else {
+                MethodUtils.getLatestCashDiscountOrSurCharge(
+                    WholetotalPrice,
+                    prefProvider,
+                    requireContext()
+                ) / isSelectedCount
             }
             paymentAmount = String.format("%.2f", WholetotalPrice / isSelectedCount).toDouble()
             Log.d(TAG, "paymentClick: cashDiscountSurcharge " + cashDiscountSurcharge)
@@ -1775,9 +1801,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         magtekProPaymentCall()
                     }
                     prefProvider.setValueboolean(Constants.IS_PAX_CONNECTED, false)
-                } else if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false) && !mSessionManager.isConnected) {
+                } else if (prefProvider.getValueboolean(
+                        Constants.IS_PAX_CONNECTED,
+                        false
+                    ) && !mSessionManager.isConnected
+                ) {
                     makePaxPaymentRequest()
-                } else{
+                } else {
                     errorDisplay("Please connect a payment device.")
                 }
             } else {
@@ -1881,10 +1911,14 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 String.format("%.2f", totalServiceCharge / isSelectedCount).toDouble()
             totalTax = String.format("%.2f", totalTax / isSelectedCount).toDouble()
             totalDiscount = String.format("%.2f", totalDiscount / isSelectedCount).toDouble()
-            cashDiscountSurcharge = if(prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD){
+            cashDiscountSurcharge = if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
                 0.0
-            }else{
-                MethodUtils.getLatestCashDiscountOrSurCharge(WholetotalPrice/isSelectedCount, prefProvider, requireContext())
+            } else {
+                MethodUtils.getLatestCashDiscountOrSurCharge(
+                    WholetotalPrice / isSelectedCount,
+                    prefProvider,
+                    requireContext()
+                )
             }
             paymentAmount = String.format("%.2f", WholetotalPrice / isSelectedCount).toDouble()
             Log.d(TAG, "paymentClick: cashDiscountSurcharge " + cashDiscountSurcharge)
@@ -1975,7 +2009,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     } else {
                         custom_paymentAmount = 0.0
 
-                        val actualTotalAmountWithTip = (WholetotalPrice / isSelectedCount) +  tipAmount
+                        val actualTotalAmountWithTip =
+                            (WholetotalPrice / isSelectedCount) + tipAmount
 
                         val giftCardBalanceAmount = it.data.amount
 
@@ -2000,7 +2035,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             )
                             AlertUtils.showCustomAlertWithListenerWithOK(
                                 requireContext(),
-                                message = "Your GiftCard Balance is $${giftCardBalanceAmount.toPrecision(2)}. Please use split payment."
+                                message = "Your GiftCard Balance is $${
+                                    giftCardBalanceAmount.toPrecision(
+                                        2
+                                    )
+                                }. Please use split payment."
                             ) { _, _ ->
                             }
                         }
@@ -2022,12 +2061,15 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     private fun makePaxPaymentRequest() {
         GlobalScope.launch {
-            Log.d("getCommSettingFromFile ","getCommSettingFromFile: "+Gson().toJson(SettingINI.getCommSettingFromFile("/storage/emulated/0/Download/"+ SettingINI.FILENAME)))
-            posLink.SetCommSetting(SettingINI.getCommSettingFromFile("/storage/emulated/0/Download/"+ SettingINI.FILENAME))
-            val amt = ((paymentAmount-tipAmount) * 100).roundToInt()
+            Log.d(
+                "getCommSettingFromFile ",
+                "getCommSettingFromFile: " + Gson().toJson(SettingINI.getCommSettingFromFile("/storage/emulated/0/Download/" + SettingINI.FILENAME))
+            )
+            posLink.SetCommSetting(SettingINI.getCommSettingFromFile("/storage/emulated/0/Download/" + SettingINI.FILENAME))
+            val amt = ((paymentAmount - tipAmount) * 100).roundToInt()
             val tip_amt = (tipAmount * 100).roundToInt()
             ECRRefNumber = System.currentTimeMillis().toString()
-            Log.d("Amt: ","amt $amt tip $tip_amt")
+            Log.d("Amt: ", "amt $amt tip $tip_amt")
             var broadPOS_version = prefProvider.getValue(
                 Constants.BROADPOS_VERSION,
                 ""
@@ -2080,7 +2122,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     "Payment Details: ",
                     "$ExtData $resultCode $resultTxt $GlobalUID $RefNumber"
                 )
-                Log.d("Payment Details: ", "$cardLastDigits $approvedAmount $CARDBIN $EDCType $tipAmount ${Gson().toJson(response)}")
+                Log.d(
+                    "Payment Details: ",
+                    "$cardLastDigits $approvedAmount $CARDBIN $EDCType $tipAmount ${
+                        Gson().toJson(response)
+                    }"
+                )
 
                 if (resultCode == "000000") {
                     CoroutineScope(Dispatchers.Main).launch {
@@ -2130,7 +2177,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     private fun getMerchantDataObserver() {
         magtekProViewModel.merchantData.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { response ->
-                Log.d("merchantData: ","merchantData observe")
+                Log.d("merchantData: ", "merchantData observe")
                 val resultCode = response.resultCode
                 val status = response.resultTxt
                 val mID = response.VarValue
@@ -2149,11 +2196,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
     }
 
-    private fun connectBP(){
+    private fun connectBP() {
         BroadPOSCommunicator.getInstance(activity)
             .startListeningService(object : BroadPOSCommunicator.StartListenerCallBack {
                 override fun onSuccess() {
-                    Toast.makeText(context, "Successful StartListenerCallBack", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Successful StartListenerCallBack", Toast.LENGTH_SHORT)
+                        .show()
                 }
 
                 override fun onFail(msg: String) {
@@ -2200,11 +2248,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             Log.e("AmtviewModeltotalPrice", "totalPrice  ${viewModel.totalPrice}")
             viewModel.totalServiceCharge =
                 String.format("%.2f", viewModel.totalServiceCharge).toDouble()
-            WholetotalPrice = MethodUtils.getTwoDecimal(viewModel.subTotalPrice).toPrecision(2).toDouble() + viewModel.totalTax + String.format(
+            WholetotalPrice = MethodUtils.getTwoDecimal(viewModel.subTotalPrice).toPrecision(2)
+                .toDouble() + viewModel.totalTax + String.format(
                 "%.2f",
                 viewModel.totalServiceCharge
             ).toDouble()
-            if (redeemLoyaltyInfo?.needToApplyLoyalty == true ) {
+            if (redeemLoyaltyInfo?.needToApplyLoyalty == true) {
                 WholetotalPrice -= redeemLoyaltyInfo?.usedLoyaltyAmount!!
                 viewModel.totalPrice = WholetotalPrice
             } else {
@@ -2311,15 +2360,19 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             tipAmount = prefProvider.getValue(Constants.TIP, "").toDouble()
         }
 
-        cashDiscountSurcharge = if(prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD){
+        cashDiscountSurcharge = if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
             0.0
-        }else{
-            MethodUtils.getLatestCashDiscountOrSurCharge(WholetotalPrice/isSelectedCount, prefProvider, requireContext())
+        } else {
+            MethodUtils.getLatestCashDiscountOrSurCharge(
+                WholetotalPrice / isSelectedCount,
+                prefProvider,
+                requireContext()
+            )
         }
 
         prefProvider.setValue(
-                Constants.CASH_DISCOUNT_SURCHARGE,
-                String.format("%.2f", cashDiscountSurcharge)
+            Constants.CASH_DISCOUNT_SURCHARGE,
+            String.format("%.2f", cashDiscountSurcharge)
         )
         cashDiscountType = viewModel.cashDiscountType
 
@@ -2435,7 +2488,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         } else {
             if (this::presentation.isInitialized) {
                 presentation.show()
-                presentation.showTipsAddedNew(tipAmount,tipAmount, WholetotalPrice)
+                presentation.showTipsAddedNew(tipAmount, tipAmount, WholetotalPrice)
             }
 
             MethodUtils.setPriceTextView(
@@ -2498,18 +2551,39 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     private fun getCalCashDiscWithAmount(totalprice: Double, isCash: Boolean): Double {
         return if (isCash) {
-            if (cashDiscountType == "CashDiscount" && prefProvider.getValue(ORDER_TYPE, TAKEOUT) != GIFT_CARD) {
-                if (totalprice - MethodUtils.getLatestCashDiscountOrSurCharge(totalprice, prefProvider, requireContext()) < 0.0) {
+            if (cashDiscountType == "CashDiscount" && prefProvider.getValue(
+                    ORDER_TYPE,
+                    TAKEOUT
+                ) != GIFT_CARD
+            ) {
+                if (totalprice - MethodUtils.getLatestCashDiscountOrSurCharge(
+                        totalprice,
+                        prefProvider,
+                        requireContext()
+                    ) < 0.0
+                ) {
                     0.0
                 } else {
-                    totalprice - MethodUtils.getLatestCashDiscountOrSurCharge(totalprice, prefProvider, requireContext())
+                    totalprice - MethodUtils.getLatestCashDiscountOrSurCharge(
+                        totalprice,
+                        prefProvider,
+                        requireContext()
+                    )
                 }
             } else {
                 totalprice
             }
         } else {
-            if (cashDiscountType == "SurCharge" && prefProvider.getValue(ORDER_TYPE, TAKEOUT) != GIFT_CARD) {
-                totalprice + MethodUtils.getLatestCashDiscountOrSurCharge(totalprice, prefProvider, requireContext())
+            if (cashDiscountType == "SurCharge" && prefProvider.getValue(
+                    ORDER_TYPE,
+                    TAKEOUT
+                ) != GIFT_CARD
+            ) {
+                totalprice + MethodUtils.getLatestCashDiscountOrSurCharge(
+                    totalprice,
+                    prefProvider,
+                    requireContext()
+                )
             } else {
                 totalprice
             }
@@ -2645,10 +2719,14 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         isSplitScreen = false
         binding.paymentLinearLayout.visibility = View.VISIBLE
         binding.splitLinearLayout.visibility = View.GONE
-        cashDiscountSurcharge = if(prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD){
+        cashDiscountSurcharge = if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
             0.0
-        }else{
-            MethodUtils.getLatestCashDiscountOrSurCharge(WholetotalPrice/isSelectedCount, prefProvider, requireContext())
+        } else {
+            MethodUtils.getLatestCashDiscountOrSurCharge(
+                WholetotalPrice / isSelectedCount,
+                prefProvider,
+                requireContext()
+            )
         }
     }
 
@@ -2734,6 +2812,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         Log.d("yash", "makeCashPayment: totaltax    : " + totalTax)
         Log.d("yash", "makeCashPayment: total disc  : " + totalDiscount)
         Log.d("yash", "makeCashPayment: total serv  : " + totalServiceCharge)
+        Log.e("checkCartList", "cartList:  ${Gson().toJson(cartList)}")
+        Log.e("checkCartList", "cartList:  ${Gson().toJson(viewModel.cartModel)}")
         val myRequest = cartList?.let {
             paymentviewModel.createOrderRequest(
                 it,
@@ -3019,24 +3099,31 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                 magtekModule.closeDevice()
                             paymentviewModel.setMagensaResponse(
                                 Gson().toJson(response.body()!![0]),
-                                (if (i == 3){ cardNumber = cardNumber.takeLast(4)
-                                }else if(i== 1){
-                                    cardNumber = (response.body()!![0].dataOutput?.PANLast4).toString()
-                                }else if(i==2){
-                                    cardNumber = (response.body()!![0].dataOutput?.PANLast4).toString()
+                                (if (i == 3) {
+                                    cardNumber = cardNumber.takeLast(4)
+                                } else if (i == 1) {
+                                    cardNumber =
+                                        (response.body()!![0].dataOutput?.PANLast4).toString()
+                                } else if (i == 2) {
+                                    cardNumber =
+                                        (response.body()!![0].dataOutput?.PANLast4).toString()
                                 } else {
                                     cardNumber = ""
                                 }).toString()
                             )
                             giftCardViewModel.setMagensaResponse(
                                 Gson().toJson(response.body()!![0]),
-                                    (if (i == 3){ cardNumber =cardNumber.takeLast(4)
-                                }else if(i== 1){
-                                    cardNumber = (response.body()!![0].dataOutput?.PANLast4).toString()
-                                }else if(i==2){
-                                        cardNumber = (response.body()!![0].dataOutput?.PANLast4).toString()
-                                }else {
-                                        cardNumber = "" }).toString()
+                                (if (i == 3) {
+                                    cardNumber = cardNumber.takeLast(4)
+                                } else if (i == 1) {
+                                    cardNumber =
+                                        (response.body()!![0].dataOutput?.PANLast4).toString()
+                                } else if (i == 2) {
+                                    cardNumber =
+                                        (response.body()!![0].dataOutput?.PANLast4).toString()
+                                } else {
+                                    cardNumber = ""
+                                }).toString()
                             )
 
                             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
@@ -3408,35 +3495,35 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     }
 
     override fun onInputAccountStart() {
-        Log.d("onInputAccountStart","onInputAccountStart")
+        Log.d("onInputAccountStart", "onInputAccountStart")
     }
 
     override fun onEnterExpiryDate() {
-        Log.d("onEnterExpiryDate","onEnterExpiryDate")
+        Log.d("onEnterExpiryDate", "onEnterExpiryDate")
     }
 
     override fun onEnterZip() {
-        Log.d("onEnterZip","onEnterZip")
+        Log.d("onEnterZip", "onEnterZip")
     }
 
     override fun onEnterCVV() {
-        Log.d("onEnterCVV","onEnterCVV")
+        Log.d("onEnterCVV", "onEnterCVV")
     }
 
     override fun onSelectEMVApp(p0: MutableList<String>?) {
-        Log.d("onSelectEMVApp","onSelectEMVApp ${p0.toString()}")
+        Log.d("onSelectEMVApp", "onSelectEMVApp ${p0.toString()}")
     }
 
     override fun onProcessing(p0: String?, p1: String?) {
-        Log.d("onProcessing","onProcessing $p0 $p1")
+        Log.d("onProcessing", "onProcessing $p0 $p1")
     }
 
     override fun onWarnRemoveCard() {
-        Log.d("onWarnRemoveCard","onWarnRemoveCard")
+        Log.d("onWarnRemoveCard", "onWarnRemoveCard")
     }
 
     override fun onFinish(p0: InputAccount.InputAccountResponse?) {
-        Log.d("InputAccount onFinish","onFinish ${p0.toString()}")
+        Log.d("InputAccount onFinish", "onFinish ${p0.toString()}")
     }
 
     private fun clearObserver() {

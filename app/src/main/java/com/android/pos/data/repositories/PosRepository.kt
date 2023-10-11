@@ -142,20 +142,7 @@ class PosRepository @Inject constructor(
         appDatabase.cancelOrderReasonDao().addAllCancelOrderReasonsSuspend(cancelOrderReason)
     }
 
-    fun getKitchenPrinters() = performGetOperation(databaseQuery = {
-        appDatabase.printerDao().kitchenPrintList
-    },
-        networkCall = { apiHelperNew.getPrinterData(prefProvider.getValueInt(TERMINAL_ID, 0)) },
-        saveCallResult = {
-            appDatabase.printerDao().addCustomerPrinterList(it.data.customerReceiptPrinters)
-            it.data.kitchenReceiptPrinters?.let { it1 ->
-                appDatabase.printerDao().addKitchenPrinterList(
-                    it1
-                )
-            }
-        }
-
-    )
+    fun getKitchenPrinters() = performGetOperationDatabase { appDatabase.printerDao().kitchenPrintList }
 
     suspend fun getKitchenPrintersList() = appDatabase.printerDao().getKitchenPrinterList()
 
@@ -761,9 +748,11 @@ class PosRepository @Inject constructor(
         return appDatabase.categoryDao().manualCategoryId
     }
 
-    suspend fun addItemCart(cartModel: CartModel) {
+     fun addItemCart(cartModel: CartModel) {
         synchronized(this) {
+          //  appDatabase.beginTransaction()
             appDatabase.cartDao().addSuspended(cartModel)
+           // appDatabase.endTransaction()
         }
 
     }

@@ -532,7 +532,7 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
     }
 
     override fun onCategorySelected(parentPosition: Int, childPosition: Int) {
-        lifecycleScope.launch(Dispatchers.IO) {
+        lifecycleScope.launch {
             itemAdapter.submitData(PagingData.empty())
         }
         Log.e(

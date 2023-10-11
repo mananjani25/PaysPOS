@@ -1067,7 +1067,6 @@ class CartFragment(
                             }
                         }
 
-                        Log.e("checkCartSi","checkCartSi123456: ${it.get(0).items?.size}")
 
                         saveVisibility()
 
