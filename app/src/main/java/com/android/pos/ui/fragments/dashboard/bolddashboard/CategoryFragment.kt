@@ -186,28 +186,29 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
                                     ) {
                                         Log.e("ItemAdapter", "AddedItem 1 ")
                                         Log.e("ItemAdapter", "itemListSize  ${itemList1.size}")
-
-                                        lifecycleScope.launch {
+                                        runOnUiThread(Runnable {
+                                            binding.rvItemList.adapter = null
+                                            itemAdapter = ItemAdapterPagDash(
+                                                listner,
+                                                null,
+                                                prefProvider
+                                            )
+                                            binding.rvItemList.setHasFixedSize(true)
+                                            binding.rvItemList.layoutManager =
+                                                GridLayoutManager(
+                                                    requireContext(),
+                                                    4
+                                                )
+                                            binding.rvItemList.adapter = itemAdapter
+                                        })
+                                        lifecycleScope.launch(Dispatchers.IO) {
                                             viewModel.itemsByCat(categoryList1[0].category.id)
                                                 .collectLatest {
                                                     Log.e("CollectItems", "Collect")
 
-                                                    runOnUiThread(Runnable {
-                                                        binding.rvItemList.adapter = null
-                                                        itemAdapter = ItemAdapterPagDash(
-                                                            listner,
-                                                            null,
-                                                            prefProvider
-                                                        )
-                                                        binding.rvItemList.setHasFixedSize(true)
-                                                        binding.rvItemList.layoutManager =
-                                                            GridLayoutManager(
-                                                                requireContext(),
-                                                                4
-                                                            )
-                                                        binding.rvItemList.adapter = itemAdapter
-                                                    })
-                                                    itemAdapter.submitData(it)
+                                                    lifecycleScope.launch(Dispatchers.Main) {
+                                                        itemAdapter.submitData(it)
+                                                    }
                                                     Log.e(
                                                         "LoadedItems",
                                                         "sizeOf  ${itemAdapter.snapshot().items.size}"
@@ -314,8 +315,9 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
                         lifecycleScope.launch(Dispatchers.IO) {
                             viewModel.itemsByCat(categoryList1[tabPos].category.id).collectLatest {
 
-
-                                itemAdapter.submitData(it)
+                                lifecycleScope.launch(Dispatchers.Main) {
+                                    itemAdapter.submitData(it)
+                                }
 
 
                             }
@@ -416,21 +418,23 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
             }?.let { it1 ->
                 itemList.addAll(it1)
             }
-            lifecycleScope.launch {
+            lifecycleScope.launch(Dispatchers.IO) {
                 viewModel.itemsByCat(categoryList1[tabPos].category.id).collectLatest {
 
-                    itemAdapter.snapshot().toCollection(arrayListOf()).clear()
+                    lifecycleScope.launch(Dispatchers.Main){
+                        itemAdapter.snapshot().toCollection(arrayListOf()).clear()
 
 
-                    itemAdapter.submitData(it)
-                    for (i in itemList.indices) {
-                        if (itemList[i]?.itemId == model.itemID) {
-                            itemAdapter.setPos(i)
-                            break
+                        itemAdapter.submitData(it)
+                        for (i in itemList.indices) {
+                            if (itemList[i]?.itemId == model.itemID) {
+                                itemAdapter.setPos(i)
+                                break
+                            }
                         }
                     }
 
-                    itemAdapter.notifyDataSetChanged()
+                    //itemAdapter.notifyDataSetChanged()
 
 
                 }
@@ -560,23 +564,23 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
             viewModel.itemsByCat(catId).collectLatest {
 
 
-                itemAdapter.setPos(-2)
+                //itemAdapter.setPos(-2)
+
+                lifecycleScope.launch(Dispatchers.Main) {
+
+                    edtSearch?.text?.clear()
+                    if (prefProvider.getValueInt(Constants.CAT_ID_SELECTED, 0) == 0) {
+
+                            itemAdapter.submitData(it)
+                            binding.rvCategoryParent.scrollToPosition(0)
 
 
+                    } else {
+                        changePositionOfCate()
+                    }
 
-                edtSearch?.text?.clear()
-                if (prefProvider.getValueInt(Constants.CAT_ID_SELECTED, 0) == 0) {
                     itemAdapter.submitData(it)
-                    binding.rvCategoryParent.scrollToPosition(0)
-
-                } else {
-                    changePositionOfCate()
                 }
-
-
-                  itemAdapter.submitData(it)
-
-
             }
 
 
