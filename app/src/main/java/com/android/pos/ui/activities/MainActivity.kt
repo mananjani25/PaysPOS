@@ -778,11 +778,6 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             Constants.KITCHEN_PRINTER_LIST_PREF,
             Gson().toJson(it.data).toString()
         )*/
-        if (prefProvider?.getValueboolean(
-                Constants.IS_MASTER_TERMINAL,
-                false
-            ) == true
-        ) {
             Log.e(TAG,"CheckHere DAta:")
             val data = Data.Builder()
                 //.putString("kitchenPrinterList", Gson().toJson(kitchenPrinterList))
@@ -817,7 +812,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 e.printStackTrace()
             }
 
-        }
+
     }
 
     private fun getKitchenPrinters() {
@@ -911,9 +906,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
 
         //demoPrinterQueue()
-        if (prefProvider?.getValueboolean(IS_PRINTER_QUEUE_STARTS, false) == true) {
-            getKitOne()
-        }
+        getKitOne()
 
 
         // connectionActionCable()
