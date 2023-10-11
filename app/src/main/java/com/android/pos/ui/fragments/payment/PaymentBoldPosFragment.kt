@@ -361,14 +361,18 @@ class PaymentBoldPosFragment : Fragment() {
 
     private fun listeners() {
         binding.layoutHeaderCheckout.tvAddTip.setOnClickListener {
-            if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
-                findNavController().navigate(
-                    R.id.action_paymentBoldPosFragment_to_addTipDialog,
-                    bundleOf(
-                        "totalTip" to viewModel.tipTransactionAmount,
-                        "splitCount" to viewModel.isSelectCount
+            if(prefProvider.getValueboolean(IS_PAX_PAYMENT_FAILED, false)) {
+                AlertUtils.showCustomAlert(requireContext(), getString(R.string.pax_transaction_error_message))
+            } else {
+                if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
+                    findNavController().navigate(
+                        R.id.action_paymentBoldPosFragment_to_addTipDialog,
+                        bundleOf(
+                            "totalTip" to viewModel.tipTransactionAmount,
+                            "splitCount" to viewModel.isSelectCount
+                        )
                     )
-                )
+                }
             }
         }
         binding.layoutHeaderCheckout.tvAddDiscount.setOnClickListener {
