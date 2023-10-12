@@ -517,6 +517,14 @@ class CartFragment(
             prefProvider.setValueboolean(Constants.LOYALTY_ADDED, p1)
             prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED, p1)
             binding.tvPayNow.text = "Pay ${binding.txtTotal.text}"
+            binding.txtLoyaltyBalance.text =
+                "${
+                    if (viewModel.redeemLoyaltyInfo.needToApplyLoyalty) {
+                        viewModel.redeemLoyaltyInfo.remainingLoyaltyPoints
+                    } else {
+                        viewModel.redeemLoyaltyInfo.availablePoints
+                    }
+                }"
 //            addObserver()
             if (this::presentation.isInitialized) {
                 presentation.show()

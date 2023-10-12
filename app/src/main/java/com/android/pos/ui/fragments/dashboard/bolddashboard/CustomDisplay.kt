@@ -469,6 +469,9 @@ class CustomDisplay(
                     "${context.resources.getString(R.string.applied_loyalty_balance)}: ${dashBoardCategoryViewModel.redeemLoyaltyInfo.usedLoyaltyAmount}"
                 binding.tvLoyaltyPoints.text =
                     "${context.resources.getString(R.string.applied_loyalty_points)}: ${dashBoardCategoryViewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
+            } else {
+                binding.tvLoyaltyBalance.invisible()
+                binding.tvLoyaltyPoints.invisible()
             }
             binding.txtLoyaltyPointsLabel.text =
                 "Loyalty Balance: ${
