@@ -68,16 +68,16 @@ class BusniessDetailsViewModel @Inject constructor(
             TextUtils.isEmpty(model.customer_contact_email?.trim()) -> {
                 _snackbarText.value = Event("Please enter business email address")
             }
-            TextUtils.isEmpty(model.businessAddress[0].address1.trim()) -> {
+            model.businessAddress.isEmpty() || (model.businessAddress.isNotEmpty() && TextUtils.isEmpty(model.businessAddress[0].address1.trim())) -> {
                 _snackbarText.value = Event("Please enter business address")
             }
-            TextUtils.isEmpty(model.businessAddress[0].city.trim()) -> {
+            model.businessAddress.isEmpty() || (model.businessAddress.isNotEmpty() && TextUtils.isEmpty(model.businessAddress[0].city.trim())) -> {
                 _snackbarText.value = Event("Please enter business address city")
             }
-            TextUtils.isEmpty(model.businessAddress[0].state.trim()) -> {
+            model.businessAddress.isEmpty() || (model.businessAddress.isNotEmpty() && TextUtils.isEmpty(model.businessAddress[0].state.trim())) -> {
                 _snackbarText.value = Event("Please enter business address state")
             }
-            TextUtils.isEmpty(model.businessAddress[0].postcode.trim()) -> {
+            model.businessAddress.isEmpty() || (model.businessAddress.isNotEmpty() && TextUtils.isEmpty(model.businessAddress[0].postcode.trim())) -> {
                 _snackbarText.value = Event("Please enter business address postcode")
             }
             (!TextUtils.isEmpty(model.business_website?.trim()) && !Patterns.WEB_URL.matcher(model.business_website?.trim().toString()).matches())-> {

@@ -198,9 +198,45 @@ class BusinessDetailsFragment : Fragment() {
         binding.btnUpdate.setOnClickListener {
 
 
+            val address =   if (businessAddress == null && binding.edtStreet.text.trim().isNotEmpty()) {
+
+                  BusinessAddress(
+                    address1 = binding.edtStreet.text.toString().trim(),
+                    address2 = binding.edtSuite.text.toString().trim(),
+                    city = binding.edtCity.text.toString().trim(),
+                    state = binding.edtState.text.toString().trim(),
+                    country = binding.edtAddress.selectedItem.toString(),
+                    postcode = binding.edtZip.text.toString().trim(),
+
+
+                )
+            }
+            else{
+              businessAddress?.let { it1 ->
+                    BusinessAddress(
+                        bid = addressID!!,
+                        address1 = binding.edtStreet.text.toString().trim(),
+                        address2 = binding.edtSuite.text.toString().trim(),
+                        city = binding.edtCity.text.toString().trim(),
+                        state = binding.edtState.text.toString().trim(),
+                        country = binding.edtAddress.selectedItem.toString(),
+                        postcode = binding.edtZip.text.toString().trim(),
+                        addressableType = it1.addressableType ?: "",
+                        addressableId = businessAddress!!.addressableId,
+                        createdAt = businessAddress!!.createdAt,
+                        updatedAt = businessAddress!!.updatedAt,
+                        latitude = businessAddress!!.latitude,
+                        longitude = businessAddress!!.longitude,
+                        typeOfAddress = businessAddress!!.typeOfAddress
+
+                    )
+                }
+
+            }
             val model = TbBusinessDetails()
             model.id = prefProvider.getLocationId()
-            model.business_name = binding.edtBusinessName.text.toString().trim().replace("\\s+".toRegex(), " ")
+            model.business_name =
+                binding.edtBusinessName.text.toString().trim().replace("\\s+".toRegex(), " ")
             model.business_website = binding.edtWebSite.text.toString()
             model.phone_number = binding.edtPhoneNo.text.toString()
             model.phone_number_1_country = binding.spPhone.selectedItem.toString()
@@ -209,28 +245,11 @@ class BusinessDetailsFragment : Fragment() {
             model.time_zone = timeZoneValue[binding.spTimeZone.selectedItemPosition]
             model.customer_contact_email = binding.edtEmail.text.toString()
 
-            val address = businessAddress?.addressableType?.let { it1 ->
-                BusinessAddress(
-                    bid = addressID!!,
-                    address1 = binding.edtStreet.text.toString().trim(),
-                    address2 = binding.edtSuite.text.toString().trim(),
-                    city = binding.edtCity.text.toString().trim(),
-                    state = binding.edtState.text.toString().trim(),
-                    country = binding.edtAddress.selectedItem.toString(),
-                    postcode = binding.edtZip.text.toString().trim(),
-                    addressableType = it1,
-                    addressableId = businessAddress!!.addressableId,
-                    createdAt = businessAddress!!.createdAt,
-                    updatedAt = businessAddress!!.updatedAt,
-                    latitude = businessAddress!!.latitude,
-                    longitude = businessAddress!!.longitude,
-                    typeOfAddress = businessAddress!!.typeOfAddress
-
-                )
+            if (address != null) {
+                model.businessAddress = listOf(address)
+            } else {
+                model.businessAddress = emptyList()
             }
-
-            model.businessAddress = listOf(address) as List<BusinessAddress>
-
             MethodUtils.hideKeyboard(requireActivity())
             viewModel.submit(model)
         }
@@ -348,8 +367,11 @@ class BusinessDetailsFragment : Fragment() {
                             binding.edtSuite.setText(it?.businessAddress?.get(0)?.address2)
                             binding.edtStreet.setText(it?.businessAddress?.get(0)?.address1)
 
-                            addressID = it?.businessAddress?.get(0)?.bid
-                            businessAddress = it?.businessAddress?.get(0)
+
+                            if (businessAddress != null) {
+                                addressID = it?.businessAddress?.get(0)?.bid
+                                businessAddress = it?.businessAddress?.get(0)
+                            }
                         }
 
 
