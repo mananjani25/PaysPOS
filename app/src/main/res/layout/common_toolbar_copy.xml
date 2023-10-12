@@ -124,7 +124,7 @@
                 <TextView
                     android:id="@+id/txtHome"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
+                    android:layout_height="@dimen/height_home_button"
                     android:fontFamily="@font/sf_pro_display_semibold"
                     android:text="@string/tv_home"
                     android:gravity="center"
@@ -132,6 +132,7 @@
                     android:textColor="@color/white"
                     android:background="@drawable/button_action_hover"
                     android:paddingHorizontal="@dimen/padding_home_button"
+                    android:paddingVertical="@dimen/vertical_padding_home_button"
                     android:textSize="@dimen/_7mdpi"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"

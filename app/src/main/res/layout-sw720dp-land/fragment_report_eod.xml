@@ -123,6 +123,7 @@
                     android:paddingHorizontal="@dimen/padding_home_button"
                     android:paddingVertical="@dimen/vertical_padding_home_button"
                     android:text="@string/tv_home"
+                    android:fontFamily="@font/sf_pro_display_semibold"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_7mdpi"
                     android:visibility="gone" />

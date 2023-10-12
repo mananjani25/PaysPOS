@@ -38,15 +38,14 @@
                 android:id="@+id/tvHome"
                 style="@style/CustomFontSemiBold"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/height_home_button"
                 android:gravity="center"
-                android:paddingLeft="@dimen/_30sdp"
-                android:paddingTop="@dimen/_10sdp"
-                android:paddingRight="@dimen/_30sdp"
-                android:paddingBottom="@dimen/_10sdp"
+                android:paddingVertical="@dimen/vertical_padding_home_button"
+                android:paddingHorizontal="@dimen/padding_home_button"
+                android:fontFamily="@font/sf_pro_display_semibold"
                 android:text="@string/tv_home"
                 android:textColor="@color/btnColorDark_"
-                android:textSize="@dimen/_14sdp" />
+                android:textSize="@dimen/_7mdpi" />
         </LinearLayout>
 
         <View

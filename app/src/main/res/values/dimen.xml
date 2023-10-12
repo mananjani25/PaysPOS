@@ -40,7 +40,7 @@
     <dimen name="btn_size">@dimen/_25sdp</dimen>
     <dimen name="header_title_size">@dimen/_7mdpi</dimen>
     <dimen name="padding_home_button">@dimen/_12sdp</dimen>
-    <dimen name="height_home_button">@dimen/_23sdp</dimen>
+    <dimen name="height_home_button">@dimen/_22sdp</dimen>
     <dimen name="vertical_padding_home_button">@dimen/_5sdp</dimen>
     <dimen name="setting_inner_text_size">@dimen/_7mdpi</dimen>
     <dimen name="setting_inner_sub_text_size">@dimen/_6sdp</dimen>
