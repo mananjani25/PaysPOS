@@ -46,11 +46,11 @@
                 android:layout_height="@dimen/height_home_button"
                 android:layout_centerInParent="true"
                 android:layout_gravity="center"
-                android:gravity="center"
                 android:fontFamily="@font/sf_pro_display_semibold"
-                android:text="@string/tv_home"
-                android:paddingVertical="@dimen/vertical_padding_home_button"
+                android:gravity="center"
                 android:paddingHorizontal="@dimen/padding_home_button"
+                android:paddingVertical="@dimen/vertical_padding_home_button"
+                android:text="@string/tv_home"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_7mdpi" />
 
