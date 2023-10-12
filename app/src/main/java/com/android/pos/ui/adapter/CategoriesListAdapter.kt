@@ -9,6 +9,7 @@ import android.widget.Filterable
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.entities.TbCategory
+import com.android.pos.data.remote.Constants.DEFAULT_CATEGORY
 import com.android.pos.data.remote.Constants.GIFT_CARD_CATEGORY
 import com.android.pos.databinding.ViewCategoryBinding
 import com.android.pos.utils.callback.ItemCallback
@@ -54,8 +55,12 @@ class CategoriesListAdapter(private val isChoose: Boolean) :
             if (!isChoose) {
                 if (item.name == GIFT_CARD_CATEGORY) {
                     binding.layoutMenu.imgOrderMenu.gone()
+                    binding.imageCheck.invisible()
+                }else if (item.name == DEFAULT_CATEGORY){
+                    binding.imageCheck.invisible()
                 } else {
                     binding.layoutMenu.imgOrderMenu.visible()
+                    binding.imageCheck.visible()
                 }
             }
         }
@@ -169,6 +174,15 @@ class CategoriesListAdapter(private val isChoose: Boolean) :
 
     fun getItem(position: Int): TbCategory {
         return filterList[position]
+    }
+
+    fun getPositionOf(itemName:String):Int{
+        for (i in 0 until filterList.size){
+            if (filterList[i].name == itemName){
+                return i
+            }
+        }
+        return -1
     }
 
     fun add(categoryModel: List<TbCategory>) {
