@@ -67,7 +67,7 @@
         <TextView
             android:id="@+id/txtLogout"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/height_home_button"
             android:layout_toStartOf="@+id/txtSave"
             android:background="@drawable/button_action_hover"
             android:fontFamily="@font/sf_pro_display_semibold"
