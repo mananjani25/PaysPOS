@@ -331,11 +331,19 @@ class CreateTax : Fragment() {
                             requireContext().sendBroadcast(intent2)
                         }
                         backPressManage()
+                        callSyncAPI()
                     }
                 }
 
             }
         })
+    }
+
+    private fun callSyncAPI() {
+        val intent = Intent()
+        intent.action = Constants.SYNC_NOTIFICATION
+        requireContext().sendBroadcast(intent)
+
     }
 
     private fun setupSnackbar() {
