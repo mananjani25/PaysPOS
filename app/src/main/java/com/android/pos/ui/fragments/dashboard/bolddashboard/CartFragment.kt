@@ -1073,6 +1073,7 @@ class CartFragment(
 
 
                         if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
+                            runOnUiThread(Runnable {
                             binding.rvCartDineIn.visible()
                             binding.rvCartList.gone()
                             checkOrderType()
@@ -1347,7 +1348,7 @@ class CartFragment(
 
                             }
 
-
+                            })
                         } else {
 
                             runOnUiThread(Runnable {
