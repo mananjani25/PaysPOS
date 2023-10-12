@@ -1945,6 +1945,7 @@ open class PaymentViewModel @Inject constructor(
                 cardType = 0
             } else {
                 //PAX Details
+                cardType = 0
                 ext_data = extData
                 global_uniq_id = globalUID
                 ref_num = refNum
