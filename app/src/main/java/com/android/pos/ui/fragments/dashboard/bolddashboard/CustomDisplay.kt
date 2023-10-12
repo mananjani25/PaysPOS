@@ -471,7 +471,12 @@ class CustomDisplay(
                     "${context.resources.getString(R.string.applied_loyalty_points)}: ${dashBoardCategoryViewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
             }
             binding.txtLoyaltyPointsLabel.text =
-                "Loyalty Balance: ${dashBoardCategoryViewModel.redeemLoyaltyInfo.availablePoints}"
+                "Loyalty Balance: ${
+                    if (dashBoardCategoryViewModel.redeemLoyaltyInfo.needToApplyLoyalty) {
+                        dashBoardCategoryViewModel.redeemLoyaltyInfo.remainingLoyaltyPoints
+                    } else {
+                        dashBoardCategoryViewModel.redeemLoyaltyInfo.availablePoints
+                    }}"
             binding.txtCustomerName.text = name
 
         } else {
