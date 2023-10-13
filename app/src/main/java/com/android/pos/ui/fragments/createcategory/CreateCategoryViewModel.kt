@@ -1,6 +1,7 @@
 package com.android.pos.ui.fragments.createcategory
 
 import android.text.TextUtils
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -14,7 +15,9 @@ import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Status.*
+import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -168,6 +171,7 @@ class CreateCategoryViewModel @Inject constructor(
                         resource.data.let { categoryResponse ->
                             if (categoryResponse?.status == 200) {
                                 resource.data?.let {
+                                    Log.d("TAG", "responseCreateCategory submit: "+ Gson().toJson(it))
                                     removeIdsFromOldCategories(ids, tbItemsList, defaultCatData)
                                     val category = TbCategory().apply {
                                         name = it.data.name.trim()
@@ -182,6 +186,15 @@ class CreateCategoryViewModel @Inject constructor(
                                         originalImgUrl = it.data.originalImgUrl
                                     }
                                     posRepository.createCategory(category)
+                                    Log.d("TAG", "responseCreateCategory sort number of gift card: "+prefProvider.getValueInt(Constants.GIFT_CARD_SORT,0))
+                                    Log.d("TAG", "responseCreateCategory sort number of default : "+prefProvider.getValueInt(Constants.DEFAULT_CATEGORY_SORT,0))
+                                    Log.d("TAG", "responseCreateCategory id of gift card at first position: "+prefProvider.getValueboolean(Constants.GIFT_CARD_AT_FIRST,false))
+                                    if (prefProvider.getValueboolean(Constants.GIFT_CARD_AT_FIRST,false)){
+                                        posRepository.updateSorting(Constants.DEFAULT_CATEGORY,prefProvider.getValueInt(Constants.DEFAULT_CATEGORY_SORT,0)+1)
+                                    }else{
+                                        posRepository.updateSorting(Constants.GIFT_CARD_CATEGORY,prefProvider.getValueInt(Constants.GIFT_CARD_SORT,0)+1)
+                                        posRepository.updateSorting(Constants.DEFAULT_CATEGORY,prefProvider.getValueInt(Constants.DEFAULT_CATEGORY_SORT,0)+2)
+                                    }
 
                                    /* if (isEdit) {
                                         val oldIds = posRepository.getItemsByCategory(category.id)

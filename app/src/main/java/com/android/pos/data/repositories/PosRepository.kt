@@ -1,6 +1,7 @@
 package com.android.pos.data.repositories
 
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.android.pos.data.db.AppDatabase
@@ -53,6 +54,7 @@ import com.android.pos.utils.performGetOperation
 import com.android.pos.utils.performGetOperationDatabase
 import com.android.pos.utils.performGetOperationNew
 import com.android.pos.utils.statusUtils.Resource
+import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -296,6 +298,16 @@ class PosRepository @Inject constructor(
                         originalImgUrl = category.originalImgUrl
                     }
                     categoryModelList.add(model)
+                    Log.d("TAG", "getAllCategoryList: response of API : "+Gson().toJson(model))
+                    if (category.name == Constants.GIFT_CARD && category.sort == 1){
+                        prefProvider.setValueboolean(Constants.GIFT_CARD_AT_FIRST,true)
+                    }
+                    if (category.name == Constants.GIFT_CARD){
+                        prefProvider.setValueInt(Constants.GIFT_CARD_SORT,category.sort)
+                    }
+                    if (category.name == Constants.DEFAULT_CATEGORY){
+                        prefProvider.setValueInt(Constants.DEFAULT_CATEGORY_SORT,category.sort)
+                    }
                 }
                 appDatabase.categoryDao().addAll(categoryModelList)
             }
@@ -361,6 +373,8 @@ class PosRepository @Inject constructor(
     fun updateModSet(mod: ModifierSet) = appDatabase.modifierSetDao().update(mod)
 
     fun getAllCountryList() = appDatabase.countryListDao().all
+
+    fun getAllSortNumbers() = appDatabase.categoryDao().getAllSortNumbers()
 
     fun modifierSets() =
         performGetOperation(databaseQuery = { appDatabase.modifierSetDao().all },
@@ -675,6 +689,8 @@ class PosRepository @Inject constructor(
 
     suspend fun createCategory(category: TbCategory) =
         appDatabase.categoryDao().add(category)
+
+    suspend fun updateSorting(name: String,sort:Int) = appDatabase.categoryDao().updateSorting(name,sort)
 
     suspend fun updateItemCategory(
         catId: Int,

@@ -4789,6 +4789,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
     fun syncInventoryModule(b: Boolean) {
+        var needToUpdate = false
         _showProgress.value = Event(true)
         _syncDone.value = Event(false)
         viewModelScope.launch {
@@ -4834,6 +4835,34 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     isDeleted = category.isDeleted
                                 }
                                 categoryModelList.add(model)
+                                Log.d("TAG", "Sync getAllCategoryList: response of API : "+Gson().toJson(model))
+
+                                if (category.name == GIFT_CARD && category.sort == 1){
+                                    prefProvider.setValueboolean(Constants.GIFT_CARD_AT_FIRST,true)
+                                }
+                                if (category.name == Constants.GIFT_CARD){
+                                    prefProvider.setValueInt(Constants.GIFT_CARD_SORT,category.sort)
+                                }
+                                if (category.name == Constants.DEFAULT_CATEGORY){
+                                    prefProvider.setValueInt(Constants.DEFAULT_CATEGORY_SORT,category.sort)
+                                }
+
+                                /*if (posRepository.getAllSortNumbers().contains(category.sort) && !needToUpdate){
+                                    needToUpdate = true
+                                    if (prefProvider.getValueboolean(Constants.GIFT_CARD_AT_FIRST,false)) {
+                                        posRepository.updateSorting(Constants.DEFAULT_CATEGORY,prefProvider.getValueInt(Constants.DEFAULT_CATEGORY_SORT,0)+mCategory.size)
+                                    } else {
+                                        posRepository.updateSorting(Constants.GIFT_CARD_CATEGORY,prefProvider.getValueInt(Constants.GIFT_CARD_SORT,0)+mCategory.size)
+                                        posRepository.updateSorting(Constants.DEFAULT_CATEGORY,prefProvider.getValueInt(Constants.DEFAULT_CATEGORY_SORT,0)+mCategory.size+1)
+                                    }
+                                }*/
+                                // if created new category by admin web panel
+                                /*if (prefProvider.getValueboolean(Constants.GIFT_CARD_AT_FIRST,false)){
+                                    posRepository.updateSorting(Constants.DEFAULT_CATEGORY,prefProvider.getValueInt(Constants.DEFAULT_CATEGORY_SORT,0)+1)
+                                }else{
+                                    posRepository.updateSorting(Constants.GIFT_CARD_CATEGORY,prefProvider.getValueInt(Constants.GIFT_CARD_SORT,0)+1)
+                                    posRepository.updateSorting(Constants.DEFAULT_CATEGORY,prefProvider.getValueInt(Constants.DEFAULT_CATEGORY_SORT,0)+2)
+                                }*/
 
                                 category.items.forEach {
                                     if (it.name?.lowercase() == "Manual Sales".lowercase()) {
