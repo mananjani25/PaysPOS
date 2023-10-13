@@ -2423,39 +2423,33 @@ class CartFragment(
 
                         var ordertype = ""
                         var ordertypeId = 0
-                        if (prefProvider.getValue(ORDER_TYPE, "") == OPEN_ORDER) {
-                            ordertype = prefProvider.getValue(ORDER_TYPE, "")
-                            ordertypeId = prefProvider.getValueInt(ORDER_TYPE_ID, 0)
-                        } else {
-                            run breaking@{
-                                viewModel.ordertypelist.forEach {
-                                    if (it.orderType == OPEN_ORDER) {
-                                        ordertype = it.orderType
-                                        ordertypeId = it.id
-                                        return@breaking
-                                    }
-                                }
-                            }
 
-
-                        }
-
-                        if (prefProvider.getValue(ORDER_TYPE, "").toString()
-                                .trim() == PHONE_ORDER.toString().trim()
-                        ) {
+                        if (prefProvider.getValue(ORDER_TYPE, "").trim() == PHONE_ORDER.trim()) {
 
                             viewModel.ordertypelist.forEach {
-                                if (it.orderType == PHONE_ORDER) {
+                                if (it.orderType == PHONE_ORDER && it.isDefault) {
                                     ordertype = it.orderType
                                     ordertypeId = it.id
                                 }
 
-
                             }
+
+                        } else if(prefProvider.getValue(ORDER_TYPE, "").trim() == TAKEOUT.trim()){
+
+                                viewModel.ordertypelist.forEach {
+                                    if (it.orderType == OPEN_ORDER && it.isDefault) {
+                                        ordertype = it.orderType
+                                        ordertypeId = it.id
+                                    }
+                                }
+
+                        } else if (prefProvider.getValue(ORDER_TYPE, "") == OPEN_ORDER) {
+                            ordertype = prefProvider.getValue(ORDER_TYPE, "")
+                            ordertypeId = prefProvider.getValueInt(ORDER_TYPE_ID, 0)
                         }
 
-
-                        Log.e("ordertypeId :: ", ordertypeId.toString())
+                        Log.e("TAGGER", "ordertype :: $ordertype")
+                        Log.e("TAGGER", "ordertypeId :: $ordertypeId")
 
                         if (viewModel.restrictedAmount(binding.txtTotal)) {
 

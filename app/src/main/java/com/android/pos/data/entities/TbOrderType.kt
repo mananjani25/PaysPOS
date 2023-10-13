@@ -30,5 +30,6 @@ data class TbOrderType(
     var isDeleted: Boolean = false,
      @SerializedName("primary_order_type")
     var primaryOrderType: Boolean = false,
-
+    @SerializedName("is_default")
+    var isDefault: Boolean = false,
 ) : Parcelable
