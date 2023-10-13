@@ -22,6 +22,7 @@ import com.android.pos.aidl.IWoyouService
 import com.android.pos.data.model.requestModel.RefundRequestModel
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.EXTERNAL_PAYMENT
 import com.android.pos.data.remote.Constants.REFUND1
 import com.android.pos.databinding.DialogRefundReasonBinding
 import com.android.pos.di.ApiModule1
@@ -758,7 +759,7 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                     ) { _, _ ->
                         //  prefProvider.setValueboolean(IS_REFUND, true)
 
-                        if (paymentType == "Card") {
+                        if (paymentType == "Card" || paymentType == EXTERNAL_PAYMENT) {
                             sendToTransaction()
                         } else if (customerList.isEmpty()) {
                             sendToTransaction()
