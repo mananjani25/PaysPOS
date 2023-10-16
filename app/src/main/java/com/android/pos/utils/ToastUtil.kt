@@ -11,9 +11,6 @@ import android.widget.TextView
  * Created by Waheed on 04,November,2019
  */
 
-object ToastUtil {
-
-    fun showNormalToast(context: Context, message: String) {
-        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-    }
+fun Context.showNormalToast(message: String) {
+    Toast.makeText(this, message, Toast.LENGTH_LONG).show()
 }
