@@ -98,6 +98,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import org.json.JSONArray
+import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.Date
 import javax.inject.Inject
@@ -141,6 +143,9 @@ class CartFragment(
     private val dineInViewModel by viewModels<DineInOrderTableViewModel>()
     var cashDiscountType = ""
     var cartlist: ArrayList<CartModel> = arrayListOf()
+    var tempList: JSONArray? = null
+    private var tempStored:Boolean = false
+    var itemModified = false
     private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
     private val viewModelPayment by activityViewModels<PaymentViewModel>()
     var updateBundle: Bundle? = null
@@ -220,7 +225,9 @@ class CartFragment(
         isFromPayment = arguments?.getBoolean("isFromPayment") ?: false
         isActiveOrder = arguments?.getBoolean("isFromActiveOrder") ?: false
 
-
+        if (!prefProvider.getValueboolean(Constants.BACK_FROM_PAYMENT,false)){
+            prefProvider.getValueboolean(Constants.NO_NEED_TO_PRINT, false)
+        }
         findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Bundle>("data")
             ?.observe(viewLifecycleOwner) { it ->
                 if (it.getBundle("updateBundle") != null) {
@@ -893,6 +900,10 @@ class CartFragment(
                         ?.let { it1 -> cartAdapter.setList(it1) }
 
                     cartlist = it as ArrayList<CartModel>
+                    if (tempStored == false){
+                        tempList = JSONArray(Gson().toJson(cartlist)).getJSONObject(0).getJSONArray("items")
+                        tempStored = true
+                    }
 
                     viewModel.setCartModel(it)
                     if (it[0].taxlistDynamic?.isNotEmpty() == true) {
@@ -1399,6 +1410,11 @@ class CartFragment(
                             }
 
                             cartlist = it as ArrayList<CartModel>
+                            if (tempStored == false){
+                                tempList = JSONArray(Gson().toJson(cartlist)).getJSONObject(0).getJSONArray("items")
+                                tempStored = true
+                            }
+
                             viewModel.itemCalculationCartModel(
                                 it[0],
                                 binding.txtTotal,
@@ -1919,7 +1935,8 @@ class CartFragment(
         ) {
             positiveButton(getString(R.string.tv_delete)) {
                 // Do positive stuff here
-
+                prefProvider.setValueboolean(Constants.BACK_FROM_PAYMENT,false)
+                prefProvider.setValueboolean(Constants.NO_NEED_TO_PRINT,false)
                 taxBirfurcationAdapter.clearList()
                 viewModel.clearListTax()
                 prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
@@ -2296,6 +2313,18 @@ class CartFragment(
                 prefProvider.setValue(Constants.TAX_CHARGE, "")
                 prefProvider.setValue(Constants.SERVICE_CHARGE, "")
                 viewModel.setTipAmount(0.0)
+
+                if (arguments?.getBoolean("update") == true) {
+                    if (prefProvider.getValueboolean(Constants.BACK_FROM_PAYMENT, false) == true) {
+                        prefProvider.setValueboolean(Constants.BACK_FROM_PAYMENT, false)
+                        if (prefProvider.getValueboolean(Constants.NO_NEED_TO_PRINT, true)) {
+                            checkUpdation()
+                        }
+                    } else {
+                        checkUpdation()
+                    }
+                }
+
                 if (isOrderUpdate) {
                     var bundle: Bundle = Bundle()
                     bundle.putInt("orderId", orderId!!)
@@ -2468,6 +2497,37 @@ class CartFragment(
             } catch (e: Exception) {
                 e.printStackTrace()
             }
+        }
+    }
+
+    private fun checkUpdation() {
+        Log.d(TAG, "checkUpdation: cartlist "+Gson().toJson(cartlist))
+        if (/*tempList.length()>0 && cartlist.size>0 &&*/ tempList?.length() == cartlist[cartlist.size - 1].items?.size) {
+            for (i in 0 until tempList!!.length()) {
+                val tempItemModifierList = ((tempList!!.get(i) as JSONObject).get("modifiers") as JSONArray)
+                if (((tempList!!.get(i) as JSONObject).get("name") != cartlist[cartlist.size - 1].items!![i].name) || ((tempList!!.get(i) as JSONObject).get("itemQuantity") != cartlist[cartlist.size - 1].items!![i].itemQuantity) || (tempItemModifierList.length() != cartlist[cartlist.size - 1].items!![i].modifiers.size)) {
+                    itemModified = true
+                } else {
+                    for (j in 0 until (tempItemModifierList.length())){
+                        if (((tempItemModifierList.get(j) as JSONObject).get("name") != cartlist[cartlist.size - 1].items!![i].modifiers[j].name) || ((tempItemModifierList.get(j) as JSONObject).get("modifier_quantity") != cartlist[cartlist.size - 1].items!![i].modifiers[j].modifier_quantity)){
+                            itemModified = true
+                        }
+                    }
+                }
+            }
+            if (!itemModified) {
+                //no print
+                prefProvider.setValueboolean(Constants.NO_NEED_TO_PRINT, true)
+                Log.d(TAG, "checkUpdation: NO_NEED_TO_PRINT true")
+            } else {
+                //print
+                prefProvider.setValueboolean(Constants.NO_NEED_TO_PRINT, false)
+                Log.d(TAG, "checkUpdation: NO_NEED_TO_PRINT false")
+            }
+        } else {
+            //print
+            prefProvider.setValueboolean(Constants.NO_NEED_TO_PRINT, false)
+            Log.d(TAG, "checkUpdation: NO_NEED_TO_PRINT false")
         }
     }
 

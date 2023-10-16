@@ -119,6 +119,8 @@ object Constants {
     const val AMOUNT = "Amount"
     const val IS_ORDER_UPDATE = "isOrderUpdate"
     const val OPEN_ORDER_UPDATE_FOR_PRINT = "open_order_update_for_print"
+    const val NO_NEED_TO_PRINT = "cart_updated"
+    const val BACK_FROM_PAYMENT = "back_from_payment"
     const val BUNDLE_ORDER_ID = "BUNDLE_ORDER_ID"
     const val PAYMENT_ID = "payment_id"
     const val BUNDLE_PAYMENT_ID = "BUNDLE_PAYMENT_ID"
