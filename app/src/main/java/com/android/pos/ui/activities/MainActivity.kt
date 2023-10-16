@@ -188,11 +188,12 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     private var syncReceiver = object : BroadcastReceiver() {
         override fun onReceive(p0: Context?, p1: Intent?) {
 
-            LogUtil.logEN("onReceive", "" + p1?.action)
+            try {
+                dashBoardCategoryViewModel.syncInventoryModule(true)
+            }catch (e:Exception){
+                Log.d("syncReceiver","dashBoardCategoryViewModel create exception")
 
-            dashBoardCategoryViewModel.syncInventoryModule(true)
-
-
+            }
         }
 
     }
