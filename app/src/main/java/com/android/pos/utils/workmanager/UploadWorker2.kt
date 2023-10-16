@@ -303,6 +303,15 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                             modelOrder.id = it.asJsonObject.get("id").asInt
                             modelOrder.orderType =
                                 it.asJsonObject.get("order_type").asString
+
+                            try {
+                                if (it.asJsonObject.has("delivery_type")){
+                                    modelOrder.deliveryType = it.asJsonObject.get("delivery_type").asString
+                                }
+                            }catch (e:Exception){
+                                Log.d("KeyNotFound","Exception")
+                            }
+
                             modelOrder.dateAndTime =
                                 it.asJsonObject.get("date_and_time").asString
                             modelOrder.employeeName =
@@ -760,6 +769,14 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
 
         cloudPrinter.setAlignment(AlignStyle.CENTER)
         cloudPrinter.printText(obj.orderType)
+
+
+        if (obj.deliveryType.isNotEmpty()){
+            cloudPrinter.lineFeed(1)
+            cloudPrinter.setAlignment(AlignStyle.CENTER)
+            cloudPrinter.printText(obj.deliveryType)
+        }
+
 
         cloudPrinter.lineFeed(1)
         cloudPrinter.setBoldMode(false)
