@@ -6102,7 +6102,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 Status.SUCCESS -> {
                     ProgressUtils.dismissProgressDialog()
                     if (it.data != null && isPrint == true) {
-
+                        isPrint = false
 
                         kitchenPrinterList = it.data
 
