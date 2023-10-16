@@ -4837,8 +4837,13 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 categoryModelList.add(model)
                                 Log.d("TAG", "Sync getAllCategoryList: response of API : "+Gson().toJson(model))
 
-                                if (category.name == GIFT_CARD && category.sort == 1){
-                                    prefProvider.setValueboolean(Constants.GIFT_CARD_AT_FIRST,true)
+                                if (category.name == GIFT_CARD){
+                                    if (category.sort == 1) {
+                                        prefProvider.setValueboolean(Constants.GIFT_CARD_AT_FIRST,true)
+                                    }
+                                    else {
+                                        prefProvider.setValueboolean(Constants.GIFT_CARD_AT_FIRST,false)
+                                    }
                                 }
                                 if (category.name == Constants.GIFT_CARD){
                                     prefProvider.setValueInt(Constants.GIFT_CARD_SORT,category.sort)
@@ -4857,12 +4862,36 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     }
                                 }*/
                                 // if created new category by admin web panel
-                                /*if (prefProvider.getValueboolean(Constants.GIFT_CARD_AT_FIRST,false)){
-                                    posRepository.updateSorting(Constants.DEFAULT_CATEGORY,prefProvider.getValueInt(Constants.DEFAULT_CATEGORY_SORT,0)+1)
-                                }else{
-                                    posRepository.updateSorting(Constants.GIFT_CARD_CATEGORY,prefProvider.getValueInt(Constants.GIFT_CARD_SORT,0)+1)
-                                    posRepository.updateSorting(Constants.DEFAULT_CATEGORY,prefProvider.getValueInt(Constants.DEFAULT_CATEGORY_SORT,0)+2)
-                                }*/
+                                if (mCategory.size == 1 && !category.isDeleted){
+                                    if (prefProvider.getValueboolean(
+                                            Constants.GIFT_CARD_AT_FIRST,
+                                            false
+                                        )
+                                    ) {
+                                        posRepository.updateSorting(
+                                            Constants.DEFAULT_CATEGORY,
+                                            prefProvider.getValueInt(
+                                                Constants.DEFAULT_CATEGORY_SORT,
+                                                0
+                                            ) + 1
+                                        )
+                                    } else {
+                                        posRepository.updateSorting(
+                                            Constants.GIFT_CARD_CATEGORY,
+                                            prefProvider.getValueInt(
+                                                Constants.GIFT_CARD_SORT,
+                                                0
+                                            ) + 1
+                                        )
+                                        posRepository.updateSorting(
+                                            Constants.DEFAULT_CATEGORY,
+                                            prefProvider.getValueInt(
+                                                Constants.DEFAULT_CATEGORY_SORT,
+                                                0
+                                            ) + 2
+                                        )
+                                    }
+                                }
 
                                 category.items.forEach {
                                     if (it.name?.lowercase() == "Manual Sales".lowercase()) {

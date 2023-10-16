@@ -299,8 +299,13 @@ class PosRepository @Inject constructor(
                     }
                     categoryModelList.add(model)
                     Log.d("TAG", "getAllCategoryList: response of API : "+Gson().toJson(model))
-                    if (category.name == Constants.GIFT_CARD && category.sort == 1){
-                        prefProvider.setValueboolean(Constants.GIFT_CARD_AT_FIRST,true)
+                    if (category.name == Constants.GIFT_CARD){
+                        if (category.sort == 1) {
+                            prefProvider.setValueboolean(Constants.GIFT_CARD_AT_FIRST,true)
+                        }
+                        else {
+                            prefProvider.setValueboolean(Constants.GIFT_CARD_AT_FIRST,false)
+                        }
                     }
                     if (category.name == Constants.GIFT_CARD){
                         prefProvider.setValueInt(Constants.GIFT_CARD_SORT,category.sort)

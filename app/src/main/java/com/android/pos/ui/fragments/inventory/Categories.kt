@@ -87,6 +87,8 @@ class Categories(val clickedPosition: Int) : Fragment(),ItemCallback {
                                     prefProvider.setValueInt(Constants.GIFT_CARD_SORT,it1[i].sort)
                                     if (it1[i].sort == 1){
                                         prefProvider.setValueboolean(Constants.GIFT_CARD_AT_FIRST,true)
+                                    }else{
+                                        prefProvider.setValueboolean(Constants.GIFT_CARD_AT_FIRST,false)
                                     }
                                 }
                                 if (it1[i].name == Constants.DEFAULT_CATEGORY){
