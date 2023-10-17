@@ -630,7 +630,7 @@
                         android:layout_marginStart="@dimen/_4sdp"
                         android:layout_marginEnd="@dimen/_2sdp"
                         android:layout_weight="1"
-                        android:background="@color/backgroundColor"
+                        android:background="@drawable/border_orange"
                         android:gravity="center"
                         android:padding="@dimen/_5sdp"
                         android:text="@string/save"
