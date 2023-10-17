@@ -40,6 +40,7 @@ import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ADD_VALUE
 import com.android.pos.data.remote.Constants.BALANCE_INQUIRY
 import com.android.pos.data.remote.Constants.CUSTOMER
+import com.android.pos.data.remote.Constants.DELIVERY_TYPE
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
 import com.android.pos.data.remote.Constants.GIFT_CARD
@@ -818,6 +819,28 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             try {
                 if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
                     prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
+                    if (isupdate || prefProvider.getValueboolean(Constants.DINE_IN_UPDATE, false)){
+                        prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
+                        prefProvider.setValue(Constants.REDIRECT_FROM, "")
+                        if (prefProvider.getValue(ORDER_TYPE, "").toString() == Constants.DINE_IN) {
+                            prefProvider.setValue(Constants.DINE_IN_UPDATE_LIST, "")
+                            prefProvider.setValueInt(Constants.DINE_INGUEST_SELECTED, 0)
+                            viewModel.removeItemDineInList.clear()
+                            prefProvider.setValue(ORDER_TYPE, "")
+                            prefProvider.setValue(ORDER_TYPE_NAME, "")
+                            prefProvider.setValueboolean(Constants.LOYALTY_ADDED, false)
+                            prefProvider.setValueboolean(Constants.DINE_IN_UPDATE, false)
+                        }else{
+                            prefProvider.setValue(ORDER_TYPE, "")
+                            prefProvider.setValue(ORDER_TYPE_NAME, "")
+                            prefProvider.setValue(DELIVERY_TYPE, "")
+                            prefProvider.setValueboolean(Constants.LOYALTY_ADDED, false)
+                        }
+                        clearCustomer()
+                        viewModel.updateActiveOrderFlagClear()
+                        viewModel.clearListTax()
+                        viewModel.deleteCart()
+                    }
                     findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
                 }
             } catch (e: Exception) {
