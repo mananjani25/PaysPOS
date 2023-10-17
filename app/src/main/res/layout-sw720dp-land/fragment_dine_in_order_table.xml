@@ -19,13 +19,13 @@
                 android:id="@+id/txtHome"
                 style="@style/CustomFontBold"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="@dimen/height_home_button"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:background="@drawable/button_action_hover"
                 android:gravity="center_vertical"
-                android:paddingHorizontal="@dimen/_16sdp"
-                android:paddingVertical="@dimen/_5sdp"
+                android:paddingHorizontal="@dimen/padding_home_button"
+                android:paddingVertical="@dimen/vertical_padding_home_button"
                 android:text="Home"
                 android:textAllCaps="true"
                 android:textColor="@color/white"
@@ -226,17 +226,18 @@
                 android:id="@+id/txtHomeBottom"
                 style="@style/CustomFontBold"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/height_home_button"
                 android:layout_marginStart="@dimen/_4sdp"
                 android:layout_marginEnd="@dimen/_2sdp"
                 android:layout_weight="1"
                 android:background="@drawable/dine_in_footer_selector"
                 android:gravity="center"
                 android:minWidth="@dimen/_120sdp"
-                android:padding="@dimen/_8sdp"
+                android:paddingHorizontal="@dimen/padding_home_button"
+                android:paddingVertical="@dimen/vertical_padding_home_button"
                 android:text="@string/tv_home"
                 android:textColor="@color/white"
-                android:textSize="@dimen/_6ssp" />
+                android:textSize="@dimen/_7mdpi" />
 
 
             <androidx.appcompat.widget.AppCompatTextView

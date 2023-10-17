@@ -826,6 +826,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 //            }
 //        }
 
+        // clear pax response from database
+        paymentViewModel.deletePaxPaymentData()
         if (!isSpilt) {
 
             prefProvider.setValue(Constants.ORDER_TYPE, "")
@@ -6042,6 +6044,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         prefProvider.setValueboolean(ORDER_COMPLETED, true)
                         findNavController().navigate(R.id.action_orderCompleteFragment_to_passcode)
                     } else {
+
+                        clearObserver()
                         findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
                     }
 
@@ -6055,6 +6059,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         prefProvider.setValueboolean(ORDER_COMPLETED, true)
                         findNavController().navigate(R.id.action_orderCompleteFragment_to_passcode)
                     } else {
+
+                        clearObserver()
                         findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
                     }
                 }
@@ -6096,7 +6102,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 Status.SUCCESS -> {
                     ProgressUtils.dismissProgressDialog()
                     if (it.data != null && isPrint == true) {
-
+                        isPrint = false
 
                         kitchenPrinterList = it.data
 
@@ -6157,11 +6163,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                             )
                                                                         )
                                                                     ) {
-
-                                                                        initKitchenPrinter(
+                                                                        if (!prefProvider.getValueboolean(Constants.NO_NEED_TO_PRINT, false)) {
+                                                                            initKitchenPrinter(
                                                                             kitchenPrinterList.get(i),
                                                                             KITCHEN
-                                                                        )
+                                                                        )}
                                                                     }
 
                                                                 }
@@ -6201,14 +6207,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                                 )
                                                                             )
                                                                         ) {
-
-
+                                                                            if (!prefProvider.getValueboolean(Constants .NO_NEED_TO_PRINT, false)) {
                                                                             initKitchenPrinter(
                                                                                 kitchenPrinterList.get(
                                                                                     i
                                                                                 ),
                                                                                 KITCHEN
-                                                                            )
+                                                                            )}
 
                                                                         }
 
@@ -13064,6 +13069,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     }
 
     override fun onRunResult(isSuccess: Boolean, code: Int, msg: String?) {
+
+    }
+
+    private fun clearObserver() {
+        viewLifecycleOwnerLiveData.removeObservers(viewLifecycleOwner)
+        onDestroy()
 
     }
 

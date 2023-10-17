@@ -5,24 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.db.IDataManager
-import com.android.pos.data.entities.CartModel
-import com.android.pos.data.entities.CashDiscountModel
-import com.android.pos.data.entities.DineInCartModel
-import com.android.pos.data.entities.Employee
-import com.android.pos.data.entities.ItemModifierSets
-import com.android.pos.data.entities.LoyaltyProgramsModel
-import com.android.pos.data.entities.ModifierSet
-import com.android.pos.data.entities.OptionSet
-import com.android.pos.data.entities.TaxData
-import com.android.pos.data.entities.TbBusinessDetails
-import com.android.pos.data.entities.TbCardReader
-import com.android.pos.data.entities.TbCategory
-import com.android.pos.data.entities.TbCountryList
-import com.android.pos.data.entities.TbCustomer
-import com.android.pos.data.entities.TbItem
-import com.android.pos.data.entities.TbOrderType
-import com.android.pos.data.entities.TbTimeZones
-import com.android.pos.data.entities.TeamRole
+import com.android.pos.data.entities.*
 import com.android.pos.data.model.PrinterQueueModel
 import com.android.pos.data.model.ShiftRportConfiguration
 import com.android.pos.data.model.SplitDetailListModel
@@ -116,7 +99,9 @@ class PosRepository @Inject constructor(
     },
         networkCall = { apiHelperNew.getPrinterData(prefProvider.getValueInt(TERMINAL_ID, 0)) },
         saveCallResult = {
-            if (it.data.customerReceiptPrinters?.isEmpty() == true || it.data.customerReceiptPrinters?.size == 0) {appDatabase.printerDao().deleteCustomerPrinters()}else {
+            if (it.data.customerReceiptPrinters?.isEmpty() == true || it.data.customerReceiptPrinters?.size == 0) {
+                appDatabase.printerDao().deleteCustomerPrinters()
+            } else {
                 appDatabase.printerDao().addCustomerPrinterList(it.data.customerReceiptPrinters)
             }
             if (it.data.kitchenReceiptPrinters?.isEmpty() == true || it.data.kitchenReceiptPrinters?.size == 0) {
@@ -140,20 +125,7 @@ class PosRepository @Inject constructor(
         appDatabase.cancelOrderReasonDao().addAllCancelOrderReasonsSuspend(cancelOrderReason)
     }
 
-    fun getKitchenPrinters() = performGetOperation(databaseQuery = {
-        appDatabase.printerDao().kitchenPrintList
-    },
-        networkCall = { apiHelperNew.getPrinterData(prefProvider.getValueInt(TERMINAL_ID, 0)) },
-        saveCallResult = {
-            appDatabase.printerDao().addCustomerPrinterList(it.data.customerReceiptPrinters)
-            it.data.kitchenReceiptPrinters?.let { it1 ->
-                appDatabase.printerDao().addKitchenPrinterList(
-                    it1
-                )
-            }
-        }
-
-    )
+    fun getKitchenPrinters() = performGetOperationDatabase { appDatabase.printerDao().kitchenPrintList }
 
     suspend fun getKitchenPrintersList() = appDatabase.printerDao().getKitchenPrinterList()
 
@@ -297,7 +269,9 @@ class PosRepository @Inject constructor(
     }
 
     fun getCategoryListAll() =
-        performGetOperationDatabase(databaseQuery = { appDatabase.categoryDao().allWithoutGiftCard() })
+        performGetOperationDatabase(databaseQuery = {
+            appDatabase.categoryDao().allWithoutGiftCard()
+        })
 
     fun getCategoryListIWCAll() = performGetOperationDatabase(databaseQuery = {
         appDatabase.categoryDao().allCatWithoutItem()
@@ -757,9 +731,13 @@ class PosRepository @Inject constructor(
         return appDatabase.categoryDao().manualCategoryId
     }
 
-    suspend fun addItemCart(cartModel: CartModel) {
+     fun addItemCart(cartModel: CartModel) {
+        synchronized(this) {
+          //  appDatabase.beginTransaction()
+            appDatabase.cartDao().addSuspended(cartModel)
+           // appDatabase.endTransaction()
+        }
 
-        appDatabase.cartDao().add(cartModel)
     }
 
     suspend fun addItemCartDineIn(cartModel: DineInCartModel) {
@@ -1214,6 +1192,16 @@ class PosRepository @Inject constructor(
 
     fun inventoryCounts() =
         performGetOperationNew(networkCall = { apiHelperNew.inventoryCounts() })
+
+    suspend fun addPAXData(paxData: PAXData) {
+        appDatabase.PAXDao().add(paxData)
+    }
+
+    suspend fun getPAXDetails() = appDatabase.PAXDao().getPAXDetails()
+
+    suspend fun deletePAXTable() {
+        appDatabase.PAXDao().delete()
+    }
 
     suspend fun addCardReader(tbCardReader: TbCardReader) {
         appDatabase.cardReaderDao().add(tbCardReader)

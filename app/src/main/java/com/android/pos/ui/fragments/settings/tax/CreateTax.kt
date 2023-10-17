@@ -1,8 +1,10 @@
 package com.android.pos.ui.fragments.settings.tax
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +17,7 @@ import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.TaxData
 import com.android.pos.data.entities.TbItem
+import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ADD_TAX
 import com.android.pos.data.remote.Constants.CREATE_TAX
 import com.android.pos.data.remote.Constants.DIALOG_KEY
@@ -22,6 +25,7 @@ import com.android.pos.data.remote.Constants.DIALOG_KEY_TAX
 import com.android.pos.data.remote.Constants.INCLUDE_TAX
 import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.databinding.DialogCreateNewTaxBinding
+import com.android.pos.di.PrefProvider
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
@@ -30,10 +34,13 @@ import com.android.pos.utils.extensions.getNavigationResultLiveData
 import com.android.pos.utils.extensions.liveSnackBar
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
+
 
 @AndroidEntryPoint
 class CreateTax : Fragment() {
 
+    private var previousValue: String = ""
     private lateinit var binding: DialogCreateNewTaxBinding
 
     private val viewModel by viewModels<CreateTaxViewModel>()
@@ -42,14 +49,17 @@ class CreateTax : Fragment() {
 
     var isEdit: Boolean = false
     private lateinit var taxData: TaxData
-    private lateinit var taxDataTmp:TaxData
+    private lateinit var taxDataTmp: TaxData
+
+    @set:Inject
+    internal var prefProvider: PrefProvider? = null
 
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding =
             DataBindingUtil.inflate(inflater, R.layout.dialog_create_new_tax, container, false)
 
@@ -71,9 +81,10 @@ class CreateTax : Fragment() {
             binding.header.txtTitle.text = getString(R.string.tv_update_tax)
             viewModel.setTaxData(taxData)
 
-            binding.itemsCount.text = "" + taxData.itemIds?.size + " Items"
+            binding.itemsCount.text = "" + taxData.itemIds.size + " Items"
             binding.tvItemPricing.text = taxData.itemPricing
             binding.edtAmount.setText(String.format("%.2f", viewModel.createTaxDetails.value?.rate))
+
             binding.swtEnableTax.isChecked = taxData.isActive
             binding.swtCustomAmount.isChecked = taxData.isCustomAmount
             viewModel.isEditData(isEdit, taxData.id)
@@ -104,20 +115,51 @@ class CreateTax : Fragment() {
             }
 
             override fun afterTextChanged(s: Editable?) {
-                if (binding.swtTaxType.text == "Percentage") {
-                    val temp_rate = s.toString()
-                    if (temp_rate.isNotEmpty()) {
-                        if (temp_rate.toFloat() > 100) {
-                            AlertUtils.showCustomAlertWithListenerWithOK(
-                                requireContext(),
-                                "Please enter percentage less than or equal to 100"
-                            ) { _, _ ->
-                                binding.edtAmount.setText("")
-                            }
-                        }
-                    }
+                Log.d("addTextChangedListener","editable = ${s.toString()}")
 
-                }
+                try {
+                 if (binding.swtTaxType.text == "Percentage") {
+
+                     if(s?.length == 1 && s[0] == '.'){
+                         binding.edtAmount.setText("")
+                         return
+                     }
+
+                     if (previousValue.contains(".")){
+                         Log.d("addTextChangedListener","1 dot is already exist")
+                         val str = s.toString()
+                         val strold = str.substring(0, str.length - 1)
+                         val lastchar = str.substring(str.length - 1)
+                         if (strold.contains(".") && lastchar == ".") {
+                             val length: Int? = binding.edtAmount.text?.length
+                             if (length != null) {
+                                 if (length > 0) {
+                                     binding.edtAmount.text?.delete(length - 1, length)
+                                 }
+                             }
+                         }
+
+                         return
+                     }
+
+
+                     val temp_rate = s.toString()
+                     previousValue = temp_rate
+                     if (temp_rate.isNotEmpty()) {
+                         if (temp_rate.toFloat() > 100) {
+                             AlertUtils.showCustomAlertWithListenerWithOK(
+                                 requireContext(),
+                                 "Please enter percentage less than or equal to 100"
+                             ) { _, _ ->
+                                 binding.edtAmount.setText("")
+                             }
+                         }
+                     }
+
+                 }
+             }catch (e:Exception){
+                 Log.d("addTextChangedListener","exception = $e")
+             }
             }
 
         })
@@ -185,7 +227,7 @@ class CreateTax : Fragment() {
                 itemIds.add(it.itemId)
             }
 
-             viewModel.setItemIds(itemIds)
+            viewModel.setItemIds(itemIds)
         }
 
         val resultDialogKeyTax = getNavigationResultLiveData<String>(DIALOG_KEY_TAX)
@@ -215,10 +257,10 @@ class CreateTax : Fragment() {
 
     private fun backPressManage() {
 
-     /*   Log.e("itemIdsSizeFrag","itemIdsSize ${taxDataTmp.itemIds.size}")
-        viewModel.setItemIds(taxDataTmp.itemIds.toCollection(arrayListOf()))
-        viewModel.setTaxData(taxDataTmp)
-*/
+        /*   Log.e("itemIdsSizeFrag","itemIdsSize ${taxDataTmp.itemIds.size}")
+           viewModel.setItemIds(taxDataTmp.itemIds.toCollection(arrayListOf()))
+           viewModel.setTaxData(taxDataTmp)
+   */
 
         val navController = findNavController()
         navController.previousBackStackEntry?.savedStateHandle?.set(
@@ -279,7 +321,17 @@ class CreateTax : Fragment() {
                     AlertUtils.showCustomAlertWithListenerWithOK(
                         it, createTaxResponse.message
                     ) { _, _ ->
+                        if (prefProvider?.getValue("device_token", "")?.trim()?.isEmpty() == true) {
+                            val intent = Intent()
+                            intent.action = Constants.SYNC_SETTING_NOTIFICATION
+                            requireContext().sendBroadcast(intent)
+
+                            val intent2 = Intent()
+                            intent2.action = Constants.SYNC_NOTIFICATION
+                            requireContext().sendBroadcast(intent2)
+                        }
                         backPressManage()
+                        callSyncAPI()
                     }
                 }
 
@@ -287,8 +339,16 @@ class CreateTax : Fragment() {
         })
     }
 
+    private fun callSyncAPI() {
+        val intent = Intent()
+        intent.action = Constants.SYNC_NOTIFICATION
+        requireContext().sendBroadcast(intent)
+
+    }
+
     private fun setupSnackbar() {
         binding.root.liveSnackBar(this, viewModel.snackbarText, Snackbar.LENGTH_SHORT)
 
     }
+
 }

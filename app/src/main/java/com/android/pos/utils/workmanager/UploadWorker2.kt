@@ -97,11 +97,8 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
             isPrinterQueueEnable = inputData.getBoolean(Constants.IS_PRINTER_QUEUE_ENABLE, false)
             isCancelWork = inputData.getBoolean("is_cancel_work", false)
 
+            Log.d("isPrinterQueueEnable","isPrinterQueueEnable = $isPrinterQueueEnable")
 
-            Log.e(
-                TAG,
-                "checkIsCancelWork:  ${isCancelWork}  isPrinterQueueEnable  ${isPrinterQueueEnable}"
-            )
             Log.e(TAG,"CheckQueueCancel  ${mContext.getSharedPreferences(
                 mContext.resources.getString(R.string.app_name),
                 Context.MODE_PRIVATE
@@ -113,7 +110,9 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                 ).getBoolean(CHECK_QUEUE_CANCEL, false) == false ) {
                 Log.e(TAG, "checkIsdws")
                 if (isInternetAvailable()) {
-                    connectActionCable()
+                    if (isPrinterQueueEnable){
+                        connectActionCable()
+                    }
                 } else {
                     // show popup for network
                     sendNotification("Please check your Network Connectivity.")
@@ -304,6 +303,15 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                             modelOrder.id = it.asJsonObject.get("id").asInt
                             modelOrder.orderType =
                                 it.asJsonObject.get("order_type").asString
+
+                            try {
+                                if (it.asJsonObject.has("delivery_type")){
+                                    modelOrder.deliveryType = it.asJsonObject.get("delivery_type").asString
+                                }
+                            }catch (e:Exception){
+                                Log.d("KeyNotFound","Exception")
+                            }
+
                             modelOrder.dateAndTime =
                                 it.asJsonObject.get("date_and_time").asString
                             modelOrder.employeeName =
@@ -674,6 +682,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
     }
 
     private fun sendNotification(messageBody: String) {
+        Log.d("sendNotification","message = $messageBody")
 
 
         val channelId = mContext.getString(R.string.default_notification_channel_id)
@@ -760,6 +769,14 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
 
         cloudPrinter.setAlignment(AlignStyle.CENTER)
         cloudPrinter.printText(obj.orderType)
+
+
+        if (obj.deliveryType.isNotEmpty()){
+            cloudPrinter.lineFeed(1)
+            cloudPrinter.setAlignment(AlignStyle.CENTER)
+            cloudPrinter.printText(obj.deliveryType)
+        }
+
 
         cloudPrinter.lineFeed(1)
         cloudPrinter.setBoldMode(false)

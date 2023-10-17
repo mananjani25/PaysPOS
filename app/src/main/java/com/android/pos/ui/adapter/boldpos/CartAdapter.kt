@@ -1,6 +1,5 @@
 package com.android.pos.ui.adapter.boldpos
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,7 +11,6 @@ import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.callback.MyCallback
 import com.android.pos.utils.extensions.strike
-import com.google.gson.Gson
 
 class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
     var cartList = ArrayList<TbItem>()
@@ -29,7 +27,6 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: TbItem, pos: Int) {
-            LogUtil.logE(TAG, "itemprice:  ${item.price}")
             binding.txtName.text = item.name
             binding.txtQuantity.text = item.itemQuantity.toString()
             binding.txtEachQntPrice.text = MethodUtils.roundOffAmount((item.price))

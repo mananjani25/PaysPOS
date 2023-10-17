@@ -12,6 +12,7 @@ import com.android.pos.data.model.responseModel.BaseResponse
 import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN
+import com.android.pos.data.remote.Constants.IS_PAX_PAYMENT_FAILED
 import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.android.pos.data.remote.Constants.PAYMENT_ID
 import com.android.pos.data.remote.Constants.PAYMENT_ID_FOR_CUSTOMER_DISPLAY
@@ -24,7 +25,6 @@ import com.android.pos.ui.fragments.magtek.PaymentResponse
 import com.android.pos.utils.Event
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
-import com.android.pos.utils.MethodUtils.Companion.percentageCalculation
 import com.android.pos.utils.TimeFormatUtils
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
@@ -64,6 +64,9 @@ open class PaymentViewModel @Inject constructor(
 
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
+
+    private val _transactionErrorText = MutableLiveData<Event<Any?>>()
+    val transactionErrorText: LiveData<Event<Any?>> = _transactionErrorText
 
     var dineInWholeDiscount: Double? = null
     var dineInWholeSC: Double? = null
@@ -231,6 +234,7 @@ open class PaymentViewModel @Inject constructor(
                                     }
                                 }
 
+                                deletePaxPaymentData()
                                 _msgText.value = Event(response.message)
 
                                 _orderCreate.value = Event(true)
@@ -239,14 +243,14 @@ open class PaymentViewModel @Inject constructor(
                             }
 
                         } else {
-                            _snackbarText.value = Event(resource.message)
+                            _transactionErrorText.value = Event(resource.message)
                         }
                     }
 
                 }
 
                 Status.ERROR -> {
-                    _snackbarText.value = Event(resource.message)
+                    _transactionErrorText.value = Event(resource.message)
 
                     if (cashPaymentType(orderRequestModel)) {
                         _showProgressCash.value = Event(false)
@@ -983,7 +987,8 @@ open class PaymentViewModel @Inject constructor(
         PAXtoken: String = "",
         cardLastDigits: String = "",
         totalServiceChargeM: Double = 0.0,
-        totalDiscountM: Double = 0.0
+        totalDiscountM: Double = 0.0,
+        cardTypeOfTransaction: String = "",
     ): OrderRequestModel {
 
         val orderAttributeRequestModel = OrderAttributeRequestModel()
@@ -1100,7 +1105,8 @@ open class PaymentViewModel @Inject constructor(
                 extData,
                 ECRRefNumber,
                 PAXtoken,
-                cardLastDigits
+                cardLastDigits,
+                cardTypeOfTransaction
             )
         } else {
             null
@@ -1869,7 +1875,7 @@ open class PaymentViewModel @Inject constructor(
         tipAmount: Double,
         splitValue: Int,
         finalcashdiscount: Double,
-        paymentTypeStatus: String,cardNumber1 :String,
+        paymentTypeStatus: String, cardNumber1: String,
         cashdiscountType: String,
         redeemLoyaltyInfo: RedeemLoyaltyInfo?,
         globalUID: String = "",
@@ -1877,7 +1883,8 @@ open class PaymentViewModel @Inject constructor(
         extData: String = "",
         ECRRefNumber: String = "",
         PAXtoken: String = "",
-        cardLastDigits: String = ""
+        cardLastDigits: String = "",
+        cardTypeOfTransaction: String = ""
     ): PaymentAttributes {
         return PaymentAttributes().apply {
 //            if (isUpdateOrder)
@@ -1938,14 +1945,15 @@ open class PaymentViewModel @Inject constructor(
                 cardType = 0
             } else {
                 //PAX Details
+                cardType = 0
                 ext_data = extData
                 global_uniq_id = globalUID
                 ref_num = refNum
                 ecr_ref_num = ECRRefNumber
                 pax_transaction_token = PAXtoken
                 cardNumber = cardLastDigits.ifEmpty { "" }
+                cardName = cardTypeOfTransaction
             }
-
             if (cashdiscountType.isNotEmpty()) {
                 cash_discount_or_surcharge = finalcashdiscount
                 total_cash_discount = finalcashdiscount
@@ -2073,6 +2081,7 @@ open class PaymentViewModel @Inject constructor(
                                         _data.value = Event(createOrderResponse)
                                     }
                                 }
+                                deletePaxPaymentData()
 
 
 
@@ -2083,14 +2092,14 @@ open class PaymentViewModel @Inject constructor(
                             }
 
                         } else {
-                            _snackbarText.value = Event(resource.message)
+                            _transactionErrorText.value = Event(resource.message)
                         }
                     }
 
                 }
 
                 Status.ERROR -> {
-                    _snackbarText.value = Event(resource.message)
+                    _transactionErrorText.value = Event(resource.message)
                     if (cashPaymentTypeSplit(myRequest)) {
                         _showProgressCash.value = Event(true)
                     } else
@@ -2196,7 +2205,7 @@ open class PaymentViewModel @Inject constructor(
                 Status.SUCCESS -> {
                     _showProgress.value = Event(false)
                     _textToPaySpit.value = Event(true)
-
+                    deletePaxPaymentData()
                 }
 
                 Status.LOADING -> {
@@ -2205,7 +2214,7 @@ open class PaymentViewModel @Inject constructor(
                 }
 
                 Status.ERROR -> {
-                    _snackbarText.value = Event(resource.message)
+                    _transactionErrorText.value = Event(resource.message)
                     _showProgress.value = Event(false)
                 }
             }
@@ -2213,5 +2222,21 @@ open class PaymentViewModel @Inject constructor(
 
         }
 
+    }
+
+    fun savePaxPaymentDataLocally(paxData: PAXData){
+        viewModelScope.launch {
+            posRepository.addPAXData(paxData)
+        }
+    }
+
+    suspend fun getPaxPaymentData() = posRepository.getPAXDetails()
+
+    fun deletePaxPaymentData() {
+        prefProvider.setValueboolean(IS_PAX_PAYMENT_FAILED, false)
+
+        viewModelScope.launch {
+            posRepository.deletePAXTable()
+        }
     }
 }

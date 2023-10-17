@@ -8,7 +8,6 @@ import com.android.pos.data.entities.TbItem
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.ViewItemCartCustomerDisplayBinding
 import com.android.pos.di.PrefProvider
-import com.android.pos.ui.adapter.CartItemModifierAdapter
 import com.android.pos.ui.adapter.CartItemModifierAdapterForCustomerDisplay
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
@@ -36,7 +35,6 @@ class CartAdapterCustomerDisplay : RecyclerView.Adapter<CartAdapterCustomerDispl
         fun bind(item: TbItem, pos: Int) {
             prefProvider = PrefProvider(itemView.context)
             val showCashCreditPrice = prefProvider.getValueboolean(Constants.SHOW_CASH_CREDIT_PRICE_ON_CUSTOMER_DISPLAY, false)
-            LogUtil.logE(TAG, "itemprice:  ${item.price}")
             binding.txtName.text = item.name
             binding.txtQuantity.text = "x" + item.itemQuantity
             binding.txtEachQntPrice.text = MethodUtils.roundOffAmount((item.price))

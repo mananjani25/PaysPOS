@@ -252,7 +252,11 @@ class Notes : Fragment(), ItemCallback {
 
                     alert(
                         getString(R.string.app_name),
-                        getString(R.string.delete_note_message)
+                        if (noteListadapter.getItem(pos).isActive) {
+                            getString(R.string.delete_active_note_message)
+                        } else {
+                            getString(R.string.delete_note_message)
+                        }
                     ) {
                         positiveButton(getString(R.string.tv_delete)) {
                             // Do positive stuff here

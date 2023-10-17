@@ -35,18 +35,20 @@
                 android:id="@+id/txtProducts"
                 style="@style/CustomFontSemiBold"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/height_home_button"
+                android:paddingVertical="@dimen/vertical_padding_home_button"
+                android:paddingHorizontal="@dimen/padding_home_button"
+                android:fontFamily="@font/sf_pro_display_semibold"
                 android:layout_alignParentEnd="true"
                 android:layout_gravity="end"
                 android:background="?attr/selectableItemBackground"
                 android:gravity="end"
-                android:padding="@dimen/_5sdp"
                 android:text="@string/tv_home"
                 android:textAllCaps="true"
                 android:textColor="@color/txt_color_blue"
 
 
-                android:textSize="@dimen/_6mdpi"
+                android:textSize="@dimen/_7mdpi"
                 android:visibility="visible" />
 
             <!-- android:background="?attr/selectableItemBackground"-->

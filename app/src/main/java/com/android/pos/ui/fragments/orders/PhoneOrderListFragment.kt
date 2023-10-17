@@ -599,6 +599,14 @@ class PhoneOrderListFragment(
 
     }
 
+    override fun noDataAvailableFilter() {
+        TODO("Not yet implemented")
+    }
+
+    override fun hideNoDataAvailable() {
+        TODO("Not yet implemented")
+    }
+
     private fun cartModel(order: OpenOrderResponse.Data.Order): CartModel {
         LogUtil.logE("futureDeliveryDate  ", Gson().toJson(order))
         return CartModel().apply {

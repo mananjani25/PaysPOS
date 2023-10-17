@@ -22,6 +22,7 @@ import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.CASH_DISCOUNT_SURCHARGE
+import com.android.pos.data.remote.Constants.IS_PAX_PAYMENT_FAILED
 import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.SERVICE_CHARGE
@@ -123,6 +124,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                         prefProvider.setValue(SPLIT_PAY_AMOUNT, "")
                         prefProvider.setValueInt(SPLIT_NO, -1)
                         findNavController().navigate(R.id.action_paymentFragment_to_dashboardCategoryNew)
+                    } else if (prefProvider.getValueboolean(IS_PAX_PAYMENT_FAILED, false)) {
+                        AlertUtils.showCustomAlert(requireContext(), getString(R.string.pax_transaction_error_message))
                     } else {
                         AlertUtils.showCustomAlert(requireContext(), "Please complete all payment.")
                     }
@@ -874,7 +877,10 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     prefProvider.setValue(SPLIT_PAY_AMOUNT, "")
                     prefProvider.setValueInt(SPLIT_NO, -1)
                     findNavController().navigate(R.id.action_paymentFragment_to_dashboardCategoryNew)
-                } else {
+                } else if (prefProvider.getValueboolean(IS_PAX_PAYMENT_FAILED, false)) {
+                    AlertUtils.showCustomAlert(requireContext(), getString(R.string.pax_transaction_error_message))
+                }
+                else {
                     AlertUtils.showCustomAlert(requireContext(), "Please complete all payment.")
                 }
 

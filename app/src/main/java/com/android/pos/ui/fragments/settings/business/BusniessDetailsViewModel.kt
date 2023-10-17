@@ -11,7 +11,9 @@ import com.android.pos.data.entities.BusinessAddress
 import com.android.pos.data.entities.TbBusinessDetails
 import com.android.pos.data.model.responseModel.BaseResponse
 import com.android.pos.data.model.responseModel.BusinessResponse
+import com.android.pos.data.remote.Constants
 import com.android.pos.data.repositories.PosRepository
+import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,7 +23,8 @@ import javax.inject.Inject
 @HiltViewModel
 class BusniessDetailsViewModel @Inject constructor(
     private val posRepository: PosRepository,
-    private val appDatabase: AppDatabase
+    private val appDatabase: AppDatabase,
+    private val prefProvider: PrefProvider
 ) : ViewModel() {
 
 
@@ -68,16 +71,16 @@ class BusniessDetailsViewModel @Inject constructor(
             TextUtils.isEmpty(model.customer_contact_email?.trim()) -> {
                 _snackbarText.value = Event("Please enter business email address")
             }
-            TextUtils.isEmpty(model.businessAddress[0].address1.trim()) -> {
+            model.businessAddress.isEmpty() || (model.businessAddress.isNotEmpty() && TextUtils.isEmpty(model.businessAddress[0].address1.trim())) -> {
                 _snackbarText.value = Event("Please enter business address")
             }
-            TextUtils.isEmpty(model.businessAddress[0].city.trim()) -> {
+            model.businessAddress.isEmpty() || (model.businessAddress.isNotEmpty() && TextUtils.isEmpty(model.businessAddress[0].city.trim())) -> {
                 _snackbarText.value = Event("Please enter business address city")
             }
-            TextUtils.isEmpty(model.businessAddress[0].state.trim()) -> {
+            model.businessAddress.isEmpty() || (model.businessAddress.isNotEmpty() && TextUtils.isEmpty(model.businessAddress[0].state.trim())) -> {
                 _snackbarText.value = Event("Please enter business address state")
             }
-            TextUtils.isEmpty(model.businessAddress[0].postcode.trim()) -> {
+            model.businessAddress.isEmpty() || (model.businessAddress.isNotEmpty() && TextUtils.isEmpty(model.businessAddress[0].postcode.trim())) -> {
                 _snackbarText.value = Event("Please enter business address postcode")
             }
             (!TextUtils.isEmpty(model.business_website?.trim()) && !Patterns.WEB_URL.matcher(model.business_website?.trim().toString()).matches())-> {
@@ -111,6 +114,33 @@ class BusniessDetailsViewModel @Inject constructor(
                                         model.time_zone = customerListReposne.data.timeZone
                                         model.customer_contact_email =
                                             customerListReposne.data.customerContactEmail
+
+                                        prefProvider.setValue(
+                                            Constants.BUSINESS_NAME,
+                                            customerListReposne.data.businessName
+                                        )
+
+                                        prefProvider.setValue(
+                                            Constants.SYSTEM_TIMEZONE,
+                                            customerListReposne.data.timeZone
+                                        )
+
+                                        prefProvider.setValue(
+                                            Constants.BUSINESS_PHONE_NO,
+                                            customerListReposne.data.phoneNumber
+                                        )
+
+                                        prefProvider.setValue(
+                                            Constants.BUSINESS_WEBSITE,
+                                            customerListReposne.data.businessWebsite
+                                        )
+
+                                        if (customerListReposne.data.address!=null) {
+                                            prefProvider.setValue(
+                                                Constants.BUSINESS_ADDRESS,
+                                                customerListReposne.data.address
+                                            )
+                                        }
 
                                         val address =
                                             customerListReposne.data.addressAttributes.addressableType.let { it1 ->

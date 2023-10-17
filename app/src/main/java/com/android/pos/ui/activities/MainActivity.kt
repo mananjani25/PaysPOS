@@ -188,11 +188,12 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     private var syncReceiver = object : BroadcastReceiver() {
         override fun onReceive(p0: Context?, p1: Intent?) {
 
-            LogUtil.logEN("onReceive", "" + p1?.action)
+            try {
+                dashBoardCategoryViewModel.syncInventoryModule(true)
+            }catch (e:Exception){
+                Log.d("syncReceiver","dashBoardCategoryViewModel create exception")
 
-            dashBoardCategoryViewModel.syncInventoryModule(true)
-
-
+            }
         }
 
     }
@@ -778,11 +779,6 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             Constants.KITCHEN_PRINTER_LIST_PREF,
             Gson().toJson(it.data).toString()
         )*/
-        if (prefProvider?.getValueboolean(
-                Constants.IS_MASTER_TERMINAL,
-                false
-            ) == true
-        ) {
             Log.e(TAG,"CheckHere DAta:")
             val data = Data.Builder()
                 //.putString("kitchenPrinterList", Gson().toJson(kitchenPrinterList))
@@ -817,7 +813,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 e.printStackTrace()
             }
 
-        }
+
     }
 
     private fun getKitchenPrinters() {
@@ -900,13 +896,18 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         updatePrinter = this
+        /*try {
+            val field: Field = CursorWindow::class.java.getDeclaredField("sCursorWindowSize")
+            field.setAccessible(true)
+            field.set(null, 10 * 1024 * 1024) //the 100MB is the new size
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }*/
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN)
 
 
         //demoPrinterQueue()
-        if (prefProvider?.getValueboolean(IS_PRINTER_QUEUE_STARTS, false) == true) {
-            getKitOne()
-        }
+        getKitOne()
 
 
         // connectionActionCable()

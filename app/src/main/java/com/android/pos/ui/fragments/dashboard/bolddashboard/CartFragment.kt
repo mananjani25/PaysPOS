@@ -61,6 +61,7 @@ import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.ORDER_TYPE_ID
 import com.android.pos.data.remote.Constants.ORDER_TYPE_NAME
 import com.android.pos.data.remote.Constants.PHONE_ORDER
+import com.android.pos.data.remote.Constants.PICK_UP
 import com.android.pos.data.remote.Constants.REDIRECT_FROM
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.remote.Constants.WHOLE_AMOUNT
@@ -97,6 +98,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import org.json.JSONArray
+import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.Date
 import javax.inject.Inject
@@ -140,6 +143,9 @@ class CartFragment(
     private val dineInViewModel by viewModels<DineInOrderTableViewModel>()
     var cashDiscountType = ""
     var cartlist: ArrayList<CartModel> = arrayListOf()
+    var tempList: JSONArray? = null
+    private var tempStored:Boolean = false
+    var itemModified = false
     private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
     private val viewModelPayment by activityViewModels<PaymentViewModel>()
     var updateBundle: Bundle? = null
@@ -165,6 +171,7 @@ class CartFragment(
     var cashDiscountSurcharge = 0.0
 
     private var orderTypeAdapter: OrderTypeAdapter? = null
+    var splitValue = -1
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -218,7 +225,9 @@ class CartFragment(
         isFromPayment = arguments?.getBoolean("isFromPayment") ?: false
         isActiveOrder = arguments?.getBoolean("isFromActiveOrder") ?: false
 
-
+        if (!prefProvider.getValueboolean(Constants.BACK_FROM_PAYMENT,false)){
+            prefProvider.getValueboolean(Constants.NO_NEED_TO_PRINT, false)
+        }
         findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Bundle>("data")
             ?.observe(viewLifecycleOwner) { it ->
                 if (it.getBundle("updateBundle") != null) {
@@ -276,7 +285,7 @@ class CartFragment(
 
             if (isFromDashboard!!) {
                 val builder = SpannableStringBuilder()
-                val str1 = SpannableString(getString(R.string.current_order) + " : ")
+                val str1 = SpannableString(getString(R.string.current_order) + ": ")
                 str1.setSpan(ForegroundColorSpan(getColor(R.color.txtColor)), 0, str1.length, 0)
                 builder.append(str1)
                 val str2 = SpannableString(prefProvider.getValue(ORDER_TYPE_NAME, ""))
@@ -292,7 +301,7 @@ class CartFragment(
                 }
             } else {
                 binding.orderTypeDisplay.text =
-                    getString(R.string.current_order) + " : " + prefProvider.getValue(
+                    getString(R.string.current_order) + ": " + prefProvider.getValue(
                         ORDER_TYPE_NAME,
                         ""
                     )
@@ -340,6 +349,12 @@ class CartFragment(
         addObserver()
         setupTaxAdapter()
         getOrderTypes()
+
+        findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Bundle>("data")
+            ?.observe(viewLifecycleOwner) {
+                Log.d(TAG, "splitDetector onCreateView: "+it.getInt("splitvalue"))
+                splitValue = it.getInt("splitvalue")
+            }
 
 
         if (taxBirfurcationAdapter.taxlist.size == 0) {
@@ -893,6 +908,10 @@ class CartFragment(
                         ?.let { it1 -> cartAdapter.setList(it1) }
 
                     cartlist = it as ArrayList<CartModel>
+                    if (tempStored == false){
+                        tempList = JSONArray(Gson().toJson(cartlist)).getJSONObject(0).getJSONArray("items")
+                        tempStored = true
+                    }
 
                     viewModel.setCartModel(it)
                     if (it[0].taxlistDynamic?.isNotEmpty() == true) {
@@ -1040,11 +1059,20 @@ class CartFragment(
 //                        if (oldItemSize != null && oldItemSize != 1)
 
                         // Flag is used to update cart if last item from the cart will be deleted
-                        if(prefProvider.getValueboolean(IS_LAST_ITEM_DELETE, false)) {
-                            prefProvider.setValueboolean(IS_LAST_ITEM_DELETE, false) // reset flag after updating cart
-                        } else {
-                            return@observe
+                        try {
+                            if (!this::prefProvider.isInitialized){
+                                prefProvider = PrefProvider(requireContext())
+                            }
+
+                            if(prefProvider.getValueboolean(IS_LAST_ITEM_DELETE, false)) {
+                                prefProvider.setValueboolean(IS_LAST_ITEM_DELETE, false) // reset flag after updating cart
+                            } else {
+                                return@observe
+                            }
+                        }catch (e:Exception){
+                            Log.e("CartFragment", "exception = ${e.toString()}")
                         }
+
                     } else {
                         val currentTimeMillis = System.currentTimeMillis()
 
@@ -1396,6 +1424,11 @@ class CartFragment(
                             }
 
                             cartlist = it as ArrayList<CartModel>
+                            if (tempStored == false){
+                                tempList = JSONArray(Gson().toJson(cartlist)).getJSONObject(0).getJSONArray("items")
+                                tempStored = true
+                            }
+
                             viewModel.itemCalculationCartModel(
                                 it[0],
                                 binding.txtTotal,
@@ -1928,7 +1961,8 @@ class CartFragment(
         ) {
             positiveButton(getString(R.string.tv_delete)) {
                 // Do positive stuff here
-
+                prefProvider.setValueboolean(Constants.BACK_FROM_PAYMENT,false)
+                prefProvider.setValueboolean(Constants.NO_NEED_TO_PRINT,false)
                 taxBirfurcationAdapter.clearList()
                 viewModel.clearListTax()
                 prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
@@ -2150,6 +2184,12 @@ class CartFragment(
                         "You can not change customer from checkout when loyalty points added. Please go back and change customer."
                     ) { _, _ ->
                     }
+                }else if (viewModel.getSplitCount() > 1 || splitValue > 1){
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        requireActivity(),
+                        "Customer can not be changed during split payment."
+                    ) { _, _ ->
+                    }
                 } else {
                     viewModel.setIsFromAddCustomer(true)
                     findNavController().navigate(R.id.action_paymentBoldPosFragment_to_assignCustomerOrderFragment)
@@ -2299,6 +2339,18 @@ class CartFragment(
                 prefProvider.setValue(Constants.TAX_CHARGE, "")
                 prefProvider.setValue(Constants.SERVICE_CHARGE, "")
                 viewModel.setTipAmount(0.0)
+
+                if (arguments?.getBoolean("update") == true) {
+                    if (prefProvider.getValueboolean(Constants.BACK_FROM_PAYMENT, false) == true) {
+                        prefProvider.setValueboolean(Constants.BACK_FROM_PAYMENT, false)
+                        if (prefProvider.getValueboolean(Constants.NO_NEED_TO_PRINT, true)) {
+                            checkUpdation()
+                        }
+                    } else {
+                        checkUpdation()
+                    }
+                }
+
                 if (isOrderUpdate) {
                     var bundle: Bundle = Bundle()
                     bundle.putInt("orderId", orderId!!)
@@ -2474,6 +2526,37 @@ class CartFragment(
         }
     }
 
+    private fun checkUpdation() {
+        Log.d(TAG, "checkUpdation: cartlist "+Gson().toJson(cartlist))
+        if (/*tempList.length()>0 && cartlist.size>0 &&*/ tempList?.length() == cartlist[cartlist.size - 1].items?.size) {
+            for (i in 0 until tempList!!.length()) {
+                val tempItemModifierList = ((tempList!!.get(i) as JSONObject).get("modifiers") as JSONArray)
+                if (((tempList!!.get(i) as JSONObject).get("name") != cartlist[cartlist.size - 1].items!![i].name) || ((tempList!!.get(i) as JSONObject).get("itemQuantity") != cartlist[cartlist.size - 1].items!![i].itemQuantity) || (tempItemModifierList.length() != cartlist[cartlist.size - 1].items!![i].modifiers.size)) {
+                    itemModified = true
+                } else {
+                    for (j in 0 until (tempItemModifierList.length())){
+                        if (((tempItemModifierList.get(j) as JSONObject).get("name") != cartlist[cartlist.size - 1].items!![i].modifiers[j].name) || ((tempItemModifierList.get(j) as JSONObject).get("modifier_quantity") != cartlist[cartlist.size - 1].items!![i].modifiers[j].modifier_quantity)){
+                            itemModified = true
+                        }
+                    }
+                }
+            }
+            if (!itemModified) {
+                //no print
+                prefProvider.setValueboolean(Constants.NO_NEED_TO_PRINT, true)
+                Log.d(TAG, "checkUpdation: NO_NEED_TO_PRINT true")
+            } else {
+                //print
+                prefProvider.setValueboolean(Constants.NO_NEED_TO_PRINT, false)
+                Log.d(TAG, "checkUpdation: NO_NEED_TO_PRINT false")
+            }
+        } else {
+            //print
+            prefProvider.setValueboolean(Constants.NO_NEED_TO_PRINT, false)
+            Log.d(TAG, "checkUpdation: NO_NEED_TO_PRINT false")
+        }
+    }
+
     private fun createDineInOrder() {
         if (cartlist.isNotEmpty()) {
             if (prefProvider.getValueboolean(Constants.DINE_IN_UPDATE, false)) {
@@ -2633,7 +2716,7 @@ class CartFragment(
 
         Log.e(TAG, "checkOrderType  ${model?.orderType}")
 
-        prefProvider.setValue(DELIVERY_TYPE, "")
+        prefProvider.setValue(DELIVERY_TYPE, PICK_UP)
 
         prefProvider.setValue(Constants.REDIRECT_FROM, "")
 
@@ -2646,7 +2729,7 @@ class CartFragment(
             findNavController().navigate(
                 R.id.action_dashboardCategoryBoldPOS_to_phoneOrderFragment
             )
-
+            model.orderType.let { prefProvider.setValue(ORDER_TYPE, it) }
 
         } else {
             Log.e(TAG, "InsideDine inNoDine")

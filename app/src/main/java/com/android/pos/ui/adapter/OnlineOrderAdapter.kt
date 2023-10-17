@@ -273,7 +273,11 @@ class OnlineOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
 
                     fList
                 }
-
+                if (filterList.size == 0){
+                    mCallback?.noDataAvailableFilter()
+                }else {
+                    mCallback?.hideNoDataAvailable()
+                }
                 return FilterResults().apply { values = filterList }
             }
 

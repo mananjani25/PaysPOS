@@ -22,6 +22,7 @@ import com.android.pos.data.model.requestModel.OrderServiceChargesAttribute
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.IS_FROM_ALL_ORDER
+import com.android.pos.data.remote.Constants.IS_PAX_PAYMENT_FAILED
 import com.android.pos.data.remote.Constants.MANUAL_SALE
 import com.android.pos.data.remote.Constants.OPEN_ORDER
 import com.android.pos.data.remote.Constants.ORDER_TYPE
@@ -319,6 +320,8 @@ class PaymentBoldPosFragment : Fragment() {
         Log.d(TAG, "onViewCreated: " + prefProvider.getValueboolean(SPLIT_ENABLE, false))
         if (prefProvider.getValueboolean(Constants.SPLIT_ENABLE, false)) {
             AlertUtils.showCustomAlert(requireContext(), "Please complete all payment.")
+        } else if (prefProvider.getValueboolean(IS_PAX_PAYMENT_FAILED, false)) {
+            AlertUtils.showCustomAlert(requireContext(), getString(R.string.pax_transaction_error_message))
         } else {
             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == OPEN_ORDER) {
                 val navController = findNavController()
@@ -341,6 +344,7 @@ class PaymentBoldPosFragment : Fragment() {
                     }else{
                         navController.popBackStack()
                     }
+                prefProvider.setValueboolean(Constants.BACK_FROM_PAYMENT,true)
 
                 } else {
                     if(prefProvider.getValueboolean(IS_FROM_ALL_ORDER,false)){
@@ -358,14 +362,18 @@ class PaymentBoldPosFragment : Fragment() {
 
     private fun listeners() {
         binding.layoutHeaderCheckout.tvAddTip.setOnClickListener {
-            if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
-                findNavController().navigate(
-                    R.id.action_paymentBoldPosFragment_to_addTipDialog,
-                    bundleOf(
-                        "totalTip" to viewModel.tipTransactionAmount,
-                        "splitCount" to viewModel.isSelectCount
+            if(prefProvider.getValueboolean(IS_PAX_PAYMENT_FAILED, false)) {
+                AlertUtils.showCustomAlert(requireContext(), getString(R.string.pax_transaction_error_message))
+            } else {
+                if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
+                    findNavController().navigate(
+                        R.id.action_paymentBoldPosFragment_to_addTipDialog,
+                        bundleOf(
+                            "totalTip" to viewModel.tipTransactionAmount,
+                            "splitCount" to viewModel.isSelectCount
+                        )
                     )
-                )
+                }
             }
         }
         binding.layoutHeaderCheckout.tvAddDiscount.setOnClickListener {

@@ -1,6 +1,7 @@
 package com.android.pos.di
 
 import android.content.Context
+import android.util.Log
 import android.view.View
 import com.android.pos.data.entities.TeamRole
 import com.android.pos.data.remote.Constants
@@ -12,7 +13,7 @@ import javax.inject.Singleton
 @Singleton
 class RolePermission @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val prefProvider: PrefProvider
+    private var prefProvider: PrefProvider
 ) {
 
     private val MODULE_CUSTOMER = "Customer"
@@ -30,11 +31,22 @@ class RolePermission @Inject constructor(
     private val MODULE_CASH_DRAWER = "Cash Drawer"
 
     fun findCurrentUserRoleAndSave(teamRoles: List<TeamRole>) {
-        for (teamRole in teamRoles) {
-            if (teamRole.id != prefProvider.getEmployeeRoleId()) continue
-            prefProvider.saveCurrentRoleDetails(teamRole)
-            break
+
+        try {
+
+            prefProvider = PrefProvider(context)
+
+            for (teamRole in teamRoles) {
+                if (teamRole.id != prefProvider.getEmployeeRoleId()) continue
+                prefProvider.saveCurrentRoleDetails(teamRole)
+                break
+            }
+
+        }catch (e:Exception){
+            Log.d("Exception","findCurrentUserRoleAndSave")
         }
+
+
     }
 
      private fun checkPermission(root: View?, moduleName: String): Boolean {

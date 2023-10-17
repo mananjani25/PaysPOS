@@ -52,7 +52,7 @@
             android:id="@+id/linearSecond"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toLeftOf="@+id/txthome"
+            android:layout_toLeftOf="@+id/ll_home"
             android:paddingVertical="@dimen/_2sdp">
 
             <LinearLayout
@@ -164,7 +164,7 @@
                     android:layout_marginRight="@dimen/_2sdp"
                     android:contentDescription="@string/clock"
                     android:paddingVertical="@dimen/_5sdp"
-                    android:src="@drawable/switch_user"
+                    android:src="@drawable/swipe_user_clock"
                     app:tint="@color/txtColor" />
 
                 <TextView
@@ -214,20 +214,31 @@
                 android:textSize="@dimen/_7mdpi" />-->
         </androidx.appcompat.widget.LinearLayoutCompat>
 
-        <TextView
-            android:id="@+id/txthome"
+        <LinearLayout
+            android:id="@+id/ll_home"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/_23sdp"
-            android:layout_alignParentEnd="true"
-            android:layout_marginStart="@dimen/_5sdp"
-            android:background="@color/btnColor"
-            android:fontFamily="@font/sf_pro_display_semibold"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
             android:gravity="center"
-            android:paddingHorizontal="@dimen/padding_home_button"
-            android:text="@string/tv_home"
-            android:textAllCaps="true"
-            android:textColor="@color/white"
-            android:textSize="@dimen/_7mdpi" />
+            android:layout_alignBottom="@id/linearSecond"
+            android:layout_alignParentEnd="true">
+            <TextView
+                android:id="@+id/txthome"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/height_home_button"
+                android:layout_marginStart="@dimen/_5sdp"
+                android:background="@color/btnColor"
+                android:fontFamily="@font/sf_pro_display_semibold"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:paddingHorizontal="@dimen/padding_home_button"
+                android:paddingVertical="@dimen/vertical_padding_home_button"
+                android:text="@string/tv_home"
+                android:textAllCaps="true"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_7mdpi" />
+        </LinearLayout>
+
 
 
     </RelativeLayout>

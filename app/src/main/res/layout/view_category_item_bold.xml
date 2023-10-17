@@ -8,6 +8,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/_4sdp"
+        android:focusable="true"
+        android:clickable="true"
         android:background="@drawable/item_selector"
         android:orientation="vertical">
 
