@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.entities.TbCategory
+import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentCategoriesBinding
 import com.android.pos.ui.adapter.CategoriesListAdapter
 import com.android.pos.utils.AlertUtils
@@ -178,12 +179,16 @@ class Categories(val clickedPosition: Int) : Fragment(),ItemCallback {
                     }
                     dragTo = target.bindingAdapterPosition
 
-                    adapter.onItemMove(
-                        viewHolder.bindingAdapterPosition,
-                        target.bindingAdapterPosition
-                    )
+                    return if (dragFrom != adapter.getPositionOf(Constants.GIFT_CARD_CATEGORY) && dragTo != adapter.getPositionOf(Constants.GIFT_CARD_CATEGORY) && dragFrom != adapter.getPositionOf(Constants.DEFAULT_CATEGORY) && dragTo != adapter.getPositionOf(Constants.DEFAULT_CATEGORY)){
+                        adapter.onItemMove(
+                            viewHolder.bindingAdapterPosition,
+                            target.bindingAdapterPosition
+                        )
+                        true
+                    } else {
+                        false
+                    }
 
-                    return true
                 }
 
                 override fun isLongPressDragEnabled(): Boolean {
@@ -199,7 +204,7 @@ class Categories(val clickedPosition: Int) : Fragment(),ItemCallback {
                     viewHolder: RecyclerView.ViewHolder
                 ) {
 
-                    if (dragFrom != -1 && dragTo != -1 && dragFrom != dragTo) {
+                    if (dragFrom != adapter.getPositionOf(Constants.GIFT_CARD_CATEGORY) && dragTo != adapter.getPositionOf(Constants.GIFT_CARD_CATEGORY) && dragFrom != adapter.getPositionOf(Constants.DEFAULT_CATEGORY) && dragTo != adapter.getPositionOf(Constants.DEFAULT_CATEGORY) && dragFrom != -1 && dragTo != -1 && dragFrom != dragTo) {
 
                          reallyMoved(
                               adapter.getItem(dragFrom).sort,
@@ -212,6 +217,30 @@ class Categories(val clickedPosition: Int) : Fragment(),ItemCallback {
                             adapter.getItem(dragTo).id
                         )*/
 
+                    } else if (dragFrom != adapter.getPositionOf(Constants.GIFT_CARD_CATEGORY) && dragFrom != adapter.getPositionOf(Constants.DEFAULT_CATEGORY) && (dragTo == adapter.getPositionOf(Constants.GIFT_CARD_CATEGORY) || dragTo == adapter.getPositionOf(Constants.DEFAULT_CATEGORY)) && dragFrom != -1 && dragTo != -1 && dragFrom != dragTo){
+                        // position setup for that item
+                        if (adapter.getPositionOf(Constants.GIFT_CARD_CATEGORY)!=0){
+                            reallyMoved(
+                                adapter.getItem(dragFrom).sort,
+                                adapter.getItem(adapter.getPositionOf(Constants.GIFT_CARD_CATEGORY)-1).sort,
+                                adapter.getItem(viewHolder.layoutPosition).id
+                            )
+                        }else {
+                            if (adapter.getPositionOf(Constants.DEFAULT_CATEGORY) != -1 && dragTo == adapter.getPositionOf(Constants.DEFAULT_CATEGORY)) {
+                                reallyMoved(
+                                    adapter.getItem(dragFrom).sort,
+                                    adapter.getItem(adapter.getPositionOf(Constants.DEFAULT_CATEGORY)-1).sort,
+                                    adapter.getItem(viewHolder.layoutPosition).id
+                                )
+                            } else {
+                                // no default category
+                                reallyMoved(
+                                    adapter.getItem(dragFrom).sort,
+                                    adapter.getItem(adapter.getPositionOf(Constants.GIFT_CARD_CATEGORY)+1).sort,
+                                    adapter.getItem(viewHolder.layoutPosition).id
+                                )
+                            }
+                        }
                     }
 
                     dragFrom = -1
@@ -260,7 +289,7 @@ class Categories(val clickedPosition: Int) : Fragment(),ItemCallback {
     override fun onItemClickListener(view: View?, pos: Int) {
         val popupMenu = view?.let { PopupMenu(requireContext(), it) }
         popupMenu?.menuInflater?.inflate(
-            if (adapter.getItem(pos).name == "Default Category") {
+            if (adapter.getItem(pos).name == Constants.DEFAULT_CATEGORY) {
                 R.menu.edit_menu
             } else {
                 R.menu.edit_delete__hide_menu
