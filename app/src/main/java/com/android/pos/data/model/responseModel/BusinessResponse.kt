@@ -17,6 +17,7 @@ data class BusinessResponse(
         @SerializedName("phone_number_2_country") val phoneNumber2Country: String,
         @SerializedName("customer_contact_email") val customerContactEmail: String,
         @SerializedName("business_website") val businessWebsite: String,
+        @SerializedName("address") val address: String?,
         @SerializedName("user_id") val userId: Int,
         @SerializedName("subdomain") val subdomain: String,
         @SerializedName("location_category_id") val locationCategoryId: Int,
