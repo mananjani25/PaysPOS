@@ -733,6 +733,8 @@
     <string name="total_discount">Total Discount</string>
     <string name="loyalty_amount">Loyalty Amount</string>
     <string name="used_loyalty_points">Used Loyalty Points</string>
+    <string name="applied_loyalty_points">Applied Loyalty Points</string>
+    <string name="applied_loyalty_balance">Applied Loyalty Balance</string>
     <string name="loyalty_balance">Loyalty Balance</string>
     <string name="loyalty_rewards">Loyalty Rewards</string>
     <string name="used_loyalty_amount">Used Loyalty Amount</string>

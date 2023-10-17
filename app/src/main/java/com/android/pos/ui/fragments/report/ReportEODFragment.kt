@@ -3639,8 +3639,9 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
 
 
                             teamEmployeeListGlobal.forEachIndexed { index, employee ->
-
+                                Log.d("viewLifecycleOwner","index = $index")
                                 if (viewModel.employeeId() == employee.id) {
+                                    Log.d("teamEmployeeListGlobal","index = $index")
                                     defaultEmployeePos = index
                                     return@forEachIndexed
                                 }
@@ -3679,7 +3680,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
         terminalList: ArrayList<String>,
         defaultEmployeePos: Int
     ) {
-        LogUtil.logE(TAG, "terminalListSize  ${terminalList.size}")
+        LogUtil.logE(TAG, "terminalListSize  mm ${terminalList.size}")
         val spinnerAdapter = ArrayAdapter(
             requireActivity(),
             R.layout.row_spinner,
@@ -3695,7 +3696,23 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                 LogUtil.logE("defaultEmployeePos", defaultEmployeePos.toString())
 
                 viewModel.viewModelScope.launch {
-                    binding.spTerminals.setSelection(defaultEmployeePos, false)
+                    try {
+                        binding.spTerminals.setSelection(defaultEmployeePos, false)
+                        LogUtil.logE(TAG, "terminalListSize  1")
+                    }catch (e:Exception){
+
+                        if (defaultEmployeePos <=0 ){
+                            LogUtil.logE(TAG, "terminalListSize  2")
+                            binding.spTerminals.setSelection(0, false)
+                        }else {
+                            LogUtil.logE(TAG, "terminalListSize  3")
+                            val selection = defaultEmployeePos-1
+                            binding.spTerminals.setSelection(selection, false)
+                        }
+
+
+                    }
+
                 }
             }
         } catch (e: Exception) {

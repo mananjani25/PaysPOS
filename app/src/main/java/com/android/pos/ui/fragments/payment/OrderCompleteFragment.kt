@@ -6102,7 +6102,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 Status.SUCCESS -> {
                     ProgressUtils.dismissProgressDialog()
                     if (it.data != null && isPrint == true) {
-
+                        isPrint = false
 
                         kitchenPrinterList = it.data
 
@@ -6163,11 +6163,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                             )
                                                                         )
                                                                     ) {
-
-                                                                        initKitchenPrinter(
+                                                                        if (!prefProvider.getValueboolean(Constants.NO_NEED_TO_PRINT, false)) {
+                                                                            initKitchenPrinter(
                                                                             kitchenPrinterList.get(i),
                                                                             KITCHEN
-                                                                        )
+                                                                        )}
                                                                     }
 
                                                                 }
@@ -6207,14 +6207,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                                 )
                                                                             )
                                                                         ) {
-
-
+                                                                            if (!prefProvider.getValueboolean(Constants .NO_NEED_TO_PRINT, false)) {
                                                                             initKitchenPrinter(
                                                                                 kitchenPrinterList.get(
                                                                                     i
                                                                                 ),
                                                                                 KITCHEN
-                                                                            )
+                                                                            )}
 
                                                                         }
 

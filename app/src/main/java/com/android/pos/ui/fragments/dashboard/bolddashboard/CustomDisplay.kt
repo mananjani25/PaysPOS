@@ -462,13 +462,31 @@ class CustomDisplay(
         if (name.isNotEmpty()) {
             binding.txtCustomerName.visible()
             binding.txtLoyaltyPointsLabel.visible()
+            if (dashBoardCategoryViewModel.redeemLoyaltyInfo.needToApplyLoyalty) {
+                binding.tvLoyaltyBalance.visible()
+                binding.tvLoyaltyPoints.visible()
+                binding.tvLoyaltyBalance.text =
+                    "${context.resources.getString(R.string.applied_loyalty_balance)}: ${dashBoardCategoryViewModel.redeemLoyaltyInfo.usedLoyaltyAmount}"
+                binding.tvLoyaltyPoints.text =
+                    "${context.resources.getString(R.string.applied_loyalty_points)}: ${dashBoardCategoryViewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
+            } else {
+                binding.tvLoyaltyBalance.invisible()
+                binding.tvLoyaltyPoints.invisible()
+            }
             binding.txtLoyaltyPointsLabel.text =
-                "Loyalty Points: ${dashBoardCategoryViewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
+                "Loyalty Balance: ${
+                    if (dashBoardCategoryViewModel.redeemLoyaltyInfo.needToApplyLoyalty) {
+                        dashBoardCategoryViewModel.redeemLoyaltyInfo.remainingLoyaltyPoints
+                    } else {
+                        dashBoardCategoryViewModel.redeemLoyaltyInfo.availablePoints
+                    }}"
             binding.txtCustomerName.text = name
 
         } else {
             binding.txtLoyaltyPointsLabel.invisible()
             binding.txtCustomerName.invisible()
+            binding.tvLoyaltyBalance.invisible()
+            binding.tvLoyaltyPoints.invisible()
             binding.relativeLoylatyPoints.gone()
             binding.lblLoyaltyPoints.gone()
             if (dashBoardCategoryViewModel.order_note.isNotEmpty()) {
@@ -621,13 +639,21 @@ class CustomDisplay(
     }
 
     private fun getCustomerList() {
-        dineInViewModel.customer().observe(lifecycleOwner) { it ->
-            if (it.isNotEmpty()) {
-                allCustomerList.clear()
-                allCustomerList.addAll(it)
+
+        try {
+            dineInViewModel.customer().observe(lifecycleOwner) { it ->
+                if (it.isNotEmpty()) {
+                    allCustomerList.clear()
+                    allCustomerList.addAll(it)
+                }
             }
+        }catch (e:Exception){
+            Log.d("getCustomerList","exception : ${e.toString()}")
         }
+
+
     }
+
 
     fun showTableDetails(baseResponse: GetOrderDetailsResponse.Data) {
 

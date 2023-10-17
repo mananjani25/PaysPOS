@@ -642,6 +642,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
         binding.edtAmount.removeTextChangedListener(this)
         binding.edtAmount.setText(MethodUtils.roundOffAmountString(discount))
+        binding.edtAmount.addTextChangedListener(this)
         selectedListPos = pos
     }
 
@@ -693,7 +694,20 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
                 LogUtil.logE(TAG, "formatted  ${formatted}")
                 binding.edtAmount.setText(formatted.replace("""[$,%]""".toRegex(), ""))
-                binding.edtAmount.setSelection(formatted.replace("""[$,%]""".toRegex(), "").length)
+
+                var selection = formatted.replace("""[$,%]""".toRegex(), "").length
+
+                try {
+                    binding.edtAmount.setSelection(selection)
+                }catch (e:Exception){
+                    Log.d("onTextChanged","onTextChanged exception = $selection")
+                    if (selection <=0){
+                        selection = 0
+                        binding.edtAmount.setSelection(selection)
+                    }else {
+                        binding.edtAmount.setSelection(selection-1)
+                    }
+                }
 
 
                 if (selectedCurrency == AMOUNT) {

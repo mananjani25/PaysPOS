@@ -119,6 +119,8 @@ object Constants {
     const val AMOUNT = "Amount"
     const val IS_ORDER_UPDATE = "isOrderUpdate"
     const val OPEN_ORDER_UPDATE_FOR_PRINT = "open_order_update_for_print"
+    const val NO_NEED_TO_PRINT = "cart_updated"
+    const val BACK_FROM_PAYMENT = "back_from_payment"
     const val BUNDLE_ORDER_ID = "BUNDLE_ORDER_ID"
     const val PAYMENT_ID = "payment_id"
     const val BUNDLE_PAYMENT_ID = "BUNDLE_PAYMENT_ID"
@@ -141,6 +143,8 @@ object Constants {
     const val GIFT_CARD_NAME = "Gift Card"
     const val DINE_IN_STATUS = "DineInStatus"
     const val DINE_IN_TABLE_ID = "DineInTableId"
+
+    const val EXTERNAL_PAYMENT = "External"
 
     const val AMOUNT_TYPE = "amountType"
     const val RATE_OR_AMOUNT = "rateAmount"
@@ -205,8 +209,8 @@ object Constants {
     const val DELETE_QUEUE_ORDER_PHASE3 = "printer_queues/destroy_v2?order_id="
     const val UPDATE_PRITNER_QUEUE_TRACK = "update_printer_queue_track"
 
-    const val PRINTER_QUEUE_CONNECTION_URL_SNACKPOS = "wss://snackhq.com/cable"
-    //const val PRINTER_QUEUE_CONNECTION_URL_SNACKPOS = "wss://hugepos.com/cable"
+   // const val PRINTER_QUEUE_CONNECTION_URL_SNACKPOS = "wss://snackhq.com/cable"
+    const val PRINTER_QUEUE_CONNECTION_URL_SNACKPOS = "wss://hugepos.com/cable"
 
     const val INCREASE_ONGOING_ORDER_COUNTER = "locations/increase_ongoing_order_counter"
     const val DECREASE_ONGOING_ORDER_COUNTER = "locations/decrease_ongoing_order_counter"
@@ -793,6 +797,7 @@ object Constants {
     const val ADD_VALUE = "Add Value"
     const val BALANCE_INQUIRY = "Balance Inquiry"
     const val GIFT_CARD_CATEGORY = "GIFT CARD"
+    const val DEFAULT_CATEGORY = "Default Category"
     const val IS_LAST_ITEM_DELETE = "IS_LAST_ITEM_DELETE"
 
     const val SURCHARGE_TEXT = "Surcharge"
