@@ -774,15 +774,11 @@ class PhoneOrderListFragment(
                 orderItemId = it.id
                 itemId = it.itemId
                 name = it.itemName
-                cost = it.price
                 isManualSales = ismanualsale
                 manualSaleId = mannual_Sale_ID
                 price = it.price
-                priceType = ""
                 isEdited = it.isEdited
                 itemQuantity = it.quantity
-                kitchenName = ""
-                productCode = ""
                 sku = ""
                 isHide = false
                 sort = 0

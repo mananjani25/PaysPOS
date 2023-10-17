@@ -26,12 +26,8 @@ class TbItem : Parcelable {
     var itemId: Int = 0
     var name: String = ""
     var id: Int = 0
-    var cost: Double = 0.0
     var price: Double = 0.0
-    var priceType: String = ""
     var quantity: Int = 0
-    var kitchenName: String = ""
-    var productCode: String = ""
     var sku: String = ""
     var isHide: Boolean = false
     var sort: Int = 0
@@ -46,8 +42,6 @@ class TbItem : Parcelable {
     var customItemID: Int = 0
     var categoryId: Int = 0
     var categoryName: String = ""
-
-    var modifierGroupIds: String = ""
     var shortDescription: String = ""
     var note: String = ""
 
@@ -55,14 +49,11 @@ class TbItem : Parcelable {
     var isManualSales: Boolean = false
     var isChecked: Boolean = false
     var modifier_set_ids: List<Int> = emptyList()
-    var option_set_ids: List<Int> = emptyList()
-    var isTax: Boolean = false
     var modifiers: List<Modifier> = emptyList()
 
     var customItemCount: Int = 0
     var discountPrice: Double = 0.0
     var singleItemPrice: Double = 0.0
-    var isDiscountDefault = false
     var discountId: Int? = null
     var discountType: String = ""
     var variationsAttributes: List<VariationsAttribute> = emptyList()
@@ -86,12 +77,8 @@ class TbItem : Parcelable {
 
         itemId = item.id
         name = item.name ?: ""
-        cost = item.cost
         price = item.price
-        priceType = item.priceType ?: ""
         quantity = item.quantity
-        kitchenName = item.kitchenName ?: ""
-        productCode = item.productCode ?: ""
         sku = item.sku ?: ""
         website_hide_status = item.website_hide_status ?: ""
         hide_status = item.hide_status ?: ""
@@ -175,12 +162,8 @@ class TbItem : Parcelable {
         }
         modeTb.itemId = item.itemId
         modeTb.name = item.name ?: ""
-        modeTb.cost = item.cost
         modeTb.price = item.price
-        modeTb.priceType = item.priceType ?: ""
         modeTb.quantity = item.quantity
-        modeTb.kitchenName = item.kitchenName ?: ""
-        modeTb.productCode = item.productCode ?: ""
         modeTb.sku = item.sku ?: ""
         modeTb.isHide = item.isHide
         modeTb.sort = item.sort

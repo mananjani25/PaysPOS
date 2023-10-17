@@ -796,15 +796,11 @@ class ActiveOrderFragment(
                 itemId = it.itemId
                 id = it.custom_item_id
                 name = it.itemName
-                cost = it.price
                 isManualSales = ismanualsale
                 manualSaleId = mannual_Sale_ID
                 price = it.price
-                priceType = ""
                 isEdited = it.isEdited
                 itemQuantity = it.quantity
-                kitchenName = ""
-                productCode = ""
                 sku = ""
                 isHide = false
                 sort = 0

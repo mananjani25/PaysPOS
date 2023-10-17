@@ -605,12 +605,8 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
                     id = it.custom_item_id
                     itemId = it.itemId
                     name = it.itemName
-                    cost = it.price
                     price = it.price
-                    priceType = ""
                     itemQuantity = it.quantity
-                    kitchenName = ""
-                    productCode = ""
                     sku = ""
                     isHide = false
                     sort = 0

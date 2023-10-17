@@ -1331,7 +1331,6 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                     cartModel.discountPrice = disPrice
                     cartModel.discountId = result.id
                     cartModel.discountType = result.discountType
-                    cartModel.isDiscountDefault = true
 
                     LogUtil.logE(TAG, "cartModelPArseMsd   ${Gson().toJson(cartModel)}")
                     cartList?.get(0)?.taxlistDynamic = arrayListOf()
@@ -1347,7 +1346,6 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                     val cartModel = cartAdapter.getItem(pos)
                     cartModel.discountPrice =
                         MethodUtils.roundOffAmountDouble(result.percentage * cartModel.itemQuantity)
-                    cartModel.isDiscountDefault = false
                     cartModel.discountType = result.discountType
                     cartList?.get(0)?.taxlistDynamic = arrayListOf()
                     cartList?.get(0)?.items?.forEach { items ->
