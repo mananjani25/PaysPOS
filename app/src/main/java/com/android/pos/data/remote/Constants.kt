@@ -144,6 +144,8 @@ object Constants {
     const val DINE_IN_STATUS = "DineInStatus"
     const val DINE_IN_TABLE_ID = "DineInTableId"
 
+    const val EXTERNAL_PAYMENT = "External"
+
     const val AMOUNT_TYPE = "amountType"
     const val RATE_OR_AMOUNT = "rateAmount"
     const val OPTION_TYPE = "optionType"
