@@ -78,12 +78,12 @@ class ItemAdapterPagDash(
                 }
             } else {
                 if (model?.name?.length!! >= 30) {
-                    if (getItemPriceIsValid(model.price).isNotEmpty()) {
+                    if (getItemPriceIsValid(model.name , model.price).isNotEmpty()) {
                         itename_price.append(
                             model.name.substring(
                                 0,
                                 30
-                            ) + "...\n" + getItemPriceIsValid(model.price)
+                            ) + "...\n" + getItemPriceIsValid(model.name , model.price)
                         )
                         binding.txtCategoryName.text = itename_price
                     } else {
@@ -111,9 +111,9 @@ class ItemAdapterPagDash(
                         binding.txtCategoryName.text = itename_price
                     }
                 } else {
-                    if (getItemPriceIsValid(model.price).isNotEmpty()) {
+                    if (getItemPriceIsValid(model.name , model.price).isNotEmpty()) {
                         binding.txtCategoryName.text =
-                            "" + model.name + "\n" + getItemPriceIsValid(model.price)
+                            "" + model.name + "\n" + getItemPriceIsValid(model.name , model.price)
                     } else {
                         binding.txtCategoryName.text = "" + model.name
                     }
@@ -214,13 +214,17 @@ class ItemAdapterPagDash(
 
     }
 
-    fun getItemPriceIsValid(amount: Double): String {
+    fun getItemPriceIsValid(name:String , amount: Double): String {
         return if (prefProvider?.getValueboolean(
                 Constants.ONLY_SHOW_PRICE_GREATER_THAN_ZERO,
                 false
             ) == false
         ) {
-            amount.let { MethodUtils.roundOffAmount(it) }
+            if(name == SELL_CARD || name == ADD_VALUE || name == BALANCE_INQUIRY) {
+                ""
+            } else {
+                amount.let { MethodUtils.roundOffAmount(it) }
+            }
         } else if (amount > 0.0) {
             amount.let { MethodUtils.roundOffAmount(it) }
         } else {
