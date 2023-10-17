@@ -186,9 +186,19 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
                                     ) {
                                         Log.e("ItemAdapter", "AddedItem 1 ")
                                         Log.e("ItemAdapter", "itemListSize  ${itemList1.size}")
+
+                                        lifecycleScope.launch(Dispatchers.IO) {
+                                            viewModel.itemsByCat(categoryList1[0].category.id)
+                                                .collectLatest {
+                                                    Log.e("CollectItems", "Collect")
+                                                    lifecycleScope.launch(Dispatchers.Main) {
+                                                        itemAdapter.submitData(it)
+                                                    }
+                                                }
+                                        }
                                         runOnUiThread(Runnable {
                                             binding.rvItemList.adapter = null
-                                            itemAdapter = ItemAdapterPagDash(
+                                          /*  itemAdapter = ItemAdapterPagDash(
                                                 listner,
                                                 null,
                                                 prefProvider
@@ -198,25 +208,9 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
                                                 GridLayoutManager(
                                                     requireContext(),
                                                     4
-                                                )
+                                                )*/
                                             binding.rvItemList.adapter = itemAdapter
                                         })
-                                        lifecycleScope.launch(Dispatchers.IO) {
-                                            viewModel.itemsByCat(categoryList1[0].category.id)
-                                                .collectLatest {
-                                                    Log.e("CollectItems", "Collect")
-
-                                                    lifecycleScope.launch(Dispatchers.Main) {
-                                                        itemAdapter.submitData(it)
-                                                    }
-                                                    Log.e(
-                                                        "LoadedItems",
-                                                        "sizeOf  ${itemAdapter.snapshot().items.size}"
-                                                    )
-
-
-                                                }
-                                        }
                                         runOnUiThread(Runnable {
                                             binding.rvCategoryParent.scrollToPosition(0)
                                         })
