@@ -56,6 +56,7 @@ object ApiModule {
                 OkHttpClient.Builder().connectTimeout(50000, TimeUnit.MILLISECONDS)
                     .readTimeout(100000, TimeUnit.MILLISECONDS)
                     .addInterceptor(hostSelectionInterceptor)
+
                     .addInterceptor { chain ->
                         chain.proceed(chain.request().newBuilder().also {
                             val authToken = prefProvider.getValue(AUTH_TOKEN, "")

@@ -144,6 +144,10 @@ object Constants {
     const val DINE_IN_STATUS = "DineInStatus"
     const val DINE_IN_TABLE_ID = "DineInTableId"
 
+    const val GIFT_CARD_AT_FIRST = "gidt_card_at_first"
+    const val GIFT_CARD_SORT = "gidt_card_sort"
+    const val DEFAULT_CATEGORY_SORT = "default_category_sort"
+
     const val AMOUNT_TYPE = "amountType"
     const val RATE_OR_AMOUNT = "rateAmount"
     const val OPTION_TYPE = "optionType"
@@ -795,6 +799,7 @@ object Constants {
     const val ADD_VALUE = "Add Value"
     const val BALANCE_INQUIRY = "Balance Inquiry"
     const val GIFT_CARD_CATEGORY = "GIFT CARD"
+    const val DEFAULT_CATEGORY = "Default Category"
     const val IS_LAST_ITEM_DELETE = "IS_LAST_ITEM_DELETE"
 
     const val SURCHARGE_TEXT = "Surcharge"

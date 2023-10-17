@@ -20,7 +20,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.entities.TbCategory
+import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentCategoriesBinding
+import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.CategoriesListAdapter
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.LogUtil
@@ -43,6 +45,7 @@ class Categories(val clickedPosition: Int) : Fragment(),ItemCallback {
     private val TAG = "Categories"
     var dragFrom = -1
     var dragTo = -1
+    lateinit var prefProvider:PrefProvider
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -63,6 +66,7 @@ class Categories(val clickedPosition: Int) : Fragment(),ItemCallback {
         categoriesObserver()
         observeShowProgress()
         deleteObserve()
+        prefProvider = PrefProvider(requireContext())
     }
 
     private fun categoriesObserver() {
@@ -78,6 +82,19 @@ class Categories(val clickedPosition: Int) : Fragment(),ItemCallback {
                         it.data?.let { it1 ->
                             listSize=it.data.size
                             adapter.add(it1)
+                            for (i in 0 until it1.size){
+                                if (it1[i].name == Constants.GIFT_CARD_CATEGORY){
+                                    prefProvider.setValueInt(Constants.GIFT_CARD_SORT,it1[i].sort)
+                                    if (it1[i].sort == 1){
+                                        prefProvider.setValueboolean(Constants.GIFT_CARD_AT_FIRST,true)
+                                    }else{
+                                        prefProvider.setValueboolean(Constants.GIFT_CARD_AT_FIRST,false)
+                                    }
+                                }
+                                if (it1[i].name == Constants.DEFAULT_CATEGORY){
+                                    prefProvider.setValueInt(Constants.DEFAULT_CATEGORY_SORT,it1[i].sort)
+                                }
+                            }
                             binding.edtSearch.hint = "Search (" + it1.size + ") Categories"
                         }
                     }

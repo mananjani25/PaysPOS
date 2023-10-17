@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.android.pos.data.entities.CategoryWithInventory
 import com.android.pos.data.entities.TbCategory
+import com.android.pos.utils.swipereveallayout.SwipeRevealLayout
 
 
 /**
@@ -36,6 +37,9 @@ interface CategoryDao {
 
     @Query("SELECT * from TbCategory where TbCategory.id  = :id  and TbCategory.isDeleted = 0 LIMIT 1")
     fun categoryById(id: Int?): TbCategory?
+
+    @Query("SELECT sort from TbCategory")
+    fun getAllSortNumbers(): List<Int>
 
     @Query("SELECT * from TbCategory  LIMIT 1")
     fun categoryOne(): TbCategory?
@@ -166,8 +170,8 @@ interface CategoryDao {
         deletePrinterQueue()
     }
 
-    @Query("UPDATE TbCategory SET sort = :sort WHERE  TbCategory.id = :id ")
-    fun updateSorting(id: Int, sort: Int?): Int
+    @Query("UPDATE TbCategory SET sort = :sort WHERE  TbCategory.name = :name ")
+    suspend fun updateSorting(name: String, sort: Int?): Int
 
     @get:Query("SELECT * from TbCategory WHERE TbCategory.name == 'Manual Sales' and TbCategory.isDeleted = 0 LIMIT 1")
     val manualCategoryId: LiveData<TbCategory>
