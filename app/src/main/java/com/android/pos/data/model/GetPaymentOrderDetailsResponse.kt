@@ -34,7 +34,7 @@ class GetPaymentOrderDetailsResponse(
         @SerializedName("total_discount") val total_discount: Double,
         @SerializedName("sub_total") val sub_total: Double,
         @SerializedName("transaction_id") val transaction_id: String,
-        @SerializedName("card_type") val card_type: String,
+        @SerializedName("card_type") val card_type: String? = null,
         @SerializedName("card_name") val card_name: String,
         @SerializedName("magensa_response") val magensa_response_data: String,
         @SerializedName("card_number") val card_number: String,
