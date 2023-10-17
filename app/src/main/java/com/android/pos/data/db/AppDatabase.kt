@@ -265,6 +265,8 @@ abstract class AppDatabase : RoomDatabase() {
             override fun migrate(database: SupportSQLiteDatabase) {
                 try {
                     database.execSQL("ALTER TABLE PrinterQueue ADD COLUMN deliveryType TEXT DEFAULT '' NOT NULL")
+                    database.execSQL("ALTER TABLE TbOrderType ADD COLUMN isDefault INTEGER DEFAULT 0 NOT NULL")
+
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
