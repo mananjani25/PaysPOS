@@ -143,7 +143,7 @@ object Constants {
     const val GIFT_CARD_NAME = "Gift Card"
     const val DINE_IN_STATUS = "DineInStatus"
     const val DINE_IN_TABLE_ID = "DineInTableId"
-
+    const val EXTERNAL_PAYMENT = "External"
     const val GIFT_CARD_AT_FIRST = "gidt_card_at_first"
     const val GIFT_CARD_SORT = "gidt_card_sort"
     const val DEFAULT_CATEGORY_SORT = "default_category_sort"
