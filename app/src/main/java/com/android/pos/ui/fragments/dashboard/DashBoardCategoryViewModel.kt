@@ -3155,7 +3155,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
         redeemLoyaltyInfo.total = total
         val availablePoints1 = customer?.final_reward ?: 0
-
+        redeemLoyaltyInfo.availablePoints = availablePoints1
         if (customer == null) {
             //loyalty cant be applied if customer is not selected.
             redeemLoyaltyInfo.needToApplyLoyalty = false
@@ -3185,12 +3185,12 @@ class DashBoardCategoryViewModel @Inject constructor(
                             redeemLoyaltyInfo.total - redeemLoyaltyInfo.usedLoyaltyAmount
                     }
                     redeemLoyaltyInfo.remainingLoyaltyPoints =
-                        availablePoints - redeemLoyaltyInfo.usedLoyaltyPoints
+                        availablePoints1 - redeemLoyaltyInfo.usedLoyaltyPoints
                 } else {
                     redeemLoyaltyInfo.usedLoyaltyAmount =
                         (availablePoints * it.amount / it.rewardPoint)
                     redeemLoyaltyInfo.usedLoyaltyPoints = availablePoints
-                    redeemLoyaltyInfo.remainingLoyaltyPoints = 0
+                    redeemLoyaltyInfo.remainingLoyaltyPoints = availablePoints1 - redeemLoyaltyInfo.usedLoyaltyPoints
                     if (redeemLoyaltyInfo.usedLoyaltyAmount >= redeemLoyaltyInfo.total) {
                         redeemLoyaltyInfo.remainingAmount =
                             redeemLoyaltyInfo.usedLoyaltyAmount - redeemLoyaltyInfo.total

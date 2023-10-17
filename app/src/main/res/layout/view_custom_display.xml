@@ -33,9 +33,37 @@
                 android:paddingVertical="@dimen/_5sdp"
                 android:singleLine="true"
                 android:textColor="@color/btnColorDark"
-                android:textSize="@dimen/_8mdpi"
+                android:textSize="@dimen/_6mdpi"
                 android:textStyle="bold"
                 tools:text="Customer Name" />
+
+            <TextView
+                android:id="@+id/tvLoyaltyBalance"
+                style="@style/CustomFontSemiBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:paddingVertical="@dimen/_5sdp"
+                android:singleLine="true"
+                android:textColor="@color/btnColorDark"
+                android:textSize="@dimen/_6mdpi"
+                android:textStyle="bold"
+                tools:text="@string/applied_loyalty_balance" />
+
+            <TextView
+                android:id="@+id/tvLoyaltyPoints"
+                style="@style/CustomFontSemiBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:paddingVertical="@dimen/_5sdp"
+                android:singleLine="true"
+                android:textColor="@color/btnColorDark"
+                android:textSize="@dimen/_6mdpi"
+                android:textStyle="bold"
+                tools:text="@string/applied_loyalty_points" />
 
             <TextView
                 android:id="@+id/txtLoyaltyPointsLabel"
@@ -49,7 +77,7 @@
                 android:paddingVertical="@dimen/_5sdp"
                 android:singleLine="true"
                 android:textColor="@color/btnColorDark"
-                android:textSize="@dimen/_8mdpi"
+                android:textSize="@dimen/_6mdpi"
                 android:textStyle="bold"
                 tools:text="Loyalty Points: 1000" />
 

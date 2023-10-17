@@ -532,6 +532,14 @@ class CartFragment(
             prefProvider.setValueboolean(Constants.LOYALTY_ADDED, p1)
             prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED, p1)
             binding.tvPayNow.text = "Pay ${binding.txtTotal.text}"
+            binding.txtLoyaltyBalance.text =
+                "${
+                    if (viewModel.redeemLoyaltyInfo.needToApplyLoyalty) {
+                        viewModel.redeemLoyaltyInfo.remainingLoyaltyPoints
+                    } else {
+                        viewModel.redeemLoyaltyInfo.availablePoints
+                    }
+                }"
 //            addObserver()
             if (this::presentation.isInitialized) {
                 presentation.show()
@@ -965,7 +973,13 @@ class CartFragment(
                                 binding.txtLoyaltyPoints.text =
                                     "${viewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
                                 binding.txtLoyaltyBalance.text =
-                                    "${viewModel.selectedCustomer?.final_reward}"
+                                    "${
+                                        if (viewModel.redeemLoyaltyInfo.needToApplyLoyalty) {
+                                            viewModel.redeemLoyaltyInfo.remainingLoyaltyPoints
+                                        } else {
+                                            viewModel.redeemLoyaltyInfo.availablePoints
+                                        }
+                                    }"
                                 binding.checkloylaty.isChecked =
                                     viewModel.redeemLoyaltyInfo.needToApplyLoyalty
                             }
@@ -1488,7 +1502,13 @@ class CartFragment(
                                             binding.txtLoyaltyPoints.text =
                                                 "${viewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
                                             binding.txtLoyaltyBalance.text =
-                                                "${viewModel.selectedCustomer?.final_reward}"
+                                                "${
+                                                    if (viewModel.redeemLoyaltyInfo.needToApplyLoyalty) {
+                                                        viewModel.redeemLoyaltyInfo.remainingLoyaltyPoints
+                                                    } else {
+                                                        viewModel.redeemLoyaltyInfo.availablePoints
+                                                    }
+                                                }"
 
                                         } else {
                                             binding.liinearInfoLayout.layoutParams.height =
@@ -1515,7 +1535,13 @@ class CartFragment(
                                         binding.txtLoyaltyPoints.text =
                                             "${viewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
                                         binding.txtLoyaltyBalance.text =
-                                            "${viewModel.selectedCustomer?.final_reward}"
+                                            "${
+                                                if (viewModel.redeemLoyaltyInfo.needToApplyLoyalty) {
+                                                    viewModel.redeemLoyaltyInfo.remainingLoyaltyPoints
+                                                } else {
+                                                    viewModel.redeemLoyaltyInfo.availablePoints
+                                                }
+                                            }"
                                         binding.checkloylaty.isChecked =
                                             viewModel.redeemLoyaltyInfo.needToApplyLoyalty
                                         Log.d(
