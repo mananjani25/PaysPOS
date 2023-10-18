@@ -173,6 +173,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     BatteryStatusChangeEventListener, ICallback {
     private var IS_GIFT_CARD_TYPE: Boolean = false
     private var isPrint: Boolean = false
+    private var isPrintCustomer: Boolean = false
     private var isFirstKitPrint = false
     private val paymentViewModel by activityViewModels<PaymentViewModel>()
     private lateinit var presentation: CustomDisplay
@@ -255,6 +256,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         binding = FragmentOrderCompletBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
         isPrint = true
+        isPrintCustomer = true
 
         getCustomerDisplay(requireContext())?.let { display ->
             presentation = CustomDisplay(
@@ -983,7 +985,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                   binding.llPrint.setTextColor(resources.getColor(R.color.white))*/
 
                 isNotPrinted = true
-                isPrint = true
+                isPrintCustomer = true
 
                 binding.llEmail.background =
                     resources.getDrawable(R.drawable.background_square_border_grey)
@@ -1081,6 +1083,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     private fun customerPrintWholeOrder(shouldCheckForAutoPrinting: Boolean) {
         isPrint = false
+        isPrintCustomer= false
 
         var guestPos = requireArguments().getInt(GUEST_POSITION)
         LogUtil.logE(TAG, "getGuestPosition  ${guestPos}")
@@ -6399,7 +6402,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             when (it.status) {
                 Status.SUCCESS -> {
                     ProgressUtils.dismissProgressDialog()
-                    if (it.data!=null  && isPrint) {
+                    if (it.data!=null  && isPrintCustomer) {
+                        isPrintCustomer = false
+                        isPrint = false
                         val customerList = it.data
 
                         if (IS_GIFT_CARD_TYPE) {
@@ -6441,8 +6446,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                 }
                             }
                         }
-                        isPrint = false
+                        isPrintCustomer = false
 
+                    } else {
+                        Log.d("getCustomerPrinterList"," data isPrint = $isPrint")
                     }
 
                 }
