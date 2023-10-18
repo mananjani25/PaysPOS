@@ -340,6 +340,10 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     }
 
+    fun getAllCartItems(): Flow<List<TbCartItem>> {
+        return posRepository.getAllCartItems()
+    }
+
     fun manualSale(orderType: String, employee_Id: Int): LiveData<List<CartModel>> {
 
         return posRepository.getCartList(orderType, employee_Id)
@@ -362,15 +366,16 @@ class DashBoardCategoryViewModel @Inject constructor(
     fun addCart(cartModel: CartModel) {
         System.currentTimeMillis()
         CoroutineScope(Dispatchers.IO).launch {
-            /*  val millis =   measureTimeMillis {
-
-                 }
-                 Log.d(TAG, "addCart: $millis")*/
-            //removeItemDineInList.clear()
             posRepository.addItemCart(generateCombinedItems(cartModel))
             destroyedList.clear()
         }
 
+    }
+
+    fun addItemToCartItems(tbCartItem: TbCartItem){
+        CoroutineScope(Dispatchers.IO).launch {
+            posRepository.addItemToCart(tbCartItem)
+        }
     }
 
     fun addOrderNote(note: String) {
@@ -1442,7 +1447,8 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                             }
                         }
-                    } else if (type == UPDATE) {
+                    }
+                    else if (type == UPDATE) {
                         var index = -1
 
                         var idsF = list.filter { it.itemId == item?.itemId }
@@ -1609,7 +1615,8 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                             }
                         }
-                    } else if (type == DELETE) {
+                    }
+                    else if (type == DELETE) {
 
                         var index = -1
                         Log.e(TAG, "CheckDeleteItem ${Gson().toJson(item)}")
@@ -1734,6 +1741,601 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
                 }
+            }
+
+        }
+    }
+
+    fun updateCart(
+        cartList: List<TbCartItem>?,
+        item: TbCartItem?,
+        type: String,
+        isManualSales: Boolean,
+        dineInList: List<DineInModel> = arrayListOf(),
+        isFromDineInScreen: Boolean = false,
+        position: Int = -1,
+    ) {
+        prefProvider.setValueboolean(
+            IS_LAST_ITEM_DELETE, false
+        )  // reset flag in case of adding or updating item
+        Log.e("DashViewModModel", "checkCartSize: ${cartList?.size}")
+        var cartModel = item?.let { addCartModelNew(it, isManualSales) }
+        if (cartList != null && cartList.isEmpty()) {
+            // empty cart hoy to new cart create kare
+
+            Log.e("DashViewModModel", "checkItem:  ${Gson().toJson(item?.modifiers)}")
+
+
+            if (item != null) {
+                if (type == UPDATE) {
+                    cartList.forEach { items ->
+                        cartModel = taxBifurcationCalculationNew(items, cartModel!!, type, false)
+                    }
+                } else {
+                    cartModel = taxBifurcationCalculationNew(item, cartModel!!, type, false)
+                }
+            } else if (dineInList.isNotEmpty()) {
+                dineInList.forEach { dineInModel ->
+                    dineInModel.items.forEach { itemData ->
+                        cartModel = taxBifurcationCalculation(itemData, cartModel!!, type, false)
+                    }
+
+                }
+            }
+
+        } else {
+
+            var isItem1000 = false
+            val list = cartList?.toMutableList()
+            if (!list.isNullOrEmpty()) {
+
+                if (type == ADD) {
+                    var index = -1
+                    for (i in list.indices) {
+                        if (item != null) {
+
+                            if (item.isManualSales) {
+
+
+                                if (list[i].manualSaleId == item.manualSaleId) {
+                                    Log.d(TAG, "cartLogic: " + i)
+                                    index = i
+                                    break
+                                }
+
+                            } else {
+
+                                Log.e("AddedInElse", "Item Qty = ${list[i].itemQuantity}")
+                                if (list[i].itemId == item.itemId && list[i].itemQuantity > 1000) {
+                                    isItem1000 = true
+                                    _itemQuantityCheck.value = Event(true)
+                                    break
+                                } else {
+                                    if (list[i].itemId == item.itemId && (!checkVariationNew(
+                                            list[i], item
+                                        ) && !checkModifierNew(list[i], item))
+                                    ) {
+                                        var isBreak: Boolean = false
+                                        Log.e(
+                                            "checkORderUpdate", "isOrderUpdate:  ${
+                                                prefProvider.getValueboolean(
+                                                    IS_UPDATE_ORDER, false
+                                                )
+                                            }"
+                                        )
+                                        if (prefProvider.getValueboolean(
+                                                IS_UPDATE_ORDER, false
+                                            )
+                                        ) {
+                                            try {
+                                                item.isEdited = true
+                                                list[i].isEdited = true
+                                            } catch (e: java.lang.Exception) {
+                                                e.printStackTrace()
+                                            }
+                                        }
+
+                                        list[i].modifiers.forEach { modifier ->
+                                            item.modifiers.forEach { mod ->
+                                                if (mod.id == modifier.id && mod.modifier_quantity == modifier.modifier_quantity) {
+                                                    if (list[i].variationsAttributes.isNotEmpty() && list[i].variationsAttributes[0].id == item.variationsAttributes[0].id) {
+                                                        item.id += 1
+                                                        isBreak = true
+                                                        Log.d(
+                                                            TAG, "newCartLogicModifier: isBreak"
+                                                        )
+
+                                                        return@forEach
+                                                    } /*else if (list[i].variationsAttributes.isEmpty() == true) {
+                                                        item.id += 1
+                                                        isBreak = true
+                                                        Log.d(TAG, "newCartLogicModifier: isBreak")
+
+                                                        return@forEach
+                                                    }*/
+//
+
+                                                } else if (mod.id == modifier.id && mod.modifier_quantity != modifier.modifier_quantity) {
+                                                    item.id += 1
+                                                    isBreak = false
+                                                    Log.d(TAG, "newCartLogicModifier: isBreak")
+
+                                                    return@forEach
+                                                }
+
+                                            }
+
+
+
+                                            if (isBreak) {
+                                                return@forEach
+                                            }
+                                        }
+
+
+//
+                                        if (list[i].variationsAttributes.isNotEmpty() == true) {
+                                            if (list[i].variationsAttributes.get(0).id != item.variationsAttributes.get(
+                                                    0
+                                                ).id
+                                            ) {
+                                                item.id += 1
+
+                                            }
+
+
+                                        }
+
+                                        if (isBreak) {
+                                            index = i
+                                            break
+                                        }
+
+
+                                    } else if (list[i].itemId == item.itemId && checkVariationNew(
+                                            list[i], item
+                                        ) && checkModifierNew(list[i], item)
+                                    ) {
+                                        Log.d(TAG, "cartLogic: " + i)
+
+                                        Log.e(
+                                            "checkORderUpdate", "isOrderUpdate:  ${
+                                                prefProvider.getValueboolean(
+                                                    IS_UPDATE_ORDER, false
+                                                )
+                                            }"
+                                        )
+
+                                        if (prefProvider.getValueboolean(
+                                                IS_UPDATE_ORDER, false
+                                            )
+                                        ) {
+                                            try {
+                                                item.isEdited = true
+                                                list[i].isEdited = true
+                                            } catch (e: java.lang.Exception) {
+                                                e.printStackTrace()
+                                            }
+                                        }
+                                        var listTmp = combineItemNew(
+                                            list.toCollection(arrayListOf()), item, i
+                                        )
+                                        list.clear()
+                                        Log.d(
+                                            TAG,
+                                            "newCartLogicModifier: position of selected Item " + item.id
+                                        )
+                                        list.addAll(listTmp.toMutableList())
+
+                                        Log.e(TAG, "getMergeCombineItem  ${list.size}")
+
+                                        index = -2
+                                        break
+
+
+                                    }
+                                }
+
+
+                            }
+
+                        }
+                    }
+
+                    if (!isItem1000) {
+                        list.forEach {
+                            if (it.id == item?.id && it.itemId == item.itemId) {
+                                item.id += 1
+                            }
+                        }
+
+
+
+                        if (index != -1 && index != -2) {
+                            val model = cartList[index]
+                            Log.e("DashViewModModel", "getIndexFirst  ${index}")
+                            if (model != null) {
+                                if (index != -1) {
+                                    if (item != null) {
+                                        model.name = item.name
+                                        model.itemQuantity =
+                                            model.itemQuantity + item.itemQuantity
+                                        model.price = item.price
+                                        model.variationsAttributes = item.variationsAttributes
+                                        item.modifiers.forEach {
+                                            it.itemQuantity =
+                                                (it.modifier_quantity * item.itemQuantity)/*  model.modifiers.forEach { tbmodfier ->
+                                                      if (it.id == tbmodfier.id) {
+                                                          it.modifier_quantity =
+                                                              it.itemQuantity / item.itemQuantity
+                                                          it.itemQuantity =
+                                                              it.itemQuantity + tbmodfier.itemQuantity
+                                                      }
+                                                  }*/
+
+                                        }
+
+
+                                        model.modifiers = item.modifiers
+                                        if (item.isEdited) {
+                                            model.isEdited = item.isEdited
+                                        }
+
+                                        if (prefProvider.getValueboolean(
+                                                IS_UPDATE_ORDER_FROM_ACTIVE_ORDER, false
+                                            )
+                                        ) {
+                                            model.isEdited = true
+                                        }
+                                        itemDiscountApplyNew(model, item)
+                                    }
+
+                                    list[index] = model
+                                } else {
+                                    if (item != null) {
+                                        model.itemQuantity = item.itemQuantity
+                                        if (item.isEdited) {
+                                            model.isEdited = item.isEdited
+                                        }
+                                        if (prefProvider.getValueboolean(
+                                                IS_UPDATE_ORDER_FROM_ACTIVE_ORDER, false
+                                            )
+                                        ) {
+                                            model.isEdited = true
+                                        }
+                                        itemDiscountApplyNew(model, item)
+                                        model.isDestroy = false
+                                    }
+                                    list[index] = model
+                                }
+
+                            }
+                        } else if (index != -2) {
+                            Log.e("DashViewModModel", "getIndexSecond  ${index}")
+                            if (item != null) {
+                                item.singleItemPrice = item.price
+
+                                item.modifiers.forEach { it ->
+                                    Log.e(TAG, "moditemQuantity  ${it.itemQuantity}")
+                                    Log.e(TAG, "itemQuantity  ${item.itemQuantity}")
+
+                                    /*  if (type == ADD){
+                                          it.modifier_quantity = it.itemQuantity / item.itemQuantity
+
+                                              it.itemQuantity = item.itemQuantity
+
+                                      }
+                                      else{*/
+                                    it.itemQuantity = it.modifier_quantity * item.itemQuantity
+
+                                    /*}*/
+
+                                    item.singleItemPrice += it.price * it.itemQuantity
+                                }
+                                item.isDestroy = false
+                                if (prefProvider.getValueboolean(
+                                        IS_UPDATE_ORDER_FROM_ACTIVE_ORDER, false
+                                    )
+                                ) {
+                                    item.isEdited = true
+                                }
+                                list.add(item)
+                            }
+                        } else {
+                            //For BIS-3219 issue
+                            //This is for adding the item after deleting it after coming from all orders update order click
+                            var newItem: TbCartItem? = null
+                            var indexToRemove = -1
+                            list.forEachIndexed { index, tbItem ->
+                                if (tbItem.isDestroy && tbItem.itemId == item?.itemId) {
+                                    newItem = tbItem
+                                    indexToRemove = index
+                                }
+                            }
+
+                            if (indexToRemove != -1) {
+                                list.removeAt(indexToRemove)
+                            }
+
+                            if (newItem != null) {
+                                newItem?.itemQuantity = 1
+                                newItem?.isDestroy = false
+                                list.add(newItem!!)
+                            }
+
+                            Log.e("DashViewModModel", "getIndexThird  ${index}")
+
+                        }
+                    }
+                }
+                else if (type == UPDATE) {
+                    var index = -1
+
+                    var idsF = list.filter { it.itemId == item?.itemId }
+                    Log.e("CheckUpdate", "checkIdsfSize  ${idsF.size}")
+
+                    for (i in list.indices) {
+                        if (item != null) {
+                            if (item.isManualSales) {
+
+
+                                if (list[i].manualSaleId == item.manualSaleId) {
+                                    Log.d(TAG, "cartLogic: " + i)
+                                    index = i
+                                    break
+                                }
+
+                            } else {
+
+
+                                if (idsF.size > 1 && list[i].itemId == item.itemId && checkVariationNew(
+                                        list[i], item
+                                    ) && checkModifierNew(
+                                        list[i], item
+                                    ) && item.id != list[i].id
+                                ) {
+
+
+                                    var listTmp =
+                                        combineItemNew(list.toCollection(arrayListOf()), item, i)
+                                    list.clear()
+                                    Log.e(
+                                        "CheckUpdate",
+                                        "newCartLogicModifier: position of selected Item " + item.id
+                                    )/*var indexJ = -1
+
+                                        for (j in 0 until listTmp.size) {
+                                            if (listTmp[j].id == item.id
+                                            ) {
+                                                indexJ = j
+                                                break
+                                            }
+
+                                        }*/
+                                    var ttempllist = ArrayList(listTmp).apply {
+                                        if (position != -1) {
+                                            Log.e("CheckUpdate", "GETIndexJ  ${position}")
+                                            this[position].isDestroy = true
+//                                                    removeAt(indexJ)
+                                        }
+                                    }
+                                    list.addAll(ttempllist.toMutableList())
+                                    index = -2
+                                    break
+                                } else if (list[i].id == item.id && list[i].itemId == item.itemId) {
+
+                                    var isBreakInside = false
+
+
+                                    if (idsF.size > 1) {
+
+                                        for (k in i until list.size) {
+                                            if (list[k].id != item.id && list[k].itemId == item.itemId && checkVariationNew(
+                                                    list[k], item
+                                                ) && checkModifierNew(list[k], item)
+                                            ) {
+
+                                                var listTmp = combineItemNew(
+                                                    list.toCollection(arrayListOf()), item, k
+                                                )
+                                                list.clear()
+                                                Log.e(
+                                                    "CheckUpdate",
+                                                    "newCartLogicModifier: position of selected Item " + item.id
+                                                )/*var indexJ = -1
+
+                                                    for (j in 0 until listTmp.size) {
+                                                        if (listTmp[j].id == item.id
+                                                        ) {
+                                                            indexJ = j
+                                                            break
+                                                        }
+
+                                                    }*/
+                                                var ttempllist = ArrayList(listTmp).apply {
+                                                    if (position != -1) {
+                                                        Log.e(
+                                                            "CheckUpdate",
+                                                            "GETIndexJ  ${position}"
+                                                        )
+                                                        this[position].isDestroy = true
+//                                                                removeAt(indexJ)
+                                                    }
+                                                }
+                                                list.addAll(ttempllist.toMutableList())
+                                                index = -2
+                                                isBreakInside = true
+                                                break
+
+                                            }
+
+                                        }
+                                    }
+                                    if (isBreakInside) {
+                                        break
+                                    }
+
+                                    if (isBreakInside == false) {
+                                        Log.e("CheckUpdate", "cartLogicFInd: " + i)
+                                        index = i
+                                        break
+                                    }
+                                }
+
+                            }
+
+                        }
+                    }
+                    if (index == -2) {
+
+                    } else if (index != -1) {
+                        val model = cartList[index]
+                        Log.e("CheckUpdate", "cartLogic: " + index)
+                        if (model != null) {
+                            if (item != null) {
+                                model.name = item.name
+                                model.price = item.price
+                                model.variationsAttributes = item.variationsAttributes
+                                if (item.isEdited) {
+                                    model.isEdited = item.isEdited
+                                }
+                                if (prefProvider.getValueboolean(
+                                        IS_UPDATE_ORDER_FROM_ACTIVE_ORDER, false
+                                    )
+                                ) {
+                                    model.isEdited = true
+                                }
+                                item.singleItemPrice = item.price
+                                item.modifiers.forEach {
+                                    it.itemQuantity = (it.modifier_quantity * item.itemQuantity)
+                                    item.singleItemPrice += it.price * it.modifier_quantity
+                                }
+                                Log.d(TAG, "newCartLogicModifier: " + item.singleItemPrice)
+                                model.itemQuantity = item.itemQuantity
+                                model.modifiers = item.modifiers
+                                model.isDestroy = false
+                                itemDiscountApplyNew(model, item)
+
+                            }
+                            Log.d(TAG, "cartLogic:itemname " + model.name)
+                            list[index] = model
+
+                        }
+                    }
+                }
+                else if (type == DELETE) {
+
+                    var index = -1
+                    Log.e(TAG, "CheckDeleteItem ${Gson().toJson(item)}")
+                    Log.e(TAG, "getListedItems  ${Gson().toJson(list[0])}")
+                    Log.e(TAG, "checkReOrder  ${cartModel?.reorder}")
+
+                    for (i in list.indices) {
+                        if (item != null) {
+                            if (!item.isManualSales) {
+                                if (cartModel?.reorder == false && list[i].itemId == item.itemId && item.modifiers.isEmpty() && checkVariationNew(
+                                        list[i], item
+                                    ) && item.id == list[i].id
+                                ) {
+                                    index = i
+                                    Log.d(TAG, "newCartLogicModifier normal item: ${i}")
+                                    break
+                                } else if (cartModel?.reorder == false && list[i].itemId == item.itemId && list[i].id == item.id && checkVariationNew(
+                                        list[i], item
+                                    ) && checkModifierNew(list[i], item)
+                                ) {
+                                    Log.e(TAG, "CheckedBefore")
+                                    index = i
+                                    break
+                                } else if (cartModel?.reorder == true) {
+                                    if (list[i].orderItemId == item.orderItemId) {
+                                        index = i
+                                        Log.e(TAG, "indexReorder:  ${index}")
+                                        break
+                                    }
+
+                                } else if (cartModel?.reorder == false && list[i].itemId == item.itemId && (!checkVariationNew(
+                                        list[i], item
+                                    ) || !checkModifierNew(list[i], item))
+                                ) {
+                                    if (list[i].id == item.id) {
+                                        Log.e(TAG, "CheckedBefore   ${i}")
+                                        index = i
+                                        break
+                                    }
+                                }
+
+                            } else {
+                                if (list[i].manualSaleId == item.manualSaleId) {
+                                    index = i
+                                    break
+                                } else if (cartModel?.reorder == true) {
+                                    if (list[i].orderItemId == item.orderItemId) {
+                                        index = i
+                                        Log.e(TAG, "indexReorder23:  ${index}")
+                                        break
+                                    }
+
+                                }
+                            }
+                        }
+
+                    }
+
+                    if (index != -1) {
+                        val model = cartList[index]
+                        if (model != null) {
+                            //delete from cart
+                            if (item?.isEdited == true) {
+                                model.isEdited = item.isEdited
+                                model.isDestroy = true
+                            } else {
+                                if (list.size == 1) {
+                                    prefProvider.setValueboolean(IS_LAST_ITEM_DELETE, true)
+                                }
+                                list.remove(model)
+                            }
+                        }
+                    } else {
+                        //list.remove(item)
+                    }
+                }
+
+
+                if (type == UPDATE) {
+                    cartList.forEach { itemData ->
+                        cartModel = taxBifurcationCalculationNew(
+                            itemData, cartModel!!, type, false
+                        )
+                    }
+                } else {
+                    if (item != null) {
+                        cartModel = taxBifurcationCalculationNew(item!!, cartModel!!, type, false)
+                    }
+                }
+                addCart(cartModel!!)
+                if (item != null) {
+                    addItemToCartItems(item)
+                }
+            } else {
+
+                if (type == DELETE) {
+                    deleteCart()
+                } else {
+
+                    val newCartModel: CartModel =
+                        taxBifurcationCalculationNew(item!!, cartModel!!, type, false)
+                    if (item.modifiers.isNotEmpty()) {
+                        item.modifiers.forEach { mod ->
+                            mod.itemQuantity = item.itemQuantity * mod.modifier_quantity
+                        }
+                    }
+
+                    addCart(newCartModel)
+                    addItemToCartItems(item)
+                }
+
+
             }
 
         }
@@ -2347,6 +2949,31 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     }
 
+    private fun combineItemNew(list: ArrayList<TbCartItem>, item: TbCartItem, index: Int): List<TbCartItem> {
+        Log.e(TAG, "newItemitemQuantity  ${Gson().toJson(item)}")
+        Log.e(TAG, "newItemitemQuantity  ${item.itemQuantity}")
+        Log.e(TAG, "newItemitemQuantityOld  ${list[index].itemQuantity}")
+//        if(list[index].itemQuantity < MAX_ITEM_QUANTITY){
+//        }
+        if ((list[index].itemQuantity + item.itemQuantity) <= MAX_ITEM_QUANTITY) {
+            list[index].itemQuantity += item.itemQuantity
+            list[index].modifiers.forEach { listmod ->
+                item.modifiers.forEach { itemmod ->
+                    if (itemmod.id == listmod.id) {
+                        listmod.itemQuantity = itemmod.modifier_quantity * list[index].itemQuantity
+                    }
+                }
+            }
+        } else {
+            _itemQuantityCheck.value = Event(true)
+        }
+
+        Log.d(TAG, "combineItem: " + list[index].itemQuantity)
+        Log.d(TAG, "combineItem: " + Gson().toJson(list[index].modifiers))
+        return list
+
+    }
+
     private fun checkSameModifier(tbItem: TbItem, item: TbItem): Boolean {
 
         var isSame = false
@@ -2373,6 +3000,14 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     private fun itemDiscountApply(model: TbItem, item: TbItem) {
+        model.discountPrice = item.discountPrice
+        model.discountType = item.discountType
+        model.discountId = item.discountId
+        model.isManualSales = item.isManualSales
+        model.note = item.note
+    }
+
+    private fun itemDiscountApplyNew(model: TbCartItem, item: TbCartItem) {
         model.discountPrice = item.discountPrice
         model.discountType = item.discountType
         model.discountId = item.discountId
@@ -2607,6 +3242,75 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     }
 
+    fun checkModifierNew(tbItem: TbCartItem, item: TbCartItem): Boolean {
+        var isSame = false
+        var listOfDataMod: ArrayList<Int> = arrayListOf()
+        var tbMod: HashMap<Int, Int> = hashMapOf()
+        var itemMod: HashMap<Int, Int> = hashMapOf()
+        Log.e(TAG, "checkItemTbMod  ${Gson().toJson(tbItem.modifiers)}")
+        Log.e(TAG, "checkItemMod  ${Gson().toJson(item.modifiers)}")
+
+        if (tbItem.modifiers.isNotEmpty()) {
+            tbItem.modifiers.forEach {
+                if (!it._destroy) {
+                    tbMod.put(it.id ?: 0, it.modifier_quantity)
+                    listOfDataMod.add(it.id ?: 0)
+                }
+            }
+        }
+
+        var listOfDataModSelected: ArrayList<Int> = arrayListOf()
+        if (item.modifiers.isNotEmpty()) {
+            item.modifiers.forEach {
+                if (!it._destroy) {
+                    itemMod.put(it.id ?: 0, it.modifier_quantity)
+                    listOfDataModSelected.add(it.id ?: 0)
+                }
+
+            }
+        }
+
+        if (tbItem.modifiers.isEmpty() && item.modifiers.isEmpty()) return true
+
+        Log.e(TAG, "checkModSize  ${tbMod.size}")
+        Log.e(TAG, "checkModSizeItemMod  ${itemMod.size}")
+
+        if (listOfDataMod.size == listOfDataModSelected.size) {
+
+            isSame = true
+            Log.e(TAG, "Item.modifiers  ${Gson().toJson(item.modifiers)}")
+            Log.e(TAG, "TbItem.modifiers   ${Gson().toJson(tbItem.modifiers)}")
+
+
+            var selectedList: ArrayList<Boolean> = arrayListOf()
+
+            Log.e("CheckModData", "checktbMod:  ${Gson().toJson(tbMod)}")
+            Log.e("CheckModData", "checkContaine  ${Gson().toJson(itemMod)}")
+            tbMod.forEach {
+                Log.e(TAG, "GetKey ${it.key}  GetValue ${it.value}")
+                if (itemMod.containsKey(it.key) && it.value == itemMod.get(it.key)) {
+                    selectedList.add(true)
+
+                } else {
+                    selectedList.add(false)
+                }
+            }
+
+            Log.e(TAG, "selectedList:  ${Gson().toJson(selectedList)}")
+            if (selectedList.contains(false)) {
+                isSame = false
+            }
+
+
+        } else {
+            isSame = false
+        }
+
+        Log.e(TAG, "ReturnIssame ${isSame}")
+        return isSame
+
+    }
+
     private fun checkModifier(tbItem: TbItem, item: TbItem): Boolean {
 
 
@@ -2675,6 +3379,41 @@ class DashBoardCategoryViewModel @Inject constructor(
         return isSame
     }
 
+    private fun checkVariationNew(tbItem: TbCartItem, item: TbCartItem): Boolean {
+
+        var isSame = true
+
+        var listOfDataMod: ArrayList<Int> = arrayListOf()
+        if (tbItem.variationsAttributes.isNotEmpty()) {
+            tbItem.variationsAttributes.forEach {
+                listOfDataMod.add(it.id ?: 0)
+            }
+        }
+
+        var listOfDataModSelecteItem: ArrayList<Int> = arrayListOf()
+        if (item.variationsAttributes.isNotEmpty()) {
+            item.variationsAttributes.forEach {
+                listOfDataModSelecteItem.add(it.id ?: 0)
+            }
+        }
+
+        if (tbItem.variationsAttributes.isEmpty() && item.variationsAttributes.isEmpty()) return true
+        isSame =
+            if (listOfDataMod.containsAll(listOfDataModSelecteItem) && listOfDataMod.size == listOfDataModSelecteItem.size) {
+                if (tbItem.variationsAttributes[0].id == item.variationsAttributes[0].id) {
+                    (tbItem.variationsAttributes[0].price == item.variationsAttributes[0].price)
+                } else {
+                    false
+                }
+            } else {
+                false
+            }
+
+
+        Log.e(TAG, "CheckVariationAdd ${isSame}")
+        return isSame
+    }
+
 
     fun addCartModel(item: TbItem, isManualSales: Boolean): CartModel {
         val inventoryModelList = ArrayList<TbItem>()
@@ -2692,6 +3431,22 @@ class DashBoardCategoryViewModel @Inject constructor(
 
             inventoryModelList.add(item)
             items = inventoryModelList
+        }
+    }
+
+    fun addCartModelNew(item: TbCartItem, isManualSales: Boolean): CartModel {
+        return CartModel().apply {
+            terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
+            employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1)
+            locationId = prefProvider.getValueInt(Constants.LOCATION_ID, -1)
+            orderTypeId = prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)
+            orderType = prefProvider.getValue(Constants.ORDER_TYPE, "").toString()
+            orderTypeName = prefProvider.getValue(Constants.ORDER_TYPE_NAME, "").toString()
+            isMaual = isManualSales
+            serviceCharge = serviceChargesList
+            customer = assignCustomer
+            item.itemQuantity = item.itemQuantity
+
         }
     }
 
@@ -3335,6 +4090,42 @@ class DashBoardCategoryViewModel @Inject constructor(
         return totaltaxtemp
     }
 
+    private fun getTotalTaxBirfurcationNew(
+        item: TbCartItem, itemtype: TaxData, type: String
+    ): Double {
+        var totaltaxtemp: Double = 0.0
+        var modifierPrice = 0.0
+        val price = (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
+
+        item.modifiers.forEach {
+            modifierPrice += (it.price * it.itemQuantity)
+        }
+
+        val totalPrice = price + modifierPrice /*- (discountPrice * item.itemQuantity)*/
+
+
+        totaltaxtemp += if (itemtype.taxType == "Percentage") {
+            if (totalPrice < 0.0) {
+
+                String.format("%.2f", 0.00).toDouble()
+            } else {
+                val itemTaxPrice = (itemtype.rate * totalPrice) / 100
+                Log.e("itemTaxPrice", "" + itemTaxPrice)
+                itemTaxPrice
+            }
+
+        } else {
+            Log.d("yash", "taxCalculation: " + itemtype.taxType)
+            if (totalPrice <= 0.0) {
+                String.format("%.2f", 0.00).toDouble()
+            } else {
+                String.format("%.2f", itemtype.rate * item.itemQuantity).toDouble()
+            }
+
+        }
+        return totaltaxtemp
+    }
+
     private fun taxBifurcationCalculation(
         item: TbItem, cartModel: CartModel, type: String, orderTaxID: Boolean
     ): CartModel {
@@ -3468,6 +4259,148 @@ class DashBoardCategoryViewModel @Inject constructor(
                         itemtype.subTotalAmount = itemtype.subTotalAmount?.plus(totalPrice)
                     }
                     itemtype.totalTaxTypePrice = getTotalTaxBirfurcation(item, itemtype, type)
+                    cartModel.taxlistDynamic = listOf(itemtype)
+                }
+            }
+
+        }
+
+        return cartModel
+    }
+
+    private fun taxBifurcationCalculationNew(
+        item: TbCartItem, cartModel: CartModel, type: String, orderTaxID: Boolean
+    ): CartModel {
+        item.taxes?.forEachIndexed { indextax, itemtype ->
+            if (itemtype.isActive && !itemtype.isDeleted) {
+                if (cartModel.taxlistDynamic?.isNotEmpty() == true) {
+                    var found = -1
+                    cartModel.taxlistDynamic!!.forEachIndexed { index, itemData ->
+                        if (orderTaxID) {
+                            if (itemtype.orderTaxId == itemData.orderTaxId) {
+                                found = index
+                            }
+                        } else {
+                            if (itemtype.id == itemData.id) {
+                                found = index
+                            }
+                        }
+
+                    }
+                    Log.d(TAG, "taxBifurcationCalculation: " + found)
+                    if (found == -1) {
+                        if (itemtype.taxType != "Percentage") {
+                            var modifierPrice: Double = 0.0
+                            val price =
+                                (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
+
+                            item.modifiers.forEach {
+                                modifierPrice += (it.price * it.itemQuantity)
+                            }
+
+                            val totalPrice = price + modifierPrice
+                            itemtype.subTotalAmount = itemtype.subTotalAmount?.plus(totalPrice)
+                        } else {
+                            itemtype.subTotalAmount = 0.0
+                        }
+                        itemtype.totalTaxTypePrice = getTotalTaxBirfurcationNew(item, itemtype, type)
+                        cartModel.taxlistDynamic =
+                            concatenate(cartModel.taxlistDynamic!!, listOf(itemtype))
+                    } else {
+                        if (itemtype.taxType != "Percentage") {
+                            var modifierPrice: Double = 0.0
+                            val price =
+                                (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
+
+                            item.modifiers.forEach {
+                                modifierPrice += (it.price * it.itemQuantity)
+                            }
+                            val totalPrice = price + modifierPrice
+                            if (type == DELETE) {
+                                if (found <= cartModel.taxlistDynamic?.size!! - 1) {
+                                    cartModel.taxlistDynamic!![found].subTotalAmount =
+                                        cartModel.taxlistDynamic!![found].subTotalAmount.minus(
+                                            totalPrice
+                                        )
+                                }
+                            } else {
+                                if (found <= cartModel.taxlistDynamic?.size!! - 1) {
+                                    cartModel.taxlistDynamic!![found].subTotalAmount =
+                                        cartModel.taxlistDynamic!![found].subTotalAmount.plus(
+                                            totalPrice
+                                        )
+                                }
+                            }
+
+                        } else {
+                            if (found <= cartModel.taxlistDynamic?.size!! - 1) {
+                                cartModel.taxlistDynamic!![found].subTotalAmount = 0.0
+                            }
+                        }
+                        if (type == ADD || type == UPDATE) {
+                            if (found <= cartModel.taxlistDynamic?.size!! - 1) {
+                                cartModel.taxlistDynamic?.get(found)?.totalTaxTypePrice =
+                                    cartModel.taxlistDynamic!![found].totalTaxTypePrice.plus(
+                                        getTotalTaxBirfurcationNew(
+                                            item, itemtype, type
+                                        )
+                                    )
+                            }
+                        } else if (type == DELETE) {
+                            if (found <= cartModel.taxlistDynamic?.size!! - 1) {
+                                cartModel.taxlistDynamic?.get(found)?.totalTaxTypePrice =
+                                    cartModel.taxlistDynamic?.get(found)?.totalTaxTypePrice?.minus(
+                                        getTotalTaxBirfurcationNew(
+                                            item, itemtype, type
+                                        )
+                                    )!!
+                            }
+                            if (found <= cartModel.taxlistDynamic?.size!! - 1) {
+                                if (cartModel.taxlistDynamic?.get(found)?.totalTaxTypePrice == 0.0) {
+                                    var temp_arraylist: ArrayList<TaxData> =
+                                        cartModel.taxlistDynamic!!.toCollection(
+                                            arrayListOf()
+                                        )
+                                    temp_arraylist.removeAt(found)
+                                    cartModel.taxlistDynamic = temp_arraylist.toList()
+
+                                }
+                            }
+                            if (cartModel.taxlistDynamic!!.isNotEmpty()) {
+                                if (found <= cartModel.taxlistDynamic?.size!! - 1) {
+                                    if (cartModel.taxlistDynamic?.get(found)?.taxType != "Percentage") {
+                                        if (cartModel.taxlistDynamic?.get(found)?.subTotalAmount == 0.0) {
+                                            var temp_arraylist: ArrayList<TaxData> =
+                                                cartModel.taxlistDynamic!!.toCollection(
+                                                    arrayListOf()
+                                                )
+                                            temp_arraylist.removeAt(found)
+                                            cartModel.taxlistDynamic = temp_arraylist.toList()
+
+                                        }
+                                    }
+                                }
+
+                            }
+
+
+                        }
+
+                    }
+                } else {
+                    if (itemtype.taxType != "Percentage") {
+                        var modifierPrice: Double = 0.0
+                        val price =
+                            (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
+
+                        item.modifiers.forEach {
+                            modifierPrice += (it.price * it.itemQuantity)
+                        }
+
+                        val totalPrice = price + modifierPrice
+                        itemtype.subTotalAmount = itemtype.subTotalAmount?.plus(totalPrice)
+                    }
+                    itemtype.totalTaxTypePrice = getTotalTaxBirfurcationNew(item, itemtype, type)
                     cartModel.taxlistDynamic = listOf(itemtype)
                 }
             }

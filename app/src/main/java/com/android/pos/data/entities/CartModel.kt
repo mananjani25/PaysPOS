@@ -9,7 +9,6 @@ import com.android.pos.data.typeconvert.TypeConvertersItems
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-@TypeConverters(TypeConvertersItems::class)
 @Entity(tableName = "CartModel")
 class CartModel : Parcelable {
 

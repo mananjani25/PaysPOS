@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.DineInCartModel
+import com.android.pos.data.entities.TbCartItem
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -13,6 +14,16 @@ import kotlinx.coroutines.flow.Flow
 interface CartDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun add(cartModel: CartModel): Long?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun addCartItem(cartItem: TbCartItem): Long?
+
+    @Query("select * from TbCartItem")
+    fun getCartItems(): Flow<List<TbCartItem>>
+
+    @Transaction
+    @Query("DELETE FROM TbCartItem")
+    suspend fun deleteCartItems()
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
      fun addSuspended(cartModel: CartModel): Long?

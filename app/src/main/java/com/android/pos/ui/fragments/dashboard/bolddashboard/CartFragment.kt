@@ -1037,7 +1037,7 @@ class CartFragment(
             if (view != null) {
 
 
-                viewModel.mAllWordsFlow(
+                /*viewModel.mAllWordsFlow(
                     prefProvider.getValue(ORDER_TYPE, TAKEOUT),
                     prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
                 ).asLiveData().observe(viewLifecycleOwner) {
@@ -1666,6 +1666,13 @@ class CartFragment(
                         })
 
                     }
+                }*/
+
+                viewModel.getAllCartItems().asLiveData().observe(viewLifecycleOwner){
+                    Log.d("BRUNO", "addObserver: CALLED")
+                /*it.forEach {tbCartItem ->
+                        Log.d("BRUNO", "ITEM: ${tbCartItem.name} , QTY: ${tbCartItem.itemQuantity}")
+                    }*/
                 }
             }
 

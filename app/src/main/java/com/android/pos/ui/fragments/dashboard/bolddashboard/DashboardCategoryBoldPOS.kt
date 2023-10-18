@@ -1105,9 +1105,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         }
     }
 
-    override fun onItemSelected(item: TbItem) {
+    override fun onItemSelected(tbItem: TbItem) {
 
-        when (item.name) {
+        when (tbItem.name) {
             SELL_CARD -> {
                 // clear customer if added any for previous order type
                 viewModel.clearCustomer()
@@ -1131,6 +1131,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             else -> {
 
                 CoroutineScope(Dispatchers.IO).launch {
+                    val item = TbCartItem().convertToCartItem(tbItem, tbItem)
                     item.timeStamp = randomOfflineId()
                     getInitialTakeOutOrderType()
                     Log.e("viewModel.cartModel", Gson().toJson(viewModel.cartModel))
@@ -1158,10 +1159,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
 
                     if (item.modifier_set_ids.isNotEmpty() || item.variationsAttributes.isNotEmpty()) {
-                        /*  if (item.variationsAttributes.isNotEmpty()) {
-                              item.variationsAttributes.get(0).isChecked = true
-                          }*/
-                        item.modifiers.forEach { it.isChecked = false }
+
+                        /*item.modifiers.forEach { it.isChecked = false }
                         item.variationsAttributes.forEach { it ->
                             if (it.priceType == "Variable") {
                                 it.price = null
@@ -1177,8 +1176,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         val fm: FragmentManager = requireActivity().supportFragmentManager
                         fm.beginTransaction().add(binding.frameLayout.id, fragment)
                             .setReorderingAllowed(true)
-                            .addToBackStack(backStateName).commit()
-                        //  loadCategoryFragment(fragment)
+                            .addToBackStack(backStateName).commit()*/
                     } else {
                         Log.e(TAG, "cartListItemAddSize: ${cartList.size}")
                         if (cartList.isEmpty()) {
@@ -1192,7 +1190,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                     prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
 
                             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
-                                if (cartList[0].dineInList?.isEmpty() == true) {
+                                /*if (cartList[0].dineInList?.isEmpty() == true) {
                                     cartList[0].dineInList = dineInList
                                 }
 
@@ -1224,16 +1222,16 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                         )
                                     })
 
-                                }
+                                }*/
                             } else {
-                                runOnUiThread(Runnable {
-                                    viewModel.newCartLogicModifier(
-                                        cartList,
+                                runOnUiThread {
+                                    viewModel.updateCart(
+                                        listOf(item),
                                         item,
                                         Constants.ADD,
-                                        false
+                                        false,
                                     )
-                                })
+                                }
                             }
                         }
 

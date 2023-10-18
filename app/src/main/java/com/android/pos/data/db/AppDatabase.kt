@@ -39,6 +39,7 @@ import com.android.pos.data.typeconvert.TCServiceCharge
 import com.android.pos.data.typeconvert.TCVariations
 import com.android.pos.data.typeconvert.TypeConvertersEmployee
 import com.android.pos.data.typeconvert.TypeConvertersIds
+import com.android.pos.data.typeconvert.TypeConvertersItems
 import com.android.pos.data.typeconvert.TypeConvertersModule
 import com.android.pos.data.typeconvert.TypeConvertersTax
 import com.android.pos.data.typeconvert.TypeConvertorAddress
@@ -55,10 +56,12 @@ import com.android.pos.data.typeconvert.TypeConvertorPhone
         PrinterResponse.Data.KitchenReceiptPrinters::class, GetKitchenReceiptSettingsResponse.Data::class,
         GetCustomerReceiptSettingsResponse.Data::class, LoyaltyProgramsModel::class, SplitDetailListModel::class,
         CashDiscountModel::class, TbCountryList::class, TbCardReader::class, PAXData::class, VenueDetailsResponse.Data.CancelOrderReason::class,
-        DineInCartModel::class, ShiftRportConfiguration::class, TbBusinessDetails::class, TbTimeZones::class, PrinterQueueModel::class, VenueDetailsResponse.Data.WastageReason::class],
+        DineInCartModel::class, ShiftRportConfiguration::class, TbBusinessDetails::class, TbTimeZones::class, PrinterQueueModel::class,
+        VenueDetailsResponse.Data.WastageReason::class, TbCartItem::class],
     version = 11
 )
 @TypeConverters(
+    TypeConvertersItems::class,
     TypeConvertersIds::class,
     TypeConvertorAddress::class,
     TypeConvertorPhone::class,

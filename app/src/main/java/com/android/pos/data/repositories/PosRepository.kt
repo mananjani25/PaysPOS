@@ -1,6 +1,7 @@
 package com.android.pos.data.repositories
 
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.android.pos.data.db.AppDatabase
@@ -53,7 +54,9 @@ import com.android.pos.utils.performGetOperation
 import com.android.pos.utils.performGetOperationDatabase
 import com.android.pos.utils.performGetOperationNew
 import com.android.pos.utils.statusUtils.Resource
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
@@ -714,6 +717,8 @@ class PosRepository @Inject constructor(
         return appDatabase.cartDao().allItemFlow(orderType, employee_Id)
     }
 
+    fun getAllCartItems() = appDatabase.cartDao().getCartItems()
+
     fun getCartDineInList(employee_Id: Int): LiveData<List<DineInCartModel>> {
         return appDatabase.cartDao().allItemDineIn(DINE_IN, employee_Id)
     }
@@ -740,6 +745,15 @@ class PosRepository @Inject constructor(
 
     }
 
+    suspend fun addItemToCart(tbCartItem: TbCartItem) {
+        val startTime = System.currentTimeMillis()
+        appDatabase.cartDao().addCartItem(tbCartItem)
+        // Calculate the time taken
+        val endTime = System.currentTimeMillis()
+        val timeTaken = endTime - startTime
+        Log.d("InsertTime", "Time taken to insert: $timeTaken ms")
+    }
+
     suspend fun addItemCartDineIn(cartModel: DineInCartModel) {
 
         appDatabase.cartDao().addDineInCartDao(cartModel)
@@ -753,6 +767,7 @@ class PosRepository @Inject constructor(
 
     suspend fun deleteCart(employee_id: Int) {
         appDatabase.cartDao().delete(employee_id)
+        appDatabase.cartDao().deleteCartItems()
     }
 
     suspend fun deleteAllCart() {
