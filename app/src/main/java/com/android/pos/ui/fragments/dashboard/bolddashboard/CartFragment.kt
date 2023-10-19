@@ -2469,6 +2469,18 @@ class CartFragment(
                             future_delivery_time = formattertime.format(date)
 
                             LogUtil.logE(TAG, "UpdateOrderItemsList  ${cartList.items?.size}")
+
+                            if (arguments?.getBoolean("update") == true) {
+                                if (prefProvider.getValueboolean(Constants.BACK_FROM_PAYMENT, false) == true) {
+                                    prefProvider.setValueboolean(Constants.BACK_FROM_PAYMENT, false)
+                                    if (prefProvider.getValueboolean(Constants.NO_NEED_TO_PRINT, true)) {
+                                        checkUpdation()
+                                    }
+                                } else {
+                                    checkUpdation()
+                                }
+                            }
+
                             val request = viewModelPayment.createOpenOrderRequest(
                                 cartList,
                                 viewModel.subTotalPrice,
@@ -2495,9 +2507,7 @@ class CartFragment(
                             )
                             isSaveOrder = true
                             viewModelPayment.saveOrder(true)
-                            viewModelPayment.submit(request)
-
-
+                            viewModelPayment.submit(request, !prefProvider.getValueboolean(Constants.NO_NEED_TO_PRINT, false))
 
                             isOrderUpdate = false
                             binding.tvSave.text = getString(R.string.save)

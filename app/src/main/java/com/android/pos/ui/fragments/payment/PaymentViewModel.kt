@@ -130,9 +130,9 @@ open class PaymentViewModel @Inject constructor(
         this.order_type_id = order_typeId
     }
 
-    fun submit(orderRequestModel: OrderRequestModel) {
+    fun submit(orderRequestModel: OrderRequestModel , printOrder: Boolean = true) {
 
-
+        orderRequestModel.print_order = printOrder
         if (cashPaymentType(orderRequestModel)) {
             _showProgressCash.value = Event(true)
         } else
