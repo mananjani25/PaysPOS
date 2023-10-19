@@ -1105,7 +1105,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         }
     }
 
-    override fun onItemSelected(tbItem: TbItem) {
+    override fun onItemSelected(tbItem: TbItem, position: Int) {
 
         when (tbItem.name) {
             SELL_CARD -> {
@@ -1129,10 +1129,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             }
 
             else -> {
-
+                viewModel.setLatestCartItemPosition(position)
                 CoroutineScope(Dispatchers.IO).launch {
                     val item = TbCartItem().convertToCartItem(tbItem, tbItem)
-                    item.timeStamp = randomOfflineId()
+                    item.timeStamp = System.currentTimeMillis().toString()
                     getInitialTakeOutOrderType()
                     Log.e("viewModel.cartModel", Gson().toJson(viewModel.cartModel))
 
@@ -1160,7 +1160,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                     if (item.modifier_set_ids.isNotEmpty() || item.variationsAttributes.isNotEmpty()) {
 
-                        /*item.modifiers.forEach { it.isChecked = false }
+                        item.modifiers.forEach { it.isChecked = false }
                         item.variationsAttributes.forEach { it ->
                             if (it.priceType == "Variable") {
                                 it.price = null
@@ -1176,7 +1176,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         val fm: FragmentManager = requireActivity().supportFragmentManager
                         fm.beginTransaction().add(binding.frameLayout.id, fragment)
                             .setReorderingAllowed(true)
-                            .addToBackStack(backStateName).commit()*/
+                            .addToBackStack(backStateName).commit()
                     } else {
                         Log.e(TAG, "cartListItemAddSize: ${cartList.size}")
                         if (cartList.isEmpty()) {
@@ -1226,11 +1226,17 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                             } else {
                                 runOnUiThread {
                                     viewModel.updateCart(
-                                        listOf(item),
+                                        viewModel.currentCartItems,
                                         item,
                                         Constants.ADD,
                                         false,
                                     )
+                                   /* viewModel.newCartLogicModifier(
+                                        cartList,
+                                        item,
+                                        Constants.ADD,
+                                        false
+                                    )*/
                                 }
                             }
                         }
@@ -1482,12 +1488,21 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     override fun onItemUpdate(item: TbItem, position: Int) {
         prefProvider.setValueInt(Constants.CAT_ID_SELECTED, item.categoryId)
         val backStateName: String = AddItemFragment.javaClass.getName()
-        val fragment = AddItemFragment.newInstance(item, this, cartList, true, position)
+        val fragment = AddItemFragment.newInstance(TbCartItem().convertToCartItem(item, item), this, cartList, true, position)
         val fm: FragmentManager = requireActivity().supportFragmentManager
         fm.beginTransaction().add(binding.frameLayout.id, fragment).setReorderingAllowed(true)
             .addToBackStack(backStateName).commit()
         /*val frag: Fragment = AddItemFragment.newInstance(item, this, cartList, true)
         loadCategoryFragment(frag)*/
+    }
+
+    override fun onCartItemUpdate(item: TbCartItem, position: Int) {
+        prefProvider.setValueInt(Constants.CAT_ID_SELECTED, item.categoryId)
+        val backStateName: String = AddItemFragment.javaClass.getName()
+        val fragment = AddItemFragment.newInstance(item, this, cartList, true, position)
+        val fm: FragmentManager = requireActivity().supportFragmentManager
+        fm.beginTransaction().add(binding.frameLayout.id, fragment).setReorderingAllowed(true)
+            .addToBackStack(backStateName).commit()
     }
 
     override fun onDineInOrderCleared() {

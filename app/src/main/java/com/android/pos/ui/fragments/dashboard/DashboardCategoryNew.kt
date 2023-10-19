@@ -1709,6 +1709,10 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         }
     }
 
+    override fun onCartItemClickListener(view: View?, data: TbCartItem, position: Int) {
+        TODO("Not yet implemented")
+    }
+
     private fun makeItemEdited(item: TbItem) {
         if (isOrderUpdate) {
             //for open order and edit cart

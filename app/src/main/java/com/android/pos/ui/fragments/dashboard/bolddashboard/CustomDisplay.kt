@@ -551,6 +551,9 @@ class CustomDisplay(
     }
 
     override fun onItemClickListener(view: View?, data: TbItem, position: Int) {}
+    override fun onCartItemClickListener(view: View?, data: TbCartItem, position: Int) {
+        TODO("Not yet implemented")
+    }
 
     override fun onHeaderSelected(position: Int) {}
 

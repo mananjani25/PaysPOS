@@ -10,6 +10,7 @@ import androidx.core.view.get
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
+import com.android.pos.data.entities.TbCartItem
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.DineInModel
 import com.android.pos.databinding.ViewDineInItemBinding
@@ -180,6 +181,10 @@ class DineInAdapterCustomerDisplay : RecyclerView.Adapter<DineInAdapterCustomerD
             list.get(0).headerPosition = layoutPosition
             listner.onItemSelected(bindingAdapterPosition, position, data)
 
+        }
+
+        override fun onCartItemClickListener(view: View?, data: TbCartItem, position: Int) {
+            TODO("Not yet implemented")
         }
 
     }

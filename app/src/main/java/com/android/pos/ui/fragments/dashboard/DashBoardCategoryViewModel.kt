@@ -101,6 +101,7 @@ import java.net.URL
 import java.text.NumberFormat
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 import kotlin.collections.set
 import kotlin.math.ceil
 
@@ -139,6 +140,8 @@ class DashBoardCategoryViewModel @Inject constructor(
     var tip = 0.0
     var order_note = ""
     var cartModel: CartModel? = null
+    var currentCartItems: ArrayList<TbCartItem> = arrayListOf()
+    var latestUpdatedCartItem = 0
     var assignCustomer: TbCustomer? = null
     var orderItemDiscount = 0.0
     var selectedCustomer: TbCustomer? = null
@@ -232,6 +235,13 @@ class DashBoardCategoryViewModel @Inject constructor(
         this.cartModel = generateCombinedItems(cartList[0])
     }
 
+    fun setCurrentCartItems(cartItems: List<TbCartItem>) {
+        this.currentCartItems = cartItems.toCollection(ArrayList())
+    }
+
+    fun setLatestCartItemPosition(position: Int) {
+        latestUpdatedCartItem = position
+    }
 
     val serviceCharges = posRepository.serviceChargeList()
     val getOrderTypes = posRepository.getOrderTypes()
@@ -372,7 +382,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     }
 
-    fun addItemToCartItems(tbCartItem: TbCartItem){
+    private fun addItemToCartItems(tbCartItem: TbCartItem) {
         CoroutineScope(Dispatchers.IO).launch {
             posRepository.addItemToCart(tbCartItem)
         }
@@ -1774,6 +1784,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 } else {
                     cartModel = taxBifurcationCalculationNew(item, cartModel!!, type, false)
                 }
+                addItemToCartItems(item)
             } else if (dineInList.isNotEmpty()) {
                 dineInList.forEach { dineInModel ->
                     dineInModel.items.forEach { itemData ->
@@ -2314,9 +2325,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                     }
                 }
                 addCart(cartModel!!)
-                if (item != null) {
-                    addItemToCartItems(item)
-                }
+                val newUpdatedItem = list.filter { it.itemId == item?.itemId }[0]
+                addItemToCartItems(newUpdatedItem)
             } else {
 
                 if (type == DELETE) {
@@ -2949,7 +2959,11 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     }
 
-    private fun combineItemNew(list: ArrayList<TbCartItem>, item: TbCartItem, index: Int): List<TbCartItem> {
+    private fun combineItemNew(
+        list: ArrayList<TbCartItem>,
+        item: TbCartItem,
+        index: Int
+    ): List<TbCartItem> {
         Log.e(TAG, "newItemitemQuantity  ${Gson().toJson(item)}")
         Log.e(TAG, "newItemitemQuantity  ${item.itemQuantity}")
         Log.e(TAG, "newItemitemQuantityOld  ${list[index].itemQuantity}")
@@ -3899,6 +3913,172 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     }
 
+    fun itemCalculationCartModelNew(
+        cartItems: List<TbCartItem>,
+        txtTotalAmount: AppCompatTextView,
+        context: Context
+    ) {
+
+        var totalAmmount = 0.0
+        nonCashAdj = 0.0
+        totalPrice = 0.0
+        totalCount = 0
+        subTotalPrice = 0.0
+        totalDiscount = 0.0
+        totalTax = 0.0
+        totalServiceCharge = 0.0
+        var amountToBePaid = 0.0
+
+        if (cartItems.isNotEmpty()) {
+
+            if (cartModel?.reorder == true) {
+
+
+                val itemCount = cartItems.size
+
+                cartItems.forEach { item ->
+                    totalCount += item.itemQuantity
+                    totalDiscount += (item.discountPrice * item.itemQuantity)
+                    subTotalPrice += (item.price * item.itemQuantity)
+                    item.modifiers.forEach {
+                        subTotalPrice += (it.price * it.itemQuantity)
+                    }
+                    taxCalculationReorderNew(item)
+
+
+                }
+                String.format("%.2f", totalTax).toDouble()
+                subTotalPrice -= cartModel?.discountPrice ?: 0.0
+                if (subTotalPrice < 0) {
+                    subTotalPrice = 0.0
+                }
+                //serviceChargeCalculationModel(cartModel!!)
+
+                /*totalDiscount += cartModel.discountPrice
+                order_note = cartModel.note*/
+
+                var finalTotal = 0.0
+                finalTotal = (subTotalPrice + totalTax + totalServiceCharge)
+
+                cashDiscountType = prefProvider.getValue(Constants.OPTION_TYPE, "")
+                //loyalty point and price calculation
+                amountToBePaid = finalTotal
+                if (selectedCustomer == null) {
+                    totalPrice = amountToBePaid
+                    MethodUtils.setPriceTextView(
+                        txtTotalAmount, amountToBePaid
+                    )
+                } else {
+                    checkAppliedLoyaltyProgram(
+                        selectedCustomer, amountToBePaid, txtTotalAmount
+                    )
+                    redeemLoyaltyInfo.getAmountToBePaid()?.let {
+                        totalPrice = it
+                    }
+                }
+
+                if (MethodUtils.isEnableCashDiscount(context)) {
+                    cashdiscountAmount = MethodUtils.calculateCashDiscount(
+                        totalPrice, prefProvider, context
+                    )
+                } else {
+                    cashdiscountAmount = 0.0
+                }
+
+
+            } else {
+
+                nonCashAdj = 0.0
+                totalPrice = 0.0
+                totalCount = 0
+                subTotalPrice = 0.0
+                totalDiscount = 0.0
+                totalTax = 0.0
+                totalServiceCharge = 0.0
+
+                val itemCount = cartItems.size
+                var taxList: ArrayList<TaxData> = arrayListOf()
+                cartItems.forEach { item ->
+                    if (!item.isDestroy) {
+                        totalCount += item.itemQuantity
+                        totalDiscount += item.discountPrice * item.itemQuantity
+                        subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
+
+
+                        taxCalculationNew(item, 0.0 / itemCount)
+
+                        item.modifiers.forEach {
+                            subTotalPrice += (it.price * it.itemQuantity)
+
+                        }
+                    }
+                }
+                subTotalPrice -= cartModel?.discountPrice ?: 0.0
+                if (subTotalPrice < 0) {
+                    subTotalPrice = 0.0
+                }
+                /*serviceChargeCalculationModel(cartModel!!)
+
+                totalDiscount += cartModel.discountPrice
+                order_note = cartModel.note*/
+
+                var finalTotal = 0.0
+                finalTotal = (subTotalPrice + totalTax + totalServiceCharge)
+
+                redeemLoyaltyInfo.needToApplyLoyalty = prefProvider.getValueboolean(
+                    LOYALTY_ADDED, false
+                )
+                totalPrice = finalTotal
+
+
+
+                cashDiscountType = prefProvider.getValue(Constants.OPTION_TYPE, "")
+                //loyalty point and price calculation
+                amountToBePaid = finalTotal
+
+                if (selectedCustomer == null) {
+                    totalPrice = amountToBePaid
+                    MethodUtils.setPriceTextView(
+                        txtTotalAmount, amountToBePaid
+                    )
+                } else {
+                    checkAppliedLoyaltyProgram(
+                        selectedCustomer, amountToBePaid, txtTotalAmount
+                    )
+                    redeemLoyaltyInfo.getAmountToBePaid()?.let {
+                        totalPrice = it
+                    }
+                }
+
+                if (MethodUtils.isEnableCashDiscount(context) && prefProvider.getValue(
+                        ORDER_TYPE, TAKEOUT
+                    ) != GIFT_CARD
+                ) {
+                    cashdiscountAmount = MethodUtils.calculateCashDiscount(
+                        totalPrice, prefProvider, context
+                    )
+                } else {
+                    cashdiscountAmount = 0.0
+                }
+
+            }
+
+
+        } else {
+
+            nonCashAdj = 0.0
+            totalPrice = 0.0
+            totalCount = 0
+            subTotalPrice = 0.0
+            totalDiscount = 0.0
+            totalTax = 0.0
+            totalServiceCharge = 0.0
+            amountToBePaid = 0.0
+            MethodUtils.setPriceTextView(txtTotalAmount, totalPrice)
+        }
+
+    }
+
 
     fun loyaltyPointCondition(customer: TbCustomer?): Boolean {
         return (customer?.enroll_to_loyalty == true && activeLoyaltyProgram != null && activeLoyaltyProgram?.rewardPoint ?: 0 <= customer.final_reward ?: 0)
@@ -4303,7 +4483,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                         } else {
                             itemtype.subTotalAmount = 0.0
                         }
-                        itemtype.totalTaxTypePrice = getTotalTaxBirfurcationNew(item, itemtype, type)
+                        itemtype.totalTaxTypePrice =
+                            getTotalTaxBirfurcationNew(item, itemtype, type)
                         cartModel.taxlistDynamic =
                             concatenate(cartModel.taxlistDynamic!!, listOf(itemtype))
                     } else {
@@ -4468,7 +4649,102 @@ class DashBoardCategoryViewModel @Inject constructor(
         Log.e("CheckTotalTax", "totalTax:   ${totalTax}")
     }
 
+    private fun taxCalculationNew(item: TbCartItem, discountPrice: Double) {
+
+        item.taxes?.forEach { tax ->
+            if (tax.isActive && !tax.isDeleted) {
+
+
+                var modifierPrice = 0.0
+                val price =
+                    (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
+
+                item.modifiers.forEach {
+                    modifierPrice += (it.price * it.itemQuantity)
+                }
+
+                val totalPrice = price + modifierPrice /*- (discountPrice * item.itemQuantity)*/
+
+                Log.e("GetTaxTotalPrice", "totalPrice:   ${totalPrice}")
+
+                totalTax += if (tax.taxType == "Percentage") {
+                    Log.d("yash", "taxCalculation: " + tax.taxType)
+
+
+                    if (totalPrice < 0.0) {
+
+                        String.format("%.2f", 0.00).toDouble()
+                    } else {
+                        val itemTaxPrice = (tax.rate * totalPrice) / 100
+                        Log.e("itemTaxPrice", "" + itemTaxPrice)
+                        //String.format("%.2f",itemTaxPrice).toDouble()
+                        String.format("%.2f", itemTaxPrice).toDouble()
+                        //  MethodUtils.getTwoDecimal(itemTaxPrice)
+                    }
+
+                } else {
+                    Log.d("yash", "taxCalculation: " + tax.taxType)
+
+                    if (totalPrice <= 0.0) {
+                        String.format("%.2f", 0.00).toDouble()
+                    } else {
+                        //   MethodUtils.getTwoDecimal(tax.rate * item.itemQuantity)
+                        /*String.format("%.2f", tax.rate * item.itemQuantity)
+                            .toDouble()*/
+                        String.format("%.2f", tax.rate * item.itemQuantity).toDouble()
+
+                    }
+
+                }
+            }
+        }
+        String.format("%.2f", totalTax).toDouble()
+
+        Log.e("CheckTotalTax", "totalTax:   ${totalTax}")
+    }
+
     private fun taxCalculationReorder(item: TbItem) {
+        item.taxes?.forEach { tax ->
+            if (tax.isActive && !tax.isDeleted) {
+
+                var modifierPrice = 0.0
+                val price = (item.price * item.itemQuantity) - (item.discountPrice)
+
+                item.modifiers.forEach {
+                    modifierPrice += (it.price * it.itemQuantity)
+                }
+
+                val totalPrice = price + modifierPrice /*- (discountPrice * item.itemQuantity)*/
+
+
+                totalTax += if (tax.taxType == "Percentage") {
+                    Log.d("yash", "taxCalculation: " + tax.taxType)
+
+
+                    if (totalPrice < 0.0) {
+
+                        String.format("%.2f", 0.00).toDouble()
+                    } else {
+                        val itemTaxPrice = (tax.rate * totalPrice) / 100
+                        Log.e("itemTaxPrice", "" + itemTaxPrice)
+                        itemTaxPrice.toDouble()
+                    }
+
+                } else {
+                    Log.d("yash", "taxCalculation: " + tax.taxType)
+
+                    if (totalPrice <= 0.0) {
+                        String.format("%.2f", 0.00).toDouble()
+                    } else {
+                        String.format("%.2f", tax.rate * item.itemQuantity).toDouble()
+                    }
+
+                }
+            }
+        }
+    }
+
+    private fun taxCalculationReorderNew(item: TbCartItem) {
         item.taxes?.forEach { tax ->
             if (tax.isActive && !tax.isDeleted) {
 

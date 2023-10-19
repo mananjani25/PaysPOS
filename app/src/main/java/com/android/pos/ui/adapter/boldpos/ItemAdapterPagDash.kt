@@ -160,7 +160,7 @@ class ItemAdapterPagDash(
                     AlertUtils.showCustomAlert(binding.root.context, model.name + " is sold out.")
                     return@setOnClickListener
                 } else if(model.name == SELL_CARD || model.name == ADD_VALUE || model.name == BALANCE_INQUIRY){
-                    listener.onItemSelected(model)
+                    listener.onItemSelected(model, position)
                     return@setOnClickListener
                 } else {
                     try {
@@ -175,7 +175,7 @@ class ItemAdapterPagDash(
                                 EventBus.getDefault().post("EventBus")
                             }
 
-                            listener.onItemSelected(it)
+                            listener.onItemSelected(it, position)
                             return@setOnClickListener
 
 

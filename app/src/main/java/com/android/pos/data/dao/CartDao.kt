@@ -18,7 +18,7 @@ interface CartDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addCartItem(cartItem: TbCartItem): Long?
 
-    @Query("select * from TbCartItem")
+    @Query("select * from TbCartItem ORDER BY timeStamp")
     fun getCartItems(): Flow<List<TbCartItem>>
 
     @Transaction
