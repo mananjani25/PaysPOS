@@ -2411,7 +2411,7 @@ class CartFragment(
                         if (prefProvider.getValue(ORDER_TYPE, "").trim() == PHONE_ORDER.trim()) {
 
                             viewModel.ordertypelist.forEach {
-                                if (it.orderType == PHONE_ORDER && it.isDefault) {
+                                if (it.orderType == PHONE_ORDER) {
                                     ordertype = it.orderType
                                     ordertypeId = it.id
                                 }
