@@ -6,7 +6,7 @@ data class OrderRequestModel(
     var order: OrderAttributeRequestModel,
     var send_payment_link: Boolean? = false,
     var gift_card_redeem: Boolean? = false,
-    var gift_card: GiftCardRedeem? = null
+    var gift_card: GiftCardRedeem? = null,
 ) {
     class GiftCardRedeem(
         var name: String = "",

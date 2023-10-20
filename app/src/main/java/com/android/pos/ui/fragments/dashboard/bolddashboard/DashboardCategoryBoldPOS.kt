@@ -247,6 +247,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 //        }
         getOrderTypes()
         observeSaveOrder()
+        observeOrderNotUpdated()
         getKitchenReceiptSettings()
         addObserver()
         getServiceCharges()
@@ -2396,6 +2397,26 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 // getKitchenPrinters(it)
 
 
+            }
+        }
+
+    }
+
+    private fun observeOrderNotUpdated() {
+
+        viewModelPayment.OrderNotUpdated.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let {
+                // AlertUtils.showCustomAlert(requireActivity(), it.message)
+                viewModel.deleteCart()
+                viewModel.updateActiveOrderFlagClear()
+                if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
+                    prefProvider.setValue(ORDER_TYPE, "")
+                }
+                prefProvider.setValue(ORDER_TYPE_NAME, "")
+                LogUtil.logE(TAG, "QueueCreateAgain")
+
+                clearCustomer()
+                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
             }
         }
 

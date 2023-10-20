@@ -5,7 +5,6 @@ import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.text.style.ForegroundColorSpan
 import android.util.Log
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -226,7 +225,7 @@ class CartFragment(
         isActiveOrder = arguments?.getBoolean("isFromActiveOrder") ?: false
 
         if (!prefProvider.getValueboolean(Constants.BACK_FROM_PAYMENT,false)){
-            prefProvider.getValueboolean(Constants.NO_NEED_TO_PRINT, false)
+            prefProvider.setValueboolean(Constants.NO_NEED_TO_PRINT, false)
         }
         findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Bundle>("data")
             ?.observe(viewLifecycleOwner) { it ->
@@ -2469,6 +2468,18 @@ class CartFragment(
                             future_delivery_time = formattertime.format(date)
 
                             LogUtil.logE(TAG, "UpdateOrderItemsList  ${cartList.items?.size}")
+
+                            if (arguments?.getBoolean("update") == true) {
+                                if (prefProvider.getValueboolean(Constants.BACK_FROM_PAYMENT, false) == true) {
+                                    prefProvider.setValueboolean(Constants.BACK_FROM_PAYMENT, false)
+                                    if (prefProvider.getValueboolean(Constants.NO_NEED_TO_PRINT, true)) {
+                                        checkUpdation()
+                                    }
+                                } else {
+                                    checkUpdation()
+                                }
+                            }
+
                             val request = viewModelPayment.createOpenOrderRequest(
                                 cartList,
                                 viewModel.subTotalPrice,
@@ -2495,9 +2506,15 @@ class CartFragment(
                             )
                             isSaveOrder = true
                             viewModelPayment.saveOrder(true)
-                            viewModelPayment.submit(request)
-
-
+                            if (!prefProvider.getValueboolean(Constants.NO_NEED_TO_PRINT, false)){
+                                //print
+                                Log.d(TAG, "checkUpdation calling submit -> printing ")
+                                viewModelPayment.submit(request)
+                            } else {
+                                //no print
+                                Log.d(TAG, "checkUpdation not printing ")
+                                viewModelPayment.noUpdatesFound()
+                            }
 
                             isOrderUpdate = false
                             binding.tvSave.text = getString(R.string.save)
