@@ -5,7 +5,6 @@ import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.text.style.ForegroundColorSpan
 import android.util.Log
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -2507,7 +2506,15 @@ class CartFragment(
                             )
                             isSaveOrder = true
                             viewModelPayment.saveOrder(true)
-                            viewModelPayment.submit(request, !prefProvider.getValueboolean(Constants.NO_NEED_TO_PRINT, false))
+                            if (!prefProvider.getValueboolean(Constants.NO_NEED_TO_PRINT, false)){
+                                //print
+                                Log.d(TAG, "checkUpdation calling submit -> printing ")
+                                viewModelPayment.submit(request)
+                            } else {
+                                //no print
+                                Log.d(TAG, "checkUpdation not printing ")
+                                viewModelPayment.noUpdatesFound()
+                            }
 
                             isOrderUpdate = false
                             binding.tvSave.text = getString(R.string.save)

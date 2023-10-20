@@ -89,6 +89,9 @@ open class PaymentViewModel @Inject constructor(
     private val _queueStart = MutableLiveData<Event<CreateOrderResponse?>>()
     val QueueStart: LiveData<Event<CreateOrderResponse?>> = _queueStart
 
+    private val _orderNotUpdated = MutableLiveData<Event<Any?>>()
+    val OrderNotUpdated: LiveData<Event<Any?>> = _orderNotUpdated
+
     private val _queueStartTakeOut = MutableLiveData<Event<CreateOrderResponse?>>()
     val QueueStartTakeOut: LiveData<Event<CreateOrderResponse?>> = _queueStartTakeOut
 
@@ -130,9 +133,9 @@ open class PaymentViewModel @Inject constructor(
         this.order_type_id = order_typeId
     }
 
-    fun submit(orderRequestModel: OrderRequestModel , printOrder: Boolean = true) {
+    fun submit(orderRequestModel: OrderRequestModel) {
 
-        orderRequestModel.print_order = printOrder
+//        orderRequestModel.print_order = printOrder
         if (cashPaymentType(orderRequestModel)) {
             _showProgressCash.value = Event(true)
         } else
@@ -269,6 +272,19 @@ open class PaymentViewModel @Inject constructor(
 //                    _showProgress.value = Event(true)
                 }
             }
+        }
+    }
+
+    fun noUpdatesFound() {
+        viewModelScope.launch {
+            posRepository.deleteCart(
+                    prefProvider.getValueInt(
+                        Constants.EMPLOYEE_ID,
+                        0
+                    )
+            )
+            _orderNotUpdated.value = Event(null)
+            deletePaxPaymentData()
         }
     }
 
