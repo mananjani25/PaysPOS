@@ -306,6 +306,8 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
 
                             try {
                                 if (it.asJsonObject.has("delivery_type")){
+                                    if (it.asJsonObject.get("order_type").asString == Constants.PHONE_ORDER.lowercase() ||
+                                        it.asJsonObject.get("order_type").asString == Constants.OPEN_ORDER.lowercase())
                                     modelOrder.deliveryType = it.asJsonObject.get("delivery_type").asString
                                 }
                             }catch (e:Exception){
