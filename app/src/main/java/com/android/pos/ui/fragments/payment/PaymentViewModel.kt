@@ -283,7 +283,7 @@ open class PaymentViewModel @Inject constructor(
                         0
                     )
             )
-            _orderNotUpdated.value = Event(null)
+            _orderNotUpdated.value = Event(true)
             deletePaxPaymentData()
         }
     }
