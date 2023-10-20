@@ -225,7 +225,7 @@ class CartFragment(
         isActiveOrder = arguments?.getBoolean("isFromActiveOrder") ?: false
 
         if (!prefProvider.getValueboolean(Constants.BACK_FROM_PAYMENT,false)){
-            prefProvider.getValueboolean(Constants.NO_NEED_TO_PRINT, false)
+            prefProvider.setValueboolean(Constants.NO_NEED_TO_PRINT, false)
         }
         findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Bundle>("data")
             ?.observe(viewLifecycleOwner) { it ->
