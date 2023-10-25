@@ -841,7 +841,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     if (item != null) {
                                         item.singleItemPrice = item.price
                                         item.modifiers.forEach { it ->
-                                            it.modifier_quantity = it.itemQuantity
+//                                            it.modifier_quantity = it.itemQuantity
+                                            it.itemQuantity = it.modifier_quantity * item.itemQuantity
                                             item.singleItemPrice += it.price * it.itemQuantity
                                         }
                                         item.isDestroy = false
@@ -1145,7 +1146,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                         if (item != null) {
                             if (item.modifiers.isNotEmpty()) {
                                 item.modifiers.forEach { mod ->
-                                    mod.modifier_quantity = mod.itemQuantity
+//                                    mod.modifier_quantity = mod.itemQuantity
+                                    mod.itemQuantity =
+                                        (mod.modifier_quantity * item.itemQuantity)
                                 }
                             }
                             cartModel.dineInList?.get(dineInSelectedItemHeaderPos)?.items?.add(item)
@@ -1823,7 +1826,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     model.modifiers.forEach {
                                         item?.modifiers?.forEach { itemmodif ->
                                             if (itemmodif.id == it.id) {
-                                                it.itemQuantity = itemmodif.itemQuantity ?: 1
+                                                it.itemQuantity =
+                                                    (it.modifier_quantity * model.itemQuantity) ?: 1
                                             }
                                         }
                                     }
@@ -2734,6 +2738,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                         taxCalculation(item, cartList[0].discountPrice / dineInItems)
 
                         item.modifiers.forEach {
+                            it.itemQuantity = it.modifier_quantity * item.itemQuantity
                             subTotalPrice += (it.price * it.itemQuantity)
                         }
                     }
@@ -2767,6 +2772,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                             taxCalculation(item, cartList[0].discountPrice / dineInItems)
 
                             item.modifiers.forEach {
+                                it.itemQuantity = it.modifier_quantity * item.itemQuantity
                                 subTotalPrice += (it.price * it.itemQuantity)
                             }
                         }
@@ -2811,6 +2817,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                         taxCalculation(item, cartList[0].discountPrice / itemCount!!)
 
                         item.modifiers.forEach {
+                            it.itemQuantity = it.modifier_quantity * item.itemQuantity
                             subTotalPrice += (it.price * it.itemQuantity)
 
                         }
@@ -2915,6 +2922,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                         taxCalculation(item, cartModel.discountPrice / dineInItems)
 
                         item.modifiers.forEach {
+                            it.itemQuantity = it.modifier_quantity * item.itemQuantity
                             subTotalPrice += (it.price * it.itemQuantity)
                         }
                     }
@@ -2996,6 +3004,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                         totalDiscount += (item.discountPrice * item.itemQuantity)
                         subTotalPrice += (item.price * item.itemQuantity)
                         item.modifiers.forEach {
+                            it.itemQuantity = it.modifier_quantity * item.itemQuantity
                             subTotalPrice += (it.price * it.itemQuantity)
                         }
                         taxCalculationReorder(item)
@@ -3065,6 +3074,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                             taxCalculation(item, cartModel.discountPrice / itemCount!!)
 
                             item.modifiers.forEach {
+                                it.itemQuantity = it.modifier_quantity * item.itemQuantity
                                 subTotalPrice += (it.price * it.itemQuantity)
 
                             }
@@ -3307,6 +3317,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         val price = (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
 
         item.modifiers.forEach {
+            it.itemQuantity = it.modifier_quantity * item.itemQuantity
             modifierPrice += (it.price * it.itemQuantity)
         }
 
@@ -3362,6 +3373,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
 
                             item.modifiers.forEach {
+                                it.itemQuantity = it.modifier_quantity * item.itemQuantity
                                 modifierPrice += (it.price * it.itemQuantity)
                             }
 
@@ -3380,6 +3392,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
 
                             item.modifiers.forEach {
+                                it.itemQuantity = it.modifier_quantity * item.itemQuantity
                                 modifierPrice += (it.price * it.itemQuantity)
                             }
                             val totalPrice = price + modifierPrice
@@ -3461,6 +3474,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                             (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
 
                         item.modifiers.forEach {
+                            it.modifier_quantity = it.modifier_quantity * item.itemQuantity
                             modifierPrice += (it.price * it.itemQuantity)
                         }
 
@@ -3492,6 +3506,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
 
                 item.modifiers.forEach {
+                    it.itemQuantity = it.modifier_quantity * item.itemQuantity
                     modifierPrice += (it.price * it.itemQuantity)
                 }
 
@@ -3543,6 +3558,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 val price = (item.price * item.itemQuantity) - (item.discountPrice)
 
                 item.modifiers.forEach {
+                    it.itemQuantity = it.modifier_quantity * item.itemQuantity
                     modifierPrice += (it.price * it.itemQuantity)
                 }
 
@@ -5607,6 +5623,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     taxCalculation(item, cartModel.discountPrice / itemCount!!)
 
                     item.modifiers.forEach {
+                        it.itemQuantity = it.modifier_quantity * item.itemQuantity
                         subTotalPrice += (it.price * it.itemQuantity)
 
                     }
