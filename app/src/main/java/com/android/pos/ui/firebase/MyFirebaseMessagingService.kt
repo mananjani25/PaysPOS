@@ -61,9 +61,11 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                     sendBroadcast(intent)
                     setSoundForOnlineOrder()
                 } else if (type == "Sync") {
-                    val intent = Intent()
-                    intent.action = SYNC_NOTIFICATION
-                    sendBroadcast(intent)
+                    if (prefProvider.getValue(Constants.AUTH_TOKEN,"").isNotEmpty()) {
+                        val intent = Intent()
+                        intent.action = SYNC_NOTIFICATION
+                        sendBroadcast(intent)
+                    }
                 } else if (type == "SettingData") {
                     val intent = Intent()
                     intent.action = SYNC_SETTING_NOTIFICATION

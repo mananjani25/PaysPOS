@@ -11,10 +11,8 @@ import com.android.pos.data.typeconvert.TCModifier
 import com.android.pos.data.typeconvert.TypeConvertersIds
 import com.android.pos.data.typeconvert.TypeConvertersTax
 import com.google.gson.Gson
-import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
-import java.util.*
-import kotlin.collections.ArrayList
+import java.util.UUID
 
 
 @TypeConverters(TypeConvertersTax::class, TypeConvertersIds::class, TCModifier::class)
@@ -252,9 +250,9 @@ class TbItem : Parcelable {
                             variationList.forEach { varI ->
                                 if (varI.id == it.id) {
                                     varI.name = it.name
-                                    varI.priceType = it.priceType
+                                    varI.priceType = it.priceType ?: ""
                                     varI.price = it.price
-                                    varI.optionIds = it.optionIds
+                                    varI.optionIds = it.optionIds ?: listOf()
                                     varI.optionSetIds = it.optionSetIds
                                     varI.orderVariationId = it.orderVariationId
                                     varI.stockQty = it.stockQty

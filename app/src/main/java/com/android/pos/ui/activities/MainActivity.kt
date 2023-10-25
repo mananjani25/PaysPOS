@@ -41,7 +41,6 @@ import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.IS_MASTER_TERMINAL
 import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
-import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_STARTS
 import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.remote.Constants.UNIQUE_ID
 import com.android.pos.data.repositories.UserRepository
@@ -189,7 +188,9 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         override fun onReceive(p0: Context?, p1: Intent?) {
 
             try {
-                dashBoardCategoryViewModel.syncInventoryModule(true)
+                if (prefProvider?.getValue(Constants.AUTH_TOKEN,"")?.isNotEmpty() == true) {
+                    dashBoardCategoryViewModel.syncInventoryModule(true)
+                }
             }catch (e:Exception){
                 Log.d("syncReceiver","dashBoardCategoryViewModel create exception")
 
@@ -266,7 +267,9 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         override fun onReceive(p0: Context?, p1: Intent?) {
 
             LogUtil.logEN("onReceive", "" + p1?.action)
-            dashBoardCategoryViewModel.syncSettingModule()
+            if (prefProvider?.getValue(Constants.AUTH_TOKEN,"")?.isNotEmpty() == true) {
+                dashBoardCategoryViewModel.syncSettingModule()
+            }
 
         }
 
