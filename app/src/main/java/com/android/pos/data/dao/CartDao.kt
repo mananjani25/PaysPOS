@@ -25,6 +25,9 @@ interface CartDao {
     @Query("DELETE FROM TbCartItem")
     suspend fun deleteCartItems()
 
+    @Query("select * from TbCartItem WHERE guestIndexForDineIn = :guestIndexForDineIn ORDER BY timeStamp")
+    fun getDineInCartItems(guestIndexForDineIn:Int): Flow<List<TbCartItem>>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
      fun addSuspended(cartModel: CartModel): Long?
 

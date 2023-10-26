@@ -7,6 +7,7 @@ import android.text.Spannable
 import android.text.style.ForegroundColorSpan
 import android.text.style.StrikethroughSpan
 import android.text.style.StyleSpan
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
@@ -181,6 +182,7 @@ class ItemAdapterPagDash(
 
                         }
                     } catch (e: Exception) {
+                        Log.d("TAG", "dineintest bind: error: "+e.message)
                         return@setOnClickListener
                         e.printStackTrace()
                     }

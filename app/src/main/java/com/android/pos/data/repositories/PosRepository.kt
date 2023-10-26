@@ -718,6 +718,7 @@ class PosRepository @Inject constructor(
     }
 
     fun getAllCartItems() = appDatabase.cartDao().getCartItems()
+    fun getDineInCartItems(guestIndexForDineIn:Int) = appDatabase.cartDao().getDineInCartItems(guestIndexForDineIn)
 
     fun getCartDineInList(employee_Id: Int): LiveData<List<DineInCartModel>> {
         return appDatabase.cartDao().allItemDineIn(DINE_IN, employee_Id)

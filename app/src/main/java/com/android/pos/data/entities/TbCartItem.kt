@@ -71,6 +71,8 @@ class TbCartItem : Parcelable {
     var headerPositionDinein = 0
     var itemOriginalModifiersList: List<Modifier>? = arrayListOf()
 
+    var guestIndexForDineIn : Int? = null
+
     fun convertToItem(item: Item, category: Category?): TbCartItem {
 
         itemId = item.id
