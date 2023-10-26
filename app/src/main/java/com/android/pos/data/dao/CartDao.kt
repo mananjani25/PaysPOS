@@ -25,6 +25,9 @@ interface CartDao {
     @Query("DELETE FROM TbCartItem")
     suspend fun deleteCartItems()
 
+    @Delete
+    suspend fun deleteItemFromCartItems(cartItem: TbCartItem)
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
      fun addSuspended(cartModel: CartModel): Long?
 

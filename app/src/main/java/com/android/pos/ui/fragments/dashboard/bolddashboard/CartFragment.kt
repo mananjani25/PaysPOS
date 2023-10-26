@@ -1927,7 +1927,9 @@ class CartFragment(
                                     binding.relativeDynamicTax.gone()
                                     binding.imgDropdown.gone()
                                     viewModel.clearListTax()
-                                    cartAdapter.clearList()
+                                    //Commented below for BIS-3375
+                                    //cartAdapter.clearList()
+                                    cartItemsAdapter.submitList(emptyList())
                                     reSetTaxBifurcationData()
                                     binding.relativeOrderNotes?.visibility = View.GONE
                                     binding.txtTotal.text = MethodUtils.roundOffAmount(0.00)
@@ -2615,7 +2617,7 @@ class CartFragment(
             }
 
 
-            if (cartlist.isEmpty()) {
+            if (viewModel.currentCartItems.isEmpty()) {
                 popupMenu.menu.findItem(R.id.menu_discount).isVisible = false
                 popupMenu.menu.findItem(R.id.menu_order_note).isVisible = false
 //                popupMenu.menu.findItem(R.id.menu_clear_cart).isVisible = false

@@ -518,7 +518,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 
         binding.txtRemoveItem.setOnClickListener {
             Log.e(TAG, "getDeleteItem  ${Gson().toJson(item)}")
-            //makeItemEdited(item)
+            makeItemEditedNew(item)
             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
                 LogUtil.logE(TAG, "isEditedisEdited  ${item.isEdited}")
                 cartList[0].dineInList?.let { it1 ->
@@ -528,6 +528,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                     )*/
                 }
             } else {
+                viewModel.updateCart(viewModel.currentCartItems,item, DELETE,item.isManualSales)
                 //viewModel.newCartLogicModifier(cartList, item, DELETE, item.isManualSales)
             }
             requireActivity().supportFragmentManager.popBackStackImmediate(
@@ -1045,6 +1046,20 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
     }
 
     private fun makeItemEdited(item: TbItem) {
+        LogUtil.logE(TAG, "isOrderUpdateOpen:  ${Gson().toJson(viewModel.openOrderUpdate)}")
+        if (viewModel.openOrderUpdate == true) {
+            //for open order and edit cart
+            item.isEdited = true
+        } else if (isUpdateItem && prefProvider.getValueboolean(
+                DINE_IN_UPDATE,
+                false
+            ) && item.orderItemId != null && item.orderItemId != 0
+        ) {
+            item.isEdited = true
+        }
+    }
+
+    private fun makeItemEditedNew(item: TbCartItem) {
         LogUtil.logE(TAG, "isOrderUpdateOpen:  ${Gson().toJson(viewModel.openOrderUpdate)}")
         if (viewModel.openOrderUpdate == true) {
             //for open order and edit cart

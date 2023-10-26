@@ -388,6 +388,12 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
     }
 
+    private fun deleteItemFromCartItem(tbCartItem: TbCartItem){
+        CoroutineScope(Dispatchers.IO).launch {
+            posRepository.deleteItemFromCartItems(tbCartItem)
+        }
+    }
+
     fun addOrderNote(note: String) {
         if (cartModel != null) {
             cartModel!!.note = note
@@ -1784,14 +1790,15 @@ class DashBoardCategoryViewModel @Inject constructor(
                 } else {
                     cartModel = taxBifurcationCalculationNew(item, cartModel!!, type, false)
                 }
+                addCart(cartModel!!)
                 addItemToCartItems(item)
             } else if (dineInList.isNotEmpty()) {
-                dineInList.forEach { dineInModel ->
+                /*dineInList.forEach { dineInModel ->
                     dineInModel.items.forEach { itemData ->
                         cartModel = taxBifurcationCalculation(itemData, cartModel!!, type, false)
                     }
 
-                }
+                }*/
             }
 
         } else {
@@ -2305,6 +2312,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     prefProvider.setValueboolean(IS_LAST_ITEM_DELETE, true)
                                 }
                                 list.remove(model)
+                                deleteItemFromCartItem(model)
                             }
                         }
                     } else {
@@ -2325,8 +2333,12 @@ class DashBoardCategoryViewModel @Inject constructor(
                     }
                 }
                 addCart(cartModel!!)
-                val newUpdatedItem = list.filter { it.itemId == item?.itemId }[0]
-                addItemToCartItems(newUpdatedItem)
+                if(list.isNotEmpty() && type != DELETE){
+                    val newUpdatedList = list.filter { it.itemId == item?.itemId }
+                    if(newUpdatedList.isNotEmpty()){
+                        addItemToCartItems(newUpdatedList[0])
+                    }
+                }
             } else {
 
                 if (type == DELETE) {

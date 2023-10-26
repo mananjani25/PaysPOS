@@ -754,6 +754,10 @@ class PosRepository @Inject constructor(
         Log.d("InsertTime", "Time taken to insert: $timeTaken ms")
     }
 
+    suspend fun deleteItemFromCartItems(tbCartItem: TbCartItem){
+        appDatabase.cartDao().deleteItemFromCartItems(tbCartItem)
+    }
+
     suspend fun addItemCartDineIn(cartModel: DineInCartModel) {
 
         appDatabase.cartDao().addDineInCartDao(cartModel)
