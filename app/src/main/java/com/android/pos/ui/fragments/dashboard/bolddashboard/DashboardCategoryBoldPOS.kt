@@ -469,12 +469,12 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
         setFragmentResultListener("request_key_discount_details") { requestKey: String, bundle: Bundle ->
             val result = bundle.getParcelable<TbDiscount>("data")
-            val item = bundle.getParcelable<TbItem>("item")
+            val item = bundle.getParcelable<TbCartItem>("item")
             if (result != null) {
                 when (result.discountType) {
                     requireContext().getString(R.string.disc_percentage) -> {
 
-                        item?.discountPrice = item?.let { totalPrice(it) }?.let {
+                        item?.discountPrice = item?.let { totalPriceNew(it) }?.let {
                             calculateDiscountPercentage(
                                 it,
                                 result.percentage
@@ -484,7 +484,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         item.discountId = result.id
                         item.discountType = result.discountType
 
-                        viewModel.newCartLogicModifier(cartList, item, Constants.UPDATE, false)
+                        //viewModel.newCartLogicModifier(cartList, item, Constants.UPDATE, false)
+                        viewModel.updateCart(viewModel.currentCartItems, item, Constants.UPDATE, false)
 
                     }
 
@@ -495,7 +496,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         item?.discountType = result.discountType
 
 
-                        viewModel.newCartLogicModifier(cartList, item, Constants.UPDATE, false)
+                        //viewModel.newCartLogicModifier(cartList, item, Constants.UPDATE, false)
+                        viewModel.updateCart(viewModel.currentCartItems, item, Constants.UPDATE, false)
                     }
 
                     else -> {
@@ -503,7 +505,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         item?.discountId = 0
                         item?.discountType = result.discountType
 
-                        viewModel.newCartLogicModifier(cartList, item, Constants.UPDATE, false)
+                        //viewModel.newCartLogicModifier(cartList, item, Constants.UPDATE, false)
+                        viewModel.updateCart(viewModel.currentCartItems, item, Constants.UPDATE, false)
 
                     }
                 }
@@ -521,7 +524,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         setFragmentResultListener("request_key_note") { requestKey: String, bundle: Bundle ->
             val note = bundle.getString("note")
             val isOrderNote = bundle.getBoolean("isOrderNote")
-            val singleItem = bundle.getParcelable<TbItem>("item")
+            val singleItem = bundle.getParcelable<TbCartItem>("item")
             // val cartList = bundle.getParcelableArrayList<CartModel>("cartList")
             var dineInArrayList: List<DineInModel>? = null
             /*
@@ -545,12 +548,12 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 singleItem?.note = note.toString()
                 singleItem?.let {
                     dineInArrayList?.let { it1 ->
-                        viewModel.newCartLogicModifier(
+                        /*viewModel.newCartLogicModifier(
                             cartList,
                             it,
                             Constants.UPDATE,
                             false
-                        )
+                        )*/
                     }
                 }
             }
@@ -573,6 +576,25 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     }
 
     private fun totalPrice(model: TbItem): Double {
+
+        return if (model.modifiers.isNotEmpty()) {
+
+            var totalPrice = 0.0
+
+            val mList = model.modifiers
+            mList.forEach { items ->
+                totalPrice += items.price
+            }
+
+            (model.price) + totalPrice
+        } else {
+
+            model.price
+
+        }
+    }
+
+    private fun totalPriceNew(model: TbCartItem): Double {
 
         return if (model.modifiers.isNotEmpty()) {
 

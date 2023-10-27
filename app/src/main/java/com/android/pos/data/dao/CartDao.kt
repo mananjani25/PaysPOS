@@ -31,6 +31,9 @@ interface CartDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
      fun addSuspended(cartModel: CartModel): Long?
 
+     @Update
+     fun updateCartModel(cartModel: CartModel)
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addAllItem(elementsBeanList: List<CartModel>)
 

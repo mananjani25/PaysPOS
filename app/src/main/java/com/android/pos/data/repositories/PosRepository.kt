@@ -745,6 +745,12 @@ class PosRepository @Inject constructor(
 
     }
 
+    fun updateCartModel(cartModel: CartModel) {
+        synchronized(this) {
+            appDatabase.cartDao().updateCartModel(cartModel)
+        }
+    }
+
     suspend fun addItemToCart(tbCartItem: TbCartItem) {
         val startTime = System.currentTimeMillis()
         appDatabase.cartDao().addCartItem(tbCartItem)

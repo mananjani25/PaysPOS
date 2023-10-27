@@ -235,6 +235,10 @@ class DashBoardCategoryViewModel @Inject constructor(
         this.cartModel = generateCombinedItems(cartList[0])
     }
 
+    fun setUpdatedCartModel(cartModel: CartModel) {
+        this.cartModel = cartModel
+    }
+
     fun setCurrentCartItems(cartItems: List<TbCartItem>) {
         this.currentCartItems = cartItems.toCollection(ArrayList())
     }
@@ -380,6 +384,12 @@ class DashBoardCategoryViewModel @Inject constructor(
             destroyedList.clear()
         }
 
+    }
+
+    fun updateCartModel(cartModel: CartModel) {
+        CoroutineScope(Dispatchers.IO).launch {
+            posRepository.updateCartModel(cartModel)
+        }
     }
 
     private fun addItemToCartItems(tbCartItem: TbCartItem) {
@@ -1776,6 +1786,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         )  // reset flag in case of adding or updating item
         Log.e("DashViewModModel", "checkCartSize: ${cartList?.size}")
         var cartModel = item?.let { addCartModelNew(it, isManualSales) }
+        setUpdatedCartModel(cartModel!!)
         if (cartList != null && cartList.isEmpty()) {
             // empty cart hoy to new cart create kare
 
@@ -1790,6 +1801,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 } else {
                     cartModel = taxBifurcationCalculationNew(item, cartModel!!, type, false)
                 }
+
                 addCart(cartModel!!)
                 addItemToCartItems(item)
             } else if (dineInList.isNotEmpty()) {
@@ -2332,7 +2344,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                         cartModel = taxBifurcationCalculationNew(item!!, cartModel!!, type, false)
                     }
                 }
-                addCart(cartModel!!)
+                updateCartModel(cartModel!!)
                 if(list.isNotEmpty() && type != DELETE){
                     val newUpdatedList = list.filter { it.itemId == item?.itemId }
                     if(newUpdatedList.isNotEmpty()){
