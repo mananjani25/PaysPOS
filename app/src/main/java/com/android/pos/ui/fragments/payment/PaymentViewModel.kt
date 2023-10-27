@@ -768,6 +768,255 @@ open class PaymentViewModel @Inject constructor(
         return orderRequestModel
     }
 
+    fun createOrderRequestNew(
+        cartItems: List<TbCartItem>,
+        cartModel: CartModel,
+        subTotalPrice: Double,
+        totalPrice: Double,
+        totalServiceCharge: Double,
+        totalTax: Double,
+        ORDER_TYPE: String,
+        future_delivery_date: String,
+        future_delivery_time: String,
+        isPaid: Boolean,
+        totalDiscount: Double,
+        tipAmount: Double,
+        splitValue: Int,
+        redeemLoyaltyInfo: RedeemLoyaltyInfo?,
+        finaldiscount: Double,
+        needToAddPaymentAttributes: Boolean?,
+        paymentType: String,
+        cashdiscountType: String,
+        tipID: Int? = null,
+        isPrinterQueue: Boolean = false,
+        offlineId: String = "",
+        totalServiceChargeM: Double = 0.0,
+        totalDiscountM: Double = 0.0
+
+    ): OrderRequestModel {
+
+        val orderAttributeRequestModel = OrderAttributeRequestModel()
+
+        if (isUpdateOrder)
+            orderAttributeRequestModel.id = orderId
+
+
+        if (prefProvider.getValue(Constants.ORDER_TYPE, "")
+                .equals(PHONE_ORDER, ignoreCase = true)
+        ) {
+            orderAttributeRequestModel.send_payment_link = true
+        }
+
+        orderAttributeRequestModel.openOrderType =
+            prefProvider.getValue(Constants.ORDER_TYPE, "")
+
+        Log.e("checkOrderTypeID","getOrderTypeID  ${prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)}")
+        Log.e("checkOrderTypeID","getOrderTypeIDVARTE  ${order_type_id}")
+        if (order_type_id == -1 && prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT) == Constants.OPEN_ORDER)
+        {
+            order_type_id = prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)
+        }
+        else if (prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT) == Constants.DINE_IN && orderId != 0){
+            order_type_id = prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)
+        }
+
+
+        if (order_type_id == -1 && prefProvider.getValue(
+                Constants.ORDER_TYPE,
+                TAKEOUT
+            ) == Constants.PHONE_ORDER
+        ) {
+            order_type_id = prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)
+        }
+
+        orderAttributeRequestModel.orderTypeId = order_type_id
+        orderAttributeRequestModel.date = TimeFormatUtils.getCurrentDate()
+        if (future_delivery_date.isNotEmpty())
+            orderAttributeRequestModel.futureDeliveryDate = future_delivery_date
+
+        if (future_delivery_time.isNotEmpty())
+            orderAttributeRequestModel.futureDeliveryTime = future_delivery_time
+
+        if (cartModel.orderType == PHONE_ORDER) {
+            orderAttributeRequestModel.deliveryType =
+                prefProvider.getValue(Constants.DELIVERY_TYPE, PICK_UP)
+        }
+        orderAttributeRequestModel.employeeId = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+        orderAttributeRequestModel.locationId = prefProvider.getValueInt(Constants.LOCATION_ID, 1)
+        orderAttributeRequestModel.terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, 0)
+        orderAttributeRequestModel.note = cartModel.note
+        if (paymentType == "Cash") {
+            if (cashdiscountType == "SurCharge") {
+                orderAttributeRequestModel.cash_discount_type = cashdiscountType
+                orderAttributeRequestModel.cash_discount_or_surcharge = 0.0
+                orderAttributeRequestModel.totalAmount = totalPrice
+            } else if (cashdiscountType == "CashDiscount") {
+                orderAttributeRequestModel.cash_discount_or_surcharge = actual_CashDiscountSurCharge
+                orderAttributeRequestModel.cash_discount_type = cashdiscountType
+
+                orderAttributeRequestModel.totalAmount = totalPrice
+            } else {
+                orderAttributeRequestModel.cash_discount_or_surcharge = 0.0
+                orderAttributeRequestModel.cash_discount_type = ""
+                orderAttributeRequestModel.totalAmount = totalPrice
+            }
+        }
+        cartModel.taxlistDynamic?.forEach { taxData ->
+            if (taxData.taxType == "Percentage") {
+                taxData.percentage_value =
+                    MethodUtils.roundOffAmountDouble(taxData.rate)
+            } else {
+                taxData.percentage_value =
+                    MethodUtils.roundOffAmountDouble((100 * taxData.totalTaxTypePrice) / taxData.subTotalAmount!!)
+            }
+        }
+        try {
+            orderAttributeRequestModel.tax_bifurcation_data =
+                Gson().toJson(cartModel.taxlistDynamic)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        orderAttributeRequestModel.offlineId =
+            if (isUpdateOrder) orderOfflineId.toString() else MethodUtils.randomOfflineId(
+                prefProvider.getValueInt(Constants.LOCATION_ID, -1).toString()
+            )
+
+        if (isPrinterQueue) {
+            orderAttributeRequestModel.offlineId = offlineId
+        }
+
+
+        LogUtil.logE(TAG, "openOrderType: " + cartModel.orderType)
+
+        if (textToPay) {
+            orderAttributeRequestModel.paymentStatus = 0
+        } else
+            orderAttributeRequestModel.paymentStatus = if (isPaid) 1 else 0
+
+        orderAttributeRequestModel.serviceChargeEnabled = true
+        orderAttributeRequestModel.taxEnabled = true
+        orderAttributeRequestModel.subTotal = actual_SubTotal
+
+
+        if (cartModel.discountId != null && cartModel.discountId != -1)
+            orderAttributeRequestModel.discount_id = cartModel.discountId
+        orderAttributeRequestModel.totalDiscount = if (cartModel.orderType == DINE_IN) {
+            dineInWholeDiscount ?: 0.0
+        } else {
+
+            if (actual_TotalDiscount != 0.0) {
+                actual_TotalDiscount
+            } else {
+                totalDiscount
+
+            }
+
+        }
+        orderAttributeRequestModel.totalServiceCharges = if (cartModel.orderType == DINE_IN) {
+            dineInWholeSC ?: 0.0
+        } else {
+            if (actual_TotalServiceCharge != 0.0) {
+                actual_TotalServiceCharge
+            } else {
+                totalServiceCharge
+            }
+
+
+        }
+
+        orderAttributeRequestModel.totalTaxAmount = actual_TotalTax
+        orderAttributeRequestModel.totalTips = tipAmount
+        orderAttributeRequestModel.is_loyalty_applied = redeemLoyaltyInfo?.needToApplyLoyalty
+        if (orderAttributeRequestModel.is_loyalty_applied == true) {
+            orderAttributeRequestModel.loyalty_program_id =
+                "${redeemLoyaltyInfo?.loyaltyProgramsModel?.id}"
+            orderAttributeRequestModel.loyalty_amount = redeemLoyaltyInfo?.usedLoyaltyAmount
+            orderAttributeRequestModel.used_reward_points = redeemLoyaltyInfo?.usedLoyaltyPoints
+        }
+
+
+        val customerId = prefProvider.getValueInt(Constants.CUSTOMER_ID, -1)
+        if (customerId != -1) {
+            orderAttributeRequestModel.customer_id = "" + customerId
+        }
+
+        var needPaymentAttributes = needToAddPaymentAttributes
+        if (textToPay) {
+            needPaymentAttributes = false
+        }
+
+        orderAttributeRequestModel.paymentAttributes = if (needPaymentAttributes == true) {
+            paymentAttributes(
+                cartModel,
+                totalPrice,
+                subTotalPrice,
+                totalServiceCharge,
+                totalTax,
+                totalDiscount,
+                tipAmount,
+                splitValue,
+                finaldiscount,
+                paymentType,
+                orderAttributeRequestModel.cash_discount_type,
+                redeemLoyaltyInfo = redeemLoyaltyInfo,
+                tipID
+            )
+        } else {
+            null
+        }
+
+        if (cartModel.orderType == DINE_IN) {
+            orderAttributeRequestModel.orderServiceChargesAttributes = serviceChargeListApplied
+        } else {
+            orderAttributeRequestModel.orderServiceChargesAttributes =
+                orderServiceChargesAttributes(cartModel, subTotalPrice)
+        }
+
+//
+        if (cartModel.orderType == DINE_IN) {
+            orderAttributeRequestModel.guestsAttributes = getGuestsAttributes(cartModel)
+            orderAttributeRequestModel.orderItemsAttributes = dineInOrderItemAttributed(cartModel)
+        } else {
+            orderAttributeRequestModel.orderItemsAttributes = orderItemsAttributesNew(cartModel, cartItems)
+        }
+
+//        if (cartModel.customer != null)
+//            orderAttributeRequestModel.customerAttributes = customerAttributes(cartModel)
+
+
+        var sendPaymentLink = false
+        var isPaidOrder: Boolean
+        if (prefProvider.getValue(Constants.ORDER_TYPE, "")
+                .equals(PHONE_ORDER, ignoreCase = true)
+        ) {
+            orderAttributeRequestModel.send_payment_link = true
+            sendPaymentLink = true
+            isPaidOrder = false
+        } else {
+            isPaidOrder = isPaid
+        }
+
+        isPaidOrder = prefProvider.getValueboolean(Constants.IS_ORDER_REDEEMABLE_WITH_GIFT_CARD, false)
+
+        Log.e("completed_all_payments", isPaidOrder.toString())
+
+        var giftCardRedeem: OrderRequestModel.GiftCardRedeem? = null
+
+        if(prefProvider.getValueboolean(Constants.IS_GIFT_CARD_REDEEM, false)){
+            giftCardRedeem = OrderRequestModel.GiftCardRedeem(prefProvider.getValue(Constants.GIFT_CARD_NUMBER, ""),prefProvider.getValue(Constants.GIFT_CARD_PIN,""))
+        }
+
+        val orderRequestModel =
+            OrderRequestModel(isPaidOrder, orderAttributeRequestModel,
+                sendPaymentLink,
+                gift_card_redeem = prefProvider.getValueboolean(Constants.IS_GIFT_CARD_REDEEM, false),
+                gift_card = giftCardRedeem)
+
+        LogUtil.logE("orderRequestModel", ":  ${Gson().toJson(orderRequestModel)}")
+
+        return orderRequestModel
+    }
+
     fun isInRange(minn: Int, maxx: Int, value: Int): Boolean {
         return (minn <= value && value <= maxx)
     }
@@ -948,6 +1197,160 @@ open class PaymentViewModel @Inject constructor(
         } else {
 
             orderAttributeRequestModel.orderItemsAttributes = orderItemsAttributes(cartModel)
+        }
+
+//        if (cartModel.customer != null)
+//            orderAttributeRequestModel.customerAttributes = customerAttributes(cartModel)
+
+
+        val orderRequestModel = OrderRequestModel(isPaid, orderAttributeRequestModel)
+
+
+        return orderRequestModel
+    }
+
+    fun createOpenOrderRequestNew(
+        cartItems: List<TbCartItem>,
+        cartModel: CartModel,
+        subTotalPrice: Double,
+        totalPrice: Double,
+        totalServiceCharge: Double,
+        totalTax: Double,
+        ORDER_TYPE: String,
+        future_delivery_date: String,
+        future_delivery_time: String,
+        isPaid: Boolean,
+        totalDiscount: Double,
+        tipAmount: Double,
+        splitValue: Int,
+        redeemLoyaltyInfo: RedeemLoyaltyInfo?,
+        finaldiscount: Double,
+        needToAddPaymentAttributes: Boolean?,
+        paymentType: String,
+        cashdiscountType: String
+    ): OrderRequestModel {
+
+        val orderAttributeRequestModel = OrderAttributeRequestModel()
+
+
+        if (isUpdateOrder)
+            orderAttributeRequestModel.id = orderId
+
+        orderAttributeRequestModel.date = TimeFormatUtils.getCurrentDate()
+        if (future_delivery_date.isNotEmpty())
+            orderAttributeRequestModel.futureDeliveryDate = future_delivery_date
+
+        if (future_delivery_time.isNotEmpty())
+            orderAttributeRequestModel.futureDeliveryTime = future_delivery_time
+
+
+        if (cartModel.openOrderType.isNotEmpty() && cartModel.openOrderType != null) {
+            orderAttributeRequestModel.deliveryType = cartModel.openOrderType
+        } else {
+            orderAttributeRequestModel.deliveryType = cartModel.deliveryType
+        }
+
+        if (cartModel.orderType == PHONE_ORDER) {
+            orderAttributeRequestModel.deliveryType =
+                prefProvider.getValue(Constants.DELIVERY_TYPE, PICK_UP)
+        }
+
+        orderAttributeRequestModel.employeeId = cartModel.employeeID
+        orderAttributeRequestModel.locationId = cartModel.locationId
+        orderAttributeRequestModel.terminalId = cartModel.terminalId
+        orderAttributeRequestModel.note = cartModel.note
+        orderAttributeRequestModel.offlineId =
+            if (isUpdateOrder) orderOfflineId.toString() else MethodUtils.randomOfflineId(
+                prefProvider.getValueInt(Constants.LOCATION_ID, -1).toString()
+            )
+        LogUtil.logE(TAG, "openOrderType: " + cartModel.orderType)
+        orderAttributeRequestModel.openOrderType = cartModel.orderType
+        orderAttributeRequestModel.orderTypeId = cartModel.orderTypeId
+        orderAttributeRequestModel.orderTypeName = cartModel.orderTypeName
+        orderAttributeRequestModel.paymentStatus = if (isPaid) 1 else 0
+        orderAttributeRequestModel.serviceChargeEnabled = true
+        orderAttributeRequestModel.taxEnabled = true
+        orderAttributeRequestModel.subTotal = MethodUtils.roundOffAmountDouble(subTotalPrice)
+        orderAttributeRequestModel.totalAmount =
+            MethodUtils.roundOffAmountDouble(totalPrice) - MethodUtils.roundOffAmountDouble(
+                tipAmount
+            )
+
+
+        if (cartModel.discountId != null && cartModel.discountId != -1)
+            orderAttributeRequestModel.discount_id = cartModel.discountId
+        orderAttributeRequestModel.totalDiscount = totalDiscount
+        orderAttributeRequestModel.totalServiceCharges =
+            MethodUtils.roundOffAmountDouble(totalServiceCharge)
+        orderAttributeRequestModel.totalTaxAmount = MethodUtils.roundOffAmountDouble(totalTax)
+        orderAttributeRequestModel.totalTips = MethodUtils.roundOffAmountDouble(tipAmount)
+        cartModel.taxlistDynamic?.forEach { taxData ->
+            if (taxData.taxType == "Percentage") {
+                taxData.percentage_value =
+                    MethodUtils.roundOffAmountDouble(taxData.rate)
+            } else {
+                taxData.percentage_value =
+                    MethodUtils.roundOffAmountDouble((100 * taxData.totalTaxTypePrice) / taxData.subTotalAmount!!)
+            }
+        }
+        if (cartModel.taxlistDynamic?.isNotEmpty() == true) {
+            try {
+                orderAttributeRequestModel.tax_bifurcation_data =
+                    Gson().toJson(cartModel.taxlistDynamic)
+            } catch (e: java.lang.Exception) {
+                e.printStackTrace()
+            }
+        }
+        orderAttributeRequestModel.is_loyalty_applied = redeemLoyaltyInfo?.needToApplyLoyalty
+        if (orderAttributeRequestModel.is_loyalty_applied == true) {
+            orderAttributeRequestModel.loyalty_program_id =
+                "${redeemLoyaltyInfo?.loyaltyProgramsModel?.id}"
+            orderAttributeRequestModel.loyalty_amount = redeemLoyaltyInfo?.usedLoyaltyAmount
+            orderAttributeRequestModel.used_reward_points = redeemLoyaltyInfo?.usedLoyaltyPoints
+        }
+//        if (cartModel.customer != null)
+//            orderAttributeRequestModel.customer_id = cartModel.customer?.id
+
+        val customerId = prefProvider.getValueInt(Constants.CUSTOMER_ID, -1)
+        if (customerId != -1) {
+            orderAttributeRequestModel.customer_id = "" + customerId
+        } else {
+            orderAttributeRequestModel.customer_id = ""
+        }
+
+
+        orderAttributeRequestModel.paymentAttributes = if (needToAddPaymentAttributes == true) {
+            paymentAttributes(
+                cartModel,
+                totalPrice,
+                subTotalPrice,
+                totalServiceCharge,
+                totalTax,
+                totalDiscount,
+                tipAmount,
+                splitValue,
+                finaldiscount,
+                paymentType,
+                orderAttributeRequestModel.cash_discount_type,
+                redeemLoyaltyInfo = redeemLoyaltyInfo
+            )
+        } else {
+            null
+        }
+        if (cartModel.orderType == DINE_IN) {
+            orderAttributeRequestModel.orderServiceChargesAttributes = serviceChargeListApplied
+        } else {
+            orderAttributeRequestModel.orderServiceChargesAttributes =
+                orderServiceChargesAttributes(cartModel, subTotalPrice)
+        }
+        if (cartModel.orderType == DINE_IN) {
+            orderAttributeRequestModel.guestsAttributes = getGuestsAttributes(cartModel)
+
+            orderAttributeRequestModel.orderItemsAttributes = dineInOrderItemAttributed(cartModel)
+
+        } else {
+
+            orderAttributeRequestModel.orderItemsAttributes = orderItemsAttributesNew(cartModel,cartItems)
         }
 
 //        if (cartModel.customer != null)
@@ -1442,6 +1845,71 @@ open class PaymentViewModel @Inject constructor(
         return orderItemsAttributeList
     }
 
+    private fun orderItemsAttributesNew(cartModel: CartModel, cartItems: List<TbCartItem>): List<OrderItemsAttribute> {
+
+        val orderItemsAttributeList: ArrayList<OrderItemsAttribute> =
+            arrayListOf()
+        LogUtil.logE(TAG, "insideSize  ${cartItems.size}")
+
+        cartItems.forEach { item ->
+
+            val orderItemsAttribute = OrderItemsAttribute()
+
+            if (isUpdateOrder && item.orderItemId != null)
+                orderItemsAttribute.id = item.orderItemId
+
+
+            orderItemsAttribute.category_id = item.categoryId
+            orderItemsAttribute.custom_item_id = item.id
+
+
+            if (cartModel.reorder) {
+                orderItemsAttribute.discountAmount = (item.discountPrice)
+            } else {
+                orderItemsAttribute.discountAmount = (item.discountPrice * item.itemQuantity)
+            }
+
+
+            orderItemsAttribute.discountType = item.discountType
+            if (item.discountId != -1)
+                orderItemsAttribute.discountId = item.discountId
+            orderItemsAttribute.employeeId = cartModel.employeeID
+            orderItemsAttribute.isCount = 0
+            orderItemsAttribute.isEdited = item.isEdited
+            orderItemsAttribute.isDestroy = item.isDestroy
+            orderItemsAttribute.isPaid = false
+            orderItemsAttribute.isPrinted = if (isUpdateOrder && item.isEdited == true) false else if (isUpdateOrder && item.isEdited == false) true else false
+            orderItemsAttribute.isTaxRemoved = false
+            orderItemsAttribute.itemId = item.itemId
+            orderItemsAttribute.is_manual_sales = item.isManualSales
+            orderItemsAttribute.itemName = item.name
+            orderItemsAttribute.note = item.note
+            orderItemsAttribute.price = item.price
+            orderItemsAttribute.quantity = item.itemQuantity
+            orderItemsAttribute.terminalId = cartModel.terminalId
+            orderItemsAttribute.timestamp = MethodUtils.randomOfflineId(
+                prefProvider.getValueInt(Constants.LOCATION_ID, -1).toString()
+            )
+            orderItemsAttribute.totalPrice =
+                MethodUtils.roundOffAmountDouble(item.price * item.itemQuantity)
+            orderItemsAttribute.orderItemTaxesAttributes = orderItemTaxesAttributesNew(item)
+            orderItemsAttribute.orderItemModifiersAttributes =
+                orderItemModifierAttributesNew(item, cartModel.terminalId)
+            orderItemsAttribute.isFired = item.isFired
+
+            orderItemsAttribute.orderItemVariationAttributes =
+                orderItemVariationAttributesNew(item)
+
+            if (item.variationsAttributes.isNotEmpty()) {
+                orderItemsAttribute.variationId = item.variationsAttributes[0].id
+            }
+
+            orderItemsAttributeList.add(orderItemsAttribute)
+        }
+        LogUtil.logE(TAG, "orderItemsAttributeList:  ${Gson().toJson(orderItemsAttributeList)}")
+        return orderItemsAttributeList
+    }
+
     private fun orderItemVariationAttributes(
         item: TbItem
     ): OrderItemVariationAttribute? {
@@ -1472,8 +1940,71 @@ open class PaymentViewModel @Inject constructor(
         return null
     }
 
+    private fun orderItemVariationAttributesNew(
+        item: TbCartItem
+    ): OrderItemVariationAttribute? {
+
+        if (item.variationsAttributes.isNotEmpty()) {
+
+            item.variationsAttributes.forEach {
+
+                val orderItemVariationAttribute = OrderItemVariationAttribute()
+                orderItemVariationAttribute.name = it.name.toString()
+                orderItemVariationAttribute.price = it.price ?: 0.0
+                orderItemVariationAttribute.totalPrice = it.price ?: 0.0 * item.itemQuantity
+                orderItemVariationAttribute.variationId = it.id!!
+                orderItemVariationAttribute.quantity = item.itemQuantity
+
+                if (isUpdateOrder) {
+                    orderItemVariationAttribute.orderId = orderId
+                    orderItemVariationAttribute.order_item_id = item.orderItemId
+                    orderItemVariationAttribute.id = it.orderVariationId
+                }
+
+                return orderItemVariationAttribute
+
+            }
+
+        }
+
+        return null
+    }
+
     private fun orderItemModifierAttributes(
         item: TbItem,
+        terminalId: Int
+    ): List<OrderItemModifierAttribute> {
+
+        val orderItemModifierAttributeList: ArrayList<OrderItemModifierAttribute> =
+            arrayListOf()
+
+        LogUtil.logE(TAG, "getmodifiers:  ${Gson().toJson(item.modifiers)}")
+        item.modifiers.forEach {
+
+            val orderItemModifierAttribute = OrderItemModifierAttribute().apply {
+
+                if (isUpdateOrder && it.orderModifierId != null)
+                    id = it.orderModifierId
+
+                name = it.name
+                price = it.price
+                modifier_id = it.id
+                order_item_id = item.orderItemId
+                totalPrice = MethodUtils.roundOffAmountDouble(it.price * it.itemQuantity)
+                modifier_set_id = it.modifierSetId ?: 0
+                quantity = it.itemQuantity
+                modifier_quantity = it.modifier_quantity
+                order_item_taxes_attributes = arrayListOf()
+                _destroy = it._destroy
+            }
+            orderItemModifierAttributeList.add(orderItemModifierAttribute)
+        }
+
+        return orderItemModifierAttributeList
+    }
+
+    private fun orderItemModifierAttributesNew(
+        item: TbCartItem,
         terminalId: Int
     ): List<OrderItemModifierAttribute> {
 
@@ -1593,6 +2124,77 @@ open class PaymentViewModel @Inject constructor(
     }
 
     private fun orderItemTaxesAttributes(items: TbItem): List<OrderItemTaxesAttribute> {
+
+        val orderItemTaxesAttributeList: ArrayList<OrderItemTaxesAttribute> =
+            arrayListOf()
+
+        items.taxes?.forEach { tax ->
+
+            if (tax.isActive) {
+
+                val orderItemTaxesAttribute = OrderItemTaxesAttribute()
+
+                if (isUpdateOrder && tax.orderTaxId != null)
+                    orderItemTaxesAttribute.id = tax.orderTaxId
+
+                orderItemTaxesAttribute.isDefault = tax.isDefault
+                orderItemTaxesAttribute.isTaxRemoved = true
+                orderItemTaxesAttribute.name = tax.name.toString()
+                orderItemTaxesAttribute.rate = tax.rate
+                orderItemTaxesAttribute.taxId = tax.id
+
+                orderItemTaxesAttribute.orderItemId = items.orderItemId
+                orderItemTaxesAttribute.orderId = orderId
+                if (isUpdateOrder) {
+                }
+
+                if (tax.taxType == "Percentage") {
+
+
+                    var modifierPrice = 0.0
+
+                    var price = 0.0
+                    price =
+                        (items.price * items.itemQuantity) - (items.discountPrice * items.itemQuantity)
+
+
+
+                    items.modifiers.forEach {
+                        modifierPrice += (it.price * it.itemQuantity)
+                    }
+
+                    val totalPrice = price + modifierPrice
+
+                    val itemTaxPrice =
+                        (tax.rate * totalPrice) / 100
+
+                    LogUtil.logE("Tax Amount 1", itemTaxPrice.toString())
+
+                    orderItemTaxesAttribute.taxTotalAmount =
+                        MethodUtils.roundOffAmountDouble(itemTaxPrice)
+                } else {
+
+                    val ss = tax.rate * items.itemQuantity
+
+                    LogUtil.logE("Tax Amount", ss.toString())
+
+                    orderItemTaxesAttribute.taxTotalAmount =
+                        MethodUtils.roundOffAmountDouble((ss))
+                }
+
+
+
+
+                orderItemTaxesAttribute.taxType = tax.taxType.toString()
+                orderItemTaxesAttributeList.add(orderItemTaxesAttribute)
+            }
+        }
+
+
+        return orderItemTaxesAttributeList
+    }
+
+    private fun orderItemTaxesAttributesNew(items: TbCartItem): List<OrderItemTaxesAttribute> {
 
         val orderItemTaxesAttributeList: ArrayList<OrderItemTaxesAttribute> =
             arrayListOf()

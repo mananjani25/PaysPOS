@@ -1741,10 +1741,10 @@ class CartFragment(
                                 oldItemSize = it.size
 
 
-                               /* viewModel.destroyedList.clear()
-                                it.filter { item -> item.isDestroy }?.let {
-                                    viewModel.destroyedList.addAll(it)
-                                }*/
+                                viewModel.destroyedCartItemsList.clear()
+                                it.filter { item -> item.isDestroy }.let { listOfCartItems ->
+                                    viewModel.destroyedCartItemsList.addAll(listOfCartItems)
+                                }
 
                                 runOnUiThread(Runnable {
                                     if (isFromPayment) {
@@ -1779,16 +1779,14 @@ class CartFragment(
                                     binding.rvCartList.removeAllViewsInLayout()*/
                                 })
 
-                                //cartlist = it as ArrayList<CartModel>
                                 runOnUiThread(kotlinx.coroutines.Runnable {
                                     viewModel.itemCalculationCartModelNew(
                                         it,
                                         binding.txtTotal,
                                         requireContext()
                                     )
-                                    //viewModel.setCartModel(it)
-                                    /*it[0].taxlistDynamic?.toCollection(arrayListOf())
-                                        ?.let { it1 -> setTaxBifurcationData(it1) }*/
+                                    viewModel.cartModel?.taxlistDynamic?.toCollection(arrayListOf())
+                                        ?.let { it1 -> setTaxBifurcationData(it1) }
 
                                     if (viewModel.order_note.isNotEmpty()) {
                                         binding.relativeOrderNotes?.visibility = View.VISIBLE
@@ -1927,8 +1925,6 @@ class CartFragment(
                                     binding.relativeDynamicTax.gone()
                                     binding.imgDropdown.gone()
                                     viewModel.clearListTax()
-                                    //Commented below for BIS-3375
-                                    //cartAdapter.clearList()
                                     cartItemsAdapter.submitList(emptyList())
                                     reSetTaxBifurcationData()
                                     binding.relativeOrderNotes?.visibility = View.GONE
@@ -2713,7 +2709,7 @@ class CartFragment(
             if (prefProvider.getValueboolean(OPEN_ORDER_UPDATE_FOR_PRINT, false)) {
                 prefProvider.setValue(
                     Constants.OPEN_ORDER_ITEMS,
-                    Gson().toJson(cartAdapter.cartList)
+                    Gson().toJson(cartItemsAdapter.currentList)
                 )
             }
 
@@ -2770,7 +2766,7 @@ class CartFragment(
                     )
 
                 }
-                if (cartAdapter.cartList.isNotEmpty()) {
+                if (cartItemsAdapter.currentList.isNotEmpty()) {
                     prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER, false)
                     prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
 
@@ -2833,10 +2829,10 @@ class CartFragment(
                                 orderOfflineId
                             )
 
-                            val cartList = viewModel.generateCombinedItems(viewModel.cartModel!!)
-                            cartList.openOrderType = Constants.PICK_UP
-                            cartList.orderType = ordertype
-                            cartList.orderTypeId = ordertypeId
+                            val cartModel = viewModel.cartModel
+                            cartModel?.openOrderType = Constants.PICK_UP
+                            cartModel?.orderType = ordertype
+                            cartModel?.orderTypeId = ordertypeId
 
                             val totalAmountTobeSave =
                                 if (viewModel.redeemLoyaltyInfo.isLoyaltyApplied == true) {
@@ -2845,9 +2841,9 @@ class CartFragment(
                                     viewModel.totalPrice
                                 }
 
-                            cartList.openOrderType = Constants.PICK_UP
+                            cartModel?.openOrderType = Constants.PICK_UP
                             if (!isOrderUpdate)
-                                cartList.customer = assignCustomer
+                                cartModel?.customer = assignCustomer
 
                             val formatterdate = SimpleDateFormat("yyyy-MM-dd")
                             val formattertime = SimpleDateFormat("hh:mm a")
@@ -2855,8 +2851,8 @@ class CartFragment(
                             future_delivery_date = formatterdate.format(date)
                             future_delivery_time = formattertime.format(date)
 
-                            LogUtil.logE(TAG, "UpdateOrderItemsList  ${cartList.items?.size}")
-                            val request = viewModelPayment.createOpenOrderRequest(
+                            LogUtil.logE(TAG, "UpdateOrderItemsList  ${viewModel.currentCartItems.size}")
+                            /*val request = viewModelPayment.createOpenOrderRequest(
                                 cartList,
                                 viewModel.subTotalPrice,
                                 totalAmountTobeSave,
@@ -2879,10 +2875,37 @@ class CartFragment(
                                 "Cash",
                                 cashDiscountType
 
-                            )
+                            )*/
+                            val request = cartModel?.let {
+                                viewModelPayment.createOpenOrderRequestNew(
+                                    viewModel.currentCartItems,
+                                    it,
+                                    viewModel.subTotalPrice,
+                                    totalAmountTobeSave,
+                                    viewModel.totalServiceCharge,
+                                    viewModel.totalTax,
+                                    OPEN_ORDER,
+                                    future_delivery_date,
+                                    future_delivery_time,
+                                    false,
+                                    viewModel.totalDiscount,
+                                    0.00,
+                                    -1,
+                                    viewModel.redeemLoyaltyInfo,
+                                    MethodUtils.calculateCashDiscount(
+                                        viewModel.totalPrice,
+                                        prefProvider,
+                                        requireContext()
+                                    ),
+                                    false,
+                                    "Cash",
+                                    cashDiscountType
+
+                                )
+                            }
                             isSaveOrder = true
                             viewModelPayment.saveOrder(true)
-                            viewModelPayment.submit(request)
+                            request?.let { it1 -> viewModelPayment.submit(it1) }
 
 
 

@@ -150,6 +150,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     var paymentType: String = "cash"
     var taxDynamicList: ArrayList<TaxData> = arrayListOf()
     var destroyedList: ArrayList<TbItem> = arrayListOf()
+    var destroyedCartItemsList: ArrayList<TbCartItem> = arrayListOf()
     var removeItemDineInList: ArrayList<TbItem> = arrayListOf()
     var ordertypelist: ArrayList<TbOrderType> = arrayListOf()
     var isOrderUpdate: Boolean = false
@@ -380,7 +381,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     fun addCart(cartModel: CartModel) {
         System.currentTimeMillis()
         CoroutineScope(Dispatchers.IO).launch {
-            posRepository.addItemCart(generateCombinedItems(cartModel))
+            posRepository.addItemCart(cartModel)
             destroyedList.clear()
         }
 
@@ -395,6 +396,14 @@ class DashBoardCategoryViewModel @Inject constructor(
     private fun addItemToCartItems(tbCartItem: TbCartItem) {
         CoroutineScope(Dispatchers.IO).launch {
             posRepository.addItemToCart(tbCartItem)
+            destroyedCartItemsList.clear()
+        }
+    }
+
+    fun addOrderItemsToCartItems(tbCartItem: List<TbCartItem>) {
+        CoroutineScope(Dispatchers.IO).launch {
+            posRepository.addCartItemsList(tbCartItem)
+            destroyedCartItemsList.clear()
         }
     }
 
@@ -440,6 +449,26 @@ class DashBoardCategoryViewModel @Inject constructor(
         cartModel.items = combinedItems
         return cartModel
     }
+
+    /*fun generateCombinedItemsNew(cartItemsList: List<TbCartItem>): List<TbCartItem> {
+        val combinedItems = arrayListOf<TbCartItem>()
+        cartItemsList.let {
+
+            if (isOrderUpdate) {
+                it.forEach {
+                    if (it.orderItemId != null && it.isDestroy == true) {
+                        combinedItems.add(it)
+                    }
+                }
+            } else {
+                combinedItems.addAll(it)
+            }
+        }
+        if (cartModel?.isOpenOrder == true && isOrderUpdate) {
+            combinedItems.addAll(destroyedCartItemsList)
+        }
+        return combinedItems
+    }*/
 
     fun addDineInRemovedItems(cartModel: CartModel): CartModel {
         var destroyedItems: ArrayList<TbItem> = arrayListOf()
@@ -2347,8 +2376,12 @@ class DashBoardCategoryViewModel @Inject constructor(
                 updateCartModel(cartModel!!)
                 if(list.isNotEmpty() && type != DELETE){
                     val newUpdatedList = list.filter { it.itemId == item?.itemId }
-                    if(newUpdatedList.isNotEmpty()){
+                    if(newUpdatedList.isNotEmpty() && newUpdatedList.size == 1){
                         addItemToCartItems(newUpdatedList[0])
+                    } else if(newUpdatedList.isNotEmpty() && newUpdatedList.size > 1){
+                        newUpdatedList.forEach {
+                            addItemToCartItems(it)
+                        }
                     }
                 }
             } else {
@@ -3976,10 +4009,12 @@ class DashBoardCategoryViewModel @Inject constructor(
                 if (subTotalPrice < 0) {
                     subTotalPrice = 0.0
                 }
-                //serviceChargeCalculationModel(cartModel!!)
+                cartModel?.let {
+                    serviceChargeCalculationModel(it)
+                }
 
-                /*totalDiscount += cartModel.discountPrice
-                order_note = cartModel.note*/
+                totalDiscount += cartModel?.discountPrice ?: 0.0
+                order_note = cartModel?.note ?: ""
 
                 var finalTotal = 0.0
                 finalTotal = (subTotalPrice + totalTax + totalServiceCharge)
@@ -4041,10 +4076,12 @@ class DashBoardCategoryViewModel @Inject constructor(
                 if (subTotalPrice < 0) {
                     subTotalPrice = 0.0
                 }
-                /*serviceChargeCalculationModel(cartModel!!)
+                cartModel?.let {
+                    serviceChargeCalculationModel(it)
+                }
 
-                totalDiscount += cartModel.discountPrice
-                order_note = cartModel.note*/
+                totalDiscount += cartModel?.discountPrice ?: 0.0
+                order_note = cartModel?.note ?: ""
 
                 var finalTotal = 0.0
                 finalTotal = (subTotalPrice + totalTax + totalServiceCharge)

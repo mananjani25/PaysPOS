@@ -760,6 +760,15 @@ class PosRepository @Inject constructor(
         Log.d("InsertTime", "Time taken to insert: $timeTaken ms")
     }
 
+    suspend fun addCartItemsList(tbCartItems: List<TbCartItem>) {
+        val startTime = System.currentTimeMillis()
+        appDatabase.cartDao().addCartItemsList(tbCartItems)
+        // Calculate the time taken
+        val endTime = System.currentTimeMillis()
+        val timeTaken = endTime - startTime
+        Log.d("InsertTime", "Time taken to insert: $timeTaken ms")
+    }
+
     suspend fun deleteItemFromCartItems(tbCartItem: TbCartItem){
         appDatabase.cartDao().deleteItemFromCartItems(tbCartItem)
     }

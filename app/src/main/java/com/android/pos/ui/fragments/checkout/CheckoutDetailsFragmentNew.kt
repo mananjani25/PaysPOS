@@ -2846,8 +2846,30 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         Log.d("yash", "makeCashPayment: total serv  : " + totalServiceCharge)
         Log.e("checkCartList", "cartList:  ${Gson().toJson(cartList)}")
         Log.e("checkCartList", "cartList:  ${Gson().toJson(viewModel.cartModel)}")
-        val myRequest = cartList?.let {
+        /*val myRequest = cartList?.let {
             paymentviewModel.createOrderRequest(
+                it,
+                subTotalPrice,
+                paymentAmount,
+                totalServiceCharge,
+                totalTax,
+                prefProvider.getValue(Constants.ORDER_TYPE, ""),
+                future_delivery_date,
+                future_delivery_time,
+                true,
+                totalDiscount,
+                tipAmount,
+                splitValue,
+                redeemLoyaltyInfo,
+                cashDiscountSurcharge,
+                true,
+                paymentType, cashDiscountType,
+                tipID
+            )
+        }*/
+        val myRequest = viewModel.cartModel?.let {
+            paymentviewModel.createOrderRequestNew(
+                viewModel.currentCartItems,
                 it,
                 subTotalPrice,
                 paymentAmount,
