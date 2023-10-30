@@ -392,7 +392,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                 }
             })
     }
-
+    // get merchant details of PAX device
     private fun getMerchantDataObserver() {
         magtekProViewModel.merchantData.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { response ->
@@ -414,7 +414,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
             }
         }
     }
-
+    // Adjust tip on transactions done via PAX
     private fun adjustPaxTips() {
         GlobalScope.launch {
             posLink.SetCommSetting(SettingINI.getCommSettingFromFile(FILE_PATH + SettingINI.FILENAME))
@@ -502,7 +502,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
         }
     }
-
+    // Update tip in order
     private fun tipCall(isCard: Boolean) {
         singleTransaction?.let { viewModel.orderUpdateTip(it.id, tipAmount, isCard) }
     }
@@ -522,6 +522,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
     }
 
+    // validate time range filter
     private fun differnceTrue(date1: String, date2: String?): Long {
         var dateType1: Date
         var dateType2: Date

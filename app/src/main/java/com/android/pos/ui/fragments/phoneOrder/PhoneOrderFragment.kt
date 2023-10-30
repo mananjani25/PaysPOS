@@ -155,6 +155,7 @@ class PhoneOrderFragment : Fragment() {
 
     }
 
+    // manage delivery type of phone order : Pick up/ Delivery
     private fun manageDeliveryTypeView(){
         if(orderType == PICK_UP) {
             orderType = PICK_UP
@@ -175,6 +176,7 @@ class PhoneOrderFragment : Fragment() {
         }
     }
 
+    // init places api for address suggestions
     private fun placesClientInit() {
 
         if (!Places.isInitialized()) {

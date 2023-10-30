@@ -166,6 +166,7 @@ class AddValueInGiftCardFragment : Fragment() {
         }
     }
 
+    //delete cart and clear local data on back press
     private fun clearCartOnBackPress() {
         prefProvider.setValue("PaidAmount", "")
         prefProvider.setValue(Constants.WHOLE_AMOUNT, "")
@@ -183,6 +184,7 @@ class AddValueInGiftCardFragment : Fragment() {
         dashboardViewModel.deleteCart()
     }
 
+    // Move to checkout screen with added gift card details to make payment
     private fun moveToCheckout() {
 
         prefProvider.setValue(Constants.CUSTOMER_NAME, "")

@@ -325,6 +325,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
 
     */
+    // observer for cart modification
     fun mAllWords(orderType: String, employee_Id: Int): LiveData<List<CartModel>> {
 
         return posRepository.getCartList(orderType, employee_Id)
@@ -359,6 +360,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     var serviceChargesList: ArrayList<TbServiceCharge> = arrayListOf()
 
 
+    // store updated cart in database
     fun addCart(cartModel: CartModel) {
         System.currentTimeMillis()
         CoroutineScope(Dispatchers.IO).launch {
@@ -410,6 +412,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         return cartModel
     }
 
+    // Store removed items from dine in order in case of Update order to send in server request
     fun addDineInRemovedItems(cartModel: CartModel): CartModel {
         var destroyedItems: ArrayList<TbItem> = arrayListOf()
         cartModel.items?.forEach {

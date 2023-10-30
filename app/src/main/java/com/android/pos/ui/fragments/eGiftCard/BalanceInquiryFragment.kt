@@ -85,6 +85,7 @@ class BalanceInquiryFragment : Fragment() {
             findNavController().popBackStack()
         }
 
+        // to check balance of existing gift card
         binding.txtCheckBalance.setOnClickListener {
 
             val inputGiftCardNumber = binding.edtGiftCardNumber.text.toString().replace(" ","")

@@ -432,6 +432,7 @@ class TransactionDetailsFragment : Fragment() {
             })
     }
 
+    // get merchant details of PAX device
     private fun getMerchantDataObserver() {
         magtekProViewModel.merchantData.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { response ->
@@ -454,6 +455,7 @@ class TransactionDetailsFragment : Fragment() {
         }
     }
 
+    // Adjust tip on transactions done via PAX
     private fun adjustPaxTips() {
         GlobalScope.launch {
             posLink.SetCommSetting(SettingINI.getCommSettingFromFile(Constants.FILE_PATH + SettingINI.FILENAME))
@@ -543,10 +545,12 @@ class TransactionDetailsFragment : Fragment() {
         }
     }
 
+    // Update tip in order
     private fun tipCall(isCard: Boolean) {
         paymentDetailsResponse.data.let { viewModel.orderUpdateTip(it.id, tipAmount, isCard) }
     }
 
+    // to pay using magtek device
     private fun magtekCall(refundAmount: Double) {
         if (paymentDetailsResponse.data.order.order_type == "OnlineWebOrder") {
             val model = Gson().fromJson(

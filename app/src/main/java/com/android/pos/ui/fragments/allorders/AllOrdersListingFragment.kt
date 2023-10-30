@@ -97,6 +97,7 @@ import java.util.*
 import javax.inject.Inject
 import kotlin.math.abs
 
+// This fragment contains listing of orders based on selected order types and order status
 @AndroidEntryPoint
 class AllOrdersListingFragment(
     var orderStatus: String,
@@ -193,7 +194,7 @@ class AllOrdersListingFragment(
         }
     }
 
-
+    // to sort order's listing based on stations
     private fun setupStationSort() {
         binding.lnrStationSort.setOnClickListener {
             if (isStationAtoZ) {
@@ -227,6 +228,7 @@ class AllOrdersListingFragment(
         }
     }
 
+    // to sort order's listing based on employees
     private fun setupEmployeeSort() {
         binding.lnrEmployeeSort.setOnClickListener {
             if (isEmployeeAtoZ) {
@@ -261,6 +263,7 @@ class AllOrdersListingFragment(
         }
     }
 
+    // To accept/decline online or phone orders
     private fun acceptedAndDeclineOrder(time: Int, orderId: Int, is_accepted: Boolean) {
         var employee_id = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
         var terminal_id = prefProvider.getValueInt(Constants.TERMINAL_ID, 0)
@@ -300,6 +303,7 @@ class AllOrdersListingFragment(
         }
     }
 
+    // To update order
     private fun updateOrder(orderId: Int, order_status: String) {
         viewModel.updateOnlineOrder(
             orderId,
@@ -329,6 +333,7 @@ class AllOrdersListingFragment(
         }
     }
 
+    // Fetch all orders from api
     private fun getAllOrders() {
 
         var paymentStatus: String = when (orderStatusLabel) {
@@ -751,6 +756,7 @@ class AllOrdersListingFragment(
         binding.rvOpenOrder?.adapter = adapter
     }
 
+    // To search orders based on order id, employee, customer
     private fun searchFilter() {
 
         binding.autoSearch.addTextChangedListener(object : TextWatcher {
@@ -1173,6 +1179,7 @@ class AllOrdersListingFragment(
         Log.d("noDataAvailableFilter","hide")
     }
 
+    // get available customer printer's list
     private fun getCustomerPrinters(order: OnlineOrderResponseModel.Data, type: String) {
 
         activeOrderViewModel.getCustomerPrinterList().observe(viewLifecycleOwner) {
@@ -2608,6 +2615,7 @@ class AllOrdersListingFragment(
 
     }
 
+    // to generate customer receipt in sunmi printer
     private fun generatePrintSunmi(
         customerReceiptPrinters: PrinterResponse.Data.CustomerReceiptPrinters,
         type: String,
@@ -3255,6 +3263,7 @@ class AllOrdersListingFragment(
         }
     }
 
+    // calculate taxes of order items
     private fun getTaxBirfucationList(orderItems: List<OnlineOrderResponseModel.Data.OrderItem>): ArrayList<TaxData> {
         var taxListDynamic: ArrayList<TaxData> = arrayListOf()
         if (orderItems.isNotEmpty()) {
@@ -3578,6 +3587,7 @@ class AllOrdersListingFragment(
         return serviceChargeList
     }
 
+    // to get kitchen reciept settings
     private fun getKitchenReceiptSettings() {
         viewModel.getKitchenReceiptSettings().observe(viewLifecycleOwner) {
 
@@ -3587,6 +3597,7 @@ class AllOrdersListingFragment(
         }
     }
 
+    // To get connected kitchen printers
     private fun getKitchenPrinters(data: OnlineOrderResponseModel.Data) {
         viewModel.getKitchenPrinterList().observe(viewLifecycleOwner) { it ->
             when (it.status) {

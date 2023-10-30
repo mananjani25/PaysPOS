@@ -253,6 +253,7 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
 
     }
 
+    // to navigate to the desired category
     private fun changePositionOfCate() {
         runOnUiThread(Runnable {
             var tabPos = -1
