@@ -786,17 +786,6 @@ class CartFragment(
         }
     }
 
-    private fun addDineInObserver() {
-
-        viewModel.mAllWords(
-            prefProvider.getValue(ORDER_TYPE, ""),
-            prefProvider.getValueInt(EMPLOYEE_ID, 0)
-        ).observe(
-            requireActivity(), nameObserver
-        )
-
-    }
-
     fun setTaxBifurcationData(taxlistData: ArrayList<TaxData>) {
         if (taxlistData?.isNotEmpty()) {
             Log.d(TAG, "addObserver: " + taxlistData.size)
@@ -865,11 +854,12 @@ class CartFragment(
         LogUtil.logE("CreateCartEmpIdRecd", "" + prefProvider.getValueInt(EMPLOYEE_ID, 0))
 
         if (prefProvider.getValue(REDIRECT_FROM, "") == MANUAL_SALE) {
-            viewModel.manualSaleItems(
+            viewModel.getManualSaleCartItems(
                 prefProvider.getValue(ORDER_TYPE, TAKEOUT),
                 prefProvider.getValueInt(EMPLOYEE_ID, 0)
             ).observe(requireActivity()) {
                 LogUtil.logE(TAG, "listSize  ${Gson().toJson(it)}")
+                viewModel.setCurrentCartItems(it)
                 if (it.isNotEmpty()) {
                     if (isFromPayment) {
                         viewModel.selectedCustomer = null
@@ -905,16 +895,14 @@ class CartFragment(
                     binding.rvCartDineIn.gone()
                     binding.rvCartList.visible()
 
-                    it[0].items?.toCollection(arrayListOf())
-                        ?.let { it1 -> cartAdapter.setList(it1) }
+                    it.toCollection(arrayListOf())
+                        .let { it1 -> cartItemsAdapter.submitList(it1) }
 
-                    cartlist = it as ArrayList<CartModel>
 
-                    viewModel.setCartModel(it)
-                    if (it[0].taxlistDynamic?.isNotEmpty() == true) {
-                        Log.d(TAG, "addObserver: " + it[0].taxlistDynamic?.size)
+                    if (viewModel.cartModel?.taxlistDynamic?.isNotEmpty() == true) {
+                        Log.d(TAG, "addObserver: " + viewModel.cartModel?.taxlistDynamic?.size)
                         setupTaxAdapter()
-                        taxBirfurcationAdapter.setList(it[0].taxlistDynamic as ArrayList<TaxData>)
+                        taxBirfurcationAdapter.setList(viewModel.cartModel?.taxlistDynamic as ArrayList<TaxData>)
                     }
                     if (viewModel.order_note.isNotEmpty()) {
                         binding.relativeOrderNotes?.visibility = View.VISIBLE
@@ -984,14 +972,16 @@ class CartFragment(
                         binding.lblLoyaltyBalance.visibility = View.GONE
                     }
 
-                    viewModel.itemCalculation(it, binding.txtTotal, requireContext())
-                    setTaxBifurcationData(it[0].taxlistDynamic as ArrayList<TaxData>)
+                    viewModel.itemCalculationCartModelNew(it, binding.txtTotal, requireContext())
+                    viewModel.cartModel?.let { cm ->
+                        setTaxBifurcationData(cm.taxlistDynamic as ArrayList<TaxData>)
+                    }
 
 
                 } else {
                     cartlist = arrayListOf()
                     viewModel.clearListTax()
-                    cartAdapter.clearList()
+                    cartItemsAdapter.submitList(emptyList())
                     reSetTaxBifurcationData()
                     binding.txtTotal.text = MethodUtils.roundOffAmount(0.00)
                     binding.txtSubTotal.text = MethodUtils.roundOffAmount(0.00)
@@ -1370,7 +1360,6 @@ class CartFragment(
                                     filterItems.addAll(it!!.toCollection(arrayListOf()))
                                 }
 
-                                Log.e("mAllWords", "filterItems  ${filterItems.size}")
                                 runOnUiThread(Runnable {
                                     cartAdapter.setList(filterItems)
                                     binding.rlCartView.visible()
@@ -1670,11 +1659,11 @@ class CartFragment(
                     }
                 }*/
 
-                viewModel.getAllCartItems().asLiveData().observe(viewLifecycleOwner){
+                viewModel.getAllCartItems(
+                    prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT),
+                    prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+                ).asLiveData().observe(viewLifecycleOwner){
                     Log.d("BRUNO", "addObserver: CALLED")
-                /*it.forEach {tbCartItem ->
-                        Log.d("BRUNO", "ITEM: ${tbCartItem.name} , QTY: ${tbCartItem.itemQuantity}")
-                    }*/
                     Log.d("19OCT", "addObserver: CCI 1 = ${Gson().toJson(it)}")
                     viewModel.setCurrentCartItems(it)
                     CoroutineScope(Dispatchers.IO).launch {
@@ -1728,7 +1717,6 @@ class CartFragment(
                                     filterItems.addAll(it.toCollection(arrayListOf()))
                                 }
 
-                                Log.e("mAllWords", "filterItems  ${Gson().toJson(filterItems)}")
                                 runOnUiThread {
                                     cartItemsAdapter.submitList(filterItems)
                                     binding.rvCartList.postDelayed({
@@ -1989,7 +1977,7 @@ class CartFragment(
                                 if (!presentation.isShowing)
                                     presentation.show()
                                 if (it.isNotEmpty()) {
-                                    //presentation.updateCustomerDisplay(it)
+                                    presentation.updateCustomerDisplay(it)
                                 } else {
                                     presentation.onLogOutOrClockOutWithApiService(apiService)
                                 }

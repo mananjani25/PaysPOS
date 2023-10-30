@@ -12,6 +12,7 @@ import android.view.*
 import android.widget.Toast
 import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -177,7 +178,7 @@ class CustomDisplay(
                 ""
             ) == MANUAL_SALE
         ) {
-            dashBoardCategoryViewModel.manualSaleItems(
+            dashBoardCategoryViewModel.getManualSaleCartItems(
                 prefProvider.getValue(ORDER_TYPE, TAKEOUT),
                 prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
             ).observe(lifecycleOwner) {
@@ -186,10 +187,11 @@ class CustomDisplay(
                 }
             }
         } else {
-            dashBoardCategoryViewModel.mAllWords(
+            dashBoardCategoryViewModel.getAllCartItems(
                 prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT),
                 prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
-            ).observe(lifecycleOwner) {
+            ).asLiveData().observe(lifecycleOwner) {
+                Log.d("WINZO", "onDisplayChanged: ${it.size}")
                 it?.let {
                     updateCustomerDisplay(it)
                 }
@@ -224,7 +226,7 @@ class CustomDisplay(
 
     }
 
-    fun updateCustomerDisplay(cartList: List<CartModel>) {
+    fun updateCustomerDisplay(cartList: List<TbCartItem>) {
         Log.d(TAG, "updateCustomerDisplay: OUTSIDE")
         showCashCreditPrice = prefProvider.getValueboolean(
             Constants.SHOW_CASH_CREDIT_PRICE_ON_CUSTOMER_DISPLAY,
@@ -232,6 +234,7 @@ class CustomDisplay(
         )
         if (this::binding.isInitialized) {
             Log.d(TAG, "updateCustomerDisplay: INSIDE")
+            Log.d(TAG, "updateCustomerDisplay: cartList = ${Gson().toJson(cartList)}")
             if (cartList.isNotEmpty()) {
 
                 binding.mainCartLayout.visibility = View.VISIBLE
@@ -242,8 +245,8 @@ class CustomDisplay(
                 ) == Constants.DINE_IN
 
                 if (isDineIn) {
-                    if (cartList[0].dineInList?.isNotEmpty() == true) {
-                        val dineInList = cartList[0].dineInList
+                    if (dashBoardCategoryViewModel.cartModel?.dineInList?.isNotEmpty() == true) {
+                        val dineInList = dashBoardCategoryViewModel.cartModel?.dineInList
 
                         dineInCartAdapter.setList(
                             dineInList?.toCollection(arrayListOf()) ?: arrayListOf()
@@ -268,7 +271,7 @@ class CustomDisplay(
                         binding.txtCardLabel.gone()
 
                     }
-                    cartList[0].items?.toCollection(arrayListOf())?.let { it1 ->
+                    cartList.toCollection(arrayListOf()).let { it1 ->
                         cartAdapter.setList(it1)
                     }
                     displayCustomer()

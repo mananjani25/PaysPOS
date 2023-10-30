@@ -72,6 +72,12 @@ class TbCartItem : Parcelable {
     var headerPositionDinein = 0
     var itemOriginalModifiersList: List<Modifier>? = arrayListOf()
 
+    var employeeID: Int = 0
+    var isMaual: Boolean = false
+    var orderType: String = ""
+    var orderTypeName: String = ""
+    var orderTypeId: Int = 0
+
     fun convertToItem(item: Item, category: Category?): TbCartItem {
 
         itemId = item.id

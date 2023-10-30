@@ -23,6 +23,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.*
 import androidx.lifecycle.Observer
+import androidx.lifecycle.asLiveData
 import androidx.navigation.fragment.findNavController
 import com.android.pos.MainApplication
 import com.android.pos.R
@@ -1160,6 +1161,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                     prefProvider.setValue(Constants.REDIRECT_FROM, "")
 
+                    item.employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+                    item.orderType = prefProvider.getValue(ORDER_TYPE, "")
+
                     if (cartList.isEmpty() && viewModel.cartModel != null) {
                         viewModel.cartModel?.let {
                             cartList.add(it)
@@ -1364,10 +1368,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 }
             }
         }
-        viewModel.mAllWords(
+        viewModel.getAllCartItems(
             prefProvider.getValue(ORDER_TYPE, TAKEOUT),
             prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
-        ).observe(requireActivity()) {
+        ).asLiveData().observe(requireActivity()) {
 
             if (prefProvider.getValue(ORDER_TYPE, "").trim().isEmpty()) {
                 binding.layoutHeader.txtKeypad.gone()
@@ -1380,18 +1384,18 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 cartList = arrayListOf()
 
             } else {
-                if (it[0].orderId != 0) {
-                    it[0].orderId?.let { it1 -> viewModel.setOrderId(it1) }
+                if (viewModel.cartModel?.orderId != 0) {
+                    viewModel.cartModel?.orderId?.let { it1 -> viewModel.setOrderId(it1) }
                 }
-                cartList.clear()
+                /*cartList.clear()
                 cartList = arrayListOf()
-                cartList.addAll(it.toCollection(arrayListOf()))
+                cartList.addAll(it.toCollection(arrayListOf()))*/
             }
 
             if (this::presentation.isInitialized) {
                 if (!presentation.isShowing)
                     presentation.show()
-                if (cartList.isNotEmpty()) {
+                if (it.isNotEmpty()) {
                     presentation.updateCustomerDisplay(it)
                 } else {
                     presentation.onLogOutOrClockOutWithApiService(apiService)

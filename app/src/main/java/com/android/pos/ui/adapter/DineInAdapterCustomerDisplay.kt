@@ -52,7 +52,7 @@ class DineInAdapterCustomerDisplay : RecyclerView.Adapter<DineInAdapterCustomerD
             binding.rvCart.adapter = itemAdapter
             itemAdapter.setCallback(this)
             //swipeListener(binding.rvCart, layoutPosition, binding.root.context)
-            itemAdapter.addCart(model.items)
+            //itemAdapter.addCart(model.items)
 
             if (list.get(layoutPosition).customer != null) {
                 binding.txtTableName.setText(
