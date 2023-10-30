@@ -237,7 +237,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 try {
 
                     workManager.enqueueUniqueWork(
-                        Constants.PRINTER_QUEUE_BACKGROUND, ExistingWorkPolicy.REPLACE,
+                        Constants.PRINTER_QUEUE_BACKGROUND, ExistingWorkPolicy.KEEP,
                         uploadWorkRequest
                     )
 
@@ -896,6 +896,34 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         }
     }
 
+    override fun onStop() {
+        super.onStop()
+        Log.e(TAG,"checkActivityStop:")
+
+        WorkManager.getInstance(this).cancelAllWork()
+        val data = Data.Builder()
+            //.putString("kitchenPrinterList", Gson().toJson(kitchenPrinterList))
+            // .put("kitchenSettingData", Gson().toJson(kitchenSettingModel))
+            .put("location_id", prefProvider?.getValueInt(Constants.LOCATION_ID, 0))
+            .put("base_url", prefProvider?.getValue(Constants.BASE_URL_NEW, ""))
+            .put(
+                Constants.IS_PRINTER_QUEUE_ENABLE, prefProvider?.getValueboolean(
+                    Constants.IS_PRINTER_QUEUE_ENABLE, false
+                )
+            )
+            .put("is_cancel_work",true)
+            .build()
+
+        val uploadWorkRequest =
+            OneTimeWorkRequest.Builder(
+                UploadWorker2::class.java
+            ).addTag(Constants.PRINTER_QUEUE_BACKGROUND)
+                .setInputData(data)
+                .build()
+
+
+        val workManager = WorkManager.getInstance(this)
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         updatePrinter = this
@@ -1782,5 +1810,6 @@ private fun makeErrorMessage(status: PrinterStatusInfo): String? {
       }*/
     return msg
 }
+
 
 

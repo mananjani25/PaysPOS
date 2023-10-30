@@ -55,6 +55,10 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
     StatusChangeListener, ReceiveListener, ConnectionListener,
     ResultCallback {
 
+    private var isFromParent: Boolean=true
+    private var previousPrinterAddress = ""
+    private var previousPrinterName = ""
+    private var disconnectSize0: Boolean = false
     private var isPrinterQueueEnable: Boolean = false
     private var currentCloudPrinter: CloudPrinter? = null
     private var printerQueueData: Boolean = false
@@ -87,30 +91,41 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
     private var isPrinterRunning: Boolean = false
     private var printerBGRunning: Boolean = false
     private var isCancelWork: Boolean = true
+    private var isCount : Int = 5
 
 
     override suspend fun doWork(): Result {
 
         try {
+
+            consumer?.subscriptions?.remove(subscription)
+
+            consumer?.disconnect()
+
             locationId = inputData.getInt("location_id", 0)
             baseUrl = inputData.getString("base_url").toString()
             isPrinterQueueEnable = inputData.getBoolean(Constants.IS_PRINTER_QUEUE_ENABLE, false)
             isCancelWork = inputData.getBoolean("is_cancel_work", false)
 
-            Log.d("isPrinterQueueEnable","isPrinterQueueEnable = $isPrinterQueueEnable")
+            Log.d("isPrinterQueueEnable", "isPrinterQueueEnable = $isPrinterQueueEnable")
 
-            Log.e(TAG,"CheckQueueCancel  ${mContext.getSharedPreferences(
-                mContext.resources.getString(R.string.app_name),
-                Context.MODE_PRIVATE
-            ).getBoolean(CHECK_QUEUE_CANCEL, false)}")
+            Log.e(
+                TAG, "CheckQueueCancel  ${
+                    mContext.getSharedPreferences(
+                        mContext.resources.getString(R.string.app_name),
+                        Context.MODE_PRIVATE
+                    ).getBoolean(CHECK_QUEUE_CANCEL, false)
+                }"
+            )
 
-            if ( mContext.getSharedPreferences(
+            if (mContext.getSharedPreferences(
                     mContext.resources.getString(R.string.app_name),
                     Context.MODE_PRIVATE
-                ).getBoolean(CHECK_QUEUE_CANCEL, false) == false ) {
+                ).getBoolean(CHECK_QUEUE_CANCEL, false) == false
+            ) {
                 Log.e(TAG, "checkIsdws")
                 if (isInternetAvailable()) {
-                    if (isPrinterQueueEnable){
+                    if (isPrinterQueueEnable) {
                         connectActionCable()
                     }
                 } else {
@@ -180,7 +195,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                 Log.e(TAG, "onActionReceived:  ${Gson().toJson(it)}")
                 Log.e(TAG, "onActionReceived checkCancelWeok:  ${isCancelWork}")
 
-                if ( mContext.getSharedPreferences(
+                if (mContext.getSharedPreferences(
                         mContext.resources.getString(R.string.app_name),
                         Context.MODE_PRIVATE
                     ).getBoolean(CHECK_QUEUE_CANCEL, false) == true
@@ -189,6 +204,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                     consumer?.disconnect()
                 } else {
 
+                    Log.e("listOfPrintersData", "onReceived")
                     if (it != null && isQueueRunning == false) {
                         isQueueRunning = true
                         listOfPrintersData.clear()
@@ -237,6 +253,13 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
             }?.onDisconnected {
                 Log.e(TAG, "onDisconnected")
 
+                if (disconnectSize0 == true) {
+                    isQueueRunning = false
+                    isPrinterRunning = false
+                    connectActionCable()
+
+                } else if (isFromParent == false){
+
 
                     Handler(Looper.getMainLooper()).postDelayed(Runnable {
                         if (isInternetAvailable()) {
@@ -245,16 +268,21 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                             if (mContext.getSharedPreferences(
                                     mContext.resources.getString(R.string.app_name),
                                     Context.MODE_PRIVATE
-                                ).getBoolean(CHECK_QUEUE_CANCEL, false) == false) {
+                                ).getBoolean(CHECK_QUEUE_CANCEL, false) == false
+                            ) {
                                 consumer?.connect()
-                            }
-                            else{
+                            } else {
                                 consumer?.subscriptions?.remove(subscription)
                             }
                         } else {
                             sendNotification("Please check your Network Connectivity.")
                         }
                     }, 6000)
+                }
+
+                if (isFromParent == true){
+                    isFromParent = false
+                }
 
 
             }?.onFailed {
@@ -274,7 +302,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
 
 
         // 3. Establish connection
-        if ( mContext.getSharedPreferences(
+        if (mContext.getSharedPreferences(
                 mContext.resources.getString(R.string.app_name),
                 Context.MODE_PRIVATE
             ).getBoolean(CHECK_QUEUE_CANCEL, false) == false
@@ -288,15 +316,34 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
 
         if (model.asJsonObject.has("data")) {
             var dataList: JsonArray = model.asJsonObject.get("data").asJsonArray
+            Log.e("listOfPrintersData", "data available}")
 
             if (dataList.size() != 0) {
                 isQueueRunning = true
+                var   isDataAvailable = true
                 dataList.forEach {
                     var listofPrinterOrders: ArrayList<PrinterQueueModel> = arrayListOf()
 
                     if (it.asJsonObject.has("orders")) {
+                        disconnectSize0 = false
 
                         var ordersArray = it.asJsonObject.get("orders").asJsonArray
+
+                     /*   for (i in dataList) {
+                            var orders = i.asJsonObject.get("orders").asJsonArray
+                            isDataAvailable = orders.size() != 0
+                        }
+
+                        isCount -= 1
+                        if (isCount == 0){
+                            isDataAvailable = false
+                            disconnectSize0 = true
+                            Log.e(TAG,"onDisconnectSIZE = $isCount")
+                            consumer?.disconnect()
+                            isCount = 5
+                          //  return
+                        }*/
+
                         ordersArray.forEach {
                             var modelOrder = PrinterQueueModel()
 
@@ -305,12 +352,13 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                                 it.asJsonObject.get("order_type").asString
 
                             try {
-                                if (it.asJsonObject.has("delivery_type")){
+                                if (it.asJsonObject.has("delivery_type")) {
                                     if (it.asJsonObject.get("order_type").asString == Constants.PHONE_ORDER_)
-                                    modelOrder.deliveryType = it.asJsonObject.get("delivery_type").asString
+                                        modelOrder.deliveryType =
+                                            it.asJsonObject.get("delivery_type").asString
                                 }
-                            }catch (e:Exception){
-                                Log.d("KeyNotFound","Exception")
+                            } catch (e: Exception) {
+                                Log.d("KeyNotFound", "Exception")
                             }
 
                             modelOrder.dateAndTime =
@@ -557,6 +605,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
 
                         )
                     )
+                    Log.e("listOfPrintersData", "listOfPrintersData ${listOfPrintersData.size}")
                 }
                 var isDataGot = false
 
@@ -572,6 +621,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                 if (isDataGot) {
 
                     if (listOfPrintersData.get(0).printerName.contains("CloudPrint_", true)) {
+                        Log.e("checkCommitResultForCloud", "checkCommitResultForCloud 88")
                         sendDataToPrintToSunmi()
 
                     } else {
@@ -683,7 +733,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
     }
 
     private fun sendNotification(messageBody: String) {
-        Log.d("sendNotification","message = $messageBody")
+        Log.d("sendNotification", "message = $messageBody")
 
 
         val channelId = mContext.getString(R.string.default_notification_channel_id)
@@ -716,6 +766,8 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
 
 
     private fun sendDataToPrintToSunmi() {
+        Log.e("checkCommitResultF", "checkCommitResultForCloud flagIsComplete 2 ")
+
         var cloudPrinter: CloudPrinter = CloudPrinterBuilder.buildPrinter(
             listOfPrintersData.get(currentPrinterIndex).printerName,
             listOfPrintersData.get(currentPrinterIndex).ipAddress,
@@ -725,9 +777,42 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
         var checkPassOrder = false
         cloudPrinter.connect(mContext, object : ConnectCallback {
             override fun onConnect() {
+                Log.e("checkCommitResultFor", "checkCommitResultForCloud  33 cloudPrinter.")
+                Log.e(
+                    "checkCommitResultForCloud",
+                    "checkCommitResultForCloud  name = original ${cloudPrinter.cloudPrinterInfo.name}"
+                )
+                Log.e(
+                    "checkCommitResultForCloud",
+                    "checkCommitResultForCloud  name = saved $previousPrinterName")
+
+                Log.e(
+                    "checkCommitResultForCloud",
+                    "checkCommitResultForCloud  address =  ${cloudPrinter.cloudPrinterInfo.address}"
+                )
+                Log.e(
+                    "checkCommitResultForCloud",
+                    "checkCommitResultForCloud  address saved =  $previousPrinterAddress"
+                )
+                Log.e(
+                    "checkCommitResultForCloud",
+                    "checkCommitResultForCloud  mac =  ${cloudPrinter.cloudPrinterInfo.mac}"
+                )
                 Log.e(TAG, "onConnected 11")
                 currentCloudPrinter = cloudPrinter
                 sendReceiptToPrintSunmi(cloudPrinter)
+
+                if (previousPrinterAddress == cloudPrinter.cloudPrinterInfo.address && previousPrinterName == cloudPrinter.cloudPrinterInfo.name){
+                    Log.e("checkCommitResultForCloud", "duplicate order")
+
+                }else {
+
+
+                }
+
+                previousPrinterAddress = cloudPrinter.cloudPrinterInfo.address
+                previousPrinterName = cloudPrinter.cloudPrinterInfo.name
+
 
             }
 
@@ -755,6 +840,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
     }
 
     private fun sendReceiptToPrintSunmi(cloudPrinter: CloudPrinter) {
+        Log.d("checkCommitResultForCloud", "sendReceiptToPrintSunmi 5")
 
         var obj =
             listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.get(currentOrderIndex)
@@ -772,7 +858,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
         cloudPrinter.printText(obj.orderType)
 
 
-        if (obj.deliveryType.isNotEmpty()){
+        if (obj.deliveryType.isNotEmpty()) {
             cloudPrinter.lineFeed(1)
             cloudPrinter.setAlignment(AlignStyle.CENTER)
             cloudPrinter.printText(obj.deliveryType)
@@ -874,11 +960,15 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
 
         cloudPrinter.lineFeed(3)
         cloudPrinter.cutPaper(true)
+        Log.d("checkCommitResultForCloud", "sendReceiptToPrintSunmi cutPaper")
 
         var flagIsComplete: Boolean = false
 
         if (checkConnect(cloudPrinter)) {
-            Log.e(TAG, "checkCommitResultForCloud")
+            Log.e(
+                "checkCommitResultForCloud",
+                "checkCommitResultForCloud flagIsComplete 1 = $flagIsComplete"
+            )
             cloudPrinter.commitTransBuffer(object : ResultCallback {
                 override fun onComplete() {
                     //isQueueRunning = false
@@ -946,7 +1036,6 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
     }
 
     private fun checkForNextOrder(isCurrentPrinterFailed: Boolean = false) {
-        Log.e(TAG, "checkListlistOfPrintersData: ${listOfPrintersData.size}")
 
         if (listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.isNotEmpty() && listOfPrintersData.get(
                 currentPrinterIndex
@@ -954,6 +1043,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
             && isCurrentPrinterFailed == false
         ) {
             currentOrderIndex += 1
+            Log.e("checkCommitResultForCloud", "checkCommitResultForCloud 89")
             sendDataToPrintToSunmi()
 
         } else {
@@ -971,6 +1061,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                 }
 
                 if (isBreakIn) {
+                    Log.e("checkCommitResultForCloud", "checkCommitResultForCloud 90")
                     sendDataToPrintToSunmi()
                 } else {
                     //call action cable here
@@ -991,7 +1082,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                         )
                         Log.e(
                             TAG,
-                            "checkID 6: ${locationId}  checkURL 6:  ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}"
+                            "checkID 10: ${locationId}  checkURL 10:  ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}"
                         )
                         subscription?.perform("received", params)
                     }
@@ -1071,10 +1162,6 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
 
     fun connectActionCableSYNCSETTINGS() {
         // 1. Setup
-        var requestURL =
-            baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3
-
-        Log.d("PrinterRefreshWorker", "requestURL = $requestURL")
 
         val uri = URI(Constants.PRINTER_QUEUE_CONNECTION_URL_SNACKPOS)
         consumer2 = ActionCable.createConsumer(uri)
