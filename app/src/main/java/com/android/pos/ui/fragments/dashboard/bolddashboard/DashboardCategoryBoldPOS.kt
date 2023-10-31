@@ -204,8 +204,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        checkCashDrawerObserver()
         Binding()
+        checkCashDrawerObserver()
+        SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
         releaseMemory()
         prefProvider.setValue(Constants.REDIRECT_FROM, "")
         //prefProvider.setValue(Constants.OPEN_ORDER_ITEMS, "")
@@ -940,148 +941,138 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     }
 
     private fun getCustomerPrinters() {
-        viewModel.getCustomerPrinterList().observe(viewLifecycleOwner) {
+        CoroutineScope(Dispatchers.IO).launch {
+            var customersPrinters = viewModel.getCustomerPrinterList() ?: arrayListOf()
+            if (customersPrinters.isNotEmpty()) {
+                for (i in 0 until customersPrinters.size) {
+                    Log.d(TAG, "CASH-DRAWER: PrinterName($i) = ${customersPrinters[i].name}")
+                    if (customersPrinters[i].name.startsWith("CloudPrint", true) == true) {
+                        if (woyouService != null) {
+                            woyouService!!.sendRAWData(byteArrayOf(0x1B, 0x45, 0x01), this@DashboardCategoryBoldPOS)
+                        } else {
+                            val aa = ByteArray(5)
 
-            when (it.status) {
-                Status.SUCCESS -> {
-                    Log.d(TAG, "CASH-DRAWER: STEP 2 ")
-                    if (it.data?.isNotEmpty() == true) {
-                        for (i in 0 until it.data.size) {
-                            Log.d(TAG, "CASH-DRAWER: PrinterName($i) = ${it.data[i].name}")
-                            if (it.data[i].name.startsWith("CloudPrint", true) == true) {
-                                if (woyouService != null) {
-                                    woyouService!!.sendRAWData(byteArrayOf(0x1B, 0x45, 0x01), this)
-                                } else {
-                                    val aa = ByteArray(5)
+                            aa[0] = 0x10
+                            aa[1] = 0x14
+                            aa[2] = 0x00
+                            aa[3] = 0x00
+                            aa[4] = 0x00
 
-                                    aa[0] = 0x10
-                                    aa[1] = 0x14
-                                    aa[2] = 0x00
-                                    aa[3] = 0x00
-                                    aa[4] = 0x00
+                            try {
+                                SunmiPrinterApi.getInstance().sendRawData(aa)
+                            } catch (e: java.lang.Exception) {
+                                e.printStackTrace()
+                            }
 
-                                    try {
-                                        SunmiPrinterApi.getInstance().sendRawData(aa)
-                                    } catch (e: java.lang.Exception) {
-                                        e.printStackTrace()
-                                    }
-
-                                    try {
-                                        SunmiPrintHelper.getInstance().openCashBox()
-                                    } catch (e: java.lang.Exception) {
-                                        e.printStackTrace()
-                                    }
-                                }
-
-                            } else if (it.data[i].name.startsWith(
-                                    SUNMI_INNER_PRINTER,
-                                    true
-                                ) == true
-                            ) {
-                                SunmiPrintHelper.getInstance()
-                                    .initSunmiPrinterService(requireContext())
-
-                                if (woyouService != null) {
-                                    woyouService!!.sendRAWData(byteArrayOf(0x1B, 0x45, 0x01), this)
-                                } else {
-                                    val aa = ByteArray(5)
-
-                                    aa[0] = 0x10
-                                    aa[1] = 0x14
-                                    aa[2] = 0x00
-                                    aa[3] = 0x00
-                                    aa[4] = 0x00
-
-
-                                    try {
-                                        SunmiPrintHelper.getInstance().sendRawData(aa)
-                                    } catch (e: java.lang.Exception) {
-                                        e.printStackTrace()
-                                    }
-                                    try {
-                                        SunmiPrintHelper.getInstance().openCashBox()
-                                    } catch (e: java.lang.Exception) {
-                                        e.printStackTrace()
-                                    }
-
-                                }
-
-                            } else {
-                                Log.d(TAG, "CASH-DRAWER: STEP 3 in TM-m30 ")
-
-
-                                try {
-                                    var mPrinter =
-                                        Printer(
-                                            Printer.TM_M30,
-                                            Printer.MODEL_ANK,
-                                            (activity as MainActivity).applicationContext
-                                        )
-
-
-                                    var printerAdd =
-                                        if (it.data[i].printer_type == Constants.BLUETOOTH) "BT:" + it.data[i].macAddress else "TCP:" + it.data[i].ipAddress
-                                    mPrinter.connect(
-                                        printerAdd,
-                                        Printer.PARAM_DEFAULT
-                                    )
-
-                                    mPrinter.addPulse(
-                                        com.epson.epos2.printer.Printer.DRAWER_HIGH,
-                                        com.epson.epos2.printer.Printer.PULSE_100
-                                    )
-
-                                    try {
-
-                                        mPrinter.sendData(Printer.PARAM_DEFAULT)
-                                        mPrinter.disconnect()
-                                    } catch (e: java.lang.Exception) {
-                                        try {
-                                            mPrinter.disconnect()
-                                        } catch (e: java.lang.Exception) {
-                                            e.printStackTrace()
-                                        }
-                                        e.printStackTrace()
-                                    }
-                                } catch (e: Exception) {
-                                    e.printStackTrace()
-                                }
-
-                                /*var builder: Builder = Builder(
-                                    if (it.data[i].name.substring(0, 6).toString()
-                                            .lowercase() == "TM-m30".lowercase()
-                                    ) {
-                                        "TM-m30"
-                                    } else {
-                                        it.data[i].name
-                                    }, PrinterClass.language, requireActivity()
-                                )
-
-                                Log.d(TAG, "CASH-DRAWER: STEP 4")
-                                builder.addPulse(
-                                    com.epson.epos2.printer.Printer.DRAWER_HIGH,
-                                    com.epson.epos2.printer.Printer.PULSE_100
-                                )
-
-                                val status = IntArray(1)
-                                val battery = IntArray(1)
-                                try {
-                                    Log.d(TAG, "CASH-DRAWER: STEP 5")
-                                    PrinterClass.getPrinter()?.sendData(
-                                        builder,
-                                        PrinterClass.BLUETOOTH_TIMEOUT, status, battery
-                                    )
-                                } catch (e: java.lang.Exception) {
-                                    Log.d(TAG, "CASH-DRAWER: STEP 5 with error = ${e.localizedMessage} ")
-                                    e.printStackTrace()
-                                }*/
-
-
+                            try {
+                                SunmiPrintHelper.getInstance().openCashBox()
+                            } catch (e: java.lang.Exception) {
+                                e.printStackTrace()
                             }
                         }
 
-                    }
+                    } else if (customersPrinters[i].name.startsWith(
+                            SUNMI_INNER_PRINTER,
+                            true
+                        ) == true
+                    ) {
+                        if (woyouService != null) {
+                            woyouService!!.sendRAWData(byteArrayOf(0x1B, 0x45, 0x01), this@DashboardCategoryBoldPOS)
+                        } else {
+                            val aa = ByteArray(5)
 
+                            aa[0] = 0x10
+                            aa[1] = 0x14
+                            aa[2] = 0x00
+                            aa[3] = 0x00
+                            aa[4] = 0x00
+
+
+                            try {
+                                SunmiPrintHelper.getInstance().sendRawData(aa)
+                            } catch (e: java.lang.Exception) {
+                                e.printStackTrace()
+                            }
+                            try {
+                                SunmiPrintHelper.getInstance().openCashBox()
+                            } catch (e: java.lang.Exception) {
+                                e.printStackTrace()
+                            }
+
+                        }
+
+                    } else {
+                        Log.d(TAG, "CASH-DRAWER: STEP 3 in TM-m30 ")
+
+
+                        try {
+                            var mPrinter =
+                                Printer(
+                                    Printer.TM_M30,
+                                    Printer.MODEL_ANK,
+                                    (activity as MainActivity).applicationContext
+                                )
+
+
+                            var printerAdd =
+                                if (customersPrinters[i].printer_type == Constants.BLUETOOTH) "BT:" + customersPrinters[i].macAddress else "TCP:" + customersPrinters[i].ipAddress
+                            mPrinter.connect(
+                                printerAdd,
+                                Printer.PARAM_DEFAULT
+                            )
+
+                            mPrinter.addPulse(
+                                com.epson.epos2.printer.Printer.DRAWER_HIGH,
+                                com.epson.epos2.printer.Printer.PULSE_100
+                            )
+
+                            try {
+
+                                mPrinter.sendData(Printer.PARAM_DEFAULT)
+                                mPrinter.disconnect()
+                            } catch (e: java.lang.Exception) {
+                                try {
+                                    mPrinter.disconnect()
+                                } catch (e: java.lang.Exception) {
+                                    e.printStackTrace()
+                                }
+                                e.printStackTrace()
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+
+                        /*var builder: Builder = Builder(
+                            if (it.data[i].name.substring(0, 6).toString()
+                                    .lowercase() == "TM-m30".lowercase()
+                            ) {
+                                "TM-m30"
+                            } else {
+                                it.data[i].name
+                            }, PrinterClass.language, requireActivity()
+                        )
+
+                        Log.d(TAG, "CASH-DRAWER: STEP 4")
+                        builder.addPulse(
+                            com.epson.epos2.printer.Printer.DRAWER_HIGH,
+                            com.epson.epos2.printer.Printer.PULSE_100
+                        )
+
+                        val status = IntArray(1)
+                        val battery = IntArray(1)
+                        try {
+                            Log.d(TAG, "CASH-DRAWER: STEP 5")
+                            PrinterClass.getPrinter()?.sendData(
+                                builder,
+                                PrinterClass.BLUETOOTH_TIMEOUT, status, battery
+                            )
+                        } catch (e: java.lang.Exception) {
+                            Log.d(TAG, "CASH-DRAWER: STEP 5 with error = ${e.localizedMessage} ")
+                            e.printStackTrace()
+                        }*/
+
+
+                    }
                 }
 
             }
