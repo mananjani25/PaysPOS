@@ -453,31 +453,31 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
             var totalItemswithQuantity = 0
 
             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
-                cartList.get(0).dineInList?.forEach {
+                viewModel.cartModel?.dineInList?.forEach {
                     it.items.forEach { it1 ->
                         totalItemswithQuantity += it1.itemQuantity
                     }
                 }
             } else {
-                cartList[0].items?.forEach {
+                viewModel.currentCartItems.forEach {
                     totalItemswithQuantity += it.itemQuantity
 
                 }
             }
 
             var perItemDiscount = 0.0
-            if (cartList[0].discountPrice != 0.0) {
+            if (viewModel.cartModel?.discountPrice != 0.0) {
                 if (totalItemswithQuantity == 0) {
                     totalItemswithQuantity = 1
                 }
                 perItemDiscount =
-                    MethodUtils.roundOffAmountDouble(cartList[0].discountPrice / totalItemswithQuantity)
+                    MethodUtils.roundOffAmountDouble(viewModel.cartModel?.discountPrice!! / totalItemswithQuantity)
             }
 
             LogUtil.logE(TAG, "totalItemswithQuantity  ${totalItemswithQuantity}")
             LogUtil.logE(TAG, "perItemDiscount  ${perItemDiscount}")
             val bundle = Bundle().apply {
-                putDouble("orderDiscount", cartList[0].discountPrice)
+                putDouble("orderDiscount", viewModel.cartModel?.discountPrice!!)
                 putBoolean("isFromDetails", true)
                 putParcelable("model", item)
                 putDouble("itemOrderDiscount", perItemDiscount)

@@ -755,6 +755,10 @@ class PosRepository @Inject constructor(
         }
     }
 
+    fun observeCartModel(): LiveData<List<CartModel>> {
+        return appDatabase.cartDao().observeCartModel()
+    }
+
     suspend fun addItemToCart(tbCartItem: TbCartItem) {
         val startTime = System.currentTimeMillis()
         appDatabase.cartDao().addCartItem(tbCartItem)

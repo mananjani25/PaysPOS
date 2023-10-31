@@ -3506,6 +3506,8 @@ class AllOrdersListingFragment(
                 if (it.order_item_variation != null)
                     variationsAttributes = variationAtt(it.order_item_variation)
                 note = it.note
+                employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+                orderType = prefProvider.getValue(Constants.ORDER_TYPE, "")
             }
 
             inventoryModelList.add(items)

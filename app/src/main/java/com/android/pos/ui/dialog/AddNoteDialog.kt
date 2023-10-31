@@ -35,7 +35,6 @@ class AddNoteDialog : DialogFragment(), ItemCallback {
 
     private var isOrderNote: Boolean = false
     private var item: TbCartItem? = null
-    private var cartList: ArrayList<CartModel>? = null
     private var headerItemPosition: Int? = null
     private lateinit var binding: DailogAddNoteBinding
     private lateinit var noteListadapter: NotesListAdapter
@@ -75,7 +74,6 @@ class AddNoteDialog : DialogFragment(), ItemCallback {
 
         item = requireArguments().getParcelable("item")
         isOrderNote = requireArguments().getBoolean("isOrderNote")
-        cartList = requireArguments().getParcelableArrayList<CartModel>("cartList")
         if (prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT) == Constants.DINE_IN) {
             headerItemPosition = requireArguments().getInt("headerPos")
             LogUtil.logE(TAG, "headerItemPosition:  ${headerItemPosition}")
@@ -113,7 +111,6 @@ class AddNoteDialog : DialogFragment(), ItemCallback {
                 putString("note", "")
                 putParcelable("item", item)
                 putBoolean("isOrderNote", isOrderNote)
-                putParcelableArrayList("cartList", cartList)
                 headerItemPosition?.let { putInt("headerPos", it) }
             }
 
@@ -128,7 +125,6 @@ class AddNoteDialog : DialogFragment(), ItemCallback {
             putString("note", binding.edtNote.text.toString().trim())
             putParcelable("item", item)
             putBoolean("isOrderNote", isOrderNote)
-            putParcelableArrayList("cartList", cartList)
             headerItemPosition?.let { putInt("headerPos", it) }
         }
 

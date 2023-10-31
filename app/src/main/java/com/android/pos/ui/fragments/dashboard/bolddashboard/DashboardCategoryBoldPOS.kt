@@ -457,7 +457,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         if (result.id != -1) {
                             viewModel.cartModel!!.discountId = result.id
                         }
-                        viewModel.addCart(viewModel.cartModel!!)
+                        viewModel.updateCartModel(viewModel.cartModel!!)
                     }
                     Log.d(TAG, "resultListener: " + Gson().toJson(viewModel.cartModel!!))
                 } catch (e: Exception) {
@@ -905,7 +905,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             try {
                 if (rolePermission.hasManualSalesPermission(binding.root)) {
                     prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
-                    viewModel.deleteManualSaleCart()
+                    viewModel.deleteManualSaleItemsFromCartItems()
                     binding.layoutHeader.txtKeypad.setTextColor(resources.getColor(R.color.btnColor))
                     binding.layoutHeader.txtKeypad.setTypeface(
                         binding.layoutHeader.txtKeypad.typeface,

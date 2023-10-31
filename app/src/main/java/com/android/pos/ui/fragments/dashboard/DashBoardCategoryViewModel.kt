@@ -173,6 +173,8 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun getKitchenReceiptSettings() = posRepository.getKitchenReceiptSettings()
 
+    fun observeLatestCartModel(): LiveData<List<CartModel>> = posRepository.observeCartModel()
+
     fun setGuestPay(value: Boolean) {
         isGuestPay = value
     }
@@ -236,8 +238,8 @@ class DashBoardCategoryViewModel @Inject constructor(
         this.cartModel = generateCombinedItems(cartList[0])
     }
 
-    fun setUpdatedCartModel(cartModel: CartModel) {
-        this.cartModel = cartModel
+    fun setUpdatedCartModel(updatedCartModel: CartModel) {
+        this.cartModel = updatedCartModel
     }
 
     fun setCurrentCartItems(cartItems: List<TbCartItem>) {
@@ -422,7 +424,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     fun addOrderNote(note: String) {
         if (cartModel != null) {
             cartModel!!.note = note
-            addCart(cartModel!!)
+            updateCartModel(cartModel!!)
 
         }
     }
@@ -656,7 +658,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     fun manualSaleCartLogicNew(cartList: List<TbCartItem>?, item: TbCartItem, type: String) {
 
         var cartModel = addCartModelNew(item, true)
-        setUpdatedCartModel(cartModel)
+
         if (cartList != null && cartList.isEmpty()) {
             if (type == UPDATE) {
                 cartList.forEach { items ->
@@ -1933,7 +1935,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         )  // reset flag in case of adding or updating item
         Log.e("DashViewModModel", "checkCartSize: ${cartList?.size}")
         var cartModel = item?.let { addCartModelNew(it, isManualSales) }
-        setUpdatedCartModel(cartModel!!)
+
         if (cartList != null && cartList.isEmpty()) {
             // empty cart hoy to new cart create kare
 
@@ -3845,7 +3847,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             totalServiceCharge = 0.0
             var amountToBePaid = 0.0
 
-            if (cartList[0].orderType == DINE_IN) {
+            if (cartModel?.orderType == DINE_IN) {
 
             } else {
 
@@ -3866,15 +3868,15 @@ class DashBoardCategoryViewModel @Inject constructor(
                         }
                     }
 
-                    order_note = cartList[0].note
-                    subTotalPrice -= cartList[0].discountPrice
+                    order_note = cartModel?.note ?: ""
+                    subTotalPrice -= cartModel?.discountPrice ?: 0.0
 
                     if (subTotalPrice < 0) {
                         subTotalPrice = 0.0
                     }
                     cartModel?.let { serviceChargeCalculationNew(it) }
 
-                    totalDiscount += cartList[0].discountPrice
+                    totalDiscount += cartModel?.discountPrice ?: 0.0
 
                     cartList.forEach {
                         totalDiscount += (it.discountPrice * it.itemQuantity)
@@ -3886,7 +3888,6 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                     //loyalty point and price calculation
                     amountToBePaid = totalPrice
-
 
                     if (selectedCustomer == null) {
                         var fnAmount = amountToBePaid

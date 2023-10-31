@@ -18,7 +18,7 @@ interface CartDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addCartItem(cartItem: TbCartItem): Long?
 
-    @Query("select * from TbCartItem where orderType = :orderType AND isManualSales = 0 AND employeeID=:employee_Id ORDER BY timeStamp")
+    @Query("select * from TbCartItem where orderType = :orderType AND isManualSaleItem = 0 AND employeeID=:employee_Id ORDER BY timeStamp")
     fun getCartItems(orderType: String, employee_Id: Int): Flow<List<TbCartItem>>
 
     @Transaction
@@ -36,6 +36,12 @@ interface CartDao {
 
      @Update
      fun updateCartModel(cartModel: CartModel)
+
+     @Query("select * from CartModel LIMIT 1")
+     suspend fun getCurrentCartModel(): List<CartModel>
+
+    @Query("select * from CartModel LIMIT 1")
+    fun observeCartModel(): LiveData<List<CartModel>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addAllItem(elementsBeanList: List<CartModel>)
@@ -62,13 +68,13 @@ interface CartDao {
     @Query("DELETE FROM CartModel where CartModel.isMaual = 1 AND CartModel.employeeID=:employee_Id")
     suspend fun deleteManualSale(employee_Id: Int)
 
-    @Query("DELETE FROM TbCartItem where isManualSales = 1 AND employeeID=:employee_Id")
+    @Query("DELETE FROM TbCartItem where isManualSaleItem = 1 AND employeeID=:employee_Id")
     suspend fun deleteManualSaleItemsFromCartItem(employee_Id: Int)
 
     @Query("select * from CartModel where CartModel.orderType = :orderType AND CartModel.isMaual = 1 AND CartModel.employeeID=:employee_Id")
     fun getManualSaleItems(orderType: String, employee_Id: Int): LiveData<List<CartModel>>
 
-    @Query("select * from TbCartItem where orderType = :orderType AND isManualSales = 1 AND employeeID=:employee_Id")
+    @Query("select * from TbCartItem where orderType = :orderType AND isManualSaleItem = 1 AND employeeID=:employee_Id")
     fun getManualSaleCartItems(orderType: String, employee_Id: Int): LiveData<List<TbCartItem>>
 
     //For Dine in Local Database

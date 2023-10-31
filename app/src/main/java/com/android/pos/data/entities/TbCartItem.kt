@@ -73,7 +73,7 @@ class TbCartItem : Parcelable {
     var itemOriginalModifiersList: List<Modifier>? = arrayListOf()
 
     var employeeID: Int = 0
-    var isMaual: Boolean = false
+    var isManualSaleItem: Boolean = false
     var orderType: String = ""
     var orderTypeName: String = ""
     var orderTypeId: Int = 0
