@@ -1136,7 +1136,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     val item = TbCartItem().convertToCartItem(tbItem, tbItem)
                     item.timeStamp = System.currentTimeMillis().toString()
                     getInitialTakeOutOrderType()
-                    Log.e("viewModel.cartModel", Gson().toJson(viewModel.cartModel))
+                    Log.e(TAG,"dineintest viewModel.cartmodel: "+ Gson().toJson(viewModel.cartModel))
 
                     prefProvider.setValue(Constants.REDIRECT_FROM, "")
 
@@ -1181,7 +1181,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                             .addToBackStack(backStateName).commit()
                     } else {
                         Log.d(TAG, "dineintest onItemSelected: ")
-                        Log.e(TAG, "cartListItemAddSize: ${cartList.size}")
+                        Log.e(TAG, "dineintest cartListItemAddSize: ${cartList.size}")
                         if (cartList.isEmpty()) {
                             viewModel.createCart(cartList)
                         }
@@ -1193,7 +1193,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                     prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
 
                             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
-                                item.guestIndexForDineIn = position
+                                item.guestIndexForDineIn = viewModel.dineInHeaderPosition
                                 if (cartList[0].dineInList?.isEmpty() == true) {
                                     cartList[0].dineInList = dineInList
                                 }
@@ -1228,19 +1228,21 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                             viewModel.setCurrentCartItems(it)
                                         }*/
 
-                                        Log.d(TAG, "dineintest currentCartItems: "+viewModel.currentCartItems)
-                                        Log.d(TAG, "dineintest item: "+item)
+                                        Log.d(TAG, "1232 dineintest currentCartItems: "+Gson().toJson(viewModel.currentCartItems))
+                                        Log.d(TAG, "dineintest item: "+Gson().toJson(item))
                                         //insert dine in
                                         viewModel.updateDineInCart(
                                             viewModel.currentCartItems,
                                             item,
                                             Constants.ADD,
                                             false,
+                                            dineInList
                                         )
                                     })
 
                                 }
                             } else {
+                                item.guestIndexForDineIn = null
                                 runOnUiThread {
                                     viewModel.updateCart(
                                         viewModel.currentCartItems,
@@ -1502,10 +1504,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     }
 
 
-    override fun onItemUpdate(item: TbItem, position: Int) {
+    override fun onItemUpdate(item: TbCartItem, position: Int) {
         prefProvider.setValueInt(Constants.CAT_ID_SELECTED, item.categoryId)
         val backStateName: String = AddItemFragment.javaClass.getName()
-        val fragment = AddItemFragment.newInstance(TbCartItem().convertToCartItem(item, item), this, cartList, true, position)
+        val fragment = AddItemFragment.newInstance(item, this, cartList, true, position)
         val fm: FragmentManager = requireActivity().supportFragmentManager
         fm.beginTransaction().add(binding.frameLayout.id, fragment).setReorderingAllowed(true)
             .addToBackStack(backStateName).commit()
@@ -1629,6 +1631,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             dineInList = dineInList
         )*/
 
+        Log.d(TAG, "1633 dineintest currentCartItems: "+viewModel.currentCartItems)
+        Log.d(TAG, "dineintest dineinlist: "+dineInList)
         viewModel.updateDineInCart(viewModel.currentCartItems,null,Constants.ADD,false,dineInList)
 
     }
@@ -1713,6 +1717,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     dineInList = dineInList,
                     isFromDineInScreen = true
                 )*/
+                Log.d(TAG, "1719 dineintest currentCartItems: "+viewModel.currentCartItems)
+                Log.d(TAG, "dineintest dineinlist: "+dineInList)
                 viewModel.updateDineInCart(viewModel.currentCartItems,null,Constants.ADD,false,dineInList,true)
                 // viewModel.orderItemDiscount = arguments?.getDouble("totalDiscount") ?: 0.0
 

@@ -101,7 +101,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     private lateinit var presentation: CustomDisplay
     private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
     private val passcodeViewModel by activityViewModels<PasscodeViewModel>()
-    private var fireItemsList: ArrayList<TbItem> = arrayListOf()
+    private var fireItemsList: ArrayList<TbCartItem> = arrayListOf()
 
     private var passSCTotal: Double = 0.0
     private var passDiscountTotal: Double = 0.0
@@ -272,7 +272,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         }
     }
 
-    private fun checkVariation(tbItem: TbItem, item: TbItem): Boolean {
+    private fun checkVariation(tbItem: TbCartItem, item: TbCartItem): Boolean {
 
         var isSame = true
 
@@ -305,7 +305,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         return isSame
     }
 
-    fun checkModifierNewLogic(tbItem: TbItem, item: TbItem): Boolean {
+    fun checkModifierNewLogic(tbItem: TbCartItem, item: TbCartItem): Boolean {
         var isSame = false
         var listOfDataMod: ArrayList<Int> = arrayListOf()
         var tbMod: HashMap<Int, Int> = hashMapOf()
@@ -505,7 +505,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         binding.btnPayNew.setOnClickListener {
             try {
                 //new Calculation for total Discount
-                var listWT: ArrayList<TbItem> = arrayListOf()
+                var listWT: ArrayList<TbCartItem> = arrayListOf()
                 var list = dineInTableAdapter.getList()
 
                 for (i in 0 until list.size) {
@@ -576,12 +576,13 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 cartList = getCartModel(adapterList.toCollection(arrayListOf()))
                 cartList?.note = order_note
                 cartList!!.taxlistDynamic = listOf()
-                var temp_itemsList: ArrayList<TbItem> = arrayListOf()
-                cartList?.dineInList?.forEach { dineModel ->
+                var temp_itemsList: ArrayList<TbCartItem> = arrayListOf()
+                /*cartList?.dineInList?.forEach { dineModel ->
                     if (!dineModel.isPaid) {
                         temp_itemsList.addAll(dineModel.items)
                     }
-                }
+                }*/
+                temp_itemsList.addAll(dashboardViewModel.currentCartItems)
 
 
                 temp_itemsList.forEach { item ->
@@ -680,7 +681,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 totalTax = 0.0
                 var subTotal = 0.0
                 var amtToPay = 0.0
-                val totalItem: ArrayList<TbItem> = arrayListOf()
+                val totalItem: ArrayList<TbCartItem> = arrayListOf()
                 for (i in 0 until adapterList.size) {
                     if (adapterList.get(i).isHeader == 1) {
                         adapterList.get(i).item?.let {
@@ -912,7 +913,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             for (i in 0 until list.size) {
                 val model = DineInModel()
                 if (list[i].isHeader == 0) {
-                    val listTbItem: ArrayList<TbItem> = arrayListOf()
+                    val listTbItem: ArrayList<TbCartItem> = arrayListOf()
                     model.id = list[i].id
                     model.isPaid = list[i].isPaid
                     model.title = list[i].title
@@ -951,7 +952,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         }
 
                     }
-                    model.items = listTbItem
+//                    model.items = listTbItem
+                    dashboardViewModel.currentCartItems = listTbItem
                     newList.add(model)
 
 
@@ -1036,7 +1038,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 }
             }
 
-            dineInTableAdapter.setList(guestList.toCollection(arrayListOf()), notPayAnyAmount)
+            Log.d(TAG, "1041 dineinlisttest setList: "+guestList.toCollection(arrayListOf()))
+            dineInTableAdapter.setList(
+                guestList.toCollection(arrayListOf()),
+                notPayAnyAmount,
+            )
 
             if (guestAttribute != null) {
 
@@ -1192,7 +1198,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
     }
 
-    private fun getTotalTaxBirfurcation(item: TbItem, itemtype: TaxData): Double {
+    private fun getTotalTaxBirfurcation(item: TbCartItem, itemtype: TaxData): Double {
         var totaltaxtemp: Double = 0.0
         var modifierPrice = 0.0
         val price =
@@ -1234,7 +1240,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     }
 
     private fun taxBifurcationCalculation(
-        item: TbItem,
+        item: TbCartItem,
         cartModel: CartModel
     ): CartModel {
         item.taxes?.forEachIndexed { indextax, itemtype ->
@@ -1458,8 +1464,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         serviceChargeGuest: Double,
         divideDiscount2: Double,
         dividedGuestAmt: Double,
-        listItemWT: ArrayList<TbItem>,
-        listItemGuestSelected: ArrayList<TbItem>
+        listItemWT: ArrayList<TbCartItem>,
+        listItemGuestSelected: ArrayList<TbCartItem>
     ) {
 
         //New Drag and Drop
@@ -1494,7 +1500,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
         var subTotal = 0.0
         var amtToPay = 0.0
-        val totalItem: ArrayList<TbItem> = arrayListOf()
+        val totalItem: ArrayList<TbCartItem> = arrayListOf()
         for (i in position + 1 until adapterList.size) {
             if (adapterList.get(i).isHeader == 1) {
                 adapterList.get(i).item?.let {
@@ -1897,7 +1903,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
         cartList = getCartModel(adapterList.toCollection(arrayListOf()))
 
-        var temp_itemslist: ArrayList<TbItem> = arrayListOf()
+        var temp_itemslist: ArrayList<TbCartItem> = arrayListOf()
 
 
 //        temp_itemslist.addAll(listItemWT)
@@ -2047,7 +2053,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         return (minn <= value && value <= maxx)
     }
 
-    override fun onSendItemToKitchen(item: TbItem) {
+    override fun onSendItemToKitchen(item: TbCartItem) {
 
         val ids: MutableList<Int> = ArrayList()
         item.orderItemId?.let { ids.add(it) }
@@ -2069,7 +2075,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
     }
 
-    override fun onWholeTableToKitchen(ids: String, list: ArrayList<TbItem>,listItemWithGuest: HashMap<String, ArrayList<TbItem>>) {
+    override fun onWholeTableToKitchen(ids: String, list: ArrayList<TbCartItem>,listItemWithGuest: HashMap<String, ArrayList<TbCartItem>>) {
         LogUtil.logE(TAG, "WholeTableITem")
         viewModel.fireItemToKitchen(orderId ?: 0, true, ids, true)
         for (i in 0 until kitchenPrinterList.size) {
@@ -2081,12 +2087,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         }
     }
 
-    override fun singleItemFired(id: String, position: Int, item: TbItem, listItemWithGuest: HashMap<String, ArrayList<TbItem>>) {
+    override fun singleItemFired(id: String, position: Int, item: TbCartItem, listItemWithGuest: HashMap<String, ArrayList<TbCartItem>>) {
 
         clickedPos = position
         viewModel.fireItemToKitchen(orderId ?: 0, true, id, false, item)
 
-        var listItem: ArrayList<TbItem> = arrayListOf()
+        var listItem: ArrayList<TbCartItem> = arrayListOf()
         listItem.add(item)
         for (i in 0 until kitchenPrinterList.size) {
             if (kitchenPrinterList[i].status) {
@@ -2101,9 +2107,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     }
 
     override fun onGuestPrint(
-        listItem: ArrayList<TbItem>,
+        listItem: ArrayList<TbCartItem>,
         guestName: String,
-        listWTitems: ArrayList<TbItem>,
+        listWTitems: ArrayList<TbCartItem>,
         subTotalGuest: Double,
         total: Double,
         taxGuest: Double,
@@ -2158,9 +2164,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
     private fun guestPrint(
         paymentStatus: String,
-        listGuestItem: ArrayList<TbItem>,
+        listGuestItem: ArrayList<TbCartItem>,
         guestName: String,
-        wtItems: ArrayList<TbItem>,
+        wtItems: ArrayList<TbCartItem>,
         subTotalGuest: Double = 0.0,
         total: Double = 0.0,
         taxGuest: Double = 0.0,
@@ -2246,7 +2252,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                             }
                         }
                     }
-                    dineInTableAdapter.setList(newList as ArrayList<DineInModel>)
+                    Log.d(TAG, "2255 dineinlisttest setList: "+newList as ArrayList<DineInModel>)
+                    dineInTableAdapter.setList(
+                        newList as ArrayList<DineInModel>
+                    )
                 }
             }
         }
@@ -2412,7 +2421,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                                             //for add item in tbItem List and extract/convert data from API
                                             val itemDineIn: DineInModel = DineInModel()
-                                            val item = TbItem()
+                                            val item = TbCartItem()
                                             item.isPaid = it.isPaid
                                             item.discountPrice = it.discountAmount
                                             item.discountId = it.discountId
@@ -2897,7 +2906,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     dineInList.sortBy { it.sort }
                     if (dineInList.isNotEmpty()) {
                         Log.d("###17MAR23", "dineInList.isNotEmpty(): Called - Start")
-                        dineInTableAdapter.setList(dineInList, notPayAnyAmount)
+                        Log.d(TAG, "2909 dineinlisttest setList: "+dineInList)
+                        dineInTableAdapter.setList(dineInList, notPayAnyAmount )
                         if (this::presentation.isInitialized) {
                             presentation.show()
                             presentation.onDisplayChanged()
@@ -2937,8 +2947,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
     fun getCartModel(list: ArrayList<DineInModel>): CartModel {
         var model = CartModel()
-        var listItem: ArrayList<TbItem> = arrayListOf()
-        var dineInItems: ArrayList<TbItem> = arrayListOf()
+        var listItem: ArrayList<TbCartItem> = arrayListOf()
+        var dineInItems: ArrayList<TbCartItem> = arrayListOf()
         var newDineInList: ArrayList<DineInModel> = arrayListOf()
         var dineinModel: DineInModel = DineInModel()
 
@@ -2964,13 +2974,15 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                         if (j == (list.size - 1)) {
                             dineinModel.items = arrayListOf()
-                            dineinModel.items.addAll(dineInItems)
+//                            dineinModel.items.addAll(dineInItems)
+                            dashboardViewModel.currentCartItems.addAll(dineInItems)
                             dineInItems = arrayListOf()
                             break
                         }
                     } else {
                         dineinModel.items = arrayListOf()
-                        dineinModel.items.addAll(dineInItems)
+//                        dineinModel.items.addAll(dineInItems)
+                        dashboardViewModel.currentCartItems.addAll(dineInItems)
                         dineInItems = arrayListOf()
                         break
                     }
@@ -2984,7 +2996,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         }
         model.orderType = "DineIn"
         model.dineInList = newDineInList
-        model.items = listItem
+//        model.items = listItem
+        dashboardViewModel.currentCartItems = listItem
         model.discountPrice = list[0].orderDiscount
         model.serviceCharge = serviceChargeList
         model.employeeID = prefProvider.getValueInt(EMPLOYEE_ID, 0)
@@ -3281,7 +3294,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             newList[0].listOfItemsMoved.addAll(listOfMoveItemIds.toCollection(arrayListOf()))
 
-            dineInTableAdapter.setList(newList)
+            Log.d(TAG, "3297 dineinlisttest setList: "+newList)
+            dineInTableAdapter.setList(
+                newList
+            )
 
             updateOrderCall(isFromReorder = true)
         }
@@ -3309,7 +3325,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     }
 
     // Navigate to Add Item to Wastage dialog
-    override fun onAddToWastage(position: Int, item: TbItem) {
+    override fun onAddToWastage(position: Int, item: TbCartItem) {
         val bundle = Bundle().apply {
             putInt("itemQuantity", item.itemQuantity)
         }
@@ -3495,9 +3511,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         type: String,
         paymentStatus: String,
         guestPrint: Boolean,
-        listGuestItem: ArrayList<TbItem>,
+        listGuestItem: ArrayList<TbCartItem>,
         guestName: String,
-        listWTitems: ArrayList<TbItem>,
+        listWTitems: ArrayList<TbCartItem>,
         subTotalGuest: Double = 0.0,
         total: Double = 0.0,
         taxGuest: Double = 0.0,
@@ -3691,9 +3707,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         customerReceiptPrinters: PrinterResponse.Data.CustomerReceiptPrinters,
         type: String,
         paymentType: String,
-        listGuestItem: ArrayList<TbItem>,
+        listGuestItem: ArrayList<TbCartItem>,
         guestName: String,
-        listWTitems: ArrayList<TbItem>,
+        listWTitems: ArrayList<TbCartItem>,
         subTotalGuest: Double = 0.0,
         total: Double = 0.0,
         taxGuest: Double = 0.0,
@@ -4960,9 +4976,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         customerReceiptPrinters: PrinterResponse.Data.CustomerReceiptPrinters,
         type: String,
         paymentType: String,
-        listGuestItem: ArrayList<TbItem>,
+        listGuestItem: ArrayList<TbCartItem>,
         guestName: String,
-        listWTitems: ArrayList<TbItem>,
+        listWTitems: ArrayList<TbCartItem>,
         subTotalGuest: Double = 0.0,
         total: Double = 0.0,
         taxGuest: Double = 0.0,
@@ -5568,9 +5584,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         customerReceiptPrinters: PrinterResponse.Data.CustomerReceiptPrinters,
         type: String,
         paymentType: String,
-        listGuestItem: ArrayList<TbItem>,
+        listGuestItem: ArrayList<TbCartItem>,
         guestName: String,
-        listWTitems: ArrayList<TbItem>,
+        listWTitems: ArrayList<TbCartItem>,
         subTotalGuest: Double = 0.0,
         total: Double = 0.0,
         taxGuest: Double = 0.0,
@@ -8517,8 +8533,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     private fun initKitchenPrinter(
         data: PrinterResponse.Data.KitchenReceiptPrinters,
         type: String,
-        item: ArrayList<TbItem>,
-        listItemWithGuest: HashMap<String, ArrayList<TbItem>> = hashMapOf()
+        item: ArrayList<TbCartItem>,
+        listItemWithGuest: HashMap<String, ArrayList<TbCartItem>> = hashMapOf()
 
     ) {
 
@@ -8678,7 +8694,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     private fun generateKitchenReceiptForU220(
         customerReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
         type: String,
-        item: ArrayList<TbItem>,
+        item: ArrayList<TbCartItem>,
         builder: Printer
     ) {
         try {
@@ -8903,7 +8919,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     private fun generateReceiptForU220(
         customerReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
         type: String,
-        item: ArrayList<TbItem>,
+        item: ArrayList<TbCartItem>,
         builder: Printer
     ) {
 
@@ -9116,8 +9132,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     private fun generateKitchenReceipt(
         customerReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
         type: String,
-        item: ArrayList<TbItem>,
-        listItemWithGuest: HashMap<String, ArrayList<TbItem>>
+        item: ArrayList<TbCartItem>,
+        listItemWithGuest: HashMap<String, ArrayList<TbCartItem>>
     ) {
         var builder: Builder? = null
         try {
@@ -9589,8 +9605,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     private fun setService(
         data: PrinterResponse.Data.KitchenReceiptPrinters,
         type: String,
-        item: ArrayList<TbItem>,
-        listItemWithGuest: HashMap<String, ArrayList<TbItem>>
+        item: ArrayList<TbCartItem>,
+        listItemWithGuest: HashMap<String, ArrayList<TbCartItem>>
     ) {
         if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.FoundSunmiPrinter) {
 
@@ -9649,9 +9665,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         customerReceiptPrinters: PrinterResponse.Data.CustomerReceiptPrinters,
         type: String,
         paymentType: String,
-        listGuestItem: ArrayList<TbItem>,
+        listGuestItem: ArrayList<TbCartItem>,
         guestName: String,
-        listWTitems: ArrayList<TbItem>,
+        listWTitems: ArrayList<TbCartItem>,
         subTotalGuest: Double,
         total: Double,
         taxGuest: Double,
@@ -9711,8 +9727,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     private fun generateKitchenReceiptSunmi(
         customerReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
         type: String,
-        item: ArrayList<TbItem>,
-        listItemWithGuest: HashMap<String, ArrayList<TbItem>> = hashMapOf()
+        item: ArrayList<TbCartItem>,
+        listItemWithGuest: HashMap<String, ArrayList<TbCartItem>> = hashMapOf()
     ) {
         try {
             //ProgressUtils.showProgressDialog(requireActivity())
@@ -9817,8 +9833,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     private fun generateKitchenReceiptSunmiInner(
         customerReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
         type: String,
-        item: ArrayList<TbItem>,
-        listItemWithGuest: HashMap<String, ArrayList<TbItem>>
+        item: ArrayList<TbCartItem>,
+        listItemWithGuest: HashMap<String, ArrayList<TbCartItem>>
     ) {
         try {
 
@@ -10060,15 +10076,15 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         var list: List<DineInModel> = arrayListOf()
         list = dineInTableAdapter.getList() ?: arrayListOf()
         val builder = ArrayList<String>()
-        var listItem: ArrayList<TbItem> = arrayListOf()
-        var listItemWithGuest: LinkedHashMap<String, ArrayList<TbItem>> = linkedMapOf()
+        var listItem: ArrayList<TbCartItem> = arrayListOf()
+        var listItemWithGuest: LinkedHashMap<String, ArrayList<TbCartItem>> = linkedMapOf()
 
         for (i in 0 until list.size) {
 
             if (list[i].isHeader == 0) {
                 if (i < list.size - 1 && list[i + 1].isHeader == 1) {
                     Log.e(TAG, "checkInsideEdge 1 ")
-                    var listItemLocal: ArrayList<TbItem> = arrayListOf()
+                    var listItemLocal: ArrayList<TbCartItem> = arrayListOf()
                     for (j in i + 1 until list.size) {
                         if (list[j].isHeader == 1) {
                             Log.e(TAG, "checkInsideEdge 2 ")
@@ -10156,7 +10172,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                             index
                                         )!!
                                     )
-                                    var tbItem: TbItem = TbItem()
+                                    var tbItem: TbCartItem = TbCartItem()
                                     tbItem.categoryId =
                                         getOrderDetailsResponse?.orderItems?.get(index)?.categoryId
                                             ?: 0
@@ -10209,7 +10225,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 it.value.forEach { it1 ->
                     var orderITemId = it1.orderItemId
                     if (orderItemsIds.contains(it1.orderItemId) == false) {
-                        var listNewITems: ArrayList<TbItem> = arrayListOf()
+                        var listNewITems: ArrayList<TbCartItem> = arrayListOf()
                         listNewITems.addAll(it.value)
                         if (listNewITems.isNotEmpty()) {
                             for (k in it.value.indices) {
@@ -10224,7 +10240,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             }
 
             // remove guest with no items
-            val it: MutableIterator<Map.Entry<String, ArrayList<TbItem>>> = listItemWithGuest.entries.iterator()
+            val it: MutableIterator<Map.Entry<String, ArrayList<TbCartItem>>> = listItemWithGuest.entries.iterator()
             while (it.hasNext()) {
                 if (it.next().value.isEmpty()) {
                     it.remove()

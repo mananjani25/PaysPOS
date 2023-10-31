@@ -246,7 +246,7 @@ class CustomDisplay(
                         val dineInList = cartList[0].dineInList
 
                         dineInCartAdapter.setList(
-                            dineInList?.toCollection(arrayListOf()) ?: arrayListOf()
+                            dineInList?.toCollection(arrayListOf()) ?: arrayListOf() , dashBoardCategoryViewModel.listItems
                         )
                         binding.rowHeaderLayoutDineIn?.visible()
                         binding.rowHeaderLayout.gone()
@@ -268,7 +268,7 @@ class CustomDisplay(
                         binding.txtCardLabel.gone()
 
                     }
-                    cartList[0].items?.toCollection(arrayListOf())?.let { it1 ->
+                    dashBoardCategoryViewModel.listItems.toCollection(arrayListOf()).let { it1 ->
                         cartAdapter.setList(it1)
                     }
                     displayCustomer()
@@ -550,14 +550,14 @@ class CustomDisplay(
             ?.replace(",", ", ")
     }
 
-    override fun onItemClickListener(view: View?, data: TbItem, position: Int) {}
+    override fun onItemClickListener(view: View?, data: TbCartItem, position: Int) {}
     override fun onCartItemClickListener(view: View?, data: TbCartItem, position: Int) {
         TODO("Not yet implemented")
     }
 
     override fun onHeaderSelected(position: Int) {}
 
-    override fun onItemSelected(headerPosition: Int, position: Int, item: TbItem) {}
+    override fun onItemSelected(headerPosition: Int, position: Int, item: TbCartItem) {}
 
     override fun onCustomerClicked(position: Int, isRemoved: Boolean) {}
 
@@ -752,7 +752,7 @@ class CustomDisplay(
 
                                     //for add item in tbItem List and extract/convert data from API
                                     val itemDineIn: DineInModel = DineInModel()
-                                    val item = TbItem()
+                                    val item = TbCartItem()
                                     item.isPaid = it.isPaid
                                     item.discountPrice = it.discountAmount
                                     item.discountId = it.discountId

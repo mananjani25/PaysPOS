@@ -696,7 +696,7 @@ class CartFragment(
 
 
 
-        dineInCartAdapter.setList(dineInList)
+        dineInCartAdapter.setList(dineInList ,viewModel.listItems)
 
         if (cartlist.isEmpty()) {
             val cartModel = CartModel().apply {
@@ -906,8 +906,8 @@ class CartFragment(
                     binding.rvCartDineIn.gone()
                     binding.rvCartList.visible()
 
-                    it[0].items?.toCollection(arrayListOf())
-                        ?.let { it1 -> cartAdapter.setList(it1) }
+                    viewModel.currentCartItems.toCollection(arrayListOf())
+                        .let { it1 -> cartAdapter.setList(it1) }
 
                     cartlist = it as ArrayList<CartModel>
 
@@ -1038,7 +1038,6 @@ class CartFragment(
 
         } else {
             if (view != null) {
-
 
                 /*viewModel.mAllWordsFlow(
                     prefProvider.getValue(ORDER_TYPE, TAKEOUT),
@@ -1715,7 +1714,7 @@ class CartFragment(
                                     checkOrderType()
                                     if (it.isNotEmpty()) {
 
-                                        cartlist = it as ArrayList<CartModel>
+//                                        cartlist = it
                                         if (isFromPayment) {
 
                                             if (MethodUtils.isEnableCashDiscount(requireContext()) && prefProvider.getValue(
@@ -1742,7 +1741,7 @@ class CartFragment(
                                             binding.linearButtonView.gone()
                                             binding.relPreoceedToFire.visible()
                                         }
-                                        if (it[0].dineInList?.isNotEmpty() == true) {
+                                        /*if (it[0].dineInList?.isNotEmpty() == true) {
                                             var dineInList = it[0].dineInList
                                             if (dineInList?.get(0)?.selectedPosition != -1) {
 
@@ -1755,7 +1754,7 @@ class CartFragment(
                                             )
 
 
-                                        }
+                                        }*/
                                         LogUtil.logE(TAG, "getPAyment:  ${isFromPayment}")
                                         LogUtil.logE(TAG, "isGuestPayment:  ${isGuestPayment}")
 
@@ -1763,8 +1762,8 @@ class CartFragment(
                                             viewModelPayment.dineInWholeDiscount =
                                                 guestCalModel?.wholeOrderPassDiscount
                                             viewModelPayment.dineInWholeSC = guestCalModel?.wholeOrderPassSC
-                                            viewModel.itemCalculationForDineInPayment(
-                                                it[0],
+                                            viewModel.itemCalculationForDineInPaymentNew(
+//                                                it,
                                                 binding.txtTotal,
                                                 requireContext(),
                                                 guestCalModel!!,
@@ -1772,8 +1771,8 @@ class CartFragment(
                                             )
                                         } else {
                                             LogUtil.logE(TAG, "WithOutDineIn")
-                                            viewModel.itemCalculationCartModel(
-                                                it[0],
+                                            viewModel.itemCalculationCartModelNew(
+                                                it,
                                                 binding.txtTotal,
                                                 requireContext()
                                             )
@@ -1781,7 +1780,7 @@ class CartFragment(
 
 
 
-                                        viewModel.setCartModel(it)
+//                                        viewModel.setCartModel(it)
                                         if (prefProvider.getValueboolean(
                                                 Constants.DINE_IN_UPDATE,
                                                 false
@@ -1791,12 +1790,11 @@ class CartFragment(
 
                                             var getOldList = prefProvider.getValue(DINE_IN_UPDATE_LIST, "")
                                             if (getOldList.isEmpty()) {
-                                                var listItemDine: ArrayList<GetOrderDetailsResponse.Data.OrderItem> =
-                                                    arrayListOf()
-                                                var data = it[0].dineInList
-                                                LogUtil.logE(TAG, "getDataSizeDin ${data?.size}")
-                                                data?.forEach {
-                                                    it.items.forEach { item ->
+                                                var listItemDine: ArrayList<GetOrderDetailsResponse.Data.OrderItem> = arrayListOf()
+//                                                var data = it[0].dineInList
+//                                                LogUtil.logE(TAG, "getDataSizeDin ${data?.size}")
+//                                                data?.forEach {
+                                                it.forEach { item ->
                                                         var modifiers: ArrayList<GetOrderDetailsResponse.Data.OrderItem.OrderItemModifier> =
                                                             arrayListOf()
                                                         if (item.modifiers.isNotEmpty()) {
@@ -1857,7 +1855,7 @@ class CartFragment(
                                                         )
 
                                                     }
-                                                }
+//                                                }
                                                 prefProvider.setValue(
                                                     Constants.DINE_IN_UPDATE_LIST,
                                                     Gson().toJson(listItemDine)
@@ -1866,23 +1864,24 @@ class CartFragment(
 
                                         } else {
                                             binding.txtDineInProceed.setText("Proceed To Fire")
+//                                            cartAdapter.notifyDataSetChanged()
                                         }
 
-                                        Log.e(
+                                        /*Log.e(
                                             "CheckCalculation",
                                             "taxlistDynamic: ${Gson().toJson(it[0].taxlistDynamic)}"
-                                        )
+                                        )*/
 
-                                        var listOfTax: ArrayList<TaxData> = arrayListOf()
-                                        var noItem = false
-                                        var listItems: ArrayList<TbItem> = arrayListOf()
-                                        it[0].dineInList?.forEach {
+//                                        var listOfTax: ArrayList<TaxData> = arrayListOf()
+//                                        var noItem = false
+//                                        var listItems: ArrayList<TbCartItem> = arrayListOf()
+//                                        it[0].dineInList?.forEach {
+                                        viewModel.listItems.clear()
+                                            viewModel.listItems.addAll(it)
 
-                                            listItems.addAll(it.items)
+//                                        }
 
-                                        }
-
-                                        it[0].taxlistDynamic?.let { it1 ->
+                                        /*it[0].taxlistDynamic?.let { it1 ->
                                             if (prefProvider.getValue(
                                                     ORDER_TYPE,
                                                     ""
@@ -1899,7 +1898,7 @@ class CartFragment(
                                                 setTaxBifurcationData(it[0].taxlistDynamic as ArrayList<TaxData>)
                                             }
 
-                                        }
+                                        }*/
 
                                         binding.txtSubTotal.text =
                                             MethodUtils.roundOffAmount(viewModel.subTotalPrice)
@@ -1931,7 +1930,7 @@ class CartFragment(
                                         binding.lblLoyaltyBalance.visibility = View.GONE
 
                                     } else {
-                                        cartlist = arrayListOf()
+//                                        cartlist = arrayListOf()
                                         if (isFromPayment) {
                                             if (MethodUtils.isEnableCashDiscount(requireContext()) && prefProvider.getValue(
                                                     ORDER_TYPE,
@@ -2295,6 +2294,53 @@ class CartFragment(
 
                     }
                 }
+
+                viewModel.mAllWordsFlow(
+                    prefProvider.getValue(ORDER_TYPE, TAKEOUT),
+                    prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+                ).asLiveData().observe(viewLifecycleOwner) {
+                    if (it.isNotEmpty()) {
+                        if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
+                            viewModel.setCartModel(it)
+                            cartlist = it as ArrayList<CartModel>
+                            if (it[0].dineInList?.isNotEmpty() == true) {
+                                var dineInList = it[0].dineInList
+                                if (dineInList?.get(0)?.selectedPosition != -1) {
+
+                                    dineInList?.get(0)?.selectedPosition =
+                                        viewModel.dineInHeaderPosition
+                                }
+
+                                dineInCartAdapter.setList(
+                                    dineInList?.toCollection(arrayListOf()) ?: arrayListOf() , viewModel.listItems
+                                )
+
+
+                            }
+                            var listOfTax: ArrayList<TaxData> = arrayListOf()
+
+                            it[0].taxlistDynamic?.let { it1 ->
+                                if (prefProvider.getValue(
+                                        ORDER_TYPE,
+                                        ""
+                                    ) == DINE_IN && viewModel.listItems.isEmpty() && prefProvider.getValueboolean(
+                                        Constants.DINE_IN_UPDATE,
+                                        false
+                                    ) == false
+                                ) {
+                                    listOfTax.addAll(arrayListOf())
+                                    setTaxBifurcationData(arrayListOf())
+
+                                } else {
+                                    listOfTax.addAll(it1)
+                                    setTaxBifurcationData(it[0].taxlistDynamic as ArrayList<TaxData>)
+                                }
+
+                            }
+
+                        }
+                    }
+                }
             }
 
         }
@@ -2389,7 +2435,7 @@ class CartFragment(
         ProgressUtils.dismissProgressDialog()
     }
 
-    override fun onItemClickListener(view: View?, data: TbItem, position: Int) {
+    override fun onItemClickListener(view: View?, data: TbCartItem, position: Int) {
         LogUtil.logE(TAG, "itemClicked  ${Gson().toJson(data)}")
 
 
@@ -2413,7 +2459,7 @@ class CartFragment(
         viewModel.dineInHeaderPosition = position
     }
 
-    override fun onItemSelected(headerPosition: Int, position: Int, item: TbItem) {
+    override fun onItemSelected(headerPosition: Int, position: Int, item: TbCartItem) {
         LogUtil.logE(TAG, "onDineinItemClick ${position}")
 
         viewModel.selectedItemPositionDine = position
@@ -2657,6 +2703,7 @@ class CartFragment(
                     clearCustomer()
                     viewModel.deleteCart()
                     cartlist.clear()
+                    viewModel.listItems.clear()
                     isOrderUpdate = false
                     dineInCartAdapter.clearList()
 
@@ -2760,7 +2807,7 @@ class CartFragment(
                 if (cartlist.isNotEmpty()) {
                     if (prefProvider.getValueboolean(DINE_IN_UPDATE, false)) {
                         var itemCount = 0
-                        for (i in cartlist.indices) {
+                        /*for (i in cartlist.indices) {
                             for (j in cartlist[i].dineInList?.indices!!) {
                                 if (cartlist[i].dineInList?.get(j)?.items?.size!! > 0) {
                                     itemCount++
@@ -2771,7 +2818,8 @@ class CartFragment(
                                 break
                             }
 
-                        }
+                        }*/
+                        itemCount = viewModel.currentCartItems.size
 
                         if (itemCount == 0) {
                             AlertUtils.showCustomAlertWithListenerWithOK(
@@ -3240,12 +3288,13 @@ class CartFragment(
 
                 var itemCount = 0
                 for (i in cartlist.indices) {
-                    for (j in cartlist[i].dineInList?.indices!!) {
+                    /*for (j in cartlist[i].dineInList?.indices!!) {
                         if (cartlist[i].dineInList?.get(j)?.items?.size!! > 0) {
                             itemCount++
                             break
                         }
-                    }
+                    }*/
+                    itemCount = viewModel.currentCartItems.size
                     if (itemCount != 0) {
                         createDineInRequest()
                         break

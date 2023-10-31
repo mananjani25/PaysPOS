@@ -18,6 +18,12 @@ interface CartDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addCartItem(cartItem: TbCartItem): Long?
 
+    @Query("delete from TbCartItem where itemId = :itemId AND guestIndexForDineIn = :guestIndexForDineIn")
+    suspend fun removeCartItem(itemId:Int,guestIndexForDineIn: Int)
+
+    @Query("select Max(dineInUniqueId) FROM TbCartItem")
+    suspend fun getLatestPrimaryKey(): Int
+
     @Query("select * from TbCartItem ORDER BY timeStamp")
     fun getCartItems(): Flow<List<TbCartItem>>
 

@@ -124,6 +124,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     private var syncMarkeup: Boolean = false
     private var isGuestPay: Boolean = false
     var dineInHeaderPosition: Int = 0
+    var listItems: ArrayList<TbCartItem> = arrayListOf()
     var dineInSelectedItemHeaderPos: Int = 0
     var selectedItemPositionDine: Int = 0
     val TAG = "DashBoardCateViewModel"
@@ -392,6 +393,16 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
     }
 
+    private fun removeItemFromCartItems(itemId: Int , guestIndexForDineIn: Int) {
+        CoroutineScope(Dispatchers.IO).launch {
+            posRepository.removeItemFromCart(itemId , guestIndexForDineIn )
+        }
+    }
+
+    suspend fun getLatestPrimaryKey(): Int {
+        return posRepository.getLatestPrimaryKey()
+    }
+
     fun addOrderNote(note: String) {
         if (cartModel != null) {
             cartModel!!.note = note
@@ -606,11 +617,11 @@ class DashBoardCategoryViewModel @Inject constructor(
         dineInList: List<DineInModel> = arrayListOf(),
         isFromDineInScreen: Boolean = false,
         position: Int = -1
-    ) {/*
+    ) {
         prefProvider.setValueboolean(
             IS_LAST_ITEM_DELETE, false
         )  // reset flag in case of adding or updating item
-        Log.e("DashViewModModel", "checkCartSize: ${cartList?.size}")
+        Log.e("DashViewModModel", "newCartLogicModifier checkCartSize: ${cartList?.size}")
         if (cartList != null && cartList.isEmpty()) {
             // empty cart hoy to new cart create kare
 
@@ -1181,8 +1192,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 }
 
-            }
-            else {
+            } else {
                 var isItem1000 = false
                 val list = cartList?.get(0)?.items?.toMutableList()
                 if (list != null && list.isNotEmpty()) {
@@ -1467,8 +1477,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                             }
                         }
-                    }
-                    else if (type == UPDATE) {
+                    } else if (type == UPDATE) {
                         var index = -1
 
                         var idsF = list.filter { it.itemId == item?.itemId }
@@ -1638,8 +1647,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                             }
                         }
-                    }
-                    else if (type == DELETE) {
+                    } else if (type == DELETE) {
 
                         var index = -1
                         Log.e(TAG, "CheckDeleteItem ${Gson().toJson(item)}")
@@ -1768,7 +1776,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             }
 
         }
-    */
+
     }
 
     fun updateCart(
@@ -1783,7 +1791,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         prefProvider.setValueboolean(
             IS_LAST_ITEM_DELETE, false
         )  // reset flag in case of adding or updating item
-        Log.e("DashViewModModel", "checkCartSize: ${cartList?.size}")
+        Log.e("DashViewModModel", "updateCart checkCartSize: ${cartList?.size}")
         var cartModel = item?.let { addCartModelNew(it, isManualSales) }
         if (cartList != null && cartList.isEmpty()) {
             // empty cart hoy to new cart create kare
@@ -2373,10 +2381,12 @@ class DashBoardCategoryViewModel @Inject constructor(
         isFromDineInScreen: Boolean = false,
         position: Int = -1,
     ) {
+        var addNewEntry = false
+        Log.d(TAG, "updateDineInCart: type: " + type)
         prefProvider.setValueboolean(
             IS_LAST_ITEM_DELETE, false
         )  // reset flag in case of adding or updating item
-        Log.e("DashViewModModel", "checkCartSize: ${cartList?.size}")
+        Log.e("DashViewModModel", "updateDineInCart checkCartSize: ${cartList?.size}")
         var cartModel = item?.let { addCartModelNew(it, isManualSales) }
         if (cartList != null && cartList.isEmpty()) {
             // empty cart hoy to new cart create kare
@@ -2392,6 +2402,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                 } else {
                     cartModel = taxBifurcationCalculationNew(item, cartModel!!, type, false)
                 }
+                Log.d("DashViewModModel", "addItemToCartItems 2397: ")
+                item.guestIndexForDineIn = this.dineInHeaderPosition
+                currentCartItems.add(item)
                 addItemToCartItems(item)
             } else if (dineInList.isNotEmpty()) {
                 dineInList.forEach { dineInModel ->
@@ -2400,9 +2413,16 @@ class DashBoardCategoryViewModel @Inject constructor(
                     }
 
                 }
+                item?.let {
+                    Log.d("DashViewModModel", "addItemToCartItems 2407: ")
+                    item.guestIndexForDineIn = this.dineInHeaderPosition
+                    currentCartItems.add(it)
+                    addItemToCartItems(it)
+                }
             }
 
         } else {
+            Log.d("DashViewModModel", "else called: ")
             var isDineInItem1000 = false
             order_note = cartModel!!.note
             var list = cartList!!.toMutableList()
@@ -2410,15 +2430,16 @@ class DashBoardCategoryViewModel @Inject constructor(
 
             cartModel?.dineInList = dineInList
             var dinein = dineInList
+            Log.d("DashViewModModel", "dinein list size: " + dinein.size)
             if (dinein.isNotEmpty() && dinein != null) {
 //                val selectedHeader = dineInList.get(0).selectedPosition
-                if (!cartList.isNullOrEmpty()) {
+                if (list.isNotEmpty()) {
                     if (type == ADD) {
                         var index = -1
                         for (i in list.indices) {
                             if (item != null) {
                                 if (item.isManualSales) {
-
+                                    Log.d("DashViewModModel", "manual sales: " + item.isManualSales)
 
                                     if (list[i].manualSaleId == item.manualSaleId) {
                                         Log.d(TAG, "cartLogic: " + i)
@@ -2427,57 +2448,63 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     }
 
                                 } else {
-                                    Log.e("AddedInElse", "GotMod")
+                                    Log.e("AddedInElse", "DashViewModModel GotMod")
 
                                     if (list[i].itemId == item.itemId && list[i].itemQuantity > 1000) {
                                         isDineInItem1000 = true
                                         _itemQuantityCheck.value = Event(true)
                                         break
                                     } else {
-                                        if (list[i].itemId == item.itemId && checkVariationNew(
-                                                list[i], item
-                                            ) && checkModifierNew(list[i], item)
-                                        ) {
-                                            Log.d(TAG, "cartLogic: " + i)
+                                        if (list[i].itemId == item.itemId && list[i].guestIndexForDineIn == dineInHeaderPosition) {
+                                            if (list[i].itemId == item.itemId && checkVariationNew(
+                                                    list[i], item
+                                                ) && checkModifierNew(list[i], item)
+                                            ) {
 
-                                            var listTmp = combineItemNew(
-                                                list.toCollection(arrayListOf()), item, i
-                                            )
-                                            list.clear()
-                                            Log.e(
-                                                TAG,
-                                                "newCartLogicModifier: position of selected Item " + item.id
-                                            )
-                                            list.addAll(listTmp.toMutableList())
+//                                            if (list[i].guestIndexForDineIn == item.guestIndexForDineIn) {
+                                                Log.d(TAG, "DashViewModModel cartLogic: " + i)
 
-                                            Log.e(TAG, "getMergeCombineItem  ${list.size}")
+                                                var listTmp = combineItemNew(
+                                                    list.toCollection(arrayListOf()), item, i
+                                                )
+                                                list.clear()
+                                                Log.e(
+                                                    TAG,
+                                                    "DashViewModModel newCartLogicModifier: position of selected Item " + item.id
+                                                )
+                                                list.addAll(listTmp.toMutableList())
 
-                                            index = -2
-                                            break
+                                                Log.e(
+                                                    TAG,
+                                                    "DashViewModModel getMergeCombineItem  ${list.size}"
+                                                )
+
+                                                index = -2
+                                                break
+//                                            }
+
+                                            } else if (list[i].itemId == item.itemId && (!checkVariationNew(
+                                                    list[i], item
+                                                ) && !checkModifierNew(list[i], item))
+                                            ) {
+                                                addNewEntry = true
+                                                Log.d(TAG, "DashViewModModel else if called: ")
+                                                var isBreak: Boolean = false
 
 
-                                        } else if (list[i].itemId == item.itemId && (!checkVariationNew(
-                                                list[i], item
-                                            ) && !checkModifierNew(list[i], item))
-                                        ) {
-                                            var isBreak: Boolean = false
+                                                list[i].modifiers.forEach { modifier ->
+                                                    item.modifiers.forEach { mod ->
+                                                        if (mod.id == modifier.id && mod.modifier_quantity == modifier.modifier_quantity) {
+                                                            if (list!![i].variationsAttributes.isNotEmpty() && list!![i].variationsAttributes[0].id == item.variationsAttributes[0].id) {
+                                                                item.id += 1
+                                                                isBreak = true
+                                                                Log.e(
+                                                                    TAG,
+                                                                    "DashViewModModel newCartLogicModifier: if isBreak"
+                                                                )
 
-
-
-
-                                            list[i].modifiers.forEach { modifier ->
-                                                item.modifiers.forEach { mod ->
-                                                    if (mod.id == modifier.id && mod.modifier_quantity == modifier.modifier_quantity) {
-                                                        if (list!![i].variationsAttributes.isNotEmpty() && list!![i].variationsAttributes[0].id == item.variationsAttributes[0].id) {
-                                                            item.id += 1
-                                                            isBreak = true
-                                                            Log.e(
-                                                                TAG,
-                                                                "newCartLogicModifier: isBreak"
-                                                            )
-
-                                                            return@forEach
-                                                        } /*else if (list[i].variationsAttributes.isEmpty() == true) {
+                                                                return@forEach
+                                                            } /*else if (list[i].variationsAttributes.isEmpty() == true) {
                                                         item.id += 1
                                                         isBreak = true
                                                         Log.d(TAG, "newCartLogicModifier: isBreak")
@@ -2486,45 +2513,59 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                     }*/
 //
 
-                                                    } else if (mod.id == modifier.id && mod.modifier_quantity != modifier.modifier_quantity) {
-                                                        item.id += 1
-                                                        isBreak = false
-                                                        Log.e(
-                                                            TAG, "newCartLogicModifier: isBreak"
-                                                        )
+                                                        } else if (mod.id == modifier.id && mod.modifier_quantity != modifier.modifier_quantity) {
+                                                            item.id += 1
+                                                            isBreak = false
+                                                            Log.e(
+                                                                TAG,
+                                                                "DashViewModModel newCartLogicModifier: else if isBreak"
+                                                            )
 
-                                                        return@forEach
+                                                            return@forEach
+                                                        }
+
                                                     }
 
+
+
+                                                    if (isBreak) {
+                                                        return@forEach
+                                                    }
                                                 }
-
-
-
-                                                if (isBreak) {
-                                                    return@forEach
-                                                }
-                                            }
 
 
 //
-                                            if (list[i].variationsAttributes.isNotEmpty() == true) {
-                                                if (list[i].variationsAttributes.get(0).id != item.variationsAttributes.get(
-                                                        0
-                                                    ).id
-                                                ) {
-                                                    item.id += 1
+                                                if (list[i].variationsAttributes.isNotEmpty() == true) {
+                                                    if (list[i].variationsAttributes.get(0).id != item.variationsAttributes.get(
+                                                            0
+                                                        ).id
+                                                    ) {
+                                                        item.id += 1
+
+                                                    }
+
 
                                                 }
 
+                                                if (isBreak) {
+                                                    index = i
+                                                    break
+                                                }
+
+
+                                            } else {
+                                                Log.d(
+                                                    TAG,
+                                                    "DashViewModModel variation else called : "
+                                                )
 
                                             }
-
-                                            if (isBreak) {
-                                                index = i
-                                                break
-                                            }
-
-
+                                        } else {
+//                                            item.itemId = item.itemId+1
+//                                            Log.d("DashViewModModel", "addItemToCartItems 2551: "+item.itemQuantity)
+//                                            item.guestIndexForDineIn = this.dineInHeaderPosition
+//                                            addItemToCartItems(item)
+//                                            addCart(cartModel!!)
                                         }
                                     }
 
@@ -2556,8 +2597,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                             }
 
                             if (index != -1 && index != -2) {
-                                val model = cartList[index]
-                                Log.d(TAG, "cartLogic: " + index)
+                                val model = list[index]
+                                Log.d(TAG, "DashViewModModel 2570 cartLogic: " + index)
                                 if (model != null) {
                                     if (index != -1) {
                                         if (item != null) {
@@ -2617,7 +2658,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                                 }
                             } else if (index != -2) {
-                                Log.d(TAG, "cartLogic: " + index)
+                                Log.d(TAG, "DashViewModModel 2630 cartLogic: " + index)
                                 if (item != null) {
                                     item.singleItemPrice = item.price
                                     item.modifiers.forEach { it ->
@@ -2645,7 +2686,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                             ) {
                                 Log.e(
                                     TAG,
-                                    "checkInsideSc  ${item?.isDestroy}  updateOrder ${isOrderUpdate}"
+                                    "DashViewModModel checkInsideSc  ${item?.isDestroy}  updateOrder ${isOrderUpdate}"
                                 )
 
                                 var flagD: Boolean = false
@@ -2663,10 +2704,16 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 }
 
                             }
-                            Log.e("GEtDineInData", "getList  ${Gson().toJson(list)}")
-                            Log.e("GEtDineInData", "destroyTerer  ${item?.isDestroy}")
                             Log.e(
-                                TAG, "checkDinein  ${
+                                "GEtDineInData",
+                                "DashViewModModel getList  ${Gson().toJson(list)}"
+                            )
+                            Log.e(
+                                "GEtDineInData",
+                                "DashViewModModel destroyTerer  ${item?.isDestroy}"
+                            )
+                            Log.e(
+                                TAG, "DashViewModModel checkDinein  ${
                                     prefProvider.getValueboolean(
                                         DINE_IN_UPDATE, false
                                     )
@@ -2674,7 +2721,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                             )
 
                             if (item != null) {
-                                addItemToCartItems(item)
+//                                Log.d("DashViewModModel", "addItemToCartItems 2687: ")
+//                                item.guestIndexForDineIn = this.dineInHeaderPosition
+//                                addItemToCartItems(item)
                             }
 
                         }
@@ -2875,14 +2924,29 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     model.isDestroy = true
                                 } else {
                                     list.remove(model)
+                                    /*currentCartItems.remove(model)
+                                    model.guestIndexForDineIn?.let {
+                                        removeItemFromCartItems(model.itemId ,
+                                            it
+                                        )
+                                    }*/
                                 }
+                            }
+                            currentCartItems.remove(item)
+                            item?.guestIndexForDineIn?.let {
+                                removeItemFromCartItems(item.itemId ,
+                                    it
+                                )
                             }
                         } else {
                             //list.remove(item)
 
                         }
                         if (item != null) {
-                            addItemToCartItems(item)
+//                            Log.d("DashViewModModel", "addItemToCartItems 2896: ")
+//                            item.guestIndexForDineIn = this.dineInHeaderPosition
+//                            currentCartItems.add(item)
+//                            addItemToCartItems(item)
                         }
                         Log.e(
                             "ModNewLogic",
@@ -2895,12 +2959,13 @@ class DashBoardCategoryViewModel @Inject constructor(
                 }
                 if (type == UPDATE) {
                     for (i in 0 until dineInList.size) {
-                        cartList.forEach {
+                        list.forEach {
                             cartModel = taxBifurcationCalculationNew(
                                 it, cartModel!!, type, false
                             )
                         }
                     }
+
 
                     Log.e(
                         TAG, "taxlistDynamicData:  ${Gson().toJson(cartModel!!.taxlistDynamic)}"
@@ -2910,9 +2975,42 @@ class DashBoardCategoryViewModel @Inject constructor(
                         cartModel = taxBifurcationCalculationNew(item, cartModel!!, type, false)
                     }
                 }
-                val newUpdatedItem = list.filter { it.itemId == item?.itemId }[0]
-                addItemToCartItems(newUpdatedItem)
-                addCart(cartModel!!)
+                val newUpdatedItemList = list.filter { it.itemId == item?.itemId && it.guestIndexForDineIn == dineInHeaderPosition }
+                var newUpdatedItem:TbCartItem = if(newUpdatedItemList.isNotEmpty()) {
+                    // IMPORTANT -- remove this.. this is for log purpose only
+                    newUpdatedItemList.forEach {
+                        it.taxes = arrayListOf()
+                        Log.d(TAG, "newUpdatedItemList updateDineInCart: "+Gson().toJson(it))
+                    }
+
+                    newUpdatedItemList[0]
+                }else{
+                    list.filter { it.itemId == item?.itemId }[0]
+                }
+
+                if (type != DELETE) {
+                    Log.d("DashViewModModel", "addItemToCartItems 2926: ")
+                    Log.d(
+                        "DashViewModModel",
+                        "newUpdatedItem:: guestIndexForDineIn: " + dineInHeaderPosition
+                    )
+                    // IMPORTANT -- remove this.. this is for log purpose only
+                    newUpdatedItem.taxes = arrayListOf()
+                    Log.d("DashViewModModel", "newUpdatedItem:: " + Gson().toJson(newUpdatedItem))
+                    newUpdatedItem.guestIndexForDineIn = this.dineInHeaderPosition
+                    if (addNewEntry) {
+                        viewModelScope.launch {
+                            newUpdatedItem.dineInUniqueId =
+                                this@DashBoardCategoryViewModel.getLatestPrimaryKey() + 1
+                        }
+                        currentCartItems.add(newUpdatedItem)
+                        addItemToCartItems(newUpdatedItem)
+                    } else {
+                        currentCartItems.add(newUpdatedItem)
+                        addItemToCartItems(newUpdatedItem)
+                    }
+                    addCart(cartModel!!)
+                }
             } else {
 
                 if (type == DELETE) {
@@ -2925,6 +3023,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                             mod.modifier_quantity = mod.itemQuantity
                         }
                     }
+                    Log.d("DashViewModModel", "addItemToCartItems 2941: ")
+                    item.guestIndexForDineIn = this.dineInHeaderPosition
+                    currentCartItems.add(item)
                     addItemToCartItems(item)
 
                     if (cartModel != null) {
@@ -3907,7 +4008,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             isSame = false
         }
 
-        Log.e(TAG, "ReturnIssame ${isSame}")
+        Log.e(TAG, "DashViewModModel checkModifierNew ReturnIssame ${isSame}")
         return isSame
 
     }
@@ -4002,7 +4103,11 @@ class DashBoardCategoryViewModel @Inject constructor(
         isSame =
             if (listOfDataMod.containsAll(listOfDataModSelecteItem) && listOfDataMod.size == listOfDataModSelecteItem.size) {
                 if (tbItem.variationsAttributes[0].id == item.variationsAttributes[0].id) {
-                    (tbItem.variationsAttributes[0].price == item.variationsAttributes[0].price)
+                    if ((tbItem.variationsAttributes[0].price == item.variationsAttributes[0].price)) {
+                        tbItem.guestIndexForDineIn == item.guestIndexForDineIn
+                    } else {
+                        false
+                    }
                 } else {
                     false
                 }
@@ -4011,7 +4116,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             }
 
 
-        Log.e(TAG, "CheckVariationAdd ${isSame}")
+        Log.e(TAG, "DashViewModModel CheckVariationAdd ${isSame}")
         return isSame
     }
 
@@ -5899,7 +6004,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         var orderItemsAttributeList: ArrayList<OrderItemsAttribute> = arrayListOf()
 
         for (i in 0 until cartModel.dineInList?.size!!) {
-            cartModel.dineInList?.get(i)?.items?.forEach { item ->
+            currentCartItems.forEach { item ->
 
                 val orderItemsAttribute = OrderItemsAttribute()
 
@@ -5998,7 +6103,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     private fun orderItemTaxesAttributes(
-        items: TbItem, orderId: Int? = null
+        items: TbCartItem, orderId: Int? = null
     ): List<OrderItemTaxesAttribute> {
 
 
@@ -6073,7 +6178,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     fun orderItemModifierAttributes(
-        item: TbItem, terminalId: Int
+        item: TbCartItem, terminalId: Int
     ): List<OrderItemModifierAttribute> {
 
         val orderItemModifierAttributeList: ArrayList<OrderItemModifierAttribute> = arrayListOf()
@@ -6104,7 +6209,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     private fun orderModifierTaxesAttributes(
-        items: TbItem, modifier: Modifier, terminalId: Int
+        items: TbCartItem, modifier: Modifier, terminalId: Int
     ): List<OrderModifierTaxesAttribute> {
 
         val orderItemTaxesAttributeList: ArrayList<OrderModifierTaxesAttribute> = arrayListOf()
@@ -6174,7 +6279,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     private fun orderItemVariationAttributes(
-        item: TbItem
+        item: TbCartItem
     ): OrderItemVariationAttribute? {
 
         if (item.variationsAttributes.isNotEmpty()) {
@@ -6419,7 +6524,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         val orderItemsAttributeList: ArrayList<OrderItemsAttribute> = arrayListOf()
         LogUtil.logE(TAG, "insideSize  ${cartModel.items?.size}")
 
-        cartModel.items?.forEach { item ->
+        currentCartItems.forEach { item ->
 
             val orderItemsAttribute = OrderItemsAttribute()
 
@@ -7414,6 +7519,113 @@ class DashBoardCategoryViewModel @Inject constructor(
                 amountToBePaid = 0.0
             }
         }
+        //totalAmmount = totalPrice-cartList[0].discountPrice
+
+
+    }
+
+    fun itemCalculationForDineInPaymentNew(
+//        cartModel: CartModel,
+        txtTotal: AppCompatTextView,
+        context: Context,
+        model: GuestPaymentCalculationModel,
+        isGuestPayment: Boolean
+    ) {
+
+        var totalAmmount = 0.0
+        nonCashAdj = 0.0
+        totalPrice = 0.0
+        totalCount = 0
+        subTotalPrice = 0.0
+        totalDiscount = 0.0
+        totalTax = 0.0
+        totalServiceCharge = 0.0
+        var amountToBePaid = 0.0
+        if (isGuestPayment) {
+
+            subTotalPrice = model.subTotal
+            totalTax = model.tax
+            totalServiceCharge = model.serviceCharge
+            totalDiscount = model.totalDiscount
+            order_note = cartModel!!.note
+
+            totalServiceCharge = model.serviceCharge
+            // serviceChargeCalculationModel(cartModel)
+            subTotalPrice -= model.totalDiscount
+
+
+            var finalTotal = 0.0
+            finalTotal = model.total
+            cashDiscountType = prefProvider.getValue(Constants.OPTION_TYPE, "")
+            //loyalty point and price calculation
+            amountToBePaid = finalTotal
+
+            Log.e("checkDineInFinalAmt", "finalTotal:  ${finalTotal}")
+            totalPrice = MethodUtils.roundOffAmountDouble(finalTotal)
+
+            if (MethodUtils.isEnableCashDiscount(context)) {
+                cashdiscountAmount = MethodUtils.calculateCashDiscount(
+                    totalPrice, prefProvider, context
+                )
+
+                //   cashdiscountAmount = model.cashDiscount
+
+            } else {
+                cashdiscountAmount = 0.0
+            }
+
+            Log.e("checkDineInFinalAmt", "checkCashDiscountAmt:  ${cashdiscountAmount}")
+            val nf: NumberFormat = NumberFormat.getNumberInstance()
+            nf.maximumFractionDigits = 2
+            val rounded: String = nf.format(cashdiscountAmount)
+            cashdiscountAmount = rounded.toDouble()
+            MethodUtils.setPriceTextView(txtTotal, model.total)
+
+
+        } else {
+            LogUtil.logE(TAG, "NotDineInGuest")
+            subTotalPrice = model.subTotal
+            totalTax = model.tax
+            totalServiceCharge = model.serviceCharge
+            totalDiscount = model.totalDiscount
+            order_note = cartModel!!.note
+            totalServiceCharge = model.serviceCharge
+
+            var finalTotal = 0.0
+            finalTotal = model.total
+            cashDiscountType = prefProvider.getValue(Constants.OPTION_TYPE, "")
+            //loyalty point and price calculation
+            amountToBePaid = finalTotal
+            totalPrice = finalTotal
+
+            LogUtil.logE(TAG, "newDAstotalPrice  ${totalPrice}")/*if (selectedCustomer == null) {
+                    totalPrice = amountToBePaid
+
+                } else {
+                    redeemLoyaltyInfo.getAmountToBePaid()?.let {
+                        totalPrice = it
+                    }
+                }*/
+
+            if (MethodUtils.isEnableCashDiscount(context)) {
+                cashdiscountAmount = MethodUtils.calculateCashDiscount(
+                    totalPrice, prefProvider, context
+                )
+            } else {
+                cashdiscountAmount = 0.0
+            }
+            val nf: NumberFormat = NumberFormat.getNumberInstance()
+            nf.maximumFractionDigits = 2
+            val rounded: String = nf.format(cashdiscountAmount)
+            cashdiscountAmount = rounded.toDouble()
+            Log.d(TAG, "itemCalculationForDineInPayment: " + cashdiscountAmount)
+
+
+            MethodUtils.setPriceTextView(txtTotal, model.total)
+
+
+        }
+
         //totalAmmount = totalPrice-cartList[0].discountPrice
 
 

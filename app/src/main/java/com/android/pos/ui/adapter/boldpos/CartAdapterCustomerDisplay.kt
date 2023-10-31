@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.android.pos.data.entities.TbCartItem
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.ViewItemCartCustomerDisplayBinding
@@ -19,7 +20,7 @@ import com.google.gson.Gson
 
 class CartAdapterCustomerDisplay : RecyclerView.Adapter<CartAdapterCustomerDisplay.MyViewHolder>() {
     private lateinit var prefProvider: PrefProvider
-    var cartList = ArrayList<TbItem>()
+    var cartList = ArrayList<TbCartItem>()
     private val TAG = "CartAdapter"
 
 
@@ -32,7 +33,7 @@ class CartAdapterCustomerDisplay : RecyclerView.Adapter<CartAdapterCustomerDispl
     inner class MyViewHolder(private val binding: ViewItemCartCustomerDisplayBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(item: TbItem, pos: Int) {
+        fun bind(item: TbCartItem, pos: Int) {
             prefProvider = PrefProvider(itemView.context)
             val showCashCreditPrice = prefProvider.getValueboolean(Constants.SHOW_CASH_CREDIT_PRICE_ON_CUSTOMER_DISPLAY, false)
             binding.txtName.text = item.name
@@ -187,7 +188,7 @@ class CartAdapterCustomerDisplay : RecyclerView.Adapter<CartAdapterCustomerDispl
 
     }
 
-    fun setList(list: ArrayList<TbItem>) {
+    fun setList(list: ArrayList<TbCartItem>) {
         LogUtil.logE(TAG, "itemListSize ${list.size}")
         cartList = list
         notifyDataSetChanged()
@@ -208,12 +209,12 @@ class CartAdapterCustomerDisplay : RecyclerView.Adapter<CartAdapterCustomerDispl
         return cartList.size
     }
 
-    fun addCart(mList: List<TbItem>?) {
-        cartList = mList as ArrayList<TbItem>
-        val it: MutableIterator<TbItem> = cartList.iterator()
+    fun addCart(mList: List<TbCartItem>?) {
+        cartList = mList as ArrayList<TbCartItem>
+        val it: MutableIterator<TbCartItem> = cartList.iterator()
 
         while (it.hasNext()) {
-            val s: TbItem = it.next()
+            val s: TbCartItem = it.next()
             if (s.isDestroy) {
                 it.remove()
             }
@@ -222,12 +223,12 @@ class CartAdapterCustomerDisplay : RecyclerView.Adapter<CartAdapterCustomerDispl
         notifyDataSetChanged()
     }
 
-    private fun totalPrice(model: TbItem): Double {
+    private fun totalPrice(model: TbCartItem): Double {
         return model.price * model.itemQuantity
     }
 
 
-    private fun totalEachPrice(model: TbItem): Double {
+    private fun totalEachPrice(model: TbCartItem): Double {
         return model.price * 1
     }
 

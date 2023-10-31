@@ -1,6 +1,7 @@
 package com.android.pos.data.model
 
 import android.os.Parcelable
+import com.android.pos.data.entities.TbCartItem
 import com.android.pos.data.entities.TbCustomer
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.entities.TbServiceCharge
@@ -30,7 +31,7 @@ data class DineInModel(
     var totalGuestCount: Int = 0,
     var eligibleGuestsForDivision: Int = 0,
     var isHeader: Int = 0,
-    var item: TbItem? = null,
+    var item: TbCartItem? = null,
     var totalGuestPrice: Double = 0.0,
     var sort: Int = 0,
     var totalTableAmt: Double = 0.0,

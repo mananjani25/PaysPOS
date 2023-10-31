@@ -755,6 +755,19 @@ class PosRepository @Inject constructor(
         Log.d("InsertTime", "Time taken to insert: $timeTaken ms")
     }
 
+    suspend fun removeItemFromCart(itemId: Int , guestIndexForDineIn: Int) {
+        val startTime = System.currentTimeMillis()
+        appDatabase.cartDao().removeCartItem(itemId , guestIndexForDineIn )
+        // Calculate the time taken
+        val endTime = System.currentTimeMillis()
+        val timeTaken = endTime - startTime
+        Log.d("InsertTime", "Time taken to insert: $timeTaken ms")
+    }
+
+    suspend fun getLatestPrimaryKey(): Int {
+        return appDatabase.cartDao().getLatestPrimaryKey()
+    }
+
     suspend fun addItemCartDineIn(cartModel: DineInCartModel) {
 
         appDatabase.cartDao().addDineInCartDao(cartModel)

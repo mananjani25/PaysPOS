@@ -21,7 +21,8 @@ import kotlin.collections.ArrayList
 @Parcelize
 class TbCartItem : Parcelable {
 
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
+    var dineInUniqueId : Int = 0
     var itemId: Int = 0
     var name: String = ""
     var id: Int = 0

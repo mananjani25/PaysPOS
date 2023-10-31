@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.android.pos.data.entities.TbCartItem
 import com.android.pos.data.entities.TbItem
 import com.android.pos.databinding.ViewDineInTableItemsBinding
 import com.android.pos.utils.LogUtil
@@ -13,7 +14,7 @@ import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.callback.MyCallback
 
 class DineInTableItemAdapter : RecyclerView.Adapter<DineInTableItemAdapter.MyViewHolder>() {
-    var cartList = ArrayList<TbItem>()
+    var cartList = ArrayList<TbCartItem>()
     private val TAG = "CartAdapter"
 
     private lateinit var mCallback: DineInItemListner
@@ -25,7 +26,7 @@ class DineInTableItemAdapter : RecyclerView.Adapter<DineInTableItemAdapter.MyVie
 
     inner class MyViewHolder(private val binding: ViewDineInTableItemsBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: TbItem, pos: Int) {
+        fun bind(item: TbCartItem, pos: Int) {
             if (item.discountPrice != 0.0) {
                 binding.tvDiscountRate.visibility = View.VISIBLE
                 binding.tvRate.paintFlags = binding.tvRate.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
@@ -90,14 +91,14 @@ class DineInTableItemAdapter : RecyclerView.Adapter<DineInTableItemAdapter.MyVie
 
     }
 
-    fun addCart(mList: List<TbItem>?) {
-        cartList = mList as ArrayList<TbItem>
+    fun addCart(mList: List<TbCartItem>?) {
+        cartList = mList as ArrayList<TbCartItem>
         notifyDataSetChanged()
     }
 
-    fun updateCart(mList: List<TbItem?>) {
+    fun updateCart(mList: List<TbCartItem?>) {
         cartList.clear()
-        cartList = mList as ArrayList<TbItem>
+        cartList = mList as ArrayList<TbCartItem>
         notifyDataSetChanged()
     }
 
@@ -125,7 +126,7 @@ class DineInTableItemAdapter : RecyclerView.Adapter<DineInTableItemAdapter.MyVie
         notifyItemRemoved(pos)
     }
 
-    private fun totalPrice(model: TbItem): Double {
+    private fun totalPrice(model: TbCartItem): Double {
 
         return if (model.modifiers.isNotEmpty()) {
 
@@ -145,7 +146,7 @@ class DineInTableItemAdapter : RecyclerView.Adapter<DineInTableItemAdapter.MyVie
     }
 
     interface DineInItemListner {
-        fun onSendOrderToKitchen(item: TbItem)
+        fun onSendOrderToKitchen(item: TbCartItem)
     }
 
 }

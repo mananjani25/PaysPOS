@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
+import com.android.pos.data.entities.TbCartItem
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.data.model.DineInModel
@@ -338,7 +339,7 @@ class DineInTableAdapterCD() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
         }
 
-        override fun onSendOrderToKitchen(item: TbItem) {
+        override fun onSendOrderToKitchen(item: TbCartItem) {
 
             listner.onSendItemToKitchen(item)
         }
@@ -364,7 +365,7 @@ class DineInTableAdapterCD() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             listItemGuestSelected: ArrayList<TbItem>
         )
 
-        fun onSendItemToKitchen(item: TbItem)
+        fun onSendItemToKitchen(item: TbCartItem)
         fun onWholeTableToKitchen(ids: String, listItems: ArrayList<TbItem>)
         fun singleItemFired(id: String, position: Int, item: TbItem)
         fun onGuestPrint(
@@ -387,7 +388,7 @@ class DineInTableAdapterCD() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         return list[position].isHeader
     }
 
-    private fun totalPrice(model: TbItem): Double {
+    private fun totalPrice(model: TbCartItem): Double {
 
         return model.price * model.itemQuantity
     }

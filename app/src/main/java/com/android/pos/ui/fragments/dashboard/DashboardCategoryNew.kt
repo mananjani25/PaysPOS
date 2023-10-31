@@ -708,7 +708,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
 
                 if (dineList != null) {
-                    dineInCartAdapter.setList(dineList.toCollection(arrayListOf()))
+                    dineInCartAdapter.setList(dineList.toCollection(arrayListOf()) , viewModel.listItems)
 
                 }
 
@@ -1699,11 +1699,11 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     }
 
     @SuppressLint("SetTextI18n")
-    override fun onItemClickListener(view: View?, data: TbItem, position: Int) {
+    override fun onItemClickListener(view: View?, data: TbCartItem, position: Int) {
 
         if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
 
-            ItemPopup(data, false)
+//            ItemPopup(data, false)
         } else {
             orderTypeDialog()
         }
@@ -3149,7 +3149,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
 
 
-        dineInCartAdapter.setList(dineInList)
+        dineInCartAdapter.setList(dineInList,viewModel.listItems)
 
         if (cartList.isEmpty()) {
             val cartModel = CartModel().apply {
@@ -3177,7 +3177,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     }
 
     @SuppressLint("SetTextI18n")
-    override fun onItemSelected(headerPosition: Int, position: Int, data: TbItem) {
+    override fun onItemSelected(headerPosition: Int, position: Int, data: TbCartItem) {
         val isItemClick = false
         val dialog = Dialog(requireContext())
         dialog.window?.requestFeature(Window.FEATURE_NO_TITLE)
@@ -3256,13 +3256,13 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                                 rvVariationList.visibility = View.VISIBLE
                                 txtItemName.text = it.name + ":-  Choose One"
                                 variationAdapter.addVariations(it.variationsAttributes)
-                                showPriceTitle(
-                                    variationsAttribute = null,
-                                    variationAdapter,
-                                    data,
-                                    txtTitle,
-                                    isItemClick
-                                )
+//                                showPriceTitle(
+//                                    variationsAttribute = null,
+//                                    variationAdapter,
+//                                    data,
+//                                    txtTitle,
+//                                    isItemClick
+//                                )
 
                             }
 
@@ -3282,13 +3282,13 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         } else {
             rvVariationList.visibility = View.GONE
             txtItemName.visibility = View.GONE
-            showPriceTitle(
-                variationsAttribute = null,
-                variationAdapter,
-                data,
-                txtTitle,
-                isItemClick
-            )
+//            showPriceTitle(
+//                variationsAttribute = null,
+//                variationAdapter,
+//                data,
+//                txtTitle,
+//                isItemClick
+//            )
         }
 
         edtNote.setText(data.note)
@@ -3298,7 +3298,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         txtQty.setText(qty.toString())
 
         variationAdapter?.showVariationPriceClick = { it: VariationsAttribute ->
-            showPriceTitle(it, variationAdapter = null, data, txtTitle, isItemClick)
+//            showPriceTitle(it, variationAdapter = null, data, txtTitle, isItemClick)
         }
 
 
@@ -3349,9 +3349,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         dineInList.get(0).selectedPosition =
                             dineInCartAdapter.getHeaderPosition()
 
-                        viewModel.newCartLogicModifier(cartList, data, ADD, false, dineInList = dineInList)
+//                        viewModel.newCartLogicModifier(cartList, data, ADD, false, dineInList = dineInList)
                     } else {
-                        viewModel.newCartLogicModifier(cartList, data, ADD, false)
+//                        viewModel.newCartLogicModifier(cartList, data, ADD, false)
                     }
                 } else
                     if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN) {
@@ -3359,7 +3359,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         val dineInList = dineInCartAdapter.getList()
                         dineInList.get(0).selectedPosition = headerPosition
                         // dineInList.get(dineInCartAdapter.getHeaderPosition()).items.add(data)
-                        viewModel.newCartLogicModifier(cartList, data, UPDATE, false, dineInList = dineInList)
+//                        viewModel.newCartLogicModifier(cartList, data, UPDATE, false, dineInList = dineInList)
 
                     } else {
 
@@ -3424,12 +3424,12 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         btnRemove.setOnClickListener {
 
             cartList[0].orderType = DINE_IN
-            viewModel.newCartLogicModifier(
-                cartList,
-                data,
-                DELETE, false,
-                dineInList = dineInCartAdapter.getList()
-            )
+//            viewModel.newCartLogicModifier(
+//                cartList,
+//                data,
+//                DELETE, false,
+//                dineInList = dineInCartAdapter.getList()
+//            )
 
             dialog.dismiss()
         }
@@ -3439,17 +3439,17 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 if (result != null) {
                     if (result.discountType == requireContext().getString(R.string.disc_percentage)) {
 
-                        data.discountPrice = calculateDiscountPercentage(
-                            totalPrice(data),
-                            result.percentage
-                        )
+//                        data.discountPrice = calculateDiscountPercentage(
+//                            totalPrice(data),
+//                            result.percentage
+//                        )
                         discountPrice = data.discountPrice / data.itemQuantity
                         data.discountId = result.id
                         data.discountType = result.discountType
                         data.isManualSales = false
                         txtTitle.text = data.name + "  $" + String.format(
                             "%.2f",
-                            (totalPrice(data) - data.discountPrice)
+//                            (totalPrice(data) - data.discountPrice)
                         )
 
                     } else if (data.price > result.percentage) {
@@ -3463,7 +3463,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         //viewModel.cartLogic(cartList, data, Constants.UPDATE)
                         txtTitle.text = data.name + "  $" + String.format(
                             "%.2f",
-                            (totalPrice(data) - data.discountPrice)
+//                            (totalPrice(data) - data.discountPrice)
                         )
                     }
 
