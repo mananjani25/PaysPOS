@@ -487,7 +487,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         item.discountType = result.discountType
 
                         //viewModel.newCartLogicModifier(cartList, item, Constants.UPDATE, false)
-                        viewModel.updateCart(viewModel.currentCartItems, item, Constants.UPDATE, false)
+                        viewModel.updateCart(viewModel.currentCartItems, item, Constants.UPDATE, false, isFromDetail = true)
 
                     }
 
@@ -499,7 +499,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
 
                         //viewModel.newCartLogicModifier(cartList, item, Constants.UPDATE, false)
-                        viewModel.updateCart(viewModel.currentCartItems, item, Constants.UPDATE, false)
+                        viewModel.updateCart(viewModel.currentCartItems, item, Constants.UPDATE, false, isFromDetail = true)
                     }
 
                     else -> {
@@ -508,7 +508,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         item?.discountType = result.discountType
 
                         //viewModel.newCartLogicModifier(cartList, item, Constants.UPDATE, false)
-                        viewModel.updateCart(viewModel.currentCartItems, item, Constants.UPDATE, false)
+                        viewModel.updateCart(viewModel.currentCartItems, item, Constants.UPDATE, false, isFromDetail = true)
 
                     }
                 }
@@ -551,7 +551,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                 }else{
                     singleItem?.let {
-                        viewModel.updateCart(viewModel.currentCartItems, it, UPDATE,false)
+                        viewModel.updateCart(viewModel.currentCartItems, it, UPDATE,false, isFromDetail = true)
                     }
                 }
 

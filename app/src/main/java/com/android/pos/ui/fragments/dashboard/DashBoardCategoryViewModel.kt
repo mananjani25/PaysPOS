@@ -1918,6 +1918,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         item: TbCartItem?,
         type: String,
         isManualSales: Boolean,
+        isFromDetail: Boolean = false,
         dineInList: List<DineInModel> = arrayListOf(),
         isFromDineInScreen: Boolean = false,
         position: Int = -1,
@@ -2486,15 +2487,26 @@ class DashBoardCategoryViewModel @Inject constructor(
                     }
                 }
                 updateCartModel(cartModel!!)
-                if(list.isNotEmpty() && type != DELETE){
+
+                if(list.isNotEmpty() && type != DELETE && !isFromDetail){
+
+                    /*val newUpdatedList: List<TbCartItem> = if(hasCustomItemIds(list)){
+                        list.filter { it.customItemID == item?.customItemID }
+                    }else{
+                        list.filter { it.itemId == item?.itemId }
+                    }*/
+
                     val newUpdatedList = list.filter { it.itemId == item?.itemId }
+
                     if(newUpdatedList.isNotEmpty()){
                         newUpdatedList.forEach {
                             addItemToCartItems(it)
                         }
                     }
+
                 }
-            } else {
+            }
+            else {
 
                 if (type == DELETE) {
                     deleteCart()
@@ -2516,6 +2528,19 @@ class DashBoardCategoryViewModel @Inject constructor(
             }
 
         }
+    }
+
+    /**
+     * This method is used to check if the list contains multiple custom items or not
+     * */
+    private fun hasCustomItemIds(list: MutableList<TbCartItem>): Boolean {
+        var customIdsCount = 0
+        list.forEach {
+            if(it.customItemID != 0){
+                customIdsCount++
+            }
+        }
+        return customIdsCount > 1
     }
 
 
