@@ -3515,7 +3515,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     }
 
-    override fun onItemDelete(position: Int, itemPosition: Int, data: TbItem) {
+    override fun onItemDelete(position: Int, itemPosition: Int, data: TbCartItem) {
         alert(
             getString(R.string.app_name),
             getString(R.string.delete_item_message)
@@ -3524,12 +3524,12 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 // Do positive stuff here
                 cartList.get(0).orderType = DINE_IN
 
-                viewModel.newCartLogicModifier(
+                /*viewModel.newCartLogicModifier(
                     cartList,
                     data,
                     DELETE, false,
                     dineInList = dineInCartAdapter.getList()
-                )
+                )*/
 
 
             }

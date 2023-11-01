@@ -63,6 +63,7 @@ import com.android.pos.data.remote.Constants.SMALL
 import com.android.pos.data.remote.Constants.SPLIT_ENABLE
 import com.android.pos.data.remote.Constants.SUNMI_INNER_PRINTER
 import com.android.pos.data.remote.Constants.TAKEOUT
+import com.android.pos.data.remote.Constants.UPDATE
 import com.android.pos.databinding.FragmentDashboardCategoryBoldPosBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
@@ -471,7 +472,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
         setFragmentResultListener("request_key_discount_details") { requestKey: String, bundle: Bundle ->
             val result = bundle.getParcelable<TbDiscount>("data")
-            val item = bundle.getParcelable<TbItem>("item")
+            val item = bundle.getParcelable<TbCartItem>("item")
             if (result != null) {
                 when (result.discountType) {
                     requireContext().getString(R.string.disc_percentage) -> {
@@ -486,7 +487,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         item.discountId = result.id
                         item.discountType = result.discountType
 
-                        viewModel.newCartLogicModifier(cartList, item, Constants.UPDATE, false)
+//                        viewModel.newCartLogicModifier(cartList, item, Constants.UPDATE, false)
+                        viewModel.updateDineInCart(viewModel.currentCartItems, item, Constants.UPDATE, false)
 
                     }
 
@@ -497,7 +499,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         item?.discountType = result.discountType
 
 
-                        viewModel.newCartLogicModifier(cartList, item, Constants.UPDATE, false)
+//                        viewModel.newCartLogicModifier(cartList, item, Constants.UPDATE, false)
+                        viewModel.updateDineInCart(viewModel.currentCartItems, item, Constants.UPDATE, false)
                     }
 
                     else -> {
@@ -505,7 +508,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         item?.discountId = 0
                         item?.discountType = result.discountType
 
-                        viewModel.newCartLogicModifier(cartList, item, Constants.UPDATE, false)
+//                        viewModel.newCartLogicModifier(cartList, item, Constants.UPDATE, false)
+                        viewModel.updateDineInCart(viewModel.currentCartItems, item, Constants.UPDATE, false)
 
                     }
                 }
@@ -523,7 +527,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         setFragmentResultListener("request_key_note") { requestKey: String, bundle: Bundle ->
             val note = bundle.getString("note")
             val isOrderNote = bundle.getBoolean("isOrderNote")
-            val singleItem = bundle.getParcelable<TbItem>("item")
+            val singleItem = bundle.getParcelable<TbCartItem>("item")
             // val cartList = bundle.getParcelableArrayList<CartModel>("cartList")
             var dineInArrayList: List<DineInModel>? = null
             /*
@@ -547,12 +551,13 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 singleItem?.note = note.toString()
                 singleItem?.let {
                     dineInArrayList?.let { it1 ->
-                        viewModel.newCartLogicModifier(
+                        /*viewModel.newCartLogicModifier(
                             cartList,
                             it,
                             Constants.UPDATE,
                             false
-                        )
+                        )*/
+                        viewModel.updateDineInCart(viewModel.currentCartItems,it, UPDATE,false)
                     }
                 }
             }
@@ -574,7 +579,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         return ((originalPrice * percentage) / 100)
     }
 
-    private fun totalPrice(model: TbItem): Double {
+    private fun totalPrice(model: TbCartItem): Double {
 
         return if (model.modifiers.isNotEmpty()) {
 

@@ -9,6 +9,7 @@ import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.data.entities.CartModel
+import com.android.pos.data.entities.TbCartItem
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.responseModel.NoteResponse
 import com.android.pos.data.remote.Constants
@@ -32,7 +33,7 @@ import kotlin.collections.ArrayList
 class AddNoteDialog : DialogFragment(), ItemCallback {
 
     private var isOrderNote: Boolean = false
-    private var item: TbItem? = null
+    private var item: TbCartItem? = null
     private var cartList: ArrayList<CartModel>? = null
     private var headerItemPosition: Int? = null
     private lateinit var binding: DailogAddNoteBinding

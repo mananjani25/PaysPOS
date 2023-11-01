@@ -17,6 +17,7 @@ import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.pos.R
+import com.android.pos.data.entities.TbCartItem
 import com.android.pos.data.entities.TbDiscount
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.remote.Constants.AMOUNT
@@ -52,7 +53,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
     private var discountModel: TbDiscount? = null
     var selectedListPos: Int = -1
     private var isFromDetails = false
-    private lateinit var defaultModel: TbItem
+    private lateinit var defaultModel: TbCartItem
     private var selectedCurrency: String = AMOUNT
     var modifierPrice: Double = 0.0
     var orderDiscount: Double = 0.0
@@ -83,10 +84,10 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
         selectedvalue = requireArguments().getDouble("selectedvalue")
         orderDiscount = requireArguments().getDouble("orderDiscount")
         isFromDetails = requireArguments().getBoolean("isFromDetails", false)
-        val model: TbItem? = requireArguments().getParcelable("model")
+        val model: TbCartItem? = requireArguments().getParcelable("model")
         itemOrderDiscount = requireArguments().getDouble("itemOrderDiscount")
         itemQuantity = requireArguments().getInt("totalquantity")
-        defaultModel = model ?: TbItem()
+        defaultModel = model ?: TbCartItem()
 
         LogUtil.logE(TAG, "dataModel ${Gson().toJson(model)}")
 

@@ -34,7 +34,9 @@ import com.android.pos.data.model.responseModel.GetFloorPlanResponse
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.ADD
 import com.android.pos.data.remote.Constants.CUSTOMER_ID
+import com.android.pos.data.remote.Constants.DELETE
 import com.android.pos.data.remote.Constants.DELIVERY_TYPE
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.DINE_IN_LIST_EDIT
@@ -78,6 +80,7 @@ import com.android.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.ui.fragments.payment.PaymentViewModel
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.Event
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
@@ -736,6 +739,7 @@ class CartFragment(
                 dineInCartAdapter = DineInAdapter()
                 dineInCartAdapter.setListner(this)
                 //dineInCartAdapter.setList(dineInList)
+                dineInCartAdapter.setList(dineInList ,viewModel.listItems)
 
 
                 if (cartlist.isEmpty()) {
@@ -1878,7 +1882,7 @@ class CartFragment(
 //                                        it[0].dineInList?.forEach {
                                         viewModel.listItems.clear()
                                             viewModel.listItems.addAll(it)
-
+                                        dineInCartAdapter.setItemList(viewModel.listItems)
 //                                        }
 
                                         /*it[0].taxlistDynamic?.let { it1 ->
@@ -2585,7 +2589,7 @@ class CartFragment(
         }
     }
 
-    override fun onItemDelete(position: Int, itemPosition: Int, data: TbItem) {
+    override fun onItemDelete(position: Int, itemPosition: Int, data: TbCartItem) {
 
         alert(
             getString(R.string.app_name),
@@ -2595,13 +2599,14 @@ class CartFragment(
                 // Do positive stuff here
                 cartlist.get(0).orderType = Constants.DINE_IN
 
-                viewModel.newCartLogicModifier(
+                /*viewModel.newCartLogicModifier(
                     cartlist,
                     data,
                     Constants.DELETE, false,
                     dineInList = dineInCartAdapter.getList()
-                )
+                )*/
 
+                viewModel.updateDineInCart(viewModel.currentCartItems,data, DELETE,false,dineInCartAdapter.getList())
 
             }
             negativeButton(R.string.tv_cancel) {

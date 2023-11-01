@@ -228,6 +228,11 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>() {
         notifyDataSetChanged()
     }
 
+    fun setItemList( itemList : ArrayList<TbCartItem>){
+        this.itemList = itemList
+        notifyDataSetChanged()
+    }
+
     @SuppressLint("NotifyDataSetChanged")
     fun addItem(item: TbItem, selectedPos: Int) {
         val items: ArrayList<TbItem> = list.get(selectedPos).items
@@ -244,7 +249,7 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>() {
         fun onHeaderSelected(position: Int)
         fun onItemSelected(headerPosition: Int, position: Int, item: TbCartItem)
         fun onCustomerClicked(position: Int, isRemoved: Boolean)
-        fun onItemDelete(position: Int, itemPosition: Int, data: TbItem)
+        fun onItemDelete(position: Int, itemPosition: Int, data: TbCartItem)
         fun onRemoveGuest(position: Int)
     }
 
@@ -296,7 +301,8 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>() {
                     listner.onItemDelete(
                         headerPos,
                         position,
-                        list.get(headerPos).items.get(position)
+                        itemList[position]
+//                        list.get(headerPos).items.get(position)
                     )
                 }
             })
