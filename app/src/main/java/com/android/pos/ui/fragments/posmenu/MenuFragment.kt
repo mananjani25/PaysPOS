@@ -5,6 +5,7 @@ import android.app.Dialog
 import android.content.ClipboardManager
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -33,6 +34,7 @@ import com.android.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.disconnectSocket
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.visible
@@ -132,7 +134,13 @@ class MenuFragment : DialogFragment() {
             event.getContentIfNotHandled()?.let {
                 if (it) {
 
-                    WorkManager.getInstance(requireActivity()).cancelAllWork()
+                    if (prefProvider.getValueboolean(IS_MASTER_TERMINAL, false) && prefProvider.getValueboolean(
+                            Constants.IS_PRINTER_QUEUE_ENABLE,false)
+                    ){
+                        requireActivity().disconnectSocket()
+
+                    }
+/*
                     val data = Data.Builder()
                         //.putString("kitchenPrinterList", Gson().toJson(kitchenPrinterList))
                         // .put("kitchenSettingData", Gson().toJson(kitchenSettingModel))
@@ -166,7 +174,7 @@ class MenuFragment : DialogFragment() {
                     } catch (e: java.lang.Exception) {
 
                         e.printStackTrace()
-                    }
+                    }*/
                     dashBoardCategoryViewModel.cartModel = null
                     viewModel.destroyedList = arrayListOf()
                     // To refrain from disconnecting PAX after logout

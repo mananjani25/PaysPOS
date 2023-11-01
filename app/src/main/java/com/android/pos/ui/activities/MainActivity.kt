@@ -876,6 +876,13 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
     override fun onDestroy() {
         super.onDestroy()
+        if (prefProvider?.getValueboolean(IS_MASTER_TERMINAL, false) == true && prefProvider?.getValueboolean(
+                Constants.IS_PRINTER_QUEUE_ENABLE,false) == true
+        ){
+
+            disconnectSocket()
+
+        }
         updatePrinter = null
         unregisterReceiver(broadcastReceiver)
         unregisterReceiver(broadcastReceiveronlineOrder)
@@ -1462,8 +1469,10 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
     override fun onPause() {
         super.onPause()
-        WorkManager.getInstance(this).cancelAllWork()
-        UploadWorker2.workerDisconnect()
+
+       // disconnectSocket()
+
+
         if (this::presentation.isInitialized) {
             presentation.hide()
             presentation.onDisplayChanged()

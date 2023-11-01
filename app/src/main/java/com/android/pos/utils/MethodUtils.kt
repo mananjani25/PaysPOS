@@ -14,6 +14,7 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.fragment.app.FragmentActivity
+import androidx.work.WorkManager
 import com.android.pos.MainApplication
 import com.android.pos.R
 import com.android.pos.data.entities.ModifierSet
@@ -22,6 +23,7 @@ import com.android.pos.data.model.requestModel.CreateItemRequestModel
 import com.android.pos.data.remote.Constants
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.extensions.toMultiPartRequestBody
+import com.android.pos.utils.workmanager.UploadWorker2
 import com.google.gson.Gson
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.google.i18n.phonenumbers.Phonenumber
@@ -705,3 +707,12 @@ class MethodUtils {
 
 }
 
+fun Context.disconnectSocket(){
+    try {
+        UploadWorker2.workerDisconnect()
+        WorkManager.getInstance(this).cancelAllWork()
+    }catch (e:Exception){
+        //WorkManager.getInstance(this).cancelAllWork()
+        Log.d("MainActivityOnPause","onPause exception")
+    }
+}

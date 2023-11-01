@@ -55,7 +55,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
     StatusChangeListener, ReceiveListener, ConnectionListener,
     ResultCallback {
 
-    private var isFromParent: Boolean=true
+    private var isFromParent: Boolean = true
     private var previousPrinterAddress = ""
     private var previousPrinterName = ""
     private var disconnectSize0: Boolean = false
@@ -88,21 +88,18 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
     private var isPrinterRunning: Boolean = false
     private var printerBGRunning: Boolean = false
     private var isCancelWork: Boolean = true
-    private var isCount : Int = 5
+    private var isCount: Int = 5
 
-    companion object{
+    companion object {
         private var subscription: Subscription? = null
         private var subscription2: Subscription? = null
         private var consumer: Consumer? = null
         private var consumer2: Consumer? = null
 
-        fun workerDisconnect(){
+        fun workerDisconnect() {
             try {
-                if (subscription != null) {
-                    //consumer?.subscriptions?.remove(subscription)
-                }
                 consumer?.disconnect()
-            }catch (e:Exception){
+            } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
@@ -113,9 +110,9 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
 
         try {
 
-            consumer?.subscriptions?.remove(subscription)
+          //  consumer?.subscriptions?.remove(subscription)
 
-            consumer?.disconnect()
+          //  consumer?.disconnect()
 
             locationId = inputData.getInt("location_id", 0)
             baseUrl = inputData.getString("base_url").toString()
@@ -149,8 +146,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                 }
             } else {
                 Log.e(TAG, "fsfkiwoorm")
-                consumer?.disconnect()
-                consumer?.subscriptions?.remove(subscription)
+               workerDisconnect()
             }
 
             if (isInternetAvailable()) {
@@ -238,7 +234,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                             runBlocking {
                                 Log.e(TAG, "callActionCalledRun 3")
 
-                                isQueueRunning = false
+
                                 currentOrderIndex = 0
                                 currentPrinterIndex = 0
                                 delay(5000)
@@ -249,6 +245,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                                 Log.e(TAG, "checkID: ${locationId}  checkURL:  ${requestURL}")
 
                                 subscription?.perform("received", params)
+                                isQueueRunning = false
 
                             }
 
@@ -268,29 +265,36 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
             }?.onDisconnected {
                 Log.e(TAG, "onDisconnected")
 
+                if (subscription != null) {
+                    try {
+                        consumer?.subscriptions?.remove(subscription)
+                    }catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
 
-                    Handler(Looper.getMainLooper()).postDelayed(Runnable {
-                        if (isInternetAvailable()) {
-
-
-                            if (mContext.getSharedPreferences(
-                                    mContext.resources.getString(R.string.app_name),
-                                    Context.MODE_PRIVATE
-                                ).getBoolean(CHECK_QUEUE_CANCEL, false) == false
-                            ) {
-                                //consumer?.connect()
-                            } else {
-                                consumer?.subscriptions?.remove(subscription)
-                            }
-                        } else {
-                            sendNotification("Please check your Network Connectivity.")
-                        }
-                    }, 6000)
+                /*               Handler(Looper.getMainLooper()).postDelayed(Runnable {
+                                   if (isInternetAvailable()) {
 
 
-               /* if (isFromParent == true){
-                    isFromParent = false
-                }*/
+                                       if (mContext.getSharedPreferences(
+                                               mContext.resources.getString(R.string.app_name),
+                                               Context.MODE_PRIVATE
+                                           ).getBoolean(CHECK_QUEUE_CANCEL, false) == false
+                                       ) {
+                                           //consumer?.connect()
+                                       } else {
+                                           consumer?.subscriptions?.remove(subscription)
+                                       }
+                                   } else {
+                                       sendNotification("Please check your Network Connectivity.")
+                                   }
+                               }, 6000)*/
+
+
+                /* if (isFromParent == true){
+                     isFromParent = false
+                 }*/
 
 
             }?.onFailed {
@@ -328,7 +332,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
 
             if (dataList.size() != 0) {
                 isQueueRunning = true
-                var   isDataAvailable = true
+                var isDataAvailable = true
                 dataList.forEach {
                     var listofPrinterOrders: ArrayList<PrinterQueueModel> = arrayListOf()
 
@@ -337,20 +341,20 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
 
                         var ordersArray = it.asJsonObject.get("orders").asJsonArray
 
-                     /*   for (i in dataList) {
-                            var orders = i.asJsonObject.get("orders").asJsonArray
-                            isDataAvailable = orders.size() != 0
-                        }
+                        /*   for (i in dataList) {
+                               var orders = i.asJsonObject.get("orders").asJsonArray
+                               isDataAvailable = orders.size() != 0
+                           }
 
-                        isCount -= 1
-                        if (isCount == 0){
-                            isDataAvailable = false
-                            disconnectSize0 = true
-                            Log.e(TAG,"onDisconnectSIZE = $isCount")
-                            consumer?.disconnect()
-                            isCount = 5
-                          //  return
-                        }*/
+                           isCount -= 1
+                           if (isCount == 0){
+                               isDataAvailable = false
+                               disconnectSize0 = true
+                               Log.e(TAG,"onDisconnectSIZE = $isCount")
+                               consumer?.disconnect()
+                               isCount = 5
+                             //  return
+                           }*/
 
                         ordersArray.forEach {
                             var modelOrder = PrinterQueueModel()
@@ -636,7 +640,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                         //call action cable here
 
                         runBlocking {
-                            isQueueRunning = false
+
 
                             currentOrderIndex = 0
                             currentPrinterIndex = 0
@@ -656,6 +660,8 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
 
                             subscription?.perform("received", params)
 
+                            isQueueRunning = false
+
                         }
 
                     }
@@ -665,7 +671,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
 
 
                     Log.e(TAG, "callActionCalledRun 5")
-                    isQueueRunning = false
+
                     currentOrderIndex = 0
                     currentPrinterIndex = 0
 
@@ -680,6 +686,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                             "checkID 3: ${locationId}  checkURL 3:  ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}"
                         )
                         subscription?.perform("received", params)
+                        isQueueRunning = false
                     }
 
 
@@ -689,7 +696,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
 
                 runBlocking {
                     Log.e(TAG, "callActionCalledRun 6")
-                    isQueueRunning = false
+
                     currentOrderIndex = 0
                     currentPrinterIndex = 0
                     delay(5000)
@@ -701,13 +708,14 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                         "checkID 4: ${locationId}  checkURL 4:  ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}"
                     )
                     subscription?.perform("received", params)
+                    isQueueRunning = false
                 }
             }
 
         } else {
             runBlocking {
                 Log.e(TAG, "callActionCalledRun 6")
-                isQueueRunning = false
+
                 currentOrderIndex = 0
                 currentPrinterIndex = 0
                 delay(5000)
@@ -719,6 +727,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                     "checkID 5: ${locationId}  checkURL 5:  ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}"
                 )
                 subscription?.perform("received", params)
+                isQueueRunning = false
             }
         }
 
@@ -792,7 +801,8 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                 )
                 Log.e(
                     "checkCommitResultForCloud",
-                    "checkCommitResultForCloud  name = saved $previousPrinterName")
+                    "checkCommitResultForCloud  name = saved $previousPrinterName"
+                )
 
                 Log.e(
                     "checkCommitResultForCloud",
@@ -810,10 +820,10 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                 currentCloudPrinter = cloudPrinter
                 sendReceiptToPrintSunmi(cloudPrinter)
 
-                if (previousPrinterAddress == cloudPrinter.cloudPrinterInfo.address && previousPrinterName == cloudPrinter.cloudPrinterInfo.name){
+                if (previousPrinterAddress == cloudPrinter.cloudPrinterInfo.address && previousPrinterName == cloudPrinter.cloudPrinterInfo.name) {
                     Log.e("checkCommitResultForCloud", "duplicate order")
 
-                }else {
+                } else {
 
 
                 }
@@ -1077,7 +1087,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
 
 
                         Log.e(TAG, "callActionCalledRun 1")
-                        isQueueRunning = false
+
                         currentOrderIndex = 0
                         currentPrinterIndex = 0
                         delay(2000)
@@ -1093,6 +1103,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                             "checkID 10: ${locationId}  checkURL 10:  ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}"
                         )
                         subscription?.perform("received", params)
+                        isQueueRunning = false
                     }
                 }
 
@@ -1103,7 +1114,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
 
 
                     Log.e(TAG, "callActionCalledRun 2")
-                    isQueueRunning = false
+
                     currentOrderIndex = 0
                     currentPrinterIndex = 0
                     delay(2000)
@@ -1119,6 +1130,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                         "checkID 7: ${locationId}  checkURL 7:  ${baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3}"
                     )
                     subscription?.perform("received", params)
+                    isQueueRunning = false
                 }
 
             }
