@@ -900,30 +900,12 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         super.onStop()
         Log.e(TAG,"checkActivityStop:")
 
-        WorkManager.getInstance(this).cancelAllWork()
-        val data = Data.Builder()
-            //.putString("kitchenPrinterList", Gson().toJson(kitchenPrinterList))
-            // .put("kitchenSettingData", Gson().toJson(kitchenSettingModel))
-            .put("location_id", prefProvider?.getValueInt(Constants.LOCATION_ID, 0))
-            .put("base_url", prefProvider?.getValue(Constants.BASE_URL_NEW, ""))
-            .put(
-                Constants.IS_PRINTER_QUEUE_ENABLE, prefProvider?.getValueboolean(
-                    Constants.IS_PRINTER_QUEUE_ENABLE, false
-                )
-            )
-            .put("is_cancel_work",true)
-            .build()
-
-        val uploadWorkRequest =
-            OneTimeWorkRequest.Builder(
-                UploadWorker2::class.java
-            ).addTag(Constants.PRINTER_QUEUE_BACKGROUND)
-                .setInputData(data)
-                .build()
 
 
-        val workManager = WorkManager.getInstance(this)
+
     }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         updatePrinter = this
@@ -1480,6 +1462,8 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
     override fun onPause() {
         super.onPause()
+        WorkManager.getInstance(this).cancelAllWork()
+        UploadWorker2.workerDisconnect()
         if (this::presentation.isInitialized) {
             presentation.hide()
             presentation.onDisplayChanged()

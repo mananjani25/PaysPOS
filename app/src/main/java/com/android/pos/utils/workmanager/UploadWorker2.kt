@@ -79,10 +79,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
     var currentOrderIndex = 0
     val mgr = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-    private var subscription: Subscription? = null
-    private var subscription2: Subscription? = null
-    private var consumer: Consumer? = null
-    private var consumer2: Consumer? = null
+
     private var locationId: Int = 0
     private var baseUrl = ""
     private var kitchenPrinterList: List<PrinterResponse.Data.KitchenReceiptPrinters> = listOf()
@@ -92,6 +89,24 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
     private var printerBGRunning: Boolean = false
     private var isCancelWork: Boolean = true
     private var isCount : Int = 5
+
+    companion object{
+        private var subscription: Subscription? = null
+        private var subscription2: Subscription? = null
+        private var consumer: Consumer? = null
+        private var consumer2: Consumer? = null
+
+        fun workerDisconnect(){
+            try {
+                if (subscription != null) {
+                    //consumer?.subscriptions?.remove(subscription)
+                }
+                consumer?.disconnect()
+            }catch (e:Exception){
+                e.printStackTrace()
+            }
+        }
+    }
 
 
     override suspend fun doWork(): Result {
@@ -253,13 +268,6 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
             }?.onDisconnected {
                 Log.e(TAG, "onDisconnected")
 
-                if (disconnectSize0 == true) {
-                    isQueueRunning = false
-                    isPrinterRunning = false
-                    connectActionCable()
-
-                } else if (isFromParent == false){
-
 
                     Handler(Looper.getMainLooper()).postDelayed(Runnable {
                         if (isInternetAvailable()) {
@@ -270,7 +278,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                                     Context.MODE_PRIVATE
                                 ).getBoolean(CHECK_QUEUE_CANCEL, false) == false
                             ) {
-                                consumer?.connect()
+                                //consumer?.connect()
                             } else {
                                 consumer?.subscriptions?.remove(subscription)
                             }
@@ -278,11 +286,11 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                             sendNotification("Please check your Network Connectivity.")
                         }
                     }, 6000)
-                }
 
-                if (isFromParent == true){
+
+               /* if (isFromParent == true){
                     isFromParent = false
-                }
+                }*/
 
 
             }?.onFailed {
