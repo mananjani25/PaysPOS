@@ -175,6 +175,8 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun observeLatestCartModel(): LiveData<List<CartModel>> = posRepository.observeCartModel()
 
+    fun getCartModels() = posRepository.getCartModels()
+
     fun setGuestPay(value: Boolean) {
         isGuestPay = value
     }
@@ -393,6 +395,12 @@ class DashBoardCategoryViewModel @Inject constructor(
             destroyedList.clear()
         }
 
+    }
+
+    fun deleteCartModel(cartModel: CartModel){
+        CoroutineScope(Dispatchers.IO).launch {
+            posRepository.deleteCartModel(cartModel)
+        }
     }
 
     fun updateCartModel(cartModel: CartModel) {
@@ -1762,20 +1770,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     }
                                     item.singleItemPrice = item.price
                                     item.modifiers.forEach {
-                                        it.itemQuantity = (it.modifier_quantity * item.itemQuantity)/*model.modifiers.forEach { tbmodifier ->
-                                            if (it.id == tbmodifier.id) {
-                                                if (it.modifier_quantity != tbmodifier.modifier_quantity) {
-                                                    tbmodifier.modifier_quantity =
-                                                        it.modifier_quantity
-                                                } else {
-                                                    it.modifier_quantity =
-                                                        it.itemQuantity / model.itemQuantity
-                                                }
-
-                                                it.itemQuantity =
-                                                    (it.modifier_quantity * item.itemQuantity)
-                                            }
-                                        }*/
+                                        it.itemQuantity = (it.modifier_quantity * item.itemQuantity)
                                         item.singleItemPrice += it.price * it.modifier_quantity
                                     }
                                     Log.d(TAG, "newCartLogicModifier: " + item.singleItemPrice)
@@ -1882,10 +1877,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                         }
                     }
                     cartModel.items = list
-                    addCart(cartModel)/*if (list.isEmpty()) {
-                        // delete carts
-                        deleteCart()
-                    }*/
+                    addCart(cartModel)
                 } else {
 
                     if (type == DELETE) {

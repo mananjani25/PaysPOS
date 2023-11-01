@@ -63,6 +63,7 @@ import com.android.pos.data.remote.Constants.SMALL
 import com.android.pos.data.remote.Constants.SPLIT_ENABLE
 import com.android.pos.data.remote.Constants.SUNMI_INNER_PRINTER
 import com.android.pos.data.remote.Constants.TAKEOUT
+import com.android.pos.data.remote.Constants.UPDATE
 import com.android.pos.databinding.FragmentDashboardCategoryBoldPosBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
@@ -528,35 +529,32 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             val singleItem = bundle.getParcelable<TbCartItem>("item")
             // val cartList = bundle.getParcelableArrayList<CartModel>("cartList")
             var dineInArrayList: List<DineInModel>? = null
-            /*
-                        if (prefProvider.getValue(
-                                ORDER_TYPE,
-                                TAKEOUT
-                            ) ==DINE_IN
-                        ) {
-                            Log.e(TAG,"notecartlist$cartList")
-                            dineInArrayList = cartList?.get(0)?.dineInList
-                            dineInArrayList?.get(0)?.selectedPosition = bundle.getInt("headerPos")
-                        }
-            */
+            /*if (prefProvider.getValue(
+                    ORDER_TYPE,
+                    TAKEOUT
+            ) ==DINE_IN
+                ) {
+                Log.e(TAG,"notecartlist$cartList")
+                dineInArrayList = cartList?.get(0)?.dineInList
+                dineInArrayList?.get(0)?.selectedPosition = bundle.getInt("headerPos")
+            }*/
 
 
             if (isOrderNote) {
                 viewModel.addOrderNote(note.toString())
-                /* cartList[0].note = note.toString()
-                 viewModel.addCart(cartList[0])*/
             } else {
                 singleItem?.note = note.toString()
-                singleItem?.let {
-                    dineInArrayList?.let { it1 ->
-                        /*viewModel.newCartLogicModifier(
-                            cartList,
-                            it,
-                            Constants.UPDATE,
-                            false
-                        )*/
+                if(prefProvider.getValue(
+                        ORDER_TYPE,
+                        TAKEOUT
+                    ) == DINE_IN){
+
+                }else{
+                    singleItem?.let {
+                        viewModel.updateCart(viewModel.currentCartItems, it, UPDATE,false)
                     }
                 }
+
             }
 
         }

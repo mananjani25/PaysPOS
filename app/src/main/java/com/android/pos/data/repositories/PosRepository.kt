@@ -749,6 +749,12 @@ class PosRepository @Inject constructor(
 
     }
 
+    fun deleteCartModel(cartModel: CartModel){
+        synchronized(this){
+            appDatabase.cartDao().deleteCartModel(cartModel)
+        }
+    }
+
     fun updateCartModel(cartModel: CartModel) {
         synchronized(this) {
             appDatabase.cartDao().updateCartModel(cartModel)
@@ -757,6 +763,9 @@ class PosRepository @Inject constructor(
 
     fun observeCartModel(): LiveData<List<CartModel>> {
         return appDatabase.cartDao().observeCartModel()
+    }
+    fun getCartModels(): List<CartModel> {
+        return appDatabase.cartDao().getCartModels()
     }
 
     suspend fun addItemToCart(tbCartItem: TbCartItem) {

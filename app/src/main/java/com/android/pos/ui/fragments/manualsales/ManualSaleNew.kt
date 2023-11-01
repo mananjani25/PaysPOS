@@ -59,6 +59,7 @@ import javax.inject.Inject
 class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
     ManualSaleOptionsCustomCallback, ManualSaleCartAdapterNew.ManualSaleInterface {
 
+    private var manualCartModel: CartModel? = null
     private var mPostion: Int = 0
     private var manualItemId: Int = 0
     private var manualCategoryId: Int = 0
@@ -371,16 +372,18 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
             viewModel.observeLatestCartModel().observe(viewLifecycleOwner){
 
-                var latestCartModel: CartModel? = null
                 if(it.isNotEmpty()){
-                    latestCartModel = it[0]
-                    Log.d("31OCT23", "addObserver: CartModel Updated = ${Gson().toJson(latestCartModel)}")
+                    it.forEach {cm ->
+                        if(cm.isMaual){
+                            manualCartModel = cm
+                            return@forEach
+                        }
+                    }
+
+                    Log.d("31OCT23", "addObserver: CartModel Updated = ${Gson().toJson(manualCartModel)}")
                     Log.d("31OCT23", "addObserver: CartItems Updated = ${Gson().toJson(cartItemsList)}")
 
-                    viewModel.setUpdatedCartModel(latestCartModel)
-                    cartItemsList?.let { items ->
-                        updateCartFooter(items, latestCartModel)
-                    }
+                    updateCartFooter()
 
                 }
             }
@@ -401,24 +404,22 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
                 }
 
-                cartItemsList?.let { items ->
-                    updateCartFooter(items, viewModel.cartModel)
-                }
+                updateCartFooter()
             }
         }
 
 
     }
 
-    private fun updateCartFooter(cartItemsList: List<TbCartItem>, cartModel: CartModel?) {
-        if(cartItemsList.isNotEmpty()){
+    private fun updateCartFooter() {
+        if(cartItemsList?.isNotEmpty() == true){
             viewModel.itemCalculationNew(
-                cartModel,
+                manualCartModel,
                 cartItemsList,
                 binding.txtTotalAmount, requireContext(),
                 isFromManualSales = true
             )
-            cartModel?.let { cm ->
+            manualCartModel?.let { cm ->
                 setTaxBifurcationData(cm.taxlistDynamic as ArrayList<TaxData>)
             }
             setTextValue()
@@ -618,14 +619,14 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             }
             if (it != null && it.isNotEmpty()) {
 
-
                 mainCartList = it as ArrayList<TbCartItem>
                 mainCartModel = viewModel.cartModel ?: CartModel()
+
                 if (cartItemsList != null && cartItemsList!!.isNotEmpty()) {
 
 
                     mainCartModel.taxlistDynamic = getTaxBifurcationList(
-                        viewModel.cartModel?.taxlistDynamic,
+                        manualCartModel?.taxlistDynamic,
                         mainCartModel.taxlistDynamic
                     )
 
@@ -655,17 +656,16 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                         Log.d("WINZO", "#4 - Main Items List Again Size = ${mainCartList.size} = ${getItemIds(mainCartList)} and ")
 
                     }
-                    /*
-                    TO-DO
-                    if (cartList!![0].discountPrice != 0.00)
-                        mainCartList[0].discountPrice = cartList!![0].discountPrice
+                    if (manualCartModel?.discountPrice != 0.00)
+                        mainCartModel.discountPrice = manualCartModel?.discountPrice ?: 0.0
 
-                    if (cartList!![0].note.isNotEmpty())
-                        mainCartList[0].note = cartList!![0].note*/
+                    if (manualCartModel?.note?.isNotEmpty() == true)
+                        mainCartModel.note = manualCartModel?.note ?: ""
 
+                    manualCartModel?.let { it1 -> viewModel.deleteCartModel(it1) }
                     viewModel.deleteManualSaleItemsFromCartItems()
 
-                    viewModel.addCart(mainCartModel)
+                    viewModel.updateCartModel(mainCartModel)
                     Log.d("BYPASS", "onClick: before MainCartList = ${getItemIds(mainCartList)}")
                     mainCartList.forEach { mcItem ->
                         mcItem.isManualSaleItem = false
@@ -807,6 +807,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                             ) {
                                 positiveButton(getString(R.string.tv_delete)) {
                                     viewModel.deleteManualSaleItemsFromCartItems()
+                                    manualCartModel?.let { it1 -> viewModel.deleteCartModel(it1) }
                                     prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
                                     binding.txtTotalAmount.text = "$0.00"
                                     binding.txtTotal.text = "$0.00"
@@ -1328,14 +1329,14 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 val discountApplyPrice = viewModel.totalPrice
                 val price = discountApplyPrice - orderDiscount
 
-                if (cartList?.isNotEmpty() == true) {
-                    cartList!![0].discountPrice = orderDiscount
-                    cartList!![0].discountSelectdValue = value
-                    cartList!![0].discountType = result.discountType
+                manualCartModel?.let {
+                    manualCartModel?.discountPrice = orderDiscount
+                    manualCartModel?.discountSelectdValue = value
+                    manualCartModel?.discountType = result.discountType
                     if (result.id != -1) {
-                        cartList!![0].discountId = result.id
+                        manualCartModel?.discountId = result.id
                     }
-                    viewModel.addCart(cartList!![0])
+                    viewModel.updateCartModel(it)
                 }
 
 
@@ -1345,10 +1346,11 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             val note = bundle.getString("note")
             val isOrderNote = bundle.getBoolean("isOrderNote")
             if (isOrderNote) {
-                if (viewModel.cartModel!=null) {
-                    viewModel.cartModel?.note = note.toString()
-                    viewModel.updateCartModel(viewModel.cartModel!!)
+                manualCartModel?.let {
+                    manualCartModel?.note = note.toString()
+                    viewModel.updateCartModel(it)
                 }
+
             } else {
                 cartItemModel.note = note.toString()
                 viewModel.cartModel?.taxlistDynamic = arrayListOf()
@@ -1358,7 +1360,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                         taxData.totalTaxTypePrice = 0.0
                     }
                 }
-                cartItemModel?.let {
+                cartItemModel.let {
                     viewModel.manualSaleCartLogicNew(
                         cartItemsList,
                         it,
@@ -1379,12 +1381,12 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                         result.percentage
                     )
                     LogUtil.logE(TAG, "discountPrice:  $disPrice")
-                    viewModel.cartModel?.discountPrice = disPrice
-                    viewModel.cartModel?.discountId = result.id
-                    viewModel.cartModel?.discountType = result.discountType
+                    manualCartModel?.discountPrice = disPrice
+                    manualCartModel?.discountId = result.id
+                    manualCartModel?.discountType = result.discountType
 
-                    LogUtil.logE(TAG, "cartModelPArseMsd   ${Gson().toJson(viewModel.cartModel)}")
-                    viewModel.cartModel?.taxlistDynamic = arrayListOf()
+                    LogUtil.logE(TAG, "cartModelPArseMsd   ${Gson().toJson(manualCartModel)}")
+                    manualCartModel?.taxlistDynamic = arrayListOf()
                     cartItemsList?.forEach { items ->
                         items.taxes?.forEach { taxData ->
                             taxData.subTotalAmount = 0.0
@@ -1395,10 +1397,10 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
                 } else if (result.discountType == "Amount") {
                     val cartItem = manualSaleCartAdapterNew.getItem(pos)
-                    viewModel.cartModel?.discountPrice =
+                    manualCartModel?.discountPrice =
                         MethodUtils.roundOffAmountDouble(result.percentage * cartItem.itemQuantity)
-                    viewModel.cartModel?.discountType = result.discountType
-                    viewModel.cartModel?.taxlistDynamic = arrayListOf()
+                    manualCartModel?.discountType = result.discountType
+                    manualCartModel?.taxlistDynamic = arrayListOf()
                     cartItemsList?.forEach { items ->
                         items.taxes?.forEach { taxData ->
                             taxData.subTotalAmount = 0.0
@@ -1409,9 +1411,9 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
                 } else {
                     val cartItem = manualSaleCartAdapterNew.getItem(pos)
-                    viewModel.cartModel?.discountPrice = 0.0
-                    viewModel.cartModel?.discountType = ""
-                    viewModel.cartModel?.taxlistDynamic = arrayListOf()
+                    manualCartModel?.discountPrice = 0.0
+                    manualCartModel?.discountType = ""
+                    manualCartModel?.taxlistDynamic = arrayListOf()
                     cartItemsList?.forEach { items ->
                         items.isManualSaleItem = true
                         items.taxes?.forEach { taxData ->

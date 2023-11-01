@@ -26,6 +26,9 @@ interface CartDao {
     suspend fun deleteCartItems()
 
     @Delete
+    fun deleteCartModel(cartModel: CartModel)
+
+    @Delete
     suspend fun deleteItemFromCartItems(cartItem: TbCartItem)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -40,8 +43,11 @@ interface CartDao {
      @Query("select * from CartModel LIMIT 1")
      suspend fun getCurrentCartModel(): List<CartModel>
 
-    @Query("select * from CartModel LIMIT 1")
+    @Query("select * from CartModel")
     fun observeCartModel(): LiveData<List<CartModel>>
+
+    @Query("select * from CartModel")
+    fun getCartModels(): List<CartModel>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addAllItem(elementsBeanList: List<CartModel>)
