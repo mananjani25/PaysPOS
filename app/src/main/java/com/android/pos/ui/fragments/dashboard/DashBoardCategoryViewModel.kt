@@ -93,6 +93,7 @@ import com.squareup.okhttp.Response
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.forEach
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.InputStream
@@ -355,7 +356,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         return posRepository.getAllCartItems()
     }
 
-    fun getDineInCartItems(guestIndexForDineIn: Int): Flow<List<TbCartItem>> {
+    fun getDineInCartItems(guestIndexForDineIn: Int): List<TbCartItem> {
         return posRepository.getDineInCartItems(guestIndexForDineIn)
     }
 
@@ -2387,20 +2388,23 @@ class DashBoardCategoryViewModel @Inject constructor(
             IS_LAST_ITEM_DELETE, false
         )  // reset flag in case of adding or updating item
         Log.e("DashViewModModel", "updateDineInCart checkCartSize: ${cartList?.size}")
-        var cartModel = item?.let { addCartModelNew(it, isManualSales) }
+        var cartModel = addCartModelNew(item, isManualSales)
         if (cartList != null && cartList.isEmpty()) {
             // empty cart hoy to new cart create kare
 
             Log.e("DashViewModModel", "checkItem:  ${Gson().toJson(item?.modifiers)}")
 
-
             if (item != null) {
                 if (type == UPDATE) {
                     cartList.forEach { items ->
-                        cartModel = taxBifurcationCalculationNew(items, cartModel!!, type, false)
+                        cartModel =
+                            cartModel?.let { taxBifurcationCalculationNew(items, it, type, false) }
                     }
                 } else {
-                    cartModel = taxBifurcationCalculationNew(item, cartModel!!, type, false)
+                    cartModel = cartModel?.let {
+                        taxBifurcationCalculationNew(item,
+                            it, type, false)
+                    }
                 }
                 Log.d("DashViewModModel", "addItemToCartItems 2397: ")
                 item.guestIndexForDineIn = this.dineInHeaderPosition
@@ -2409,7 +2413,11 @@ class DashBoardCategoryViewModel @Inject constructor(
             } else if (dineInList.isNotEmpty()) {
                 dineInList.forEach { dineInModel ->
                     cartList.forEach { itemData ->
-                        cartModel = taxBifurcationCalculationNew(itemData, cartModel!!, type, false)
+                        cartModel =
+                            cartModel?.let {
+                                taxBifurcationCalculationNew(itemData,
+                                    it, type, false)
+                            }
                     }
 
                 }
@@ -2424,7 +2432,10 @@ class DashBoardCategoryViewModel @Inject constructor(
         } else {
             Log.d("DashViewModModel", "else called: ")
             var isDineInItem1000 = false
-            order_note = cartModel!!.note
+            if (cartModel == null){
+                cartModel = this.cartModel
+            }
+            order_note = cartModel?.note.toString()
             var list = cartList!!.toMutableList()
 
 
@@ -2902,7 +2913,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     if (list[i].manualSaleId == item.manualSaleId) {
                                         index = i
                                         break
-                                    } else if (cartModel!!.reorder == true) {
+                                    } else if (cartModel?.reorder == true) {
                                         if (list[i].orderItemId == item.orderItemId) {
                                             index = i
                                             Log.e(TAG, "indexReorder23:  ${index}")
@@ -2950,7 +2961,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                         }
                         Log.e(
                             "ModNewLogic",
-                            "dineInList:   ${Gson().toJson(cartModel!!.dineInList)}"
+                            "dineInList:   ${Gson().toJson(cartModel?.dineInList)}"
                         )
                         //cartModel.dineInList = dinein
 
@@ -2968,48 +2979,78 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
                     Log.e(
-                        TAG, "taxlistDynamicData:  ${Gson().toJson(cartModel!!.taxlistDynamic)}"
+                        TAG, "taxlistDynamicData:  ${Gson().toJson(cartModel?.taxlistDynamic)}"
                     )
                 } else {
                     if (item != null) {
-                        cartModel = taxBifurcationCalculationNew(item, cartModel!!, type, false)
+                        cartModel =
+                            cartModel?.let { taxBifurcationCalculationNew(item, it, type, false) }
                     }
                 }
-                val newUpdatedItemList = list.filter { it.itemId == item?.itemId && it.guestIndexForDineIn == dineInHeaderPosition }
-                var newUpdatedItem:TbCartItem = if(newUpdatedItemList.isNotEmpty()) {
-                    // IMPORTANT -- remove this.. this is for log purpose only
-                    newUpdatedItemList.forEach {
-                        it.taxes = arrayListOf()
-                        Log.d(TAG, "newUpdatedItemList updateDineInCart: "+Gson().toJson(it))
-                    }
-
-                    newUpdatedItemList[0]
-                }else{
-                    list.filter { it.itemId == item?.itemId }[0]
-                }
-
-                if (type != DELETE) {
-                    Log.d("DashViewModModel", "addItemToCartItems 2926: ")
-                    Log.d(
-                        "DashViewModModel",
-                        "newUpdatedItem:: guestIndexForDineIn: " + dineInHeaderPosition
-                    )
-                    // IMPORTANT -- remove this.. this is for log purpose only
-                    newUpdatedItem.taxes = arrayListOf()
-                    Log.d("DashViewModModel", "newUpdatedItem:: " + Gson().toJson(newUpdatedItem))
-                    newUpdatedItem.guestIndexForDineIn = this.dineInHeaderPosition
-                    if (addNewEntry) {
-                        viewModelScope.launch {
-                            newUpdatedItem.dineInUniqueId =
-                                this@DashBoardCategoryViewModel.getLatestPrimaryKey() + 1
+                if (item != null) {
+                    val newUpdatedItemList = list.filter { it.itemId == item?.itemId && it.guestIndexForDineIn == dineInHeaderPosition }
+                    var newUpdatedItem:TbCartItem = if(newUpdatedItemList.isNotEmpty()) {
+                        // IMPORTANT -- remove this.. this is for log purpose only
+                        newUpdatedItemList.forEach {
+                            it.taxes = arrayListOf()
+                            Log.d(TAG, "newUpdatedItemList updateDineInCart: "+Gson().toJson(it))
                         }
-                        currentCartItems.add(newUpdatedItem)
-                        addItemToCartItems(newUpdatedItem)
-                    } else {
-                        currentCartItems.add(newUpdatedItem)
-                        addItemToCartItems(newUpdatedItem)
+
+                        newUpdatedItemList[0]
+                    }else{
+                        list.filter { it.itemId == item.itemId }[0]
                     }
-                    addCart(cartModel!!)
+
+                    if (type != DELETE) {
+                        Log.d("DashViewModModel", "addItemToCartItems 2926: ")
+                        Log.d(
+                            "DashViewModModel",
+                            "newUpdatedItem:: guestIndexForDineIn: " + dineInHeaderPosition
+                        )
+                        // IMPORTANT -- remove this.. this is for log purpose only
+                        newUpdatedItem.taxes = arrayListOf()
+                        Log.d("DashViewModModel", "newUpdatedItem:: " + Gson().toJson(newUpdatedItem))
+                        newUpdatedItem.guestIndexForDineIn = this.dineInHeaderPosition
+                        if (addNewEntry) {
+                            viewModelScope.launch {
+                                newUpdatedItem.dineInUniqueId =
+                                    this@DashBoardCategoryViewModel.getLatestPrimaryKey() + 1
+                            }
+                            currentCartItems.add(newUpdatedItem)
+                            addItemToCartItems(newUpdatedItem)
+                        } else {
+                            currentCartItems.add(newUpdatedItem)
+                            addItemToCartItems(newUpdatedItem)
+                        }
+                        cartModel?.let { addCart(it) }
+                    }
+                }else{
+                    for (i in 0 until list.size){
+                        var newUpdatedItem = list[i]
+                        if (type != DELETE) {
+                            Log.d("DashViewModModel", "addItemToCartItems 2926: ")
+                            Log.d(
+                                "DashViewModModel",
+                                "newUpdatedItem:: guestIndexForDineIn: " + dineInHeaderPosition
+                            )
+                            // IMPORTANT -- remove this.. this is for log purpose only
+                            newUpdatedItem.taxes = arrayListOf()
+                            Log.d("DashViewModModel", "newUpdatedItem:: " + Gson().toJson(newUpdatedItem))
+                            newUpdatedItem.guestIndexForDineIn = this.dineInHeaderPosition
+                            if (addNewEntry) {
+                                viewModelScope.launch {
+                                    newUpdatedItem.dineInUniqueId =
+                                        this@DashBoardCategoryViewModel.getLatestPrimaryKey() + 1
+                                }
+                                currentCartItems.add(newUpdatedItem)
+                                addItemToCartItems(newUpdatedItem)
+                            } else {
+                                currentCartItems.add(newUpdatedItem)
+                                addItemToCartItems(newUpdatedItem)
+                            }
+                            cartModel?.let { addCart(it) }
+                        }
+                    }
                 }
             } else {
 
@@ -3017,20 +3058,19 @@ class DashBoardCategoryViewModel @Inject constructor(
                     deleteCart()
                 } else {
 
-                    cartModel = taxBifurcationCalculationNew(item!!, cartModel!!, type, false)
-                    if (item.modifiers.isNotEmpty()) {
+                    cartModel =
+                        cartModel?.let { taxBifurcationCalculationNew(item!!, it, type, false) }
+                    if (item?.modifiers?.isNotEmpty() == true) {
                         item.modifiers.forEach { mod ->
                             mod.modifier_quantity = mod.itemQuantity
                         }
                     }
                     Log.d("DashViewModModel", "addItemToCartItems 2941: ")
-                    item.guestIndexForDineIn = this.dineInHeaderPosition
-                    currentCartItems.add(item)
-                    addItemToCartItems(item)
+                    item?.guestIndexForDineIn = this.dineInHeaderPosition
+                    item?.let { currentCartItems.add(it) }
+                    item?.let { addItemToCartItems(it) }
 
-                    if (cartModel != null) {
-                        addCart(cartModel!!)
-                    }
+                    cartModel?.let { addCart(it) }
                 }
 
 
@@ -4140,7 +4180,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
     }
 
-    fun addCartModelNew(item: TbCartItem, isManualSales: Boolean): CartModel {
+    fun addCartModelNew(item: TbCartItem?, isManualSales: Boolean): CartModel? {
         return CartModel().apply {
             terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
             employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1)
@@ -4151,7 +4191,9 @@ class DashBoardCategoryViewModel @Inject constructor(
             isMaual = isManualSales
             serviceCharge = serviceChargesList
             customer = assignCustomer
-            item.itemQuantity = item.itemQuantity
+            if (item != null) {
+                item.itemQuantity = item.itemQuantity
+            }
 
         }
     }
@@ -4606,6 +4648,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     fun itemCalculationCartModelNew(
+        cartModel: CartModel?,
         cartItems: List<TbCartItem>,
         txtTotalAmount: AppCompatTextView,
         context: Context
@@ -5617,7 +5660,8 @@ class DashBoardCategoryViewModel @Inject constructor(
         isPaid: Boolean,
         totalDiscount: Double,
         tipAmount: Double,
-        floorPlanDetails: DineInOrderDetailAttributes
+        floorPlanDetails: DineInOrderDetailAttributes,
+        cartItems:ArrayList<TbCartItem>
     ): OrderRequestModel {
 
         val orderAttributeRequestModel = OrderAttributeRequestModel()
@@ -5680,14 +5724,19 @@ class DashBoardCategoryViewModel @Inject constructor(
         orderAttributeRequestModel.orderServiceChargesAttributes =
             dineInServiceChargeAppliedAttribute(cartModel)
 
-        for (i in 0 until cartModel.dineInList?.size!!) {
+        /*for (i in 0 until cartModel.dineInList?.size!!) {
             cartModel.dineInList?.get(i)?.items?.forEach { item ->
                 if (item.timeStamp == null || item.timeStamp!!.lowercase() == "null".lowercase()) {
                     item.timeStamp = randomOfflineId().toString()
                 }
             }
+        }*/
+        cartItems.forEach { item ->
+            if (item.timeStamp == null || item.timeStamp!!.lowercase() == "null".lowercase()) {
+                item.timeStamp = randomOfflineId().toString()
+            }
         }
-        orderAttributeRequestModel.orderItemsAttributes = dineInOrderItemAttributed(cartModel)
+        orderAttributeRequestModel.orderItemsAttributes = dineInOrderItemAttributed(cartModel,cartItems)
 
         orderAttributeRequestModel.guestsAttributes = getGuestsAttributes(cartModel)
 
@@ -5899,22 +5948,24 @@ class DashBoardCategoryViewModel @Inject constructor(
     private fun getGuestsAttributes(cartModel: CartModel): List<GuestsAttributes> {
         val orderItemsAttributeList: ArrayList<GuestsAttributes> = arrayListOf()
         Log.e(TAG, "dineInListData:   ${Gson().toJson(cartModel.dineInList)}")
-        cartModel.dineInList?.forEach { it ->
+        cartModel.dineInList?.forEachIndexed { index,it ->
+            CoroutineScope(Dispatchers.IO).launch {
+                var cartItems = getDineInCartItems(index) as ArrayList<TbCartItem>
             val model = GuestsAttributes()
             model.name = it.title.toString()
             model.Destroy = it.isDestroy
             if (it.id != 0) {
                 model.id = it.id
             }
-            if (it.items.isNotEmpty()) {
+            if (cartItems?.isNotEmpty() == true) {
                 var listItems: ArrayList<GuestItemsAttributes> = arrayListOf()
                 var subTotal = 0.0
                 var totalTax = 0.0
                 var totalTips = 0.0
                 var totalDiscount = 0.0
                 var totalAmount = 0.0
-                it.items.sortedBy { it.dineInSort }
-                it.items.forEach { tb ->
+                cartItems.sortedBy { it.dineInSort }
+                cartItems.forEach { tb ->
 
 
                     listItems.add(GuestItemsAttributes(id = tb.guestItemId,
@@ -5993,18 +6044,18 @@ class DashBoardCategoryViewModel @Inject constructor(
             }
             orderItemsAttributeList.add(model)
 
-
+        }
         }
 
         return orderItemsAttributeList
 
     }
 
-    private fun dineInOrderItemAttributed(cartModel: CartModel): List<OrderItemsAttribute> {
+    private fun dineInOrderItemAttributed(cartModel: CartModel , cartItems:ArrayList<TbCartItem>): List<OrderItemsAttribute> {
         var orderItemsAttributeList: ArrayList<OrderItemsAttribute> = arrayListOf()
 
-        for (i in 0 until cartModel.dineInList?.size!!) {
-            currentCartItems.forEach { item ->
+//        for (i in 0 until cartModel.dineInList?.size!!) {
+        cartItems.forEach { item ->
 
                 val orderItemsAttribute = OrderItemsAttribute()
 
@@ -6065,13 +6116,13 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 orderItemsAttributeList.add(orderItemsAttribute)
             }
-        }
+//        }
 
 
-        cartModel.items?.forEach {
-            cartModel?.dineInList?.forEach { m ->
-                m.items.forEach { oi ->
-                    if (oi.name.equals(it.name, true) == false && it.isDestroy) {
+//        cartModel.items?.forEach {
+//            cartModel?.dineInList?.forEach { m ->
+                cartItems.forEach { it ->
+                    if (/*oi.name.equals(it.name, true) == false &&*/ it.isDestroy) {
                         var model = OrderItemsAttribute()
                         model.category_id = it.categoryId
                         model.itemId = it.itemId
@@ -6082,9 +6133,9 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                     }
                 }
-            }
+//            }
 
-        }
+//        }
 
 
 
@@ -6462,7 +6513,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             totalDiscount = MethodUtils.roundOffAmountDouble(ttotalDiscount)
             totalServiceCharges = totalServiceCharge
             totalTaxAmount = totalTax
-            orderItemsAttributes = dineInOrderItemAttributed(cartModel)
+            orderItemsAttributes = dineInOrderItemAttributed(cartModel , currentCartItems)
             offlineId = null
             deletedGuestItems = cartModel.listOfItemRemoved.toCollection(arrayListOf())
             //            paymentAttributes =
@@ -7525,7 +7576,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     fun itemCalculationForDineInPaymentNew(
-//        cartModel: CartModel,
+        cartModel: CartModel,
         txtTotal: AppCompatTextView,
         context: Context,
         model: GuestPaymentCalculationModel,
@@ -7547,7 +7598,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             totalTax = model.tax
             totalServiceCharge = model.serviceCharge
             totalDiscount = model.totalDiscount
-            order_note = cartModel!!.note
+            order_note = cartModel.note
 
             totalServiceCharge = model.serviceCharge
             // serviceChargeCalculationModel(cartModel)
@@ -7588,7 +7639,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             totalTax = model.tax
             totalServiceCharge = model.serviceCharge
             totalDiscount = model.totalDiscount
-            order_note = cartModel!!.note
+            order_note = cartModel.note
             totalServiceCharge = model.serviceCharge
 
             var finalTotal = 0.0

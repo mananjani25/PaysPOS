@@ -1666,6 +1666,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     private fun checkDineInEditOrder() {
         if (arguments?.getBoolean("is_dine_in_edit") == true) {
             var dineInList = arguments?.getParcelableArrayList<DineInModel>("dine_in_list")
+            val dineInItemsList = arguments?.getParcelableArrayList<TbCartItem>("dine_in_cart_items")
 
             if (dineInList?.isNotEmpty() == true) {
                 if (cartList.isEmpty()) {
@@ -1724,6 +1725,18 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 )*/
                 Log.d(TAG, "1719 dineintest currentCartItems: "+viewModel.currentCartItems)
                 Log.d(TAG, "dineintest dineinlist: "+dineInList)
+
+                // IMPORTANT - remove this as this is just for logs
+                dineInItemsList?.forEach {
+                    it.taxes = arrayListOf()
+                    Log.d(TAG, "testDineInUpdate dineInItemsList: "+Gson().toJson(it))
+                }
+                // IMPORTANT - remove this as this is just for logs
+                viewModel.currentCartItems.forEach {
+                    it.taxes = arrayListOf()
+                    Log.d(TAG, "testDineInUpdate dineInItemsList: "+Gson().toJson(it))
+                }
+
                 viewModel.updateDineInCart(viewModel.currentCartItems,null,Constants.ADD,false,dineInList,true)
                 // viewModel.orderItemDiscount = arguments?.getDouble("totalDiscount") ?: 0.0
 

@@ -87,6 +87,8 @@ import com.sunmi.externalprinterlibrary.api.ConnectCallback
 import com.sunmi.externalprinterlibrary.api.SunmiPrinter
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
@@ -514,6 +516,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                             for (j in i + 1 until list.size) {
                                 if (list.get(j).isHeader == 1) {
                                     listWT.add(list.get(j).item!!)
+                                    dashboardViewModel.currentCartItems.add(list[j].item!!)
                                 } else {
                                     break
                                 }
@@ -908,7 +911,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             val list = dineInTableAdapter.getList()
             val newList: ArrayList<DineInModel> = arrayListOf()
 
-
             dashboardViewModel.dineInHeaderPosition = 0
             for (i in 0 until list.size) {
                 val model = DineInModel()
@@ -953,7 +955,13 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                     }
 //                    model.items = listTbItem
-                    dashboardViewModel.currentCartItems = listTbItem
+//                    dashboardViewModel.currentCartItems = listTbItem
+                    // IMPORTANT - remove this as this is just for logs
+                    listTbItem.forEach {
+                        dashboardViewModel.currentCartItems.add(it)
+                        it.taxes = arrayListOf()
+                        Log.d(TAG, "testDineInUpdate onClick: "+Gson().toJson(it))
+                    }
                     newList.add(model)
 
 
@@ -977,6 +985,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 "dine_in_list",
                 newList
             )
+            bundle.putParcelableArrayList("dine_in_cart_items",dashboardViewModel.currentCartItems)
 
             LogUtil.logE(
                 "OrderFre",
@@ -2975,6 +2984,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         if (j == (list.size - 1)) {
                             dineinModel.items = arrayListOf()
 //                            dineinModel.items.addAll(dineInItems)
+                            dashboardViewModel.currentCartItems = arrayListOf()
                             dashboardViewModel.currentCartItems.addAll(dineInItems)
                             dineInItems = arrayListOf()
                             break
@@ -2982,6 +2992,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     } else {
                         dineinModel.items = arrayListOf()
 //                        dineinModel.items.addAll(dineInItems)
+                        dashboardViewModel.currentCartItems = arrayListOf()
                         dashboardViewModel.currentCartItems.addAll(dineInItems)
                         dineInItems = arrayListOf()
                         break

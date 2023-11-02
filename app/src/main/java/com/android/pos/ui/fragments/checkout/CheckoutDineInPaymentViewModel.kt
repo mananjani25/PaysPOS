@@ -38,6 +38,8 @@ import com.squareup.okhttp.OkHttpClient
 import com.squareup.okhttp.Request
 import com.squareup.okhttp.Response
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 import java.io.IOException
@@ -190,7 +192,9 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
     fun addCart(cartModel: CartModel) {
 
         viewModelScope.launch {
-            posRepository.addItemCart(cartModel)
+            CoroutineScope(Dispatchers.IO).launch {
+                posRepository.addItemCart(cartModel)
+            }
             destroyedList.clear()
         }
     }

@@ -732,6 +732,7 @@ class CartFragment(
     private fun checkDineInEditOrder() {
         if (arguments?.getBoolean("is_dine_in_edit") == true) {
             val dineInList = arguments?.getParcelableArrayList<DineInModel>("dine_in_list")
+            val dineInItemsList = arguments?.getParcelableArrayList<TbCartItem>("dine_in_cart_items")
 
             if (dineInList?.isNotEmpty() == true) {
                 //  binding.layoutCart.txtOrderType.setText("Dine In")
@@ -776,13 +777,25 @@ class CartFragment(
 
                 viewModel.orderItemDiscount = arguments?.getDouble("totalDiscount") ?: 0.0
                 viewModel.totalDiscount = arguments?.getDouble("totalDiscount") ?: 0.0
-                viewModel.newCartLogicModifier(
+                /*viewModel.newCartLogicModifier(
                     cartlist,
                     null,
                     Constants.ADD,
                     false,
                     dineInList = dineInList
-                )
+                )*/
+
+                // IMPORTANT - remove this as this is just for logs
+                dineInItemsList?.forEach {
+                    it.taxes = arrayListOf()
+                    Log.d(TAG, "testDineInUpdate dineInItemsList: "+Gson().toJson(it))
+                }
+                // IMPORTANT - remove this as this is just for logs
+                viewModel.currentCartItems.forEach {
+                    it.taxes = arrayListOf()
+                    Log.d(TAG, "testDineInUpdate dineInItemsList: "+viewModel.currentCartItems)
+                }
+                viewModel.updateDineInCart(viewModel.currentCartItems,null, ADD,false,dineInList)
 
 
             }
@@ -1759,7 +1772,7 @@ class CartFragment(
 
 
                                         }*/
-                                        LogUtil.logE(TAG, "getPAyment:  ${isFromPayment}")
+                                        /*LogUtil.logE(TAG, "getPAyment:  ${isFromPayment}")
                                         LogUtil.logE(TAG, "isGuestPayment:  ${isGuestPayment}")
 
                                         if (isFromPaymentDinein) {
@@ -1780,7 +1793,7 @@ class CartFragment(
                                                 binding.txtTotal,
                                                 requireContext()
                                             )
-                                        }
+                                        }*/
 
 
 
@@ -1841,7 +1854,7 @@ class CartFragment(
                                                                 isPrinted = false,
                                                                 itemId = item.itemId,
                                                                 note = item.note,
-                                                                orderId = cartlist[0].orderId ?: 0,
+                                                                orderId = viewModel.cartModel?.orderId ?: 0,
                                                                 orderItemModifiers = modifiers,
                                                                 orderItemTaxes = arrayListOf(),
                                                                 price = item.price,
@@ -2062,6 +2075,7 @@ class CartFragment(
                                 //cartlist = it as ArrayList<CartModel>
                                 runOnUiThread(kotlinx.coroutines.Runnable {
                                     viewModel.itemCalculationCartModelNew(
+                                        viewModel.cartModel,
                                         it,
                                         binding.txtTotal,
                                         requireContext()
@@ -2303,6 +2317,9 @@ class CartFragment(
                     prefProvider.getValue(ORDER_TYPE, TAKEOUT),
                     prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
                 ).asLiveData().observe(viewLifecycleOwner) {
+                    for (i in 0..it.size-1){
+                        Log.d("19OCT", "addObserver: CCI 2 = ${Gson().toJson(i)}")
+                    }
                     if (it.isNotEmpty()) {
                         if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
                             viewModel.setCartModel(it)
@@ -2321,6 +2338,31 @@ class CartFragment(
 
 
                             }
+
+                            LogUtil.logE(TAG, "getPAyment:  ${isFromPayment}")
+                            LogUtil.logE(TAG, "isGuestPayment:  ${isGuestPayment}")
+
+                            if (isFromPaymentDinein) {
+                                viewModelPayment.dineInWholeDiscount =
+                                    guestCalModel?.wholeOrderPassDiscount
+                                viewModelPayment.dineInWholeSC = guestCalModel?.wholeOrderPassSC
+                                viewModel.itemCalculationForDineInPaymentNew(
+                                    it[0],
+                                    binding.txtTotal,
+                                    requireContext(),
+                                    guestCalModel!!,
+                                    isGuestPayment
+                                )
+                            } else {
+                                LogUtil.logE(TAG, "WithOutDineIn")
+                                viewModel.itemCalculationCartModelNew(
+                                    it[0],
+                                    viewModel.currentCartItems,
+                                    binding.txtTotal,
+                                    requireContext()
+                                )
+                            }
+
                             var listOfTax: ArrayList<TaxData> = arrayListOf()
 
                             it[0].taxlistDynamic?.let { it1 ->
@@ -3251,7 +3293,7 @@ class CartFragment(
         if (cartlist.isNotEmpty()) {
             if (prefProvider.getValueboolean(Constants.DINE_IN_UPDATE, false)) {
                 var itemCount = 0
-                for (i in cartlist.indices) {
+                /*for (i in cartlist.indices) {
                     for (j in cartlist[i].dineInList?.indices!!) {
                         if (cartlist[i].dineInList?.get(j)?.items?.size!! > 0) {
                             itemCount++
@@ -3262,7 +3304,8 @@ class CartFragment(
                         break
                     }
 
-                }
+                }*/
+                itemCount = viewModel.currentCartItems.size
 
                 if (itemCount == 0) {
                     AlertUtils.showCustomAlertWithListenerWithOK(
@@ -3372,7 +3415,8 @@ class CartFragment(
             false,
             totalDiscount = finalDiscount,
             0.0,
-            floorPlanDetails = floorModel
+            floorPlanDetails = floorModel,
+            cartItems = viewModel.currentCartItems
         )
 
         if (orderRequestModel != null) {

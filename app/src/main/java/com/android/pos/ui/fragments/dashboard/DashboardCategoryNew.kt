@@ -2713,7 +2713,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         if (cartList.isNotEmpty()) {
             if (prefProvider.getValueboolean(DINE_IN_UPDATE, false)) {
                 var itemCount = 0
-                for (i in cartList.indices) {
+                /*for (i in cartList.indices) {
                     for (j in cartList[i].dineInList?.indices!!) {
                         if (cartList[i].dineInList?.get(j)?.items?.size!! > 0) {
                             itemCount++
@@ -2724,7 +2724,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                         break
                     }
 
-                }
+                }*/
+                itemCount = viewModel.currentCartItems.size
 
                 if (itemCount == 0) {
                     AlertUtils.showCustomAlertWithListenerWithOK(
@@ -2803,7 +2804,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 }
                 if (prefProvider.getValue(ORDER_TYPE, "").toString() == DINE_IN) {
                     var itemCount = 0
-                    for (i in cartList.indices) {
+                    /*for (i in cartList.indices) {
                         for (j in cartList[i].dineInList?.indices!!) {
                             if (cartList[i].dineInList?.get(j)?.items?.size!! > 0) {
                                 itemCount++
@@ -2814,7 +2815,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                             createDineInRequest()
                             break
                         }
-                    }
+                    }*/
+                    itemCount = viewModel.currentCartItems.size
 
                     if (itemCount == 0) {
                         bundle.clear()
@@ -2908,7 +2910,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
             false,
             totalDiscount = viewModel.totalDiscount + cartList[0].discountPrice,
             0.0,
-            floorPlanDetails = floorModel
+            floorPlanDetails = floorModel,
+            viewModel.currentCartItems
         )
 
         if (orderRequestModel != null) {
