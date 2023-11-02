@@ -194,11 +194,13 @@ class AllOrdersViewModel @Inject constructor(
 
     fun cancelOrder(orderId: Int, reason: String, reason_id: Int?) {
         _showProgress.value = Event(true)
-
+        val formatterDate = SimpleDateFormat("yyyy-MM-dd")
+        val formatterTime = SimpleDateFormat("hh:mm a")
+        val date = Date()
         val request = OrderCancelRequest.OrderData(
             "Cancelled", reason, reason_id, prefProvider.getValueInt(
-                Constants.EMPLOYEE_ID, 0
-            )
+                Constants.EMPLOYEE_ID, 0,
+            ), formatterDate.format(date), formatterTime.format(date)
         )
 
         val orderCancelRequest = OrderCancelRequest(request)
