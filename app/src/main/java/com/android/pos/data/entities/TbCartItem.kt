@@ -44,13 +44,11 @@ class TbCartItem : Parcelable {
     var categoryName: String = ""
     var shortDescription: String = ""
     var note: String = ""
-
     var itemQuantity: Int = 0
     var isManualSales: Boolean = false
     var isChecked: Boolean = false
     var modifier_set_ids: List<Int> = emptyList()
     var modifiers: List<Modifier> = emptyList()
-
     var customItemCount: Int = 0
     var discountPrice: Double = 0.0
     var singleItemPrice: Double = 0.0
@@ -58,7 +56,6 @@ class TbCartItem : Parcelable {
     var discountType: String = ""
     var variationsAttributes: List<VariationsAttribute> = emptyList()
     var optionSets: List<OptionSet>? = null
-
     var orderItemId: Int? = null
     var isFired: Boolean = false
     var timeStamp: String? = null
@@ -71,7 +68,6 @@ class TbCartItem : Parcelable {
     var isDeleted: Boolean = false
     var headerPositionDinein = 0
     var itemOriginalModifiersList: List<Modifier>? = arrayListOf()
-
     var employeeID: Int = 0
     var isManualSaleItem: Boolean = false
     var orderType: String = ""

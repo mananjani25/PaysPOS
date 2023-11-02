@@ -58,7 +58,7 @@ import com.android.pos.data.typeconvert.TypeConvertorPhone
         CashDiscountModel::class, TbCountryList::class, TbCardReader::class, PAXData::class, VenueDetailsResponse.Data.CancelOrderReason::class,
         DineInCartModel::class, ShiftRportConfiguration::class, TbBusinessDetails::class, TbTimeZones::class, PrinterQueueModel::class,
         VenueDetailsResponse.Data.WastageReason::class, TbCartItem::class],
-    version = 11
+    version = 13
 )
 @TypeConverters(
     TypeConvertersItems::class,
@@ -264,10 +264,73 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        private val MIGRATION_12_13: Migration = object : Migration(12, 13) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                try {
+                    database.execSQL(
+                        "CREATE TABLE IF NOT EXISTS `TbCartItem` " +
+                                "(`cartItemId` INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                                "`itemId` INTEGER NOT NULL, " +
+                                "`name` TEXT NOT NULL, " +
+                                "`id` INTEGER NOT NULL, " +
+                                "`price` REAL NOT NULL, " +
+                                "`quantity` INTEGER NOT NULL, " +
+                                "`sku` TEXT NOT NULL, " +
+                                "`isHide` INTEGER NOT NULL, " +
+                                "`sort` INTEGER NOT NULL, " +
+                                "`dineInSort` INTEGER NOT NULL, " +
+                                "`hide_status` TEXT, " +
+                                "`website_hide_status` TEXT, " +
+                                "`taxes` TEXT NOT NULL, " +
+                                "`imageUrl` TEXT, " +
+                                "`thumbImageUrl` TEXT, " +
+                                "`createdAt` TEXT NOT NULL, " +
+                                "`updatedAt` TEXT NOT NULL, " +
+                                "`customItemID` INTEGER NOT NULL, " +
+                                "`categoryId` INTEGER NOT NULL, " +
+                                "`categoryName` TEXT NOT NULL, " +
+                                "`shortDescription` TEXT NOT NULL, " +
+                                "`note` TEXT NOT NULL, " +
+                                "`itemQuantity` INTEGER NOT NULL, " +
+                                "`isManualSales` INTEGER NOT NULL, " +
+                                "`isChecked` INTEGER NOT NULL, " +
+                                "`modifiers_set_ids` TEXT NOT NULL, " +
+                                "`modifiers` TEXT NOT NULL, " +
+                                "`customItemCount` INTEGER NOT NULL, " +
+                                "`discountPrice` REAL NOT NULL, " +
+                                "`singleItemPrice` REAL NOT NULL, " +
+                                "`discountId` INTEGER, " +
+                                "`discountType` TEXT NOT NULL, " +
+                                "`variationsAttributes` TEXT NOT NULL, " +
+                                "`optionSets` TEXT, " +
+                                "`orderItemId` INTEGER, " +
+                                "`isFired` INTEGER NOT NULL, " +
+                                "`timeStamp` TEXT, " +
+                                "`isPaid` INTEGER NOT NULL, " +
+                                "`isEdited` INTEGER NOT NULL, " +
+                                "`guestItemId` INTEGER, " +
+                                "`isDestroy` INTEGER NOT NULL, " +
+                                "`reorder` INTEGER NOT NULL, " +
+                                "`manualSaleId` TEXT NOT NULL, " +
+                                "`isDeleted` INTEGER NOT NULL, " +
+                                "`headerPositionDinein` INTEGER NOT NULL, " +
+                                "`itemOriginalModifiersList` TEXT, " +
+                                "`employeeID` INTEGER NOT NULL, " +
+                                "`isManualSaleItem` INTEGER NOT NULL, " +
+                                "`orderType` TEXT NOT NULL, " +
+                                "`orderTypeName` TEXT NOT NULL, " +
+                                "`orderTypeId` INTEGER NOT NULL)"
+                    )
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
+
         private fun buildDatabase(appContext: Context) =
             Room.databaseBuilder(appContext, AppDatabase::class.java, DATABASE_NAME)
                 .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7
-                    , MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11
+                    , MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_12_13
                 )
                 .build()
     }
