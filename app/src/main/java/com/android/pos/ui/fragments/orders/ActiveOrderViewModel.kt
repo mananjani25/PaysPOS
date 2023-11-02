@@ -124,8 +124,7 @@ class ActiveOrderViewModel @Inject constructor(
 
         val request = OrderCancelRequest.OrderData(
             "Cancelled", reason, reason_id, prefProvider.getValueInt(
-                Constants.EMPLOYEE_ID, 0
-            )
+                Constants.EMPLOYEE_ID, 0,), "", ""
         )
 
         val orderCancelRequest = OrderCancelRequest(request)

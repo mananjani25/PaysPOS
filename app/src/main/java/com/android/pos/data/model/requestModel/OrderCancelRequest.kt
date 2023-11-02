@@ -21,7 +21,11 @@ data class OrderCancelRequest(
         @SerializedName("cancel_order_reason_id")
         val cancel_order_reason_id: Int?,
         @SerializedName("cancel_by_employee_id")
-        val cancel_by_employee_id: Int?
+        val cancel_by_employee_id: Int?,
+        @SerializedName("future_delivery_date")
+        val futureDeliveryDate: String = "",
+        @SerializedName("future_delivery_time")
+        val futureDeliveryTime: String = ""
 
-        ) : Parcelable
+    ) : Parcelable
 }
