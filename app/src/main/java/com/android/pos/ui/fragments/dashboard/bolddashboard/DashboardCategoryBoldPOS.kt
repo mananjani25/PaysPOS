@@ -486,7 +486,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         item.discountId = result.id
                         item.discountType = result.discountType
 
-                        //viewModel.newCartLogicModifier(cartList, item, Constants.UPDATE, false)
                         viewModel.updateCart(viewModel.currentCartItems, item, Constants.UPDATE, false, isFromDetail = true)
 
                     }
@@ -498,7 +497,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         item?.discountType = result.discountType
 
 
-                        //viewModel.newCartLogicModifier(cartList, item, Constants.UPDATE, false)
                         viewModel.updateCart(viewModel.currentCartItems, item, Constants.UPDATE, false, isFromDetail = true)
                     }
 
@@ -507,7 +505,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         item?.discountId = 0
                         item?.discountType = result.discountType
 
-                        //viewModel.newCartLogicModifier(cartList, item, Constants.UPDATE, false)
                         viewModel.updateCart(viewModel.currentCartItems, item, Constants.UPDATE, false, isFromDetail = true)
 
                     }
@@ -1214,39 +1211,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                     prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
 
                             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
-                                /*if (cartList[0].dineInList?.isEmpty() == true) {
-                                    cartList[0].dineInList = dineInList
-                                }
 
-
-                                if (cartList[0].dineInList?.isNotEmpty() == true) {
-                                    Log.e(
-                                        "checkDineHeaderPos",
-                                        "dineInHeaderPosition:  ${viewModel.dineInHeaderPosition}"
-                                    )
-
-                                    if (prefProvider.getValueboolean(
-                                            Constants.DINE_IN_UPDATE,
-                                            false
-                                        )
-                                    ) {
-                                        item.isEdited = true
-                                    }
-
-                                    var dineInList = cartList[0].dineInList
-                                    dineInList!![0]?.selectedPosition =
-                                        viewModel.dineInHeaderPosition
-                                    runOnUiThread(Runnable {
-                                        viewModel.newCartLogicModifier(
-                                            cartList,
-                                            item,
-                                            Constants.ADD,
-                                            false,
-                                            dineInList = dineInList
-                                        )
-                                    })
-
-                                }*/
                             } else {
                                 runOnUiThread {
                                     viewModel.updateCart(
@@ -1255,12 +1220,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                         Constants.ADD,
                                         false,
                                     )
-                                   /* viewModel.newCartLogicModifier(
-                                        cartList,
-                                        item,
-                                        Constants.ADD,
-                                        false
-                                    )*/
                                 }
                             }
                         }

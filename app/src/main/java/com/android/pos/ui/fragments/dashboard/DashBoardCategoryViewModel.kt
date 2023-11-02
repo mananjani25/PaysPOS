@@ -2489,19 +2489,6 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
     }
 
-    /**
-     * This method is used to check if the list contains multiple custom items or not
-     * */
-    private fun hasCustomItemIds(list: MutableList<TbCartItem>): Boolean {
-        var customIdsCount = 0
-        list.forEach {
-            if(it.customItemID != 0){
-                customIdsCount++
-            }
-        }
-        return customIdsCount > 1
-    }
-
     private fun combineItem(list: ArrayList<TbItem>, item: TbItem, index: Int): List<TbItem> {
         Log.e(TAG, "newItemitemQuantity  ${Gson().toJson(item)}")
         Log.e(TAG, "newItemitemQuantity  ${item.itemQuantity}")
