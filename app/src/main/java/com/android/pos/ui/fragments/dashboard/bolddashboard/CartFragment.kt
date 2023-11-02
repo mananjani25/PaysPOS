@@ -1687,13 +1687,12 @@ class CartFragment(
 //                        if (oldItemSize != null && oldItemSize != 1)
 
                             // Flag is used to update cart if last item from the cart will be deleted
-                            if (prefProvider.getValueboolean(IS_LAST_ITEM_DELETE, false)) {
+                            if (this@CartFragment::prefProvider.isInitialized && prefProvider.getValueboolean(IS_LAST_ITEM_DELETE, false)) {
+                                Log.d("02nov23", "updateCart: LAST ITEM DELETED TRUE")
                                 prefProvider.setValueboolean(
                                     IS_LAST_ITEM_DELETE,
                                     false
                                 ) // reset flag after updating cart
-                            } else {
-                                return@launch
                             }
                         } else {
                             val currentTimeMillis = System.currentTimeMillis()
@@ -1732,7 +1731,9 @@ class CartFragment(
                                 runOnUiThread {
                                     cartItemsAdapter.submitList(filterItems)
                                     binding.rvCartList.postDelayed({
-                                        binding.rvCartList.smoothScrollToPosition(cartItemsAdapter.currentList.size - 1)
+                                        if(cartItemsAdapter.currentList.isNotEmpty()){
+                                            binding.rvCartList.smoothScrollToPosition(cartItemsAdapter.currentList.size - 1)
+                                        }
                                     }, 200)
                                     binding.rlCartView.visible()
                                     binding.rvOrderType.gone()
@@ -2323,6 +2324,7 @@ class CartFragment(
         cartItemsAdapter = CartItemsAdapter()
         cartItemsAdapter.setCallback(this)
         binding.rvCartList.adapter = cartItemsAdapter
+        binding.rvCartList.itemAnimator = null
         dineInCartAdapter = DineInAdapter()
         dineInCartAdapter.setListner(this)
         dineInCartAdapter.isFromPayment(isFromPayment)

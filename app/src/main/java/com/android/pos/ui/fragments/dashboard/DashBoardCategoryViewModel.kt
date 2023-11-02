@@ -2419,6 +2419,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                             if (item?.isEdited == true) {
                                 model.isEdited = item.isEdited
                                 model.isDestroy = true
+                                addItemToCartItems(model)//Update deleted item with its updated fields like isEdited and isDestroy
                             } else {
                                 if (list.size == 1) {
                                     prefProvider.setValueboolean(IS_LAST_ITEM_DELETE, true)
