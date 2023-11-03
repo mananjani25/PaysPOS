@@ -24,7 +24,7 @@ interface CartDao {
     @Query("delete from TbCartItem where itemId = :itemId AND guestIndexForDineIn = :guestIndexForDineIn")
     suspend fun removeCartItem(itemId:Int,guestIndexForDineIn: Int)
 
-    @Query("select Max(dineInUniqueId) FROM TbCartItem")
+    @Query("select Max(cartItemId) FROM TbCartItem")
     suspend fun getLatestPrimaryKey(): Int
 
     @Query("select * from TbCartItem ORDER BY timeStamp")

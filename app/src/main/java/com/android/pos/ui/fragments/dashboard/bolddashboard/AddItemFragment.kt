@@ -367,7 +367,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                     dineInList?.get(0)?.headerPosition = viewModel.dineInSelectedItemHeaderPos
                     dineInList?.get(0)?.selectedPosition = viewModel.dineInSelectedItemHeaderPos
                     LogUtil.logE(TAG, "getItem  ${Gson().toJson(item)}")
-                    cartList[0].taxlistDynamic = arrayListOf()
+                    cartModelsList[0].taxlistDynamic = arrayListOf()
                     /*cartList[0].dineInList?.forEach { dineInModel ->
                         dineInModel.items.forEach { items ->
                             items.taxes?.forEach { taxData ->
@@ -383,7 +383,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                         }
                     }
 
-                    Log.e(TAG, "dineInListWhenUpdate:  ${Gson().toJson(cartList)}")
+                    Log.e(TAG, "dineInListWhenUpdate:  ${Gson().toJson(cartModelsList)}")
                     /*viewModel.newCartLogicModifier(
                         cartList,
                         item,

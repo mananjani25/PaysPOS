@@ -41,7 +41,6 @@ import com.android.pos.data.remote.Constants.DELIVERY_TYPE
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.DINE_IN_LIST_EDIT
 import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
-import com.android.pos.data.remote.Constants.DINE_IN_UPDATE_LIST
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.GIFT_CARD
 import com.android.pos.data.remote.Constants.IS_FROM_ALL_ORDER
@@ -80,7 +79,6 @@ import com.android.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.ui.fragments.payment.PaymentViewModel
 import com.android.pos.utils.AlertUtils
-import com.android.pos.utils.Event
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
@@ -810,17 +808,6 @@ class CartFragment(
         }
     }
 
-    private fun addDineInObserver() {
-
-        viewModel.mAllWords(
-            prefProvider.getValue(ORDER_TYPE, ""),
-            prefProvider.getValueInt(EMPLOYEE_ID, 0)
-        ).observe(
-            requireActivity(), nameObserver
-        )
-
-    }
-
     fun setTaxBifurcationData(taxlistData: ArrayList<TaxData>) {
         if (taxlistData?.isNotEmpty()) {
             Log.d(TAG, "addObserver: " + taxlistData.size)
@@ -1103,7 +1090,282 @@ class CartFragment(
                         saveVisibility()
 
                         if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
+                            runOnUiThread(Runnable {
+                                binding.rvCartDineIn.visible()
+                                binding.rvCartList.gone()
+                                checkOrderType()
+                                if (it.isNotEmpty()) {
 
+//                                        cartlist = it
+                                    if (isFromPayment) {
+
+                                        if (MethodUtils.isEnableCashDiscount(requireContext()) && prefProvider.getValue(
+                                                ORDER_TYPE,
+                                                TAKEOUT
+                                            ) != Constants.GIFT_CARD
+                                        ) {
+                                            binding.linearCashDiscount.visible()
+                                            if (prefProvider.getValue(
+                                                    OPTION_TYPE,
+                                                    "CashDiscount"
+                                                ) == "CashDiscount"
+                                            ) {
+                                                binding.labelCashSurcharge?.text = "Cash Discount"
+                                            } else {
+                                                showSurchargeWithPercentage()
+                                            }
+                                        } else {
+                                            binding.linearCashDiscount.gone()
+                                        }
+                                        binding.linearButtonView.gone()
+                                        binding.relPreoceedToFire.gone()
+                                    } else {
+                                        binding.linearButtonView.gone()
+                                        binding.relPreoceedToFire.visible()
+                                    }
+                                    /*if (it[0].dineInList?.isNotEmpty() == true) {
+                                        var dineInList = it[0].dineInList
+                                        if (dineInList?.get(0)?.selectedPosition != -1) {
+
+                                            dineInList?.get(0)?.selectedPosition =
+                                                viewModel.dineInHeaderPosition
+                                        }
+
+                                        dineInCartAdapter.setList(
+                                            dineInList?.toCollection(arrayListOf()) ?: arrayListOf()
+                                        )
+
+
+                                    }*/
+                                    /*LogUtil.logE(TAG, "getPAyment:  ${isFromPayment}")
+                                    LogUtil.logE(TAG, "isGuestPayment:  ${isGuestPayment}")
+
+                                    if (isFromPaymentDinein) {
+                                        viewModelPayment.dineInWholeDiscount =
+                                            guestCalModel?.wholeOrderPassDiscount
+                                        viewModelPayment.dineInWholeSC = guestCalModel?.wholeOrderPassSC
+                                        viewModel.itemCalculationForDineInPaymentNew(
+//                                                it,
+                                            binding.txtTotal,
+                                            requireContext(),
+                                            guestCalModel!!,
+                                            isGuestPayment
+                                        )
+                                    } else {
+                                        LogUtil.logE(TAG, "WithOutDineIn")
+                                        viewModel.itemCalculationCartModelNew(
+                                            it,
+                                            binding.txtTotal,
+                                            requireContext()
+                                        )
+                                    }*/
+
+
+
+//                                        viewModel.setCartModel(it)
+                                    if (prefProvider.getValueboolean(
+                                            Constants.DINE_IN_UPDATE,
+                                            false
+                                        )
+                                    ) {
+                                        binding.txtDineInProceed.setText("Update and Proceed")
+
+                                        var getOldList = prefProvider.getValue(Constants.DINE_IN_UPDATE_LIST, "")
+                                        if (getOldList.isEmpty()) {
+                                            var listItemDine: ArrayList<GetOrderDetailsResponse.Data.OrderItem> = arrayListOf()
+//                                                var data = it[0].dineInList
+//                                                LogUtil.logE(TAG, "getDataSizeDin ${data?.size}")
+//                                                data?.forEach {
+                                            it.forEach { item ->
+                                                var modifiers: ArrayList<GetOrderDetailsResponse.Data.OrderItem.OrderItemModifier> =
+                                                    arrayListOf()
+                                                if (item.modifiers.isNotEmpty()) {
+                                                    item.modifiers.forEach {
+                                                        var modelMod =
+                                                            GetOrderDetailsResponse.Data.OrderItem.OrderItemModifier(
+                                                                categoryId = "",
+                                                                id = it.id ?: 0,
+                                                                it.modifier_quantity,
+                                                                isModifier = it.isChecked,
+                                                                itemId = "",
+                                                                modifierId = 0,
+                                                                it.modifierSetId,
+                                                                name = it.name,
+                                                                orderId = 0,
+                                                                orderItemId = 0,
+                                                                orderItemTaxes = arrayListOf(),
+                                                                price = it.price,
+                                                                quantity = it.itemQuantity,
+                                                                timestamp = ""
+
+                                                            )
+
+                                                        modifiers.add(modelMod)
+                                                    }
+                                                }
+                                                listItemDine.add(
+                                                    GetOrderDetailsResponse.Data.OrderItem(
+                                                        categoryId = item.categoryId,
+                                                        custom_item_id = item.id,
+                                                        completedInKitchen = false,
+                                                        discountAmount = 0.0,
+                                                        discountId = 0,
+                                                        discountType = "",
+                                                        employeeId = 0,
+                                                        float = 0.0,
+                                                        id = item.orderItemId ?: 0,
+                                                        isPaid = item.isPaid,
+                                                        isFired = item.isFired,
+                                                        isPrinted = false,
+                                                        itemId = item.itemId,
+                                                        note = item.note,
+                                                        orderId = viewModel.cartModel?.orderId ?: 0,
+                                                        orderItemModifiers = modifiers,
+                                                        orderItemTaxes = arrayListOf(),
+                                                        price = item.price,
+                                                        quantity = item.itemQuantity,
+                                                        timestamp = item.timeStamp ?: "",
+                                                        totalPrice = item.price,
+                                                        itemName = item.name,
+                                                        refundedAmount = 0.0,
+                                                        refundedQuantity = 0,
+
+                                                        order_item_variation = null
+
+
+                                                    )
+                                                )
+
+                                            }
+//                                                }
+                                            prefProvider.setValue(
+                                                Constants.DINE_IN_UPDATE_LIST,
+                                                Gson().toJson(listItemDine)
+                                            )
+                                        }
+
+                                    } else {
+                                        binding.txtDineInProceed.setText("Proceed To Fire")
+//                                            cartAdapter.notifyDataSetChanged()
+                                    }
+
+                                    /*Log.e(
+                                        "CheckCalculation",
+                                        "taxlistDynamic: ${Gson().toJson(it[0].taxlistDynamic)}"
+                                    )*/
+
+//                                        var listOfTax: ArrayList<TaxData> = arrayListOf()
+//                                        var noItem = false
+//                                        var listItems: ArrayList<TbCartItem> = arrayListOf()
+//                                        it[0].dineInList?.forEach {
+                                    viewModel.listItems.clear()
+                                    viewModel.listItems.addAll(it)
+                                    dineInCartAdapter.setItemList(viewModel.listItems)
+//                                        }
+
+                                    /*it[0].taxlistDynamic?.let { it1 ->
+                                        if (prefProvider.getValue(
+                                                ORDER_TYPE,
+                                                ""
+                                            ) == DINE_IN && listItems.isEmpty() && prefProvider.getValueboolean(
+                                                Constants.DINE_IN_UPDATE,
+                                                false
+                                            ) == false
+                                        ) {
+                                            listOfTax.addAll(arrayListOf())
+                                            setTaxBifurcationData(arrayListOf())
+
+                                        } else {
+                                            listOfTax.addAll(it1)
+                                            setTaxBifurcationData(it[0].taxlistDynamic as ArrayList<TaxData>)
+                                        }
+
+                                    }*/
+
+                                    binding.txtSubTotal.text =
+                                        MethodUtils.roundOffAmount(viewModel.subTotalPrice)
+                                    binding.txtTax.text = MethodUtils.roundOffAmount(viewModel.totalTax)
+                                    binding.txtServiceCharge.text =
+                                        MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
+                                    binding.txtDiscount.text =
+                                        "-" + MethodUtils.roundOffAmount(viewModel.totalDiscount)
+                                    if (prefProvider.getValue(
+                                            OPTION_TYPE, "CashDiscount"
+                                        ) == "CashDiscount"
+                                    ) {
+                                        binding.txtNoncashAdj.setTextColor(getColor(R.color.colorRed))
+                                        binding.txtNoncashAdj.text =
+                                            "-" + MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
+                                    } else {
+                                        binding.txtNoncashAdj.text =
+                                            MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
+                                    }
+                                    if (viewModel.order_note.isNotEmpty()) {
+                                        binding.relativeOrderNotes?.visibility = View.VISIBLE
+                                        binding.txtOrderNote?.text = viewModel.order_note
+                                    } else {
+                                        binding.relativeOrderNotes?.visibility = View.GONE
+                                    }
+
+                                    binding.relativeLoylatyPoints.visibility = View.GONE
+                                    binding.lblLoyaltyPoints.visibility = View.GONE
+                                    binding.lblLoyaltyBalance.visibility = View.GONE
+
+                                } else {
+//                                        cartlist = arrayListOf()
+                                    if (isFromPayment) {
+                                        if (MethodUtils.isEnableCashDiscount(requireContext()) && prefProvider.getValue(
+                                                ORDER_TYPE,
+                                                TAKEOUT
+                                            ) != Constants.GIFT_CARD
+                                        ) {
+                                            binding.linearCashDiscount.visible()
+                                            if (prefProvider.getValue(
+                                                    OPTION_TYPE,
+                                                    "CashDiscount"
+                                                ) == "CashDiscount"
+                                            ) {
+                                                binding.labelCashSurcharge?.text = "Cash Discount"
+                                            } else {
+                                                showSurchargeWithPercentage()
+                                            }
+                                        } else {
+                                            binding.linearCashDiscount.gone()
+                                        }
+                                        binding.linearButtonView.gone()
+                                        binding.relPreoceedToFire.gone()
+                                    } else {
+                                        binding.linearButtonView.gone()
+                                        binding.relPreoceedToFire.visible()
+                                    }
+                                    dineInCartAdapter.clearList()
+                                    viewModel.clearListTax()
+                                    reSetTaxBifurcationData()
+//                        var data: TbCustomer? = prefProvider.getCustomerData()
+//                        if (data != null) {
+//                            if (viewModel.loyaltyPointCondition(data)) {
+//                                binding.liinearInfoLayout.layoutParams.height =
+//                                    resources.getDimension(R.dimen._70sdp).toInt()
+//                                binding.relativeLoylatyPoints.visibility = View.VISIBLE
+//                                binding.lblLoyaltyPoints.visibility = View.VISIBLE
+//                            } else {
+//                                binding.liinearInfoLayout.layoutParams.height =
+//                                    resources.getDimension(R.dimen._40sdp).toInt()
+//                                binding.relativeLoylatyPoints.visibility = View.GONE
+//                                binding.lblLoyaltyPoints.visibility = View.GONE
+//                            }
+//                        }
+                                    binding.relativeOrderNotes?.visibility = View.GONE
+                                    binding.liinearInfoLayout.layoutParams.height =
+                                        resources.getDimension(R.dimen._50sdp).toInt()
+                                    binding.relativeLoylatyPoints.visibility = View.GONE
+                                    binding.lblLoyaltyPoints.visibility = View.GONE
+                                    binding.lblLoyaltyBalance.visibility = View.GONE
+
+
+                                }
+
+                            })
                         } else {
 
                             runOnUiThread(Runnable {
@@ -1169,8 +1431,8 @@ class CartFragment(
                                         binding.linearButtonView.visible()
                                         binding.relPreoceedToFire.gone()
                                     }
-                                   /* binding.rvCartList.removeAllViews()
-                                    binding.rvCartList.removeAllViewsInLayout()*/
+                                    /* binding.rvCartList.removeAllViews()
+                                     binding.rvCartList.removeAllViewsInLayout()*/
                                 })
 
 
@@ -1254,91 +1516,28 @@ class CartFragment(
                 }
             }
 
-                        saveVisibility()
+            viewModelPayment.showProgressCash.observe(viewLifecycleOwner) { event ->
+                event.getContentIfNotHandled()?.let {
+                    LogUtil.logE("observeShowProgress3", isSaveOrder.toString())
+                    if (it) {
+                        ProgressUtils.showProgressDialog(requireActivity())
+                    } else {
+                        ProgressUtils.dismissProgressDialog()
+                    }
+                }
+            }
+        }
+    }
 
-
-                        if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
-
-                        } else {
-
-                            runOnUiThread(Runnable {
-                                binding.rvCartDineIn.gone()
-                                binding.rvCartList.visible()
-                                checkOrderType()
-                            })
-
-                            if (it.isNotEmpty()) {
-
-
-                                val filterItems = arrayListOf<TbCartItem>()
-                                it.filter {
-                                    !it.isDestroy
-                                }.let {
-
-                                    filterItems.addAll(it.toCollection(arrayListOf()))
-                                }
-
-                                Log.e("mAllWords", "filterItems  ${Gson().toJson(filterItems)}")
-                                runOnUiThread {
-                                    cartItemsAdapter.submitList(filterItems)
-                                    binding.rvCartList.postDelayed({
-                                        binding.rvCartList.smoothScrollToPosition(cartItemsAdapter.currentList.size - 1)
-                                    }, 200)
-                                    binding.rlCartView.visible()
-                                    binding.rvOrderType.gone()
-                                }
-
-                                oldItemSize = it.size
-
-
-                               /* viewModel.destroyedList.clear()
-                                it.filter { item -> item.isDestroy }?.let {
-                                    viewModel.destroyedList.addAll(it)
-                                }*/
-
-                                runOnUiThread(Runnable {
-                                    if (isFromPayment) {
-                                        viewModel.selectedCustomer = prefProvider.getCustomerData()
-
-                                        if (MethodUtils.isEnableCashDiscount(requireContext()) && prefProvider.getValue(
-                                                ORDER_TYPE,
-                                                TAKEOUT
-                                            ) != Constants.GIFT_CARD
-                                        ) {
-
-                                            binding.linearCashDiscount.visible()
-                                            if (prefProvider.getValue(
-                                                    OPTION_TYPE,
-                                                    "CashDiscount"
-                                                ) == "CashDiscount"
-                                            ) {
-                                                binding.labelCashSurcharge?.text = "Cash Discount"
-                                            } else {
-                                                showSurchargeWithPercentage()
-                                            }
-                                        } else {
-                                            binding.linearCashDiscount.gone()
-                                        }
-                                        binding.linearButtonView.gone()
-                                        binding.relPreoceedToFire.gone()
-                                    } else {
-                                        binding.linearButtonView.visible()
-                                        binding.relPreoceedToFire.gone()
-                                    }
-                                   /* binding.rvCartList.removeAllViews()
-                                    binding.rvCartList.removeAllViewsInLayout()*/
-                                })
-
-                                //cartlist = it as ArrayList<CartModel>
-                                runOnUiThread(kotlinx.coroutines.Runnable {
-                                    viewModel.itemCalculationCartModelNew(
-                                        it,
-                                        binding.txtTotal,
-                                        requireContext()
-                                    )
-                                    //viewModel.setCartModel(it)
-                                    /*it[0].taxlistDynamic?.toCollection(arrayListOf())
-                                        ?.let { it1 -> setTaxBifurcationData(it1) }*/
+    private fun updateCartFooter(it: List<TbCartItem>) {
+        if(it.isNotEmpty()){
+            viewModel.itemCalculationCartModelNew(
+                it,
+                binding.txtTotal,
+                requireContext()
+            )
+            viewModel.cartModel?.taxlistDynamic?.toCollection(arrayListOf())
+                ?.let { it1 -> setTaxBifurcationData(it1) }
 
             if (viewModel.order_note.isNotEmpty()) {
                 binding.relativeOrderNotes?.visibility = View.VISIBLE
@@ -1517,92 +1716,6 @@ class CartFragment(
             }
         }
 
-                        }
-
-                        runOnUiThread(Runnable {
-                            if (this@CartFragment::presentation.isInitialized) {
-                                if (!presentation.isShowing)
-                                    presentation.show()
-                                if (it.isNotEmpty()) {
-                                    //presentation.updateCustomerDisplay(it)
-                                } else {
-                                    presentation.onLogOutOrClockOutWithApiService(apiService)
-                                }
-                            }
-
-                            if (prefProvider.getValue(
-                                    ORDER_TYPE,
-                                    TAKEOUT
-                                ) == DINE_IN || prefProvider.getValueboolean(
-                                    Constants.IS_ADD_VALUE_IN_GIFT_CARD,
-                                    false
-                                )
-                            ) {
-                                binding.txtAddCustomer.invisible()
-                            } else {
-                                binding.txtAddCustomer.visible()
-                            }
-
-                            if (isFromPayment || isFromPaymentDinein) {
-                                binding.rvOrderType.gone()
-                                binding.rlCartView.visible()
-                            }
-                        })
-
-                    }
-                }
-            }
-
-        }
-
-
-        if (view != null) {
-            viewModel.showProgress.observe(viewLifecycleOwner) { event ->
-                event.getContentIfNotHandled()?.let {
-                    if (it) {
-                        ProgressUtils.showProgressDialog(requireActivity())
-                    } else {
-                        ProgressUtils.dismissProgressDialog()
-                    }
-                }
-            }
-        }
-        if (view != null) {
-            viewModelPayment.showProgress.observe(viewLifecycleOwner) { event ->
-                event.getContentIfNotHandled()?.let {
-                    LogUtil.logE("observeShowProgress3", isSaveOrder.toString())
-                    if (it) {
-                        if (isSaveOrder) {
-                            ProgressUtils.showProgressDialog(requireActivity())
-                            isSaveOrder = false
-                        } else {
-                            ProgressUtils.showProgressDialog(
-                                if (prefProvider.getValueboolean(IS_PAX_PAYMENT_FAILED, false)) {
-                                    getString(R.string.reattempting_the_payment)
-                                } else {
-                                    "Please wait payment under process"
-                                },
-                                requireActivity()
-                            )
-
-                        }
-                    } else {
-                        ProgressUtils.dismissProgressDialog()
-                    }
-                }
-            }
-
-            viewModelPayment.showProgressCash.observe(viewLifecycleOwner) { event ->
-                event.getContentIfNotHandled()?.let {
-                    LogUtil.logE("observeShowProgress3", isSaveOrder.toString())
-                    if (it) {
-                        ProgressUtils.showProgressDialog(requireActivity())
-                    } else {
-                        ProgressUtils.dismissProgressDialog()
-                    }
-                }
-            }
-        }
     }
 
     private fun showSurchargeWithPercentage() {
@@ -1682,7 +1795,7 @@ class CartFragment(
              val dineinList = dineInCartAdapter.getList()
              dineinList.get(0).selectedPosition = viewModel.dineInHeaderPosition
 
-             viewModel.cartLogic(cartModelsList, item, Constants.UPDATE, false, dineInList = dineinList)
+             viewModel.cartLogic(cartlist, item, Constants.UPDATE, false, dineInList = dineinList)
 
          }*/
     }
@@ -2038,6 +2151,11 @@ class CartFragment(
                             }
                         } else {
                             Log.e(TAG, ".destroyedListRelPR:  ${viewModel.destroyedList.size}")
+                            Log.e("IssueBIS777", "getITems:  ${viewModel.cartModel?.items?.size}")
+                            Log.e(
+                                "IssueBIS777",
+                                "getITemsFromScreen:  ${viewModel.cartModel?.items?.size}"
+                            )
 
                             if (cartModelsList[0] != null) {
 
@@ -2487,6 +2605,12 @@ class CartFragment(
 
                 var itemCount = 0
                 for (i in cartModelsList.indices) {
+                    /*for (j in cartlist[i].dineInList?.indices!!) {
+                        if (cartlist[i].dineInList?.get(j)?.items?.size!! > 0) {
+                            itemCount++
+                            break
+                        }
+                    }*/
                     itemCount = viewModel.currentCartItems.size
                     if (itemCount != 0) {
                         createDineInRequest()

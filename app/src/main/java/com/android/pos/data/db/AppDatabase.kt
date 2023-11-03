@@ -319,6 +319,7 @@ abstract class AppDatabase : RoomDatabase() {
                                 "`isManualSaleItem` INTEGER NOT NULL, " +
                                 "`orderType` TEXT NOT NULL, " +
                                 "`orderTypeName` TEXT NOT NULL, " +
+                                "`guestIndexForDineIn` INTEGER NOT NULL, " +
                                 "`orderTypeId` INTEGER NOT NULL)"
                     )
                 } catch (e: Exception) {
