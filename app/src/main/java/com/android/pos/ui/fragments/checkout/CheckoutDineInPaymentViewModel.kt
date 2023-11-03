@@ -48,6 +48,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 import kotlin.math.ceil
 
 @HiltViewModel
@@ -368,7 +369,7 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
                     if (dineIn != null && dineIn.isNotEmpty()) {
                         val selectedHeader = dineInList.get(0).selectedPosition
 
-                        dineIn.get(selectedHeader).items.forEachIndexed { pos, tbItem ->
+                       /* dineIn.get(selectedHeader).items.forEachIndexed { pos, tbItem ->
                             if (item != null) {
                                 if (tbItem.itemId == item.itemId && checkVariation(
                                         tbItem,
@@ -383,7 +384,7 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
                             }
 
 
-                        }
+                        }*/
 
 
                         if (index != -1) {
@@ -504,7 +505,7 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
                     if (type == Constants.ADD || type == Constants.UPDATE) {
                         var index = -1
 
-                        for (i in list.indices) {
+                        /*for (i in list.indices) {
                             if (item != null) {
                                 if (list[i].itemId == item.itemId && checkVariation(
                                         list[i],
@@ -516,7 +517,7 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
                                     break
                                 }
                             }
-                        }
+                        }*/
 //                        list.forEachIndexed { pos, tbItem ->
 //                            if (item != null) {
 //                                if (tbItem.itemId == item.itemId && checkVariation(
@@ -659,24 +660,12 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
         model.note = item.note
     }
 
-    fun addItemToCart(
-        cartList: List<CartModel>?,
-        item: TbItem?,
+    suspend fun addItemToCart(
+        list: ArrayList<TbCartItem>?,
+        item: TbCartItem?,
         type: String, isManualSales: Boolean,
         dineInList: List<DineInModel> = arrayListOf()
     ) {
-
-        if (cartList != null && cartList.isEmpty()) {
-            // empty cart hoy to new cart create kare
-            val cartModel = item?.let { addCartModel(it, isManualSales) }
-            if (cartModel != null) {
-                addCart(cartModel)
-            }
-
-
-        } else {
-
-            val list = cartList?.get(0)?.items?.toMutableList()
             if (list != null && list.isNotEmpty()) {
 
                 if (type == Constants.ADD || type == Constants.UPDATE) {
@@ -698,7 +687,7 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
 
                     }
                     if (index != -1) {
-                        val model = cartList[0].items?.get(index)
+                        val model = list.get(index)
                         if (model != null) {
                             if (type == "UPDATE") {
                                 if (item != null) {
@@ -753,7 +742,7 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
                         }
                     }
                     if (index != -1) {
-                        val model = cartList[0].items?.get(index)
+                        val model = list.get(index)
                         if (model != null) {
                             //delete from cart
                             if (item?.isEdited == true) {
@@ -768,9 +757,12 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
                     }
                 }
 
-                val cartModel = cartList[0]
-                cartModel.items = list
-                addCart(cartModel)
+//                val cartModel = cartList[0]
+//                cartModel.items = list
+//                addCart(cartModel)
+                list.forEach {
+                    posRepository.addItemToCart(it)
+                }
 
                 if (list.isEmpty()) {
                     // delete cart
@@ -780,7 +772,7 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
 
                 if (type == Constants.DELETE) {
                     deleteCart()
-                } else {
+                } /*else {
 
                     LogUtil.logE(TAG, "AddedListNull")
                     val cartModel = cartList?.get(0)
@@ -790,15 +782,14 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
 
                         addCart(cartModel)
                     }
-                }
+                }*/
 
 
             }
-        }
 
     }
 
-    private fun checkModifier(tbItem: TbItem, item: TbItem): Boolean {
+    private fun checkModifier(tbItem: TbCartItem, item: TbCartItem): Boolean {
 
         if (item.modifiers.isEmpty()) return true
 
@@ -816,7 +807,7 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
         return checkModifier
     }
 
-    private fun checkVariation(tbItem: TbItem, item: TbItem): Boolean {
+    private fun checkVariation(tbItem: TbCartItem, item: TbCartItem): Boolean {
 
         if (item.variationsAttributes.isEmpty()) return true
 

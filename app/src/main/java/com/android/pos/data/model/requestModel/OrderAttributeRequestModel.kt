@@ -352,6 +352,9 @@ class OrderItemsAttribute {
 
     @SerializedName("sort")
     var sort: Int? = null
+
+    @SerializedName("guest_index_for_dine_in")
+    var guestIndexForDineIn : Int? = 0
 }
 
 class OrderItemTaxesAttribute {

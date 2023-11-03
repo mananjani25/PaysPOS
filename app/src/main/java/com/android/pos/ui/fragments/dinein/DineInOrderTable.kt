@@ -39,6 +39,7 @@ import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.ADD
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.DINE_IN_ADAPTER_LIST
 import com.android.pos.data.remote.Constants.DINE_IN_DISCOUNT
@@ -597,7 +598,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
                 var listreemaining: List<TaxData> = emptyList()
-                listWT.forEach { wholetableitems ->
+//                listWT.forEach { wholetableitems ->
+                dashboardViewModel.currentCartItems.forEach { wholetableitems ->
                     wholetableitems.taxes?.forEachIndexed { index, taxData ->
                         var modifierPrice: Double = 0.0
                         var totaltaxtemp: Double = 0.0
@@ -680,6 +682,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
                 viewModelPayment.addCart(cartList!!)
+                CoroutineScope(Dispatchers.IO).launch {
+                    listWT.forEach {
+                        viewModelPayment.addItemToCart(dashboardViewModel.currentCartItems,it, ADD,false)
+                    }
+                }
+
 
                 totalTax = 0.0
                 var subTotal = 0.0
@@ -897,12 +905,14 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         binding.txtHome.setOnClickListener {
             prefProvider.setValue(ORDER_TYPE, "")
             prefProvider.setValue(ORDER_TYPE_NAME, "")
+            dineInTableAdapter.setList(arrayListOf())
             dashboardViewModel.cartModel = null
             findNavController().navigate(R.id.action_dineInOrderTable_to_dashboardCategoryNew)
         }
         binding.txtHomeBottom.setOnClickListener {
             prefProvider.setValue(ORDER_TYPE, "")
             prefProvider.setValue(ORDER_TYPE_NAME, "")
+            dineInTableAdapter.setList(arrayListOf())
             dashboardViewModel.cartModel = null
             findNavController().navigate(R.id.action_dineInOrderTable_to_dashboardCategoryNew)
         }
@@ -973,7 +983,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
             LogUtil.logE(TAG, "listOfMoveItemIds:  ${listOfMoveItemIds.size}")
-            newList[0].listOfItemsMoved.addAll(listOfMoveItemIds.toCollection(arrayListOf()))
+            if (newList.isNotEmpty()) newList[0].listOfItemsMoved.addAll(listOfMoveItemIds.toCollection(arrayListOf()))
 
             //   prefProvider.setValue(Constants.DINE_IN_UPDATE_LIST, Gson().toJson(newList))
 
@@ -2764,28 +2774,30 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         totalSubTotal + totalTaxAmount + totalServiceChargeAmount - orderDiscount
 
                     // Convert Order discount into percentage to divide in guest (To resolve minus guest amount issue)
-                    dineInList[0].orderDiscountPercentage = MethodUtils.roundOffAmountDouble(
-                        MethodUtils.calculatePercentageFromAmount(
-                            totalDiscountWO,
-                            (baseResponse.subTotal + totalDiscountWO)
+                    if (dineInList.isNotEmpty()){
+                        dineInList[0].orderDiscountPercentage = MethodUtils.roundOffAmountDouble(
+                            MethodUtils.calculatePercentageFromAmount(
+                                totalDiscountWO,
+                                (baseResponse.subTotal + totalDiscountWO)
+                            )
                         )
-                    )
-                    dineInList.get(0).guestDividedAmt =
-                        guestShareTotal
-                    dineInList.get(0).totalGuestCount = baseResponse.guestAttributes.size - 1
-                    dineInList.get(0).eligibleGuestsForDivision = eligibleGuestsForDivision
-                    dineInList.get(0).wholeTableSubTotal =
-                        subTotalWT / eligibleGuestsForDivision
-                    dineInList.get(0).wholeTableTax =
-                        totalTaxWT / eligibleGuestsForDivision
-                    dineInList.get(0).wholeTableSurTax =
-                        serviceChargeWT / eligibleGuestsForDivision
-                    dineInList.get(0).wholeTableDiscont =
-                        MethodUtils.roundOffAmountDouble(wholeTableDiscount / eligibleGuestsForDivision)
+                        dineInList.get(0).guestDividedAmt =
+                            guestShareTotal
+                        dineInList.get(0).totalGuestCount = baseResponse.guestAttributes.size - 1
+                        dineInList.get(0).eligibleGuestsForDivision = eligibleGuestsForDivision
+                        dineInList.get(0).wholeTableSubTotal =
+                            subTotalWT / eligibleGuestsForDivision
+                        dineInList.get(0).wholeTableTax =
+                            totalTaxWT / eligibleGuestsForDivision
+                        dineInList.get(0).wholeTableSurTax =
+                            serviceChargeWT / eligibleGuestsForDivision
+                        dineInList.get(0).wholeTableDiscont =
+                            MethodUtils.roundOffAmountDouble(wholeTableDiscount / eligibleGuestsForDivision)
 
-                    dineInList.get(0).orderDiscount = orderDiscount
-                    dineInList.get(0).orderTotalAmount =
-                        MethodUtils.roundOffAmountDouble(baseResponse.subTotal + baseResponse.totalTaxAmount + baseResponse.totalServiceCharges)
+                        dineInList.get(0).orderDiscount = orderDiscount
+                        dineInList.get(0).orderTotalAmount =
+                            MethodUtils.roundOffAmountDouble(baseResponse.subTotal + baseResponse.totalTaxAmount + baseResponse.totalServiceCharges)
+                    }
 
 
 

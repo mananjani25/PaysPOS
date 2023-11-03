@@ -235,7 +235,9 @@ data class CreateOrderResponse(
                 @SerializedName("timestamp")
                 val timestamp: String = "",
                 @SerializedName("total_price")
-                val totalPrice: Double = 0.0
+                val totalPrice: Double = 0.0,
+                @SerializedName("guest_index_for_dine_in")
+                var guestIndexForDineIn : Int? = 0
             ) : Parcelable {
                 @Parcelize
                 data class OrderItemModifiers(
