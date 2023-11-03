@@ -52,7 +52,7 @@ class DineInAdapterCustomerDisplay : RecyclerView.Adapter<DineInAdapterCustomerD
             binding.rvCart.adapter = itemAdapter
             itemAdapter.setCallback(this)
             //swipeListener(binding.rvCart, layoutPosition, binding.root.context)
-            //itemAdapter.addCart(model.items)
+//            itemAdapter.addCart(model.items)
 
             if (list.get(layoutPosition).customer != null) {
                 binding.txtTableName.setText(
@@ -176,7 +176,7 @@ class DineInAdapterCustomerDisplay : RecyclerView.Adapter<DineInAdapterCustomerD
             }
         }
 
-        override fun onItemClickListener(view: View?, data: TbItem, position: Int) {
+        override fun onItemClickListener(view: View?, data: TbCartItem, position: Int) {
             list.get(0).itemPosition = position
             list.get(0).headerPosition = layoutPosition
             listner.onItemSelected(bindingAdapterPosition, position, data)
@@ -230,7 +230,7 @@ class DineInAdapterCustomerDisplay : RecyclerView.Adapter<DineInAdapterCustomerD
 
     interface DineInCallback {
         fun onHeaderSelected(position: Int)
-        fun onItemSelected(headerPosition: Int, position: Int, item: TbItem)
+        fun onItemSelected(headerPosition: Int, position: Int, item: TbCartItem)
         fun onCustomerClicked(position: Int, isRemoved: Boolean)
         fun onItemDelete(position: Int, itemPosition: Int, data: TbItem)
     }

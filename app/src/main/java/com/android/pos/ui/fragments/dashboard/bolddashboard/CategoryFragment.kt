@@ -188,7 +188,7 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
                                         Log.e("ItemAdapter", "itemListSize  ${itemList1.size}")
                                         runOnUiThread(Runnable {
                                             binding.rvItemList.adapter = null
-                                            itemAdapter = ItemAdapterPagDash(
+                                          /*  itemAdapter = ItemAdapterPagDash(
                                                 listner,
                                                 null,
                                                 prefProvider
@@ -198,7 +198,7 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
                                                 GridLayoutManager(
                                                     requireContext(),
                                                     4
-                                                )
+                                                )*/
                                             binding.rvItemList.adapter = itemAdapter
                                         })
                                         lifecycleScope.launch(Dispatchers.IO) {

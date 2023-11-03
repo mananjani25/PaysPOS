@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.CashDiscountModel
+import com.android.pos.data.entities.TbCartItem
 import com.android.pos.data.entities.TbCustomer
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.requestModel.*
@@ -58,8 +59,8 @@ class DineInOrderTableViewModel @Inject constructor(
     private val _fireAllStatus = MutableLiveData<Event<Boolean>>()
     val fireAllStatus: LiveData<Event<Boolean>> = _fireAllStatus
 
-    private val _fireSingleStatus = MutableLiveData<Event<TbItem?>>()
-    val fireSingleStatus: LiveData<Event<TbItem?>> = _fireSingleStatus
+    private val _fireSingleStatus = MutableLiveData<Event<TbCartItem?>>()
+    val fireSingleStatus: LiveData<Event<TbCartItem?>> = _fireSingleStatus
 
     val _Basedata = MutableLiveData<Event<GetOrderDetailsResponse.Data?>>()
     val Basedata: LiveData<Event<GetOrderDetailsResponse.Data?>> = _Basedata
@@ -189,7 +190,7 @@ class DineInOrderTableViewModel @Inject constructor(
         status: Boolean,
         itemIds: String,
         isAllFired: Boolean,
-        item: TbItem? = null
+        item: TbCartItem? = null
     ) {
         Log.d("###17MAR23", "fireItemToKitchen: Called - Start")
         _showProgress.value = Event(true)

@@ -68,6 +68,7 @@ class TbCartItem : Parcelable {
     var isDeleted: Boolean = false
     var headerPositionDinein = 0
     var itemOriginalModifiersList: List<Modifier>? = arrayListOf()
+    var guestIndexForDineIn : Int? = null
     var employeeID: Int = 0
     var isManualSaleItem: Boolean = false
     var orderType: String = ""

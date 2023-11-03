@@ -21,6 +21,15 @@ interface CartDao {
     @Query("select * from TbCartItem where orderType = :orderType AND isManualSaleItem = 0 AND employeeID=:employee_Id ORDER BY timeStamp")
     fun getCartItems(orderType: String, employee_Id: Int): Flow<List<TbCartItem>>
 
+    @Query("delete from TbCartItem where itemId = :itemId AND guestIndexForDineIn = :guestIndexForDineIn")
+    suspend fun removeCartItem(itemId:Int,guestIndexForDineIn: Int)
+
+    @Query("select Max(dineInUniqueId) FROM TbCartItem")
+    suspend fun getLatestPrimaryKey(): Int
+
+    @Query("select * from TbCartItem ORDER BY timeStamp")
+    fun getCartItems(): Flow<List<TbCartItem>>
+
     @Transaction
     @Query("DELETE FROM TbCartItem")
     suspend fun deleteCartItems()
@@ -33,6 +42,9 @@ interface CartDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addCartItemsList(cartItems: List<TbCartItem>)
+
+    @Query("select * from TbCartItem WHERE guestIndexForDineIn = :guestIndexForDineIn ORDER BY timeStamp")
+    fun getDineInCartItems(guestIndexForDineIn:Int): List<TbCartItem>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
      fun addSuspended(cartModel: CartModel): Long?

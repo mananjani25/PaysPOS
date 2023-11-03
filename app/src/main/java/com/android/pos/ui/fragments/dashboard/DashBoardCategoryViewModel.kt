@@ -93,6 +93,7 @@ import com.squareup.okhttp.Response
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.forEach
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.InputStream
@@ -120,6 +121,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     private var syncMarkeup: Boolean = false
     private var isGuestPay: Boolean = false
     var dineInHeaderPosition: Int = 0
+    var listItems: ArrayList<TbCartItem> = arrayListOf()
     var dineInSelectedItemHeaderPos: Int = 0
     var selectedItemPositionDine: Int = 0
     val TAG = "DashBoardCateViewModel"
@@ -347,6 +349,10 @@ class DashBoardCategoryViewModel @Inject constructor(
         return posRepository.getAllCartItems(orderType,employee_Id)
     }
 
+    fun getDineInCartItems(guestIndexForDineIn: Int): List<TbCartItem> {
+        return posRepository.getDineInCartItems(guestIndexForDineIn)
+    }
+
     fun manualSale(orderType: String, employee_Id: Int): LiveData<List<CartModel>> {
 
         return posRepository.getCartList(orderType, employee_Id)
@@ -411,6 +417,16 @@ class DashBoardCategoryViewModel @Inject constructor(
         CoroutineScope(Dispatchers.IO).launch {
             posRepository.deleteItemFromCartItems(tbCartItem)
         }
+    }
+
+    private fun removeItemFromCartItems(itemId: Int , guestIndexForDineIn: Int) {
+        CoroutineScope(Dispatchers.IO).launch {
+            posRepository.removeItemFromCart(itemId , guestIndexForDineIn )
+        }
+    }
+
+    suspend fun getLatestPrimaryKey(): Int {
+        return posRepository.getLatestPrimaryKey()
     }
 
     fun addOrderNote(note: String) {
@@ -761,9 +777,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                 }
             }
             // commented addCart to fix BIS-840
-            /*if (cartModel != null) {
-                addCart(cartModel!!)
-            }*/
+//            if (cartModel != null) {
+//                addCart(cartModel!!)
+//            }
 
 
         } else {
@@ -843,13 +859,14 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                                 )
 
                                                                 return@forEach
-                                                            } /*else if (list[i].variationsAttributes.isEmpty() == true) {
-                                                        item.id += 1
-                                                        isBreak = true
-                                                        Log.d(TAG, "newCartLogicModifier: isBreak")
-
-                                                        return@forEach
-                                                    }*/
+                                                            }
+//                                                            else if (list[i].variationsAttributes.isEmpty() == true) {
+//                                                        item.id += 1
+//                                                        isBreak = true
+//                                                        Log.d(TAG, "newCartLogicModifier: isBreak")
+//
+//                                                        return@forEach
+//                                                    }
 //
 
                                                         } else if (mod.id == modifier.id && mod.modifier_quantity != modifier.modifier_quantity) {
@@ -935,14 +952,15 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                     item.variationsAttributes
                                                 item.modifiers.forEach {
                                                     it.itemQuantity =
-                                                        item.itemQuantity * it.modifier_quantity/*model.modifiers.forEach { tbmodfier ->
-                                                        if (it.id == tbmodfier.id) {
-                                                            it.modifier_quantity =
-                                                                it.itemQuantity / item.itemQuantity
-                                                            it.itemQuantity =
-                                                                it.itemQuantity + tbmodfier.itemQuantity
-                                                        }
-                                                    }*/
+                                                        item.itemQuantity * it.modifier_quantity
+//                                                model.modifiers.forEach { tbmodfier ->
+//                                                        if (it.id == tbmodfier.id) {
+//                                                            it.modifier_quantity =
+//                                                                it.itemQuantity / item.itemQuantity
+//                                                            it.itemQuantity =
+//                                                                it.itemQuantity + tbmodfier.itemQuantity
+//                                                        }
+//                                                    }
 
                                                 }
 
@@ -1130,21 +1148,22 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         item.modifiers.forEach {
                                             it.itemQuantity =
                                                 (it.modifier_quantity * item.itemQuantity)
-                                            it.isChecked = item.isChecked/* model.modifiers.forEach { tbmodifier ->
-                                                 if (it.id == tbmodifier.id) {
-                                                     if (it.modifier_quantity != tbmodifier.modifier_quantity) {
-                                                         tbmodifier.modifier_quantity =
-                                                             it.modifier_quantity
-                                                     } else {
-                                                         it.modifier_quantity =
-                                                             it.itemQuantity / model.itemQuantity
-                                                     }
-
-                                                     it.itemQuantity =
-                                                         (it.modifier_quantity * item.itemQuantity)
-                                                     it.isChecked = item.isChecked
-                                                 }
-                                             }*/
+                                            it.isChecked = item.isChecked
+//                                             model.modifiers.forEach { tbmodifier ->
+//                                                 if (it.id == tbmodifier.id) {
+//                                                     if (it.modifier_quantity != tbmodifier.modifier_quantity) {
+//                                                         tbmodifier.modifier_quantity =
+//                                                             it.modifier_quantity
+//                                                     } else {
+//                                                         it.modifier_quantity =
+//                                                             it.itemQuantity / model.itemQuantity
+//                                                     }
+//
+//                                                     it.itemQuantity =
+//                                                         (it.modifier_quantity * item.itemQuantity)
+//                                                     it.isChecked = item.isChecked
+//                                                 }
+//                                             }
                                             item.singleItemPrice += it.price * it.modifier_quantity
                                         }
                                         Log.d(TAG, "newCartLogicModifier: " + item.singleItemPrice)
@@ -1367,13 +1386,14 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                             )
 
                                                             return@forEach
-                                                        } /*else if (list[i].variationsAttributes.isEmpty() == true) {
-                                                        item.id += 1
-                                                        isBreak = true
-                                                        Log.d(TAG, "newCartLogicModifier: isBreak")
-
-                                                        return@forEach
-                                                    }*/
+                                                        }
+//                                                    else if (list[i].variationsAttributes.isEmpty() == true) {
+//                                                        item.id += 1
+//                                                        isBreak = true
+//                                                        Log.d(TAG, "newCartLogicModifier: isBreak")
+//
+//                                                        return@forEach
+//                                                    }
 //
 
                                                     } else if (mod.id == modifier.id && mod.modifier_quantity != modifier.modifier_quantity) {
@@ -1485,14 +1505,15 @@ class DashBoardCategoryViewModel @Inject constructor(
                                             model.variationsAttributes = item.variationsAttributes
                                             item.modifiers.forEach {
                                                 it.itemQuantity =
-                                                    (it.modifier_quantity * item.itemQuantity)/*  model.modifiers.forEach { tbmodfier ->
-                                                      if (it.id == tbmodfier.id) {
-                                                          it.modifier_quantity =
-                                                              it.itemQuantity / item.itemQuantity
-                                                          it.itemQuantity =
-                                                              it.itemQuantity + tbmodfier.itemQuantity
-                                                      }
-                                                  }*/
+                                                    (it.modifier_quantity * item.itemQuantity)
+//                                              model.modifiers.forEach { tbmodfier ->
+//                                                      if (it.id == tbmodfier.id) {
+//                                                          it.modifier_quantity =
+//                                                              it.itemQuantity / item.itemQuantity
+//                                                          it.itemQuantity =
+//                                                              it.itemQuantity + tbmodfier.itemQuantity
+//                                                      }
+//                                                  }
 
                                             }
 
@@ -1540,16 +1561,16 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         Log.e(TAG, "moditemQuantity  ${it.itemQuantity}")
                                         Log.e(TAG, "itemQuantity  ${item.itemQuantity}")
 
-                                        /*  if (type == ADD){
-                                              it.modifier_quantity = it.itemQuantity / item.itemQuantity
-
-                                                  it.itemQuantity = item.itemQuantity
-
-                                          }
-                                          else{*/
+//                                          if (type == ADD){
+//                                              it.modifier_quantity = it.itemQuantity / item.itemQuantity
+//
+//                                                  it.itemQuantity = item.itemQuantity
+//
+//                                          }
+//                                          else{
                                         it.itemQuantity = it.modifier_quantity * item.itemQuantity
 
-                                        /*}*/
+//                                        }
 
                                         item.singleItemPrice += it.price * it.itemQuantity
                                     }
@@ -1588,8 +1609,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                             }
                         }
-                    }
-                    else if (type == UPDATE) {
+                    } else if (type == UPDATE) {
                         var index = -1
 
                         var idsF = list.filter { it.itemId == item?.itemId }
@@ -1623,16 +1643,17 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         Log.e(
                                             "CheckUpdate",
                                             "newCartLogicModifier: position of selected Item " + item.id
-                                        )/*var indexJ = -1
-
-                                        for (j in 0 until listTmp.size) {
-                                            if (listTmp[j].id == item.id
-                                            ) {
-                                                indexJ = j
-                                                break
-                                            }
-
-                                        }*/
+                                        )
+//                                        var indexJ = -1
+//
+//                                        for (j in 0 until listTmp.size) {
+//                                            if (listTmp[j].id == item.id
+//                                            ) {
+//                                                indexJ = j
+//                                                break
+//                                            }
+//
+//                                        }
                                         var ttempllist = ArrayList(listTmp).apply {
                                             if (position != -1) {
                                                 Log.e("CheckUpdate", "GETIndexJ  ${position}")
@@ -1663,16 +1684,17 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                     Log.e(
                                                         "CheckUpdate",
                                                         "newCartLogicModifier: position of selected Item " + item.id
-                                                    )/*var indexJ = -1
-
-                                                    for (j in 0 until listTmp.size) {
-                                                        if (listTmp[j].id == item.id
-                                                        ) {
-                                                            indexJ = j
-                                                            break
-                                                        }
-
-                                                    }*/
+                                                    )
+//                                                    var indexJ = -1
+//
+//                                                    for (j in 0 until listTmp.size) {
+//                                                        if (listTmp[j].id == item.id
+//                                                        ) {
+//                                                            indexJ = j
+//                                                            break
+//                                                        }
+//
+//                                                    }
                                                     var ttempllist = ArrayList(listTmp).apply {
                                                         if (position != -1) {
                                                             Log.e(
@@ -1729,6 +1751,20 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     item.singleItemPrice = item.price
                                     item.modifiers.forEach {
                                         it.itemQuantity = (it.modifier_quantity * item.itemQuantity)
+//                                        model.modifiers.forEach { tbmodifier ->
+//                                            if (it.id == tbmodifier.id) {
+//                                                if (it.modifier_quantity != tbmodifier.modifier_quantity) {
+//                                                    tbmodifier.modifier_quantity =
+//                                                        it.modifier_quantity
+//                                                } else {
+//                                                    it.modifier_quantity =
+//                                                        it.itemQuantity / model.itemQuantity
+//                                                }
+//
+//                                                it.itemQuantity =
+//                                                    (it.modifier_quantity * item.itemQuantity)
+//                                            }
+//                                        }
                                         item.singleItemPrice += it.price * it.modifier_quantity
                                     }
                                     Log.d(TAG, "newCartLogicModifier: " + item.singleItemPrice)
@@ -1743,8 +1779,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                             }
                         }
-                    }
-                    else if (type == DELETE) {
+                    } else if (type == DELETE) {
 
                         var index = -1
                         Log.e(TAG, "CheckDeleteItem ${Gson().toJson(item)}")
@@ -1886,7 +1921,6 @@ class DashBoardCategoryViewModel @Inject constructor(
         )  // reset flag in case of adding or updating item
         Log.e("DashViewModModel", "checkCartSize: ${cartList?.size}")
         var cartModel = item?.let { addCartModelNew(it, isManualSales) }
-
         if (cartList != null && cartList.isEmpty()) {
             // empty cart hoy to new cart create kare
 
@@ -2197,8 +2231,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                         }
                     }
-                }
-                else if (type == UPDATE) {
+                } else if (type == UPDATE) {
                     var index = -1
 
                     var idsF = list.filter { it.itemId == item?.itemId }
@@ -2352,8 +2385,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                         }
                     }
-                }
-                else if (type == DELETE) {
+                } else if (type == DELETE) {
 
                     var index = -1
                     Log.e(TAG, "CheckDeleteItem ${Gson().toJson(item)}")
@@ -2489,10 +2521,1301 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
     }
 
+    fun updateDineInCart(
+        cartList: List<TbCartItem>?,
+        item: TbCartItem?,
+        type: String,
+        isManualSales: Boolean,
+        dineInList: List<DineInModel> = arrayListOf(),
+        isFromDineInScreen: Boolean = false,
+        position: Int = -1,
+    ) {
+        var addNewEntry = false
+        Log.d(TAG, "updateDineInCart: type: " + type)
+        prefProvider.setValueboolean(
+            IS_LAST_ITEM_DELETE, false
+        )  // reset flag in case of adding or updating item
+        Log.e("DashViewModModel", "updateDineInCart checkCartSize: ${cartList?.size}")
+        var cartModel = addCartModelNew(item, isManualSales)
+        if (cartList != null && cartList.isEmpty()) {
+            // empty cart hoy to new cart create kare
+
+            Log.e("DashViewModModel", "checkItem:  ${Gson().toJson(item?.modifiers)}")
+
+            if (item != null) {
+                if (type == UPDATE) {
+                    cartList.forEach { items ->
+                        cartModel =
+                            cartModel?.let { taxBifurcationCalculationNew(items, it, type, false) }
+                    }
+                } else {
+                    cartModel = cartModel?.let {
+                        taxBifurcationCalculationNew(item,
+                            it, type, false)
+                    }
+                }
+                Log.d("DashViewModModel", "addItemToCartItems 2397: ")
+                item.guestIndexForDineIn = this.dineInHeaderPosition
+                currentCartItems.add(item)
+                addItemToCartItems(item)
+            } else if (dineInList.isNotEmpty()) {
+                dineInList.forEach { dineInModel ->
+                    cartList.forEach { itemData ->
+                        cartModel =
+                            cartModel?.let {
+                                taxBifurcationCalculationNew(itemData,
+                                    it, type, false)
+                            }
+                    }
+
+                }
+                item?.let {
+                    Log.d("DashViewModModel", "addItemToCartItems 2407: ")
+                    item.guestIndexForDineIn = this.dineInHeaderPosition
+                    currentCartItems.add(it)
+                    addItemToCartItems(it)
+                }
+            }
+
+        } else {
+            Log.d("DashViewModModel", "else called: ")
+            var isDineInItem1000 = false
+            if (cartModel == null){
+                cartModel = this.cartModel
+            }
+            order_note = cartModel?.note.toString()
+            var list = cartList!!.toMutableList()
+
+
+            cartModel?.dineInList = dineInList
+            var dinein = dineInList
+            Log.d("DashViewModModel", "dinein list size: " + dinein.size)
+            if (dinein.isNotEmpty() && dinein != null) {
+//                val selectedHeader = dineInList.get(0).selectedPosition
+                if (list.isNotEmpty()) {
+                    if (type == ADD) {
+                        var index = -1
+                        for (i in list.indices) {
+                            if (item != null) {
+                                if (item.isManualSales) {
+                                    Log.d("DashViewModModel", "manual sales: " + item.isManualSales)
+
+                                    if (list[i].manualSaleId == item.manualSaleId) {
+                                        Log.d(TAG, "cartLogic: " + i)
+                                        index = i
+                                        break
+                                    }
+
+                                } else {
+                                    Log.e("AddedInElse", "DashViewModModel GotMod")
+
+                                    if (list[i].itemId == item.itemId && list[i].itemQuantity > 1000) {
+                                        isDineInItem1000 = true
+                                        _itemQuantityCheck.value = Event(true)
+                                        break
+                                    } else {
+                                        if (list[i].itemId == item.itemId && list[i].guestIndexForDineIn == dineInHeaderPosition) {
+                                            if (list[i].itemId == item.itemId && checkVariationNew(
+                                                    list[i], item
+                                                ) && checkModifierNew(list[i], item)
+                                            ) {
+
+//                                            if (list[i].guestIndexForDineIn == item.guestIndexForDineIn) {
+                                                Log.d(TAG, "DashViewModModel cartLogic: " + i)
+
+                                                var listTmp = combineItemNew(
+                                                    list.toCollection(arrayListOf()), item, i
+                                                )
+                                                list.clear()
+                                                Log.e(
+                                                    TAG,
+                                                    "DashViewModModel newCartLogicModifier: position of selected Item " + item.id
+                                                )
+                                                list.addAll(listTmp.toMutableList())
+
+                                                Log.e(
+                                                    TAG,
+                                                    "DashViewModModel getMergeCombineItem  ${list.size}"
+                                                )
+
+                                                index = -2
+                                                break
+//                                            }
+
+                                            } else if (list[i].itemId == item.itemId && (!checkVariationNew(
+                                                    list[i], item
+                                                ) && !checkModifierNew(list[i], item))
+                                            ) {
+                                                addNewEntry = true
+                                                Log.d(TAG, "DashViewModModel else if called: ")
+                                                var isBreak: Boolean = false
+
+
+                                                list[i].modifiers.forEach { modifier ->
+                                                    item.modifiers.forEach { mod ->
+                                                        if (mod.id == modifier.id && mod.modifier_quantity == modifier.modifier_quantity) {
+                                                            if (list!![i].variationsAttributes.isNotEmpty() && list!![i].variationsAttributes[0].id == item.variationsAttributes[0].id) {
+                                                                item.id += 1
+                                                                isBreak = true
+                                                                Log.e(
+                                                                    TAG,
+                                                                    "DashViewModModel newCartLogicModifier: if isBreak"
+                                                                )
+
+                                                                return@forEach
+                                                            } /*else if (list[i].variationsAttributes.isEmpty() == true) {
+                                                        item.id += 1
+                                                        isBreak = true
+                                                        Log.d(TAG, "newCartLogicModifier: isBreak")
+
+                                                        return@forEach
+                                                    }*/
+//
+
+                                                        } else if (mod.id == modifier.id && mod.modifier_quantity != modifier.modifier_quantity) {
+                                                            item.id += 1
+                                                            isBreak = false
+                                                            Log.e(
+                                                                TAG,
+                                                                "DashViewModModel newCartLogicModifier: else if isBreak"
+                                                            )
+
+                                                            return@forEach
+                                                        }
+
+                                                    }
+
+
+
+                                                    if (isBreak) {
+                                                        return@forEach
+                                                    }
+                                                }
+
+
+//
+                                                if (list[i].variationsAttributes.isNotEmpty() == true) {
+                                                    if (list[i].variationsAttributes.get(0).id != item.variationsAttributes.get(
+                                                            0
+                                                        ).id
+                                                    ) {
+                                                        item.id += 1
+
+                                                    }
+
+
+                                                }
+
+                                                if (isBreak) {
+                                                    index = i
+                                                    break
+                                                }
+
+
+                                            } else {
+                                                Log.d(
+                                                    TAG,
+                                                    "DashViewModModel variation else called : "
+                                                )
+
+                                            }
+                                        } else {
+//                                            item.itemId = item.itemId+1
+//                                            Log.d("DashViewModModel", "addItemToCartItems 2551: "+item.itemQuantity)
+//                                            item.guestIndexForDineIn = this.dineInHeaderPosition
+//                                            addItemToCartItems(item)
+//                                            addCart(cartModel!!)
+                                        }
+                                    }
+
+                                }
+
+                            }
+                        }
+
+                        if (!isDineInItem1000) {
+                            list.forEach {
+                                if (it.id == item?.id && it.itemId == item.itemId) {
+                                    item.id += 1
+                                }
+                            }
+
+                            if (isFromDineInScreen) {
+                                list.forEach { it1 ->
+                                    var listd = list!!.filter { it.itemId == it1.itemId }
+                                    if (listd.size > 1) {
+                                        it1.customItemID =
+                                            kotlin.random.Random.nextInt(10, 10000)
+
+                                    }
+
+
+                                }
+
+
+                            }
+
+                            if (index != -1 && index != -2) {
+                                val model = list[index]
+                                Log.d(TAG, "DashViewModModel 2570 cartLogic: " + index)
+                                if (model != null) {
+                                    if (index != -1) {
+                                        if (item != null) {
+                                            model.name = item.name
+                                            model.itemQuantity =
+                                                model.itemQuantity + item.itemQuantity
+                                            model.price = item.price
+                                            model.variationsAttributes =
+                                                item.variationsAttributes
+                                            item.modifiers.forEach {
+                                                it.itemQuantity =
+                                                    item.itemQuantity * it.modifier_quantity/*model.modifiers.forEach { tbmodfier ->
+                                                        if (it.id == tbmodfier.id) {
+                                                            it.modifier_quantity =
+                                                                it.itemQuantity / item.itemQuantity
+                                                            it.itemQuantity =
+                                                                it.itemQuantity + tbmodfier.itemQuantity
+                                                        }
+                                                    }*/
+
+                                            }
+
+
+                                            model.modifiers = item.modifiers
+                                            if (item.isEdited) {
+                                                model.isEdited = item.isEdited
+                                            }
+
+                                            if (prefProvider.getValueboolean(
+                                                    IS_UPDATE_ORDER_FROM_ACTIVE_ORDER, false
+                                                )
+                                            ) {
+                                                model.isEdited = true
+                                            }
+                                            itemDiscountApplyNew(model, item)
+                                        }
+
+
+                                        list[index] = model
+                                    } else {
+                                        if (item != null) {
+                                            model.itemQuantity = item.itemQuantity
+                                            if (item.isEdited) {
+                                                model.isEdited = item.isEdited
+                                            }
+                                            if (prefProvider.getValueboolean(
+                                                    IS_UPDATE_ORDER_FROM_ACTIVE_ORDER, false
+                                                )
+                                            ) {
+                                                model.isEdited = true
+                                            }
+                                            itemDiscountApplyNew(model, item)
+                                            model.isDestroy = false
+                                        }
+                                        list[index] = model
+                                    }
+
+                                }
+                            } else if (index != -2) {
+                                Log.d(TAG, "DashViewModModel 2630 cartLogic: " + index)
+                                if (item != null) {
+                                    item.singleItemPrice = item.price
+                                    item.modifiers.forEach { it ->
+                                        it.modifier_quantity = it.itemQuantity
+                                        item.singleItemPrice += it.price * it.itemQuantity
+                                    }
+                                    item.isDestroy = false
+                                    if (prefProvider.getValueboolean(
+                                            IS_UPDATE_ORDER_FROM_ACTIVE_ORDER, false
+                                        )
+                                    ) {
+                                        item.isEdited = true
+                                    } else {
+                                        item.isEdited = item.isEdited
+                                    }
+
+                                    Log.e("checkISItemEdit", "isEdited  ${item.isEdited}")
+                                    list.add(item)
+                                }
+                            } else if (prefProvider.getValue(
+                                    ORDER_TYPE, TAKEOUT
+                                ) == DINE_IN && prefProvider.getValueboolean(
+                                    DINE_IN_UPDATE, false
+                                ) == true
+                            ) {
+                                Log.e(
+                                    TAG,
+                                    "DashViewModModel checkInsideSc  ${item?.isDestroy}  updateOrder ${isOrderUpdate}"
+                                )
+
+                                var flagD: Boolean = false
+                                list.forEach {
+                                    if (item?.itemId == it.itemId && it.isDestroy == true) {
+
+                                        flagD = true
+
+                                    }
+
+                                }
+
+                                if (flagD) {
+                                    item?.let { list.add(it) }
+                                }
+
+                            }
+                            Log.e(
+                                "GEtDineInData",
+                                "DashViewModModel getList  ${Gson().toJson(list)}"
+                            )
+                            Log.e(
+                                "GEtDineInData",
+                                "DashViewModModel destroyTerer  ${item?.isDestroy}"
+                            )
+                            Log.e(
+                                TAG, "DashViewModModel checkDinein  ${
+                                    prefProvider.getValueboolean(
+                                        DINE_IN_UPDATE, false
+                                    )
+                                }"
+                            )
+
+                            if (item != null) {
+//                                Log.d("DashViewModModel", "addItemToCartItems 2687: ")
+//                                item.guestIndexForDineIn = this.dineInHeaderPosition
+//                                addItemToCartItems(item)
+                            }
+
+                        }
+
+                    } else if (type == UPDATE) {
+                        var index = -1
+//                        val selectedHeader = dineInList.get(0).selectedPosition
+
+
+                        for (i in list.indices) {
+                            if (item != null) {
+                                if (item.isManualSales) {
+
+
+                                    if (list[i].manualSaleId == item.manualSaleId) {
+                                        Log.d(TAG, "cartLogic: " + i)
+                                        index = i
+                                        break
+                                    }
+
+                                } else {
+                                    if (list[i].id == item.id && list[i].itemId == item.itemId && list[i].timeStamp == item.timeStamp) {
+                                        Log.d(TAG, "cartLogic: " + i)
+                                        index = i
+                                        break
+                                    } else if (list[i].itemId == item.itemId && (item.modifiers.isNotEmpty() || item.variationsAttributes.isNotEmpty()) && checkVariationNew(
+                                            list[i], item
+                                        ) && checkModifierNew(list[i], item)
+                                    ) {
+                                        var listTmp = combineItemNew(
+                                            list.toCollection(arrayListOf()), item, i
+                                        )
+                                        list.clear()
+                                        Log.e(
+                                            TAG,
+                                            "newCartLogicModifier: position of selected Item " + item.id
+                                        )
+                                        var indexJ = -1
+
+                                        for (j in 0 until listTmp.size) {
+                                            if (listTmp[j].id == item.id) {
+                                                indexJ = j
+                                                break
+                                            }
+
+                                        }
+                                        var ttempllist = ArrayList(listTmp).apply {
+                                            if (indexJ != -1) {
+                                                Log.e(TAG, "GETIndexJ  ${indexJ}")
+                                                removeAt(indexJ)
+                                            }
+                                        }
+                                        list.addAll(ttempllist.toMutableList())
+                                        index = -2
+                                        break
+                                    }
+
+                                }
+
+                            }
+                        }
+                        if (index == -2) {
+                            Log.e(TAG, "Itis NotMinus  ")
+
+                        } else if (index != -1) {
+                            val model = list.get(index)
+                            Log.d(TAG, "cartLogic: " + index)
+                            if (model != null) {
+                                if (item != null) {
+                                    model.name = item.name
+                                    model.price = item.price
+                                    Log.e(
+                                        "CheckDineinBug",
+                                        "variationsAttributesSize  ${item.variationsAttributes.size}"
+                                    )
+                                    model.variationsAttributes = item.variationsAttributes
+
+                                    if (item.isEdited) {
+                                        model.isEdited = item.isEdited
+//                                            model.guestItemId = item.guestItemId
+                                    }
+                                    if (prefProvider.getValueboolean(
+                                            DINE_IN_UPDATE, false
+                                        )
+                                    ) {
+                                        model.isEdited = true
+                                    }
+                                    item.singleItemPrice = item.price
+                                    item.modifiers.forEach {
+                                        it.itemQuantity =
+                                            (it.modifier_quantity * item.itemQuantity)
+                                        it.isChecked = item.isChecked/* model.modifiers.forEach { tbmodifier ->
+                                                 if (it.id == tbmodifier.id) {
+                                                     if (it.modifier_quantity != tbmodifier.modifier_quantity) {
+                                                         tbmodifier.modifier_quantity =
+                                                             it.modifier_quantity
+                                                     } else {
+                                                         it.modifier_quantity =
+                                                             it.itemQuantity / model.itemQuantity
+                                                     }
+
+                                                     it.itemQuantity =
+                                                         (it.modifier_quantity * item.itemQuantity)
+                                                     it.isChecked = item.isChecked
+                                                 }
+                                             }*/
+                                        item.singleItemPrice += it.price * it.modifier_quantity
+                                    }
+                                    Log.d(TAG, "newCartLogicModifier: " + item.singleItemPrice)
+                                    model.itemQuantity = item.itemQuantity
+                                    model.modifiers = item.modifiers
+                                    model.isDestroy = false
+                                    item.orderItemId?.let {
+                                        model.orderItemId = it
+                                    }
+                                    model.taxes = item.taxes
+                                    model.modifier_set_ids = item.modifier_set_ids
+                                    model.itemId = item.itemId
+                                    model.guestItemId = item.guestItemId
+                                    model.timeStamp = item.timeStamp
+                                    itemDiscountApplyNew(model, item)
+
+                                }
+                                Log.d(TAG, "cartLogic:itemname " + model.name)
+                                list.set(index, model)
+//                                    list[index] = model
+
+                            }
+                        }
+                    } else if (type == DELETE) {
+                        var list: ArrayList<TbCartItem> = arrayListOf()
+                        if (item != null) {
+                            list = cartList as ArrayList<TbCartItem>
+                        } else {
+                            list = cartList as ArrayList<TbCartItem>
+                        }
+                        var index = -1
+                        Log.e(TAG, "checkReOrder  ${cartModel?.reorder}")
+
+                        for (i in list.indices) {
+                            if (item != null) {
+                                if (!item.isManualSales) {
+                                    if (cartModel?.reorder == false && list[i].itemId == item.itemId && item.modifiers.isEmpty() && checkVariationNew(
+                                            list[i], item
+                                        ) && list[i].id == item.id
+                                    ) {
+                                        index = i
+                                        Log.d(TAG, "newCartLogicModifier normal item: ${i}")
+                                        break
+                                    } else if (list[i].itemId == item.itemId && cartModel?.reorder == false && list[i].id == item.id && checkVariationNew(
+                                            list[i], item
+                                        ) && checkModifierNew(list[i], item)
+                                    ) {
+                                        Log.e(TAG, "CheckedBefore")
+                                        index = i
+                                        break
+                                    } else if (cartModel?.reorder == true) {
+                                        if (list[i].orderItemId == item.orderItemId) {
+                                            index = i
+                                            Log.e(TAG, "indexReorder:  ${index}")
+                                            break
+                                        }
+
+                                    } else if (cartModel?.reorder == false && list[i].itemId == item.itemId && (!checkVariationNew(
+                                            list[i], item
+                                        ) || !checkModifierNew(list[i], item))
+                                    ) {
+                                        if (list[i].id == item.id) {
+                                            Log.e(TAG, "CheckedBefore   ${i}")
+                                            index = i
+                                            break
+                                        }
+                                    }
+
+                                } else {
+                                    if (list[i].manualSaleId == item.manualSaleId) {
+                                        index = i
+                                        break
+                                    } else if (cartModel?.reorder == true) {
+                                        if (list[i].orderItemId == item.orderItemId) {
+                                            index = i
+                                            Log.e(TAG, "indexReorder23:  ${index}")
+                                            break
+                                        }
+
+                                    }
+                                }
+                            }
+
+                        }
+
+                        if (index != -1) {
+                            val model = list.get(index)
+                            if (model != null) {
+                                //delete from cart
+                                if (item?.isEdited == true) {
+                                    model.isEdited = item.isEdited
+                                    model.isDestroy = true
+                                } else {
+                                    list.remove(model)
+                                    /*currentCartItems.remove(model)
+                                    model.guestIndexForDineIn?.let {
+                                        removeItemFromCartItems(model.itemId ,
+                                            it
+                                        )
+                                    }*/
+                                }
+                            }
+                            currentCartItems.remove(item)
+                            item?.guestIndexForDineIn?.let {
+                                removeItemFromCartItems(item.itemId ,
+                                    it
+                                )
+                            }
+                        } else {
+                            //list.remove(item)
+
+                        }
+                        if (item != null) {
+//                            Log.d("DashViewModModel", "addItemToCartItems 2896: ")
+//                            item.guestIndexForDineIn = this.dineInHeaderPosition
+//                            currentCartItems.add(item)
+//                            addItemToCartItems(item)
+                        }
+                        Log.e(
+                            "ModNewLogic",
+                            "dineInList:   ${Gson().toJson(cartModel?.dineInList)}"
+                        )
+                        //cartModel.dineInList = dinein
+
+
+                    }
+                }
+                if (type == UPDATE) {
+                    for (i in 0 until dineInList.size) {
+                        list.forEach {
+                            cartModel = taxBifurcationCalculationNew(
+                                it, cartModel!!, type, false
+                            )
+                        }
+                    }
+
+
+                    Log.e(
+                        TAG, "taxlistDynamicData:  ${Gson().toJson(cartModel?.taxlistDynamic)}"
+                    )
+                } else {
+                    if (item != null) {
+                        cartModel =
+                            cartModel?.let { taxBifurcationCalculationNew(item, it, type, false) }
+                    }
+                }
+                if (item != null) {
+                    val newUpdatedItemList = list.filter { it.itemId == item?.itemId && it.guestIndexForDineIn == dineInHeaderPosition }
+                    var newUpdatedItem:TbCartItem = if(newUpdatedItemList.isNotEmpty()) {
+                        // IMPORTANT -- remove this.. this is for log purpose only
+                        newUpdatedItemList.forEach {
+                            it.taxes = arrayListOf()
+                            Log.d(TAG, "newUpdatedItemList updateDineInCart: "+Gson().toJson(it))
+                        }
+
+                        newUpdatedItemList[0]
+                    }else{
+                        list.filter { it.itemId == item.itemId }[0]
+                    }
+
+                    if (type != DELETE) {
+                        Log.d("DashViewModModel", "addItemToCartItems 2926: ")
+                        Log.d(
+                            "DashViewModModel",
+                            "newUpdatedItem:: guestIndexForDineIn: " + dineInHeaderPosition
+                        )
+                        // IMPORTANT -- remove this.. this is for log purpose only
+                        newUpdatedItem.taxes = arrayListOf()
+                        Log.d("DashViewModModel", "newUpdatedItem:: " + Gson().toJson(newUpdatedItem))
+                        newUpdatedItem.guestIndexForDineIn = this.dineInHeaderPosition
+                        if (addNewEntry) {
+                            viewModelScope.launch {
+                                newUpdatedItem.dineInUniqueId =
+                                    this@DashBoardCategoryViewModel.getLatestPrimaryKey() + 1
+                            }
+                            currentCartItems.add(newUpdatedItem)
+                            addItemToCartItems(newUpdatedItem)
+                        } else {
+                            currentCartItems.add(newUpdatedItem)
+                            addItemToCartItems(newUpdatedItem)
+                        }
+                        cartModel?.let { addCart(it) }
+                    }
+                }else{
+                    for (i in 0 until list.size){
+                        var newUpdatedItem = list[i]
+                        if (type != DELETE) {
+                            Log.d("DashViewModModel", "addItemToCartItems 2926: ")
+                            Log.d(
+                                "DashViewModModel",
+                                "newUpdatedItem:: guestIndexForDineIn: " + dineInHeaderPosition
+                            )
+                            // IMPORTANT -- remove this.. this is for log purpose only
+                            newUpdatedItem.taxes = arrayListOf()
+                            Log.d("DashViewModModel", "newUpdatedItem:: " + Gson().toJson(newUpdatedItem))
+                            newUpdatedItem.guestIndexForDineIn = this.dineInHeaderPosition
+                            if (addNewEntry) {
+                                viewModelScope.launch {
+                                    newUpdatedItem.dineInUniqueId =
+                                        this@DashBoardCategoryViewModel.getLatestPrimaryKey() + 1
+                                }
+                                currentCartItems.add(newUpdatedItem)
+                                addItemToCartItems(newUpdatedItem)
+                            } else {
+                                currentCartItems.add(newUpdatedItem)
+                                addItemToCartItems(newUpdatedItem)
+                            }
+                            cartModel?.let { addCart(it) }
+                        }
+                    }
+                }
+            } else {
+
+                if (type == DELETE) {
+                    deleteCart()
+                } else {
+
+                    cartModel =
+                        cartModel?.let { taxBifurcationCalculationNew(item!!, it, type, false) }
+                    if (item?.modifiers?.isNotEmpty() == true) {
+                        item.modifiers.forEach { mod ->
+                            mod.modifier_quantity = mod.itemQuantity
+                        }
+                    }
+                    Log.d("DashViewModModel", "addItemToCartItems 2941: ")
+                    item?.guestIndexForDineIn = this.dineInHeaderPosition
+                    item?.let { currentCartItems.add(it) }
+                    item?.let { addItemToCartItems(it) }
+
+                    cartModel?.let { addCart(it) }
+                }
+
+
+            }
+
+        }
+    }
+
+
+    fun cartLogic(
+        cartList: List<CartModel>?,
+        item: TbItem?,
+        type: String,
+        isManualSales: Boolean,
+        dineInList: List<DineInModel> = arrayListOf()
+    ) {
+
+        if (cartList != null && cartList.isEmpty()) {
+            // empty cart hoy to new cart create kare
+            var cartModel = item?.let { addCartModel(it, isManualSales) }
+            if (item != null) {
+                if (type == UPDATE) {
+                    cartModel?.items?.forEach { items ->
+                        cartModel = taxBifurcationCalculation(items, cartModel!!, type, false)
+                    }
+                } else {
+                    cartModel = taxBifurcationCalculation(item, cartModel!!, type, false)
+                }
+            } else if (dineInList.isNotEmpty()) {
+                dineInList.forEach { dineInModel ->
+                    dineInModel.items.forEach { itemData ->
+                        cartModel = taxBifurcationCalculation(itemData, cartModel!!, type, false)
+                    }
+
+                }
+            }
+            if (cartModel != null) {
+                addCart(cartModel!!)
+            }
+
+
+        } else {
+            if (cartList?.get(0)?.orderType == DINE_IN) {
+                var cartModel = cartList[0]
+                order_note = cartList[0].note
+                cartModel.dineInList = dineInList
+                if (type == ADD || type == UPDATE) {
+                    var index = -1
+                    val dineIn = dineInList
+                    if (dineIn != null && dineIn.isNotEmpty()) {
+                        val selectedHeader = dineInList.get(0).selectedPosition
+
+                        dineIn.get(selectedHeader).items.forEachIndexed { pos, tbItem ->
+                            if (item != null) {
+                                item.isDestroy = false
+                                if (tbItem.itemId == item.itemId && checkVariation(
+                                        tbItem, item
+                                    ) && checkModifier(tbItem, item)
+                                ) {
+
+                                    index = pos
+                                    return@forEachIndexed
+
+                                }
+                            }
+
+
+                        }
+
+
+
+
+                        if (index != -1) {
+                            val model =
+                                cartList[0].dineInList?.get(selectedHeader)?.items?.get(index)
+                            if (model != null) {
+                                if (type == "UPDATE") {
+                                    if (item != null) {
+                                        model.note = item.note
+                                        model.itemQuantity = item.itemQuantity
+                                        itemDiscountApply(model, item)
+                                    }
+                                    model.isDestroy = false
+                                    if (prefProvider.getValueboolean(
+                                            Constants.DINE_IN_UPDATE, false
+                                        )
+                                    ) {
+                                        model.isEdited = true
+                                    }
+                                    model.modifiers.forEach {
+                                        item?.modifiers?.forEach { itemmodif ->
+                                            if (itemmodif.id == it.id) {
+                                                it.itemQuantity = itemmodif.itemQuantity ?: 1
+                                            }
+                                        }
+                                    }
+
+                                    dineIn.get(selectedHeader).items[index] = model
+                                    dineIn.get(selectedHeader).floorPlanTable =
+                                        dineInList.get(0).floorPlanTable
+
+                                    cartModel.dineInList = dineIn
+                                    if (item != null) {
+                                        if (type == UPDATE) {
+                                            dineInList.forEach { dineInModel ->
+                                                dineInModel.items.forEach { itemData ->
+                                                    cartModel = taxBifurcationCalculation(
+                                                        itemData, cartModel, type, false
+                                                    )
+                                                }
+
+                                            }
+                                        } else {
+                                            cartModel = taxBifurcationCalculation(
+                                                item, cartModel, type, false
+                                            )
+                                        }
+                                    } else if (dineInList.isNotEmpty()) {
+                                        dineInList.forEach { dineInModel ->
+                                            dineInModel.items.forEach { itemData ->
+                                                cartModel = taxBifurcationCalculation(
+                                                    itemData, cartModel, type, false
+                                                )
+                                            }
+
+                                        }
+                                    }
+                                    addCart(cartModel)
+                                } else {
+                                    if (index != -1) {
+                                        if (item != null) {
+                                            if (model.isDestroy) {
+                                                model.itemQuantity = item.itemQuantity
+                                                model.isDestroy = false
+                                            } else {
+                                                model.itemQuantity =
+                                                    item.itemQuantity + model.itemQuantity
+                                            }
+                                            item.modifiers.forEach {
+                                                model.modifiers.forEach { modelModifier ->
+                                                    if (modelModifier.id == it.id) {
+                                                        it.itemQuantity =
+                                                            it.modifier_quantity * model.itemQuantity
+                                                    }
+                                                }
+
+                                            }
+                                            model.modifiers = item.modifiers
+//                                            itemDiscountApply(model, item)
+                                        }
+
+                                        if (prefProvider.getValueboolean(
+                                                Constants.DINE_IN_UPDATE, false
+                                            )
+                                        ) {
+                                            model.isEdited = true
+                                        }
+
+                                        dineIn.get(selectedHeader).items[index] = model
+
+                                        dineIn.get(0).floorPlanTable =
+                                            dineInList.get(0).floorPlanTable
+                                        cartModel.dineInList = dineIn
+                                        if (item != null) {
+                                            if (type == UPDATE) {
+                                                dineInList.forEach { dineInModel ->
+                                                    dineInModel.items.forEach { itemData ->
+                                                        cartModel = taxBifurcationCalculation(
+                                                            itemData, cartModel, type, false
+                                                        )
+                                                    }
+
+                                                }
+                                            } else {
+                                                cartModel = taxBifurcationCalculation(
+                                                    item!!, cartModel, type, false
+                                                )
+                                            }
+                                        } else if (dineInList.isNotEmpty()) {
+                                            dineInList.forEach { dineInModel ->
+                                                dineInModel.items.forEach { itemData ->
+                                                    cartModel = taxBifurcationCalculation(
+                                                        itemData, cartModel, type, false
+                                                    )
+                                                }
+
+                                            }
+                                        }
+                                        addCart(cartModel)
+                                    } else {
+                                        cartModel.dineInList = dineInList
+                                        if (item != null) {
+                                            if (type == UPDATE) {
+                                                dineInList.forEach { dineInModel ->
+                                                    dineInModel.items.forEach { itemData ->
+                                                        cartModel = taxBifurcationCalculation(
+                                                            itemData, cartModel, type, false
+                                                        )
+                                                    }
+
+                                                }
+                                            } else {
+                                                cartModel = taxBifurcationCalculation(
+                                                    item!!, cartModel, type, false
+                                                )
+                                            }
+
+                                        } else if (dineInList.isNotEmpty()) {
+                                            dineInList.forEach { dineInModel ->
+                                                dineInModel.items.forEach { itemData ->
+                                                    cartModel = taxBifurcationCalculation(
+                                                        itemData, cartModel, type, false
+                                                    )
+                                                }
+
+                                            }
+                                        }
+                                        addCart(cartModel)
+
+                                    }
+                                }
+
+
+                            }
+                        } else {
+
+                            if (item != null) {
+                                item.timeStamp = randomOfflineId()
+                                if (prefProvider.getValueboolean(
+                                        Constants.DINE_IN_UPDATE, false
+                                    )
+                                ) {
+                                    item.isEdited = true
+                                }
+                                item.isDestroy = false
+
+                                dineInList.get(dineInList.get(0).selectedPosition).items.add(
+                                    item
+                                )
+                            }
+                            cartModel.dineInList = dineInList
+                            if (item != null) {
+                                if (type == UPDATE) {
+                                    dineInList.forEach { dineInModel ->
+                                        dineInModel.items.forEach { itemData ->
+                                            cartModel = taxBifurcationCalculation(
+                                                itemData, cartModel, type, false
+                                            )
+                                        }
+
+                                    }
+                                } else {
+                                    cartModel = taxBifurcationCalculation(
+                                        item!!, cartModel, type, false
+                                    )
+                                }
+                            } else if (dineInList.isNotEmpty()) {
+                                dineInList.forEach { dineInModel ->
+                                    dineInModel.items.forEach { itemData ->
+                                        cartModel = taxBifurcationCalculation(
+                                            itemData,
+                                            cartModel,
+                                            type,
+                                            true,
+                                        )
+                                    }
+
+                                }
+                            }
+                            addCart(cartModel)
+                        }
+
+
+                    }
+
+
+                } else if (type == DELETE) {
+
+                    var dine = dineInList.toMutableList()
+
+
+                    if (item?.isEdited == true) {
+                        dineInSelectedItemHeaderPos?.let {
+                            dine.get(it).items.get(selectedItemPositionDine).isDestroy = true
+                            dine.get(it).items.get(selectedItemPositionDine).isEdited = true
+                            removeItemDineInList.add(
+                                dine.get(it).items.get(
+                                    selectedItemPositionDine
+                                )
+                            )
+                            dineInSelectedItemHeaderPos?.let {
+                                dine.get(it).items.remove(
+                                    dine.get(dineInSelectedItemHeaderPos).items.get(
+                                        selectedItemPositionDine
+                                    )
+                                )
+                            }
+                        }
+                    } else {
+                        dineInSelectedItemHeaderPos?.let {
+                            dine.get(it).items.remove(
+                                dine.get(dineInSelectedItemHeaderPos).items.get(
+                                    selectedItemPositionDine
+                                )
+                            )
+                        }
+                    }
+
+                    cartModel.dineInList = dine
+                    cartModel = taxBifurcationCalculation(item!!, cartModel, type, false)
+                    addCart(cartModel)
+
+
+                    /*dineInList.toMutableList().remove(
+                        dineInList.get(dineInList.get(0).selectedPosition).items.get(
+                            dineInList.get(0).selectedPosition
+                        )
+                    )*/
+                } else if (type == DINE_IN_LIST_EDIT) {
+                    cartModel.orderTypeName = DINE_IN
+                    cartModel.orderType = DINE_IN
+                    cartModel.dineInList = dineInList
+                    cartModel = taxBifurcationCalculation(item!!, cartModel, type, false)
+                    addCart(cartModel)
+
+                }
+
+
+            } else {
+                // already cart ma hoy to add/update/delete kare flag wise
+                val list = cartList?.get(0)?.items?.toMutableList()
+                if (list != null && list.isNotEmpty()) {
+
+                    if (type == ADD || type == UPDATE) {
+
+
+                        var index = -1
+
+                        for (i in list.indices) {
+                            if (item != null) {
+                                if (item.isManualSales) {
+
+
+                                    if (list[i].manualSaleId == item.manualSaleId) {
+                                        Log.d(TAG, "cartLogic: " + i)
+                                        index = i
+                                        break
+                                    }
+
+                                } else {
+                                    if (list[i].itemId == item.itemId && checkVariation(
+                                            list[i], item
+                                        ) && checkModifier(list[i], item)
+                                    ) {
+                                        Log.d(TAG, "cartLogic: " + i)
+                                        index = i
+                                        break
+                                    }
+                                }
+
+                            }
+                        }
+
+                        if (index != -1) {
+                            val model = cartList[0].items?.get(index)
+                            Log.d(TAG, "cartLogic: " + index)
+                            if (model != null) {
+                                if (type == "UPDATE") {
+                                    if (item != null) {
+                                        model.itemQuantity = item.itemQuantity
+                                        if (item.isEdited) {
+                                            model.isEdited = item.isEdited
+                                        }
+                                        if (prefProvider.getValueboolean(
+                                                IS_UPDATE_ORDER_FROM_ACTIVE_ORDER, false
+                                            )
+                                        ) {
+                                            model.isEdited = true
+                                        }
+                                        item.modifiers.forEach {
+                                            it.itemQuantity =
+                                                (it.modifier_quantity * item.itemQuantity)/*model.modifiers.forEach { tbmodifier ->
+                                                if (it.id == tbmodifier.id) {
+                                                    tbmodifier.itemQuantity =
+                                                        it.itemQuantity
+                                                }
+                                            }*/
+                                        }
+                                        model.modifiers = item.modifiers
+                                        model.isDestroy = false
+                                        itemDiscountApply(model, item)
+
+                                    }
+                                    list[index] = model
+                                } else {
+                                    if (index != -1) {
+                                        if (item != null) {
+                                            if (model.isDestroy) {
+                                                model.itemQuantity = item.itemQuantity
+                                                model.isDestroy = false
+                                            } else {
+                                                model.itemQuantity =
+                                                    item.itemQuantity + model.itemQuantity
+                                            }
+                                            item.modifiers.forEach {
+                                                it.itemQuantity =
+                                                    (it.modifier_quantity * item.itemQuantity)/* model.modifiers.forEach { tbmodfier ->
+                                                     if (it.id == tbmodfier.id) {
+                                                         it.itemQuantity + model.itemQuantity
+                                                     }
+                                                 }*/
+
+                                            }
+
+//                                            for (i in model.modifiers) {
+//                                                for (j in item.modifiers) {
+//                                                    if (i.id == j.id) {
+//                                                        j.itemQuantity = j.itemQuantity
+//                                                        j.orderModifierId = i.orderModifierId
+//                                                    }
+//                                                }
+//                                            }
+
+                                            model.modifiers = item.modifiers
+                                            if (item.isEdited) {
+                                                model.isEdited = item.isEdited
+                                            }
+
+                                            if (prefProvider.getValueboolean(
+                                                    IS_UPDATE_ORDER_FROM_ACTIVE_ORDER, false
+                                                )
+                                            ) {
+                                                model.isEdited = true
+                                            }
+                                            //   itemDiscountApply(model, item)
+                                        }
+
+                                        list[index] = model
+                                    } else {
+                                        if (item != null) {
+                                            model.itemQuantity = item.itemQuantity
+                                            if (item.isEdited) {
+                                                model.isEdited = item.isEdited
+                                            }
+                                            if (prefProvider.getValueboolean(
+                                                    IS_UPDATE_ORDER_FROM_ACTIVE_ORDER, false
+                                                )
+                                            ) {
+                                                model.isEdited = true
+                                            }
+                                            itemDiscountApply(model, item)
+                                            model.isDestroy = false
+                                        }
+                                        list[index] = model
+                                    }
+                                }
+
+                            }
+                        } else {
+                            Log.d(TAG, "cartLogic: " + index)
+                            if (item != null) {
+                                item.isDestroy = false
+                                if (prefProvider.getValueboolean(
+                                        IS_UPDATE_ORDER_FROM_ACTIVE_ORDER, false
+                                    )
+                                ) {
+                                    item.isEdited = true
+                                }
+                                list.add(item)
+                            }
+                        }
+                    } else if (type == DELETE) {
+
+                        var index = -1
+                        Log.e(TAG, "CheckDeleteItem ${Gson().toJson(item)}")
+                        Log.e(TAG, "getListedItems  ${Gson().toJson(list[0])}")
+                        Log.e(TAG, "checkReOrder  ${cartModel?.reorder}")
+
+                        for (i in list.indices) {
+                            if (item != null) {
+                                if (!item.isManualSales) {
+
+                                    if (cartModel?.reorder == false && list[i].itemId == item.itemId && checkVariation(
+                                            list[i], item
+                                        ) && checkModifier(list[i], item)
+                                    ) {
+                                        Log.e(TAG, "CheckedBefore")
+                                        index = i
+                                        break
+                                    } else if (cartModel?.reorder == true) {
+                                        if (list[i].orderItemId == item.orderItemId) {
+                                            index = i
+                                            Log.e(TAG, "indexReorder:  ${index}")
+                                            break
+                                        }
+
+                                    }
+
+                                } else {
+                                    if (list[i].manualSaleId == item.manualSaleId) {
+                                        index = i
+                                        break
+                                    } else if (cartModel?.reorder == true) {
+                                        if (list[i].orderItemId == item.orderItemId) {
+                                            index = i
+                                            Log.e(TAG, "indexReorder23:  ${index}")
+                                            break
+                                        }
+
+                                    }
+                                }
+                            }
+
+                        }
+
+//                        list.forEachIndexed { pos, tbItem ->
+//                            if (item != null) {
+//                                if (!item.isManualSales) {
+//                                    if (tbItem.itemId == item.itemId && checkVariationDelete(
+//                                            tbItem,
+//                                            item
+//                                        ) && checkModifierDelete(tbItem, item)
+//                                    ) {
+//                                        index = pos
+//                                        return@forEachIndexed
+//                                    }
+//                                } else {
+//                                    if (tbItem.manualSaleId == item.manualSaleId) {
+//                                        index = pos
+//                                        return@forEachIndexed
+//                                    }
+//                                }
+//
+//                            }
+//                        }
+
+
+                        if (index != -1) {
+                            val model = cartList[0].items?.get(index)
+                            if (model != null) {
+                                //delete from cart
+                                if (item?.isEdited == true) {
+                                    model.isEdited = item.isEdited
+                                    model.isDestroy = true
+                                } else {
+                                    list.remove(model)
+                                }
+                            }
+                        } else {
+                            //list.remove(item)
+                        }
+                    }
+
+                    var cartModel = cartList[0]
+                    if (type == UPDATE) {
+                        cartModel.items?.forEach { itemData ->
+                            cartModel = taxBifurcationCalculation(
+                                itemData, cartModel, type, false
+                            )
+                        }
+                    } else {
+                        cartModel = taxBifurcationCalculation(item!!, cartModel, type, false)
+                    }
+                    cartModel.items = list
+                    addCart(cartModel)
+                    if (list.isEmpty()) {
+                        // delete carts
+                        deleteCart()
+                    }
+                } else {
+
+                    if (type == DELETE) {
+                        deleteCart()
+                    } else {
+
+                        var cartModel = cartList?.get(0)
+                        cartModel = taxBifurcationCalculation(item!!, cartModel!!, type, false)
+                        if (item != null) cartModel?.items = listOf(item)
+                        if (cartModel != null) {
+                            addCart(cartModel!!)
+                        }
+                    }
+
+
+                }
+            }
+
+
+        }
+    }
+
     private fun combineItem(list: ArrayList<TbItem>, item: TbItem, index: Int): List<TbItem> {
         Log.e(TAG, "newItemitemQuantity  ${Gson().toJson(item)}")
         Log.e(TAG, "newItemitemQuantity  ${item.itemQuantity}")
         Log.e(TAG, "newItemitemQuantityOld  ${list[index].itemQuantity}")
+//        if(list[index].itemQuantity < MAX_ITEM_QUANTITY){
+//        }
         if ((list[index].itemQuantity + item.itemQuantity) <= MAX_ITEM_QUANTITY) {
             list[index].itemQuantity += item.itemQuantity
             list[index].modifiers.forEach { listmod ->
@@ -2541,6 +3864,31 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     }
 
+    private fun checkSameModifier(tbItem: TbItem, item: TbItem): Boolean {
+
+        var isSame = false
+
+        if (tbItem.modifiers.size != item.modifiers.size) {
+
+            run breaking@{
+                tbItem.modifiers.forEach { tbItemM ->
+
+                    item.modifiers.forEach { itemM ->
+
+                        isSame = tbItemM.id == itemM.id
+                    }
+                    if (isSame) return@breaking
+                }
+            }
+
+        } else {
+            isSame = true
+        }
+
+
+        return isSame
+    }
+
     private fun itemDiscountApply(model: TbItem, item: TbItem) {
         model.discountPrice = item.discountPrice
         model.discountType = item.discountType
@@ -2556,6 +3904,144 @@ class DashBoardCategoryViewModel @Inject constructor(
         model.isManualSales = item.isManualSales
         model.note = item.note
     }
+
+    fun addItemToCart(
+        cartList: List<CartModel>?,
+        item: TbItem?,
+        type: String,
+        isManualSales: Boolean,
+        dineInList: List<DineInModel> = arrayListOf()
+    ) {
+
+        if (cartList != null && cartList.isEmpty()) {
+            // empty cart hoy to new cart create kare
+            val cartModel = item?.let { addCartModel(it, isManualSales) }
+            if (cartModel != null) {
+                addCart(cartModel)
+            }
+
+
+        } else {
+
+            val list = cartList?.get(0)?.items?.toMutableList()
+            if (list != null && list.isNotEmpty()) {
+
+                if (type == ADD || type == UPDATE) {
+                    var index = -1
+
+                    list.forEachIndexed { pos, tbItem ->
+                        if (item != null) {
+                            if (tbItem.itemId == item.itemId && checkVariation(
+                                    tbItem, item
+                                ) && checkModifier(tbItem, item)
+                            ) {
+                                //   if (checkModifier(tbItem, item)) {
+                                index = pos
+                                return@forEachIndexed
+                                //  }
+                            }
+                        }
+
+                    }
+                    if (index != -1) {
+                        val model = cartList[0].items?.get(index)
+                        if (model != null) {
+                            if (type == "UPDATE") {
+                                if (item != null) {
+                                    model.itemQuantity = item.itemQuantity
+                                    if (item.isEdited) {
+                                        model.isEdited = item.isEdited
+                                    }
+                                }
+                                list[index] = model
+                            } else {
+                                if (index != -1) {
+                                    if (item != null) {
+                                        model.itemQuantity = item.itemQuantity + model.itemQuantity
+                                        item.modifiers.forEach {
+                                            it.itemQuantity =
+                                                model.itemQuantity * it.modifier_quantity
+                                        }
+                                        model.modifiers = item.modifiers
+                                        if (item.isEdited) {
+                                            model.isEdited = item.isEdited
+                                        }
+                                    }
+
+                                    list[index] = model
+                                } else {
+                                    if (item != null) {
+                                        model.itemQuantity = item.itemQuantity
+                                        if (item.isEdited) {
+                                            model.isEdited = item.isEdited
+                                        }
+                                    }
+                                    list[index] = model
+                                }
+                            }
+
+                        }
+                    } else {
+                        if (item != null) {
+                            list.add(item)
+                        }
+                    }
+                } else if (type == DELETE) {
+
+                    var index = -1
+
+                    list.forEachIndexed { pos, tbItem ->
+                        if (item != null) {
+                            if (tbItem.itemId == item.itemId) {
+                                index = pos
+                                return@forEachIndexed
+                            }
+                        }
+                    }
+                    if (index != -1) {
+                        val model = cartList[0].items?.get(index)
+                        if (model != null) {
+                            //delete from cart
+                            if (item?.isEdited == true) {
+                                model.isEdited = item.isEdited
+                                model.isDestroy = true
+                            } else {
+                                list.remove(item)
+                            }
+                        }
+                    } else {
+                        //list.remove(item)
+                    }
+                }
+
+                val cartModel = cartList[0]
+                cartModel.items = list
+                addCart(cartModel)
+
+                if (list.isEmpty()) {
+                    // delete cart
+                    deleteCart()
+                }
+            } else {
+
+                if (type == DELETE) {
+                    deleteCart()
+                } else {
+
+                    val cartModel = cartList?.get(0)
+                    cartModel?.items = listOf(item!!)
+                    if (cartModel != null) {
+
+                        addCart(cartModel)
+                    }
+                }
+
+
+            }
+        }
+
+    }
+
 
     fun checkModifierNewLogic(tbItem: TbItem, item: TbItem): Boolean {
         var isSame = false
@@ -2772,7 +4258,11 @@ class DashBoardCategoryViewModel @Inject constructor(
         isSame =
             if (listOfDataMod.containsAll(listOfDataModSelecteItem) && listOfDataMod.size == listOfDataModSelecteItem.size) {
                 if (tbItem.variationsAttributes[0].id == item.variationsAttributes[0].id) {
-                    (tbItem.variationsAttributes[0].price == item.variationsAttributes[0].price)
+                    if ((tbItem.variationsAttributes[0].price == item.variationsAttributes[0].price)) {
+                        tbItem.guestIndexForDineIn == item.guestIndexForDineIn
+                    } else {
+                        false
+                    }
                 } else {
                     false
                 }
@@ -2781,7 +4271,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             }
 
 
-        Log.e(TAG, "CheckVariationAdd ${isSame}")
+        Log.e(TAG, "DashViewModModel CheckVariationAdd ${isSame}")
         return isSame
     }
 
@@ -2804,7 +4294,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
     }
 
-    fun addCartModelNew(item: TbCartItem, isManualSales: Boolean): CartModel {
+    fun addCartModelNew(item: TbCartItem?, isManualSales: Boolean): CartModel? {
         return CartModel().apply {
             terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
             employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1)
@@ -2815,7 +4305,9 @@ class DashBoardCategoryViewModel @Inject constructor(
             isMaual = isManualSales
             serviceCharge = serviceChargesList
             customer = assignCustomer
-            item.itemQuantity = item.itemQuantity
+            if (item != null) {
+                item.itemQuantity = item.itemQuantity
+            }
 
         }
     }
@@ -3374,6 +4866,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     fun itemCalculationCartModelNew(
+        cartModel: CartModel?,
         cartItems: List<TbCartItem>,
         txtTotalAmount: AppCompatTextView,
         context: Context
@@ -4268,11 +5761,16 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
     }
 
+    fun addCustomer(customer: TbCustomer?) {
+        assignCustomer = customer
+    }
+
     fun getMinMax(_itemId: Int, modifierSetId: Int?): LiveData<ItemModifierSets?>? {
 
         return posRepository.getMinMax(_itemId, modifierSetId)
 
     }
+
 
     fun logoutAPI() {
         // networkConnectionInterceptor.setHostBaseUrl(prefProvider.getValue(BASE_URL_NEW,""))
@@ -4369,6 +5867,12 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
     }
 
+    fun clearTableAll() {
+        CoroutineScope(Dispatchers.IO).launch {
+            posRepository.clearTableManually()
+        }
+    }
+
 
     fun clearTable() {
 
@@ -4390,7 +5894,8 @@ class DashBoardCategoryViewModel @Inject constructor(
         isPaid: Boolean,
         totalDiscount: Double,
         tipAmount: Double,
-        floorPlanDetails: DineInOrderDetailAttributes
+        floorPlanDetails: DineInOrderDetailAttributes,
+        cartItems:ArrayList<TbCartItem>
     ): OrderRequestModel {
 
         val orderAttributeRequestModel = OrderAttributeRequestModel()
@@ -4453,14 +5958,19 @@ class DashBoardCategoryViewModel @Inject constructor(
         orderAttributeRequestModel.orderServiceChargesAttributes =
             dineInServiceChargeAppliedAttribute(cartModel)
 
-        for (i in 0 until cartModel.dineInList?.size!!) {
+        /*for (i in 0 until cartModel.dineInList?.size!!) {
             cartModel.dineInList?.get(i)?.items?.forEach { item ->
                 if (item.timeStamp == null || item.timeStamp!!.lowercase() == "null".lowercase()) {
                     item.timeStamp = randomOfflineId().toString()
                 }
             }
+        }*/
+        cartItems.forEach { item ->
+            if (item.timeStamp == null || item.timeStamp!!.lowercase() == "null".lowercase()) {
+                item.timeStamp = randomOfflineId().toString()
+            }
         }
-        orderAttributeRequestModel.orderItemsAttributes = dineInOrderItemAttributed(cartModel)
+        orderAttributeRequestModel.orderItemsAttributes = dineInOrderItemAttributed(cartModel,cartItems)
 
         orderAttributeRequestModel.guestsAttributes = getGuestsAttributes(cartModel)
 
@@ -4589,22 +6099,24 @@ class DashBoardCategoryViewModel @Inject constructor(
     private fun getGuestsAttributes(cartModel: CartModel): List<GuestsAttributes> {
         val orderItemsAttributeList: ArrayList<GuestsAttributes> = arrayListOf()
         Log.e(TAG, "dineInListData:   ${Gson().toJson(cartModel.dineInList)}")
-        cartModel.dineInList?.forEach { it ->
+        cartModel.dineInList?.forEachIndexed { index,it ->
+            CoroutineScope(Dispatchers.IO).launch {
+                var cartItems = getDineInCartItems(index) as ArrayList<TbCartItem>
             val model = GuestsAttributes()
             model.name = it.title.toString()
             model.Destroy = it.isDestroy
             if (it.id != 0) {
                 model.id = it.id
             }
-            if (it.items.isNotEmpty()) {
+            if (cartItems?.isNotEmpty() == true) {
                 var listItems: ArrayList<GuestItemsAttributes> = arrayListOf()
                 var subTotal = 0.0
                 var totalTax = 0.0
                 var totalTips = 0.0
                 var totalDiscount = 0.0
                 var totalAmount = 0.0
-                it.items.sortedBy { it.dineInSort }
-                it.items.forEach { tb ->
+                cartItems.sortedBy { it.dineInSort }
+                cartItems.forEach { tb ->
 
 
                     listItems.add(GuestItemsAttributes(id = tb.guestItemId,
@@ -4683,18 +6195,18 @@ class DashBoardCategoryViewModel @Inject constructor(
             }
             orderItemsAttributeList.add(model)
 
-
+        }
         }
 
         return orderItemsAttributeList
 
     }
 
-    private fun dineInOrderItemAttributed(cartModel: CartModel): List<OrderItemsAttribute> {
+    private fun dineInOrderItemAttributed(cartModel: CartModel , cartItems:ArrayList<TbCartItem>): List<OrderItemsAttribute> {
         var orderItemsAttributeList: ArrayList<OrderItemsAttribute> = arrayListOf()
 
-        for (i in 0 until cartModel.dineInList?.size!!) {
-            cartModel.dineInList?.get(i)?.items?.forEach { item ->
+//        for (i in 0 until cartModel.dineInList?.size!!) {
+        cartItems.forEach { item ->
 
                 val orderItemsAttribute = OrderItemsAttribute()
 
@@ -4755,13 +6267,13 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 orderItemsAttributeList.add(orderItemsAttribute)
             }
-        }
+//        }
 
 
-        cartModel.items?.forEach {
-            cartModel?.dineInList?.forEach { m ->
-                m.items.forEach { oi ->
-                    if (oi.name.equals(it.name, true) == false && it.isDestroy) {
+//        cartModel.items?.forEach {
+//            cartModel?.dineInList?.forEach { m ->
+                cartItems.forEach { it ->
+                    if (/*oi.name.equals(it.name, true) == false &&*/ it.isDestroy) {
                         var model = OrderItemsAttribute()
                         model.category_id = it.categoryId
                         model.itemId = it.itemId
@@ -4772,9 +6284,9 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                     }
                 }
-            }
+//            }
 
-        }
+//        }
 
 
 
@@ -4793,7 +6305,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     private fun orderItemTaxesAttributes(
-        items: TbItem, orderId: Int? = null
+        items: TbCartItem, orderId: Int? = null
     ): List<OrderItemTaxesAttribute> {
 
 
@@ -4868,7 +6380,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     fun orderItemModifierAttributes(
-        item: TbItem, terminalId: Int
+        item: TbCartItem, terminalId: Int
     ): List<OrderItemModifierAttribute> {
 
         val orderItemModifierAttributeList: ArrayList<OrderItemModifierAttribute> = arrayListOf()
@@ -4899,7 +6411,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     private fun orderModifierTaxesAttributes(
-        items: TbItem, modifier: Modifier, terminalId: Int
+        items: TbCartItem, modifier: Modifier, terminalId: Int
     ): List<OrderModifierTaxesAttribute> {
 
         val orderItemTaxesAttributeList: ArrayList<OrderModifierTaxesAttribute> = arrayListOf()
@@ -4969,7 +6481,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     private fun orderItemVariationAttributes(
-        item: TbItem
+        item: TbCartItem
     ): OrderItemVariationAttribute? {
 
         if (item.variationsAttributes.isNotEmpty()) {
@@ -5152,7 +6664,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             totalDiscount = MethodUtils.roundOffAmountDouble(ttotalDiscount)
             totalServiceCharges = totalServiceCharge
             totalTaxAmount = totalTax
-            orderItemsAttributes = dineInOrderItemAttributed(cartModel)
+            orderItemsAttributes = dineInOrderItemAttributed(cartModel , currentCartItems)
             offlineId = null
             deletedGuestItems = cartModel.listOfItemRemoved.toCollection(arrayListOf())
             //            paymentAttributes =
@@ -5209,7 +6721,70 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     }
 
+    private fun orderItemsAttributes(cartModel: CartModel): List<OrderItemsAttribute> {
+
+        val orderItemsAttributeList: ArrayList<OrderItemsAttribute> = arrayListOf()
+        LogUtil.logE(TAG, "insideSize  ${cartModel.items?.size}")
+
+        currentCartItems.forEach { item ->
+
+            val orderItemsAttribute = OrderItemsAttribute()
+
+            if (item.orderItemId != null) orderItemsAttribute.id = item.orderItemId
+
+
+            orderItemsAttribute.category_id = item.categoryId
+            orderItemsAttribute.custom_item_id = item.id
+
+            if (cartModel.reorder) {
+                orderItemsAttribute.discountAmount = (item.discountPrice)
+            } else {
+                orderItemsAttribute.discountAmount = (item.discountPrice * item.itemQuantity)
+            }
+
+
+            orderItemsAttribute.discountType = item.discountType
+            if (item.discountId != -1) orderItemsAttribute.discountId = item.discountId
+            orderItemsAttribute.employeeId = cartModel.employeeID
+            orderItemsAttribute.isCount = 0
+            orderItemsAttribute.isEdited = item.isEdited
+            orderItemsAttribute.isDestroy = item.isDestroy
+            orderItemsAttribute.isPaid = item.isPaid
+            orderItemsAttribute.isPrinted = true
+            orderItemsAttribute.isTaxRemoved = false
+            orderItemsAttribute.itemId = item.itemId
+            orderItemsAttribute.is_manual_sales = item.isManualSales
+            orderItemsAttribute.itemName = item.name
+            orderItemsAttribute.note = item.note
+            orderItemsAttribute.price = item.price
+            orderItemsAttribute.quantity = item.itemQuantity
+            orderItemsAttribute.terminalId = cartModel.terminalId
+            orderItemsAttribute.timestamp = MethodUtils.randomOfflineId(
+                prefProvider.getValueInt(Constants.LOCATION_ID, -1).toString()
+            )
+            orderItemsAttribute.totalPrice =
+                MethodUtils.roundOffAmountDouble(item.price * item.itemQuantity)
+            orderItemsAttribute.orderItemTaxesAttributes = orderItemTaxesAttributes(item)
+            orderItemsAttribute.orderItemModifiersAttributes =
+                orderItemModifierAttributes(item, cartModel.terminalId)
+            orderItemsAttribute.isFired = item.isFired
+
+            orderItemsAttribute.orderItemVariationAttributes = orderItemVariationAttributes(item)
+
+            if (item.variationsAttributes.isNotEmpty()) {
+                orderItemsAttribute.variationId = item.variationsAttributes[0].id
+            }
+
+            orderItemsAttributeList.add(orderItemsAttribute)
+        }
+        LogUtil.logE(
+            TAG, "orderItemsAttributeList:  ${Gson().toJson(orderItemsAttributeList)}"
+        )
+        return orderItemsAttributeList
+    }
+
     val getTaxList = taxServiceChargeRepository.getTaxList()
+
 
     fun updateOrderCall(orderId: Int, orderRequestModel: OrderRequestModel) {
         _showProgress.value = Event(true)
@@ -5920,6 +7495,310 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
 
         return cartList
+    }
+
+    fun itemCalculationForDineInPayment(
+        cartModel: CartModel,
+        txtTotal: AppCompatTextView,
+        context: Context,
+        model: GuestPaymentCalculationModel,
+        isGuestPayment: Boolean
+    ) {
+
+        var totalAmmount = 0.0
+        nonCashAdj = 0.0
+        totalPrice = 0.0
+        totalCount = 0
+        subTotalPrice = 0.0
+        totalDiscount = 0.0
+        totalTax = 0.0
+        totalServiceCharge = 0.0
+        var amountToBePaid = 0.0
+        if (cartModel.orderType == DINE_IN) {
+            if (isGuestPayment) {
+
+                subTotalPrice = model.subTotal
+                totalTax = model.tax
+                totalServiceCharge = model.serviceCharge
+                totalDiscount = model.totalDiscount
+                order_note = cartModel.note
+
+                totalServiceCharge = model.serviceCharge
+                // serviceChargeCalculationModel(cartModel)
+                subTotalPrice -= model.totalDiscount
+
+
+                var finalTotal = 0.0
+                finalTotal = model.total
+                cashDiscountType = prefProvider.getValue(Constants.OPTION_TYPE, "")
+                //loyalty point and price calculation
+                amountToBePaid = finalTotal
+
+                Log.e("checkDineInFinalAmt", "finalTotal:  ${finalTotal}")
+                totalPrice = MethodUtils.roundOffAmountDouble(finalTotal)
+
+                if (MethodUtils.isEnableCashDiscount(context)) {
+                    cashdiscountAmount = MethodUtils.calculateCashDiscount(
+                        totalPrice, prefProvider, context
+                    )
+
+                    //   cashdiscountAmount = model.cashDiscount
+
+                } else {
+                    cashdiscountAmount = 0.0
+                }
+
+                Log.e("checkDineInFinalAmt", "checkCashDiscountAmt:  ${cashdiscountAmount}")
+                val nf: NumberFormat = NumberFormat.getNumberInstance()
+                nf.maximumFractionDigits = 2
+                val rounded: String = nf.format(cashdiscountAmount)
+                cashdiscountAmount = rounded.toDouble()
+                MethodUtils.setPriceTextView(txtTotal, model.total)
+
+
+            } else {
+                LogUtil.logE(TAG, "NotDineInGuest")
+                subTotalPrice = model.subTotal
+                totalTax = model.tax
+                totalServiceCharge = model.serviceCharge
+                totalDiscount = model.totalDiscount
+                order_note = cartModel.note
+                totalServiceCharge = model.serviceCharge
+
+                var finalTotal = 0.0
+                finalTotal = model.total
+                cashDiscountType = prefProvider.getValue(Constants.OPTION_TYPE, "")
+                //loyalty point and price calculation
+                amountToBePaid = finalTotal
+                totalPrice = finalTotal
+
+                LogUtil.logE(TAG, "newDAstotalPrice  ${totalPrice}")/*if (selectedCustomer == null) {
+                    totalPrice = amountToBePaid
+
+                } else {
+                    redeemLoyaltyInfo.getAmountToBePaid()?.let {
+                        totalPrice = it
+                    }
+                }*/
+
+                if (MethodUtils.isEnableCashDiscount(context)) {
+                    cashdiscountAmount = MethodUtils.calculateCashDiscount(
+                        totalPrice, prefProvider, context
+                    )
+                } else {
+                    cashdiscountAmount = 0.0
+                }
+                val nf: NumberFormat = NumberFormat.getNumberInstance()
+                nf.maximumFractionDigits = 2
+                val rounded: String = nf.format(cashdiscountAmount)
+                cashdiscountAmount = rounded.toDouble()
+                Log.d(TAG, "itemCalculationForDineInPayment: " + cashdiscountAmount)
+
+
+                MethodUtils.setPriceTextView(txtTotal, model.total)
+
+
+            }
+        } else {
+
+            if (cartModel.items?.isEmpty() == false) {
+
+
+                val itemCount = cartModel.items?.size
+                cartModel.items?.forEach { item ->
+                    totalCount += item.itemQuantity
+
+                    subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
+
+
+//                    subTotalPrice += if (!item.isManualSales) {
+//                        (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
+//                    } else {
+//                        (item.price * item.itemQuantity) - item.discountPrice
+//                    }
+
+                    taxCalculation(item, cartModel.discountPrice / itemCount!!)
+
+                    item.modifiers.forEach {
+                        subTotalPrice += (it.price * it.itemQuantity)
+
+                    }
+                }
+
+                order_note = cartModel.note
+                subTotalPrice -= cartModel.discountPrice
+
+                if (subTotalPrice < 0) {
+                    subTotalPrice = 0.0
+                }
+                serviceChargeCalculationModel(cartModel)
+
+
+
+                totalDiscount += cartModel.discountPrice
+
+                cartModel.items!!.forEach {
+                    totalDiscount += (it.discountPrice * it.itemQuantity)
+                }
+
+                var finalTotal = 0.0
+                finalTotal = (subTotalPrice + totalTax + totalServiceCharge)
+
+
+
+                cashDiscountType = prefProvider.getValue(Constants.OPTION_TYPE, "")
+                //loyalty point and price calculation
+                amountToBePaid = finalTotal
+                if (selectedCustomer == null) {
+                    totalPrice = amountToBePaid/* MethodUtils.setPriceTextView(
+                         txtTotalAmount,
+                         amountToBePaid
+                     )*/
+                } else {/* checkAppliedLoyaltyProgram(
+                         selectedCustomer,
+                         amountToBePaid,
+                         txtTotalAmount
+                     )*/
+                    redeemLoyaltyInfo.getAmountToBePaid()?.let {
+                        totalPrice = it
+                    }
+                }
+
+                if (MethodUtils.isEnableCashDiscount(context)) {
+                    cashdiscountAmount = MethodUtils.calculateCashDiscount(
+                        totalPrice, prefProvider, context
+                    )
+                } else {
+                    cashdiscountAmount = 0.0
+                }
+
+                val nf: NumberFormat = NumberFormat.getNumberInstance()
+                nf.maximumFractionDigits = 2
+                val rounded: String = nf.format(cashdiscountAmount)
+                cashdiscountAmount = rounded.toDouble()
+                Log.e("amountToBePaid", "" + totalPrice)
+            } else {
+
+                nonCashAdj = 0.0
+                totalPrice = 0.0
+                totalCount = 0
+                subTotalPrice = 0.0
+                totalDiscount = 0.0
+                totalTax = 0.0
+                totalServiceCharge = 0.0
+                amountToBePaid = 0.0
+            }
+        }
+        //totalAmmount = totalPrice-cartList[0].discountPrice
+
+
+    }
+
+    fun itemCalculationForDineInPaymentNew(
+        cartModel: CartModel,
+        txtTotal: AppCompatTextView,
+        context: Context,
+        model: GuestPaymentCalculationModel,
+        isGuestPayment: Boolean
+    ) {
+
+        var totalAmmount = 0.0
+        nonCashAdj = 0.0
+        totalPrice = 0.0
+        totalCount = 0
+        subTotalPrice = 0.0
+        totalDiscount = 0.0
+        totalTax = 0.0
+        totalServiceCharge = 0.0
+        var amountToBePaid = 0.0
+        if (isGuestPayment) {
+
+            subTotalPrice = model.subTotal
+            totalTax = model.tax
+            totalServiceCharge = model.serviceCharge
+            totalDiscount = model.totalDiscount
+            order_note = cartModel.note
+
+            totalServiceCharge = model.serviceCharge
+            // serviceChargeCalculationModel(cartModel)
+            subTotalPrice -= model.totalDiscount
+
+
+            var finalTotal = 0.0
+            finalTotal = model.total
+            cashDiscountType = prefProvider.getValue(Constants.OPTION_TYPE, "")
+            //loyalty point and price calculation
+            amountToBePaid = finalTotal
+
+            Log.e("checkDineInFinalAmt", "finalTotal:  ${finalTotal}")
+            totalPrice = MethodUtils.roundOffAmountDouble(finalTotal)
+
+            if (MethodUtils.isEnableCashDiscount(context)) {
+                cashdiscountAmount = MethodUtils.calculateCashDiscount(
+                    totalPrice, prefProvider, context
+                )
+
+                //   cashdiscountAmount = model.cashDiscount
+
+            } else {
+                cashdiscountAmount = 0.0
+            }
+
+            Log.e("checkDineInFinalAmt", "checkCashDiscountAmt:  ${cashdiscountAmount}")
+            val nf: NumberFormat = NumberFormat.getNumberInstance()
+            nf.maximumFractionDigits = 2
+            val rounded: String = nf.format(cashdiscountAmount)
+            cashdiscountAmount = rounded.toDouble()
+            MethodUtils.setPriceTextView(txtTotal, model.total)
+
+
+        } else {
+            LogUtil.logE(TAG, "NotDineInGuest")
+            subTotalPrice = model.subTotal
+            totalTax = model.tax
+            totalServiceCharge = model.serviceCharge
+            totalDiscount = model.totalDiscount
+            order_note = cartModel.note
+            totalServiceCharge = model.serviceCharge
+
+            var finalTotal = 0.0
+            finalTotal = model.total
+            cashDiscountType = prefProvider.getValue(Constants.OPTION_TYPE, "")
+            //loyalty point and price calculation
+            amountToBePaid = finalTotal
+            totalPrice = finalTotal
+
+            LogUtil.logE(TAG, "newDAstotalPrice  ${totalPrice}")/*if (selectedCustomer == null) {
+                    totalPrice = amountToBePaid
+
+                } else {
+                    redeemLoyaltyInfo.getAmountToBePaid()?.let {
+                        totalPrice = it
+                    }
+                }*/
+
+            if (MethodUtils.isEnableCashDiscount(context)) {
+                cashdiscountAmount = MethodUtils.calculateCashDiscount(
+                    totalPrice, prefProvider, context
+                )
+            } else {
+                cashdiscountAmount = 0.0
+            }
+            val nf: NumberFormat = NumberFormat.getNumberInstance()
+            nf.maximumFractionDigits = 2
+            val rounded: String = nf.format(cashdiscountAmount)
+            cashdiscountAmount = rounded.toDouble()
+            Log.d(TAG, "itemCalculationForDineInPayment: " + cashdiscountAmount)
+
+
+            MethodUtils.setPriceTextView(txtTotal, model.total)
+
+
+        }
+
+        //totalAmmount = totalPrice-cartList[0].discountPrice
+
+
     }
 
     var isLoading = MutableLiveData<Boolean>()

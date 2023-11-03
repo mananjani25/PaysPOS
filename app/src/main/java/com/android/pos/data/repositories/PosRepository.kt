@@ -718,6 +718,7 @@ class PosRepository @Inject constructor(
     }
 
     fun getAllCartItems(orderType: String, employee_Id: Int) = appDatabase.cartDao().getCartItems(orderType, employee_Id)
+    fun getDineInCartItems(guestIndexForDineIn:Int) = appDatabase.cartDao().getDineInCartItems(guestIndexForDineIn)
 
     fun getCartDineInList(employee_Id: Int): LiveData<List<DineInCartModel>> {
         return appDatabase.cartDao().allItemDineIn(DINE_IN, employee_Id)
@@ -788,6 +789,19 @@ class PosRepository @Inject constructor(
 
     suspend fun deleteItemFromCartItems(tbCartItem: TbCartItem){
         appDatabase.cartDao().deleteItemFromCartItems(tbCartItem)
+    }
+
+    suspend fun removeItemFromCart(itemId: Int , guestIndexForDineIn: Int) {
+        val startTime = System.currentTimeMillis()
+        appDatabase.cartDao().removeCartItem(itemId , guestIndexForDineIn )
+        // Calculate the time taken
+        val endTime = System.currentTimeMillis()
+        val timeTaken = endTime - startTime
+        Log.d("InsertTime", "Time taken to insert: $timeTaken ms")
+    }
+
+    suspend fun getLatestPrimaryKey(): Int {
+        return appDatabase.cartDao().getLatestPrimaryKey()
     }
 
     suspend fun addItemCartDineIn(cartModel: DineInCartModel) {

@@ -249,7 +249,7 @@ class CustomDisplay(
                         val dineInList = dashBoardCategoryViewModel.cartModel?.dineInList
 
                         dineInCartAdapter.setList(
-                            dineInList?.toCollection(arrayListOf()) ?: arrayListOf()
+                            dineInList?.toCollection(arrayListOf()) ?: arrayListOf() , dashBoardCategoryViewModel.listItems
                         )
                         binding.rowHeaderLayoutDineIn?.visible()
                         binding.rowHeaderLayout.gone()
@@ -553,18 +553,18 @@ class CustomDisplay(
             ?.replace(",", ", ")
     }
 
-    override fun onItemClickListener(view: View?, data: TbItem, position: Int) {}
+    override fun onItemClickListener(view: View?, data: TbCartItem, position: Int) {}
     override fun onCartItemClickListener(view: View?, data: TbCartItem, position: Int) {
         TODO("Not yet implemented")
     }
 
     override fun onHeaderSelected(position: Int) {}
 
-    override fun onItemSelected(headerPosition: Int, position: Int, item: TbItem) {}
+    override fun onItemSelected(headerPosition: Int, position: Int, item: TbCartItem) {}
 
     override fun onCustomerClicked(position: Int, isRemoved: Boolean) {}
 
-    override fun onItemDelete(position: Int, itemPosition: Int, data: TbItem) {}
+    override fun onItemDelete(position: Int, itemPosition: Int, data: TbCartItem) {}
     override fun onRemoveGuest(position: Int) {}
 
     fun showThankYou(paidAmount: Double) {
@@ -755,7 +755,7 @@ class CustomDisplay(
 
                                     //for add item in tbItem List and extract/convert data from API
                                     val itemDineIn: DineInModel = DineInModel()
-                                    val item = TbItem()
+                                    val item = TbCartItem()
                                     item.isPaid = it.isPaid
                                     item.discountPrice = it.discountAmount
                                     item.discountId = it.discountId

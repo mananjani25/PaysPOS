@@ -179,6 +179,7 @@ class PaymentBoldPosFragment : Fragment() {
                     }
 
                     prefProvider.setValue(SPLIT_DINEIN_MODEL, Gson().toJson(model))
+                    Log.d(TAG, "loadCartFragmentCalled 182: ")
                     loadCartFragment(CartFragment(null, null, true, model, true))
                 } else {
                     LogUtil.logE(TAG, "elsePAymentDion")
@@ -194,6 +195,7 @@ class PaymentBoldPosFragment : Fragment() {
                     )
                     Log.e(TAG, "getDineInDetails  ${Gson().toJson(model)}")
                     prefProvider.setValue(SPLIT_DINEIN_MODEL, Gson().toJson(model))
+                    Log.d(TAG, "loadCartFragmentCalled 198: ")
                     loadCartFragment(CartFragment(null, null, true, model, false))
                 }
             } else {
@@ -211,6 +213,7 @@ class PaymentBoldPosFragment : Fragment() {
                         temp_model.guestId,
                         temp_model.model
                     )
+                    Log.d(TAG, "loadCartFragmentCalled 216: ")
                     loadCartFragment(CartFragment(null, null, true, model, true))
                 } else {
                     if (prefProvider.getValue(SPLIT_DINEIN_MODEL, "") != null) {
@@ -225,6 +228,7 @@ class PaymentBoldPosFragment : Fragment() {
                             0.0,
                             temp_model.totalDiscount,
                         )
+                        Log.d(TAG, "loadCartFragmentCalled 230: ")
                         loadCartFragment(CartFragment(null, null, true, model, false))
                     }
 
@@ -233,6 +237,7 @@ class PaymentBoldPosFragment : Fragment() {
 
 
         } else {
+            Log.d(TAG, "loadCartFragmentCalled 240: ")
             loadCartFragment(CartFragment(null, null))
         }
         if (prefProvider.getValue(ORDER_TYPE, "") == Constants.DINE_IN) {

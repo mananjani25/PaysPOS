@@ -9,6 +9,7 @@ import android.util.Log
 import androidx.annotation.Nullable
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
+import com.android.pos.data.entities.TbCartItem
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.data.model.GetPaymentOrderDetailsResponse
@@ -1867,12 +1868,12 @@ fun addTipsList(
 
 fun addOrdersForKitchenCustoemrPrinter(
     builder: Builder,
-    list: ArrayList<TbItem>,
+    list: ArrayList<TbCartItem>,
     fontSizeH: Int = 1,
     fontSizeW: Int = 1,
     printerCat: ArrayList<PrinterResponse.Data.PrinterCategories>? = null,
     fontSize: String = Constants.LARGE,
-    listItemWithGuest: HashMap<String, ArrayList<TbItem>> = hashMapOf()
+    listItemWithGuest: HashMap<String, ArrayList<TbCartItem>> = hashMapOf()
 ): Builder {
     listItemWithGuest.forEach {
         builder.addFeedLine(1)
@@ -2046,11 +2047,11 @@ fun addTipsListInner(
 
 fun addOrdersForKitchenDineIn(
     builder: Builder,
-    list: ArrayList<TbItem>,
+    list: ArrayList<TbCartItem>,
     fontSizeH: Int = 1,
     fontSizeW: Int = 1,
     printerCat: ArrayList<PrinterResponse.Data.PrinterCategories>? = null,
-    listItemWithGuest: HashMap<String, ArrayList<TbItem>> = hashMapOf()
+    listItemWithGuest: HashMap<String, ArrayList<TbCartItem>> = hashMapOf()
 ): Builder {
 
     listItemWithGuest.forEach{
@@ -2154,7 +2155,7 @@ fun addOrdersForKitchenDineIn(
 
 fun addOrdersForKitchenDineInU220(
     builder: Printer,
-    list: ArrayList<TbItem>,
+    list: ArrayList<TbCartItem>,
     fontSizeH: Int = 1,
     fontSizeW: Int = 1,
     printerCat: ArrayList<PrinterResponse.Data.PrinterCategories>? = null
@@ -2456,9 +2457,9 @@ fun addOrdersForKitchenOnlineOrderSunmiInner(
 }
 
 fun addOrdersForKitchenDineIn(
-    list: ArrayList<TbItem>,
+    list: ArrayList<TbCartItem>,
     printerCat: ArrayList<PrinterResponse.Data.PrinterCategories>? = null,
-    listItemWithGuest: HashMap<String, ArrayList<TbItem>> = hashMapOf()
+    listItemWithGuest: HashMap<String, ArrayList<TbCartItem>> = hashMapOf()
 ) {
 
     listItemWithGuest.forEach {
@@ -2512,8 +2513,8 @@ fun addOrdersForKitchenDineIn(
 }
 
 fun addOrdersForKitchenDineInInner(
-    list: ArrayList<TbItem>,
-    listItemWithGuest: HashMap<String, ArrayList<TbItem>>
+    list: ArrayList<TbCartItem>,
+    listItemWithGuest: HashMap<String, ArrayList<TbCartItem>>
 ) {
 
     listItemWithGuest.forEach {
@@ -2742,7 +2743,7 @@ fun addOrdersForKitchenCustomerNewPrinter(
 //
 //}
 fun checkItemsforPrinterDineIn(
-    list: List<TbItem>,
+    list: List<TbCartItem>,
     printerCat: ArrayList<PrinterResponse.Data.PrinterCategories?>? = null
 ): Boolean {
     var flag = false
@@ -3754,7 +3755,7 @@ fun addOrderItemOnlineOrderSunmiInner(
 
 fun addWholeTbItemToGuest(
     builder: Builder,
-    list: TbItem,
+    list: TbCartItem,
     font: String,
     showModifiers: Boolean,
     guestCount: Int,
@@ -3872,7 +3873,7 @@ fun addWholeTbItemToGuest(
 
 
 fun addWholeTbItemToGuest(
-    list: TbItem,
+    list: TbCartItem,
     font: String,
     showModifiers: Boolean,
     guestCount: Int,
@@ -3953,7 +3954,7 @@ fun addWholeTbItemToGuest(
 
 
 fun addWholeTbItemToGuestInner(
-    list: TbItem,
+    list: TbCartItem,
     font: String,
     showModifiers: Boolean,
     guestCount: Int,
@@ -4072,7 +4073,7 @@ fun checkMaxGuestCountId(serviceChargeList: ArrayList<TbServiceCharge>): Int {
 
 fun addOrderItemForDineIn(
     builder: Builder,
-    list: TbItem,
+    list: TbCartItem,
     font: String,
     showModifiers: Boolean
 ): Builder {
@@ -4165,7 +4166,7 @@ fun addOrderItemForDineIn(
 
 
 fun addOrderItemForDineIn(
-    list: TbItem,
+    list: TbCartItem,
     font: String,
     showModifiers: Boolean
 ) {
@@ -4215,7 +4216,7 @@ fun addOrderItemForDineIn(
 }
 
 fun addOrderItemForDineInInner(
-    list: TbItem,
+    list: TbCartItem,
     font: String,
     showModifiers: Boolean
 ) {
@@ -4697,7 +4698,7 @@ private fun totalPriceOpenOrder(model: OpenOrderResponse.Data.Order.OrderItem): 
 
 }
 
-private fun totalPriceDineInItem(model: TbItem): Double {
+private fun totalPriceDineInItem(model: TbCartItem): Double {
     return model.price * model.itemQuantity
 }
 
