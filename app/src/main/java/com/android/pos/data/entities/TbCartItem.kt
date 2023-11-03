@@ -74,29 +74,6 @@ class TbCartItem : Parcelable {
     var orderTypeName: String = ""
     var orderTypeId: Int = 0
 
-    fun convertToItem(item: Item, category: Category?): TbCartItem {
-
-        itemId = item.id
-        name = item.name ?: ""
-        price = item.price
-        quantity = item.quantity
-        sku = item.sku ?: ""
-        website_hide_status = item.website_hide_status ?: ""
-        hide_status = item.hide_status ?: ""
-        isHide = item.active
-        sort = item.sort
-        imageUrl = item.originalImageUrl
-        thumbImageUrl = item.thumbImageUrl
-        categoryId = category?.id ?: item.categoryId ?: 0
-        categoryName = category?.name ?: item.categoryName ?: ""
-        taxes = item.taxes
-        modifier_set_ids = item.itemModifierSetsSort
-        variationsAttributes = item.variations
-        shortDescription = item.desc ?: ""
-        isDeleted = item.isDeleted
-        return this
-    }
-
     fun convertToCartItem(item: TbItem, model: TbItem): TbCartItem {
         Log.e("GetItemForCheck", "item1  ${Gson().toJson(item)}")
         Log.e("GetItemForCheck", "model1  ${Gson().toJson(model)}")
@@ -354,76 +331,6 @@ class TbCartItem : Parcelable {
         modeTb.isDeleted = item.isDeleted
       //  modeTb.price_without_markup = item.price_without_markup
         return modeTb
-    }
-
-    fun convertToModifier(modifierSetOld: ModifierSet, model: ModifierSet): ModifierSet {
-
-        var modeModifierSet = ModifierSet()
-
-        val itemList = mutableListOf<Modifier>()
-        val itemTaxIds: ArrayList<Int> = arrayListOf()
-        modifierSetOld.modifiers.forEach {
-            it.id?.let { it1 -> itemTaxIds.add(it1) }
-        }
-
-
-        model.modifiers.let {
-
-            itemList.addAll(it)
-        }
-        val removeItems: ArrayList<Modifier> = arrayListOf()
-
-        modifierSetOld.modifiers.forEachIndexed { index, it ->
-
-            for (i in 0 until itemList.size) {
-
-                if (itemList.get(i).id == it.id) {
-                    if (it.isDeleted) {
-                        removeItems.add(itemList[i])
-                    }
-
-                }
-            }
-            if (!itemList.contains(it) && !it.isDeleted) {
-                var content = false
-                for (i in 0 until itemList.size) {
-                    if (it.id == itemList.get(i).id) {
-                        content = true
-                        break
-                    }
-                }
-                if (!content) {
-                    itemList.add(it)
-                }
-            }
-        }
-        //remove items from list
-        itemList.removeAll(removeItems)
-
-        Log.e("modeModifierSet", Gson().toJson(itemList))
-
-
-        if (itemList.isEmpty()) {
-            modeModifierSet.modifiers = emptyList()
-        } else {
-            modeModifierSet.modifiers = itemList
-        }
-
-        modeModifierSet.id = modifierSetOld.id
-        modeModifierSet.itemIds = modifierSetOld.itemIds
-        modeModifierSet.name = modifierSetOld.name
-        modeModifierSet.updatedAt = modifierSetOld.updatedAt
-        modeModifierSet.locationId = modifierSetOld.locationId
-        modeModifierSet.isChecked = modifierSetOld.isChecked
-        modeModifierSet.min_required = modifierSetOld.min_required
-        modeModifierSet.max_allowed = modifierSetOld.max_allowed
-        modeModifierSet.sort = modifierSetOld.sort
-        modeModifierSet.isDeleted = modifierSetOld.isDeleted
-
-        Log.e("modeModifierSet1", Gson().toJson(modeModifierSet))
-
-
-        return modeModifierSet
     }
 
 }

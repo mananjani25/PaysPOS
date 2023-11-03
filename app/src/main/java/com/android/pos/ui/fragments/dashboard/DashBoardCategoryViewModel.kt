@@ -393,7 +393,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
     }
 
-    private fun addItemToCartItems(tbCartItem: TbCartItem) {
+    fun addItemToCartItems(tbCartItem: TbCartItem) {
         CoroutineScope(Dispatchers.IO).launch {
             posRepository.addItemToCart(tbCartItem)
             destroyedCartItemsList.clear()

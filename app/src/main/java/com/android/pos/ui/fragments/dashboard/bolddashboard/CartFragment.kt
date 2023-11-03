@@ -1857,11 +1857,6 @@ class CartFragment(
                             }
                         } else {
                             Log.e(TAG, ".destroyedListRelPR:  ${viewModel.destroyedList.size}")
-                            Log.e("IssueBIS777", "getITems:  ${viewModel.cartModel?.items?.size}")
-                            Log.e(
-                                "IssueBIS777",
-                                "getITemsFromScreen:  ${viewModel.cartModel?.items?.size}"
-                            )
 
                             if (cartModelsList[0] != null) {
 
@@ -1871,10 +1866,6 @@ class CartFragment(
                             }
 
                             val request = viewModel.updateOrder(cartModelsList[0])
-                            Log.e(TAG, "checkITemSize:  ${cartModelsList[0].items?.size}")
-
-
-
 
                             if (cartModelsList[0].orderId != 0) {
                                 cartModelsList[0].orderId?.let { viewModel.updateOrderCall(it, request) }

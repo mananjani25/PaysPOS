@@ -66,7 +66,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
     private lateinit var nameObserver: Observer<List<TbCartItem>>
     private lateinit var binding: FragmentManualSaleNewBinding
     private val TAG = "ManualSaleNew"
-    private var cartList: List<CartModel>? = null
+    private var cartModelsList: List<CartModel>? = null
     private var cartItemsList: List<TbCartItem>? = null
     private lateinit var manualSaleCartAdapterNew: ManualSaleCartAdapterNew
     private var cartItemModel = TbCartItem()
@@ -838,9 +838,9 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
                     R.id.menu_remove_customer -> {
 
-                        if (cartList?.isNotEmpty() == true && cartList!![0].customer != null) {
-                            cartList!![0].customer = null
-                            viewModel.addCart(cartList!![0])
+                        if (cartModelsList?.isNotEmpty() == true && cartModelsList!![0].customer != null) {
+                            cartModelsList!![0].customer = null
+                            viewModel.addCart(cartModelsList!![0])
                         }
                         clearCustomer()
 
@@ -860,7 +860,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                                     TAKEOUT
                                 ) == Constants.DINE_IN
                             ) {
-                                /*cartList?.get(0)?.dineInList?.forEach {
+                                /*cartModelsList?.get(0)?.dineInList?.forEach {
                                     it.items.forEach { it1 ->
                                         totalItemswithQuantity += it1.itemQuantity
                                     }
@@ -1795,7 +1795,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             R.id.txt_discount -> {
                 val bundle = Bundle().apply {
                     putBoolean("isFromDetails", false)
-                    cartList?.get(0)?.let { putDouble("orderDiscount", it.discountPrice) }
+                    cartModelsList?.get(0)?.let { putDouble("orderDiscount", it.discountPrice) }
                     putParcelable("model", data)
                 }
 

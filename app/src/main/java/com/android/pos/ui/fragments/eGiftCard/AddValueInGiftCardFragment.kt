@@ -2,7 +2,6 @@ package com.android.pos.ui.fragments.eGiftCard
 
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
@@ -10,7 +9,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.CartModel
-import com.android.pos.data.entities.TbItem
+import com.android.pos.data.entities.TbCartItem
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentAddValueInGiftCardBinding
 import com.android.pos.di.PrefProvider
@@ -207,15 +206,18 @@ class AddValueInGiftCardFragment : Fragment() {
         prefProvider.setValue(Constants.ORDER_TYPE_NAME, Constants.GIFT_CARD_NAME)
 
         val cm = CartModel()
-        val tbItem = TbItem()
+        val tbItem = TbCartItem()
         tbItem.name = "Digital Gift Card"
         tbItem.quantity = 1
         tbItem.itemQuantity = 1
         val totalPrice = binding.edtAmount.text.toString().replace("$", "").trim().toDouble()
         tbItem.price = totalPrice
+        tbItem.employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1)
+        tbItem.orderTypeId = 0
+        tbItem.orderType = Constants.GIFT_CARD
+        tbItem.orderTypeName = Constants.GIFT_CARD
 
         cm.apply {
-            items = listOf(tbItem)
             employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1)
             terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
             isOpenOrder = false
@@ -225,6 +227,7 @@ class AddValueInGiftCardFragment : Fragment() {
         }
 
         dashboardViewModel.addCart(cm)
+        dashboardViewModel.addItemToCartItems(tbItem)
 
         val bundle = Bundle()
         bundle.putBoolean("update", true)

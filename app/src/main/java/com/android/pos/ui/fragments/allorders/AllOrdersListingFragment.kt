@@ -1093,7 +1093,7 @@ class AllOrdersListingFragment(
                 bundle.putDouble("totalServiceCharge", order.totalServiceCharges)
                 bundle.putString("future_delivery_date", order.futureDeliveryDate)
                 bundle.putString("future_delivery_time", order.futureDeliveryTime)
-                bundle.putParcelable("cartList", cartModel(order))
+                bundle.putParcelable("cartList", updatedCartModel)
 
                 bundle.putInt("orderId", order.id)
                 LogUtil.logE("orderId :: ", order.id.toString())
@@ -3246,33 +3246,6 @@ class AllOrdersListingFragment(
 
         PrintSunmiUtils.printLogo(newBitmap)
 
-    }
-
-    private fun cartModel(order: OnlineOrderResponseModel.Data): CartModel {
-        LogUtil.logE("futureDeliveryDate  ", Gson().toJson(order))
-        return CartModel().apply {
-            terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
-            employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1)
-            locationId = order.locationId
-            orderTypeId = order.orderTypeId
-            orderType = order.orderType
-            orderTypeName = order.orderType
-            futureDeliveryDate = order.futureDeliveryDate.toString()
-            isOpenOrder = true
-            serviceCharge = serviceChargesList(order)
-            customer = assignCustomer(order)
-            items = inventoryList(order)
-            note = order.note
-            var itemDiscount = 0.0
-            items?.forEach {
-                itemDiscount += it.discountPrice
-                it.itemOriginalModifiersList = it.modifiers
-            }
-            discountPrice = order.totalDiscount
-            deliveryType = order.deliveryType ?: ""
-            taxlistDynamic = getTaxBirfucationList(order.orderItems)
-
-        }
     }
 
     private fun generateCartModelFromOrderModel(order: OnlineOrderResponseModel.Data): CartModel {
