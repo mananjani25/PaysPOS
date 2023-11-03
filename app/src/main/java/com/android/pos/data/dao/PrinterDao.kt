@@ -43,5 +43,7 @@ interface PrinterDao {
     @Query("DELETE FROM TbCustomerPrint")
     suspend fun deleteCustomerPrinters()
 
+    @get:Query("select * from TbCustomerPrint")
+    val getCustomerPrintList: List<PrinterResponse.Data.CustomerReceiptPrinters>
 
 }

@@ -473,8 +473,8 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     }
 
-    fun getCustomerPrinterList(): LiveData<Resource<List<PrinterResponse.Data.CustomerReceiptPrinters>>> {
-        return posRepository.getCustomerPrinters()
+    fun getCustomerPrinterList(): List<PrinterResponse.Data.CustomerReceiptPrinters> {
+        return posRepository.fetchCustomerPrintersList()
     }
 
     fun getKitchenPrinterList(): LiveData<Resource<List<PrinterResponse.Data.KitchenReceiptPrinters>>> {
