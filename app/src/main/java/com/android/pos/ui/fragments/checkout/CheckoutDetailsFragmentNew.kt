@@ -236,6 +236,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         return binding.root
     }
 
+    // To init PosLink for pax payment
     private fun initPOSLink() {
         POSLinkCreatorWrapper.createSync(
             requireContext(),
@@ -1713,6 +1714,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     }
 
+    // To make cash payment for placing order
     private fun cashPaymentWithVariation() {
         paymentAmount = String.format("%.2f", WholetotalPrice / isSelectedCount).toDouble()
         Log.e(
@@ -1742,7 +1744,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             makeCashPayment()
         }
     }
-
+    // To purchase gift card with cash payment
     private fun redeemGiftCard() {
         subTotalPrice = String.format("%.2f", subTotalPrice / isSelectedCount).toDouble()
         totalServiceCharge =
@@ -1777,6 +1779,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     }
 
+    // manage click of different types of payment methods visible on screen
     private fun paymentClick() {
 
         binding.llCreditCard.setOnSingleClickListener {
@@ -2078,7 +2081,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
     }
 
-
+    // To make card payment using PAX device
     private fun makePaxPaymentRequest() {
         GlobalScope.launch {
             Log.d(
@@ -2137,6 +2140,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                 //implementation("org.dom4j:dom4j:2.1.3")
                 PAXtoken = response.PaymentTransInfo.Token
+                Log.d("PAX_CARD:", "pax card info > ${response.CardInfo.ProgramType}")
                 Log.d("token:", "token $PAXtoken")
                 Log.d(
                     "Payment Details: ",
@@ -2242,6 +2246,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             })
     }
 
+    // Offers card payment by manually adding cars details
     private fun manualCardPaymentCall(
         cardNumber: String,
         expDate: String,
@@ -2269,6 +2274,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         fm.beginTransaction().replace(R.id.frameLayoutId, fragment).commit()
     }
 
+    // To get payment related data srtored in preference
     fun getDataFromPref() {
         redeemLoyaltyInfo = viewModel.redeemLoyaltyInfo
         if (prefProvider.getValue(Constants.WHOLE_AMOUNT, "")
@@ -2453,6 +2459,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     }
 
+    // To set different cash payment options and total amount values
     private fun setupPaymentScreen(isSelectCount: Int) {
         MethodUtils.getCashPaymentOptionList(
             getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount,
@@ -2485,6 +2492,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         binding.tvCard.text = "Card (" + binding.tvCard.text + ")"
     }
 
+    // To calculate tip added by user
     private fun tipAmountCalculation() {
         if (tipAmount == 0.00) {
             binding.tvsplittip?.gone()
@@ -2575,12 +2583,14 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
     }
 
+    // Split total amount as per user's split choice
     private fun splitAllAmounts(TAG: String, amount: Double) {
         val remainingValue = prefProvider.getValue(TAG, "").toDouble() - amount
         prefProvider.setValue(TAG, String.format("%.2f", remainingValue))
         Log.d(TAG, "splitAllAmounts: " + prefProvider.getValue(TAG, "").toDouble())
     }
 
+    // Calculate service charge / cash discount on amount
     private fun getCalCashDiscWithAmount(totalprice: Double, isCash: Boolean): Double {
         return if (isCash) {
             if (cashDiscountType == "CashDiscount" && prefProvider.getValue(
@@ -2817,6 +2827,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
     }
 
+    // make order request with payment attributes on cash payment to reflect on server
     private fun makeCashPayment() {
         paymentType = if (prefProvider.getValueboolean(IS_GIFT_CARD_REDEEM, false)) {
             "External"
@@ -2877,6 +2888,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
     }
 
+    // generate payment attributes request
     private fun paymentAttributesRequest(myRequest: OrderRequestModel) {
         val orderId = prefProvider.getValueInt("ORDER_ID", -1)
         LogUtil.logE(TAG, "orderIdmyRequestOriginal ${orderId}")
@@ -2937,6 +2949,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
     }
 
+    // To make card pqayment using magtek device
     private fun magtekPaymentCall() {
 
         paymentviewModel.cardReaderList().observe(viewLifecycleOwner) {

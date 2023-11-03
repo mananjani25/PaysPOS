@@ -222,6 +222,7 @@ class AddNewCustomerForGiftCardFragment : Fragment(), AddressTextChangeListner {
 
     }
 
+    // Suggestions for address
     private val autocompleteClickListener =
         AdapterView.OnItemClickListener { _, _, i, _ ->
             try {

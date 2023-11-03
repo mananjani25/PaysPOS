@@ -79,6 +79,7 @@ class AllOrdersViewModel @Inject constructor(
     ): LiveData<Resource<OnlineOrderResponseModel>> =
         posRepository.getAllOrders(startDate, endDate, order_status, payment_status, order_type_id)
 
+    // To accept/decline order
     fun acceptedAndDeclineOrder(
         time: Int,
         order_id: Int,
@@ -131,6 +132,7 @@ class AllOrdersViewModel @Inject constructor(
             }
         }
     }
+    // To update online order
     fun updateOnlineOrder(
         order_id: Int,
         order_status: String
@@ -192,6 +194,7 @@ class AllOrdersViewModel @Inject constructor(
 
     val getcancelOrderReasonsDatabse = posRepository.getCancelOrderListDatabse()
 
+    // To cancel order
     fun cancelOrder(orderId: Int, reason: String, reason_id: Int?) {
         _showProgress.value = Event(true)
         val formatterDate = SimpleDateFormat("yyyy-MM-dd")

@@ -167,11 +167,13 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
 
     }
 
+    // To get dine cart from database
     fun mAllWordsDineIn(empId: Int): LiveData<List<DineInCartModel>> {
         return posRepository.getCartDineInList(empId)
 
     }
 
+    // To get manual sales cart from database
     fun manualSale(orderType: String, employee_Id: Int): LiveData<List<CartModel>> {
 
         return posRepository.getCartList(orderType, employee_Id)
@@ -186,7 +188,7 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
 
     var serviceChargesList: List<TbServiceCharge> = emptyList()
 
-
+    // To update cart and save in database
     fun addCart(cartModel: CartModel) {
 
         viewModelScope.launch {
@@ -203,6 +205,7 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
 
     }
 
+    // merge items if added tow similat items in cart
     fun generateCombinedItems(cartModel: CartModel): CartModel {
         val combinedItems = arrayListOf<TbItem>()
         cartModel.items?.let { combinedItems.addAll(it) }
@@ -221,6 +224,7 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
 
     }
 
+    // to delete cart from database
     fun deleteCart() {
         viewModelScope.launch {
             posRepository.deleteCart(prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0))
@@ -229,7 +233,7 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
     }
 
 
-
+    // To delete manual sales cart from DB
     fun deleteManualSaleCart() {
         viewModelScope.launch {
             totalPrice = 0.0
@@ -243,7 +247,7 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
         }
     }
 
-
+    // To update dine cart
     fun dineInCartUpdate(
         cartList: List<CartModel>?,
         dineInList: List<DineInModel>
@@ -337,7 +341,7 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
 
     }
 
-
+    // This methods contains logic of maintaining any cart modification
     fun cartLogic(
         cartList: List<CartModel>?,
         item: TbItem?,
@@ -794,6 +798,7 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
 
     }
 
+    // to check if two items are similar
     private fun checkModifier(tbItem: TbItem, item: TbItem): Boolean {
 
         if (item.modifiers.isEmpty()) return true
@@ -812,6 +817,7 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
         return checkModifier
     }
 
+    // to check if two items are similar
     private fun checkVariation(tbItem: TbItem, item: TbItem): Boolean {
 
         if (item.variationsAttributes.isEmpty()) return true
@@ -848,7 +854,7 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
         return posRepository.getCashDisDetail(active)
     }
 
-
+    // To manage calculation of cart items on item added / updated /removed
     @SuppressLint("SetTextI18n")
     fun itemCalculation(
         cartList: List<CartModel>?,
@@ -1140,10 +1146,12 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
 
     }
 
+    // To check if loyalty program is applicable or not
     fun loyaltyPointCondition(customer: TbCustomer?): Boolean {
         return (customer?.enroll_to_loyalty == true && activeLoyaltyProgram != null && activeLoyaltyProgram?.rewardPoint ?: 0 <= customer.final_reward ?: 0)
     }
 
+    // check and calculate loyalty points value by selected customer and available points and redeemption eligibility
     private fun checkAppliedLoyaltyProgram(
         customer: TbCustomer?,
         total: Double,
@@ -1211,6 +1219,7 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
 
     }
 
+    // To calculate service charge or cash discount of total amount
     private fun serviceChargeCalculation(cartList: List<CartModel>) {
         val serviceChargesList = cartList[0].serviceCharge
 

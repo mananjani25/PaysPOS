@@ -127,6 +127,7 @@ class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
         requireContext().unregisterReceiver(cancelledBroadcastReceiver)
     }
 
+    // To update all orders count if any new order created or updated
     private var broadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             Log.d("08JUNE23", "onReceive: CALLED")
@@ -233,6 +234,7 @@ class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
         }
     }
 
+    // To get all order type's total order count
     private fun getAllOrderCounts(startDate: String?, endDate: String?) {
         Log.d("08JUNE23", "getAllOrderCounts: CALLED")
         try {

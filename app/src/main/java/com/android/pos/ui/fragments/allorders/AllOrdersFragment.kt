@@ -35,6 +35,7 @@ class AllOrdersFragment : Fragment() {
         return binding.root
     }
 
+    // this is base fragment of ALL ORDERS screen, which contains order types tab
     private fun setupTabs() {
         val adapter = AllOrdersTabsAdapter(requireActivity().supportFragmentManager, lifecycle)
 

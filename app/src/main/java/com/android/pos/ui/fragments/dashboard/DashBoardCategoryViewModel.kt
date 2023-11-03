@@ -325,6 +325,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
 
     */
+    // observer for cart modification
     fun mAllWords(orderType: String, employee_Id: Int): LiveData<List<CartModel>> {
 
         return posRepository.getCartList(orderType, employee_Id)
@@ -359,6 +360,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     var serviceChargesList: ArrayList<TbServiceCharge> = arrayListOf()
 
 
+    // store updated cart in database
     fun addCart(cartModel: CartModel) {
         System.currentTimeMillis()
         CoroutineScope(Dispatchers.IO).launch {
@@ -389,6 +391,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     }
 
+    // combine two similar items
     fun generateCombinedItems(cartModel: CartModel): CartModel {
         val combinedItems = arrayListOf<TbItem>()
         cartModel.items?.let {
@@ -410,6 +413,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         return cartModel
     }
 
+    // Store removed items from dine in order in case of Update order to send in server request
     fun addDineInRemovedItems(cartModel: CartModel): CartModel {
         var destroyedItems: ArrayList<TbItem> = arrayListOf()
         cartModel.items?.forEach {
@@ -578,7 +582,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         addCart(cartList!![0])
     }
 
-
+    // this method manages all the calculations like, taxes, service charge, discount, surcharge /cash discount on ADD/Update/Delete items from cart
     fun newCartLogicModifier(
         cartList: List<CartModel>?,
         item: TbItem?,
@@ -601,12 +605,15 @@ class DashBoardCategoryViewModel @Inject constructor(
             if (item != null) {
                 if (type == UPDATE) {
                     cartModel?.items?.forEach { items ->
+                        // calculated taxes of all items
                         cartModel = taxBifurcationCalculation(items, cartModel!!, type, false)
                     }
                 } else {
+                    // calculated taxes of all items
                     cartModel = taxBifurcationCalculation(item, cartModel!!, type, false)
                 }
             } else if (dineInList.isNotEmpty()) {
+                // tax calculation for dine in items
                 dineInList.forEach { dineInModel ->
                     dineInModel.items.forEach { itemData ->
                         cartModel = taxBifurcationCalculation(itemData, cartModel!!, type, false)
@@ -753,6 +760,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 }
                             }
 
+                            // to validate item quantity for dine in cart(each item quantity must be less than or equal 1000)
                             if (!isDineInItem1000) {
                                 list.forEach {
                                     if (it.id == item?.id && it.itemId == item.itemId) {
@@ -781,6 +789,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     if (model != null) {
                                         if (index != -1) {
                                             if (item != null) {
+                                                // To add/update item data of cart
                                                 model.name = item.name
                                                 model.itemQuantity =
                                                     model.itemQuantity + item.itemQuantity
@@ -839,6 +848,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 } else if (index != -2) {
                                     Log.d(TAG, "cartLogic: " + index)
                                     if (item != null) {
+                                        // to update modifier data of any item
                                         item.singleItemPrice = item.price
                                         item.modifiers.forEach { it ->
 //                                            it.modifier_quantity = it.itemQuantity
@@ -915,6 +925,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         }
 
                                     } else {
+                                        // Check if added or updated item matches with any other existing item in the cart. If matches with any other item than combine items
                                         if (list[i].id == item.id && list[i].itemId == item.itemId && list[i].timeStamp == item.timeStamp) {
                                             Log.d(TAG, "cartLogic: " + i)
                                             index = i
@@ -959,6 +970,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 Log.e(TAG, "Itis NotMinus  ")
 
                             } else if (index != -1) {
+                                // if item matches with any other item in cart then update quantity and other data
                                 val model = list.get(index)
                                 Log.d(TAG, "cartLogic: " + index)
                                 if (model != null) {
@@ -1024,6 +1036,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 }
                             }
                         } else if (type == DELETE) {
+                            // to remove item from cart. Removed item will be sent with _destroy = true flag
                             var list: ArrayList<TbItem> = arrayListOf()
                             if (item != null) {
                                 list = dineInList[item.headerPositionDinein].items
@@ -1138,6 +1151,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 } else {
 
                     if (type == DELETE) {
+                        // deletes whole cart
                         deleteCart()
                     } else {
 
@@ -1155,6 +1169,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                         }
 
                         if (cartModel != null) {
+                            // Update cart with modification
                             addCart(cartModel!!)
                         }
                     }
@@ -3346,6 +3361,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         return totaltaxtemp
     }
 
+    //  To calculate each item tax
     private fun taxBifurcationCalculation(
         item: TbItem, cartModel: CartModel, type: String, orderTaxID: Boolean
     ): CartModel {

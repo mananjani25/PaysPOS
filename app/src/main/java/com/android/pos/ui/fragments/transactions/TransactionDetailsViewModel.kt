@@ -56,6 +56,7 @@ class TransactionDetailsViewModel @Inject constructor(
 
     val startDate = MutableLiveData<String>()
 
+    // get added tips of any transaction
     fun getTipsList() = posRepository.getTipsList()
 
     fun getCustomerReceiptSettings() = posRepository.getCustomerReceiptSettings()
@@ -125,6 +126,8 @@ class TransactionDetailsViewModel @Inject constructor(
     }
 
     val serviceCharges = posRepository.serviceChargeList()
+
+    // Api call for refunding amount
     fun refundPaymentApiCall(
         refundAmount: Double,
         refundData: RefundRequestModel,
@@ -192,6 +195,7 @@ class TransactionDetailsViewModel @Inject constructor(
         }
     }
 
+    // get payment details of single transaction
     fun apiCallPaymentDetails(paymentId: Int) {
 
         _showProgress.value = Event(true)
@@ -265,6 +269,7 @@ class TransactionDetailsViewModel @Inject constructor(
         }
     }
 
+    // call cash out api
     private suspend fun cashOutApi(
         refundRequestModel: RefundRequestModel,
         amount: Double,

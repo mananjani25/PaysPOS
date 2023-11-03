@@ -182,6 +182,7 @@ class GiftCardViewModel @Inject constructor(
         return SellGiftCardRequestModel(gift_card = giftCard)
     }
 
+    // purchase new gift card
     fun sellGiftCard(sellGiftCardRequestModel: SellGiftCardRequestModel) {
 
         if (checkIsCashPaymentTypeForGiftCard(sellGiftCardRequestModel)) {
@@ -379,6 +380,7 @@ class GiftCardViewModel @Inject constructor(
         return GiftCardAddValueRequest(gift_card = giftCard, gift_card_amount_tab = giftCardAmountTab)
     }
 
+    // Add money in existing gift card
     fun addValueInGiftCard(isCashPaymentType: Boolean, giftCardAddValueRequest: GiftCardAddValueRequest) {
 
         if (isCashPaymentType) {
@@ -451,6 +453,7 @@ class GiftCardViewModel @Inject constructor(
         }
     }
 
+    // check gift card balance of existing gift card
     fun giftCardCheckBalance(giftCardCheckBalanceRequest: GiftCardCheckBalanceRequest) {
 
         _showProgress.value = Event(true)

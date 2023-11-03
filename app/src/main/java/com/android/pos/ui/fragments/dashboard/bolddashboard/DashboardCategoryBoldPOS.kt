@@ -432,6 +432,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
     private fun resultListener() {
 
+        // Callback : On Add / Remove customer from cart
         setFragmentResultListener("request_key_customer") { _: String, bundle: Bundle ->
             val result = bundle.getParcelable<TbCustomer>("data")
             if (result != null) {
@@ -440,6 +441,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             }
         }
 
+        // Callback : On add/ remove discount from order
         setFragmentResultListener("request_key_discount_order") { _: String, bundle: Bundle ->
             val result = bundle.getParcelable<TbDiscount>("data")
             val value = bundle.getDouble("value")
@@ -470,6 +472,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             }
         }
 
+        // Callback : On add/remove discount of single cart item
         setFragmentResultListener("request_key_discount_details") { requestKey: String, bundle: Bundle ->
             val result = bundle.getParcelable<TbDiscount>("data")
             val item = bundle.getParcelable<TbItem>("item")
@@ -521,6 +524,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
         }
 
+        // Callback : On add/remove/update order note
         setFragmentResultListener("request_key_note") { requestKey: String, bundle: Bundle ->
             val note = bundle.getString("note")
             val isOrderNote = bundle.getBoolean("isOrderNote")
@@ -562,6 +566,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
     }
 
+    // Update cart data based on selected customer (loyalty points)
     private fun setUpCustomer(result: TbCustomer, bundle: Bundle) {
         if (cartList.isNotEmpty()) {
             cartList[0].deliveryType = bundle.getString("TYPE").toString()
@@ -716,6 +721,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         (activity as MainActivity).addDevEventsDelegate(this)
     }
 
+    // To sync all local DB data with remote data, it will be called whenever anything on the server DB would be changed.
     private fun syncData() {
 
         val sync = prefProvider.getValueboolean(Constants.SYNC_DATA, false)
@@ -754,6 +760,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         fm.beginTransaction().replace(binding.frameLayout.id, fragment).commit()
     }
 
+    // To show cart on screen
     private fun loadCartFragment(frag: Fragment) {
         val fm: FragmentManager = childFragmentManager
         val result = Bundle().apply {
@@ -940,6 +947,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
     }
 
+    // To open cash drawer base on connected customer printer type
     private fun getCustomerPrinters() {
         CoroutineScope(Dispatchers.IO).launch {
             var customersPrinters = viewModel.getCustomerPrinterList() ?: arrayListOf()
@@ -1353,6 +1361,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 }
             }
         }
+
+        // cart data update observer
         viewModel.mAllWords(
             prefProvider.getValue(ORDER_TYPE, TAKEOUT),
             prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
@@ -1521,7 +1531,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         }
     }
 
-
+    // Fetch and show dine in order data if order type is dine in
     private fun getDineInCartList() {
         val numOfGuest: Int by lazy {
             requireArguments().getInt("numberOfGuest")
@@ -1638,6 +1648,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         }
     }
 
+    // Update cart calculaiton if dine in cart is updated
     private fun checkDineInEditOrder() {
         if (arguments?.getBoolean("is_dine_in_edit") == true) {
             var dineInList = arguments?.getParcelableArrayList<DineInModel>("dine_in_list")
@@ -1705,6 +1716,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         }
     }
 
+    // navigate to dine-in order table screen if updated existing dine in order
     private fun dineInUpdateOrder() {
 
 

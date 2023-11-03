@@ -264,6 +264,7 @@ class CartFragment(
         return binding.root
     }
 
+    // To check selected order type
     private fun checkOrderType() {
 
 //        saveVisibility()
@@ -524,6 +525,7 @@ class CartFragment(
         }
     }
 
+
     private fun setupLoyalytyPoints() {
         binding.checkloylaty.setOnCheckedChangeListener { _, p1 ->
             viewModel.setcheckedLoyaltyApply(p1, binding.txtTotal)
@@ -611,6 +613,7 @@ class CartFragment(
         return serviceChargeId
     }
 
+    // calculat service charge base on guest count for dine in order type
     fun getServiceChargeFromGuestCount(guestcount: Int): List<TbServiceCharge> {
         var list: List<TbServiceCharge> = listOf()
         var isApplied = false
@@ -1808,6 +1811,7 @@ class CartFragment(
         return listOf(*lists).flatten()
     }
 
+    // To add guest and dynamic guest name to dine in order
     private fun addGuestToOrder(count: Int) {
         if (count == 0) {
             AlertUtils.showCustomAlertWithListenerWithOK(
@@ -1903,6 +1907,7 @@ class CartFragment(
         }
     }
 
+    // To remove guest from order
     override fun onRemoveGuest(position: Int) {
         if (dineInCartAdapter.getList().isNotEmpty() && dineInCartAdapter.getList().size > 2) {
             if (prefProvider.getValueboolean(DINE_IN_UPDATE, false)) {
@@ -1927,6 +1932,7 @@ class CartFragment(
         }
     }
 
+    // Update UI after removing guest from order
     private fun removeGuestObserver() {
         viewModel.removeGuestSuccess.observe(viewLifecycleOwner) { event ->
             AlertUtils.showCustomAlertWithListenerWithOK(
@@ -2568,6 +2574,7 @@ class CartFragment(
         }
     }
 
+    // create/ update dine in order
     private fun createDineInOrder() {
         if (cartlist.isNotEmpty()) {
             if (prefProvider.getValueboolean(Constants.DINE_IN_UPDATE, false)) {

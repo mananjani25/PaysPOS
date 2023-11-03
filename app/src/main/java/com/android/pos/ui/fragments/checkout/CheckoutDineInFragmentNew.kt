@@ -226,6 +226,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         return binding.root
     }
 
+    // to init poslink for pax payment
     private fun initPOSLink() {
         POSLinkCreatorWrapper.createSync(
             requireContext(),
@@ -237,6 +238,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             })
     }
 
+    // To get merchant data of pax device
     private fun getMerchantDataObserver() {
         magtekProViewModel.merchantData.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { response ->
@@ -1297,6 +1299,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         }
     }
 
+    // To make card payment via pax device
     private fun makePaxPaymentRequest() {
         GlobalScope.launch {
             Log.d("getCommSettingFromFile ","getCommSettingFromFile: "+Gson().toJson(SettingINI.getCommSettingFromFile("/storage/emulated/0/Download/"+ SettingINI.FILENAME)))
@@ -1404,6 +1407,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         }
     }
 
+    // To make card payment by adding card details manually
     private fun manualCardPaymentCall(
         cardNumber: String,
         expDate: String,
@@ -1587,6 +1591,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
     }
 
+    // To set different cash payment options and total amount values
     private fun setupPaymentScreen(isSelectCount: Int) {
         MethodUtils.getCashPaymentOptionList(
             getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount,
@@ -1610,6 +1615,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         binding.tvCard.text = "Card (" + binding.tvCard.text + ")"
     }
 
+    // To calculate tip added by user
     private fun tipAmountCalculation() {
         if (tipAmount == 0.00) {
             binding.tvsplittip?.gone()
@@ -1679,12 +1685,14 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         }
     }
 
+    // Split total amount as per user's split choice
     private fun splitAllAmounts(TAG: String, amount: Double) {
         var remainingValue = prefProvider.getValue(TAG, "").toDouble() - amount
         prefProvider.setValue(TAG, String.format("%.2f", remainingValue))
         Log.d(TAG, "splitAllAmounts: " + prefProvider.getValue(TAG, "").toDouble())
     }
 
+    // Calculate service charge / cash discount on amount
     private fun getCalCashDiscWithAmount(totalprice: Double, isCash: Boolean): Double {
         return if (isCash) {
             if (cashDiscountType == "CashDiscount") {
@@ -1864,6 +1872,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         }
     }
 
+    // make order request with payment attributes on cash payment to reflect on server
     private fun makeCashPayment() {
 
         paymentType = "Cash"
@@ -1942,6 +1951,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         prefProvider.setValue(Constants.TIPS_AMOUNT_ACTUAL, "0.0")
     }
 
+    // generate payment attributes request
     private fun paymentAttributesRequest(myRequest: OrderRequestModel) {
         val orderId = prefProvider.getValueInt("ORDER_ID", -1)
         if (orderId == -1) {
@@ -1983,6 +1993,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         }
     }
 
+    // To make card pqayment using magtek device
     private fun magtekPaymentCall() {
 
         paymentviewModel.cardReaderList().observe(viewLifecycleOwner) {
