@@ -110,9 +110,12 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
 
         try {
 
-          //  consumer?.subscriptions?.remove(subscription)
+         // This is worked class which is manage all printer queue functionalities
+         // Here we are implemented action cable change so it is used for manager queue
+         // Once we place order and if printer queue is enabled that time we will received data in Order object from action cable response.
 
-          //  consumer?.disconnect()
+
+        // Here are have one more channel implemented which is used for sync data. so it is help to update all settings and printers data
 
             locationId = inputData.getInt("location_id", 0)
             baseUrl = inputData.getString("base_url").toString()

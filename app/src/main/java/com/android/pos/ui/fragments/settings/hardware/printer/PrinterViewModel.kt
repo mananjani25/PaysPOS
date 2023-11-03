@@ -312,5 +312,13 @@ class PrinterViewModel @Inject constructor(
         syncSettingModule(isFromUpdate = true)
     }
 
+    fun deleteAllCustomerPrinters() {
+        viewModelScope.launch {
+            posRepository.deleteCustomerPrinters()
+        }
+    }
+
+
+
 }
 

@@ -11,6 +11,7 @@ import com.android.pos.data.model.PrinterListModel
 import com.android.pos.data.remote.Constants.AVAILABLE
 import com.android.pos.data.remote.Constants.WIFI
 import com.android.pos.databinding.ViewPrinterItemBinding
+import com.android.pos.ui.fragments.settings.hardware.printer.Printer.Companion.viewModelObject
 
 
 class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>() {
@@ -134,7 +135,26 @@ class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>
 
     @SuppressLint("NotifyDataSetChanged")
     fun setList(list: ArrayList<PrinterListModel>) {
-        this.list = list
+
+       var temp = ""
+        var newList = arrayListOf<PrinterListModel>()
+
+        list.forEach {
+
+            if (temp == it.printerName){
+                //viewModelObject.deletePrinter(it)
+                Log.d("deDupedNodes","Duplicate operaion id = ${it.id} , name = ${it.printerName}")
+            }else {
+                Log.d("deDupedNodes","Unique opera")
+                Log.d("deDupedNodes","Unique operaion id = ${it.id} , name = ${it.printerName}")
+                newList.add(it)
+            }
+            temp = it.printerName!!
+
+        }
+
+        this.list.clear()
+        this.list = newList
         notifyDataSetChanged()
 
     }

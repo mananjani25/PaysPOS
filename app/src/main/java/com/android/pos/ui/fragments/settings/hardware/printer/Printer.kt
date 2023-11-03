@@ -178,6 +178,14 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        /*
+        * This is Printer class. we are manage all hardware related things for printer in this class
+        * We can delete printer and update printer from our local database
+        * We are using room database to store printer
+        *
+        * */
+
+
         binding = FragmentPrinterBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
         binding.maskLayout?.visible()
@@ -194,6 +202,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
         checkMasterTerminal()
 
+        viewModelObject = viewModel
 
         return binding.root
     }
@@ -625,6 +634,31 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                                   )*/
 
                             }
+
+
+                         //   viewModel.deleteAllCustomerPrinters()
+
+                            var temp = ""
+                            var newList = arrayListOf<PrinterListModel>()
+
+                            customerPrintersList.forEach {
+
+                                if (temp == it.printerName){
+                                    //viewModelObject.deletePrinter(it)
+                                    Log.d("deDupedNodes","Duplicate operaion id = ${it.id} , name = ${it.printerName}")
+                                }else {
+                                    Log.d("deDupedNodes","Unique opera")
+                                    Log.d("deDupedNodes","Unique operaion id = ${it.id} , name = ${it.printerName}")
+                                    newList.add(it)
+                                }
+                                temp = it.printerName!!
+
+                            }
+
+                            customerPrintersList.clear()
+                            customerPrintersList = newList
+
+
                             customerAdapter.setList(customerPrintersList)
                             allPrinterlist.addAll(customerPrintersList)
                             addedCustomerPrinters = true
@@ -3188,6 +3222,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
     companion object{
         var updatePrinter: UpdatePrinters? = null
+        lateinit var viewModelObject: PrinterViewModel
+
     }
 
     override fun onDestroy() {
