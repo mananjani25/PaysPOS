@@ -9,12 +9,14 @@ import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.data.entities.CartModel
+import com.android.pos.data.entities.TbCartItem
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.responseModel.NoteResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.DailogAddNoteBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.NotesListAdapter
+import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.settings.notes.NoteListViewModel
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.ProgressUtils
@@ -32,12 +34,12 @@ import kotlin.collections.ArrayList
 class AddNoteDialog : DialogFragment(), ItemCallback {
 
     private var isOrderNote: Boolean = false
-    private var item: TbItem? = null
-    private var cartList: ArrayList<CartModel>? = null
+    private var item: TbCartItem? = null
     private var headerItemPosition: Int? = null
     private lateinit var binding: DailogAddNoteBinding
     private lateinit var noteListadapter: NotesListAdapter
     private val viewModel by viewModels<NoteListViewModel>()
+    private val dashBoardCategoryViewModel by viewModels<DashBoardCategoryViewModel>()
     private val TAG = "AddNoteDialog"
 
     @Inject
@@ -72,7 +74,6 @@ class AddNoteDialog : DialogFragment(), ItemCallback {
 
         item = requireArguments().getParcelable("item")
         isOrderNote = requireArguments().getBoolean("isOrderNote")
-        cartList = requireArguments().getParcelableArrayList<CartModel>("cartList")
         if (prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT) == Constants.DINE_IN) {
             headerItemPosition = requireArguments().getInt("headerPos")
             LogUtil.logE(TAG, "headerItemPosition:  ${headerItemPosition}")
@@ -81,8 +82,8 @@ class AddNoteDialog : DialogFragment(), ItemCallback {
 
         with(binding) {
             if (isOrderNote) {
-                if (cartList?.get(0)?.note?.isNotEmpty() == true) {
-                    edtNote.setText(cartList?.get(0)?.note ?: "")
+                if (dashBoardCategoryViewModel.cartModel?.note?.isNotEmpty() == true) {
+                    edtNote.setText(dashBoardCategoryViewModel.cartModel?.note ?: "")
                     binding.txtRemovenote?.visible()
                 } else {
                     binding.txtRemovenote?.gone()
@@ -110,7 +111,6 @@ class AddNoteDialog : DialogFragment(), ItemCallback {
                 putString("note", "")
                 putParcelable("item", item)
                 putBoolean("isOrderNote", isOrderNote)
-                putParcelableArrayList("cartList", cartList)
                 headerItemPosition?.let { putInt("headerPos", it) }
             }
 
@@ -125,7 +125,6 @@ class AddNoteDialog : DialogFragment(), ItemCallback {
             putString("note", binding.edtNote.text.toString().trim())
             putParcelable("item", item)
             putBoolean("isOrderNote", isOrderNote)
-            putParcelableArrayList("cartList", cartList)
             headerItemPosition?.let { putInt("headerPos", it) }
         }
 

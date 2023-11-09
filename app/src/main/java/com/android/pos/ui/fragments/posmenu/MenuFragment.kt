@@ -13,6 +13,7 @@ import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.work.Data
@@ -332,10 +333,10 @@ class MenuFragment : DialogFragment() {
         if (this::presentation.isInitialized) {
             presentation.show()
             presentation.onDisplayChanged()
-            dashBoardCategoryViewModel.mAllWords(
+            dashBoardCategoryViewModel.getAllCartItems(
                 prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT),
                 prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
-            ).observe(requireActivity()) {
+            ).asLiveData().observe(requireActivity()) {
                 it?.let {
                     presentation.updateCustomerDisplay(it)
                 }

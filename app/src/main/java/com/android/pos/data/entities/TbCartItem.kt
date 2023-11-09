@@ -11,16 +11,18 @@ import com.android.pos.data.typeconvert.TCModifier
 import com.android.pos.data.typeconvert.TypeConvertersIds
 import com.android.pos.data.typeconvert.TypeConvertersTax
 import com.google.gson.Gson
+import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
-import java.util.UUID
-
+import java.util.*
+import kotlin.collections.ArrayList
 
 @TypeConverters(TypeConvertersTax::class, TypeConvertersIds::class, TCModifier::class)
-@Entity(tableName = "TbItem")
+@Entity(tableName = "TbCartItem")
 @Parcelize
-class TbItem : Parcelable {
+class TbCartItem : Parcelable {
 
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
+    var cartItemId: Int = 0
     var itemId: Int = 0
     var name: String = ""
     var id: Int = 0
@@ -42,13 +44,11 @@ class TbItem : Parcelable {
     var categoryName: String = ""
     var shortDescription: String = ""
     var note: String = ""
-
     var itemQuantity: Int = 0
     var isManualSales: Boolean = false
     var isChecked: Boolean = false
     var modifier_set_ids: List<Int> = emptyList()
     var modifiers: List<Modifier> = emptyList()
-
     var customItemCount: Int = 0
     var discountPrice: Double = 0.0
     var singleItemPrice: Double = 0.0
@@ -56,7 +56,6 @@ class TbItem : Parcelable {
     var discountType: String = ""
     var variationsAttributes: List<VariationsAttribute> = emptyList()
     var optionSets: List<OptionSet>? = null
-
     var orderItemId: Int? = null
     var isFired: Boolean = false
     var timeStamp: String? = null
@@ -67,39 +66,20 @@ class TbItem : Parcelable {
     var reorder: Boolean = false
     var manualSaleId: String = UUID.randomUUID().toString()
     var isDeleted: Boolean = false
-        var headerPositionDinein = 0
+    var headerPositionDinein = 0
     var itemOriginalModifiersList: List<Modifier>? = arrayListOf()
-//    @SerializedName("price_without_markup")
-//    var price_without_markup = 0.0
-    fun convertToItem(item: Item, category: Category?): TbItem {
+    var guestIndexForDineIn : Int? = null
+    var employeeID: Int = 0
+    var isManualSaleItem: Boolean = false
+    var orderType: String = ""
+    var orderTypeName: String = ""
+    var orderTypeId: Int = 0
 
-        itemId = item.id
-        name = item.name ?: ""
-        price = item.price
-        quantity = item.quantity
-        sku = item.sku ?: ""
-        website_hide_status = item.website_hide_status ?: ""
-        hide_status = item.hide_status ?: ""
-        isHide = item.active
-        sort = item.sort
-        imageUrl = item.originalImageUrl
-        thumbImageUrl = item.thumbImageUrl
-        categoryId = category?.id ?: item.categoryId ?: 0
-        categoryName = category?.name ?: item.categoryName ?: ""
-        taxes = item.taxes
-        modifier_set_ids = item.itemModifierSetsSort
-        variationsAttributes = item.variations
-        shortDescription = item.desc ?: ""
-        isDeleted = item.isDeleted
-        return this
-    }
-
-
-    fun convertToItem1(item: TbItem, model: TbItem): TbItem {
+    fun convertToCartItem(item: TbItem, model: TbItem): TbCartItem {
         Log.e("GetItemForCheck", "item1  ${Gson().toJson(item)}")
         Log.e("GetItemForCheck", "model1  ${Gson().toJson(model)}")
 
-        val modeTb = TbItem()
+        val modeTb = TbCartItem()
 
         val itemList = mutableListOf<TaxData>()
         val itemTaxIds: ArrayList<Int> = arrayListOf()
@@ -233,9 +213,9 @@ class TbItem : Parcelable {
                             variationList.forEach { varI ->
                                 if (varI.id == it.id) {
                                     varI.name = it.name
-                                    varI.priceType = it.priceType ?: ""
+                                    varI.priceType = it.priceType
                                     varI.price = it.price
-                                    varI.optionIds = it.optionIds ?: listOf()
+                                    varI.optionIds = it.optionIds
                                     varI.optionSetIds = it.optionSetIds
                                     varI.orderVariationId = it.orderVariationId
                                     varI.stockQty = it.stockQty
@@ -353,76 +333,5 @@ class TbItem : Parcelable {
       //  modeTb.price_without_markup = item.price_without_markup
         return modeTb
     }
-
-    fun convertToModifier(modifierSetOld: ModifierSet, model: ModifierSet): ModifierSet {
-
-        var modeModifierSet = ModifierSet()
-
-        val itemList = mutableListOf<Modifier>()
-        val itemTaxIds: ArrayList<Int> = arrayListOf()
-        modifierSetOld.modifiers.forEach {
-            it.id?.let { it1 -> itemTaxIds.add(it1) }
-        }
-
-
-        model.modifiers.let {
-
-            itemList.addAll(it)
-        }
-        val removeItems: ArrayList<Modifier> = arrayListOf()
-
-        modifierSetOld.modifiers.forEachIndexed { index, it ->
-
-            for (i in 0 until itemList.size) {
-
-                if (itemList.get(i).id == it.id) {
-                    if (it.isDeleted) {
-                        removeItems.add(itemList[i])
-                    }
-
-                }
-            }
-            if (!itemList.contains(it) && !it.isDeleted) {
-                var content = false
-                for (i in 0 until itemList.size) {
-                    if (it.id == itemList.get(i).id) {
-                        content = true
-                        break
-                    }
-                }
-                if (!content) {
-                    itemList.add(it)
-                }
-            }
-        }
-        //remove items from list
-        itemList.removeAll(removeItems)
-
-        Log.e("modeModifierSet", Gson().toJson(itemList))
-
-
-        if (itemList.isEmpty()) {
-            modeModifierSet.modifiers = emptyList()
-        } else {
-            modeModifierSet.modifiers = itemList
-        }
-
-        modeModifierSet.id = modifierSetOld.id
-        modeModifierSet.itemIds = modifierSetOld.itemIds
-        modeModifierSet.name = modifierSetOld.name
-        modeModifierSet.updatedAt = modifierSetOld.updatedAt
-        modeModifierSet.locationId = modifierSetOld.locationId
-        modeModifierSet.isChecked = modifierSetOld.isChecked
-        modeModifierSet.min_required = modifierSetOld.min_required
-        modeModifierSet.max_allowed = modifierSetOld.max_allowed
-        modeModifierSet.sort = modifierSetOld.sort
-        modeModifierSet.isDeleted = modifierSetOld.isDeleted
-
-        Log.e("modeModifierSet1", Gson().toJson(modeModifierSet))
-
-
-        return modeModifierSet
-    }
-
 
 }

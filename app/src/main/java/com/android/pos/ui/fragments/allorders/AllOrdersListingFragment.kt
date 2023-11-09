@@ -39,6 +39,7 @@ import com.android.pos.data.entities.Modifier
 import com.android.pos.data.entities.RedeemLoyaltyInfo
 import com.android.pos.data.entities.TaxData
 import com.android.pos.data.entities.TbAddress
+import com.android.pos.data.entities.TbCartItem
 import com.android.pos.data.entities.TbCustomer
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.entities.TbOrderType
@@ -948,9 +949,19 @@ class AllOrdersListingFragment(
                 prefProvider.setValue(Constants.OPEN_ORDER_ITEMS, Gson().toJson(order.orderItems))
                 prefProvider.setValueboolean(Constants.OPEN_ORDER_UPDATE_FOR_PRINT, true)
 
-                dashboardViewModel.addCart(
-                    cartModel(order)
-                )
+                val updatedCartModel = generateCartModelFromOrderModel(order)
+                dashboardViewModel.addCart(updatedCartModel)
+                dashboardViewModel.setUpdatedCartModel(updatedCartModel)
+                generateCartItemsListFromOrderModel(order)?.let {
+                    Log.d("27OCT23", "generated List: ${Gson().toJson(it)}")
+                    var itemDiscount = 0.0
+                    it.forEach {
+                        itemDiscount += it.discountPrice
+                        it.itemOriginalModifiersList = it.modifiers
+                    }
+                    dashboardViewModel.addOrderItemsToCartItems(it)
+                }
+
                 val bundle = Bundle()
                 bundle.putBoolean("update", true)
                 bundle.putInt("orderId", order.id)
@@ -1057,9 +1068,18 @@ class AllOrdersListingFragment(
                 }
 
                 LogUtil.logE(TAG, "getOrder  ${Gson().toJson(order)}")
-                dashboardViewModel.addCart(
-                    cartModel(order)
-                )
+                val updatedCartModel = generateCartModelFromOrderModel(order)
+                dashboardViewModel.addCart(updatedCartModel)
+                dashboardViewModel.setUpdatedCartModel(updatedCartModel)
+                generateCartItemsListFromOrderModel(order)?.let {
+                    Log.d("27OCT23", "generated List: ${Gson().toJson(it)}")
+                    var itemDiscount = 0.0
+                    it.forEach {
+                        itemDiscount += it.discountPrice
+                        it.itemOriginalModifiersList = it.modifiers
+                    }
+                    dashboardViewModel.addOrderItemsToCartItems(it)
+                }
 
                 val bundle = Bundle()
                 bundle.putBoolean("update", true)
@@ -1079,7 +1099,7 @@ class AllOrdersListingFragment(
                 bundle.putDouble("totalServiceCharge", order.totalServiceCharges)
                 bundle.putString("future_delivery_date", order.futureDeliveryDate)
                 bundle.putString("future_delivery_time", order.futureDeliveryTime)
-                bundle.putParcelable("cartList", cartModel(order))
+                bundle.putParcelable("cartList", updatedCartModel)
 
                 bundle.putInt("orderId", order.id)
                 LogUtil.logE("orderId :: ", order.id.toString())
@@ -3236,7 +3256,7 @@ class AllOrdersListingFragment(
 
     }
 
-    private fun cartModel(order: OnlineOrderResponseModel.Data): CartModel {
+    private fun generateCartModelFromOrderModel(order: OnlineOrderResponseModel.Data): CartModel {
         LogUtil.logE("futureDeliveryDate  ", Gson().toJson(order))
         return CartModel().apply {
             terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
@@ -3249,18 +3269,15 @@ class AllOrdersListingFragment(
             isOpenOrder = true
             serviceCharge = serviceChargesList(order)
             customer = assignCustomer(order)
-            items = inventoryList(order)
             note = order.note
-            var itemDiscount = 0.0
-            items?.forEach {
-                itemDiscount += it.discountPrice
-                it.itemOriginalModifiersList = it.modifiers
-            }
             discountPrice = order.totalDiscount
             deliveryType = order.deliveryType ?: ""
             taxlistDynamic = getTaxBirfucationList(order.orderItems)
-
         }
+    }
+
+    private fun generateCartItemsListFromOrderModel(order: OnlineOrderResponseModel.Data): List<TbCartItem>? {
+        return inventoryListNew(order)
     }
 
     // calculate taxes of order items
@@ -3406,20 +3423,14 @@ class AllOrdersListingFragment(
                 itemId = it.itemId
                 id = it.custom_item_id
                 name = it.itemName
-                cost = it.price
                 isManualSales = ismanualsale
                 manualSaleId = mannual_Sale_ID
                 price = it.price
-                priceType = ""
                 isEdited = it.isEdited
                 itemQuantity = it.quantity
-                kitchenName = ""
-                productCode = ""
                 sku = ""
                 isHide = false
                 sort = 0
-                imageUrl = ""
-                thumbImageUrl = ""
                 categoryId = it.categoryId
                 categoryName = ""
                 taxes = taxes(it.orderItemTax, order.locationId)
@@ -3432,6 +3443,53 @@ class AllOrdersListingFragment(
                 if (it.order_item_variation != null)
                     variationsAttributes = variationAtt(it.order_item_variation)
                 note = it.note
+            }
+
+            inventoryModelList.add(items)
+
+        }
+
+        return inventoryModelList
+    }
+
+    private fun inventoryListNew(order: OnlineOrderResponseModel.Data): List<TbCartItem>? {
+
+        val inventoryModelList = ArrayList<TbCartItem>()
+
+        order.orderItems.forEach {
+            var ismanualsale = false
+            var mannual_Sale_ID = ""
+            if (it.itemId == 1) {
+                mannual_Sale_ID = UUID.randomUUID().toString()
+                ismanualsale = true
+            }
+            val items = TbCartItem().apply {
+                orderItemId = it.id
+                itemId = it.itemId
+                id = it.custom_item_id
+                name = it.itemName
+                isManualSales = ismanualsale
+                manualSaleId = mannual_Sale_ID
+                price = it.price
+                isEdited = it.isEdited
+                itemQuantity = it.quantity
+                sku = ""
+                isHide = false
+                sort = 0
+                categoryId = it.categoryId
+                categoryName = ""
+                taxes = taxes(it.orderItemTax, order.locationId)
+                modifier_set_ids = modifiersIds(it.orderItemModifiers)
+                modifiers = modifierSets(it.orderItemModifiers)
+                discountPrice = it.discountAmount
+                discountType = it.discountType
+                if (it.discountId != null)
+                    discountId = it.discountId
+                if (it.order_item_variation != null)
+                    variationsAttributes = variationAtt(it.order_item_variation)
+                note = it.note
+                employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+                orderType = prefProvider.getValue(Constants.ORDER_TYPE, "")
             }
 
             inventoryModelList.add(items)

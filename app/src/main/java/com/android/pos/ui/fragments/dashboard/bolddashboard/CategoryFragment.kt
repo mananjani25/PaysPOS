@@ -521,7 +521,7 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
 
 
     override fun onClick(item: TbItem) {
-        listner.onItemSelected(item)
+        listner.onItemSelected(item, 0)
 
 
     }

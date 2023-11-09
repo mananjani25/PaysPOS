@@ -15,6 +15,7 @@ import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.Modifier
+import com.android.pos.data.entities.TbCartItem
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.data.entities.VariationsAttribute
@@ -52,9 +53,9 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
     ModifierLongClickCallback {
-    private var mainItem: TbItem? = null
-    private lateinit var item: TbItem
-    private var cartList: ArrayList<CartModel> = arrayListOf()
+    private var mainItem: TbCartItem? = null
+    private lateinit var item: TbCartItem
+    private var cartModelsList: ArrayList<CartModel> = arrayListOf()
     private lateinit var binding: FragmentAddItemBinding
     private var serviceChargesList: ArrayList<TbServiceCharge>? = null
     private var serviceChargesObserve: Observer<Resource<List<TbServiceCharge>>>? = null
@@ -77,7 +78,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 
     companion object {
         fun newInstance(
-            item: TbItem,
+            item: TbCartItem,
             callback: ItemListner,
             cartListModel: ArrayList<CartModel>,
             isItemUpdate: Boolean,
@@ -184,19 +185,15 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
     }
 
     private fun getCartList() {
-        viewModel.mAllWords(
-            prefProvider.getValue(ORDER_TYPE, TAKEOUT),
-            prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
-        ).observe(requireActivity()) {
-            LogUtil.logE(TAG, "MAllWords:::  ${Gson().toJson(it)}")
+        viewModel.observeLatestCartModel().observe(requireActivity()) {
             if (it.isEmpty()) {
-                cartList.clear()
-                cartList = arrayListOf()
+                cartModelsList.clear()
+                cartModelsList = arrayListOf()
 
             } else {
-                cartList.clear()
-                cartList = arrayListOf()
-                cartList.addAll(it.toCollection(arrayListOf()))
+                cartModelsList.clear()
+                cartModelsList = arrayListOf()
+                cartModelsList.addAll(it.toCollection(arrayListOf()))
             }
 
 
@@ -256,7 +253,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 
             if (prefProvider.getValue(ORDER_TYPE, "") == Constants.OPEN_ORDER) {
 
-                if (cartList.isEmpty()) {
+                if (cartModelsList.isEmpty()) {
                     val model = CartModel()
                     model.employeeID =
                         prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
@@ -269,11 +266,11 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                             model.orderTypeId = it.id
                         }
                     }
-                    cartList.add(model)
+                    cartModelsList.add(model)
                 }
 
             } else {
-                viewModel.createCart(cartList)
+                viewModel.createCart(cartModelsList)
             }
 
 
@@ -365,32 +362,43 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 
             if (isUpdateItem) {
                 if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
-                    val dineInList = cartList[0].dineInList
+                    item.guestIndexForDineIn = viewModel.dineInHeaderPosition
+                    val dineInList = cartModelsList[0].dineInList
                     dineInList?.get(0)?.headerPosition = viewModel.dineInSelectedItemHeaderPos
                     dineInList?.get(0)?.selectedPosition = viewModel.dineInSelectedItemHeaderPos
                     LogUtil.logE(TAG, "getItem  ${Gson().toJson(item)}")
-                    cartList[0].taxlistDynamic = arrayListOf()
-                    cartList[0].dineInList?.forEach { dineInModel ->
+                    cartModelsList[0].taxlistDynamic = arrayListOf()
+                    /*cartList[0].dineInList?.forEach { dineInModel ->
                         dineInModel.items.forEach { items ->
                             items.taxes?.forEach { taxData ->
                                 taxData.subTotalAmount = 0.0
                                 taxData.totalTaxTypePrice = 0.0
                             }
                         }
+                    }*/
+                    viewModel.currentCartItems.forEach {
+                        it.taxes?.forEach { taxData ->
+                            taxData.subTotalAmount = 0.0
+                            taxData.totalTaxTypePrice = 0.0
+                        }
                     }
 
-                    Log.e(TAG, "dineInListWhenUpdate:  ${Gson().toJson(cartList)}")
-                    viewModel.newCartLogicModifier(
+                    Log.e(TAG, "dineInListWhenUpdate:  ${Gson().toJson(cartModelsList)}")
+                    /*viewModel.newCartLogicModifier(
                         cartList,
                         item,
                         Constants.UPDATE,
                         false,
                         dineInList ?: arrayListOf()
-                    )
+                    )*/
+                    Log.d(TAG, "398 dineintest currentCartItems: "+viewModel.currentCartItems)
+                    Log.d(TAG, "dineintest item: "+item)
+                    Log.d(TAG, "dineintest dineInList: "+dineInList)
+                    viewModel.updateDineInCart(viewModel.currentCartItems,item,Constants.UPDATE,false,dineInList ?: arrayListOf())
                 } else {
-
-                    cartList[0].taxlistDynamic = arrayListOf()
-                    cartList[0].items?.forEach { items ->
+                    item.guestIndexForDineIn = null
+                    cartModelsList[0].taxlistDynamic = arrayListOf()
+                    viewModel.currentCartItems.forEach { items ->
                         items.taxes?.forEach { taxData ->
                             taxData.subTotalAmount = 0.0
                             taxData.totalTaxTypePrice = 0.0
@@ -401,40 +409,47 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                     if (checkVar()) {
 
                         LogUtil.logE("NewItem", "ItemSame ${Gson().toJson(item)}")
-                        viewModel.newCartLogicModifier(cartList, item, Constants.UPDATE, false, position = itemPosition)
+                        viewModel.updateCart(viewModel.currentCartItems, item, Constants.UPDATE, false, position = itemPosition)
 
                     } else {
 
                         LogUtil.logE("NewItem", "ItemSameNot")
                         item.orderItemId = null
-                        viewModel.newCartLogicModifier(cartList, item, Constants.UPDATE, false, position = itemPosition)
+                        viewModel.updateCart(viewModel.currentCartItems, item, Constants.UPDATE, false, position = itemPosition)
                     }
 
 
                 }
             } else {
                 if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
-
+                    item.guestIndexForDineIn = viewModel.dineInHeaderPosition
                     if (prefProvider.getValueboolean(DINE_IN_UPDATE, false)) {
                         item.isEdited = true
                     }
-                    val dineInList = cartList[0].dineInList
-                    Log.e(TAG, "checkCartIsEmpty  ${cartList.size}")
+                    val dineInList = cartModelsList[0].dineInList
+                    Log.e(TAG, "checkCartIsEmpty  ${cartModelsList.size}")
                     LogUtil.logE(TAG, "dineInList:  ${Gson().toJson(dineInList)}")
                     if (dineInList?.isNotEmpty() == true && dineInList != null) {
                         dineInList[0].selectedPosition = viewModel.dineInHeaderPosition
-                        viewModel.newCartLogicModifier(
-                            cartList,
+                        /*viewModel.newCartLogicModifier(
+                            cartModelsList,
                             item,
                             Constants.ADD,
                             false,
                             dineInList
-                        )
+                        )*/
+
+                        Log.d(TAG, "448 dineintest currentCartItems: "+viewModel.currentCartItems)
+                        Log.d(TAG, "dineintest item: "+item)
+                        Log.d(TAG, "dineintest dineInList: "+dineInList)
+                        viewModel.updateDineInCart(viewModel.currentCartItems,item,Constants.ADD,false,dineInList)
                     }
                 } else {
+                    item.guestIndexForDineIn = null
 
                     Log.e("cshffasf", "checkElsee")
-                    viewModel.newCartLogicModifier(cartList, item, Constants.ADD, false)
+                    //val tbItem = TbCartItem().convertToCartItem(item, item)
+                    viewModel.updateCart(viewModel.currentCartItems, item, Constants.ADD, false)
                 }
             }
 
@@ -450,31 +465,31 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
             var totalItemswithQuantity = 0
 
             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
-                cartList.get(0).dineInList?.forEach {
+                viewModel.cartModel?.dineInList?.forEach {
                     it.items.forEach { it1 ->
                         totalItemswithQuantity += it1.itemQuantity
                     }
                 }
             } else {
-                cartList[0].items?.forEach {
+                viewModel.currentCartItems.forEach {
                     totalItemswithQuantity += it.itemQuantity
 
                 }
             }
 
             var perItemDiscount = 0.0
-            if (cartList[0].discountPrice != 0.0) {
+            if (viewModel.cartModel?.discountPrice != 0.0) {
                 if (totalItemswithQuantity == 0) {
                     totalItemswithQuantity = 1
                 }
                 perItemDiscount =
-                    MethodUtils.roundOffAmountDouble(cartList[0].discountPrice / totalItemswithQuantity)
+                    MethodUtils.roundOffAmountDouble(viewModel.cartModel?.discountPrice!! / totalItemswithQuantity)
             }
 
             LogUtil.logE(TAG, "totalItemswithQuantity  ${totalItemswithQuantity}")
             LogUtil.logE(TAG, "perItemDiscount  ${perItemDiscount}")
             val bundle = Bundle().apply {
-                putDouble("orderDiscount", cartList[0].discountPrice)
+                putDouble("orderDiscount", viewModel.cartModel?.discountPrice!!)
                 putBoolean("isFromDetails", true)
                 putParcelable("model", item)
                 putDouble("itemOrderDiscount", perItemDiscount)
@@ -499,7 +514,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
             LogUtil.logE("HeaderPosdineInHea", "${viewModel.dineInHeaderPosition}")
             val bundle = Bundle().apply {
                 putParcelable("item", item)
-                putParcelableArrayList("cartList", cartList)
+                putParcelableArrayList("cartList", cartModelsList)
                 putInt("headerPos", viewModel.dineInHeaderPosition)
             }
 
@@ -514,17 +529,25 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 
         binding.txtRemoveItem.setOnClickListener {
             Log.e(TAG, "getDeleteItem  ${Gson().toJson(item)}")
-            makeItemEdited(item)
+            makeItemEditedNew(item)
             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
+                item.guestIndexForDineIn = viewModel.dineInHeaderPosition
                 LogUtil.logE(TAG, "isEditedisEdited  ${item.isEdited}")
-                cartList[0].dineInList?.let { it1 ->
-                    viewModel.newCartLogicModifier(
-                        cartList, item, DELETE, false,
+                cartModelsList[0].dineInList?.let { it1 ->
+                    /*viewModel.newCartLogicModifier(
+                        cartModelsList, item, DELETE, false,
                         it1
-                    )
+                    )*/
+
+                    Log.d(TAG, "548 dineintest currentCartItems: "+viewModel.currentCartItems)
+                    Log.d(TAG, "dineintest item: "+Gson().toJson(item))
+                    Log.d(TAG, "dineintest dineInList: "+it1)
+                    viewModel.updateDineInCart(viewModel.currentCartItems,item, DELETE,false,it1)
                 }
             } else {
-                viewModel.newCartLogicModifier(cartList, item, DELETE, item.isManualSales)
+                item.guestIndexForDineIn = null
+                viewModel.updateCart(viewModel.currentCartItems,item, DELETE,item.isManualSales)
+                //viewModel.newCartLogicModifier(cartModelsList, item, DELETE, item.isManualSales)
             }
             requireActivity().supportFragmentManager.popBackStackImmediate(
                 AddItemFragment.javaClass.getName(),
@@ -544,7 +567,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
     }
 
     fun createCart(): ArrayList<CartModel>? {
-        if (cartList.isEmpty()) {
+        if (cartModelsList.isEmpty()) {
             val model = CartModel()
             model.employeeID =
                 prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
@@ -558,17 +581,17 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                     model.orderTypeId = it.id
                 }
             }
-            cartList.add(0, model)
+            cartModelsList.add(0, model)
             // viewModel.createEmptyCart(model)
-            return cartList
+            return cartModelsList
         }
 
-        return cartList
+        return cartModelsList
     }
 
     private fun getData() {
         originalModifiersList = arrayListOf()
-        item = requireArguments().getParcelable<TbItem>("item") ?: TbItem()
+        item = requireArguments().getParcelable<TbCartItem>("item") ?: TbCartItem()
         Log.e(TAG, "getMainItemAdd  ${Gson().toJson(item)}")
         originalModifiersList = item.itemOriginalModifiersList ?: arrayListOf()
         if (item.modifiers.isNotEmpty()) {
@@ -581,12 +604,12 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                 mainVariationId.add(it.id ?: 0)
             }
         }
-        mainItem = requireArguments().getParcelable<TbItem>("item") ?: TbItem()
+        mainItem = requireArguments().getParcelable<TbCartItem>("item") ?: TbCartItem()
         if (requireArguments().containsKey("itemPosition")) {
             itemPosition = requireArguments().getInt("itemPosition") ?: -1
         }
         LogUtil.logE(TAG, "getIrem  ${Gson().toJson(item)}")
-        cartList = requireArguments().getSerializable("cartList") as ArrayList<CartModel>
+        cartModelsList = requireArguments().getSerializable("cartList") as ArrayList<CartModel>
         setData()
     }
 
@@ -1041,6 +1064,20 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
     }
 
     private fun makeItemEdited(item: TbItem) {
+        LogUtil.logE(TAG, "isOrderUpdateOpen:  ${Gson().toJson(viewModel.openOrderUpdate)}")
+        if (viewModel.openOrderUpdate == true) {
+            //for open order and edit cart
+            item.isEdited = true
+        } else if (isUpdateItem && prefProvider.getValueboolean(
+                DINE_IN_UPDATE,
+                false
+            ) && item.orderItemId != null && item.orderItemId != 0
+        ) {
+            item.isEdited = true
+        }
+    }
+
+    private fun makeItemEditedNew(item: TbCartItem) {
         LogUtil.logE(TAG, "isOrderUpdateOpen:  ${Gson().toJson(viewModel.openOrderUpdate)}")
         if (viewModel.openOrderUpdate == true) {
             //for open order and edit cart

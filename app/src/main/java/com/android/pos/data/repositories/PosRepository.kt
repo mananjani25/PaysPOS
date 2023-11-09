@@ -54,8 +54,10 @@ import com.android.pos.utils.performGetOperation
 import com.android.pos.utils.performGetOperationDatabase
 import com.android.pos.utils.performGetOperationNew
 import com.android.pos.utils.statusUtils.Resource
+import kotlinx.coroutines.Dispatchers
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
@@ -737,6 +739,9 @@ class PosRepository @Inject constructor(
         return appDatabase.cartDao().allItemFlow(orderType, employee_Id)
     }
 
+    fun getAllCartItems(orderType: String, employee_Id: Int) = appDatabase.cartDao().getCartItems(orderType, employee_Id)
+    fun getDineInCartItems(guestIndexForDineIn:Int) = appDatabase.cartDao().getDineInCartItems(guestIndexForDineIn)
+
     fun getCartDineInList(employee_Id: Int): LiveData<List<DineInCartModel>> {
         return appDatabase.cartDao().allItemDineIn(DINE_IN, employee_Id)
     }
@@ -748,6 +753,10 @@ class PosRepository @Inject constructor(
 
     fun getManualSaleItems(orderType: String, employee_Id: Int): LiveData<List<CartModel>> {
         return appDatabase.cartDao().getManualSaleItems(orderType, employee_Id)
+    }
+
+    fun getManualSaleCartItems(orderType: String, employee_Id: Int): LiveData<List<TbCartItem>> {
+        return appDatabase.cartDao().getManualSaleCartItems(orderType, employee_Id)
     }
 
     fun getManualCategoryId(): LiveData<TbCategory> {
@@ -763,6 +772,60 @@ class PosRepository @Inject constructor(
 
     }
 
+    fun deleteCartModel(cartModel: CartModel){
+        synchronized(this){
+            appDatabase.cartDao().deleteCartModel(cartModel)
+        }
+    }
+
+    fun updateCartModel(cartModel: CartModel) {
+        synchronized(this) {
+            appDatabase.cartDao().updateCartModel(cartModel)
+        }
+    }
+
+    fun observeCartModel(): LiveData<List<CartModel>> {
+        return appDatabase.cartDao().observeCartModel()
+    }
+    fun getCartModels(): List<CartModel> {
+        return appDatabase.cartDao().getCartModels()
+    }
+
+    suspend fun addItemToCart(tbCartItem: TbCartItem) {
+        val startTime = System.currentTimeMillis()
+        appDatabase.cartDao().addCartItem(tbCartItem)
+        // Calculate the time taken
+        val endTime = System.currentTimeMillis()
+        val timeTaken = endTime - startTime
+        Log.d("InsertTime", "Time taken to insert: $timeTaken ms")
+    }
+
+    suspend fun addCartItemsList(tbCartItems: List<TbCartItem>) {
+        val startTime = System.currentTimeMillis()
+        appDatabase.cartDao().addCartItemsList(tbCartItems)
+        // Calculate the time taken
+        val endTime = System.currentTimeMillis()
+        val timeTaken = endTime - startTime
+        Log.d("InsertTime", "Time taken to insert: $timeTaken ms")
+    }
+
+    suspend fun deleteItemFromCartItems(tbCartItem: TbCartItem){
+        appDatabase.cartDao().deleteItemFromCartItems(tbCartItem)
+    }
+
+    suspend fun removeItemFromCart(itemId: Int , guestIndexForDineIn: Int) {
+        val startTime = System.currentTimeMillis()
+        appDatabase.cartDao().removeCartItem(itemId , guestIndexForDineIn )
+        // Calculate the time taken
+        val endTime = System.currentTimeMillis()
+        val timeTaken = endTime - startTime
+        Log.d("InsertTime", "Time taken to insert: $timeTaken ms")
+    }
+
+    suspend fun getLatestPrimaryKey(): Int {
+        return appDatabase.cartDao().getLatestPrimaryKey()
+    }
+
     suspend fun addItemCartDineIn(cartModel: DineInCartModel) {
 
         appDatabase.cartDao().addDineInCartDao(cartModel)
@@ -775,7 +838,8 @@ class PosRepository @Inject constructor(
 
 
     suspend fun deleteCart(employee_id: Int) {
-        appDatabase.cartDao().delete(employee_id)
+        appDatabase.cartDao().delete(employee_id)//delete cart model
+        appDatabase.cartDao().deleteCartItems()//delete cart items from TbCartItem
     }
 
     suspend fun deleteAllCart() {
@@ -784,6 +848,10 @@ class PosRepository @Inject constructor(
 
     suspend fun deleteManualSaleCart(employee_id: Int) {
         appDatabase.cartDao().deleteManualSale(employee_id)
+    }
+
+    suspend fun deleteManualSaleItemsFromCartItem(employee_id: Int) {
+        appDatabase.cartDao().deleteManualSaleItemsFromCartItem(employee_id)
     }
 
     suspend fun updateModifierSort(allCategories: ArrayList<ModifierSet>) {

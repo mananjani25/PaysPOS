@@ -62,7 +62,7 @@ class ItemAdapter(
                 try {
                     list[position]?.let {
                         LogUtil.logE("ITemAdapter", "onClickposition  ${position}")
-                        listener.onItemSelected(it)
+                        listener.onItemSelected(it, position)
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()

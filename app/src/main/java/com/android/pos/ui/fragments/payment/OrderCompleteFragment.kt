@@ -38,6 +38,7 @@ import com.android.pos.aidl.ICallback
 import com.android.pos.aidl.IWoyouService
 import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.RedeemLoyaltyInfo
+import com.android.pos.data.entities.TbCartItem
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.data.model.DineInModel
@@ -1088,8 +1089,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         var guestPos = requireArguments().getInt(GUEST_POSITION)
         LogUtil.logE(TAG, "getGuestPosition  ${guestPos}")
 
-        var listItem: java.util.ArrayList<TbItem> = arrayListOf()
-        var listItemWT: java.util.ArrayList<TbItem> = arrayListOf()
+        var listItem: java.util.ArrayList<TbCartItem> = arrayListOf()
+        var listItemWT: java.util.ArrayList<TbCartItem> = arrayListOf()
         for (i in 1 until dineInList.size) {
             if (dineInList.get(i).isHeader == 1) {
                 dineInList.get(i).item?.let { it1 -> listItemWT.add(it1) }
@@ -1150,9 +1151,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         type: String,
         paymentType: String,
         guestPrint: Boolean,
-        listGuestItem: ArrayList<TbItem>,
+        listGuestItem: ArrayList<TbCartItem>,
         guestName: String,
-        listWTitems: ArrayList<TbItem>,
+        listWTitems: ArrayList<TbCartItem>,
         subTotalGuest: Double = 0.0,
         total: Double = 0.0,
         taxGuest: Double = 0.0,
@@ -1299,9 +1300,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         customerReceiptPrinters: PrinterResponse.Data.CustomerReceiptPrinters,
         type: String,
         paymentType: String,
-        listGuestItem: ArrayList<TbItem>,
+        listGuestItem: ArrayList<TbCartItem>,
         guestName: String,
-        listWTitems: ArrayList<TbItem>,
+        listWTitems: ArrayList<TbCartItem>,
         checkOutDineInModel: GuestDataModel?,
 
         ) {
@@ -2515,8 +2516,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private fun sunmiPrinterInit(
         ipAddress: String,
         paymentType: String,
-        listWTitems: java.util.ArrayList<TbItem>,
-        listGuestItem: java.util.ArrayList<TbItem>,
+        listWTitems: java.util.ArrayList<TbCartItem>,
+        listGuestItem: java.util.ArrayList<TbCartItem>,
         guestName: String,
         finaldisLocal: Double,
         checkOutDineInModel: GuestDataModel?,
@@ -2547,8 +2548,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     private fun connect(
         paymentType: String,
-        listWTitems: java.util.ArrayList<TbItem>,
-        listGuestItem: java.util.ArrayList<TbItem>,
+        listWTitems: java.util.ArrayList<TbCartItem>,
+        listGuestItem: java.util.ArrayList<TbCartItem>,
         guestName: String,
         finaldisLocal: Double,
         checkOutDineInModel: GuestDataModel?,
@@ -2611,8 +2612,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     private fun printSunmiDinein(
         paymentType: String,
-        listWTitems: ArrayList<TbItem>,
-        listGuestItem: ArrayList<TbItem>,
+        listWTitems: ArrayList<TbCartItem>,
+        listGuestItem: ArrayList<TbCartItem>,
         guestName: String,
         finaldisLocal: Double,
         checkOutDineInModel: GuestDataModel?,
@@ -3061,8 +3062,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     private fun printSunmiDineinInner(
         paymentType: String,
-        listWTitems: ArrayList<TbItem>,
-        listGuestItem: ArrayList<TbItem>,
+        listWTitems: ArrayList<TbCartItem>,
+        listGuestItem: ArrayList<TbCartItem>,
         guestName: String,
         finaldisLocal: Double,
         checkOutDineInModel: GuestDataModel?,
@@ -12995,8 +12996,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     private fun setService(
         paymentType: String,
-        listWTitems: java.util.ArrayList<TbItem>,
-        listGuestItem: java.util.ArrayList<TbItem>,
+        listWTitems: java.util.ArrayList<TbCartItem>,
+        listGuestItem: java.util.ArrayList<TbCartItem>,
         guestName: String,
         finaldisLocal: Double,
         checkOutDineInModel: GuestDataModel?,

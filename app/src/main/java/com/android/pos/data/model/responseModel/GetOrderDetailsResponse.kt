@@ -300,8 +300,9 @@ data class GetOrderDetailsResponse(
             @SerializedName("order_item_variation")
             val order_item_variation: OrderItemVariationAttribute?,
             @SerializedName("sort")
-            val sort: Int = 0
-
+            val sort: Int = 0,
+            @SerializedName("guest_index_for_dine_in")
+            var guestIndexForDineIn : Int? = 0
         ) : Parcelable {
 
             @Parcelize

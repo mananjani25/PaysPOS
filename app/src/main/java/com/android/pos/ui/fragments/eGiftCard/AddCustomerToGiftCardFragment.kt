@@ -14,8 +14,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.pos.R
 import com.android.pos.data.entities.CartModel
+import com.android.pos.data.entities.TbCartItem
 import com.android.pos.data.entities.TbCustomer
-import com.android.pos.data.entities.TbItem
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentAddCustomerToGiftCardBinding
 import com.android.pos.di.PrefProvider
@@ -177,16 +177,19 @@ class AddCustomerToGiftCardFragment : Fragment(), ItemCallback {
         prefProvider.setValueboolean(Constants.IS_ADD_VALUE_IN_GIFT_CARD, false)
 
         val cm = CartModel()
-        val tbItem = TbItem()
+        val tbItem = TbCartItem()
         tbItem.name = "Digital Gift Card"
         tbItem.quantity = 1
         tbItem.itemQuantity = 1
         val totalPrice =
             prefProvider.getValue(Constants.GIFT_CARD_PURCHASE_AMOUNT, "0.0").toDouble()
         tbItem.price = totalPrice
+        tbItem.employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1)
+        tbItem.orderTypeId = 0
+        tbItem.orderType = Constants.GIFT_CARD
+        tbItem.orderTypeName = Constants.GIFT_CARD
 
         cm.apply {
-            items = listOf(tbItem)
             employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1)
             terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
             isOpenOrder = false
@@ -196,6 +199,7 @@ class AddCustomerToGiftCardFragment : Fragment(), ItemCallback {
         }
 
         dashboardViewModel.addCart(cm)
+        dashboardViewModel.addItemToCartItems(tbItem)
 
         val bundle = Bundle()
         bundle.putBoolean("update", true)

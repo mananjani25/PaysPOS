@@ -10,6 +10,7 @@ import androidx.core.view.get
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
+import com.android.pos.data.entities.TbCartItem
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.DineInModel
 import com.android.pos.databinding.ViewDineInItemBinding
@@ -21,6 +22,7 @@ import com.android.pos.utils.extensions.setOnSingleClickListener
 
 class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>() {
     private var list: ArrayList<DineInModel> = arrayListOf()
+    private var itemList: ArrayList<TbCartItem> = arrayListOf()
     private lateinit var listner: DineInCallback
     private lateinit var itemAdapter: com.android.pos.ui.adapter.boldpos.CartAdapter
     private val TAG = "DineInAdapter"
@@ -33,7 +35,7 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: DineInAdapter.MyViewHolder, position: Int) {
-        holder.bind(list.get(position), position)
+        holder.bind(list.get(position), itemList , position)
     }
 
     override fun getItemCount(): Int {
@@ -43,14 +45,19 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>() {
     inner class MyViewHolder(private val binding: ViewDineInItemBinding) :
         RecyclerView.ViewHolder(binding.root), MyCallback {
 
-        fun bind(model: DineInModel, position: Int) {
+        fun bind(model: DineInModel , itemList : ArrayList<TbCartItem>, position: Int) {
             binding.model = model
             binding.executePendingBindings()
             itemAdapter = CartAdapter()
             binding.rvCart.adapter = itemAdapter
             itemAdapter.setCallback(this)
             //swipeListener(binding.rvCart, layoutPosition, binding.root.context)
-            itemAdapter.addCart(model.items)
+            itemList.forEach {
+                if (it.guestIndexForDineIn == layoutPosition){
+                    itemAdapter.addItemInList(it)
+                    itemAdapter.notifyDataSetChanged()
+                }
+            }
 
             if (list.get(layoutPosition).customer != null) {
                 binding.txtTableName.setText(
@@ -172,16 +179,20 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>() {
             }
         }
 
-        override fun onItemClickListener(view: View?, data: TbItem, position: Int) {
+        override fun onItemClickListener(view: View?, data: TbCartItem, position: Int) {
             list.get(0).itemPosition = position
             list.get(0).headerPosition = layoutPosition
             listner.onItemSelected(bindingAdapterPosition, position, data)
 
         }
 
+        override fun onCartItemClickListener(view: View?, data: TbCartItem, position: Int) {
+            TODO("Not yet implemented")
+        }
+
     }
 
-    fun setList(list: ArrayList<DineInModel>) {
+    fun setList(list: ArrayList<DineInModel> , itemList : ArrayList<TbCartItem>) {
         /*
         for (i in 0 until list.size) {
             if (list[i].items.isNotEmpty()) {
@@ -212,7 +223,13 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>() {
                 filteredList.add(it)
             }
         }
+        this.itemList = itemList
         this.list = filteredList
+        notifyDataSetChanged()
+    }
+
+    fun setItemList( itemList : ArrayList<TbCartItem>){
+        this.itemList = itemList
         notifyDataSetChanged()
     }
 
@@ -230,9 +247,9 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>() {
 
     interface DineInCallback {
         fun onHeaderSelected(position: Int)
-        fun onItemSelected(headerPosition: Int, position: Int, item: TbItem)
+        fun onItemSelected(headerPosition: Int, position: Int, item: TbCartItem)
         fun onCustomerClicked(position: Int, isRemoved: Boolean)
-        fun onItemDelete(position: Int, itemPosition: Int, data: TbItem)
+        fun onItemDelete(position: Int, itemPosition: Int, data: TbCartItem)
         fun onRemoveGuest(position: Int)
     }
 
@@ -284,7 +301,8 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>() {
                     listner.onItemDelete(
                         headerPos,
                         position,
-                        list.get(headerPos).items.get(position)
+                        itemList[position]
+//                        list.get(headerPos).items.get(position)
                     )
                 }
             })

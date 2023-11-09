@@ -8,10 +8,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
-import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
-import com.android.pos.data.entities.TbItem
+import com.android.pos.data.entities.TbCartItem
 import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.data.model.DineInModel
 import com.android.pos.data.remote.Constants
@@ -21,6 +20,7 @@ import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 import com.google.gson.Gson
 import java.util.*
+import kotlin.collections.ArrayList
 
 class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private var list: ArrayList<DineInModel> = arrayListOf()
@@ -325,8 +325,8 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
             binding.btnPay.setOnClickListener {
                 if (!list.get(position).isPaid) {
-                    var listItem: ArrayList<TbItem> = arrayListOf()
-                    var listItemWT: ArrayList<TbItem> = arrayListOf()
+                    var listItem: ArrayList<TbCartItem> = arrayListOf()
+                    var listItemWT: ArrayList<TbCartItem> = arrayListOf()
                     for (i in 0 until list.size) {
                         if (list[i].title?.lowercase() == "Whole Table".lowercase() && i != (list.size - 1)) {
 
@@ -382,8 +382,8 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
             binding.imgPrint.setOnClickListener {
                 var fisrtTime: Boolean = false
-                var listItem: ArrayList<TbItem> = arrayListOf()
-                var listItemWT: ArrayList<TbItem> = arrayListOf()
+                var listItem: ArrayList<TbCartItem> = arrayListOf()
+                var listItemWT: ArrayList<TbCartItem> = arrayListOf()
                 for (i in 1 until list.size) {
                     if (list.get(i).isHeader == 1) {
                         list.get(i).item?.let { it1 -> listItemWT.add(it1) }
@@ -442,8 +442,8 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
                 if (buttonView.isPressed) {
                     if (isChecked) {
-                        var listItem: ArrayList<TbItem> = arrayListOf()
-                        var listItemWithGuest:HashMap<String,ArrayList<TbItem>> = hashMapOf()
+                        var listItem: ArrayList<TbCartItem> = arrayListOf()
+                        var listItemWithGuest:HashMap<String,ArrayList<TbCartItem>> = hashMapOf()
 
 
                         val builder = java.lang.StringBuilder()
@@ -573,7 +573,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
                     if (isChecked) {
                         if (list.get(layoutPosition).item != null) {
-                            var listItemWithGuest:HashMap<String,ArrayList<TbItem>> = hashMapOf()
+                            var listItemWithGuest:HashMap<String,ArrayList<TbCartItem>> = hashMapOf()
                             var itemsNew = list[bindingAdapterPosition].item
                             var ids: String? = null
                             itemsNew?.orderItemId?.let { ids = it.toString() }
@@ -581,7 +581,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
                             for (i in bindingAdapterPosition downTo  0){
                                 if (list.get(i).isHeader == 0){
-                                    var listITems:ArrayList<TbItem> = arrayListOf()
+                                    var listITems:ArrayList<TbCartItem> = arrayListOf()
                                     list[bindingAdapterPosition].item?.let { listITems.add(it) }
                                     listItemWithGuest.set(list.get(i).title.toString(),listITems)
 
@@ -740,7 +740,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
              }*/
         }
 
-        override fun onSendOrderToKitchen(item: TbItem) {
+        override fun onSendOrderToKitchen(item: TbCartItem) {
 
             listner.onSendItemToKitchen(item)
         }
@@ -763,17 +763,17 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             serviceCharge: Double,
             discount: Double,
             guestDividedAmt: Double,
-            listItemWT: ArrayList<TbItem>,
-            listItemGuestSelected: ArrayList<TbItem>
+            listItemWT: ArrayList<TbCartItem>,
+            listItemGuestSelected: ArrayList<TbCartItem>
         )
 
-        fun onSendItemToKitchen(item: TbItem)
-        fun onWholeTableToKitchen(ids: String, listItems: ArrayList<TbItem>,listItemWithGuest: HashMap<String, ArrayList<TbItem>>)
-        fun singleItemFired(id: String, position: Int, item: TbItem,listItemWithGuest: HashMap<String, ArrayList<TbItem>>)
+        fun onSendItemToKitchen(item: TbCartItem)
+        fun onWholeTableToKitchen(ids: String, listItems: ArrayList<TbCartItem>,listItemWithGuest: HashMap<String, ArrayList<TbCartItem>>)
+        fun singleItemFired(id: String, position: Int, item: TbCartItem,listItemWithGuest: HashMap<String, ArrayList<TbCartItem>>)
         fun onGuestPrint(
-            listItem: ArrayList<TbItem>,
+            listItem: ArrayList<TbCartItem>,
             guestName: String,
-            listWTitems: ArrayList<TbItem>,
+            listWTitems: ArrayList<TbCartItem>,
             subTotalGuest: Double,
             total: Double,
             taxGuest: Double,
@@ -781,7 +781,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             divideDiscount: Double
         )
 
-        fun onAddToWastage(position: Int, item: TbItem)
+        fun onAddToWastage(position: Int, item: TbCartItem)
         fun onRemoveGuest(position: Int)
     }
 
@@ -793,7 +793,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         return list[position].isHeader
     }
 
-    private fun totalPrice(model: TbItem): Double {
+    private fun totalPrice(model: TbCartItem): Double {
 
         return model.price * model.itemQuantity
     }
