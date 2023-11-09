@@ -14,7 +14,6 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -24,7 +23,6 @@ import com.android.pos.data.entities.CashDiscountModel
 import com.android.pos.data.entities.TaxData
 import com.android.pos.data.entities.TbCartItem
 import com.android.pos.data.entities.TbCustomer
-import com.android.pos.data.entities.TbItem
 import com.android.pos.data.entities.TbOrderType
 import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.data.model.DineInModel
@@ -45,6 +43,7 @@ import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.GIFT_CARD
 import com.android.pos.data.remote.Constants.IS_FROM_ALL_ORDER
 import com.android.pos.data.remote.Constants.IS_LAST_ITEM_DELETE
+import com.android.pos.data.remote.Constants.IS_PAX_PAYMENT_FAILED
 import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER
 import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER
 import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER_ID
@@ -70,7 +69,6 @@ import com.android.pos.databinding.FragmentCartBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.DineInAdapter
 import com.android.pos.ui.adapter.OrderTypeAdapter
-import com.android.pos.ui.adapter.boldpos.CartAdapter
 import com.android.pos.ui.adapter.boldpos.CartItemsAdapter
 import com.android.pos.ui.adapter.boldpos.TaxBirfurcationAdapter
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
@@ -92,11 +90,14 @@ import com.android.pos.utils.extensions.getColor
 import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.invisible
 import com.android.pos.utils.extensions.isVisible
+import com.android.pos.utils.extensions.runOnUiThread
 import com.android.pos.utils.extensions.setOnSingleClickListener
 import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.getCustomerDisplay
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -146,7 +147,7 @@ class CartFragment(
     var cashDiscountType = ""
     var cartlist: ArrayList<CartModel> = arrayListOf()
     var tempList: JSONArray? = null
-    private var tempStored:Boolean = false
+    private var tempStored: Boolean = false
     var itemModified = false
     var cartModelsList: ArrayList<CartModel> = arrayListOf()
     private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
@@ -227,7 +228,7 @@ class CartFragment(
         isFromPayment = arguments?.getBoolean("isFromPayment") ?: false
         isActiveOrder = arguments?.getBoolean("isFromActiveOrder") ?: false
 
-        if (!prefProvider.getValueboolean(Constants.BACK_FROM_PAYMENT,false)){
+        if (!prefProvider.getValueboolean(Constants.BACK_FROM_PAYMENT, false)) {
             prefProvider.setValueboolean(Constants.NO_NEED_TO_PRINT, false)
         }
         findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Bundle>("data")
@@ -280,7 +281,14 @@ class CartFragment(
             binding.rlCartView.visible()
             binding.rvOrderType.gone()
 
-            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN || prefProvider.getValueboolean(Constants.IS_ADD_VALUE_IN_GIFT_CARD, false)) {
+            if (prefProvider.getValue(
+                    ORDER_TYPE,
+                    TAKEOUT
+                ) == DINE_IN || prefProvider.getValueboolean(
+                    Constants.IS_ADD_VALUE_IN_GIFT_CARD,
+                    false
+                )
+            ) {
                 binding.txtAddCustomer.invisible()
             } else {
                 binding.txtAddCustomer.visible()
@@ -355,7 +363,7 @@ class CartFragment(
 
         findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Bundle>("data")
             ?.observe(viewLifecycleOwner) {
-                Log.d(TAG, "splitDetector onCreateView: "+it.getInt("splitvalue"))
+                Log.d(TAG, "splitDetector onCreateView: " + it.getInt("splitvalue"))
                 splitValue = it.getInt("splitvalue")
             }
 
@@ -585,7 +593,7 @@ class CartFragment(
                 viewModel.updateCartModel(cartModel = it)
             }
 
-            if(viewModel.currentCartItems.isNotEmpty()){
+            if (viewModel.currentCartItems.isNotEmpty()) {
                 viewModel.currentCartItems.forEach {
                     it.orderTypeName = data.name
                     it.orderType = data.orderType
@@ -711,7 +719,7 @@ class CartFragment(
 
 
 
-        dineInCartAdapter.setList(dineInList ,viewModel.currentCartItems)
+        dineInCartAdapter.setList(dineInList, viewModel.currentCartItems)
 
         if (cartModelsList.isEmpty()) {
             val cartModel = CartModel().apply {
@@ -744,7 +752,8 @@ class CartFragment(
     private fun checkDineInEditOrder() {
         if (arguments?.getBoolean("is_dine_in_edit") == true) {
             val dineInList = arguments?.getParcelableArrayList<DineInModel>("dine_in_list")
-            val dineInItemsList = arguments?.getParcelableArrayList<TbCartItem>("dine_in_cart_items")
+            val dineInItemsList =
+                arguments?.getParcelableArrayList<TbCartItem>("dine_in_cart_items")
 
             if (dineInList?.isNotEmpty() == true) {
                 //  binding.layoutCart.txtOrderType.setText("Dine In")
@@ -752,7 +761,7 @@ class CartFragment(
                 dineInCartAdapter = DineInAdapter()
                 dineInCartAdapter.setListner(this)
                 //dineInCartAdapter.setList(dineInList)
-                dineInCartAdapter.setList(dineInList ,viewModel.currentCartItems)
+                dineInCartAdapter.setList(dineInList, viewModel.currentCartItems)
 
 
                 if (cartModelsList.isEmpty()) {
@@ -800,14 +809,14 @@ class CartFragment(
                 // IMPORTANT - remove this as this is just for logs
                 dineInItemsList?.forEach {
                     it.taxes = arrayListOf()
-                    Log.d(TAG, "testDineInUpdate dineInItemsList: "+Gson().toJson(it))
+                    Log.d(TAG, "testDineInUpdate dineInItemsList: " + Gson().toJson(it))
                 }
                 // IMPORTANT - remove this as this is just for logs
                 viewModel.currentCartItems.forEach {
                     it.taxes = arrayListOf()
-                    Log.d(TAG, "testDineInUpdate dineInItemsList: "+viewModel.currentCartItems)
+                    Log.d(TAG, "testDineInUpdate dineInItemsList: " + viewModel.currentCartItems)
                 }
-                viewModel.updateDineInCart(viewModel.currentCartItems,null, ADD,false,dineInList)
+                viewModel.updateDineInCart(viewModel.currentCartItems, null, ADD, false, dineInList)
 
 
             }
@@ -895,7 +904,11 @@ class CartFragment(
                         viewModel.selectedCustomer = null
                         viewModel.redeemLoyaltyInfo.isLoyaltyApplied = false
                         viewModel.redeemLoyaltyInfo.needToApplyLoyalty = false
-                        if (MethodUtils.isEnableCashDiscount(requireContext()) && prefProvider.getValue(ORDER_TYPE, TAKEOUT) != Constants.GIFT_CARD) {
+                        if (MethodUtils.isEnableCashDiscount(requireContext()) && prefProvider.getValue(
+                                ORDER_TYPE,
+                                TAKEOUT
+                            ) != Constants.GIFT_CARD
+                        ) {
                             binding.linearCashDiscount.visible()
                             if (prefProvider.getValue(
                                     OPTION_TYPE,
@@ -1060,9 +1073,9 @@ class CartFragment(
         } else {
             if (view != null) {
 
-                viewModel.observeLatestCartModel().observe(viewLifecycleOwner){
+                viewModel.observeLatestCartModel().observe(viewLifecycleOwner) {
                     var latestCartModel: CartModel? = null
-                    if(it.isNotEmpty()){
+                    if (it.isNotEmpty()) {
                         latestCartModel = it[0]
                         viewModel.setUpdatedCartModel(latestCartModel)
                         if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
@@ -1076,7 +1089,8 @@ class CartFragment(
                                 }
 
                                 dineInCartAdapter.setList(
-                                    dineInList?.toCollection(arrayListOf()) ?: arrayListOf() , viewModel.currentCartItems
+                                    dineInList?.toCollection(arrayListOf()) ?: arrayListOf(),
+                                    viewModel.currentCartItems
                                 )
 
 
@@ -1135,7 +1149,7 @@ class CartFragment(
                 viewModel.getAllCartItems(
                     prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT),
                     prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
-                ).asLiveData().observe(viewLifecycleOwner){
+                ).asLiveData().observe(viewLifecycleOwner) {
                     Log.d("BRUNO", "addObserver: CALLED")
                     Log.d("19OCT", "addObserver: CCI 1 = ${Gson().toJson(it)}")
                     viewModel.setCurrentCartItems(it)
@@ -1143,7 +1157,11 @@ class CartFragment(
 
                         if (it.isEmpty()) {
                             // Flag is used to update cart if last item from the cart will be deleted
-                            if (this@CartFragment::prefProvider.isInitialized && prefProvider.getValueboolean(IS_LAST_ITEM_DELETE, false)) {
+                            if (this@CartFragment::prefProvider.isInitialized && prefProvider.getValueboolean(
+                                    IS_LAST_ITEM_DELETE,
+                                    false
+                                )
+                            ) {
                                 Log.d("02nov23", "updateCart: LAST ITEM DELETED TRUE")
                                 prefProvider.setValueboolean(
                                     IS_LAST_ITEM_DELETE,
@@ -1204,9 +1222,11 @@ class CartFragment(
                                     ) {
                                         binding.txtDineInProceed.setText("Update and Proceed")
 
-                                        var getOldList = prefProvider.getValue(Constants.DINE_IN_UPDATE_LIST, "")
+                                        var getOldList =
+                                            prefProvider.getValue(Constants.DINE_IN_UPDATE_LIST, "")
                                         if (getOldList.isEmpty()) {
-                                            var listItemDine: ArrayList<GetOrderDetailsResponse.Data.OrderItem> = arrayListOf()
+                                            var listItemDine: ArrayList<GetOrderDetailsResponse.Data.OrderItem> =
+                                                arrayListOf()
 //                                                var data = it[0].dineInList
 //                                                LogUtil.logE(TAG, "getDataSizeDin ${data?.size}")
 //                                                data?.forEach {
@@ -1286,12 +1306,16 @@ class CartFragment(
 
                                     viewModel.currentCartItems.clear()
                                     viewModel.currentCartItems.addAll(it)
-                                    Log.e(TAG,"getDineInListSize  ${viewModel.currentCartItems.size}")
+                                    Log.e(
+                                        TAG,
+                                        "getDineInListSize  ${viewModel.currentCartItems.size}"
+                                    )
                                     dineInCartAdapter.setItemList(viewModel.currentCartItems)
 
                                     binding.txtSubTotal.text =
                                         MethodUtils.roundOffAmount(viewModel.subTotalPrice)
-                                    binding.txtTax.text = MethodUtils.roundOffAmount(viewModel.totalTax)
+                                    binding.txtTax.text =
+                                        MethodUtils.roundOffAmount(viewModel.totalTax)
                                     binding.txtServiceCharge.text =
                                         MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
                                     binding.txtDiscount.text =
@@ -1381,8 +1405,10 @@ class CartFragment(
                                 runOnUiThread {
                                     cartItemsAdapter.submitList(filterItems)
                                     binding.rvCartList.postDelayed({
-                                        if(cartItemsAdapter.currentList.isNotEmpty()){
-                                            binding.rvCartList.smoothScrollToPosition(cartItemsAdapter.currentList.size - 1)
+                                        if (cartItemsAdapter.currentList.isNotEmpty()) {
+                                            binding.rvCartList.smoothScrollToPosition(
+                                                cartItemsAdapter.currentList.size - 1
+                                            )
                                         }
                                     }, 200)
                                     binding.rlCartView.visible()
@@ -1524,7 +1550,7 @@ class CartFragment(
     }
 
     private fun updateCartFooter(it: List<TbCartItem>) {
-        if(it.isNotEmpty()){
+        if (it.isNotEmpty()) {
             viewModel.itemCalculationCartModelNew(
                 it,
                 binding.txtTotal,
@@ -1648,7 +1674,7 @@ class CartFragment(
                 binding.lblLoyaltyPoints.visibility = View.GONE
                 binding.lblLoyaltyBalance.visibility = View.GONE
             }
-        }else{
+        } else {
             cartModelsList = arrayListOf()
             binding.liinearInfoLayout.layoutParams.height =
                 resources.getDimension(R.dimen._50sdp).toInt()
@@ -1920,7 +1946,13 @@ class CartFragment(
                     dineInList = dineInCartAdapter.getList()
                 )*/
 
-                viewModel.updateDineInCart(viewModel.currentCartItems,data, DELETE,false,dineInCartAdapter.getList())
+                viewModel.updateDineInCart(
+                    viewModel.currentCartItems,
+                    data,
+                    DELETE,
+                    false,
+                    dineInCartAdapter.getList()
+                )
 
             }
             negativeButton(R.string.tv_cancel) {
@@ -1989,8 +2021,8 @@ class CartFragment(
         ) {
             positiveButton(getString(R.string.tv_delete)) {
                 // Do positive stuff here
-                prefProvider.setValueboolean(Constants.BACK_FROM_PAYMENT,false)
-                prefProvider.setValueboolean(Constants.NO_NEED_TO_PRINT,false)
+                prefProvider.setValueboolean(Constants.BACK_FROM_PAYMENT, false)
+                prefProvider.setValueboolean(Constants.NO_NEED_TO_PRINT, false)
                 taxBirfurcationAdapter.clearList()
                 viewModel.clearListTax()
                 prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
@@ -2157,15 +2189,22 @@ class CartFragment(
 
                             if (cartModelsList[0] != null) {
 
-                                cartModelsList[0] = viewModel.generateCombinedItems(cartModelsList[0])
+                                cartModelsList[0] =
+                                    viewModel.generateCombinedItems(cartModelsList[0])
                             } else {
-                                cartModelsList[0] = viewModel.addDineInRemovedItems(viewModel.cartModel!!)
+                                cartModelsList[0] =
+                                    viewModel.addDineInRemovedItems(viewModel.cartModel!!)
                             }
 
                             val request = viewModel.updateOrder(cartModelsList[0])
 
                             if (cartModelsList[0].orderId != 0) {
-                                cartModelsList[0].orderId?.let { viewModel.updateOrderCall(it, request) }
+                                cartModelsList[0].orderId?.let {
+                                    viewModel.updateOrderCall(
+                                        it,
+                                        request
+                                    )
+                                }
                             } else {
                                 orderId?.let { it1 -> viewModel.updateOrderCall(it1, request) }
                             }
@@ -2309,9 +2348,18 @@ class CartFragment(
                             bundle.putBoolean("isOrderDiscount", true)
                             bundle.putDouble("totalPrice", viewModel.subTotalPrice)
                             if (viewModel.cartModel != null) {
-                                bundle.putDouble("orderDiscountPrice", viewModel.cartModel?.discountPrice ?: 0.0)
-                                bundle.putString("orderDiscountType", viewModel.cartModel?.discountType)
-                                bundle.putDouble("selectedvalue", viewModel.cartModel?.discountSelectdValue ?: 0.0)
+                                bundle.putDouble(
+                                    "orderDiscountPrice",
+                                    viewModel.cartModel?.discountPrice ?: 0.0
+                                )
+                                bundle.putString(
+                                    "orderDiscountType",
+                                    viewModel.cartModel?.discountType
+                                )
+                                bundle.putDouble(
+                                    "selectedvalue",
+                                    viewModel.cartModel?.discountSelectdValue ?: 0.0
+                                )
                             }
                             bundle.putString("isFrom", "orderDiscount")
                             if (prefProvider.isAdmin() || prefProvider.isManager()) {
@@ -2495,7 +2543,10 @@ class CartFragment(
                             future_delivery_date = formatterdate.format(date)
                             future_delivery_time = formattertime.format(date)
 
-                            LogUtil.logE(TAG, "UpdateOrderItemsList  ${viewModel.currentCartItems.size}")
+                            LogUtil.logE(
+                                TAG,
+                                "UpdateOrderItemsList  ${viewModel.currentCartItems.size}"
+                            )
                             val request = cartModel?.let {
                                 viewModelPayment.createOpenOrderRequestNew(
                                     viewModel.currentCartItems,
@@ -2526,10 +2577,10 @@ class CartFragment(
                             isSaveOrder = true
                             viewModelPayment.saveOrder(true)
                             request?.let { it1 -> viewModelPayment.submit(it1) }
-                            if (!prefProvider.getValueboolean(Constants.NO_NEED_TO_PRINT, false)){
+                            if (!prefProvider.getValueboolean(Constants.NO_NEED_TO_PRINT, false)) {
                                 //print
                                 Log.d(TAG, "checkUpdation calling submit -> printing ")
-                                viewModelPayment.submit(request)
+                                request?.let { it1 -> viewModelPayment.submit(it1) }
                             } else {
                                 //no print
                                 Log.d(TAG, "checkUpdation not printing ")
@@ -2557,15 +2608,22 @@ class CartFragment(
     }
 
     private fun checkUpdation() {
-        Log.d(TAG, "checkUpdation: cartlist "+Gson().toJson(cartlist))
+        Log.d(TAG, "checkUpdation: cartlist " + Gson().toJson(cartlist))
         if (/*tempList.length()>0 && cartlist.size>0 &&*/ tempList?.length() == cartlist[cartlist.size - 1].items?.size) {
             for (i in 0 until tempList!!.length()) {
-                val tempItemModifierList = ((tempList!!.get(i) as JSONObject).get("modifiers") as JSONArray)
-                if (((tempList!!.get(i) as JSONObject).get("name") != cartlist[cartlist.size - 1].items!![i].name) || ((tempList!!.get(i) as JSONObject).get("itemQuantity") != cartlist[cartlist.size - 1].items!![i].itemQuantity) || (tempItemModifierList.length() != cartlist[cartlist.size - 1].items!![i].modifiers.size)) {
+                val tempItemModifierList =
+                    ((tempList!!.get(i) as JSONObject).get("modifiers") as JSONArray)
+                if (((tempList!!.get(i) as JSONObject).get("name") != cartlist[cartlist.size - 1].items!![i].name) || ((tempList!!.get(
+                        i
+                    ) as JSONObject).get("itemQuantity") != cartlist[cartlist.size - 1].items!![i].itemQuantity) || (tempItemModifierList.length() != cartlist[cartlist.size - 1].items!![i].modifiers.size)
+                ) {
                     itemModified = true
                 } else {
-                    for (j in 0 until (tempItemModifierList.length())){
-                        if (((tempItemModifierList.get(j) as JSONObject).get("name") != cartlist[cartlist.size - 1].items!![i].modifiers[j].name) || ((tempItemModifierList.get(j) as JSONObject).get("modifier_quantity") != cartlist[cartlist.size - 1].items!![i].modifiers[j].modifier_quantity)){
+                    for (j in 0 until (tempItemModifierList.length())) {
+                        if (((tempItemModifierList.get(j) as JSONObject).get("name") != cartlist[cartlist.size - 1].items!![i].modifiers[j].name) || ((tempItemModifierList.get(
+                                j
+                            ) as JSONObject).get("modifier_quantity") != cartlist[cartlist.size - 1].items!![i].modifiers[j].modifier_quantity)
+                        ) {
                             itemModified = true
                         }
                     }
@@ -2585,6 +2643,8 @@ class CartFragment(
             prefProvider.setValueboolean(Constants.NO_NEED_TO_PRINT, false)
             Log.d(TAG, "checkUpdation: NO_NEED_TO_PRINT false")
         }
+    }
+
     private fun clearObserver() {
         viewLifecycleOwnerLiveData.removeObservers(viewLifecycleOwner)
         viewModel.getAllCartItems(
@@ -2602,17 +2662,17 @@ class CartFragment(
             if (prefProvider.getValueboolean(Constants.DINE_IN_UPDATE, false)) {
                 var itemCount = 0
                 /*for (i in cartlist.indices) {
-                    for (j in cartlist[i].dineInList?.indices!!) {
-                        if (cartlist[i].dineInList?.get(j)?.items?.size!! > 0) {
-                            itemCount++
-                            break
-                        }
-                    }
-                    if (itemCount != 0) {
+                for (j in cartlist[i].dineInList?.indices!!) {
+                    if (cartlist[i].dineInList?.get(j)?.items?.size!! > 0) {
+                        itemCount++
                         break
                     }
+                }
+                if (itemCount != 0) {
+                    break
+                }
 
-                }*/
+            }*/
                 itemCount = viewModel.currentCartItems.size
 
                 if (itemCount == 0) {
@@ -2645,11 +2705,11 @@ class CartFragment(
                 var itemCount = 0
                 for (i in cartModelsList.indices) {
                     /*for (j in cartlist[i].dineInList?.indices!!) {
-                        if (cartlist[i].dineInList?.get(j)?.items?.size!! > 0) {
-                            itemCount++
-                            break
-                        }
-                    }*/
+                    if (cartlist[i].dineInList?.get(j)?.items?.size!! > 0) {
+                        itemCount++
+                        break
+                    }
+                }*/
                     itemCount = viewModel.currentCartItems.size
                     if (itemCount != 0) {
                         createDineInRequest()
@@ -2686,12 +2746,18 @@ class CartFragment(
         )
 
         if (floorModel.floorPlanId == null) {
-            floorModel.floorPlanId = cartModelsList.get(0).dineInList?.get(1)?.floorPlanTable?.floorPlanId
-            floorModel.floorPlanTableId = cartModelsList.get(0).dineInList?.get(1)?.floorPlanTable?.id
-            floorModel.tableType = cartModelsList.get(0).dineInList?.get(1)?.floorPlanTable?.tableType
-            floorModel.tableNumber = cartModelsList.get(0).dineInList?.get(1)?.floorPlanTable?.tableNumber
-            floorModel.chairCount = cartModelsList.get(0).dineInList?.get(1)?.floorPlanTable?.chairCount
-            floorModel.tableName = cartModelsList.get(0).dineInList?.get(1)?.floorPlanTable?.tableName
+            floorModel.floorPlanId =
+                cartModelsList.get(0).dineInList?.get(1)?.floorPlanTable?.floorPlanId
+            floorModel.floorPlanTableId =
+                cartModelsList.get(0).dineInList?.get(1)?.floorPlanTable?.id
+            floorModel.tableType =
+                cartModelsList.get(0).dineInList?.get(1)?.floorPlanTable?.tableType
+            floorModel.tableNumber =
+                cartModelsList.get(0).dineInList?.get(1)?.floorPlanTable?.tableNumber
+            floorModel.chairCount =
+                cartModelsList.get(0).dineInList?.get(1)?.floorPlanTable?.chairCount
+            floorModel.tableName =
+                cartModelsList.get(0).dineInList?.get(1)?.floorPlanTable?.tableName
 
 
         }
@@ -2706,10 +2772,13 @@ class CartFragment(
 //        if (BuildConfig.DEBUG == false) {
 //            finalDiscount = cartModelsList[0].discountPrice + viewModel.totalDiscount
 //        } else {
-            finalDiscount = viewModel.totalDiscount
+        finalDiscount = viewModel.totalDiscount
 //        }
         Log.e("checkDiscount", "totalDiscount:  ${viewModel.totalDiscount}")
-        Log.e("checkDiscount", "totalDiscountdiscountPrice:  ${cartModelsList[0].discountPrice}")
+        Log.e(
+            "checkDiscount",
+            "totalDiscountdiscountPrice:  ${cartModelsList[0].discountPrice}"
+        )
 
         val orderRequestModel = viewModel.createDineInOrderRequest(
             cartModel = cartModelsList[0],
@@ -2826,5 +2895,6 @@ class CartFragment(
         }
     }
 }
+
 
 
