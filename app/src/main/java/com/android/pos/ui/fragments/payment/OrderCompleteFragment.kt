@@ -11894,9 +11894,19 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             } else {
                 SunmiPrintHelper.getInstance().lineWrap(1)
             }
-            if (customerSettingModel.showOrderType) {
+           /* if (customerSettingModel.showOrderType) {
                 receiptModel?.order?.orderTypeName?.trim()?.let { PrintSunmiUtils.headerText(it) }
                 SunmiPrintHelper.getInstance().lineWrap(1)
+            }*/
+            if (customerSettingModel.showOrderType) {
+                receiptModel?.order?.orderTypeName?.trim()?.let {
+                    PrintSunmiUtils.headerText(it)
+                    if (!it.contains("Phone", true)) {
+                        SunmiPrintHelper.getInstance().lineWrap(1)
+                    }
+
+                }
+
             }
 
             if (receiptModel?.order?.orderType.equals(PHONE_ORDER, true) ||

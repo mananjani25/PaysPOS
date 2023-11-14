@@ -4941,6 +4941,7 @@ class TransactionDetailsFragment : Fragment() {
 
             if (customerSettingModel.showOrderType) {
                 PrintSunmiUtils.headerText(paymentDetailsResponse.data.order.order_type_name.trim())
+                SunmiPrintHelper.getInstance().lineWrap(1)
             }
 
             if (paymentDetailsResponse.data.order.order_type.trim()
