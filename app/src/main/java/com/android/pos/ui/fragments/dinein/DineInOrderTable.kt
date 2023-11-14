@@ -5718,11 +5718,13 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 if (customerSettingModel.showVenueAddress) prefProvider.getValue(
                     Constants.BUSINESS_ADDRESS,
                     ""
-                ) else "",
-                if (customerSettingModel.showVenuePhone) prefProvider.getValue(
+                ) else "",prefProvider.getValue(
+                    Constants.BUSINESS_PHONE_NO,
+                    "")
+               /* if (customerSettingModel.showVenuePhone) prefProvider.getValue(
                     Constants.BUSINESS_PHONE_NO,
                     ""
-                ) else ""
+                ) else ""*/
             )
             if (customerSettingModel.showWebsiteAddress) {
                 PrintSunmiUtils.venueWebsiteInner(
@@ -7990,11 +7992,14 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 if (customerSettingModel.showVenueAddress) prefProvider.getValue(
                     Constants.BUSINESS_ADDRESS,
                     ""
-                ) else "",
-                if (customerSettingModel.showVenuePhone) prefProvider.getValue(
+                ) else "",prefProvider.getValue(
                     Constants.BUSINESS_PHONE_NO,
                     ""
-                ) else ""
+                )
+                /*if (customerSettingModel.showVenuePhone) prefProvider.getValue(
+                    Constants.BUSINESS_PHONE_NO,
+                    ""
+                ) else ""*/
             )
 
             if (customerSettingModel.showWebsiteAddress) {
