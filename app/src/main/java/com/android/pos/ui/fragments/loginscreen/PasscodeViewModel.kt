@@ -221,6 +221,7 @@ class PasscodeViewModel @Inject constructor(
                                         )
 
                                         prefProvider.setValue(Constants.CUSTOMER_NAME, "")
+                                        prefProvider.setValue(Constants.RECEIPT_CUSTOMER_NAME, "")
                                         prefProvider.setValue(Constants.PREF_CUSTOMER, "")
                                         prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
                                         deleteCart()

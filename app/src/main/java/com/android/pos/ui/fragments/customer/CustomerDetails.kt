@@ -325,6 +325,11 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
                                 Constants.CUSTOMER_NAME,
                                 order.customer.firstName + " " + order.customer.lastName
                             )
+
+                            prefProvider.setValue(
+                                Constants.RECEIPT_CUSTOMER_NAME,
+                                order.customer.firstName + " " + order.customer.lastName
+                            )
                             prefProvider.setValueInt(Constants.CUSTOMER_ID, order.customer.id)
                             prefProvider.saveCustomerData(TbCustomer.customerMapping(order.customer))
 
@@ -351,6 +356,11 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
                     if (order.customer != null) {
                         prefProvider.setValue(
                             Constants.CUSTOMER_NAME,
+                            order.customer.firstName + " " + order.customer.lastName
+                        )
+
+                        prefProvider.setValue(
+                            Constants.RECEIPT_CUSTOMER_NAME,
                             order.customer.firstName + " " + order.customer.lastName
                         )
                         prefProvider.setValueInt(Constants.CUSTOMER_ID, order.customer.id)

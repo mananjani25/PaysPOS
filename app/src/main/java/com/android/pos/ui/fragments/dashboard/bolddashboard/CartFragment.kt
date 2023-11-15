@@ -2118,6 +2118,7 @@ class CartFragment(
 
     private fun clearCustomer() {
         prefProvider.setValue(Constants.CUSTOMER_NAME, "")
+        prefProvider.setValue(Constants.RECEIPT_CUSTOMER_NAME, "")
         prefProvider.setValue(Constants.PREF_CUSTOMER, "")
         prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
         viewModel.selectedCustomer = null
@@ -2323,7 +2324,11 @@ class CartFragment(
                                 if (cartModelsList.isNotEmpty() && cartModelsList[0].customer != null) {
                                     cartModelsList[0].customer = null
                                     viewModel.addCart(cartModelsList[0])
+                                    viewModel.deleteCustomer(cartlist[0].cartId)
+
                                 }
+
+
                                 clearCustomer()
                             }
 

@@ -1487,6 +1487,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
     private fun clearCustomer() {
         prefProvider.setValue(Constants.CUSTOMER_NAME, "")
+        prefProvider.setValue(Constants.RECEIPT_CUSTOMER_NAME, "")
         prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
         prefProvider.setValue(Constants.CUSTOMER_NAME, "")
         prefProvider.setValue(Constants.PREF_CUSTOMER, "")

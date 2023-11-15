@@ -61,7 +61,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                     sendBroadcast(intent)
                     setSoundForOnlineOrder()
                 } else if (type == "Sync") {
-                    if (prefProvider.getValue(Constants.AUTH_TOKEN,"").isNotEmpty()) {
+                    if (prefProvider.getValue(Constants.AUTH_TOKEN, "").isNotEmpty()) {
                         val intent = Intent()
                         intent.action = SYNC_NOTIFICATION
                         sendBroadcast(intent)
@@ -82,10 +82,10 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                     sendBroadcast(intent)
 
                 } else {
-                   /* val intent = Intent()
-                    intent.putExtra("printer_queue", "rem")
-                    intent.action = "PrinterQueue"
-                    sendBroadcast(intent)*/
+                    /* val intent = Intent()
+                     intent.putExtra("printer_queue", "rem")
+                     intent.action = "PrinterQueue"
+                     sendBroadcast(intent)*/
 
                 }
             }

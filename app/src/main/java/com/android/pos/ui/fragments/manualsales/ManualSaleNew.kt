@@ -530,6 +530,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             assignCustomer = customer
             prefProvider.saveCustomerData(customer)
             prefProvider.setValue(CUSTOMER_NAME, customer.first_name + " " + customer.last_name)
+            prefProvider.setValue(Constants.RECEIPT_CUSTOMER_NAME, customer.first_name + " " + customer.last_name)
             customer.id?.let { prefProvider.setValueInt(Constants.CUSTOMER_ID, it) }
 
             binding.txtAddCustomer.text = customer.first_name + " " + customer.last_name
@@ -556,6 +557,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         assignCustomer = null
         prefProvider.saveCustomerData(null)
         prefProvider.setValue(CUSTOMER_NAME, "")
+        prefProvider.setValue(Constants.RECEIPT_CUSTOMER_NAME, "")
         prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
         prefProvider.setValueboolean(Constants.LOYALTY_ADDED, false)
         binding.txtAddCustomer.text = getString(R.string.add_customer2)

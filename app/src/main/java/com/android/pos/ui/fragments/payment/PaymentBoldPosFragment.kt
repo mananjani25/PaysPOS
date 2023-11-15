@@ -455,6 +455,7 @@ class PaymentBoldPosFragment : Fragment() {
 
     fun removeCustomer() {
         prefProvider.setValue(Constants.CUSTOMER_NAME, "")
+//        prefProvider.setValue(Constants.RECEIPT_CUSTOMER_NAME, "")
         prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
         prefProvider.setValue("PaidAmount", "")
         prefProvider.setValue(Constants.WHOLE_AMOUNT, "")

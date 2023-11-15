@@ -106,6 +106,9 @@ interface CartDao {
     suspend fun deleteDineInCart()
 
 
+    @Query("UPDATE CartModel SET customer = null WHERE cartId =:id")
+    fun removeCustomer(id: Int)
+
 
 
 

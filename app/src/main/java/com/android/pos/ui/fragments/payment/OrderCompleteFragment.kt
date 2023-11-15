@@ -7766,7 +7766,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             if (customerSettingModel.showCustomerAddress || customerSettingModel.showCustomerPhone || customerSettingModel.showCustomerName) {
 
-                if (receiptModel?.order?.customer != null) {
+                if (receiptModel?.order?.customer != null && !prefProvider.getValue(Constants.RECEIPT_CUSTOMER_NAME, "").toString().equals("") && !prefProvider.getValue(Constants.RECEIPT_CUSTOMER_NAME, "").toString().equals("kotlin.Unit",true)) {
 
                     builder.addFeedLine(1)
                     builder.addTextLineSpace(30)
@@ -7875,7 +7875,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
 
-                    if (customerSettingModel.showCustomerAddress) {
+                    if (customerSettingModel.showCustomerAddress && !prefProvider.getValue(Constants.RECEIPT_CUSTOMER_NAME, "").toString().equals("") && !prefProvider.getValue(Constants.RECEIPT_CUSTOMER_NAME, "").toString().equals("kotlin.Unit",true)) {
                         if (receiptModel?.order?.customer?.addresses?.isNotEmpty() == true) {
 
                             builder.addTextLineSpace(30)
@@ -8778,7 +8778,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
 
-                    if (customerSettingModel.showCustomerAddress) {
+                    if (customerSettingModel.showCustomerAddress && !prefProvider.getValue(Constants.RECEIPT_CUSTOMER_NAME, "").toString().equals("") && !prefProvider.getValue(Constants.RECEIPT_CUSTOMER_NAME, "").toString().equals("kotlin.Unit",true)) {
                         if (giftCardReceiptModel?.gift_card?.customer?.addresses?.isNotEmpty() == true) {
 
                             builder.addTextLineSpace(30)
@@ -10633,6 +10633,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         prefProvider.setValueboolean(OPEN_ORDER_UPDATE_FOR_PRINT, false)
         prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
         prefProvider.setValue(Constants.CUSTOMER_NAME, "")
+        prefProvider.setValue(Constants.RECEIPT_CUSTOMER_NAME, "")
         prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
         prefProvider.setValue("PaidAmount", "")
         prefProvider.setValue(WHOLE_AMOUNT, "")
@@ -11068,7 +11069,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         if (customerSettingModel.showCustomerAddress || customerSettingModel.showCustomerPhone || customerSettingModel.showCustomerName) {
 
-            if (giftCardReceiptModel?.gift_card?.customer != null) {
+            if (giftCardReceiptModel?.gift_card?.customer != null && !prefProvider.getValue(Constants.RECEIPT_CUSTOMER_NAME, "").toString().equals("") && !prefProvider.getValue(Constants.RECEIPT_CUSTOMER_NAME, "").toString().equals("kotlin.Unit",true)) {
                 SunmiPrinterApi.getInstance().lineWrap(1)
                 PrintSunmiUtils.customerDetails()
 
@@ -11104,7 +11105,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
 
-                if (customerSettingModel.showCustomerAddress) {
+                if (customerSettingModel.showCustomerAddress && !prefProvider.getValue(Constants.RECEIPT_CUSTOMER_NAME, "").toString().equals("") && !prefProvider.getValue(Constants.RECEIPT_CUSTOMER_NAME, "").toString().equals("kotlin.Unit",true)) {
                     if (giftCardReceiptModel?.gift_card?.customer?.addresses?.isNotEmpty() == true) {
 
                         giftCardReceiptModel?.gift_card?.customer?.addresses!!.filter { it.typeOfAddress == SHIPPING_ADDRESS }
@@ -11735,7 +11736,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             if (customerSettingModel.showCustomerAddress || customerSettingModel.showCustomerPhone || customerSettingModel.showCustomerName) {
 
-                if (receiptModel?.order?.customer != null) {
+                if (receiptModel?.order?.customer != null && !prefProvider.getValue(Constants.RECEIPT_CUSTOMER_NAME, "").toString().equals("") && !prefProvider.getValue(Constants.RECEIPT_CUSTOMER_NAME, "").toString().equals("kotlin.Unit",true)) {
 
 
                     PrintSunmiUtils.customerDetails()
@@ -11772,7 +11773,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
 
-                    if (customerSettingModel.showCustomerAddress) {
+                    if (customerSettingModel.showCustomerAddress && !prefProvider.getValue(Constants.RECEIPT_CUSTOMER_NAME, "").toString().equals("") && !prefProvider.getValue(Constants.RECEIPT_CUSTOMER_NAME, "").toString().equals("kotlin.Unit",true)) {
                         if (receiptModel?.order?.customer?.addresses?.isNotEmpty() == true) {
 
                             receiptModel?.order?.customer?.addresses!!.filter { it.typeOfAddress == SHIPPING_ADDRESS }
@@ -12401,7 +12402,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             if (customerSettingModel.showCustomerAddress || customerSettingModel.showCustomerPhone || customerSettingModel.showCustomerName) {
 
-                if (receiptModel?.order?.customer != null) {
+                if (receiptModel?.order?.customer != null && !prefProvider.getValue(Constants.RECEIPT_CUSTOMER_NAME, "").toString().equals("") && !prefProvider.getValue(Constants.RECEIPT_CUSTOMER_NAME, "").toString().equals("kotlin.Unit",true)) {
 
                     SunmiPrintHelper.getInstance().lineWrap(1)
                     PrintSunmiUtils.customerDetailsInner()

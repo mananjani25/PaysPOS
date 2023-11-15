@@ -1348,5 +1348,15 @@ class PosRepository @Inject constructor(
     suspend fun updateItemIdsForModifier(modId: Int?, itemIdsList: List<Int>) {
         appDatabase.modifierSetDao().updateModifiersItem(modId!!, itemIdsList)
     }
+
+
+    fun removeCustomer(cartId: Int) {
+        synchronized(this) {
+            return appDatabase.cartDao().removeCustomer(cartId)
+        }
+
+    }
+
+
 }
 

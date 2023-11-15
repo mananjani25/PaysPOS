@@ -1296,6 +1296,11 @@ class AddEditCustomer : Fragment(), AddressTextChangeListner {
             updatedCustomerModel.first_name + " " + updatedCustomerModel.last_name
         )
 
+        prefProvider.setValue(
+            Constants.RECEIPT_CUSTOMER_NAME,
+            updatedCustomerModel.first_name + " " + updatedCustomerModel.last_name
+        )
+
         updatedCustomerModel.id?.let { prefProvider.setValueInt(Constants.CUSTOMER_ID, it) }
 
         prefProvider.saveCustomerData(updatedCustomerModel)
@@ -1363,6 +1368,11 @@ class AddEditCustomer : Fragment(), AddressTextChangeListner {
     }
 
     private fun onUpdatingCustomer(customer: TbCustomer){
+        prefProvider.setValue(
+            Constants.RECEIPT_CUSTOMER_NAME,
+            customer.first_name + " " + customer.last_name
+        )
+
         prefProvider.setValue(
             Constants.CUSTOMER_NAME,
             customer.first_name + " " + customer.last_name

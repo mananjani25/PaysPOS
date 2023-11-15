@@ -7221,6 +7221,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         prefProvider.setValue(ORDER_TYPE_NAME, "")
         prefProvider.setValueboolean(Constants.IS_ADD_VALUE_IN_GIFT_CARD, false)
         prefProvider.setValue(Constants.CUSTOMER_NAME, "")
+        prefProvider.setValue(Constants.RECEIPT_CUSTOMER_NAME, "")
         prefProvider.setValue(Constants.PREF_CUSTOMER, "")
         prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
         clearCustomer()
@@ -7230,12 +7231,23 @@ class DashBoardCategoryViewModel @Inject constructor(
     // To clear customer if creating gift card
     fun clearCustomer() {
         prefProvider.setValue(Constants.CUSTOMER_NAME, "")
+        prefProvider.setValue(Constants.RECEIPT_CUSTOMER_NAME, "")
         prefProvider.setValue(Constants.PREF_CUSTOMER, "")
         prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
         selectedCustomer = null
         assignCustomer = null
         prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED, false)
         prefProvider.setValueboolean(LOYALTY_ADDED, false)
+    }
+
+
+    fun deleteCustomer(currentCartId: Int?) {
+        CoroutineScope(Dispatchers.IO).launch {
+//            updateOrderCall(orderId, orderRequestModel)
+            clearCustomer()
+            posRepository.removeCustomer(currentCartId!!)
+        }
+
     }
 
 }

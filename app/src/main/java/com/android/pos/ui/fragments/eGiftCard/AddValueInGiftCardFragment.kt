@@ -187,6 +187,7 @@ class AddValueInGiftCardFragment : Fragment() {
     private fun moveToCheckout() {
 
         prefProvider.setValue(Constants.CUSTOMER_NAME, "")
+        prefProvider.setValue(Constants.RECEIPT_CUSTOMER_NAME, "")
 
         prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
 

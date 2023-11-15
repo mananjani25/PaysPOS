@@ -94,6 +94,7 @@ object Constants {
     const val PREF_CURRENT_SCANNER = "pref_current_scanner"
     const val PREF_CURRENT_SCANNER_ID = "pref_current_scanner_id"
     const val CUSTOMER_NAME = "customer_name"
+    const val RECEIPT_CUSTOMER_NAME = "receipt_customer_name"
     const val SALE_CUSTOMER_NAME = "sale_customer_name"
     const val IS_CLOCKOUT = "isClockout"
     const val IS_REFUND = "isRefund"
