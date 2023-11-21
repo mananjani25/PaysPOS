@@ -2,15 +2,18 @@ package com.android.pos.ui.dialog
 
 import android.graphics.Point
 import android.os.Bundle
-import android.util.Log
-import android.view.*
+import android.view.Display
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.Window
+import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.TbCartItem
-import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.responseModel.NoteResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.DailogAddNoteBinding
@@ -26,9 +29,8 @@ import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.*
+import java.util.Collections
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
 class AddNoteDialog : DialogFragment(), ItemCallback {
@@ -81,6 +83,7 @@ class AddNoteDialog : DialogFragment(), ItemCallback {
 
 
         with(binding) {
+            binding.txtRemovenote?.gone()
             if (isOrderNote) {
                 if (dashBoardCategoryViewModel.cartModel?.note?.isNotEmpty() == true) {
                     edtNote.setText(dashBoardCategoryViewModel.cartModel?.note ?: "")

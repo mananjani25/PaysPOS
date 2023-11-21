@@ -90,6 +90,7 @@
                 android:digits="@string/character_digits_String"
                 android:maxLength="60"
                 android:inputType="text"
+                android:maxLines="1"
                 android:padding="@dimen/_7sdp"
                 android:textColor="@color/txtColor"
                 android:textColorHint="@color/hintColor"
