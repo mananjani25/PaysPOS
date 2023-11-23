@@ -24,7 +24,6 @@ import com.android.pos.data.remote.Constants.DELETE
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
 import com.android.pos.data.remote.Constants.MAX_ITEM_QUANTITY
-import com.android.pos.data.remote.Constants.MAX_ITEM_QUANTITY_FOR_MANUAL_SALES
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.SERVICECHARGE_TAKEOUT_OPENORDER
 import com.android.pos.data.remote.Constants.TAKEOUT
@@ -391,10 +390,16 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                         false,
                         dineInList ?: arrayListOf()
                     )*/
-                    Log.d(TAG, "398 dineintest currentCartItems: "+viewModel.currentCartItems)
-                    Log.d(TAG, "dineintest item: "+item)
-                    Log.d(TAG, "dineintest dineInList: "+dineInList)
-                    viewModel.updateDineInCart(viewModel.currentCartItems,item,Constants.UPDATE,false,dineInList ?: arrayListOf())
+                    Log.d(TAG, "398 dineintest currentCartItems: " + viewModel.currentCartItems)
+                    Log.d(TAG, "dineintest item: " + item)
+                    Log.d(TAG, "dineintest dineInList: " + dineInList)
+                    viewModel.updateDineInCart(
+                        viewModel.currentCartItems,
+                        item,
+                        Constants.UPDATE,
+                        false,
+                        dineInList ?: arrayListOf()
+                    )
                 } else {
                     item.guestIndexForDineIn = null
                     cartModelsList[0].taxlistDynamic = arrayListOf()
@@ -409,13 +414,25 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                     if (checkVar()) {
 
                         LogUtil.logE("NewItem", "ItemSame ${Gson().toJson(item)}")
-                        viewModel.updateCart(viewModel.currentCartItems, item, Constants.UPDATE, false, position = itemPosition)
+                        viewModel.updateCart(
+                            viewModel.currentCartItems,
+                            item,
+                            Constants.UPDATE,
+                            false,
+                            position = itemPosition
+                        )
 
                     } else {
 
                         LogUtil.logE("NewItem", "ItemSameNot")
                         item.orderItemId = null
-                        viewModel.updateCart(viewModel.currentCartItems, item, Constants.UPDATE, false, position = itemPosition)
+                        viewModel.updateCart(
+                            viewModel.currentCartItems,
+                            item,
+                            Constants.UPDATE,
+                            false,
+                            position = itemPosition
+                        )
                     }
 
 
@@ -439,10 +456,16 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                             dineInList
                         )*/
 
-                        Log.d(TAG, "448 dineintest currentCartItems: "+viewModel.currentCartItems)
-                        Log.d(TAG, "dineintest item: "+item)
-                        Log.d(TAG, "dineintest dineInList: "+dineInList)
-                        viewModel.updateDineInCart(viewModel.currentCartItems,item,Constants.ADD,false,dineInList)
+                        Log.d(TAG, "448 dineintest currentCartItems: " + viewModel.currentCartItems)
+                        Log.d(TAG, "dineintest item: " + item)
+                        Log.d(TAG, "dineintest dineInList: " + dineInList)
+                        viewModel.updateDineInCart(
+                            viewModel.currentCartItems,
+                            item,
+                            Constants.ADD,
+                            false,
+                            dineInList
+                        )
                     }
                 } else {
                     item.guestIndexForDineIn = null
@@ -539,14 +562,14 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                         it1
                     )*/
 
-                    Log.d(TAG, "548 dineintest currentCartItems: "+viewModel.currentCartItems)
-                    Log.d(TAG, "dineintest item: "+Gson().toJson(item))
-                    Log.d(TAG, "dineintest dineInList: "+it1)
-                    viewModel.updateDineInCart(viewModel.currentCartItems,item, DELETE,false,it1)
+                    Log.d(TAG, "548 dineintest currentCartItems: " + viewModel.currentCartItems)
+                    Log.d(TAG, "dineintest item: " + Gson().toJson(item))
+                    Log.d(TAG, "dineintest dineInList: " + it1)
+                    viewModel.updateDineInCart(viewModel.currentCartItems, item, DELETE, false, it1)
                 }
             } else {
                 item.guestIndexForDineIn = null
-                viewModel.updateCart(viewModel.currentCartItems,item, DELETE,item.isManualSales)
+                viewModel.updateCart(viewModel.currentCartItems, item, DELETE, item.isManualSales)
                 //viewModel.newCartLogicModifier(cartModelsList, item, DELETE, item.isManualSales)
             }
             requireActivity().supportFragmentManager.popBackStackImmediate(
@@ -623,7 +646,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                 it?.let { resource ->
                     when (resource.status) {
                         Status.SUCCESS -> {
-                            it.data?.let {it1 ->
+                            it.data?.let { it1 ->
                                 Log.e(TAG, "getItemForMos  ${Gson().toJson(it)}")
 
 
@@ -632,7 +655,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                     it1.modifier_set_ids[i]
                                 }
 
-                                if(isUpdateItem) {
+                                if (isUpdateItem) {
                                     item.modifier_set_ids = it1.modifier_set_ids
                                 }
                                 variationAdapter.addVariations(it1.variationsAttributes.filter { !it.isDeleted })
@@ -681,12 +704,20 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 
                                                 } else if (it1.priceType == "Fixed") {
 
+
                                                     var variation: VariationsAttribute? = null
                                                     if (variationAdapter != null) {
                                                         variation = variationAdapter.getItem()
                                                     } else if (variation != null) {
                                                         variation = it1
                                                     }
+
+                                                    binding.txtPrice.text =
+                                                        it1.price?.let { it2 ->
+                                                            MethodUtils.roundOffAmount(
+                                                                it2
+                                                            )
+                                                        }
 
 
 
@@ -833,6 +864,10 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
             binding.txtAddNote.visibility = View.GONE
             binding.txtAddDiscount.visibility = View.GONE
             binding.dividerUpdate.root.visibility = View.GONE
+            if (item.variationsAttributes.isNotEmpty()) {
+                binding.txtPrice.text =
+                    item?.variationsAttributes.get(0)?.price?.let { MethodUtils.roundOffAmount(it) }
+            }
         }
 
     }
