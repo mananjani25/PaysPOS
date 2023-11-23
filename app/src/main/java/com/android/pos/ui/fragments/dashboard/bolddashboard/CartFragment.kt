@@ -1630,8 +1630,8 @@ class CartFragment(
                                 }"
                             binding.txtLoyaltyPoints.text =
                                 "${viewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
-                        /*  binding.txtLoyaltyBalance.text =
-                                "${viewModel.selectedCustomer?.final_reward}"*/
+                            /*  binding.txtLoyaltyBalance.text =
+                                    "${viewModel.selectedCustomer?.final_reward}"*/
 
                             binding.txtLoyaltyBalance.text =
                                 "${viewModel.redeemLoyaltyInfo.remainingLoyaltyPoints}"
@@ -1665,9 +1665,14 @@ class CartFragment(
                             }"
                         binding.txtLoyaltyPoints.text =
                             "${viewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
-                        binding.txtLoyaltyBalance.text =
-                            "${viewModel.redeemLoyaltyInfo.remainingLoyaltyPoints}"
 
+                            if (viewModel.redeemLoyaltyInfo.needToApplyLoyalty) {
+                                binding.txtLoyaltyBalance.text =
+                                    "${viewModel.redeemLoyaltyInfo.remainingLoyaltyPoints}"
+                            } else {
+                                binding.txtLoyaltyBalance.text =
+                                    "${viewModel.selectedCustomer?.final_reward}"
+                            }
                         /*binding.txtLoyaltyBalance.text =
                             "${viewModel.selectedCustomer?.final_reward}"*/
                         binding.checkloylaty.isChecked =
