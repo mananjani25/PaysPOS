@@ -2558,7 +2558,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                 clearCustomer()
                 if (prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)) {
-                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
+                    if(viewModel.fromAllOrderFragment){
+                        viewModel.fromAllOrderFragment = false
+                    }else
+                        findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
                 } else {
                     getKitchenPrinters(it)
                 }

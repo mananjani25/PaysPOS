@@ -159,6 +159,8 @@ class DashBoardCategoryViewModel @Inject constructor(
     private val _removeGuestSuccess = MutableLiveData<Event<String>>()
     val removeGuestSuccess: LiveData<Event<String>> = _removeGuestSuccess
 
+    //using this field to restrict double navigation between DashboardCategoryBoldPOS and All Orders when clicking Home in AllOrders Page
+    var fromAllOrderFragment = false
 
     fun getCustomerReceiptSettings() = posRepository.getCustomerReceiptSettings()
 
