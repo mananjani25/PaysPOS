@@ -109,7 +109,6 @@ import kotlinx.coroutines.launch
 import java.io.IOException
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 
 
 @AndroidEntryPoint
@@ -207,22 +206,20 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        Binding()
-        checkCashDrawerObserver()
+       // Binding()// putting method in onviewcreated due to UI glitch issue
+       // checkCashDrawerObserver() // putting method in onviewcreated due to UI glitch issue
         SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
-        releaseMemory()
+       // releaseMemory()// putting method in onviewcreated due to UI glitch issue
         prefProvider.setValue(Constants.REDIRECT_FROM, "")
         //prefProvider.setValue(Constants.OPEN_ORDER_ITEMS, "")
 
-        if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
+       /* if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
             viewModel.clearGiftCardCart()
-        }
-
-//        hideSystemUI()
+        }*/ // putting method in onviewcreated due to UI glitch issue
 
         binding = FragmentDashboardCategoryBoldPosBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
-        syncData()
+       // syncData() // putting method in onviewcreated due to UI glitch issue
         getCustomerDisplay(requireContext())?.let { display ->
             presentation = CustomDisplay(
                 display,
@@ -249,7 +246,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 //        } else {
 //            binding.layoutHeader.linearOnlineorder?.gone()
 //        }
-        getOrderTypes()
+       /* getOrderTypes()
         observeSaveOrder()
         observeOrderNotUpdated()
         getKitchenReceiptSettings()
@@ -268,7 +265,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         getDineInData()
         checkSearch()
         observeServiceChargeUpdate()
-        observerSyncItemPriceChange()
+        observerSyncItemPriceChange()*/   // putting these methods in onviewcreated due to UI glitch issue
         prefProvider.setValueboolean(Constants.ORDER_COMPLETED, false)
 
 
@@ -641,6 +638,36 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        Binding()
+        checkCashDrawerObserver()
+
+        releaseMemory()
+
+        if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
+            viewModel.clearGiftCardCart()
+        }
+
+
+        getOrderTypes()
+        observeSaveOrder()
+        observeOrderNotUpdated()
+        getKitchenReceiptSettings()
+        addObserver()
+        getServiceCharges()
+        resultListener()
+        observeQueueCreate()
+        dineInUpdateOrder()
+        navigateDineInOrder()
+        getLoyaltyPrograms()
+
+        checkDineInEditOrder()
+        printerProgress()
+        observeShowProgress()
+        allOrdersPendingCountObserver()
+        getDineInData()
+        checkSearch()
+        observeServiceChargeUpdate()
+        observerSyncItemPriceChange()
         System.gc()
         onClick()
 

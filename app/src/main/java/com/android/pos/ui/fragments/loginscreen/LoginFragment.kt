@@ -21,12 +21,9 @@ import com.android.pos.BuildConfig
 import com.android.pos.R
 import com.android.pos.data.model.responseModel.PosLinkResult
 import com.android.pos.data.remote.Constants
-import com.android.pos.data.remote.Constants.AUTH_TOKEN
-import com.android.pos.data.remote.Constants.IS_CLOCKOUT
 import com.android.pos.data.remote.Constants.LOGIN_EMAIL
 import com.android.pos.data.remote.Constants.LOGIN_PASSWORD
 import com.android.pos.data.remote.Constants.LOGIN_REMEMBER
-import com.android.pos.data.remote.Constants.ORDER_COMPLETED
 import com.android.pos.databinding.FragmentLoginBinding
 import com.android.pos.di.ApiModule.BASE_URL
 import com.android.pos.di.ApiModule2
@@ -36,19 +33,20 @@ import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
 import com.android.pos.ui.fragments.dinein.DineInOrderTableViewModel
-import com.android.pos.utils.*
+import com.android.pos.utils.AdvertisingInfo
+import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.LogUtil
+import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
+import com.android.pos.utils.getCustomerDisplay
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import org.xmlpull.v1.XmlPullParser
-import org.xmlpull.v1.XmlPullParserFactory
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.io.StringReader
 import javax.inject.Inject
 
 
@@ -87,7 +85,7 @@ class LoginFragment : Fragment() {
 //       determineAdvertisingInfo()
 //        paxNetworkCall()
 
-        if (prefProvider?.getValue(AUTH_TOKEN, "").toString().isNotEmpty()) {
+       /* if (prefProvider?.getValue(AUTH_TOKEN, "").toString().isNotEmpty()) {
             if (!prefProvider?.getValueboolean(IS_CLOCKOUT, false)!!) {
                 findNavController().navigate(R.id.action_login_to_passcode)
             } else {
@@ -103,14 +101,14 @@ class LoginFragment : Fragment() {
 
             }
 
-        }
+        }*/ // due to UI glitch issue put in onViewCreated
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_login, container, false)
 
         binding.lifecycleOwner = this
         binding.loginViewModel = viewModel
 
-        getCustomerDisplay(requireContext())?.let { display ->
+       /* getCustomerDisplay(requireContext())?.let { display ->
             presentation = CustomDisplay(
                 display,
                 requireContext(),
@@ -121,11 +119,11 @@ class LoginFragment : Fragment() {
 
             )
         }
-
-        versionDisplay()
+*/ //due to UI glitch issue put in onViewCreated
+       /* versionDisplay()
         setupSnackbar()
         observeShowProgress()
-        navigate()
+        navigate()*/ //due to UI glitch issue put in onViewCreated.
         if (prefProvider?.getValueForLogin(LOGIN_REMEMBER, "") == LOGIN_REMEMBER) {
             var old_email = prefProvider?.getValueForLogin(LOGIN_EMAIL, "")
             var old_password = prefProvider?.getValueForLogin(LOGIN_PASSWORD, "")
@@ -259,6 +257,41 @@ class LoginFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        if (prefProvider?.getValue(Constants.AUTH_TOKEN, "").toString().isNotEmpty()) {
+            if (!prefProvider?.getValueboolean(Constants.IS_CLOCKOUT, false)!!) {
+                findNavController().navigate(R.id.action_login_to_passcode)
+            } else {
+                if (prefProvider?.getValueboolean("clockOutFromNoti", false) == true) {
+                    findNavController().navigate(R.id.action_login_to_passcode, arguments)
+                } else {
+                    if (prefProvider?.getValueboolean(Constants.ORDER_COMPLETED, false)!!) {
+                        findNavController().navigate(R.id.action_login_to_passcode)
+                    } else {
+                        findNavController().navigate(R.id.action_login_to_dashboardCategoryBoldPOS)
+                    }
+                }
+
+            }
+
+        }
+
+        getCustomerDisplay(requireContext())?.let { display ->
+            presentation = CustomDisplay(
+                display,
+                requireContext(),
+                viewLifecycleOwner,
+                dashboardViewModel,
+                passcodeViewModel,
+                dineInViewModel
+
+            )
+        }
+
+        versionDisplay()
+        setupSnackbar()
+        observeShowProgress()
+        navigate()
+
 
         firebaseToken()
         binding.txtSignIn.setOnClickListener {
