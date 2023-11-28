@@ -782,6 +782,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_paymentBoldPosFragment)
             }
         } else {
+
+            Log.e("Track Dashboard", "Track Dashboard - Load cart fragment 786")
+
+            viewModel.fromAllOrderFragment = true
+
             loadCartFragment(
                 CartFragment(
                     this,
@@ -847,10 +852,14 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     private fun loadCategoryFragment(fragment: Fragment) {
         val fm: FragmentManager = requireActivity().supportFragmentManager
         fm.beginTransaction().replace(binding.frameLayout.id, fragment).commit()
+        Log.e("Dashboard Tracking ","Track Dashboard - 855 Category Fragment")
     }
 
     // To show cart on screen
     private fun loadCartFragment(frag: Fragment) {
+
+        Log.e("Track Dashboard", "Track Dashboard - Load cart fragment")
+
         val fm: FragmentManager = childFragmentManager
         val result = Bundle().apply {
             putInt("fragmentId", binding.frameLayout.id)
@@ -873,11 +882,14 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         frag.arguments = result
         fm.beginTransaction().replace(binding.frameLayoutCart.id, frag).addToBackStack(null)
             .commit()
+        Log.e("Dashboard Tracking ","Track Dashboard - 885")
     }
 
     private fun loadKeyPadFragment(frag: Fragment) {
         val fm: FragmentManager = requireActivity().supportFragmentManager
         fm.beginTransaction().replace(binding.frameLayout.id, frag).commit()
+
+        Log.e("Dashboard Tracking ","Track Dashboard - 892 KEYPAD")
     }
 
     private fun onClick() {
@@ -1302,6 +1314,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         fm.beginTransaction().add(binding.frameLayout.id, fragment)
                             .setReorderingAllowed(true)
                             .addToBackStack(backStateName).commit()
+                        Log.e("Dashboard Tracking ","Track Dashboard - 1317")
                     } else {
                         Log.d(TAG, "dineintest onItemSelected: ")
                         Log.e(TAG, "dineintest cartListItemAddSize: ${cartList.size}")
@@ -1636,6 +1649,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         val fm: FragmentManager = requireActivity().supportFragmentManager
         fm.beginTransaction().add(binding.frameLayout.id, fragment).setReorderingAllowed(true)
             .addToBackStack(backStateName).commit()
+        Log.e("Dashboard Tracking ","Track Dashboard - 1652")
         /*val frag: Fragment = AddItemFragment.newInstance(item, this, cartList, true)
         loadCategoryFragment(frag)*/
     }
@@ -1647,6 +1661,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         val fm: FragmentManager = requireActivity().supportFragmentManager
         fm.beginTransaction().add(binding.frameLayout.id, fragment).setReorderingAllowed(true)
             .addToBackStack(backStateName).commit()
+        Log.e("Dashboard Tracking ","Track Dashboard - 1664")
     }
 
     override fun onDineInOrderCleared() {
@@ -2558,10 +2573,15 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                 clearCustomer()
                 if (prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)) {
-                    if(viewModel.fromAllOrderFragment){
+                    if (viewModel.fromAllOrderFragment) {
                         viewModel.fromAllOrderFragment = false
-                    }else
+                    } else if (viewModel.fromAllOrderFragmentUpdate) {
+                        viewModel.fromAllOrderFragmentUpdate = false
+                    }else {
+                        viewModel.fromAllOrderFragmentUpdate = false
+                        viewModel.fromAllOrderFragment = false
                         findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
+                    }
                 } else {
                     getKitchenPrinters(it)
                 }

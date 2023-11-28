@@ -161,7 +161,8 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     //using this field to restrict double navigation between DashboardCategoryBoldPOS and All Orders when clicking Home in AllOrders Page
     var fromAllOrderFragment = false
-
+    var fromAllOrderFragmentUpdate = false
+    var fromSaveOrderToAllOrders = false
     fun getCustomerReceiptSettings() = posRepository.getCustomerReceiptSettings()
 
     fun getKitchenReceiptSettings() = posRepository.getKitchenReceiptSettings()

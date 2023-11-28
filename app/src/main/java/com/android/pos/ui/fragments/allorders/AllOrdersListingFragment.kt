@@ -1006,6 +1006,9 @@ class AllOrdersListingFragment(
 
 
                 if (findNavController().currentDestination?.id == R.id.allOrdersFragment) {
+
+                   // dashboardViewModel.fromAllOrderFragmentUpdate = true
+
                     findNavController().navigate(
                         R.id.action_allOrder_to_dashboardCategoryBoldPOS, bundle
                     )

@@ -273,13 +273,29 @@ class CartFragment(
 
 //        saveVisibility()
         if (prefProvider.getValue(ORDER_TYPE, "").isEmpty()) {
-            binding.rlCartView.gone()
-            binding.rvOrderType.visible()
+
+            if (viewModel.fromSaveOrderToAllOrders) {
+                binding.rlCartView.visible()
+                binding.rvOrderType.gone()
+                Log.e("Dashboard Tracking", "Dashboard tracking rvOrderVisible TRUE")
+            } else {
+                binding.rlCartView.gone()
+                binding.rvOrderType.visible()
+                Log.e("Dashboard Tracking", "Dashboard tracking rvOrderVisible FALSE")
+            }
+
             binding.orderTypeDisplay.text =
                 getString(R.string.current_order)
         } else {
-            binding.rlCartView.visible()
-            binding.rvOrderType.gone()
+            if (viewModel.fromSaveOrderToAllOrders) {
+                binding.rlCartView.visible()
+                binding.rvOrderType.gone()
+                Log.e("Dashboard Tracking", "Dashboard tracking rvOrderVisible TRUE ELSE")
+            } else {
+                binding.rlCartView.visible()
+                binding.rvOrderType.gone()
+                Log.e("Dashboard Tracking", "Dashboard tracking rvOrderVisible FALSE ELSE")
+            }
 
             if (prefProvider.getValue(
                     ORDER_TYPE,
@@ -2590,6 +2606,8 @@ class CartFragment(
                             isOrderUpdate = false
                             binding.tvSave.text = getString(R.string.save)
 
+                            viewModel.fromSaveOrderToAllOrders = true
+
                         } else {
                             showMessage()
                         }
@@ -2866,6 +2884,8 @@ class CartFragment(
     override fun onStop() {
         super.onStop()
         org.greenrobot.eventbus.EventBus.getDefault().unregister(this)
+
+        viewModel.fromSaveOrderToAllOrders = false
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
