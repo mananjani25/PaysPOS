@@ -1,9 +1,6 @@
 package com.android.pos.ui.dialog
 
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
-import android.content.ServiceConnection
+import android.content.*
 import android.graphics.Point
 import android.os.Bundle
 import android.os.IBinder
@@ -282,7 +279,17 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                 } else {
                     CoroutineScope(Dispatchers.Main).launch {
                         ProgressUtils.dismissProgressDialog()
-                        requireActivity().toast("$resultCode $resultTxt", Toast.LENGTH_LONG)
+                        AlertUtils.showCustomAlertWithListenerWithOK(requireContext(),resultTxt,object:
+                            DialogInterface.OnClickListener{
+                            override fun onClick(p0: DialogInterface?, p1: Int) {
+                                try {
+                                    p0?.dismiss()
+                                } catch (e: Exception) {
+                                }
+                            }
+                        })
+
+//                        requireActivity().toast("$resultCode $resultTxt", Toast.LENGTH_LONG)
                     }
                 }
 
@@ -324,7 +331,15 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                         } else {
                             CoroutineScope(Dispatchers.Main).launch {
                                 ProgressUtils.dismissProgressDialog()
-                                requireActivity().toast("$resultCode $resultTxt", Toast.LENGTH_LONG)
+                                AlertUtils.showCustomAlertWithListenerWithOK(requireContext(),resultTxt,object:DialogInterface.OnClickListener{
+                                    override fun onClick(p0: DialogInterface?, p1: Int) {
+                                        try {
+                                            p0?.dismiss()
+                                        } catch (e: Exception) {
+                                        }
+                                    }
+                                })
+//                                requireActivity().toast("$resultCode $resultTxt", Toast.LENGTH_LONG)
                             }
                         }
                     } else {
@@ -397,7 +412,15 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                         } else {
                             CoroutineScope(Dispatchers.Main).launch {
                                 ProgressUtils.dismissProgressDialog()
-                                requireActivity().toast("$resultCode $resultTxt", Toast.LENGTH_LONG)
+                                AlertUtils.showCustomAlertWithListenerWithOK(requireContext(),resultTxt,object:DialogInterface.OnClickListener{
+                                    override fun onClick(p0: DialogInterface?, p1: Int) {
+                                        try {
+                                            p0?.dismiss()
+                                        } catch (e: Exception) {
+                                        }
+                                    }
+                                })
+//                                requireActivity().toast("$resultCode $resultTxt", Toast.LENGTH_LONG)
                             }
                         }
                     } else {
@@ -481,7 +504,15 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                         } else {
                             CoroutineScope(Dispatchers.Main).launch {
                                 ProgressUtils.dismissProgressDialog()
-                                requireActivity().toast("$resultCode $resultTxt", Toast.LENGTH_LONG)
+                                AlertUtils.showCustomAlertWithListenerWithOK(requireContext(),resultTxt,object:DialogInterface.OnClickListener{
+                                    override fun onClick(p0: DialogInterface?, p1: Int) {
+                                        try {
+                                            p0?.dismiss()
+                                        } catch (e: Exception) {
+                                        }
+                                    }
+                                })
+//                                requireActivity().toast("$resultCode $resultTxt", Toast.LENGTH_LONG)
                             }
                         }
                     } else {
