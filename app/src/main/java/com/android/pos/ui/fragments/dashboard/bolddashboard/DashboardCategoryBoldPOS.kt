@@ -1050,6 +1050,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
     // To open cash drawer base on connected customer printer type
     private fun getCustomerPrinters() {
+        Log.e("Tracking Printers","Tracking Printers - 1053")
         CoroutineScope(Dispatchers.IO).launch {
             var customersPrinters = viewModel.getCustomerPrinterList() ?: arrayListOf()
             if (customersPrinters.isNotEmpty()) {
@@ -1259,6 +1260,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             }
 
             else -> {
+                Log.e("Cart ITEM","CART ITEM CLICKED")
                 viewModel.setLatestCartItemPosition(position)
                 CoroutineScope(Dispatchers.IO).launch {
                     val item = TbCartItem().convertToCartItem(tbItem, tbItem)
@@ -1384,6 +1386,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                 }
                             } else {
                                 item.guestIndexForDineIn = null
+                                Log.e("CART ITEM","CART ITEM UPDATED")
                                 runOnUiThread {
                                     runBlocking {
                                         viewModel.updateCart(

@@ -75,10 +75,7 @@ import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.ui.fragments.payment.PaymentViewModel
-import com.android.pos.utils.AlertUtils
-import com.android.pos.utils.LogUtil
-import com.android.pos.utils.MethodUtils
-import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.*
 import com.android.pos.utils.callback.DineInOrderCallBack
 import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.callback.ItemClickListner
@@ -93,7 +90,6 @@ import com.android.pos.utils.extensions.isVisible
 import com.android.pos.utils.extensions.runOnUiThread
 import com.android.pos.utils.extensions.setOnSingleClickListener
 import com.android.pos.utils.extensions.visible
-import com.android.pos.utils.getCustomerDisplay
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -2592,10 +2588,17 @@ class CartFragment(
                             }
                             isSaveOrder = true
                             viewModelPayment.saveOrder(true)
+
+                            viewModelPayment.orderCreateCallSent = true
+
+
+                            //
+                            viewModel.fromAllOrderFragment = false
                             request?.let { it1 -> viewModelPayment.submit(it1) }
                             if (!prefProvider.getValueboolean(Constants.NO_NEED_TO_PRINT, false)) {
                                 //print
                                 Log.d(TAG, "checkUpdation calling submit -> printing ")
+                                if(!viewModelPayment.orderCreateCallSent)
                                 request?.let { it1 -> viewModelPayment.submit(it1) }
                             } else {
                                 //no print
