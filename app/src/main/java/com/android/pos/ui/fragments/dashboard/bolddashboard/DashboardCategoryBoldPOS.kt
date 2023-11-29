@@ -855,6 +855,15 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         Log.e("Dashboard Tracking ","Track Dashboard - 855 Category Fragment")
     }
 
+
+    private fun createCartForLoadCartFragment() = CartFragment(
+                this,
+                this,
+                dineInCallback = this,
+                isFromDashboard = true
+            )
+
+
     // To show cart on screen
     private fun loadCartFragment(frag: Fragment) {
 
@@ -1322,6 +1331,13 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         Log.e(TAG, "dineintest cartListItemAddSize: ${cartList.size}")
                         if (cartList.isEmpty()) {
                             viewModel.createCart(cartList)
+
+                                childFragmentManager.beginTransaction().replace(binding.frameLayoutCart.id, createCartForLoadCartFragment()).addToBackStack(null)
+                                .commit()
+
+//                            loadCartFragment(
+//                                createCartForLoadCartFragment()
+//                            )
                         }
                         item.itemQuantity = 1
                         if (cartList.size > 0) {
