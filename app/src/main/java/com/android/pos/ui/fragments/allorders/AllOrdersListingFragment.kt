@@ -352,7 +352,7 @@ class AllOrdersListingFragment(
             }
         }
 
-        if(orderTab == ALL_ORDER_TAB && orderStatusLabel == "InProgress"){
+        if (orderTab == ALL_ORDER_TAB && orderStatusLabel == "InProgress") {
             paymentStatus = ""
         }
 
@@ -808,7 +808,8 @@ class AllOrdersListingFragment(
             "rejected" -> {
 
                 if ((orderTab == ALL_ORDER_TAB || orderTab == ONLINE_ORDER_TAB)
-                    && adapter.orderList[pos].orderType == ONLINE_ORDER_TAB) {
+                    && adapter.orderList[pos].orderType == ONLINE_ORDER_TAB
+                ) {
                     alert("", "Are you sure, you want to reject this order ?") {
 
                         this.positiveButton("YES") {
@@ -1146,7 +1147,7 @@ class AllOrdersListingFragment(
                     Constants.LOYALTY_ADDED,
                     order.isLoyaltyApplied
                 )
-                prefProvider.setValueboolean(IS_FROM_ALL_ORDER,true)
+                prefProvider.setValueboolean(IS_FROM_ALL_ORDER, true)
                 findNavController().navigate(R.id.action_allOrder_to_paymentBoldPosFragment, bundle)
 
 
@@ -1154,11 +1155,19 @@ class AllOrdersListingFragment(
 
             Constants.PRINT_UNPAID -> {
                 isPrintCustomer = true
+//               This is only a fix from android side, the DeliveryType should come empty from server side when the order is OpenOrder
+                if (order.orderType.equals("OpenOrder", true)) {
+                    order.orderType = ""
+                }
                 getCustomerPrinters(order, status)
             }
 
             Constants.PRINT_PAID -> {
                 isPrintCustomer = true
+//               This is only a fix from android side, the DeliveryType should come empty from server side when the order is OpenOrder
+                if (order.orderType.equals("OpenOrder", true)) {
+                    order.orderType = ""
+                }
                 getCustomerPrinters(order, status)
             }
 
@@ -1194,12 +1203,12 @@ class AllOrdersListingFragment(
             binding.txtNodata.text = requireContext().getText(R.string.no_data_available)
         })
 
-        Log.d("noDataAvailableFilter","no data available")
+        Log.d("noDataAvailableFilter", "no data available")
     }
 
     override fun hideNoDataAvailable() {
         binding.llNoData.gone()
-        Log.d("noDataAvailableFilter","hide")
+        Log.d("noDataAvailableFilter", "hide")
     }
 
     // get available customer printer's list
@@ -1222,7 +1231,6 @@ class AllOrdersListingFragment(
 
                             }
                         }
-
 
 
                     }
@@ -1557,7 +1565,7 @@ class AllOrdersListingFragment(
                     Builder.COLOR_1
                 )
                 builder.addTextAlign(Builder.ALIGN_CENTER)
-               builder.addText(receiptModel?.deliveryType + "\n")
+                builder.addText(receiptModel?.deliveryType + "\n")
 
 
             }
@@ -1890,7 +1898,8 @@ class AllOrdersListingFragment(
                 )
             }
 
-            val result =  prefProvider.getValueboolean(Constants.SERVICECHARGE_TAKEOUT_OPENORDER,false)
+            val result =
+                prefProvider.getValueboolean(Constants.SERVICECHARGE_TAKEOUT_OPENORDER, false)
             if (receiptModel.totalServiceCharges != null && result) {
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
@@ -2122,7 +2131,13 @@ class AllOrdersListingFragment(
                 builder.addText(
                     padLine(
                         "Pay by Cash",
-                        "$" + MethodUtils.roundOffAmountString(receiptModel.totalAmount - MethodUtils.getLatestCashDiscountOrSurCharge(receiptModel.totalAmount, prefProvider, requireContext())),
+                        "$" + MethodUtils.roundOffAmountString(
+                            receiptModel.totalAmount - MethodUtils.getLatestCashDiscountOrSurCharge(
+                                receiptModel.totalAmount,
+                                prefProvider,
+                                requireContext()
+                            )
+                        ),
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             24
                         } else {
@@ -2204,7 +2219,13 @@ class AllOrdersListingFragment(
                 builder.addText(
                     padLine(
                         "Pay by Card",
-                        "$" + MethodUtils.roundOffAmountString(receiptModel.totalAmount + MethodUtils.getLatestCashDiscountOrSurCharge(receiptModel.totalAmount,prefProvider,requireContext())),
+                        "$" + MethodUtils.roundOffAmountString(
+                            receiptModel.totalAmount + MethodUtils.getLatestCashDiscountOrSurCharge(
+                                receiptModel.totalAmount,
+                                prefProvider,
+                                requireContext()
+                            )
+                        ),
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             24
                         } else {
@@ -2698,7 +2719,7 @@ class AllOrdersListingFragment(
 
 
             if (receiptModel?.orderType?.lowercase() == Constants.PHONE_ORDER.lowercase()
-             || receiptModel?.orderType?.lowercase() == Constants.OPEN_ORDER.lowercase()
+                || receiptModel?.orderType?.lowercase() == Constants.OPEN_ORDER.lowercase()
             ) {
 
                 PrintSunmiUtils.deliveryType(receiptModel?.deliveryType?.trim())
@@ -2901,9 +2922,10 @@ class AllOrdersListingFragment(
                 PrintSunmiUtils.tax(str3)
             }
 
-            val result =  prefProvider.getValueboolean(Constants.SERVICECHARGE_TAKEOUT_OPENORDER,false)
+            val result =
+                prefProvider.getValueboolean(Constants.SERVICECHARGE_TAKEOUT_OPENORDER, false)
 
-            if (result){
+            if (result) {
 
                 if (receiptModel.totalServiceCharges != null) {
 
@@ -3042,7 +3064,13 @@ class AllOrdersListingFragment(
 
                 val str5 = padLine(
                     "Pay by Cash",
-                    "$" + MethodUtils.roundOffAmountString(receiptModel.totalAmount - MethodUtils.getLatestCashDiscountOrSurCharge(receiptModel.totalAmount,prefProvider,requireContext())),
+                    "$" + MethodUtils.roundOffAmountString(
+                        receiptModel.totalAmount - MethodUtils.getLatestCashDiscountOrSurCharge(
+                            receiptModel.totalAmount,
+                            prefProvider,
+                            requireContext()
+                        )
+                    ),
                     if (customerSettingModel.fonts == Constants.LARGE) {
                         23
                     } else {
@@ -3076,7 +3104,13 @@ class AllOrdersListingFragment(
                 ).toString()
                 PrintSunmiUtils.totalPrice(str5)
 
-                val totalAmt1 = MethodUtils.roundOffAmountDouble(receiptModel.totalAmount + MethodUtils.getLatestCashDiscountOrSurCharge(receiptModel.totalAmount,prefProvider,requireContext()))
+                val totalAmt1 = MethodUtils.roundOffAmountDouble(
+                    receiptModel.totalAmount + MethodUtils.getLatestCashDiscountOrSurCharge(
+                        receiptModel.totalAmount,
+                        prefProvider,
+                        requireContext()
+                    )
+                )
                 val str51 = padLine(
                     "Pay by Card",
                     "$" + MethodUtils.roundOffAmountString(totalAmt1),
@@ -3665,7 +3699,7 @@ class AllOrdersListingFragment(
                 Status.SUCCESS -> {
                     ProgressUtils.dismissProgressDialog()
 
-                    if (isPrint){
+                    if (isPrint) {
                         isPrint = false
                         it.data?.forEach {
                             if (it.status && checkItemsforPrinterOnlineOrder(
@@ -3675,7 +3709,7 @@ class AllOrdersListingFragment(
                                 )
                             ) {
 
-                                Log.d("getKitchenPrinterList","getKitchenPrinterList mmm")
+                                Log.d("getKitchenPrinterList", "getKitchenPrinterList mmm")
 
                                 initKitchenPrinter(
                                     it,
@@ -3684,7 +3718,8 @@ class AllOrdersListingFragment(
                                 )
 
                             }
-                    } }
+                        }
+                    }
                 }
 
                 Status.LOADING -> {
@@ -3710,9 +3745,11 @@ class AllOrdersListingFragment(
         if (data.name.startsWith(SUNMI_PRINTER, true)) {
 
             try {
-                SunmiPrinterApi.getInstance().setPrinter(SunmiPrinter.SunmiBlueToothPrinter, data.ipAddress)
-            }catch (e:Exception){
-                SunmiPrinterApi.getInstance().setPrinter(SunmiPrinter.SunmiNetPrinter, data.ipAddress)
+                SunmiPrinterApi.getInstance()
+                    .setPrinter(SunmiPrinter.SunmiBlueToothPrinter, data.ipAddress)
+            } catch (e: Exception) {
+                SunmiPrinterApi.getInstance()
+                    .setPrinter(SunmiPrinter.SunmiNetPrinter, data.ipAddress)
             }
 
             if (!SunmiPrinterApi.getInstance().isConnected) {
@@ -3937,7 +3974,11 @@ class AllOrdersListingFragment(
                     if ((orderData.orderType.equals(Constants.PHONE_ORDER, true) ||
                                 orderData.orderType.equals("OnlineWebOrder", true) ||
                                 orderData.orderType.equals("Online Order", true) ||
-                                orderData.orderType.equals("OnlineOrder", true)) && orderData.deliveryType != null) {
+                                orderData.orderType.equals(
+                                    "OnlineOrder",
+                                    true
+                                )) && orderData.deliveryType != null
+                    ) {
                         builder.addFeedLine(1)
                         builder.addTextFont(Builder.FONT_E)
                         builder.addTextLang(Builder.LANG_EN)
@@ -4228,7 +4269,11 @@ class AllOrdersListingFragment(
                     if ((orderData.orderType.equals(Constants.PHONE_ORDER, true) ||
                                 orderData.orderType.equals("OnlineWebOrder", true) ||
                                 orderData.orderType.equals("Online Order", true) ||
-                                orderData.orderType.equals("OnlineOrder", true)) && orderData.deliveryType != null) {
+                                orderData.orderType.equals(
+                                    "OnlineOrder",
+                                    true
+                                )) && orderData.deliveryType != null
+                    ) {
                         builder.addFeedLine(1)
                         builder.addTextFont(Builder.FONT_E)
                         builder.addTextLang(Builder.LANG_EN)
@@ -4602,7 +4647,11 @@ class AllOrdersListingFragment(
                     if ((orderData.orderType.equals(Constants.PHONE_ORDER, true) ||
                                 orderData.orderType.equals("OnlineWebOrder", true) ||
                                 orderData.orderType.equals("Online Order", true) ||
-                                orderData.orderType.equals("OnlineOrder", true)) && orderData.deliveryType != null) {
+                                orderData.orderType.equals(
+                                    "OnlineOrder",
+                                    true
+                                )) && orderData.deliveryType != null
+                    ) {
                         builder.addFeedLine(1)
                         builder.addTextFont(Builder.FONT_E)
                         builder.addTextLang(Builder.LANG_EN)
@@ -4901,7 +4950,11 @@ class AllOrdersListingFragment(
                     if ((orderData.orderType.equals(Constants.PHONE_ORDER, true) ||
                                 orderData.orderType.equals("OnlineWebOrder", true) ||
                                 orderData.orderType.equals("Online Order", true) ||
-                                orderData.orderType.equals("OnlineOrder", true)) && orderData.deliveryType != null) {
+                                orderData.orderType.equals(
+                                    "OnlineOrder",
+                                    true
+                                )) && orderData.deliveryType != null
+                    ) {
                         builder.addFeedLine(1)
                         builder.addTextFont(Builder.FONT_E)
                         builder.addTextLang(Builder.LANG_EN)
@@ -5220,9 +5273,13 @@ class AllOrdersListingFragment(
                 SunmiPrinterApi.getInstance().lineWrap(1)
 
                 if ((orderData.orderType.equals(Constants.PHONE_ORDER, true) ||
-                    orderData.orderType.equals("OnlineWebOrder", true) ||
-                    orderData.orderType.equals("Online Order", true) ||
-                    orderData.orderType.equals("OnlineOrder", true)) && orderData.deliveryType != null) {
+                            orderData.orderType.equals("OnlineWebOrder", true) ||
+                            orderData.orderType.equals("Online Order", true) ||
+                            orderData.orderType.equals(
+                                "OnlineOrder",
+                                true
+                            )) && orderData.deliveryType != null
+                ) {
                     PrintSunmiUtils.printOrderType(orderData.deliveryType.toString())
                     SunmiPrinterApi.getInstance().lineWrap(1)
                 }
@@ -5318,7 +5375,6 @@ class AllOrdersListingFragment(
 //                                    )
 //                                }
 //                            }
-
 
 
                         PrintSunmiUtils.customerAddress(
@@ -5447,7 +5503,7 @@ class AllOrdersListingFragment(
             if (receiptModel?.orderType?.lowercase() == Constants.PHONE_ORDER.lowercase()
                 || receiptModel?.orderType?.lowercase() == Constants.OPEN_ORDER.lowercase()
             ) {
-               PrintSunmiUtils.headerText(receiptModel?.deliveryType)
+                PrintSunmiUtils.headerText(receiptModel?.deliveryType)
 
             }
             SunmiPrintHelper.getInstance().lineWrap(1)
@@ -5629,7 +5685,8 @@ class AllOrdersListingFragment(
                 PrintSunmiUtils.normalText(str3)
             }
 
-            val result =  prefProvider.getValueboolean(Constants.SERVICECHARGE_TAKEOUT_OPENORDER,false)
+            val result =
+                prefProvider.getValueboolean(Constants.SERVICECHARGE_TAKEOUT_OPENORDER, false)
 
             if (receiptModel.totalServiceCharges != null && result) {
 
@@ -5765,7 +5822,13 @@ class AllOrdersListingFragment(
 
                 val str5 = padLine(
                     "Pay by Cash",
-                    "$" + MethodUtils.roundOffAmountString(receiptModel.totalAmount - MethodUtils.getLatestCashDiscountOrSurCharge(receiptModel.totalAmount,prefProvider,requireContext())),
+                    "$" + MethodUtils.roundOffAmountString(
+                        receiptModel.totalAmount - MethodUtils.getLatestCashDiscountOrSurCharge(
+                            receiptModel.totalAmount,
+                            prefProvider,
+                            requireContext()
+                        )
+                    ),
                     if (customerSettingModel.fonts == Constants.LARGE) {
                         23
                     } else {
@@ -5799,7 +5862,13 @@ class AllOrdersListingFragment(
                 ).toString()
                 PrintSunmiUtils.boldText(str5)
 
-                val totalAmt1 = MethodUtils.roundOffAmountDouble(receiptModel.totalAmount + MethodUtils.getLatestCashDiscountOrSurCharge(receiptModel.totalAmount,prefProvider,requireContext()))
+                val totalAmt1 = MethodUtils.roundOffAmountDouble(
+                    receiptModel.totalAmount + MethodUtils.getLatestCashDiscountOrSurCharge(
+                        receiptModel.totalAmount,
+                        prefProvider,
+                        requireContext()
+                    )
+                )
                 val str51 = padLine(
                     "Pay by Card",
                     "$" + MethodUtils.roundOffAmountString(totalAmt1),
@@ -6026,7 +6095,11 @@ class AllOrdersListingFragment(
                 if ((orderData.orderType.equals(Constants.PHONE_ORDER, true) ||
                             orderData.orderType.equals("OnlineWebOrder", true) ||
                             orderData.orderType.equals("Online Order", true) ||
-                            orderData.orderType.equals("OnlineOrder", true)) && orderData.deliveryType != null) {
+                            orderData.orderType.equals(
+                                "OnlineOrder",
+                                true
+                            )) && orderData.deliveryType != null
+                ) {
                     PrintSunmiUtils.headerText(orderData.deliveryType.toString())
                     SunmiPrintHelper.getInstance().lineWrap(1)
                 }
