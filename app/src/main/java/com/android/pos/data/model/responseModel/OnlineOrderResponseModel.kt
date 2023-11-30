@@ -74,7 +74,7 @@ data class OnlineOrderResponseModel(
         @SerializedName("order_service_charges")
         val orderServiceCharges: List<OrderServiceCharge>,
         @SerializedName("order_type")
-        val orderType: String,
+        var orderType: String,
         @SerializedName("order_type_name")
         val orderTypeName: String,
         @SerializedName("order_type_id")

@@ -1014,6 +1014,9 @@ class AllOrdersListingFragment(
 
 
                 if (findNavController().currentDestination?.id == R.id.allOrdersFragment) {
+
+                   // dashboardViewModel.fromAllOrderFragmentUpdate = true
+
                     findNavController().navigate(
                         R.id.action_allOrder_to_dashboardCategoryBoldPOS, bundle
                     )
@@ -1164,11 +1167,19 @@ class AllOrdersListingFragment(
 
             Constants.PRINT_UNPAID -> {
                 isPrintCustomer = true
+//               This is only a fix from android side, the DeliveryType should come empty from server side when the order is OpenOrder
+                if (order.orderType.equals("OpenOrder", true)) {
+                    order.orderType = ""
+                }
                 getCustomerPrinters(order, status)
             }
 
             Constants.PRINT_PAID -> {
                 isPrintCustomer = true
+//               This is only a fix from android side, the DeliveryType should come empty from server side when the order is OpenOrder
+                if (order.orderType.equals("OpenOrder", true)) {
+                    order.orderType = ""
+                }
                 getCustomerPrinters(order, status)
             }
 
@@ -5480,11 +5491,13 @@ class AllOrdersListingFragment(
                 if (customerSettingModel.showVenueAddress) prefProvider.getValue(
                     Constants.BUSINESS_ADDRESS,
                     ""
-                ) else "",
-                if (customerSettingModel.showVenuePhone) prefProvider.getValue(
+                ) else "",prefProvider.getValue(
+                    Constants.BUSINESS_PHONE_NO,
+                    "")
+               /* if (customerSettingModel.showVenuePhone) prefProvider.getValue(
                     Constants.BUSINESS_PHONE_NO,
                     ""
-                ) else ""
+                ) else ""*/
             )
             if (customerSettingModel.showWebsiteAddress) {
                 PrintSunmiUtils.venueWebsiteInner(

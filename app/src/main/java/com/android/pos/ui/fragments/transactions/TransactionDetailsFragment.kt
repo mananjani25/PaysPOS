@@ -2,6 +2,7 @@ package com.android.pos.ui.fragments.transactions
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.DialogInterface
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Point
@@ -511,7 +512,16 @@ class TransactionDetailsFragment : Fragment() {
                 } else {
                     CoroutineScope(Dispatchers.Main).launch {
                         ProgressUtils.dismissProgressDialog()
-                        requireActivity().toast("$resultCode $resultTxt", Toast.LENGTH_LONG)
+                        AlertUtils.showCustomAlertWithListenerWithOK(requireContext(),resultTxt,object:
+                            DialogInterface.OnClickListener{
+                            override fun onClick(p0: DialogInterface?, p1: Int) {
+                                try {
+                                    p0?.dismiss()
+                                } catch (e: Exception) {
+                                }
+                            }
+                        })
+//                        requireActivity().toast("$resultCode $resultTxt", Toast.LENGTH_LONG)
                     }
                 }
             } else {
@@ -4908,6 +4918,8 @@ class TransactionDetailsFragment : Fragment() {
                     PrintSunmiUtils.headerText("OrderID:" + paymentDetailsResponse.data.order_id)
                 }
             }
+            SunmiPrintHelper.getInstance().lineWrap(1)
+
 
             if (customerSettingModel.showVenueLogo && prefProvider.getValue(
                     Constants.VENUE_LOGO,
@@ -4926,11 +4938,14 @@ class TransactionDetailsFragment : Fragment() {
                 if (customerSettingModel.showVenueAddress) prefProvider.getValue(
                     Constants.BUSINESS_ADDRESS,
                     ""
-                ) else "",
-                if (customerSettingModel.showVenuePhone) prefProvider.getValue(
+                ) else "",prefProvider.getValue(
                     Constants.BUSINESS_PHONE_NO,
                     ""
-                ) else ""
+                )
+               /* if (customerSettingModel.showVenuePhone) prefProvider.getValue(
+                    Constants.BUSINESS_PHONE_NO,
+                    ""
+                ) else ""*/
             )
 
             if (paymentDetailsResponse.data.order.venue_website.isNotEmpty() && customerSettingModel.showWebsiteAddress) {
@@ -4941,6 +4956,9 @@ class TransactionDetailsFragment : Fragment() {
 
             if (customerSettingModel.showOrderType) {
                 PrintSunmiUtils.headerText(paymentDetailsResponse.data.order.order_type_name.trim())
+                if (!paymentDetailsResponse.data.order.order_type_name.trim().contains("Phone", true)) {
+                    SunmiPrintHelper.getInstance().lineWrap(1)
+                }
             }
 
             if (paymentDetailsResponse.data.order.order_type.trim()
@@ -4952,6 +4970,9 @@ class TransactionDetailsFragment : Fragment() {
                 PrintSunmiUtils.headerText(paymentDetailsResponse.data.order.delivery_type)
             }
 
+            if (paymentDetailsResponse.data.order.order_type_name.trim().contains("Phone", true)) {
+                SunmiPrintHelper.getInstance().lineWrap(1)
+            }
 
             if (customerSettingModel.fonts == Constants.LARGE) {
 

@@ -72,14 +72,23 @@ class PrintSunmiUtils {
 
         }
 
+        fun String.addCharAtIndex(char: Char, index: Int) =
+            StringBuilder(this).apply { insert(index, char) }.toString()
+
+
         fun printBusinessDetailsInner(value: String, value1: String, value2: String) {
 
             if (value.isNotEmpty())
                 headerText(value)
             if (value1.isNotEmpty())
                 normalTextCenter(value1)
-            if (value2.isNotEmpty())
-                normalTextCenter(MethodUtils.getUSFormatNumber(value2))
+            if (value2.isNotEmpty()) {
+//                normalTextCenter(MethodUtils.getUSFormatNumber(value2))
+                normalTextCenter(
+                    value2.addCharAtIndex('(', 0).addCharAtIndex(')', 4).addCharAtIndex(' ', 5)
+                        .addCharAtIndex('-', 10)
+                )
+            }
 
         }
 
@@ -94,7 +103,8 @@ class PrintSunmiUtils {
 
         fun venueWebsiteInner(value: String) {
             SunmiPrintHelper.getInstance().setAlign(1)
-            SunmiPrintHelper.getInstance().printText(value, setFontSizeInner(), false, false, fontName)
+            SunmiPrintHelper.getInstance()
+                .printText(value, setFontSizeInner(), false, false, fontName)
             SunmiPrintHelper.getInstance().lineWrap(1)
 
         }
@@ -400,19 +410,19 @@ class PrintSunmiUtils {
                 setFontSize()
                 when (i) {
                     1 -> {
-                        if(!cardName.isNullOrBlank()){
+                        if (!cardName.isNullOrBlank()) {
                             SunmiPrinterApi.getInstance().printText(cardName)
                             SunmiPrinterApi.getInstance().lineWrap(1)
                         }
                     }
                     2 -> {
-                        if(!cardType.isNullOrBlank()){
+                        if (!cardType.isNullOrBlank()) {
                             SunmiPrinterApi.getInstance().printText(cardType)
                             SunmiPrinterApi.getInstance().lineWrap(1)
                         }
                     }
                     3 -> {
-                        if(!cardNumber.isNullOrBlank()){
+                        if (!cardNumber.isNullOrBlank()) {
                             SunmiPrinterApi.getInstance().printText(cardNumber)
                             SunmiPrinterApi.getInstance().lineWrap(1)
                         }
@@ -718,7 +728,7 @@ class PrintSunmiUtils {
 
         }
 
-        fun cardDetailsInner( cardName: String, cardType: String,cardNumber: String, font: String) {
+        fun cardDetailsInner(cardName: String, cardType: String, cardNumber: String, font: String) {
 
 //            for (i in 1..3) {
 //
@@ -753,7 +763,7 @@ class PrintSunmiUtils {
 
                 when (i) {
                     1 -> {
-                        if(!cardName.isNullOrBlank()){
+                        if (!cardName.isNullOrBlank()) {
                             val strCardName = padLine(
                                 "",
                                 cardName,
@@ -765,7 +775,7 @@ class PrintSunmiUtils {
                     }
 
                     2 -> {
-                        if(!cardType.isNullOrBlank()){
+                        if (!cardType.isNullOrBlank()) {
                             val strCardType = padLine(
                                 "",
                                 cardType,
@@ -777,7 +787,7 @@ class PrintSunmiUtils {
                     }
 
                     3 -> {
-                        if(!cardNumber.isNullOrBlank()){
+                        if (!cardNumber.isNullOrBlank()) {
                             val strCardNumber = padLine(
                                 "",
                                 cardNumber,

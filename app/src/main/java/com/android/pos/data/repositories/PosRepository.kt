@@ -1358,5 +1358,9 @@ class PosRepository @Inject constructor(
     }
 
 
+
+    suspend fun updateModifierJSON(modId: Int?, modifiersJson:String) {
+        appDatabase.modifierSetDao().updateModifierJSON(modId!!, modifiersJson)
+    }
 }
 

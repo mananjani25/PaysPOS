@@ -84,7 +84,7 @@ class CreateDiscount : Fragment() {
 
         binding.edtDiscount.filters = arrayOf(DecimalDigitsCountFilter(2));
 
-        binding.edtDiscount.addTextChangedListener(object :TextWatcher{
+        binding.edtDiscount.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
 
             }
@@ -96,7 +96,7 @@ class CreateDiscount : Fragment() {
             override fun afterTextChanged(s: Editable?) {
                 try {
                     var amount = s.toString()
-                    if(viewModel.discountTypeViewModel == getString(R.string.disc_percentage)){
+                    if (viewModel.discountTypeViewModel == getString(R.string.disc_percentage)) {
                         if (amount.toInt() > 100) {
                             binding.edtDiscount!!.setText("100")
                             binding.edtDiscount.setSelection(binding.edtDiscount.length())
@@ -129,14 +129,23 @@ class CreateDiscount : Fragment() {
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 try {
-                    if (binding.edtDiscount.text?.toString()
-                            ?.isNotEmpty() == true && viewModel.discountTypeViewModel.equals(
-                            "Percentage",
-                            true
-                        ) && binding.edtDiscount.text.toString().toDouble() > 100.00
-                    ) {
-                        binding.edtDiscount.setText("100")
-                        binding.edtDiscount.setSelection(binding.edtDiscount.length())
+
+                    if (binding.edtDiscount.text?.toString()?.isNotEmpty() == true) {
+
+                        val inputValue = p0.toString().toDoubleOrNull()
+                        if (inputValue != null && inputValue in 0.0..0.99) {
+
+                            if (p0?.length!! > 1 && p0.startsWith("0"))
+                                binding.edtDiscount.setText("0.")
+                        } else
+                            if (viewModel.discountTypeViewModel.equals(
+                                    "Percentage",
+                                    true
+                                ) && binding.edtDiscount.text.toString().toDouble() > 100.00
+                            ) {
+                                binding.edtDiscount.setText("100")
+                                binding.edtDiscount.setSelection(binding.edtDiscount.length())
+                            }
                     }
                 } catch (_: Exception) {
                 }
@@ -161,12 +170,23 @@ class CreateDiscount : Fragment() {
         }
 
         binding.header.txtSave.setOnClickListener {
-            var percentage = binding.edtDiscount?.text.toString()
+
+            var percentage = binding.edtDiscount.text.toString()
             var percentage_double = 0.0
-            if (percentage.isNotEmpty()) {
-                percentage_double = MethodUtils.roundOffAmountDouble(percentage.toDouble())
+
+            if (percentage.equals(".")) {
+                AlertUtils.showCustomAlertWithListenerWithOK(
+                    requireContext(),
+                    "Please enter valid Discount Rate"
+                ) { _, _ ->
+                    binding.edtDiscount.setText("")
+                }
+            } else {
+                if (percentage.isNotEmpty()) {
+                    percentage_double = MethodUtils.roundOffAmountDouble(percentage.toDouble())
+                }
+                viewModel.submit(percentage_double)
             }
-            viewModel.submit(percentage_double)
         }
     }
 

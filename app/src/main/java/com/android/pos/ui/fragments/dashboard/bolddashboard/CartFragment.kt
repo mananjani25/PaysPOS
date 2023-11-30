@@ -75,10 +75,7 @@ import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.ui.fragments.payment.PaymentViewModel
-import com.android.pos.utils.AlertUtils
-import com.android.pos.utils.LogUtil
-import com.android.pos.utils.MethodUtils
-import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.*
 import com.android.pos.utils.callback.DineInOrderCallBack
 import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.callback.ItemClickListner
@@ -93,7 +90,6 @@ import com.android.pos.utils.extensions.isVisible
 import com.android.pos.utils.extensions.runOnUiThread
 import com.android.pos.utils.extensions.setOnSingleClickListener
 import com.android.pos.utils.extensions.visible
-import com.android.pos.utils.getCustomerDisplay
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -273,13 +269,29 @@ class CartFragment(
 
 //        saveVisibility()
         if (prefProvider.getValue(ORDER_TYPE, "").isEmpty()) {
-            binding.rlCartView.gone()
-            binding.rvOrderType.visible()
+
+            if (viewModel.fromSaveOrderToAllOrders) {
+                binding.rlCartView.visible()
+                binding.rvOrderType.gone()
+                Log.e("Dashboard Tracking", "Dashboard tracking rvOrderVisible TRUE")
+            } else {
+                binding.rlCartView.gone()
+                binding.rvOrderType.visible()
+                Log.e("Dashboard Tracking", "Dashboard tracking rvOrderVisible FALSE")
+            }
+
             binding.orderTypeDisplay.text =
                 getString(R.string.current_order)
         } else {
-            binding.rlCartView.visible()
-            binding.rvOrderType.gone()
+            if (viewModel.fromSaveOrderToAllOrders) {
+                binding.rlCartView.visible()
+                binding.rvOrderType.gone()
+                Log.e("Dashboard Tracking", "Dashboard tracking rvOrderVisible TRUE ELSE")
+            } else {
+                binding.rlCartView.visible()
+                binding.rvOrderType.gone()
+                Log.e("Dashboard Tracking", "Dashboard tracking rvOrderVisible FALSE ELSE")
+            }
 
             if (prefProvider.getValue(
                     ORDER_TYPE,
@@ -1630,9 +1642,11 @@ class CartFragment(
                                 }"
                             binding.txtLoyaltyPoints.text =
                                 "${viewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
-                            binding.txtLoyaltyBalance.text =
-                                "${viewModel.selectedCustomer?.final_reward}"
+                            /*  binding.txtLoyaltyBalance.text =
+                                    "${viewModel.selectedCustomer?.final_reward}"*/
 
+                            binding.txtLoyaltyBalance.text =
+                                "${viewModel.redeemLoyaltyInfo.remainingLoyaltyPoints}"
                         } else {
                             binding.liinearInfoLayout.layoutParams.height =
                                 resources.getDimension(R.dimen._50sdp)
@@ -1663,8 +1677,16 @@ class CartFragment(
                             }"
                         binding.txtLoyaltyPoints.text =
                             "${viewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
-                        binding.txtLoyaltyBalance.text =
-                            "${viewModel.selectedCustomer?.final_reward}"
+
+                            if (viewModel.redeemLoyaltyInfo.needToApplyLoyalty) {
+                                binding.txtLoyaltyBalance.text =
+                                    "${viewModel.redeemLoyaltyInfo.remainingLoyaltyPoints}"
+                            } else {
+                                binding.txtLoyaltyBalance.text =
+                                    "${viewModel.selectedCustomer?.final_reward}"
+                            }
+                        /*binding.txtLoyaltyBalance.text =
+                            "${viewModel.selectedCustomer?.final_reward}"*/
                         binding.checkloylaty.isChecked =
                             viewModel.redeemLoyaltyInfo.needToApplyLoyalty
                     }
@@ -2581,10 +2603,17 @@ class CartFragment(
                             }
                             isSaveOrder = true
                             viewModelPayment.saveOrder(true)
+
+                            viewModelPayment.orderCreateCallSent = true
+
+
+                            //
+                            viewModel.fromAllOrderFragment = false
                             request?.let { it1 -> viewModelPayment.submit(it1) }
                             if (!prefProvider.getValueboolean(Constants.NO_NEED_TO_PRINT, false)) {
                                 //print
                                 Log.d(TAG, "checkUpdation calling submit -> printing ")
+                                if(!viewModelPayment.orderCreateCallSent)
                                 request?.let { it1 -> viewModelPayment.submit(it1) }
                             } else {
                                 //no print
@@ -2594,6 +2623,8 @@ class CartFragment(
 
                             isOrderUpdate = false
                             binding.tvSave.text = getString(R.string.save)
+
+                            viewModel.fromSaveOrderToAllOrders = true
 
                         } else {
                             showMessage()
@@ -2871,6 +2902,8 @@ class CartFragment(
     override fun onStop() {
         super.onStop()
         org.greenrobot.eventbus.EventBus.getDefault().unregister(this)
+
+        viewModel.fromSaveOrderToAllOrders = false
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

@@ -2,6 +2,7 @@ package com.android.pos.ui.fragments.dashboard.bolddashboard
 
 import android.app.Presentation
 import android.content.Context
+import android.content.DialogInterface
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.os.Bundle
@@ -1558,6 +1559,15 @@ class CustomDisplay(
                 } else {
                     CoroutineScope(Dispatchers.Main).launch {
                         ProgressUtils.dismissProgressDialog()
+                        AlertUtils.showCustomAlertWithListenerWithOK(context,resultTxt,object:
+                            DialogInterface.OnClickListener{
+                            override fun onClick(p0: DialogInterface?, p1: Int) {
+                                try {
+                                    p0?.dismiss()
+                                } catch (e: Exception) {
+                                }
+                            }
+                        })
                         Log.d("resultCode not 000000:","param $resultCode $resultTxt")
 //                        requireActivity().toast("$resultCode $resultTxt", Toast.LENGTH_LONG)
                     }
