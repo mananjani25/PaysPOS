@@ -1297,7 +1297,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             else -> {
                 Log.e("Cart ITEM","CART ITEM CLICKED")
                 viewModel.setLatestCartItemPosition(position)
-                CoroutineScope(Dispatchers.IO).launch {
+              //  CoroutineScope(Dispatchers.IO).launch {
                     val item = TbCartItem().convertToCartItem(tbItem, tbItem)
                     item.timeStamp = System.currentTimeMillis().toString()
                     getInitialTakeOutOrderType()
@@ -1445,7 +1445,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     }
                 }
             }
-        }
+        //}
 
     }
 
