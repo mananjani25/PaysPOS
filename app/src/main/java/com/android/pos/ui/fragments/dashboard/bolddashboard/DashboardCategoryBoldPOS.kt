@@ -207,10 +207,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-       // Binding()// putting method in onviewcreated due to UI glitch issue
-       // checkCashDrawerObserver() // putting method in onviewcreated due to UI glitch issue
+        Binding()// putting method in onviewcreated due to UI glitch issue
+        checkCashDrawerObserver() // putting method in onviewcreated due to UI glitch issue
         SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
-       // releaseMemory()// putting method in onviewcreated due to UI glitch issue
+        releaseMemory()// putting method in onviewcreated due to UI glitch issue
         prefProvider.setValue(Constants.REDIRECT_FROM, "")
         //prefProvider.setValue(Constants.OPEN_ORDER_ITEMS, "")
 
@@ -220,7 +220,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
         binding = FragmentDashboardCategoryBoldPosBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
-       // syncData() // putting method in onviewcreated due to UI glitch issue
+        syncData() // putting method in onviewcreated due to UI glitch issue
         getCustomerDisplay(requireContext())?.let { display ->
             presentation = CustomDisplay(
                 display,
@@ -247,7 +247,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 //        } else {
 //            binding.layoutHeader.linearOnlineorder?.gone()
 //        }
-       /* getOrderTypes()
+        getOrderTypes()
         observeSaveOrder()
         observeOrderNotUpdated()
         getKitchenReceiptSettings()
@@ -266,9 +266,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         getDineInData()
         checkSearch()
         observeServiceChargeUpdate()
-        observerSyncItemPriceChange()*/   // putting these methods in onviewcreated due to UI glitch issue
+        observerSyncItemPriceChange()   // putting these methods in onviewcreated due to UI glitch issue
         prefProvider.setValueboolean(Constants.ORDER_COMPLETED, false)
-
 
 
         binding.layoutHeader.ivLock.setOnClickListener {
@@ -682,17 +681,17 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        Binding()
-        checkCashDrawerObserver()
+//        Binding()
+//        checkCashDrawerObserver()
 
-        releaseMemory()
+//        releaseMemory()
 
         if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
             viewModel.clearGiftCardCart()
         }
 
 
-        getOrderTypes()
+       /* getOrderTypes()
         observeSaveOrder()
         observeOrderNotUpdated()
         getKitchenReceiptSettings()
@@ -711,7 +710,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         getDineInData()
         checkSearch()
         observeServiceChargeUpdate()
-        observerSyncItemPriceChange()
+        observerSyncItemPriceChange()*/
         System.gc()
         onClick()
 
