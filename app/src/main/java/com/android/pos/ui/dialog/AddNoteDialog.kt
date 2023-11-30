@@ -1,16 +1,15 @@
 package com.android.pos.ui.dialog
 
+import android.content.DialogInterface
 import android.graphics.Point
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.android.pos.data.entities.CartModel
+import com.android.pos.R
 import com.android.pos.data.entities.TbCartItem
-import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.responseModel.NoteResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.DailogAddNoteBinding
@@ -18,6 +17,7 @@ import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.NotesListAdapter
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.settings.notes.NoteListViewModel
+import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.ItemCallback
@@ -28,7 +28,6 @@ import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
 class AddNoteDialog : DialogFragment(), ItemCallback {
@@ -100,7 +99,18 @@ class AddNoteDialog : DialogFragment(), ItemCallback {
 
         binding.txtSave.setOnClickListener {
 
-            addNote()
+            if (binding.edtNote.text!!.toString().trim().isNotEmpty() && binding.edtNote.text!!.toString().trim().isNotBlank()) {
+                addNote()
+            } else {
+                AlertUtils.showCustomAlertWithListenerWithOK(
+                    requireContext(),
+                    getString(R.string.enter_order_note),
+                    object : DialogInterface.OnClickListener {
+                        override fun onClick(p0: DialogInterface?, p1: Int) {
+                        }
+
+                    })
+            }
         }
 
         binding.imgBack.setOnClickListener {

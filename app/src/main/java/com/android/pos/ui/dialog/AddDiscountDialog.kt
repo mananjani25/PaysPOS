@@ -29,6 +29,7 @@ import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.MethodUtils.Companion.toPrecision
+import com.android.pos.utils.extensions.alert
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.NumberFormat
@@ -71,7 +72,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
         binding.rvDiscountList.adapter = discountAdapter
 
         dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
-        val back = ColorDrawable(ContextCompat.getColor(binding.root.context,R.color.bg_color))
+        val back = ColorDrawable(ContextCompat.getColor(binding.root.context, R.color.bg_color))
         val inset = InsetDrawable(back, 150, 100, 150, 100)
         dialog?.window?.setBackgroundDrawable(inset);
 
@@ -177,7 +178,8 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                         val applyDiscount =
                             (defaultModel.discountPrice * 100) / (itemPrice/*(defaultModel.price + modifierPrice) * defaultModel.itemQuantity*/)
                         binding.edtAmount.setText(
-                            MethodUtils.roundOffAmountString((applyDiscount).toPrecision(2).toDouble()
+                            MethodUtils.roundOffAmountString(
+                                (applyDiscount).toPrecision(2).toDouble()
                             )
                         )
 
@@ -233,10 +235,19 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
         }
 
-        binding.txtRemoveDiscount.setOnClickListener {
+        binding.txtRemoveDiscount.setOnClickListener(object:View.OnClickListener{
+            override fun onClick(p0: View?) {
+                if (binding.edtAmount.text.toString().trim().isNotEmpty() && binding.edtAmount.text.toString().trim().isNotBlank()) {
+                    removeDiscount()
+                } else {
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        requireContext(),
+                        getString(R.string.discount_is_not_applied), null
+                    )
+                }
+            }
 
-            removeDiscount()
-        }
+        })
 
         binding.llKeypad.txt10.setOnClickListener {
 
@@ -420,111 +431,125 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
         }
 
         binding.txtSave.setOnClickListener {
-            defaultModel.itemQuantity = itemQuantity
-            if (selectedListPos != -1) {
 
-                val model = discountAdapter.getItem(selectedListPos)
-
-
-                var a = binding.edtAmount.text.toString().toDouble()
-
-                if (isOrderDiscount && selectedCurrency == PERCENTAGE) {
-
-                    a = (totalOrderPrice + orderDiscountPrice) * a / 100
-                }
-
-                val discount = TbDiscount(
-                    "",
-                    model.discountType,
-                    model.id,
-                    0,
-                    model.name,
-                    a,
-                    ""
-                )
-
-
-                val result = Bundle().apply {
-                    putParcelable("data", discount)
-                    putParcelable("item", defaultModel)
-                    putDouble("value", binding.edtAmount.text.toString().toDouble())
-                }
-
-
-                when {
-                    isFromDetails -> {
-                        setFragmentResult("request_key_discount_details", result)
-                    }
-                    isOrderDiscount -> {
-                        setFragmentResult("request_key_discount_order", result)
-                    }
-                    else -> {
-
-                        setFragmentResult("request_key_discount", result)
-                    }
-                }
-                findNavController().navigateUp()
-
-            } else if (binding.edtAmount.text?.isNotEmpty() == true && binding.edtAmount.text.toString() != "0.00") {
-
-
-                discountModel =
-                    if (selectedCurrency == PERCENTAGE) {
-
-
-                        var a = binding.edtAmount.text.toString().toDouble()
-
-                        if (isOrderDiscount) {
-
-                            a = (totalOrderPrice + orderDiscountPrice) * a / 100
-                        }
-
-                        TbDiscount(
-                            "",
-                            getString(R.string.disc_percentage),
-                            -1,
-                            0,
-                            "",
-                            a,
-                            ""
-                        )
-                    } else {
-                        TbDiscount(
-                            "",
-                            "Amount",
-                            -1,
-                            0,
-                            "",
-                            binding.edtAmount.text.toString().toDouble(),
-                            ""
-                        )
-                    }
-                val result = Bundle().apply {
-                    putParcelable("data", discountModel)
-                    putParcelable("item", defaultModel)
-                    putDouble("value", binding.edtAmount.text.toString().toDouble())
-                }
-                when {
-                    isFromDetails -> {
-                        LogUtil.logE(TAG, "PassingModel:  ${Gson().toJson(discountModel)}")
-                        setFragmentResult("request_key_discount_details", result)
-                    }
-                    isOrderDiscount -> {
-                        setFragmentResult("request_key_discount_order", result)
-                    }
-                    else -> {
-
-                        setFragmentResult("request_key_discount", result)
-                    }
-                }
-                findNavController().navigateUp()
+            if (binding.edtAmount.text.toString().trim()
+                    .isNotEmpty() && binding.edtAmount.text.toString().trim().isNotBlank()
+            ) {
+                addDiscount()
             } else {
-                removeDiscount()
+                AlertUtils.showCustomAlertWithListenerWithOK(
+                    requireContext(),
+                    getString(R.string.enter_a_discount),
+                    null
+                )
+            }
+        }
+    }
 
+    private fun addDiscount() {
+        defaultModel.itemQuantity = itemQuantity
+        if (selectedListPos != -1) {
+
+            val model = discountAdapter.getItem(selectedListPos)
+
+
+            var a = binding.edtAmount.text.toString().toDouble()
+
+            if (isOrderDiscount && selectedCurrency == PERCENTAGE) {
+
+                a = (totalOrderPrice + orderDiscountPrice) * a / 100
+            }
+
+            val discount = TbDiscount(
+                "",
+                model.discountType,
+                model.id,
+                0,
+                model.name,
+                a,
+                ""
+            )
+
+
+            val result = Bundle().apply {
+                putParcelable("data", discount)
+                putParcelable("item", defaultModel)
+                putDouble("value", binding.edtAmount.text.toString().toDouble())
             }
 
 
+            when {
+                isFromDetails -> {
+                    setFragmentResult("request_key_discount_details", result)
+                }
+                isOrderDiscount -> {
+                    setFragmentResult("request_key_discount_order", result)
+                }
+                else -> {
+
+                    setFragmentResult("request_key_discount", result)
+                }
+            }
+            findNavController().navigateUp()
+
+        } else if (binding.edtAmount.text?.isNotEmpty() == true && binding.edtAmount.text.toString() != "0.00") {
+
+
+            discountModel =
+                if (selectedCurrency == PERCENTAGE) {
+
+
+                    var a = binding.edtAmount.text.toString().toDouble()
+
+                    if (isOrderDiscount) {
+
+                        a = (totalOrderPrice + orderDiscountPrice) * a / 100
+                    }
+
+                    TbDiscount(
+                        "",
+                        getString(R.string.disc_percentage),
+                        -1,
+                        0,
+                        "",
+                        a,
+                        ""
+                    )
+                } else {
+                    TbDiscount(
+                        "",
+                        "Amount",
+                        -1,
+                        0,
+                        "",
+                        binding.edtAmount.text.toString().toDouble(),
+                        ""
+                    )
+                }
+            val result = Bundle().apply {
+                putParcelable("data", discountModel)
+                putParcelable("item", defaultModel)
+                putDouble("value", binding.edtAmount.text.toString().toDouble())
+            }
+            when {
+                isFromDetails -> {
+                    LogUtil.logE(TAG, "PassingModel:  ${Gson().toJson(discountModel)}")
+                    setFragmentResult("request_key_discount_details", result)
+                }
+                isOrderDiscount -> {
+                    setFragmentResult("request_key_discount_order", result)
+                }
+                else -> {
+
+                    setFragmentResult("request_key_discount", result)
+                }
+            }
+            findNavController().navigateUp()
+        } else {
+            removeDiscount()
+
         }
+
     }
 
     private fun removeDiscount() {
@@ -700,13 +725,13 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
                 try {
                     binding.edtAmount.setSelection(selection)
-                }catch (e:Exception){
-                    Log.d("onTextChanged","onTextChanged exception = $selection")
-                    if (selection <=0){
+                } catch (e: Exception) {
+                    Log.d("onTextChanged", "onTextChanged exception = $selection")
+                    if (selection <= 0) {
                         selection = 0
                         binding.edtAmount.setSelection(selection)
-                    }else {
-                        binding.edtAmount.setSelection(selection-1)
+                    } else {
+                        binding.edtAmount.setSelection(selection - 1)
                     }
                 }
 
