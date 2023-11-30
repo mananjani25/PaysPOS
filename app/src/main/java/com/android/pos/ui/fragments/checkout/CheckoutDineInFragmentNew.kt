@@ -2,6 +2,7 @@ package com.android.pos.ui.fragments.checkout
 
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
+import android.content.DialogInterface
 import android.os.Bundle
 import android.os.Message
 import android.text.Editable
@@ -1372,7 +1373,16 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 } else {
                     CoroutineScope(Dispatchers.Main).launch {
                         ProgressUtils.dismissProgressDialog()
-                        requireActivity().toast("$resultCode $resultTxt", Toast.LENGTH_LONG)
+                        AlertUtils.showCustomAlertWithListenerWithOK(requireContext(),resultTxt,object:
+                            DialogInterface.OnClickListener{
+                            override fun onClick(p0: DialogInterface?, p1: Int) {
+                                try {
+                                    p0?.dismiss()
+                                } catch (e: Exception) {
+                                }
+                            }
+                        })
+//                        requireActivity().toast("$resultCode $resultTxt", Toast.LENGTH_LONG)
 //                        connectBP()
                     }
                 }

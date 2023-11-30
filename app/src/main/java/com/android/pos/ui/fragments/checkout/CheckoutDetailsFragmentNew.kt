@@ -2,6 +2,7 @@ package com.android.pos.ui.fragments.checkout
 
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
+import android.content.DialogInterface
 import android.os.Bundle
 import android.os.Message
 import android.text.Editable
@@ -2195,7 +2196,16 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 } else {
                     CoroutineScope(Dispatchers.Main).launch {
                         ProgressUtils.dismissProgressDialog()
-                        requireContext().showNormalToast("$resultCode $resultTxt")
+                        AlertUtils.showCustomAlertWithListenerWithOK(requireContext(),resultTxt,object:DialogInterface.OnClickListener{
+                            override fun onClick(p0: DialogInterface?, p1: Int) {
+                                try {
+                                    p0?.dismiss()
+                                } catch (e: Exception) {
+                                }
+                            }
+                        })
+
+//                        requireContext().showNormalToast("$resultCode $resultTxt")
 //                        connectBP()
                     }
                 }

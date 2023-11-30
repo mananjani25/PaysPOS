@@ -2,6 +2,7 @@ package com.android.pos.ui.fragments.transactions
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.DialogInterface
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Point
@@ -511,7 +512,16 @@ class TransactionDetailsFragment : Fragment() {
                 } else {
                     CoroutineScope(Dispatchers.Main).launch {
                         ProgressUtils.dismissProgressDialog()
-                        requireActivity().toast("$resultCode $resultTxt", Toast.LENGTH_LONG)
+                        AlertUtils.showCustomAlertWithListenerWithOK(requireContext(),resultTxt,object:
+                            DialogInterface.OnClickListener{
+                            override fun onClick(p0: DialogInterface?, p1: Int) {
+                                try {
+                                    p0?.dismiss()
+                                } catch (e: Exception) {
+                                }
+                            }
+                        })
+//                        requireActivity().toast("$resultCode $resultTxt", Toast.LENGTH_LONG)
                     }
                 }
             } else {
