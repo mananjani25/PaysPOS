@@ -648,7 +648,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                             currentOrderIndex = 0
                             currentPrinterIndex = 0
                             Log.e(TAG, "callActionCalledRun 4")
-                            delay(2000)
+                          //  delay(2000)
 
                             val params = JsonObject()
                             params.addProperty("id", locationId)
@@ -679,7 +679,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                     currentPrinterIndex = 0
 
                     runBlocking {
-                        delay(4000)
+                        delay(2000)
 
                         val params = JsonObject()
                         params.addProperty("id", locationId)
@@ -702,7 +702,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
 
                     currentOrderIndex = 0
                     currentPrinterIndex = 0
-                    delay(5000)
+                    delay(3000)
                     val params = JsonObject()
                     params.addProperty("id", locationId)
                     params.addProperty("url", baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3)
@@ -721,7 +721,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
 
                 currentOrderIndex = 0
                 currentPrinterIndex = 0
-                delay(5000)
+                delay(3000)
                 val params = JsonObject()
                 params.addProperty("id", locationId)
                 params.addProperty("url", baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3)
@@ -1093,7 +1093,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
 
                         currentOrderIndex = 0
                         currentPrinterIndex = 0
-                        delay(2000)
+                       // delay(2000)
 
                         val params = JsonObject()
                         params.addProperty("id", locationId)
@@ -1120,7 +1120,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
 
                     currentOrderIndex = 0
                     currentPrinterIndex = 0
-                    delay(2000)
+                 //   delay(2000)
 
                     val params = JsonObject()
                     params.addProperty("id", locationId)
