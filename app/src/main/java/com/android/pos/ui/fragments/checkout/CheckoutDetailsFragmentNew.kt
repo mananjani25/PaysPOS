@@ -1011,7 +1011,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         paymentviewModel.transactionErrorText.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 prefProvider.setValueboolean(IS_PAX_PAYMENT_FAILED, true)
-                AlertUtils.showCustomAlert(requireContext(), getString(R.string.pax_transaction_error_message))
+                AlertUtils.showCustomAlert(
+                    requireContext(),
+                    getString(R.string.pax_transaction_error_message)
+                )
             }
         }
 
@@ -1727,10 +1730,14 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             String.format("%.2f", totalServiceCharge / isSelectedCount).toDouble()
         totalTax = String.format("%.2f", totalTax / isSelectedCount).toDouble()
         totalDiscount = String.format("%.2f", totalDiscount / isSelectedCount).toDouble()
-        cashDiscountSurcharge = if(prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD){
+        cashDiscountSurcharge = if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
             0.0
-        }else{
-            MethodUtils.getLatestCashDiscountOrSurCharge(WholetotalPrice, prefProvider, requireContext()) / isSelectedCount
+        } else {
+            MethodUtils.getLatestCashDiscountOrSurCharge(
+                WholetotalPrice,
+                prefProvider,
+                requireContext()
+            ) / isSelectedCount
         }
         if (cashDiscountType == "CashDiscount") {
             paymentAmount -= cashDiscountSurcharge
@@ -1745,6 +1752,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             makeCashPayment()
         }
     }
+
     // To purchase gift card with cash payment
     private fun redeemGiftCard() {
         subTotalPrice = String.format("%.2f", subTotalPrice / isSelectedCount).toDouble()
@@ -1791,10 +1799,14 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 String.format("%.2f", totalServiceCharge / isSelectedCount).toDouble()
             totalTax = String.format("%.2f", totalTax / isSelectedCount).toDouble()
             totalDiscount = String.format("%.2f", totalDiscount / isSelectedCount).toDouble()
-            cashDiscountSurcharge = if(prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD){
+            cashDiscountSurcharge = if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
                 0.0
-            }else{
-                MethodUtils.getLatestCashDiscountOrSurCharge(WholetotalPrice, prefProvider, requireContext()) / isSelectedCount
+            } else {
+                MethodUtils.getLatestCashDiscountOrSurCharge(
+                    WholetotalPrice,
+                    prefProvider,
+                    requireContext()
+                ) / isSelectedCount
             }
             paymentAmount = String.format("%.2f", WholetotalPrice / isSelectedCount).toDouble()
             Log.d(TAG, "paymentClick: cashDiscountSurcharge " + cashDiscountSurcharge)
@@ -1814,7 +1826,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         magtekProPaymentCall()
                     }
                     prefProvider.setValueboolean(Constants.IS_PAX_CONNECTED, false)
-                } else if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false) && !mSessionManager.isConnected) {
+                } else if (prefProvider.getValueboolean(
+                        Constants.IS_PAX_CONNECTED,
+                        false
+                    ) && !mSessionManager.isConnected
+                ) {
                     CoroutineScope(Dispatchers.Main).launch {
                         var paxData: PAXData? = paymentviewModel.getPaxPaymentData()
                         if (paxData != null) {
@@ -1832,7 +1848,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             makePaxPaymentRequest()
                         }
                     }
-                } else{
+                } else {
                     errorDisplay("Please connect a payment device.")
                 }
             } else {
@@ -1852,7 +1868,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         binding.lnrGiftCard.setOnSingleClickListener {
             if (prefProvider.getValueboolean(IS_PAX_PAYMENT_FAILED, false)) {
-                AlertUtils.showCustomAlert(requireContext(), getString(R.string.pax_transaction_error_message))
+                AlertUtils.showCustomAlert(
+                    requireContext(),
+                    getString(R.string.pax_transaction_error_message)
+                )
             } else {
                 binding.frameLayoutId.visible()
                 binding.relativeMain.gone()
@@ -1949,10 +1968,14 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 String.format("%.2f", totalServiceCharge / isSelectedCount).toDouble()
             totalTax = String.format("%.2f", totalTax / isSelectedCount).toDouble()
             totalDiscount = String.format("%.2f", totalDiscount / isSelectedCount).toDouble()
-            cashDiscountSurcharge = if(prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD){
+            cashDiscountSurcharge = if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
                 0.0
-            }else{
-                MethodUtils.getLatestCashDiscountOrSurCharge(WholetotalPrice/isSelectedCount, prefProvider, requireContext())
+            } else {
+                MethodUtils.getLatestCashDiscountOrSurCharge(
+                    WholetotalPrice / isSelectedCount,
+                    prefProvider,
+                    requireContext()
+                )
             }
             paymentAmount = String.format("%.2f", WholetotalPrice / isSelectedCount).toDouble()
             Log.d(TAG, "paymentClick: cashDiscountSurcharge " + cashDiscountSurcharge)
@@ -2054,7 +2077,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     } else {
                         custom_paymentAmount = 0.0
 
-                        val actualTotalAmountWithTip = (WholetotalPrice / isSelectedCount) +  tipAmount
+                        val actualTotalAmountWithTip =
+                            (WholetotalPrice / isSelectedCount) + tipAmount
 
                         val giftCardBalanceAmount = it.data.amount
 
@@ -3162,7 +3186,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 getString(R.string.reattempting_the_payment)
             } else {
                 "Please wait payment under process"
-            }, requireActivity())
+            }, requireActivity()
+        )
 
         var call: Call<PaymentResponse>? = null
         when (i) {
