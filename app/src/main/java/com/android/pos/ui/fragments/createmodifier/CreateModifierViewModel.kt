@@ -1,8 +1,6 @@
 package com.android.pos.ui.fragments.createmodifier
 
-import android.os.Build
 import android.text.TextUtils
-import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -20,6 +18,7 @@ import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
+import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -104,6 +103,7 @@ class CreateModifierViewModel @Inject constructor(
 
                                     isUpdated = true
                                     _data.value = Event(it.message)
+                                    updateModifiersJSON(modifierSetId!!,modifierSets.modifierSet.modifiersAttributes)
                                     updateModifierDataInItem(it.data.modifierSet)
                                     posRepository.addModifierSets(it.data.modifierSet)
                                 }
@@ -129,22 +129,31 @@ class CreateModifierViewModel @Inject constructor(
 
     }
 
-    private fun validateModifierSetsName() : Boolean{
+    private fun updateModifiersJSON(modId: Int, modifierList: List<Modifier>) {
+        CoroutineScope(Dispatchers.IO).launch {
+            posRepository.updateModifierJSON(modId, Gson().toJson(modifierList))
+        }
+    }
+
+    private fun validateModifierSetsName(): Boolean {
         val similarItemsList = findAllDuplicatesNames(list)
         return similarItemsList.isEmpty()
     }
 
     private fun findAllDuplicatesNames(modifierList: ArrayList<Modifier>): Set<Modifier> {
-        return modifierList.filter { item -> modifierList.count { (it.name == item.name) } > 1 }.toSet()
+        return modifierList.filter { item -> modifierList.count { (it.name == item.name) } > 1 }
+            .toSet()
     }
 
     private fun findAllDuplicatesPrices(modifierList: ArrayList<Modifier>): Set<Modifier> {
-        return modifierList.filter { item -> modifierList.count { (it.price == item.price) } > 1 }.toSet()
+        return modifierList.filter { item -> modifierList.count { (it.price == item.price) } > 1 }
+            .toSet()
     }
 
     fun setModifiers(modifierList: ArrayList<Modifier>) {
         modifierList.forEach {
-             it.name = it.name.trim().replace("\\s+".toRegex(), " ") }
+            it.name = it.name.trim().replace("\\s+".toRegex(), " ")
+        }
         this.list = modifierList
     }
 
@@ -169,7 +178,7 @@ class CreateModifierViewModel @Inject constructor(
                 oldItemIds?.forEach {
                     if (!modifierSet.itemIds.contains(it)) {
                         val item: TbItem? = posRepository.getSingleItem(it)
-                        if (item?.modifier_set_ids!=null){
+                        if (item?.modifier_set_ids != null) {
                             tempModifierSetIds = item.modifier_set_ids as ArrayList<Int>
                             if (tempModifierSetIds.isNotEmpty()) {
                                 tempModifierSetIds.remove(modifierSet.id)
