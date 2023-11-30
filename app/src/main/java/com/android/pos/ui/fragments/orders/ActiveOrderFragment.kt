@@ -3113,11 +3113,14 @@ class ActiveOrderFragment(
                 if (customerSettingModel.showVenueAddress) prefProvider.getValue(
                     BUSINESS_ADDRESS,
                     ""
-                ) else "",
-                if (customerSettingModel.showVenuePhone) prefProvider.getValue(
+                ) else "",prefProvider.getValue(
                     Constants.BUSINESS_PHONE_NO,
                     ""
-                ) else ""
+                )
+                /*if (customerSettingModel.showVenuePhone) prefProvider.getValue(
+                    Constants.BUSINESS_PHONE_NO,
+                    ""
+                ) else ""*/
             )
             if (customerSettingModel.showWebsiteAddress) {
                 PrintSunmiUtils.venueWebsiteInner(
