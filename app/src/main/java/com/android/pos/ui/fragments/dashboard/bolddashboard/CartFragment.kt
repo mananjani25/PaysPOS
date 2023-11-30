@@ -1642,9 +1642,11 @@ class CartFragment(
                                 }"
                             binding.txtLoyaltyPoints.text =
                                 "${viewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
-                            binding.txtLoyaltyBalance.text =
-                                "${viewModel.selectedCustomer?.final_reward}"
+                            /*  binding.txtLoyaltyBalance.text =
+                                    "${viewModel.selectedCustomer?.final_reward}"*/
 
+                            binding.txtLoyaltyBalance.text =
+                                "${viewModel.redeemLoyaltyInfo.remainingLoyaltyPoints}"
                         } else {
                             binding.liinearInfoLayout.layoutParams.height =
                                 resources.getDimension(R.dimen._50sdp)
@@ -1675,8 +1677,16 @@ class CartFragment(
                             }"
                         binding.txtLoyaltyPoints.text =
                             "${viewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
-                        binding.txtLoyaltyBalance.text =
-                            "${viewModel.selectedCustomer?.final_reward}"
+
+                            if (viewModel.redeemLoyaltyInfo.needToApplyLoyalty) {
+                                binding.txtLoyaltyBalance.text =
+                                    "${viewModel.redeemLoyaltyInfo.remainingLoyaltyPoints}"
+                            } else {
+                                binding.txtLoyaltyBalance.text =
+                                    "${viewModel.selectedCustomer?.final_reward}"
+                            }
+                        /*binding.txtLoyaltyBalance.text =
+                            "${viewModel.selectedCustomer?.final_reward}"*/
                         binding.checkloylaty.isChecked =
                             viewModel.redeemLoyaltyInfo.needToApplyLoyalty
                     }
