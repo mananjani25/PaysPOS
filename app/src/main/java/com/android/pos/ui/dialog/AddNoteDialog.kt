@@ -3,6 +3,13 @@ package com.android.pos.ui.dialog
 import android.content.DialogInterface
 import android.graphics.Point
 import android.os.Bundle
+import android.view.Display
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.Window
+import android.view.WindowManager
 import android.view.*
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
@@ -26,7 +33,7 @@ import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.*
+import java.util.Collections
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -80,6 +87,7 @@ class AddNoteDialog : DialogFragment(), ItemCallback {
 
 
         with(binding) {
+            binding.txtRemovenote?.gone()
             if (isOrderNote) {
                 if (dashBoardCategoryViewModel.cartModel?.note?.isNotEmpty() == true) {
                     edtNote.setText(dashBoardCategoryViewModel.cartModel?.note ?: "")
