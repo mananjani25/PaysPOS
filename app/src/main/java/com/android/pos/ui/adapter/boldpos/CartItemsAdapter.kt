@@ -1,6 +1,7 @@
 package com.android.pos.ui.adapter.boldpos
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -104,6 +105,8 @@ class CartItemsAdapter : ListAdapter<TbCartItem, CartItemsAdapter.MyViewHolder>(
                     item,
                     bindingAdapterPosition
                 )
+
+                Log.e("Item Clicked","Cart Item clicked")
             }
         }
 

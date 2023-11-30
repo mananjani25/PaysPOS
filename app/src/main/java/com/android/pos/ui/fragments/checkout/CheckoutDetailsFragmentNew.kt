@@ -1862,6 +1862,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
 
         binding.tvCash0.setOnSingleClickListener {
+
+            restrictTvCashClicks()
+
             custom_paymentAmount = 0.0
 
             paymentviewModel.totalPayAmount(
@@ -1872,16 +1875,23 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
         binding.tvCash1.setOnSingleClickListener {
 
+            restrictTvCashClicks()
+
             custom_paymentAmount =
                 binding.tvCash1.text.toString().replace("$", "").trim().toDouble()
             cashPaymentWithVariation()
         }
         binding.tvCash2.setOnSingleClickListener {
+
+            restrictTvCashClicks()
+
             custom_paymentAmount =
                 binding.tvCash2.text.toString().replace("$", "").trim().toDouble()
             cashPaymentWithVariation()
         }
         binding.tvCash3.setOnSingleClickListener {
+
+            restrictTvCashClicks()
 
             custom_paymentAmount =
                 binding.tvCash3.text.toString().replace("$", "").trim().toDouble()
@@ -1912,7 +1922,6 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
 
         }
-
 
         binding.imgBackManualCard.setOnSingleClickListener {
             MethodUtils.hideKeyboard(requireActivity())
@@ -2003,6 +2012,17 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             } else {
                 giftCardViewModel.giftCardCheckBalance(GiftCardCheckBalanceRequest(name = giftCardNumber))
             }
+        }
+    }
+
+    //Restrict user from clicking cash value multiple times
+    private fun restrictTvCashClicks(){
+        binding.apply {
+            tvCash0.isEnabled = false
+            tvCash1.isEnabled = false
+            tvCash2.isEnabled = false
+            tvCash3.isEnabled = false
+
         }
     }
 

@@ -85,7 +85,6 @@
                             android:layout_height="wrap_content"
                             android:background="@null"
                             android:padding="@dimen/_9sdp"
-                            android:digits="0123456789."
                             android:hint="@string/add_tip_"
                             android:imeOptions="actionNext"
                             android:inputType="textVisiblePassword"

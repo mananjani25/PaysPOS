@@ -2,7 +2,9 @@ package com.android.pos.ui.fragments.settings.tip
 
 import android.os.Bundle
 import android.text.Editable
+import android.text.Selection.setSelection
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -53,7 +55,7 @@ class CreateTip : Fragment() {
             tipData = arguments?.getParcelable("tipObject")!!
 
             viewModel.setTipData(tipData)
-            binding.edtTip.setText(String.format("%.2f",tipData.rate))
+            binding.edtTip.setText(String.format("%.2f", tipData.rate))
             viewModel.isEditData(isEdit, tipData.id)
         }
 
@@ -72,14 +74,24 @@ class CreateTip : Fragment() {
         binding.header.txtSave.setOnClickListener {
             var rate = binding.edtTip.text.toString()
             var rate_double = 0.0
-            if (rate.isNotEmpty()) {
-                rate_double = MethodUtils.roundOffAmountDouble(rate.toDouble())
+
+            if (rate.equals(".")) {
+                AlertUtils.showCustomAlertWithListenerWithOK(
+                    requireContext(),
+                    "Please enter valid Tip Rate"
+                ) { _, _ ->
+                    binding.edtTip.setText("")
+                }
+            } else {
+                if (rate.isNotEmpty()) {
+                    rate_double = MethodUtils.roundOffAmountDouble(rate.toDouble())
+                }
+                viewModel.submit(rate_double)
             }
-            viewModel.submit(rate_double)
         }
 
         binding.edtTip.filters = arrayOf(DecimalDigitsCountFilter(2));
-        binding.edtTip.addTextChangedListener(object :TextWatcher{
+        binding.edtTip.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
 
             }
@@ -90,25 +102,37 @@ class CreateTip : Fragment() {
 
             override fun afterTextChanged(s: Editable?) {
                 try {
-                val temp_rate = s.toString()
-                if (temp_rate.isNotEmpty()) {
-                    if (temp_rate.toFloat() > 100) {
-                        AlertUtils.showCustomAlertWithListenerWithOK(
-                            requireContext(),
-                            "Please enter percentage less than or equal to 100"
-                        ) { _, _ ->
-                            binding.edtTip.setText("")
-                        }
+                    val temp_rate = s.toString()
+
+                    if (temp_rate.isNotEmpty()) {
+
+                        val inputValue = s.toString().toDoubleOrNull()
+                        if (inputValue != null && inputValue in 0.0..0.99) {
+
+                            if (s?.length!! > 1 && s.startsWith("0"))
+                                binding.edtTip.setText("0.")
+                        } else
+                            if (temp_rate.toFloat() > 100) {
+                                AlertUtils.showCustomAlertWithListenerWithOK(
+                                    requireContext(),
+                                    "Please enter percentage less than or equal to 100"
+                                ) { _, _ ->
+                                    binding.edtTip.setText("")
+                                }
+                            }
                     }
+                    Log.e("Text", "No error")
+                } catch (e: Exception) {
+                    Log.e("Text Exception", e.printStackTrace().toString())
                 }
-                } catch (_: Exception) {
-                }
+
+
+                Log.e("Text Changed", s.toString())
             }
 
         })
         return binding.root
     }
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

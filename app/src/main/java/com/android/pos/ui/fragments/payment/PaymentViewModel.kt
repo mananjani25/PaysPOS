@@ -54,6 +54,9 @@ open class PaymentViewModel @Inject constructor(
     private var totalServiceChargeM: Double? = null
     private var totalDiscountM: Double? = null
 
+
+    var orderCreateCallSent = false
+
     fun setSer(t1: Double) {
         totalServiceChargeM = t1
     }
@@ -236,6 +239,8 @@ open class PaymentViewModel @Inject constructor(
                                         LogUtil.logE("QueueCheck", "QueueStart")
                                     }
                                 }
+
+                                orderCreateCallSent = false
 
                                 deletePaxPaymentData()
                                 _msgText.value = Event(response.message)
