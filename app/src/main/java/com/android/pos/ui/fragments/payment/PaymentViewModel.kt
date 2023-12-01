@@ -53,7 +53,7 @@ open class PaymentViewModel @Inject constructor(
     private var orderOfflineId: String? = null
     private var totalServiceChargeM: Double? = null
     private var totalDiscountM: Double? = null
-
+    public var extData:String=""
 
     var orderCreateCallSent = false
 
@@ -158,6 +158,8 @@ open class PaymentViewModel @Inject constructor(
 
             when (resource.status) {
                 Status.SUCCESS -> {
+                    prefProvider.setValue("CART_MODEL1", "")
+                    prefProvider.setValue("CART_MODEL2", "")
                     _showProgress.value = Event(false)
                     resource.data.let { response ->
                         if (response?.status == 200) {
@@ -2848,6 +2850,7 @@ open class PaymentViewModel @Inject constructor(
     }
 
     fun savePaxPaymentDataLocally(paxData: PAXData){
+        this.extData=paxData.extData
         viewModelScope.launch {
             posRepository.addPAXData(paxData)
         }
