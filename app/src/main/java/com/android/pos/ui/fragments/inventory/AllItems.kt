@@ -24,6 +24,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -288,6 +289,25 @@ class AllItems(val clickedPosition: Int, val totalItems: Int) : Fragment(), Item
 
 
         adapterPage = ItemListPageAdapter()
+
+        try {
+            adapterPage.addLoadStateListener { loadState ->
+                if (loadState.refresh is LoadState.NotLoading && adapterPage.itemCount == 0) {
+                    // Data is not available; show the "Data not available" message
+                    binding.rvAllItemList.visibility = View.GONE
+                    binding.llNoData!!.visibility = View.VISIBLE
+                } else {
+                    // Data is available; hide the message
+                    binding.rvAllItemList.visibility = View.VISIBLE
+                    binding.llNoData!!.visibility = View.GONE
+                    binding.txtNodata.setText(resources.getString(R.string.no_data_available))
+                    binding.txtItemWillAppear!!.setText(resources.getString(R.string.items_will_be_appear_here))
+                }
+            }
+        } catch (e: Exception) {
+
+        }
+
         binding.rvAllItemList.adapter = adapterPage
         binding.rvAllItemList.itemAnimator = null
         adapterPage.setCallback(this)
