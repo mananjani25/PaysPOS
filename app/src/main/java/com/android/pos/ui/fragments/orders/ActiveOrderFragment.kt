@@ -628,12 +628,12 @@ class ActiveOrderFragment(
             binding.txtNodata.text = requireContext().getText(R.string.no_data_available)
         })
 
-        Log.d("noDataAvailableFilter","no data available")
+        Log.d("noDataAvailableFilter", "no data available")
     }
 
     override fun hideNoDataAvailable() {
         binding.llNoData.gone()
-        Log.d("noDataAvailableFilter","hide")
+        Log.d("noDataAvailableFilter", "hide")
     }
 
     private fun cartModel(order: OpenOrderResponse.Data.Order): CartModel {
@@ -1644,7 +1644,8 @@ class ActiveOrderFragment(
                         "Total Discount",
 
                         if (receiptModel.totalDiscount == 0.0) {
-                            "-$" + MethodUtils.roundOffAmountString(receiptModel.totalDiscount)
+//                            "-$" + MethodUtils.roundOffAmountString(receiptModel.totalDiscount)
+                            "$" + MethodUtils.roundOffAmountString(receiptModel.totalDiscount)
                         } else {
                             "-$" + MethodUtils.roundOffAmountString(receiptModel.totalDiscount)
                         },
@@ -1712,7 +1713,9 @@ class ActiveOrderFragment(
             }
 
             if (receiptModel.totalServiceCharges != null && receiptModel.serviceChargeEnabled && prefProvider.getValueboolean(
-                    SERVICECHARGE_TAKEOUT_OPENORDER, false)) {
+                    SERVICECHARGE_TAKEOUT_OPENORDER, false
+                )
+            ) {
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
                 builder.addTextFont(Builder.FONT_E)
@@ -2050,7 +2053,7 @@ class ActiveOrderFragment(
                 builder.addText(
                     padLine(
                         "Pay by Card",
-                        "$" + MethodUtils.roundOffAmountString(totalAmt+cashdiscountAmount),
+                        "$" + MethodUtils.roundOffAmountString(totalAmt + cashdiscountAmount),
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             24
                         } else {
@@ -2667,7 +2670,8 @@ class ActiveOrderFragment(
                     "Total Discount",
 
                     if (receiptModel.totalDiscount == 0.0) {
-                        "-$" + MethodUtils.roundOffAmountString(receiptModel.totalDiscount)
+//                        "-$" + MethodUtils.roundOffAmountString(receiptModel.totalDiscount)
+                        "$" + MethodUtils.roundOffAmountString(receiptModel.totalDiscount)
                     } else {
                         "-$" + MethodUtils.roundOffAmountString(receiptModel.totalDiscount)
                     },
@@ -2711,7 +2715,9 @@ class ActiveOrderFragment(
             }
 
             if (receiptModel.totalServiceCharges != null && receiptModel.serviceChargeEnabled && prefProvider.getValueboolean(
-                    SERVICECHARGE_TAKEOUT_OPENORDER, false)) {
+                    SERVICECHARGE_TAKEOUT_OPENORDER, false
+                )
+            ) {
 
 
                 val str4 = padLine(
@@ -3121,7 +3127,7 @@ class ActiveOrderFragment(
                 if (customerSettingModel.showVenueAddress) prefProvider.getValue(
                     BUSINESS_ADDRESS,
                     ""
-                ) else "",prefProvider.getValue(
+                ) else "", prefProvider.getValue(
                     Constants.BUSINESS_PHONE_NO,
                     ""
                 )
@@ -3287,7 +3293,8 @@ class ActiveOrderFragment(
                     "Total Discount",
 
                     if (receiptModel.totalDiscount == 0.0) {
-                        "-$" + MethodUtils.roundOffAmountString(receiptModel.totalDiscount)
+//                        "-$" + MethodUtils.roundOffAmountString(receiptModel.totalDiscount)
+                        "$" + MethodUtils.roundOffAmountString(receiptModel.totalDiscount)
                     } else {
                         "-$" + MethodUtils.roundOffAmountString(receiptModel.totalDiscount)
                     },
@@ -3331,7 +3338,9 @@ class ActiveOrderFragment(
             }
 
             if (receiptModel.totalServiceCharges != null && receiptModel.serviceChargeEnabled && prefProvider.getValueboolean(
-                    SERVICECHARGE_TAKEOUT_OPENORDER, false)) {
+                    SERVICECHARGE_TAKEOUT_OPENORDER, false
+                )
+            ) {
 
 
                 val str4 = padLine(

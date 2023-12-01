@@ -341,7 +341,7 @@ class Settings : Fragment() {
         list.add(BusinessSettingModel(0, "Taxes", false))
         list.add(BusinessSettingModel(0, "Discounts", false))
         list.add(BusinessSettingModel(0, "Order Notes", false))
-        list.add(BusinessSettingModel(0, "Loyalty Program", false))
+        list.add(BusinessSettingModel(0, "Loyalty Programs", false))
         list.add(BusinessSettingModel(0, "Receipt Settings", false))
         for (i in 0 until list.size) {
             list[i].isSelected = selectedPos == i
@@ -405,7 +405,7 @@ class Settings : Fragment() {
 
             }
             6 -> {
-                binding.commonToolbar.txtSubTitle.text = "Loyalty Program"
+                binding.commonToolbar.txtSubTitle.text = "Loyalty Programs"
                 val service: Fragment = LoyaltyPointFragment()
                 loadFragment(service)
 
