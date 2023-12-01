@@ -5,6 +5,7 @@ import android.text.Editable
 import android.text.InputFilter
 
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -90,22 +91,30 @@ class CreateDiscount : Fragment() {
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-
+//                try {
+//                    Log.e("Text Listener", "Text Changed in onCreateView()")
+//                    var amount = s.toString()
+//                    val inputValue = amount.toDouble()
+//                    if (viewModel.discountTypeViewModel == getString(R.string.disc_percentage)) {
+//                        if (inputValue != null && inputValue in 0.0..0.99) {
+//
+//                            if (s?.length!! > 1 && s.startsWith("0"))
+//                                binding.edtDiscount.setText("0.")
+//                        } else {
+//                            if (amount.toInt() > 100) {
+//                                binding.edtDiscount!!.setText("100")
+//                                binding.edtDiscount.setSelection(binding.edtDiscount.length())
+//                            }
+//                        }
+//                    }
+//
+//                } catch (e: Exception) {
+//                    e.printStackTrace()
+//                }
             }
 
             override fun afterTextChanged(s: Editable?) {
-                try {
-                    var amount = s.toString()
-                    if (viewModel.discountTypeViewModel == getString(R.string.disc_percentage)) {
-                        if (amount.toInt() > 100) {
-                            binding.edtDiscount!!.setText("100")
-                            binding.edtDiscount.setSelection(binding.edtDiscount.length())
-                        }
-                    }
 
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
             }
 
         })
@@ -130,22 +139,30 @@ class CreateDiscount : Fragment() {
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 try {
 
+                    Log.e("Text Listener", "Text Changed in addTextChangeListener() - $p0")
+
                     if (binding.edtDiscount.text?.toString()?.isNotEmpty() == true) {
 
                         val inputValue = p0.toString().toDoubleOrNull()
                         if (inputValue != null && inputValue in 0.0..0.99) {
 
-                            if (p0?.length!! > 1 && p0.startsWith("0"))
-                                binding.edtDiscount.setText("0.")
-                        } else
+                            if (p0?.length!! == 1 && p0.startsWith("0")) {
+                                binding.edtDiscount.setText(".")
+                                binding.edtDiscount.setSelection(binding.edtDiscount.length())
+                            }
+
+
+                        }else{
                             if (viewModel.discountTypeViewModel.equals(
                                     "Percentage",
                                     true
                                 ) && binding.edtDiscount.text.toString().toDouble() > 100.00
                             ) {
+
                                 binding.edtDiscount.setText("100")
                                 binding.edtDiscount.setSelection(binding.edtDiscount.length())
                             }
+                        }
                     }
                 } catch (_: Exception) {
                 }
