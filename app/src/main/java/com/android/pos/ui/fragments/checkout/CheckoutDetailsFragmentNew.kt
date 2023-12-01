@@ -2881,6 +2881,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
     }
 
+
     // make order request with payment attributes on cash payment to reflect on server
     private fun makeCashPayment() {
         paymentType = if (prefProvider.getValueboolean(IS_GIFT_CARD_REDEEM, false)) {
@@ -2932,6 +2933,158 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 tipID
             )
         }*/
+        var cartModel=Gson().fromJson<CartModel?>(prefProvider.getValue("CART_MODEL1", ""),CartModel::class.java)
+        var cartModel2=Gson().fromJson<CartModel?>(prefProvider.getValue("CART_MODEL2", ""),CartModel::class.java)
+        if (cartModel !=null){
+            val myRequest = cartModel.let {
+                paymentviewModel.createOrderRequestNew(
+                    viewModel.currentCartItems,
+                    it,
+                    subTotalPrice,
+                    paymentAmount,
+                    totalServiceCharge,
+                    totalTax,
+                    prefProvider.getValue(Constants.ORDER_TYPE, ""),
+                    future_delivery_date,
+                    future_delivery_time,
+                    true,
+                    totalDiscount,
+                    tipAmount,
+                    splitValue,
+                    redeemLoyaltyInfo,
+                    cashDiscountSurcharge,
+                    true,
+                    paymentType, cashDiscountType,
+                    tipID
+                )
+            }
+            LogUtil.logE(TAG, "myRequestOriginal ${Gson().toJson(myRequest)}")
+            LogUtil.logE("ORDER TYPE 1", prefProvider.getValue(Constants.ORDER_TYPE, ""))
+            if (myRequest != null) {
+                if (custom_paymentAmount != 0.0) {
+                    paymentviewModel.totalPayAmount(custom_paymentAmount)
+                }
+                paymentAttributesRequest(myRequest)
+            }
+        }else if (cartModel2!=null){
+            val myRequest = cartModel2.let {
+                paymentviewModel.createOrderRequestNew(
+                    viewModel.currentCartItems,
+                    it,
+                    subTotalPrice,
+                    paymentAmount,
+                    totalServiceCharge,
+                    totalTax,
+                    prefProvider.getValue(Constants.ORDER_TYPE, ""),
+                    future_delivery_date,
+                    future_delivery_time,
+                    true,
+                    totalDiscount,
+                    tipAmount,
+                    splitValue,
+                    redeemLoyaltyInfo,
+                    cashDiscountSurcharge,
+                    true,
+                    paymentType, cashDiscountType,
+                    tipID
+                )
+            }
+            LogUtil.logE(TAG, "myRequestOriginal ${Gson().toJson(myRequest)}")
+            LogUtil.logE("ORDER TYPE 1", prefProvider.getValue(Constants.ORDER_TYPE, ""))
+            if (myRequest != null) {
+                if (custom_paymentAmount != 0.0) {
+                    paymentviewModel.totalPayAmount(custom_paymentAmount)
+                }
+                paymentAttributesRequest(myRequest)
+            }
+        }else{
+            val myRequest = viewModel.cartModel?.let {
+                paymentviewModel.createOrderRequestNew(
+                    viewModel.currentCartItems,
+                    it,
+                    subTotalPrice,
+                    paymentAmount,
+                    totalServiceCharge,
+                    totalTax,
+                    prefProvider.getValue(Constants.ORDER_TYPE, ""),
+                    future_delivery_date,
+                    future_delivery_time,
+                    true,
+                    totalDiscount,
+                    tipAmount,
+                    splitValue,
+                    redeemLoyaltyInfo,
+                    cashDiscountSurcharge,
+                    true,
+                    paymentType, cashDiscountType,
+                    tipID
+                )
+            }
+            LogUtil.logE(TAG, "myRequestOriginal ${Gson().toJson(myRequest)}")
+            LogUtil.logE("ORDER TYPE 1", prefProvider.getValue(Constants.ORDER_TYPE, ""))
+            if (myRequest != null) {
+
+                prefProvider.setValue("CART_MODEL1", "")
+                prefProvider.setValue("CART_MODEL2", "")
+
+                if (custom_paymentAmount != 0.0) {
+                    paymentviewModel.totalPayAmount(custom_paymentAmount)
+                }
+                paymentAttributesRequest(myRequest)
+            }
+        }
+
+    }
+ /*   private fun makeCashPayment() {
+        paymentType = if (prefProvider.getValueboolean(IS_GIFT_CARD_REDEEM, false)) {
+            "External"
+        } else {
+            "Cash"
+        }
+
+        if (orderId != -1 && orderId != 0) {
+            paymentviewModel.updateOrder(
+                true,
+                orderId,
+                paymentId,
+                paymentOfflineId,
+                orderOfflineId
+            )
+        } else {
+            paymentviewModel.updateOrder(false, null, null, "", "")
+        }
+
+
+        paymentviewModel.saveOrder(false)
+        paymentviewModel.textPay(textToPay)
+        Log.d("yash", "makeCashPayment: total Price : " + paymentAmount)
+        Log.d("yash", "makeCashPayment: sub_total   : " + subTotalPrice)
+        Log.d("yash", "makeCashPayment: totaltax    : " + totalTax)
+        Log.d("yash", "makeCashPayment: total disc  : " + totalDiscount)
+        Log.d("yash", "makeCashPayment: total serv  : " + totalServiceCharge)
+        Log.e("checkCartList", "cartList:  ${Gson().toJson(cartList)}")
+        Log.e("checkCartList", "cartList:  ${Gson().toJson(viewModel.cartModel)}")
+        *//*val myRequest = cartList?.let {
+            paymentviewModel.createOrderRequest(
+                it,
+                subTotalPrice,
+                paymentAmount,
+                totalServiceCharge,
+                totalTax,
+                prefProvider.getValue(Constants.ORDER_TYPE, ""),
+                future_delivery_date,
+                future_delivery_time,
+                true,
+                totalDiscount,
+                tipAmount,
+                splitValue,
+                redeemLoyaltyInfo,
+                cashDiscountSurcharge,
+                true,
+                paymentType, cashDiscountType,
+                tipID
+            )
+        }*//*
         val myRequest = viewModel.cartModel?.let {
             paymentviewModel.createOrderRequestNew(
                 viewModel.currentCartItems,
@@ -2963,7 +3116,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             paymentAttributesRequest(myRequest)
         }
     }
-
+*/
     // generate payment attributes request
     private fun paymentAttributesRequest(myRequest: OrderRequestModel) {
         val orderId = prefProvider.getValueInt("ORDER_ID", -1)

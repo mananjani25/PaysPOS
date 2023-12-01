@@ -755,7 +755,43 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             }
         }
 
-        binding.btnPay.setOnClickListener {
+        binding.btnPay.setOnClickListener(object:View.OnClickListener{
+            override fun onClick(p0: View?) {
+                if (cartItemsList?.isNotEmpty() == true) {
+                    prefProvider.setValue(Constants.REDIRECT_FROM, Constants.MANUAL_SALE)
+                    prefProvider.setValue(
+                        ORDER_TYPE,
+                        prefProvider.getValue(ORDER_TYPE, TAKEOUT)
+                    )
+                    prefProvider.setValue("PaidAmount", "")
+                    prefProvider.setValue(Constants.WHOLE_AMOUNT, "")
+                    prefProvider.setValueInt("cardCount", 0)
+                    prefProvider.setValue(Constants.SUB_TOTAL, "")
+                    prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
+                    prefProvider.setValue(Constants.TOTAL_DISCOUNT, "")
+                    prefProvider.setValue(Constants.TIP, "")
+                    prefProvider.setValue(Constants.TAX_CHARGE, "")
+                    prefProvider.setValue(Constants.SERVICE_CHARGE, "")
+                    prefProvider.setValue("CART_MODEL1", Gson().toJson(manualCartModel))
+                    prefProvider.setValue("CART_MODEL2", Gson().toJson(cartModelsList))
+                    prefProvider.setValueboolean(IS_FROM_ALL_ORDER,false)
+                    findNavController().navigate(
+                        R.id.action_manualSaleCart_to_paymentBoldPosFragment
+                    )
+                } else {
+
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        requireContext(),
+                        resources.getString(R.string.please_add_Atleast_one_item_in_cart)
+                    ) { _, _ ->
+                    }
+                }
+
+
+            }
+        })
+
+        /*binding.btnPay.setOnClickListener {
             if (cartItemsList?.isNotEmpty() == true) {
                 prefProvider.setValue(Constants.REDIRECT_FROM, Constants.MANUAL_SALE)
                 prefProvider.setValue(
@@ -785,7 +821,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             }
 
         }
-
+*/
 
         binding.imgOrderMenu.setOnSingleClickListener {
 

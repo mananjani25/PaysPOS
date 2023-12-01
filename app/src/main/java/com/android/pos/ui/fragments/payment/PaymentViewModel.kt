@@ -158,6 +158,8 @@ open class PaymentViewModel @Inject constructor(
 
             when (resource.status) {
                 Status.SUCCESS -> {
+                    prefProvider.setValue("CART_MODEL1", "")
+                    prefProvider.setValue("CART_MODEL2", "")
                     _showProgress.value = Event(false)
                     resource.data.let { response ->
                         if (response?.status == 200) {
