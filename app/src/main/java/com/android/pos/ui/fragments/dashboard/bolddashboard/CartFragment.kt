@@ -2049,6 +2049,13 @@ class CartFragment(
                 viewModel.clearListTax()
                 prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
                 prefProvider.setValue(Constants.REDIRECT_FROM, "")
+
+                /*Remove the added tip - START*/
+                prefProvider.setValueboolean(Constants.TIP_ADDED, false)
+                prefProvider.setValue(Constants.TIP_ADDED_AMOUNT, "")
+                prefProvider.setValueInt(Constants.TIP_ADDED_ID, 0)
+                /*Remove the added tip - END*/
+
                 updateActiveOrderFlagClear()
                 itemListner?.onCancelItemSelected()
                 if (prefProvider.getValue(ORDER_TYPE, "").toString() == Constants.DINE_IN) {
