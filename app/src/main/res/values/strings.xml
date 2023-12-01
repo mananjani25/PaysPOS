@@ -176,7 +176,7 @@
     <string name="item_name_withstar">Item Name<font color='#E90C0C'>*</font></string>
     <string name="add_tax_name">Add Tax Name</string>
     <string name="add_tax_name_">Tax Name<font color='#E90C0C'>*</font></string>
-    <string name="add_tax__percentage">Add Tax Percentages (%)</string>
+    <string name="add_tax__percentage">Add Tax Percentage (%)</string>
     <string name="add_tax__percentage_">Tax Percentages (%)<font color='#E90C0C'>*</font></string>
     <string name="add_tax__dollor">Add Tax Dollar ($)</string>
     <string name="search_categories">Search Categories</string>
@@ -636,7 +636,7 @@
     <string name="tv_reason_for_refund">Reason For Refund</string>
     <string name="tv_next">Next</string>
     <string name="tv_refund">Refund</string>
-    <string name="tv_item_refund_details">Item amount includes taxes,discounts and service charges where applicable</string>
+    <string name="tv_item_refund_details">Item amount includes taxes, discounts and service charges where applicable.</string>
     <string name="tvRefundPaymentDetails">Refunding an amount(and not a specific item) may cause a discrepancy in your Menu,item sales reports, and gift card balances.</string>
     <string name="tv_orders">Orders</string>
     <string name="tv_select_number_of_guests">Select Number Of Guests</string>
@@ -923,6 +923,7 @@
     <string name="enter_order_note">Please enter an order note.</string>
     <string name="enter_a_discount">Please select or enter a discount.</string>
     <string name="discount_is_not_applied">Discount is not applied.</string>
+    <string name="items_will_be_appear_here">Items will appear here</string>
 
 </resources>
 

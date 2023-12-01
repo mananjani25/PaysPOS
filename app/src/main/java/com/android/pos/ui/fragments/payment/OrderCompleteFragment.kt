@@ -1913,7 +1913,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             "Total Discount",
 
                             if (finaldisLocal == 0.0) {
-                                "-$" + MethodUtils.roundOffAmountString(0.0)
+//                                "-$" + MethodUtils.roundOffAmountString(0.0)
+                                "$" + MethodUtils.roundOffAmountString(0.0)
                             } else {
 
                                 "-$" + MethodUtils.roundOffAmountString(
@@ -2830,7 +2831,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     "Total Discount",
 
                     if (finaldisLocal == 0.0) {
-                        "-$" + MethodUtils.roundOffAmountString(0.0)
+//                        "-$" + MethodUtils.roundOffAmountString(0.0)
+                        "$" + MethodUtils.roundOffAmountString(0.0)
                     } else {
                         "-$" + MethodUtils.roundOffAmountString(
                             checkOutDineInModel?.totalDiscount ?: 0.0
@@ -3287,7 +3289,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     "Total Discount",
 
                     if (finaldisLocal == 0.0) {
-                        "-$" + MethodUtils.roundOffAmountString(0.0)
+//                        "-$" + MethodUtils.roundOffAmountString(0.0)
+                        "$" + MethodUtils.roundOffAmountString(0.0)
                     } else {
                         "-$" + MethodUtils.roundOffAmountString(
                             checkOutDineInModel?.totalDiscount ?: 0.0
@@ -4097,7 +4100,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             "Total Discount",
 
                             if (getDineInOrderDetails?.totalDiscount == 0.0) {
-                                "-$" + MethodUtils.roundOffAmountString(0.0)
+//                                "-$" + MethodUtils.roundOffAmountString(0.0)
+                                "$" + MethodUtils.roundOffAmountString(0.0)
                             } else {
                                 getDineInOrderDetails?.totalDiscount?.let {
                                     "-$" + MethodUtils.roundOffAmountString(it)
@@ -5072,7 +5076,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     "Total Discount",
 
                     if (getDineInOrderDetails?.totalDiscount == 0.0) {
-                        "-$" + MethodUtils.roundOffAmountString(0.0)
+//                        "-$" + MethodUtils.roundOffAmountString(0.0)
+                        "$" + MethodUtils.roundOffAmountString(0.0)
                     } else {
                         getDineInOrderDetails?.totalDiscount?.let {
                             "-$" + MethodUtils.roundOffAmountString(it)
@@ -5623,7 +5628,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     "Total Discount",
 
                     if (getDineInOrderDetails?.totalDiscount == 0.0) {
-                        "-$" + MethodUtils.roundOffAmountString(0.0)
+//                        "-$" + MethodUtils.roundOffAmountString(0.0)
+                        "$" + MethodUtils.roundOffAmountString(0.0)
                     } else {
                         getDineInOrderDetails?.totalDiscount?.let {
                             "-$" + MethodUtils.roundOffAmountString(it)
@@ -7048,7 +7054,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         "Total Discount",
 
                         if (receiptModel?.order?.totalDiscount == 0.0) {
-                            "-$" + MethodUtils.roundOffAmountString(receiptModel?.order?.totalDiscount!!)
+//                            "-$" + MethodUtils.roundOffAmountString(receiptModel?.order?.totalDiscount!!)
+                            "$" + MethodUtils.roundOffAmountString(receiptModel?.order?.totalDiscount!!)
                         } else {
                             "-$" + MethodUtils.roundOffAmountString(receiptModel?.order?.totalDiscount!!)
                         },
@@ -7813,7 +7820,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             if (customerSettingModel.showCustomerAddress || customerSettingModel.showCustomerPhone || customerSettingModel.showCustomerName) {
 
-                if (receiptModel?.order?.customer != null && !prefProvider.getValue(Constants.RECEIPT_CUSTOMER_NAME, "").toString().equals("") && !prefProvider.getValue(Constants.RECEIPT_CUSTOMER_NAME, "").toString().equals("kotlin.Unit",true)) {
+                if (receiptModel?.order?.customer != null && !prefProvider.getValue(
+                        Constants.RECEIPT_CUSTOMER_NAME,
+                        ""
+                    ).toString()
+                        .equals("") && !prefProvider.getValue(Constants.RECEIPT_CUSTOMER_NAME, "")
+                        .toString().equals("kotlin.Unit", true)
+                ) {
 
                     builder.addFeedLine(1)
                     builder.addTextLineSpace(30)
@@ -7922,7 +7935,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
 
-                    if (customerSettingModel.showCustomerAddress && !prefProvider.getValue(Constants.RECEIPT_CUSTOMER_NAME, "").toString().equals("") && !prefProvider.getValue(Constants.RECEIPT_CUSTOMER_NAME, "").toString().equals("kotlin.Unit",true)) {
+                    if (customerSettingModel.showCustomerAddress && !prefProvider.getValue(
+                            Constants.RECEIPT_CUSTOMER_NAME,
+                            ""
+                        ).toString().equals("") && !prefProvider.getValue(
+                            Constants.RECEIPT_CUSTOMER_NAME,
+                            ""
+                        ).toString().equals("kotlin.Unit", true)
+                    ) {
                         if (receiptModel?.order?.customer?.addresses?.isNotEmpty() == true) {
 
                             builder.addTextLineSpace(30)
@@ -8834,7 +8854,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
 
-                    if (customerSettingModel.showCustomerAddress && !prefProvider.getValue(Constants.RECEIPT_CUSTOMER_NAME, "").toString().equals("") && !prefProvider.getValue(Constants.RECEIPT_CUSTOMER_NAME, "").toString().equals("kotlin.Unit",true)) {
+                    if (customerSettingModel.showCustomerAddress && !prefProvider.getValue(
+                            Constants.RECEIPT_CUSTOMER_NAME,
+                            ""
+                        ).toString().equals("") && !prefProvider.getValue(
+                            Constants.RECEIPT_CUSTOMER_NAME,
+                            ""
+                        ).toString().equals("kotlin.Unit", true)
+                    ) {
                         if (giftCardReceiptModel?.gift_card?.customer?.addresses?.isNotEmpty() == true) {
 
                             builder.addTextLineSpace(30)
@@ -11132,7 +11159,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         if (customerSettingModel.showCustomerAddress || customerSettingModel.showCustomerPhone || customerSettingModel.showCustomerName) {
 
-            if (giftCardReceiptModel?.gift_card?.customer != null && !prefProvider.getValue(Constants.RECEIPT_CUSTOMER_NAME, "").toString().equals("") && !prefProvider.getValue(Constants.RECEIPT_CUSTOMER_NAME, "").toString().equals("kotlin.Unit",true)) {
+            if (giftCardReceiptModel?.gift_card?.customer != null && !prefProvider.getValue(
+                    Constants.RECEIPT_CUSTOMER_NAME,
+                    ""
+                ).toString().equals("") && !prefProvider.getValue(
+                    Constants.RECEIPT_CUSTOMER_NAME,
+                    ""
+                ).toString().equals("kotlin.Unit", true)
+            ) {
                 SunmiPrinterApi.getInstance().lineWrap(1)
                 PrintSunmiUtils.customerDetails()
 
@@ -11168,7 +11202,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
 
-                if (customerSettingModel.showCustomerAddress && !prefProvider.getValue(Constants.RECEIPT_CUSTOMER_NAME, "").toString().equals("") && !prefProvider.getValue(Constants.RECEIPT_CUSTOMER_NAME, "").toString().equals("kotlin.Unit",true)) {
+                if (customerSettingModel.showCustomerAddress && !prefProvider.getValue(
+                        Constants.RECEIPT_CUSTOMER_NAME,
+                        ""
+                    ).toString()
+                        .equals("") && !prefProvider.getValue(Constants.RECEIPT_CUSTOMER_NAME, "")
+                        .toString().equals("kotlin.Unit", true)
+                ) {
                     if (giftCardReceiptModel?.gift_card?.customer?.addresses?.isNotEmpty() == true) {
 
                         giftCardReceiptModel?.gift_card?.customer?.addresses!!.filter { it.typeOfAddress == SHIPPING_ADDRESS }
@@ -11417,7 +11457,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 val str1 = padLine(
                     "Total Discount",
                     if (receiptModel?.order?.totalDiscount == 0.0) {
-                        "-$" + MethodUtils.roundOffAmountString(receiptModel?.order?.totalDiscount!!)
+//                        "-$" + MethodUtils.roundOffAmountString(receiptModel?.order?.totalDiscount!!)
+                        "$" + MethodUtils.roundOffAmountString(receiptModel?.order?.totalDiscount!!)
                     } else {
                         "-$" + MethodUtils.roundOffAmountString(receiptModel?.order?.totalDiscount!!)
                     }, if (customerSettingModel.fonts == LARGE) 23 else 48
@@ -11801,7 +11842,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             if (customerSettingModel.showCustomerAddress || customerSettingModel.showCustomerPhone || customerSettingModel.showCustomerName) {
 
-                if (receiptModel?.order?.customer != null && !prefProvider.getValue(Constants.RECEIPT_CUSTOMER_NAME, "").toString().equals("") && !prefProvider.getValue(Constants.RECEIPT_CUSTOMER_NAME, "").toString().equals("kotlin.Unit",true)) {
+                if (receiptModel?.order?.customer != null && !prefProvider.getValue(
+                        Constants.RECEIPT_CUSTOMER_NAME,
+                        ""
+                    ).toString()
+                        .equals("") && !prefProvider.getValue(Constants.RECEIPT_CUSTOMER_NAME, "")
+                        .toString().equals("kotlin.Unit", true)
+                ) {
 
 
                     PrintSunmiUtils.customerDetails()
@@ -11838,7 +11885,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
 
-                    if (customerSettingModel.showCustomerAddress && !prefProvider.getValue(Constants.RECEIPT_CUSTOMER_NAME, "").toString().equals("") && !prefProvider.getValue(Constants.RECEIPT_CUSTOMER_NAME, "").toString().equals("kotlin.Unit",true)) {
+                    if (customerSettingModel.showCustomerAddress && !prefProvider.getValue(
+                            Constants.RECEIPT_CUSTOMER_NAME,
+                            ""
+                        ).toString().equals("") && !prefProvider.getValue(
+                            Constants.RECEIPT_CUSTOMER_NAME,
+                            ""
+                        ).toString().equals("kotlin.Unit", true)
+                    ) {
                         if (receiptModel?.order?.customer?.addresses?.isNotEmpty() == true) {
 
                             receiptModel?.order?.customer?.addresses!!.filter { it.typeOfAddress == SHIPPING_ADDRESS }
@@ -11964,10 +12018,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             } else {
                 SunmiPrintHelper.getInstance().lineWrap(1)
             }
-           /* if (customerSettingModel.showOrderType) {
-                receiptModel?.order?.orderTypeName?.trim()?.let { PrintSunmiUtils.headerText(it) }
-                SunmiPrintHelper.getInstance().lineWrap(1)
-            }*/
+            /* if (customerSettingModel.showOrderType) {
+                 receiptModel?.order?.orderTypeName?.trim()?.let { PrintSunmiUtils.headerText(it) }
+                 SunmiPrintHelper.getInstance().lineWrap(1)
+             }*/
             if (customerSettingModel.showOrderType) {
                 receiptModel?.order?.orderTypeName?.trim()?.let {
                     PrintSunmiUtils.headerText(it)
@@ -12104,7 +12158,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 val str1 = padLine(
                     "Total Discount",
                     if (receiptModel?.order?.totalDiscount == 0.0) {
-                        "-$" + MethodUtils.roundOffAmountString(receiptModel?.order?.totalDiscount!!)
+//                        "-$" + MethodUtils.roundOffAmountString(receiptModel?.order?.totalDiscount!!)
+                        "$" + MethodUtils.roundOffAmountString(receiptModel?.order?.totalDiscount!!)
                     } else {
                         "-$" + MethodUtils.roundOffAmountString(receiptModel?.order?.totalDiscount!!)
                     }, if (customerSettingModel.fonts == LARGE) 23 else 48
@@ -12488,7 +12543,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             if (customerSettingModel.showCustomerAddress || customerSettingModel.showCustomerPhone || customerSettingModel.showCustomerName) {
 
-                if (receiptModel?.order?.customer != null && !prefProvider.getValue(Constants.RECEIPT_CUSTOMER_NAME, "").toString().equals("") && !prefProvider.getValue(Constants.RECEIPT_CUSTOMER_NAME, "").toString().equals("kotlin.Unit",true)) {
+                if (receiptModel?.order?.customer != null && !prefProvider.getValue(
+                        Constants.RECEIPT_CUSTOMER_NAME,
+                        ""
+                    ).toString()
+                        .equals("") && !prefProvider.getValue(Constants.RECEIPT_CUSTOMER_NAME, "")
+                        .toString().equals("kotlin.Unit", true)
+                ) {
 
                     SunmiPrintHelper.getInstance().lineWrap(1)
                     PrintSunmiUtils.customerDetailsInner()

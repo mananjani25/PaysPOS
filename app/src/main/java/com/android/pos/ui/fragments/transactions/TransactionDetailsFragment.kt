@@ -100,12 +100,13 @@ class TransactionDetailsFragment : Fragment() {
 
     private var tipAmount: Double = 0.0
     private var kitchenPrinterList: List<PrinterResponse.Data.KitchenReceiptPrinters> = listOf()
+
     //    private lateinit var orderDetailsResponse: GetOrderDetailsResponse
     private var customerSettingModel = GetCustomerReceiptSettingsResponse.Data()
     private var kitchenSettingModel = GetKitchenReceiptSettingsResponse.Data()
     private lateinit var paymentDetailsResponse: GetPaymentOrderDetailsResponse
     private var orderId: Int = -1
-    private var orderType :String = ""
+    private var orderType: String = ""
     var mLastClickTime: Long = 0
     private val TAG = "TransactionDetailsFr"
     private var tipsList: List<GetTipReponse.Data> = listOf()
@@ -295,12 +296,20 @@ class TransactionDetailsFragment : Fragment() {
             }
 
             if (paymentDetailsResponse.data?.payment_type == "Card") {
-                Log.d("RefNum11: ","RefNum ${paymentDetailsResponse.data?.ref_num}")
+                Log.d("RefNum11: ", "RefNum ${paymentDetailsResponse.data?.ref_num}")
                 if (paymentDetailsResponse.data?.ref_num.isNullOrEmpty()) {
                     magtekCall(tipAmount)
-                } else if(!paymentDetailsResponse.data?.ref_num.isNullOrEmpty() && prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)){
+                } else if (!paymentDetailsResponse.data?.ref_num.isNullOrEmpty() && prefProvider.getValueboolean(
+                        Constants.IS_PAX_CONNECTED,
+                        false
+                    )
+                ) {
                     adjustPaxTips()
-                } else if(!paymentDetailsResponse.data?.ref_num.isNullOrEmpty() && !prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)){
+                } else if (!paymentDetailsResponse.data?.ref_num.isNullOrEmpty() && !prefProvider.getValueboolean(
+                        Constants.IS_PAX_CONNECTED,
+                        false
+                    )
+                ) {
                     AlertUtils.showCustomAlert(
                         requireContext(),
                         "Please connect to PAX device"
@@ -428,7 +437,7 @@ class TransactionDetailsFragment : Fragment() {
             object : AppThreadPool.FinishInMainThreadCallback<PosLink?> {
                 override fun onFinish(result: PosLink?) {
                     posLink = result!!
-                    Log.d("initPOSLink: ","onFinish")
+                    Log.d("initPOSLink: ", "onFinish")
                 }
             })
     }
@@ -437,7 +446,7 @@ class TransactionDetailsFragment : Fragment() {
     private fun getMerchantDataObserver() {
         magtekProViewModel.merchantData.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { response ->
-                Log.d("merchantData: ","merchantData observe")
+                Log.d("merchantData: ", "merchantData observe")
                 val resultCode = response.resultCode
                 val status = response.resultTxt
                 val mID = response.VarValue
@@ -460,8 +469,8 @@ class TransactionDetailsFragment : Fragment() {
     private fun adjustPaxTips() {
         GlobalScope.launch {
             posLink.SetCommSetting(SettingINI.getCommSettingFromFile(Constants.FILE_PATH + SettingINI.FILENAME))
-            val tip_amt = (tipAmount*100).toInt()
-            Log.d("Amt: ","tip $tip_amt RefNo ${paymentDetailsResponse.data?.ref_num}")
+            val tip_amt = (tipAmount * 100).toInt()
+            Log.d("Amt: ", "tip $tip_amt RefNo ${paymentDetailsResponse.data?.ref_num}")
 
             CoroutineScope(Dispatchers.Main).launch {
                 ProgressUtils.showProgressDialog(requireActivity())
@@ -499,7 +508,12 @@ class TransactionDetailsFragment : Fragment() {
                     "Payment Details: ",
                     "$ExtData $resultCode $resultTxt $globalUID"
                 )
-                Log.d("Payment Details: ", "$cardLastDigits $approvedAmount $CARDBIN $EDCType $tipAmount ${Gson().toJson(response)}")
+                Log.d(
+                    "Payment Details: ",
+                    "$cardLastDigits $approvedAmount $CARDBIN $EDCType $tipAmount ${
+                        Gson().toJson(response)
+                    }"
+                )
 
                 if (resultCode == "000000") {
                     CoroutineScope(Dispatchers.Main).launch {
@@ -512,15 +526,18 @@ class TransactionDetailsFragment : Fragment() {
                 } else {
                     CoroutineScope(Dispatchers.Main).launch {
                         ProgressUtils.dismissProgressDialog()
-                        AlertUtils.showCustomAlertWithListenerWithOK(requireContext(),resultTxt,object:
-                            DialogInterface.OnClickListener{
-                            override fun onClick(p0: DialogInterface?, p1: Int) {
-                                try {
-                                    p0?.dismiss()
-                                } catch (e: Exception) {
+                        AlertUtils.showCustomAlertWithListenerWithOK(
+                            requireContext(),
+                            resultTxt,
+                            object :
+                                DialogInterface.OnClickListener {
+                                override fun onClick(p0: DialogInterface?, p1: Int) {
+                                    try {
+                                        p0?.dismiss()
+                                    } catch (e: Exception) {
+                                    }
                                 }
-                            }
-                        })
+                            })
 //                        requireActivity().toast("$resultCode $resultTxt", Toast.LENGTH_LONG)
                     }
                 }
@@ -900,7 +917,7 @@ class TransactionDetailsFragment : Fragment() {
             event.getContentIfNotHandled()?.let {
                 paymentDetailsResponse = it
                 val jsonString = Gson().toJson(paymentDetailsResponse)
-                Log.e("paymentDetailsResponse","paymentDetailsResponse result = $jsonString")
+                Log.e("paymentDetailsResponse", "paymentDetailsResponse result = $jsonString")
 
                 if (paymentDetailsResponse.data.order.order_split_type == "OrderAmountTab" || paymentDetailsResponse.data.order.order_split_type == "OrderGuestTab") {
                     isSplitPayment = true
@@ -999,9 +1016,12 @@ class TransactionDetailsFragment : Fragment() {
                 binding.orderDetails = it
                 orderDetailsItemAdapter.addOrderDetailsItems(it.data.order.order_items)
                 Log.e("OrderTypeId", it.data.order.order_type_id.toString())
-                if(it.data.order.order_type_id.equals(5) || it.data.order.order_type_id.equals(2) || it.data.order.order_type_id.equals(6)){   // order_id 3 is for To go Open Order and order_id 1 for takeout
+                if (it.data.order.order_type_id.equals(5) || it.data.order.order_type_id.equals(2) || it.data.order.order_type_id.equals(
+                        6
+                    )
+                ) {   // order_id 3 is for To go Open Order and order_id 1 for takeout
                     binding.txtPrintKitchenReceipt.visibility = View.GONE
-                }else{
+                } else {
                     binding.txtPrintKitchenReceipt.visibility = View.VISIBLE
                 }
                 binding.llDiscount.visibility = View.VISIBLE
@@ -1313,7 +1333,7 @@ class TransactionDetailsFragment : Fragment() {
                     if (it.data != null) {
                         val customerList = it.data
 
-                        if(isPrintCustomer){
+                        if (isPrintCustomer) {
                             isPrintCustomer = false
                             customerList.forEach {
                                 if (it.status) {
@@ -1340,13 +1360,17 @@ class TransactionDetailsFragment : Fragment() {
         viewModel.getKitchenPrinterList().observe(viewLifecycleOwner) { it ->
             when (it.status) {
                 Status.SUCCESS -> {
-                     ProgressUtils.dismissProgressDialog()
+                    ProgressUtils.dismissProgressDialog()
                     if (it.data != null && isPrint == true) {
                         isPrint = false
                         kitchenPrinterList = it.data
                         val remain = requireArguments().getDouble("remainingAmount")
 
-                        if (!prefProvider.getValueboolean(Constants.IS_PRINTER_QUEUE_ENABLE, false)) {
+                        if (!prefProvider.getValueboolean(
+                                Constants.IS_PRINTER_QUEUE_ENABLE,
+                                false
+                            )
+                        ) {
                             if (!requireArguments().getBoolean("isSpilt")) {
                                 if (!requireArguments().getBoolean("isDineIn") && !requireArguments().getBoolean(
                                         "isFromActiveOrder"
@@ -1383,14 +1407,14 @@ class TransactionDetailsFragment : Fragment() {
 //                                                                        kitchenPrinterList.get(i),
 //                                                                        Constants.KITCHEN
 //                                                                    )
-                                                                        if (checkItemsforTransactionPrinter(
-                                                                                ((paymentDetailsResponse.data.order.order_items
-                                                                                    ?: arrayListOf()) as List<GetOrderDetailsResponse.Data.OrderItem>),
-                                                                                kitchenPrinterList[i].printerCategories.toCollection(
-                                                                                    arrayListOf()
-                                                                                )
+                                                                    if (checkItemsforTransactionPrinter(
+                                                                            ((paymentDetailsResponse.data.order.order_items
+                                                                                ?: arrayListOf()) as List<GetOrderDetailsResponse.Data.OrderItem>),
+                                                                            kitchenPrinterList[i].printerCategories.toCollection(
+                                                                                arrayListOf()
                                                                             )
-                                                                        ) {
+                                                                        )
+                                                                    ) {
                                                                         initKitchenPrinter(
                                                                             kitchenPrinterList.get(i),
                                                                             Constants.KITCHEN
@@ -1414,7 +1438,7 @@ class TransactionDetailsFragment : Fragment() {
                                             for (i in 0 until kitchenPrinterList.size) {
                                                 if (kitchenPrinterList[i].status) {
                                                     kitchenPrinterList[i].orderTypes.forEach {
-                                                         if (it.orderTypeId == paymentDetailsResponse.data.order.order_type_id
+                                                        if (it.orderTypeId == paymentDetailsResponse.data.order.order_type_id
 
                                                         ) {
 
@@ -1575,7 +1599,8 @@ class TransactionDetailsFragment : Fragment() {
         type: String
     ) {
         if (data.name.startsWith(SUNMI_PRINTER, true)) {
-            SunmiPrinterApi.getInstance().setPrinter(SunmiPrinter.SunmiBlueToothPrinter, data.ipAddress)
+            SunmiPrinterApi.getInstance()
+                .setPrinter(SunmiPrinter.SunmiBlueToothPrinter, data.ipAddress)
             if (!SunmiPrinterApi.getInstance().isConnected) {
                 SunmiPrinterApi.getInstance()
                     .connectPrinter(requireContext(), object : ConnectCallback {
@@ -1765,7 +1790,10 @@ class TransactionDetailsFragment : Fragment() {
                     )
                     builder.addTextAlign(Builder.ALIGN_CENTER)
 
-                    addBuilderText(builder, paymentDetailsResponse.data.order.order_type_name.toString())
+                    addBuilderText(
+                        builder,
+                        paymentDetailsResponse.data.order.order_type_name.toString()
+                    )
                 }
                 var tmps = "Open Order".toString().trim()
                     .toString().lowercase()
@@ -1787,7 +1815,10 @@ class TransactionDetailsFragment : Fragment() {
                     )
                     builder.addTextAlign(Builder.ALIGN_CENTER)
 
-                    addBuilderText(builder, paymentDetailsResponse.data.order.delivery_type.toString())
+                    addBuilderText(
+                        builder,
+                        paymentDetailsResponse.data.order.delivery_type.toString()
+                    )
                 }
 
                 if (kitchenSettingModel.showTeamMember) {
@@ -2077,7 +2108,10 @@ class TransactionDetailsFragment : Fragment() {
                     )
                     builder.addTextAlign(Builder.ALIGN_CENTER)
 
-                    addBuilderText(builder, paymentDetailsResponse.data.order.order_type_name.toString())
+                    addBuilderText(
+                        builder,
+                        paymentDetailsResponse.data.order.order_type_name.toString()
+                    )
                 }
                 var tmps = "Open Order".toString().trim()
                     .toString().lowercase()
@@ -2101,7 +2135,10 @@ class TransactionDetailsFragment : Fragment() {
                     )
                     builder.addTextAlign(Builder.ALIGN_CENTER)
 
-                    addBuilderText(builder, paymentDetailsResponse.data.order.delivery_type.toString())
+                    addBuilderText(
+                        builder,
+                        paymentDetailsResponse.data.order.delivery_type.toString()
+                    )
                 }
 
                 if (kitchenSettingModel.showTeamMember) {
@@ -2471,7 +2508,11 @@ class TransactionDetailsFragment : Fragment() {
                     )
                 }"
             )
-            if (prefProvider.getValueboolean(Constants.OPEN_ORDER_UPDATE_FOR_PRINT, false) == true) {
+            if (prefProvider.getValueboolean(
+                    Constants.OPEN_ORDER_UPDATE_FOR_PRINT,
+                    false
+                ) == true
+            ) {
                 paymentDetailsResponse.data.order.order_items.let {
 //                    var printOrderItems = checkOrderItemsForOpenORderUpdate()
 //                    Log.e(TAG, "printeOrderItems  ${Gson().toJson(printOrderItems)}")
@@ -2604,7 +2645,10 @@ class TransactionDetailsFragment : Fragment() {
                 Builder.COLOR_1
             )
             mPrinter.addTextAlign(Builder.ALIGN_CENTER)
-            addBuilderTextForU220(mPrinter, paymentDetailsResponse.data.order.order_type_name.toString())
+            addBuilderTextForU220(
+                mPrinter,
+                paymentDetailsResponse.data.order.order_type_name.toString()
+            )
         }
         var tmps = "Open Order".toString().trim()
             .toString().lowercase()
@@ -2625,7 +2669,10 @@ class TransactionDetailsFragment : Fragment() {
                 Builder.COLOR_1
             )
             mPrinter.addTextAlign(Builder.ALIGN_CENTER)
-            addBuilderTextForU220(mPrinter, paymentDetailsResponse.data.order.delivery_type.toString())
+            addBuilderTextForU220(
+                mPrinter,
+                paymentDetailsResponse.data.order.delivery_type.toString()
+            )
         }
 
         if (kitchenSettingModel.showTeamMember) {
@@ -2968,8 +3015,11 @@ class TransactionDetailsFragment : Fragment() {
 
 
     }
-    private fun generateKitchenReceiptSunmiInner(kitchenReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
-                                                 type: String) {
+
+    private fun generateKitchenReceiptSunmiInner(
+        kitchenReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
+        type: String
+    ) {
         try {
             // PrintSunmiUtils.fontSizeInner(LARGE)
             SunmiPrintHelper.getInstance().initPrinter()
@@ -3018,26 +3068,26 @@ class TransactionDetailsFragment : Fragment() {
 
             paymentDetailsResponse.data.order.order_items.let {
                 addOrdersForKitchenTransitionInner(
-                    it ,
+                    it,
                     kitchenReceiptPrinters.printerCategories.toCollection(arrayListOf())
                 )
             }
 
 
-            if ( paymentDetailsResponse.data.order.note.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
+            if (paymentDetailsResponse.data.order.note.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
                 PrintSunmiUtils.orderNoteInnerLarge(paymentDetailsResponse.data.order.note.toString())
             }
 
             SunmiPrintHelper.getInstance().lineWrap(1)
             if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName != false) {
-                if ( paymentDetailsResponse.data.order.customer != null) {
+                if (paymentDetailsResponse.data.order.customer != null) {
                     PrintSunmiUtils.customerDetailsInner()
                     if (kitchenSettingModel.showCustomerName) {
-                        PrintSunmiUtils.normalTextLarge( paymentDetailsResponse.data.order.customer.firstName + " " +  paymentDetailsResponse.data.order.customer.lastName)
+                        PrintSunmiUtils.normalTextLarge(paymentDetailsResponse.data.order.customer.firstName + " " + paymentDetailsResponse.data.order.customer.lastName)
                     }
 
                     if (kitchenSettingModel.showCustomerPhone) {
-                        if ( paymentDetailsResponse.data.order.customer.phones.isNotEmpty() == true) {
+                        if (paymentDetailsResponse.data.order.customer.phones.isNotEmpty() == true) {
                             paymentDetailsResponse.data.order.customer.phones.get(0).phoneNumber.let {
                                 PrintSunmiUtils.normalTextLarge(
                                     MethodUtils.getUSFormatNumber(it)
@@ -3047,14 +3097,14 @@ class TransactionDetailsFragment : Fragment() {
                     }
 
                     if (kitchenSettingModel.showCustomerAddress) {
-                        if ( paymentDetailsResponse.data.order.order_type.trim().toString()
+                        if (paymentDetailsResponse.data.order.order_type.trim().toString()
                                 .lowercase() == "Open Order".trim()
                                 .toString().lowercase()
-                            &&  paymentDetailsResponse.data.order.delivery_type.trim().toString()
+                            && paymentDetailsResponse.data.order.delivery_type.trim().toString()
                                 .lowercase() == "Pickup".trim().lowercase()
                         ) {
                         } else {
-                            if ( paymentDetailsResponse.data.order.customer.addresses.isNotEmpty() == true) {
+                            if (paymentDetailsResponse.data.order.customer.addresses.isNotEmpty() == true) {
 //                                receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
 //                                    PrintSunmiUtils.normalTextLarge(
 //                                        it
@@ -3092,8 +3142,10 @@ class TransactionDetailsFragment : Fragment() {
 
     }
 
-    private fun setService2(  kitchenReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
-                              type: String) {
+    private fun setService2(
+        kitchenReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
+        type: String
+    ) {
 
         if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.FoundSunmiPrinter) {
 
@@ -3103,14 +3155,14 @@ class TransactionDetailsFragment : Fragment() {
 
                 LogUtil.logE("SunmiPrintHelpe1r", "isBlueToothPrinter")
 
-                generateKitchenReceiptSunmiInner(kitchenReceiptPrinters,type)
+                generateKitchenReceiptSunmiInner(kitchenReceiptPrinters, type)
 
 
             }
 
         } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.CheckSunmiPrinter) {
             Handler(Looper.getMainLooper()).postDelayed({
-                setService2(kitchenReceiptPrinters,type)
+                setService2(kitchenReceiptPrinters, type)
             }, 2000)
             LogUtil.logE("SunmiPrintHelper", "CheckSunmiPrinter")
         } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.LostSunmiPrinter) {
@@ -3593,7 +3645,8 @@ class TransactionDetailsFragment : Fragment() {
                         "Total Discount",
 
                         if (paymentDetailsResponse?.data.total_discount != 0.0) {
-                            "-$" + MethodUtils.roundOffAmountString(paymentDetailsResponse?.data.total_discount)
+//                            "-$" + MethodUtils.roundOffAmountString(paymentDetailsResponse?.data.order.total_discount)
+                            "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse?.data.order.total_discount)
                         } else {
                             "-$" + MethodUtils.roundOffAmountString(paymentDetailsResponse?.data.order.total_discount)
                         },
@@ -4049,7 +4102,7 @@ class TransactionDetailsFragment : Fragment() {
                     )
                 )
 
-                if(!(paymentDetailsResponse.data.card_name).isNullOrBlank()) {
+                if (!(paymentDetailsResponse.data.card_name).isNullOrBlank()) {
                     builder.addTextLineSpace(30)
                     builder.addFeedUnit(30)
                     builder.addTextFont(Builder.FONT_E)
@@ -4076,7 +4129,7 @@ class TransactionDetailsFragment : Fragment() {
                     )
                 }
 
-                if(!(paymentDetailsResponse.data.card_type).isNullOrBlank()) {
+                if (!(paymentDetailsResponse.data.card_type).isNullOrBlank()) {
                     builder.addTextLineSpace(30)
                     builder.addFeedUnit(30)
                     builder.addTextFont(Builder.FONT_E)
@@ -4103,7 +4156,7 @@ class TransactionDetailsFragment : Fragment() {
                     )
                 }
 
-                if(!(paymentDetailsResponse.data.card_number).isNullOrBlank()) {
+                if (!(paymentDetailsResponse.data.card_number).isNullOrBlank()) {
                     builder.addTextLineSpace(30)
                     builder.addFeedUnit(30)
                     builder.addTextFont(Builder.FONT_E)
@@ -4590,7 +4643,8 @@ class TransactionDetailsFragment : Fragment() {
                     "Total Discount",
 
                     if (paymentDetailsResponse?.data.total_discount != 0.0) {
-                        "-$" + MethodUtils.roundOffAmountString(paymentDetailsResponse?.data.total_discount)
+//                        "-$" + MethodUtils.roundOffAmountString(paymentDetailsResponse?.data.order.total_discount)
+                        "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse?.data.order.total_discount)
                     } else {
                         "-$" + MethodUtils.roundOffAmountString(paymentDetailsResponse?.data.order.total_discount)
                     }, if (customerSettingModel.fonts == Constants.LARGE) 23 else 48
@@ -4809,7 +4863,8 @@ class TransactionDetailsFragment : Fragment() {
                 PrintSunmiUtils.transactionType(
                     padLine(
                         "Transaction Type",
-                        paymentDetailsResponse.data.payment_type ?: "Cash", if (customerSettingModel.fonts == Constants.LARGE) 23 else 48
+                        paymentDetailsResponse.data.payment_type ?: "Cash",
+                        if (customerSettingModel.fonts == Constants.LARGE) 23 else 48
                     ).toString()
                 )
 
@@ -4938,14 +4993,14 @@ class TransactionDetailsFragment : Fragment() {
                 if (customerSettingModel.showVenueAddress) prefProvider.getValue(
                     Constants.BUSINESS_ADDRESS,
                     ""
-                ) else "",prefProvider.getValue(
+                ) else "", prefProvider.getValue(
                     Constants.BUSINESS_PHONE_NO,
                     ""
                 )
-               /* if (customerSettingModel.showVenuePhone) prefProvider.getValue(
-                    Constants.BUSINESS_PHONE_NO,
-                    ""
-                ) else ""*/
+                /* if (customerSettingModel.showVenuePhone) prefProvider.getValue(
+                     Constants.BUSINESS_PHONE_NO,
+                     ""
+                 ) else ""*/
             )
 
             if (paymentDetailsResponse.data.order.venue_website.isNotEmpty() && customerSettingModel.showWebsiteAddress) {
@@ -4956,7 +5011,9 @@ class TransactionDetailsFragment : Fragment() {
 
             if (customerSettingModel.showOrderType) {
                 PrintSunmiUtils.headerText(paymentDetailsResponse.data.order.order_type_name.trim())
-                if (!paymentDetailsResponse.data.order.order_type_name.trim().contains("Phone", true)) {
+                if (!paymentDetailsResponse.data.order.order_type_name.trim()
+                        .contains("Phone", true)
+                ) {
                     SunmiPrintHelper.getInstance().lineWrap(1)
                 }
             }
@@ -5286,7 +5343,7 @@ class TransactionDetailsFragment : Fragment() {
                 PrintSunmiUtils.cardDetailsInner(
                     paymentDetailsResponse.data.card_name,
                     paymentDetailsResponse.data.card_type ?: "",
-                    paymentDetailsResponse.data.card_number,customerSettingModel.fonts
+                    paymentDetailsResponse.data.card_number, customerSettingModel.fonts
                 )
 
 
@@ -5295,7 +5352,8 @@ class TransactionDetailsFragment : Fragment() {
                 PrintSunmiUtils.normalText(
                     padLine(
                         "Transaction Type",
-                        paymentDetailsResponse.data.payment_type ?: "Cash", PrintSunmiUtils.lineChar()
+                        paymentDetailsResponse.data.payment_type ?: "Cash",
+                        PrintSunmiUtils.lineChar()
                     ).toString()
                 )
 
