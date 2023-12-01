@@ -48,6 +48,19 @@ class MethodUtils {
         private var thirdValue: Double = 0.0
         private var secondValue: Int = 0
 
+        fun getCardType(xml: String): String {
+            if (xml != null && !xml.isNullOrEmpty()) {
+
+                var applabStartIndex = xml.indexOf("<APPLAB>")
+                var applabEndIndex = xml.indexOf("</APPLAB>")
+                return xml.substring(
+                    applabStartIndex + "<APPLAB>".length,
+                    applabEndIndex
+                )
+            }
+            return ""
+        }
+
         @SuppressLint("HardwareIds")
         fun getDeviceId(requireActivity: FragmentActivity): String {
             return Settings.Secure.getString(
@@ -454,7 +467,7 @@ class MethodUtils {
         }
 
         fun calculatePercentageFromAmount(amount: Double, total: Double): Double {
-            return if(((amount / total) * 100).isNaN()) {
+            return if (((amount / total) * 100).isNaN()) {
                 0.0
             } else {
                 (amount / total) * 100
@@ -642,13 +655,13 @@ class MethodUtils {
 
         fun getTwoDecimalWithZero(value: Double): Double {
 
-            Log.e("getTwoDecimalWithZero",""+value)
+            Log.e("getTwoDecimalWithZero", "" + value)
             try {
                 val tmp = value.toString()
                 val tmpIndex = tmp.indexOf(".", 0, true)
-                Log.e("getTwoDecimalWithZero",""+tmpIndex)
-                return if (tmp.length == tmpIndex+2) {
-                    Log.e("getTwoDecimalWithZero",""+value.toPrecision(2) as Double)
+                Log.e("getTwoDecimalWithZero", "" + tmpIndex)
+                return if (tmp.length == tmpIndex + 2) {
+                    Log.e("getTwoDecimalWithZero", "" + value.toPrecision(2) as Double)
                     value.toPrecision(2) as Double
                     //String.format("%.2f", value).toDouble()
                 } else {
@@ -675,7 +688,7 @@ class MethodUtils {
                 "$s${i.toInt()}.$f"
             }
 
-        fun String.toDoubleWithPrecision(precision: Int): Double{
+        fun String.toDoubleWithPrecision(precision: Int): Double {
             return this.toDouble().toPrecision(precision).toDouble()
         }
 
@@ -687,12 +700,17 @@ class MethodUtils {
             val randomNumber = StringBuilder()
 
             repeat(this) {
-                randomNumber.append(kotlin.random.Random.nextInt(1,10))
+                randomNumber.append(kotlin.random.Random.nextInt(1, 10))
             }
 
             return randomNumber.toString().toLong()
         }
-        fun getLatestCashDiscountOrSurCharge(totalAmount: Double, prefProvider: PrefProvider, context: Context): Double{
+
+        fun getLatestCashDiscountOrSurCharge(
+            totalAmount: Double,
+            prefProvider: PrefProvider,
+            context: Context
+        ): Double {
             return if (isEnableCashDiscount(context)) {
                 calculateCashDiscount(
                     totalAmount,
@@ -707,12 +725,12 @@ class MethodUtils {
 
 }
 
-fun Context.disconnectSocket(){
+fun Context.disconnectSocket() {
     try {
         UploadWorker2.workerDisconnect()
         WorkManager.getInstance(this).cancelAllWork()
-    }catch (e:Exception){
+    } catch (e: Exception) {
         //WorkManager.getInstance(this).cancelAllWork()
-        Log.d("MainActivityOnPause","onPause exception")
+        Log.d("MainActivityOnPause", "onPause exception")
     }
 }
