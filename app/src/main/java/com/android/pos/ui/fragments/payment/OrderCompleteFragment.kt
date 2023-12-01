@@ -2373,10 +2373,24 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         Builder.COLOR_1
                     )
 
+                    var strCardType =
+                        receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardType
+
+                    if (paymentViewModel.extData != null && !paymentViewModel.extData.isNullOrEmpty()) {
+
+                        var applabStartIndex = paymentViewModel.extData.indexOf("<APPLAB>")
+                        var applabEndIndex = paymentViewModel.extData.indexOf("</APPLAB>")
+                        strCardType =
+                            paymentViewModel.extData.substring(
+                                applabStartIndex + "<APPLAB>".length,
+                                applabEndIndex
+                            )
+                    }
+
                     builder.addText(
                         padLine(
                             "",
-                            receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardType,
+                            strCardType,
                             if (customerSettingModel.fonts == Constants.LARGE) {
                                 24
                             } else {
@@ -3022,10 +3036,24 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     ).toString()
                 )
 
+                var strCardType =
+                    receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardType
+
+                if (paymentViewModel.extData != null && !paymentViewModel.extData.isNullOrEmpty()) {
+
+                    var applabStartIndex = paymentViewModel.extData.indexOf("<APPLAB>")
+                    var applabEndIndex = paymentViewModel.extData.indexOf("</APPLAB>")
+                    strCardType =
+                        paymentViewModel.extData.substring(
+                            applabStartIndex + "<APPLAB>".length,
+                            applabEndIndex
+                        )
+                }
+
                 PrintSunmiUtils.normalText(
                     padLine(
                         "",
-                        receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardType,
+                        strCardType,
                         if (customerSettingModel.fonts == LARGE) 23 else 48
                     ).toString()
                 )
@@ -3481,10 +3509,24 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     ).toString()
                 )
 
+                var strCardType =
+                    receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardType
+
+                if (paymentViewModel.extData != null && !paymentViewModel.extData.isNullOrEmpty()) {
+
+                    var applabStartIndex = paymentViewModel.extData.indexOf("<APPLAB>")
+                    var applabEndIndex = paymentViewModel.extData.indexOf("</APPLAB>")
+                    strCardType =
+                        paymentViewModel.extData.substring(
+                            applabStartIndex + "<APPLAB>".length,
+                            applabEndIndex
+                        )
+                }
+
                 PrintSunmiUtils.normalText(
                     padLine(
                         "",
-                        receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardType,
+                        strCardType,
                         if (customerSettingModel.fonts == LARGE) 23 else 48
                     ).toString()
                 )
@@ -4680,10 +4722,24 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         Builder.COLOR_1
                     )
 
+                    var strCardType =
+                        receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardType
+
+                    if (paymentViewModel.extData != null && !paymentViewModel.extData.isNullOrEmpty()) {
+
+                        var applabStartIndex = paymentViewModel.extData.indexOf("<APPLAB>")
+                        var applabEndIndex = paymentViewModel.extData.indexOf("</APPLAB>")
+                        strCardType =
+                            paymentViewModel.extData.substring(
+                                applabStartIndex + "<APPLAB>".length,
+                                applabEndIndex
+                            )
+                    }
+
                     builder.addText(
                         padLine(
                             "",
-                            receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardType,
+                            strCardType,
                             if (customerSettingModel.fonts == LARGE) {
                                 24
                             } else {
@@ -5357,8 +5413,20 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardName.toString()
 
 
-                val str13 =
+                var str13 =
                     receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardType.toString()
+
+
+                if (paymentViewModel.extData != null && !paymentViewModel.extData.isNullOrEmpty()) {
+
+                    var applabStartIndex = paymentViewModel.extData.indexOf("<APPLAB>")
+                    var applabEndIndex = paymentViewModel.extData.indexOf("</APPLAB>")
+                    str13 =
+                        paymentViewModel.extData.substring(
+                            applabStartIndex + "<APPLAB>".length,
+                            applabEndIndex
+                        )
+                }
 
 
                 val str14 =
@@ -5915,9 +5983,23 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     SunmiPrintHelper.getInstance().lineWrap(1)
                 }
 
+                var strCardType =
+                    receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardType.toString()
+
+                if (paymentViewModel.extData != null && !paymentViewModel.extData.isNullOrEmpty()) {
+
+                    var applabStartIndex = paymentViewModel.extData.indexOf("<APPLAB>")
+                    var applabEndIndex = paymentViewModel.extData.indexOf("</APPLAB>")
+                    strCardType =
+                        paymentViewModel.extData.substring(
+                            applabStartIndex + "<APPLAB>".length,
+                            applabEndIndex
+                        )
+                }
+
                 val str13 = padLine(
                     "",
-                    receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardType.toString(),
+                    strCardType,
                     if (customerSettingModel.fonts == LARGE) 23 else 48
                 ).toString()
 
@@ -7763,7 +7845,22 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     )
                 }
 
-                if (!(receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardType).isNullOrBlank()) {
+
+                var strCardType =
+                    receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardType
+                if (paymentViewModel.extData != null && !paymentViewModel.extData.isNullOrEmpty()) {
+
+                    var applabStartIndex = paymentViewModel.extData.indexOf("<APPLAB>")
+                    var applabEndIndex = paymentViewModel.extData.indexOf("</APPLAB>")
+                    strCardType =
+                        paymentViewModel.extData.substring(
+                            applabStartIndex + "<APPLAB>".length,
+                            applabEndIndex
+                        )
+                }
+
+
+                if (!(strCardType).isNullOrBlank()) {
                     builder.addTextLineSpace(30)
                     builder.addFeedUnit(30)
                     builder.addTextFont(Builder.FONT_E)
@@ -7777,10 +7874,23 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         Builder.COLOR_1
                     )
 
+                    var strCardType =
+                        receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardType
+                    if (paymentViewModel.extData != null && !paymentViewModel.extData.isNullOrEmpty()) {
+
+                        var applabStartIndex = paymentViewModel.extData.indexOf("<APPLAB>")
+                        var applabEndIndex = paymentViewModel.extData.indexOf("</APPLAB>")
+                        strCardType =
+                            paymentViewModel.extData.substring(
+                                applabStartIndex + "<APPLAB>".length,
+                                applabEndIndex
+                            )
+                    }
+
                     builder.addText(
                         padLine(
                             "",
-                            receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardType,
+                            strCardType,
                             if (customerSettingModel.fonts == LARGE) {
                                 24
                             } else {
@@ -11829,8 +11939,21 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardName.toString()
 
 
-                val str13 =
+                var str13 =
                     receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardType.toString()
+
+
+                if (paymentViewModel.extData != null && !paymentViewModel.extData.isNullOrEmpty()) {
+
+                    var applabStartIndex = paymentViewModel.extData.indexOf("<APPLAB>")
+                    var applabEndIndex = paymentViewModel.extData.indexOf("</APPLAB>")
+                    str13 =
+                        paymentViewModel.extData.substring(
+                            applabStartIndex + "<APPLAB>".length,
+                            applabEndIndex
+                        )
+                }
+
 
 
                 val str14 =
@@ -12525,8 +12648,19 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardName.toString()
 
 
-                val strCardType =
+                var strCardType =
                     receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardType.toString()
+
+                if (paymentViewModel.extData != null && !paymentViewModel.extData.isNullOrEmpty()) {
+
+                    var applabStartIndex = paymentViewModel.extData.indexOf("<APPLAB>")
+                    var applabEndIndex = paymentViewModel.extData.indexOf("</APPLAB>")
+                    strCardType =
+                        paymentViewModel.extData.substring(
+                            applabStartIndex + "<APPLAB>".length,
+                            applabEndIndex
+                        )
+                }
 
 
                 val strCardNumber =

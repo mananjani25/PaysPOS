@@ -53,7 +53,7 @@ open class PaymentViewModel @Inject constructor(
     private var orderOfflineId: String? = null
     private var totalServiceChargeM: Double? = null
     private var totalDiscountM: Double? = null
-
+    public var extData:String=""
 
     var orderCreateCallSent = false
 
@@ -2848,6 +2848,7 @@ open class PaymentViewModel @Inject constructor(
     }
 
     fun savePaxPaymentDataLocally(paxData: PAXData){
+        this.extData=paxData.extData
         viewModelScope.launch {
             posRepository.addPAXData(paxData)
         }
