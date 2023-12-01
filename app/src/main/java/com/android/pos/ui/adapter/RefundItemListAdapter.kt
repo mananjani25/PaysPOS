@@ -204,8 +204,13 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
             val nf2: NumberFormat = NumberFormat.getNumberInstance()
             nf2.maximumFractionDigits = 2
             val rounded2: String = nf2.format(cashDiscountDivide)
-            cashDiscountDivide = rounded2.toDouble()
-
+//            cashDiscountDivide = rounded2.toDouble()
+            if (rounded2.contains(',')){
+                val result = rounded2.filter { it != ',' }
+                cashDiscountDivide=result.toDouble()
+            }else{
+                cashDiscountDivide = rounded2.toDouble()
+            }
             Log.d(
                 "yash",
                 "bind: [$absoluteAdapterPosition] cashDiscountDivide : $cashDiscountDivide"
