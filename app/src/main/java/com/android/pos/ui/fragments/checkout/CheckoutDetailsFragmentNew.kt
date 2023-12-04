@@ -85,6 +85,7 @@ import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 import kotlin.math.roundToInt
 
 
@@ -2040,7 +2041,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     }
 
     //Restrict user from clicking cash value multiple times
-    private fun restrictTvCashClicks(){
+    private fun restrictTvCashClicks() {
         binding.apply {
             tvCash0.isEnabled = false
             tvCash1.isEnabled = false
@@ -2220,14 +2221,17 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 } else {
                     CoroutineScope(Dispatchers.Main).launch {
                         ProgressUtils.dismissProgressDialog()
-                        AlertUtils.showCustomAlertWithListenerWithOK(requireContext(),resultTxt,object:DialogInterface.OnClickListener{
-                            override fun onClick(p0: DialogInterface?, p1: Int) {
-                                try {
-                                    p0?.dismiss()
-                                } catch (e: Exception) {
+                        AlertUtils.showCustomAlertWithListenerWithOK(
+                            requireContext(),
+                            resultTxt,
+                            object : DialogInterface.OnClickListener {
+                                override fun onClick(p0: DialogInterface?, p1: Int) {
+                                    try {
+                                        p0?.dismiss()
+                                    } catch (e: Exception) {
+                                    }
                                 }
-                            }
-                        })
+                            })
 
 //                        requireContext().showNormalToast("$resultCode $resultTxt")
 //                        connectBP()
@@ -2844,6 +2848,78 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             paymentviewModel.updateOrder(false, null, null, "", "")
         }
         paymentviewModel.saveOrder(false)
+        var cartModel = Gson().fromJson<CartModel?>(
+            prefProvider.getValue("CART_MODEL1", ""),
+            CartModel::class.java
+        )
+        var cartModel2 = Gson().fromJson<CartModel?>(
+            prefProvider.getValue("CART_MODEL2", ""),
+            CartModel::class.java
+        )
+        if (cartList == null) {
+            if (cartModel != null) {
+                viewModel.cartModel = cartModel
+                cartList = cartModel
+            } else if (cartModel2 != null) {
+                viewModel.cartModel = cartModel2
+                cartList = cartModel2
+            }
+        }
+
+        if (cartList!!.items == null || cartList!!.items!!.isEmpty()) {
+            var items: ArrayList<TbItem>? = ArrayList()
+            for (item in viewModel.currentCartItems){
+                var tbItem=TbItem()
+                tbItem.id=item.id
+                tbItem.itemId=item.itemId
+                tbItem.categoryId=item.categoryId
+                tbItem.categoryName=item.categoryName
+                tbItem.createdAt=item.createdAt
+                tbItem.customItemCount=item.customItemCount
+                tbItem.dineInSort=item.dineInSort
+                tbItem.customItemID=item.customItemCount
+                tbItem.discountId=item.discountId
+                tbItem.discountPrice=item.discountPrice
+                tbItem.discountType=item.discountType
+                tbItem.guestItemId=item.guestItemId
+                tbItem.headerPositionDinein=item.headerPositionDinein
+                tbItem.hide_status=item.hide_status
+                tbItem.isHide=item.isHide
+                tbItem.imageUrl=item.imageUrl
+                tbItem.isChecked=item.isChecked
+                tbItem.isDeleted=item.isDeleted
+                tbItem.isDestroy=item.isDestroy
+                tbItem.isEdited=item.isEdited
+                tbItem.isFired=item.isFired
+                tbItem.isManualSales=item.isManualSales
+                tbItem.isPaid=item.isPaid
+                tbItem.itemOriginalModifiersList=item.itemOriginalModifiersList
+                tbItem.itemQuantity=item.itemQuantity
+                tbItem.modifier_set_ids=item.modifier_set_ids
+                tbItem.modifiers=item.modifiers
+                tbItem.name=item.name
+                tbItem.note=item.note
+                tbItem.manualSaleId=item.manualSaleId
+                tbItem.optionSets=item.optionSets
+                tbItem.website_hide_status=item.website_hide_status
+                tbItem.variationsAttributes=item.variationsAttributes
+                tbItem.updatedAt=item.updatedAt
+                tbItem.timeStamp=item.timeStamp
+                tbItem.thumbImageUrl=item.thumbImageUrl
+                tbItem.taxes=item.taxes
+                tbItem.sort=item.sort
+                tbItem.sku=item.sku
+                tbItem.singleItemPrice=item.singleItemPrice
+                tbItem.shortDescription=item.shortDescription
+                tbItem.reorder=item.reorder
+                tbItem.quantity=item.quantity
+                tbItem.price=item.price
+                tbItem.orderItemId=item.orderItemId
+                items!!.add(tbItem)
+            }
+            cartList!!.items=items
+        }
+
         val myRequest = cartList?.let {
             paymentviewModel.createOrderRequestForCard(
                 it,
@@ -2933,9 +3009,16 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 tipID
             )
         }*/
-        var cartModel=Gson().fromJson<CartModel?>(prefProvider.getValue("CART_MODEL1", ""),CartModel::class.java)
-        var cartModel2=Gson().fromJson<CartModel?>(prefProvider.getValue("CART_MODEL2", ""),CartModel::class.java)
-        if (cartModel !=null){
+        var cartModel = Gson().fromJson<CartModel?>(
+            prefProvider.getValue("CART_MODEL1", ""),
+            CartModel::class.java
+        )
+        var cartModel2 = Gson().fromJson<CartModel?>(
+            prefProvider.getValue("CART_MODEL2", ""),
+            CartModel::class.java
+        )
+        if (cartModel != null) {
+            viewModel.cartModel = cartModel
             val myRequest = cartModel.let {
                 paymentviewModel.createOrderRequestNew(
                     viewModel.currentCartItems,
@@ -2966,7 +3049,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 }
                 paymentAttributesRequest(myRequest)
             }
-        }else if (cartModel2!=null){
+        } else if (cartModel2 != null) {
+            viewModel.cartModel = cartModel2
             val myRequest = cartModel2.let {
                 paymentviewModel.createOrderRequestNew(
                     viewModel.currentCartItems,
@@ -2997,7 +3081,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 }
                 paymentAttributesRequest(myRequest)
             }
-        }else{
+        } else {
             val myRequest = viewModel.cartModel?.let {
                 paymentviewModel.createOrderRequestNew(
                     viewModel.currentCartItems,
@@ -3024,8 +3108,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             LogUtil.logE("ORDER TYPE 1", prefProvider.getValue(Constants.ORDER_TYPE, ""))
             if (myRequest != null) {
 
-                prefProvider.setValue("CART_MODEL1", "")
-                prefProvider.setValue("CART_MODEL2", "")
+                 prefProvider.setValue("CART_MODEL1", "")
+                 prefProvider.setValue("CART_MODEL2", "")
 
                 if (custom_paymentAmount != 0.0) {
                     paymentviewModel.totalPayAmount(custom_paymentAmount)
@@ -3035,36 +3119,37 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
 
     }
- /*   private fun makeCashPayment() {
-        paymentType = if (prefProvider.getValueboolean(IS_GIFT_CARD_REDEEM, false)) {
-            "External"
-        } else {
-            "Cash"
-        }
 
-        if (orderId != -1 && orderId != 0) {
-            paymentviewModel.updateOrder(
-                true,
-                orderId,
-                paymentId,
-                paymentOfflineId,
-                orderOfflineId
-            )
-        } else {
-            paymentviewModel.updateOrder(false, null, null, "", "")
-        }
+    /*   private fun makeCashPayment() {
+           paymentType = if (prefProvider.getValueboolean(IS_GIFT_CARD_REDEEM, false)) {
+               "External"
+           } else {
+               "Cash"
+           }
+
+           if (orderId != -1 && orderId != 0) {
+               paymentviewModel.updateOrder(
+                   true,
+                   orderId,
+                   paymentId,
+                   paymentOfflineId,
+                   orderOfflineId
+               )
+           } else {
+               paymentviewModel.updateOrder(false, null, null, "", "")
+           }
 
 
-        paymentviewModel.saveOrder(false)
-        paymentviewModel.textPay(textToPay)
-        Log.d("yash", "makeCashPayment: total Price : " + paymentAmount)
-        Log.d("yash", "makeCashPayment: sub_total   : " + subTotalPrice)
-        Log.d("yash", "makeCashPayment: totaltax    : " + totalTax)
-        Log.d("yash", "makeCashPayment: total disc  : " + totalDiscount)
-        Log.d("yash", "makeCashPayment: total serv  : " + totalServiceCharge)
-        Log.e("checkCartList", "cartList:  ${Gson().toJson(cartList)}")
-        Log.e("checkCartList", "cartList:  ${Gson().toJson(viewModel.cartModel)}")
-        *//*val myRequest = cartList?.let {
+           paymentviewModel.saveOrder(false)
+           paymentviewModel.textPay(textToPay)
+           Log.d("yash", "makeCashPayment: total Price : " + paymentAmount)
+           Log.d("yash", "makeCashPayment: sub_total   : " + subTotalPrice)
+           Log.d("yash", "makeCashPayment: totaltax    : " + totalTax)
+           Log.d("yash", "makeCashPayment: total disc  : " + totalDiscount)
+           Log.d("yash", "makeCashPayment: total serv  : " + totalServiceCharge)
+           Log.e("checkCartList", "cartList:  ${Gson().toJson(cartList)}")
+           Log.e("checkCartList", "cartList:  ${Gson().toJson(viewModel.cartModel)}")
+           *//*val myRequest = cartList?.let {
             paymentviewModel.createOrderRequest(
                 it,
                 subTotalPrice,
