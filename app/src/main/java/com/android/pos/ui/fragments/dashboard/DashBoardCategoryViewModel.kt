@@ -159,18 +159,26 @@ class DashBoardCategoryViewModel @Inject constructor(
     private val _removeGuestSuccess = MutableLiveData<Event<String>>()
     val removeGuestSuccess: LiveData<Event<String>> = _removeGuestSuccess
 
-    //using this field to restrict double navigation between DashboardCategoryBoldPOS and All Orders when clicking Home in AllOrders Page
+    /**
+     * Fields used to check navigation from fragments
+     */
     var fromAllOrderFragment = false
     var fromAllOrderFragmentUpdate = false
     var fromSaveOrderToAllOrders = false
 
+    /**
+     * Issue related to BIS-435
+    */
     var cartFragmentRestarted = false
-    var lastSavedlocalDataItem:TbCartItem = TbCartItem()
+
+    /**
+     * Field used to resolve multiple issues like cart going blank
+     */
     val fragmentNeedToBeUpdated = MutableLiveData<Boolean>(false)
 
-    /***
+    /**
      * This field used to resolve BIS-3473 issue - when we add same item with different modifier then its doesn't reflect in cart
-     ***/
+     */
     val doesItemContainsModifiers = MutableLiveData<Boolean>()
 
     fun getCustomerReceiptSettings() = posRepository.getCustomerReceiptSettings()
