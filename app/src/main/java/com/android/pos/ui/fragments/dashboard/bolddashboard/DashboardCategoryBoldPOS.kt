@@ -206,8 +206,19 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         viewModel.fragmentNeedToBeUpdated.observe(viewLifecycleOwner) {
             if (it) {
 
+                viewModel.fragmentNeedToBeUpdated.value = false
                 Log.e("Fragment Restarted","Restarted")
 
+                childFragmentManager.beginTransaction()
+                    .replace(binding.frameLayoutCart.id, createCartForLoadCartFragment())
+                    .addToBackStack(null)
+                    .commit()
+            }
+        }
+
+        viewModel.doesItemContainsModifiers.observe(viewLifecycleOwner){
+            if(it){
+                viewModel.doesItemContainsModifiers.value = false
                 childFragmentManager.beginTransaction()
                     .replace(binding.frameLayoutCart.id, createCartForLoadCartFragment())
                     .addToBackStack(null)

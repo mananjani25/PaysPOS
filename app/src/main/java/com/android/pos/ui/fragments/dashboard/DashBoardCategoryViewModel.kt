@@ -168,6 +168,11 @@ class DashBoardCategoryViewModel @Inject constructor(
     var lastSavedlocalDataItem:TbCartItem = TbCartItem()
     val fragmentNeedToBeUpdated = MutableLiveData<Boolean>(false)
 
+    /***
+     * This field used to resolve BIS-3473 issue - when we add same item with different modifier then its doesn't reflect in cart
+     ***/
+    val doesItemContainsModifiers = MutableLiveData<Boolean>()
+
     fun getCustomerReceiptSettings() = posRepository.getCustomerReceiptSettings()
 
     fun getKitchenReceiptSettings() = posRepository.getKitchenReceiptSettings()
