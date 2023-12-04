@@ -2856,7 +2856,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             prefProvider.getValue("CART_MODEL2", ""),
             CartModel::class.java
         )
-        if (cartList == null) {
+        if (cartList == null){
             if (cartModel != null) {
                 viewModel.cartModel = cartModel
                 cartList = cartModel
