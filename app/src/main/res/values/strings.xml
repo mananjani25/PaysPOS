@@ -177,7 +177,7 @@
     <string name="add_tax_name">Add Tax Name</string>
     <string name="add_tax_name_">Tax Name<font color='#E90C0C'>*</font></string>
     <string name="add_tax__percentage">Add Tax Percentage (%)</string>
-    <string name="add_tax__percentage_">Tax Percentages (%)<font color='#E90C0C'>*</font></string>
+    <string name="add_tax__percentage_">Tax Percentage (%)<font color='#E90C0C'>*</font></string>
     <string name="add_tax__dollor">Add Tax Dollar ($)</string>
     <string name="search_categories">Search Categories</string>
     <string name="create_category">Create Category</string>
