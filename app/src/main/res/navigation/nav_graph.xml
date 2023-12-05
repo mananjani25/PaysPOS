@@ -1770,6 +1770,10 @@
         <action
             android:id="@+id/action_phoneOrderFragment_to_assignCustomerOrderFragment"
             app:destination="@id/assignCustomerOrderFragment" />
+
+        <action
+            android:id="@+id/action_phoneOrderFragment_to_dashboardCategoryBoldPOS"
+            app:destination="@id/dashboardCategoryBoldPOS" />
     </fragment>
     <fragment
         android:id="@+id/printerQueueList"
