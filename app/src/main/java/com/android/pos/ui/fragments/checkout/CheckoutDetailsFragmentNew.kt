@@ -2030,7 +2030,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             if (giftCardNumber.isEmpty() || giftCardNumber.length != 8) {
                 AlertUtils.showCustomAlert(
                     requireContext(),
-                    "Please enter 8-digit gift card number"
+                    "Please enter 8-digit gift card number."
                 )
                 return@setOnSingleClickListener
             } else {
