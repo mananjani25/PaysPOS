@@ -181,6 +181,11 @@ class DashBoardCategoryViewModel @Inject constructor(
      */
     val doesItemContainsModifiers = MutableLiveData<Boolean>()
 
+    /**
+     * BIS - 3500 issue resolved
+     */
+    val autoSyncEnabled = MutableLiveData<Boolean>()
+
     fun getCustomerReceiptSettings() = posRepository.getCustomerReceiptSettings()
 
     fun getKitchenReceiptSettings() = posRepository.getKitchenReceiptSettings()
@@ -6453,17 +6458,23 @@ class DashBoardCategoryViewModel @Inject constructor(
                         if (!b) syncSettingModule()
 
                     }
+
+                    autoSyncEnabled.value = true
                 }
 
                 Status.ERROR -> {
                     Log.e("SyncInventory", "SyncError")
                     _snackbarText.value = Event(resource.message.toString())
                     _showProgress.value = Event(false)
+
+                    autoSyncEnabled.value = true
                 }
 
                 Status.LOADING -> {
                     Log.e("SyncInventory", "SyncLoading")
                     _showProgress.value = Event(true)
+
+                    autoSyncEnabled.value = true
                 }
             }
 

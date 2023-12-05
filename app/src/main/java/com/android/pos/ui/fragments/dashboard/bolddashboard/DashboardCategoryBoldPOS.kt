@@ -227,6 +227,12 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         }
     }
 
+    private fun autoSyncObserver(){
+        viewModel.autoSyncEnabled.observe(viewLifecycleOwner){
+            binding.layoutHeader.imgSync.visibility = if(it) View.VISIBLE else View.INVISIBLE
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -240,6 +246,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         //prefProvider.setValue(Constants.OPEN_ORDER_ITEMS, "")
 
         addFragmentReplaceObserver()
+        autoSyncObserver()
         /* if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
              viewModel.clearGiftCardCart()
          }*/ // putting method in onviewcreated due to UI glitch issue
@@ -1045,7 +1052,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             loadCategoryFragment(CategoryFragment(this, binding.layoutHeader.edtSearch))
         }
 
-        binding.layoutHeader.imgSync?.setOnClickListener {
+        binding.layoutHeader.imgSync.setOnClickListener {
+            viewModel.autoSyncEnabled.value = false
             prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
             viewModel.syncInventoryModule(false)
         }
