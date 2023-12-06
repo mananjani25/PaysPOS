@@ -2877,6 +2877,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         LogUtil.logE(TAG, "myRequestOriginal ${Gson().toJson(myRequest)}")
         if (myRequest != null) {
             paymentviewModel.totalPayAmount(paymentAmount)
+
+            if (prefProvider.getValue(Constants.GIFT_CARD_TYPE,"").equals("digital",ignoreCase = true)){
+                myRequest.order.orderTypeId=prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)
+            }
+
             paymentAttributesRequest(myRequest)
         }
     }
@@ -3172,7 +3177,6 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     gift_card_redeem = prefProvider.getValueboolean(IS_GIFT_CARD_REDEEM, false),
                     gift_card = giftCardRedeem
                 )
-
                 paymentviewModel.splitByOrder(aa, false)
             }
         }
