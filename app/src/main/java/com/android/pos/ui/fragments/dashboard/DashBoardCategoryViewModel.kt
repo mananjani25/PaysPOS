@@ -163,6 +163,11 @@ class DashBoardCategoryViewModel @Inject constructor(
     var fromAllOrderFragment = false
     var fromAllOrderFragmentUpdate = false
     var fromSaveOrderToAllOrders = false
+
+    var cartFragmentRestarted = false
+    var lastSavedlocalDataItem:TbCartItem = TbCartItem()
+    val fragmentNeedToBeUpdated = MutableLiveData<Boolean>(false)
+
     fun getCustomerReceiptSettings() = posRepository.getCustomerReceiptSettings()
 
     fun getKitchenReceiptSettings() = posRepository.getKitchenReceiptSettings()

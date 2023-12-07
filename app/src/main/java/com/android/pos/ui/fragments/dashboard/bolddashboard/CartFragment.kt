@@ -946,9 +946,10 @@ class CartFragment(
                     binding.rvCartDineIn.gone()
                     binding.rvCartList.visible()
 
+
+
                     it.toCollection(arrayListOf())
                         .let { it1 -> cartItemsAdapter.submitList(it1) }
-
 
                     if (viewModel.cartModel?.taxlistDynamic?.isNotEmpty() == true) {
                         Log.d(TAG, "addObserver: " + viewModel.cartModel?.taxlistDynamic?.size)
@@ -1415,7 +1416,47 @@ class CartFragment(
                                 }
 
                                 runOnUiThread {
-                                    cartItemsAdapter.submitList(filterItems)
+                                    Log.e("FRAGMENT RESTARTED","Fragment car line 1419")
+
+
+                                    if (viewModel.cartFragmentRestarted) {
+
+                                        viewModel.fragmentNeedToBeUpdated.value = true
+                                        viewModel.cartFragmentRestarted = false
+
+//                                        if (filterItems.contains(viewModel.lastSavedlocalDataItem)) {
+//                                            Log.e("FRAGMENT RESTARTED","CART Already Having data there")
+//                                        } else {
+//                                            val newList = filterItems
+//                                            newList.add(viewModel.lastSavedlocalDataItem)
+//                                            viewModel.lastSavedlocalDataItem = TbCartItem()
+//
+//
+//                                            filterItems.forEach {
+//                                                Log.e("FRAGMENT RESTARTED","FILTER ${it.id} ${it.name} ${it.itemQuantity}")
+//                                            }
+//
+//                                            newList.forEach {
+//                                                Log.e("FRAGMENT RESTARTED","NEW LIST ${it.id} ${it.name} ${it.itemQuantity}")
+//                                            }
+//
+//
+//                                            filterItems.forEach {
+//                                                Log.e("FRAGMENT RESTARTED","UPDATED FILTER ${it.id} ${it.name} ${it.itemQuantity}")
+//                                            }
+//
+//                                            cartItemsAdapter.submitList(newList)
+//                                            viewModel.cartFragmentRestarted = false
+//                                        }
+                                    } else {
+
+                                        Log.e("FRAGMENT RESTARTED","CART FRAGMENT NOT RESTARTED")
+                                        cartItemsAdapter.submitList(filterItems)
+
+                                    }
+
+
+
                                     binding.rvCartList.postDelayed({
                                         if (cartItemsAdapter.currentList.isNotEmpty()) {
                                             binding.rvCartList.smoothScrollToPosition(

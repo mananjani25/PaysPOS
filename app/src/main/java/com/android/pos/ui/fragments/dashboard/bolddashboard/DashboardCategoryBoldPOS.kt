@@ -202,6 +202,20 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         })
     }
 
+    private fun addFragmentReplaceObserver() {
+        viewModel.fragmentNeedToBeUpdated.observe(viewLifecycleOwner) {
+            if (it) {
+
+                Log.e("Fragment Restarted","Restarted")
+
+                childFragmentManager.beginTransaction()
+                    .replace(binding.frameLayoutCart.id, createCartForLoadCartFragment())
+                    .addToBackStack(null)
+                    .commit()
+            }
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -214,9 +228,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         prefProvider.setValue(Constants.REDIRECT_FROM, "")
         //prefProvider.setValue(Constants.OPEN_ORDER_ITEMS, "")
 
-       /* if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
-            viewModel.clearGiftCardCart()
-        }*/ // putting method in onviewcreated due to UI glitch issue
+        addFragmentReplaceObserver()
+        /* if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
+             viewModel.clearGiftCardCart()
+         }*/ // putting method in onviewcreated due to UI glitch issue
 
         binding = FragmentDashboardCategoryBoldPosBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
@@ -691,26 +706,26 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         }
 
 
-       /* getOrderTypes()
-        observeSaveOrder()
-        observeOrderNotUpdated()
-        getKitchenReceiptSettings()
-        addObserver()
-        getServiceCharges()
-        resultListener()
-        observeQueueCreate()
-        dineInUpdateOrder()
-        navigateDineInOrder()
-        getLoyaltyPrograms()
+        /* getOrderTypes()
+         observeSaveOrder()
+         observeOrderNotUpdated()
+         getKitchenReceiptSettings()
+         addObserver()
+         getServiceCharges()
+         resultListener()
+         observeQueueCreate()
+         dineInUpdateOrder()
+         navigateDineInOrder()
+         getLoyaltyPrograms()
 
-        checkDineInEditOrder()
-        printerProgress()
-        observeShowProgress()
-        allOrdersPendingCountObserver()
-        getDineInData()
-        checkSearch()
-        observeServiceChargeUpdate()
-        observerSyncItemPriceChange()*/
+         checkDineInEditOrder()
+         printerProgress()
+         observeShowProgress()
+         allOrdersPendingCountObserver()
+         getDineInData()
+         checkSearch()
+         observeServiceChargeUpdate()
+         observerSyncItemPriceChange()*/
         System.gc()
         onClick()
 
@@ -878,16 +893,16 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     private fun loadCategoryFragment(fragment: Fragment) {
         val fm: FragmentManager = requireActivity().supportFragmentManager
         fm.beginTransaction().replace(binding.frameLayout.id, fragment).commit()
-        Log.e("Dashboard Tracking ","Track Dashboard - 855 Category Fragment")
+        Log.e("Dashboard Tracking ", "Track Dashboard - 855 Category Fragment")
     }
 
 
     private fun createCartForLoadCartFragment() = CartFragment(
-                this,
-                this,
-                dineInCallback = this,
-                isFromDashboard = true
-            )
+        this,
+        this,
+        dineInCallback = this,
+        isFromDashboard = true
+    )
 
 
     // To show cart on screen
@@ -917,14 +932,14 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         frag.arguments = result
         fm.beginTransaction().replace(binding.frameLayoutCart.id, frag).addToBackStack(null)
             .commit()
-        Log.e("Dashboard Tracking ","Track Dashboard - 885")
+        Log.e("Dashboard Tracking ", "Track Dashboard - 885")
     }
 
     private fun loadKeyPadFragment(frag: Fragment) {
         val fm: FragmentManager = requireActivity().supportFragmentManager
         fm.beginTransaction().replace(binding.frameLayout.id, frag).commit()
 
-        Log.e("Dashboard Tracking ","Track Dashboard - 892 KEYPAD")
+        Log.e("Dashboard Tracking ", "Track Dashboard - 892 KEYPAD")
     }
 
     private fun onClick() {
@@ -1085,7 +1100,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
     // To open cash drawer base on connected customer printer type
     private fun getCustomerPrinters() {
-        Log.e("Tracking Printers","Tracking Printers - 1053")
+        Log.e("Tracking Printers", "Tracking Printers - 1053")
         CoroutineScope(Dispatchers.IO).launch {
             var customersPrinters = viewModel.getCustomerPrinterList() ?: arrayListOf()
             if (customersPrinters.isNotEmpty()) {
@@ -1273,6 +1288,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
     override fun onItemSelected(tbItem: TbItem, position: Int) {
 
+        var lastItem = TbCartItem().convertToCartItem(tbItem, tbItem)
+        lastItem.itemQuantity = 1
+        viewModel.lastSavedlocalDataItem = lastItem
         when (tbItem.name) {
             SELL_CARD -> {
                 // clear customer if added any for previous order type
@@ -1295,157 +1313,161 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             }
 
             else -> {
-                Log.e("Cart ITEM","CART ITEM CLICKED")
+                Log.e("Cart ITEM", "CART ITEM CLICKED")
                 viewModel.setLatestCartItemPosition(position)
-                CoroutineScope(Dispatchers.IO).launch {
-                    val item = TbCartItem().convertToCartItem(tbItem, tbItem)
-                    item.timeStamp = System.currentTimeMillis().toString()
-                    getInitialTakeOutOrderType()
-                    Log.e(
-                        TAG,
-                        "dineintest viewModel.cartmodel: " + Gson().toJson(viewModel.cartModel)
-                    )
+                //  CoroutineScope(Dispatchers.IO).launch {
+                val item = TbCartItem().convertToCartItem(tbItem, tbItem)
+                item.timeStamp = System.currentTimeMillis().toString()
+                getInitialTakeOutOrderType()
+                Log.e(
+                    TAG,
+                    "dineintest viewModel.cartmodel: " + Gson().toJson(viewModel.cartModel)
+                )
 
-                    prefProvider.setValue(Constants.REDIRECT_FROM, "")
+                prefProvider.setValue(Constants.REDIRECT_FROM, "")
 
-                    item.employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
-                    item.orderType = prefProvider.getValue(ORDER_TYPE, "")
+                item.employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+                item.orderType = prefProvider.getValue(ORDER_TYPE, "")
 
-                    if (cartList.isEmpty() && viewModel.cartModel != null) {
-                        viewModel.cartModel?.let {
-                            cartList.add(it)
-                        }
+                if (cartList.isEmpty() && viewModel.cartModel != null) {
+                    viewModel.cartModel?.let {
+                        cartList.add(it)
                     }
+                }
 
 
-                    if (cartList.isEmpty() && viewModel.cartModel != null) {
-                        cartList = arrayListOf()
-                        cartList = viewModel.createCart(cartList)
-                        if (cartList[0].employeeID != prefProvider.getValueInt(
-                                Constants.EMPLOYEE_ID,
-                                0
-                            )
-                        ) {
-                            cartList[0] = viewModel.cartModel!!
-                        }
-                    }
-
-
-
-                    if (item.modifier_set_ids.isNotEmpty() || item.variationsAttributes.isNotEmpty()) {
-
-                        item.modifiers.forEach { it.isChecked = false }
-                        item.variationsAttributes.forEach { it ->
-                            if (it.priceType == "Variable") {
-                                it.price = null
-                            }
-                        }
-                        val backStateName: String = AddItemFragment.javaClass.getName()
-                        val fragment = AddItemFragment.newInstance(
-                            item,
-                            this@DashboardCategoryBoldPOS,
-                            cartList,
-                            false
+                if (cartList.isEmpty() && viewModel.cartModel != null) {
+                    cartList = arrayListOf()
+                    cartList = viewModel.createCart(cartList)
+                    if (cartList[0].employeeID != prefProvider.getValueInt(
+                            Constants.EMPLOYEE_ID,
+                            0
                         )
-                        val fm: FragmentManager = requireActivity().supportFragmentManager
-                        fm.beginTransaction().add(binding.frameLayout.id, fragment)
-                            .setReorderingAllowed(true)
-                            .addToBackStack(backStateName).commit()
-                        Log.e("Dashboard Tracking ","Track Dashboard - 1317")
-                    } else {
-                        Log.d(TAG, "dineintest onItemSelected: ")
-                        Log.e(TAG, "dineintest cartListItemAddSize: ${cartList.size}")
-                        if (cartList.isEmpty()) {
-                            viewModel.createCart(cartList)
+                    ) {
+                        cartList[0] = viewModel.cartModel!!
+                    }
+                }
 
-                                childFragmentManager.beginTransaction().replace(binding.frameLayoutCart.id, createCartForLoadCartFragment()).addToBackStack(null)
-                                .commit()
+
+
+                if (item.modifier_set_ids.isNotEmpty() || item.variationsAttributes.isNotEmpty()) {
+
+                    item.modifiers.forEach { it.isChecked = false }
+                    item.variationsAttributes.forEach { it ->
+                        if (it.priceType == "Variable") {
+                            it.price = null
+                        }
+                    }
+                    val backStateName: String = AddItemFragment.javaClass.getName()
+                    val fragment = AddItemFragment.newInstance(
+                        item,
+                        this@DashboardCategoryBoldPOS,
+                        cartList,
+                        false
+                    )
+                    val fm: FragmentManager = requireActivity().supportFragmentManager
+                    fm.beginTransaction().add(binding.frameLayout.id, fragment)
+                        .setReorderingAllowed(true)
+                        .addToBackStack(backStateName).commit()
+                    Log.e("Dashboard Tracking ", "Track Dashboard - 1317")
+                } else {
+                    Log.d(TAG, "dineintest onItemSelected: ")
+                    Log.e(TAG, "dineintest cartListItemAddSize: ${cartList.size}")
+                    if (cartList.isEmpty()) {
+                        viewModel.createCart(cartList)
+
+                        viewModel.cartFragmentRestarted = true
+
+                        childFragmentManager.beginTransaction()
+                            .replace(binding.frameLayoutCart.id, createCartForLoadCartFragment())
+                            .addToBackStack(null)
+                            .commit()
 
 //                            loadCartFragment(
 //                                createCartForLoadCartFragment()
 //                            )
-                        }
-                        item.itemQuantity = 1
-                        if (cartList.size > 0) {
+                    }
+                    item.itemQuantity = 1
+                    if (cartList.size > 0) {
 
-                            if (cartList.isNotEmpty())
-                                cartList[0].employeeID =
-                                    prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+                        if (cartList.isNotEmpty())
+                            cartList[0].employeeID =
+                                prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
 
-                            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
-                                item.guestIndexForDineIn = viewModel.dineInHeaderPosition
-                                if (cartList[0].dineInList?.isEmpty() == true) {
-                                    cartList[0].dineInList = dineInList
-                                }
+                        if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
+                            item.guestIndexForDineIn = viewModel.dineInHeaderPosition
+                            if (cartList[0].dineInList?.isEmpty() == true) {
+                                cartList[0].dineInList = dineInList
+                            }
 
 
-                                if (cartList[0].dineInList?.isNotEmpty() == true) {
-                                    Log.e(
-                                        "checkDineHeaderPos",
-                                        "dineInHeaderPosition:  ${viewModel.dineInHeaderPosition}"
+                            if (cartList[0].dineInList?.isNotEmpty() == true) {
+                                Log.e(
+                                    "checkDineHeaderPos",
+                                    "dineInHeaderPosition:  ${viewModel.dineInHeaderPosition}"
+                                )
+
+                                if (prefProvider.getValueboolean(
+                                        Constants.DINE_IN_UPDATE,
+                                        false
                                     )
-
-                                    if (prefProvider.getValueboolean(
-                                            Constants.DINE_IN_UPDATE,
-                                            false
-                                        )
-                                    ) {
-                                        item.isEdited = true
-                                    }
-
-                                    var dineInList = cartList[0].dineInList
-                                    dineInList!![0]?.selectedPosition =
-                                        viewModel.dineInHeaderPosition
-                                    runOnUiThread(Runnable {
-                                        /*viewModel.newCartLogicModifier(
-                                            cartList,
-                                            item,
-                                            Constants.ADD,
-                                            false,
-                                            dineInList = dineInList
-                                        )*/
-                                        /*viewModel.getDineInCartItems(position).asLiveData().observe(viewLifecycleOwner){
-                                            viewModel.setCurrentCartItems(it)
-                                        }*/
-
-                                        Log.d(
-                                            TAG,
-                                            "1232 dineintest currentCartItems: " + Gson().toJson(
-                                                viewModel.currentCartItems
-                                            )
-                                        )
-                                        Log.d(TAG, "dineintest item: " + Gson().toJson(item))
-                                        //insert dine in
-                                        viewModel.updateDineInCart(
-                                            viewModel.currentCartItems,
-                                            item,
-                                            Constants.ADD,
-                                            false,
-                                            dineInList
-                                        )
-                                    })
-
+                                ) {
+                                    item.isEdited = true
                                 }
-                            } else {
-                                item.guestIndexForDineIn = null
-                                Log.e("CART ITEM","CART ITEM UPDATED")
-                                runOnUiThread {
-                                    runBlocking {
-                                        viewModel.updateCart(
-                                            viewModel.currentCartItems,
-                                            item,
-                                            Constants.ADD,
-                                            false,
+
+                                var dineInList = cartList[0].dineInList
+                                dineInList!![0]?.selectedPosition =
+                                    viewModel.dineInHeaderPosition
+                                runOnUiThread(Runnable {
+                                    /*viewModel.newCartLogicModifier(
+                                        cartList,
+                                        item,
+                                        Constants.ADD,
+                                        false,
+                                        dineInList = dineInList
+                                    )*/
+                                    /*viewModel.getDineInCartItems(position).asLiveData().observe(viewLifecycleOwner){
+                                        viewModel.setCurrentCartItems(it)
+                                    }*/
+
+                                    Log.d(
+                                        TAG,
+                                        "1232 dineintest currentCartItems: " + Gson().toJson(
+                                            viewModel.currentCartItems
                                         )
-                                    }
+                                    )
+                                    Log.d(TAG, "dineintest item: " + Gson().toJson(item))
+                                    //insert dine in
+                                    viewModel.updateDineInCart(
+                                        viewModel.currentCartItems,
+                                        item,
+                                        Constants.ADD,
+                                        false,
+                                        dineInList
+                                    )
+                                })
+
+                            }
+                        } else {
+                            item.guestIndexForDineIn = null
+                            Log.e("CART ITEM", "CART ITEM UPDATED")
+                            runOnUiThread {
+                                runBlocking {
+                                    viewModel.updateCart(
+                                        viewModel.currentCartItems,
+                                        item,
+                                        Constants.ADD,
+                                        false,
+                                    )
                                 }
                             }
                         }
-
                     }
+
                 }
             }
         }
+        //}
 
     }
 
@@ -1695,7 +1717,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         val fm: FragmentManager = requireActivity().supportFragmentManager
         fm.beginTransaction().add(binding.frameLayout.id, fragment).setReorderingAllowed(true)
             .addToBackStack(backStateName).commit()
-        Log.e("Dashboard Tracking ","Track Dashboard - 1652")
+        Log.e("Dashboard Tracking ", "Track Dashboard - 1652")
         /*val frag: Fragment = AddItemFragment.newInstance(item, this, cartList, true)
         loadCategoryFragment(frag)*/
     }
@@ -1707,7 +1729,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         val fm: FragmentManager = requireActivity().supportFragmentManager
         fm.beginTransaction().add(binding.frameLayout.id, fragment).setReorderingAllowed(true)
             .addToBackStack(backStateName).commit()
-        Log.e("Dashboard Tracking ","Track Dashboard - 1664")
+        Log.e("Dashboard Tracking ", "Track Dashboard - 1664")
     }
 
     override fun onDineInOrderCleared() {
@@ -2623,7 +2645,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         viewModel.fromAllOrderFragment = false
                     } else if (viewModel.fromAllOrderFragmentUpdate) {
                         viewModel.fromAllOrderFragmentUpdate = false
-                    }else {
+                    } else {
                         viewModel.fromAllOrderFragmentUpdate = false
                         viewModel.fromAllOrderFragment = false
                         findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
