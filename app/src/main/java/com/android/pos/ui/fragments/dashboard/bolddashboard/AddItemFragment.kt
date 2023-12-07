@@ -330,7 +330,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                         binding.root.context,
                         binding.root.context.getString(R.string.you_can_add)
                     )
-
+                    viewModel.doesItemContainsModifiers.value = false
                     return@setOnClickListener
                 }
 
@@ -349,10 +349,12 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                         ) { _, _ ->
 
                         }
+                        viewModel.doesItemContainsModifiers.value = false
                         return@setOnClickListener
                     }
                     item.variationsAttributes = variationList
                 } else {
+                    viewModel.doesItemContainsModifiers.value = true
                     return@setOnClickListener
                 }
 
@@ -421,6 +423,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                             false,
                             position = itemPosition
                         )
+                        viewModel.doesItemContainsModifiers.value = true
 
                     } else {
 
@@ -433,6 +436,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                             false,
                             position = itemPosition
                         )
+                        viewModel.doesItemContainsModifiers.value = true
                     }
 
 
@@ -473,6 +477,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                     Log.e("cshffasf", "checkElsee")
                     //val tbItem = TbCartItem().convertToCartItem(item, item)
                     viewModel.updateCart(viewModel.currentCartItems, item, Constants.ADD, false)
+                    viewModel.doesItemContainsModifiers.value = true
                 }
             }
 

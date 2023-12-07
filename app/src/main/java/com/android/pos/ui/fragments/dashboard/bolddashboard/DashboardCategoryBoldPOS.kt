@@ -206,8 +206,19 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         viewModel.fragmentNeedToBeUpdated.observe(viewLifecycleOwner) {
             if (it) {
 
+                viewModel.fragmentNeedToBeUpdated.value = false
                 Log.e("Fragment Restarted","Restarted")
 
+                childFragmentManager.beginTransaction()
+                    .replace(binding.frameLayoutCart.id, createCartForLoadCartFragment())
+                    .addToBackStack(null)
+                    .commit()
+            }
+        }
+
+        viewModel.doesItemContainsModifiers.observe(viewLifecycleOwner){
+            if(it){
+                viewModel.doesItemContainsModifiers.value = false
                 childFragmentManager.beginTransaction()
                     .replace(binding.frameLayoutCart.id, createCartForLoadCartFragment())
                     .addToBackStack(null)
@@ -1290,7 +1301,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
         var lastItem = TbCartItem().convertToCartItem(tbItem, tbItem)
         lastItem.itemQuantity = 1
-        viewModel.lastSavedlocalDataItem = lastItem
         when (tbItem.name) {
             SELL_CARD -> {
                 // clear customer if added any for previous order type
