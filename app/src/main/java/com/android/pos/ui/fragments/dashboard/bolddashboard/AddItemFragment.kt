@@ -1019,21 +1019,10 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                     )
                 }
             } else {
-
-                var min_required = 0
-
-                val mlist = ArrayList<Modifier>()
-
                 list.forEach {
-                    min_required += it.min_required
-                    mlist.addAll(it.modifiers)
+                    if(!minLogic(it.min_required,it.modifiers))
+                        return false
                 }
-
-                return (min_required == 0) || minLogic(
-                    min_required,
-                    mlist
-                )
-
             }
         }
         return true
