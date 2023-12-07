@@ -35,6 +35,8 @@ import com.android.pos.di.ApiModule.BASE_URL
 import com.android.pos.di.HostSelectionInterceptor
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.activities.MainActivity
+import com.android.pos.ui.fragments.dashboard.bolddashboard.CartFragment
+import com.android.pos.ui.fragments.dashboard.bolddashboard.DashboardCategoryBoldPOS
 import com.android.pos.ui.fragments.loginscreen.LoginViewModel
 import com.android.pos.ui.fragments.settings.business.AutoCompleteAdapter
 import com.android.pos.utils.AlertUtils
@@ -137,7 +139,7 @@ class PhoneOrderFragment : Fragment() {
 
         if (customer.phones.isNotEmpty()) {
             binding.edtPhoneNo.setText(AlertUtils.usNumberFormat(customer.phones[0].phone_number))
-        }else{
+        } else {
             binding.edtPhoneNo.text?.clear()
         }
         binding.edtEmail.setText(customer.email)
@@ -148,16 +150,15 @@ class PhoneOrderFragment : Fragment() {
             binding.edtCity.setText(customer.addresses[0].city)
             binding.edtState.setText(customer.addresses[0].state)
             binding.edtZip.setText(customer.addresses[0].postcode)
-        }else{
+        } else {
             clearAddressFields()
         }
 
 
     }
 
-    // manage delivery type of phone order : Pick up/ Delivery
-    private fun manageDeliveryTypeView(){
-        if(orderType == PICK_UP) {
+    private fun manageDeliveryTypeView() {
+        if (orderType == PICK_UP) {
             orderType = PICK_UP
             isPickUp = true
             isDelivey = false
@@ -176,7 +177,6 @@ class PhoneOrderFragment : Fragment() {
         }
     }
 
-    // init places api for address suggestions
     private fun placesClientInit() {
 
         if (!Places.isInitialized()) {
@@ -198,10 +198,12 @@ class PhoneOrderFragment : Fragment() {
     private fun clickEvent() {
 
         binding.imgBack.setOnClickListener {
-            findNavController().popBackStack()
+//            findNavController().popBackStack()
+            resetAndMoveToDashboard()
         }
         binding.txtHome.setOnClickListener {
-            findNavController().popBackStack()
+//            findNavController().popBackStack()
+            resetAndMoveToDashboard()
         }
 
         binding.txtPickup.setOnSingleClickListener {
@@ -269,148 +271,133 @@ class PhoneOrderFragment : Fragment() {
                 )
             } else if (isDelivey && binding.edtStreet.text.toString().trim().isEmpty()) {
                 AlertUtils.showCustomAlert(requireContext(), "Please enter address")
-            }
-            else if (isDelivey && binding.edtZip.text.toString().trim().isEmpty()) {
+            } else if (isDelivey && binding.edtZip.text.toString().trim().isEmpty()) {
                 AlertUtils.showCustomAlert(requireContext(), "Please enter zipcode")
             } else {
 
 
-               /* val phonesList: ArrayList<TbPhones> =
+                /* val phonesList: ArrayList<TbPhones> =
+                     arrayListOf()
+
+                 if (binding.edtPhoneNo.text?.isNotEmpty()!!) {
+
+                     val phone = TbPhones(
+                         null, binding.edtPhoneNo.text.toString().trim().replace(
+                             ("[\\D]").toRegex(),
+                             ""
+                         )
+                     )
+                     phonesList.add(phone)
+                 }
+
+
+                 val list: ArrayList<TbAddress> = arrayListOf()
+
+                 if (binding.edtStreet.text.toString().trim().isNotEmpty()) {
+
+                     val address = TbAddress(
+                         null,
+                         binding.edtStreet.text.toString().trim(),
+                         binding.edtSuite.text.toString().trim(),
+                         binding.edtCity.text.toString().trim(),
+                         binding.edtState.text.toString().trim(),
+                         if (isPickUp) PICK_UP else DELIVERY,
+                         binding.edtZip.text.toString().trim(),
+                         "",
+                         "0.0",
+                         "0.0",
+                         "Shipping",
+                         "",
+                         binding.edtStreet.text.toString().trim(),
+                     )
+                     list.add(address)
+                 }
+
+
+                 customer = TbCustomer(
+                     customerID,
+                     MethodUtils.getText(binding.edtFName),
+                     MethodUtils.getText(binding.edtLName),
+                     "",
+                     MethodUtils.getText(binding.edtEmail),
+                     selectedCustomer?.enroll_to_loyalty ?: false,
+                     false,
+                     selectedCustomer?.final_reward ?: 0,
+                     "",
+                     phonesList,
+                     list
+                 )*/
+
+
+                var listAddress: ArrayList<CreateCustomerRequestModel.Customer.Addresses> =
                     arrayListOf()
 
-                if (binding.edtPhoneNo.text?.isNotEmpty()!!) {
+                val phoneId: Int? = null
+                val addCustomerData = CreateCustomerRequestModel().apply {
+                    data?.first_name = MethodUtils.getText(binding.edtFName)
+                    data?.last_name = MethodUtils.getText(binding.edtLName)
+                    data?.email = MethodUtils.getText(binding.edtEmail)
+                    data?.enroll_to_loyalty = selectedCustomer?.enroll_to_loyalty ?: false
+                    data?.final_reward = selectedCustomer?.final_reward ?: 0
 
-                    val phone = TbPhones(
-                        null, binding.edtPhoneNo.text.toString().trim().replace(
+                    val phone = CreateCustomerRequestModel.Customer.Phone(
+                        id = if ((selectedCustomer?.phones?.size ?: 0) > 0) {
+                            selectedCustomer?.phones?.get(0)?.id ?: phoneId
+                        } else {
+                            phoneId
+                        },
+                        phone_number = binding.edtPhoneNo.text.toString().trim().replace(
                             ("[\\D]").toRegex(),
                             ""
                         )
                     )
-                    phonesList.add(phone)
-                }
 
-
-                val list: ArrayList<TbAddress> = arrayListOf()
-
-                if (binding.edtStreet.text.toString().trim().isNotEmpty()) {
-
-                    val address = TbAddress(
-                        null,
-                        binding.edtStreet.text.toString().trim(),
-                        binding.edtSuite.text.toString().trim(),
-                        binding.edtCity.text.toString().trim(),
-                        binding.edtState.text.toString().trim(),
-                        if (isPickUp) PICK_UP else DELIVERY,
-                        binding.edtZip.text.toString().trim(),
-                        "",
-                        "0.0",
-                        "0.0",
-                        "Shipping",
-                        "",
-                        binding.edtStreet.text.toString().trim(),
+                    data?.phones_attributes?.add(
+                        0, phone
                     )
-                    list.add(address)
-                }
 
+                    listAddress = arrayListOf()
+                    if (binding.edtStreet.text.toString().trim().isNotEmpty()) {
 
-                customer = TbCustomer(
-                    customerID,
-                    MethodUtils.getText(binding.edtFName),
-                    MethodUtils.getText(binding.edtLName),
-                    "",
-                    MethodUtils.getText(binding.edtEmail),
-                    selectedCustomer?.enroll_to_loyalty ?: false,
-                    false,
-                    selectedCustomer?.final_reward ?: 0,
-                    "",
-                    phonesList,
-                    list
-                )*/
-
-
-                    var listAddress: ArrayList<CreateCustomerRequestModel.Customer.Addresses> =
-                        arrayListOf()
-
-                    val phoneId: Int? = null
-                    val addCustomerData = CreateCustomerRequestModel().apply {
-                        data?.first_name = MethodUtils.getText(binding.edtFName)
-                        data?.last_name = MethodUtils.getText(binding.edtLName)
-                        data?.email = MethodUtils.getText(binding.edtEmail)
-                        data?.enroll_to_loyalty = selectedCustomer?.enroll_to_loyalty ?: false
-                        data?.final_reward = selectedCustomer?.final_reward ?: 0
-
-                        val phone = CreateCustomerRequestModel.Customer.Phone(
-                            id = if((selectedCustomer?.phones?.size ?: 0) > 0) {selectedCustomer?.phones?.get(0)?.id ?: phoneId} else {phoneId},
-                            phone_number = binding.edtPhoneNo.text.toString().trim().replace(
-                                ("[\\D]").toRegex(),
-                                ""
-                            )
-                        )
-
-                        data?.phones_attributes?.add(
-                            0, phone
-                        )
-
-                        listAddress = arrayListOf()
-                        if (binding.edtStreet.text.toString().trim().isNotEmpty()) {
-
-                            if (selectedCustomer != null) {
-                                // to update existing data in selected customer
-                                if ((selectedCustomer?.addresses?.size ?: 0) > 0) {
-                                    selectedCustomer?.addresses?.forEach { address ->
-                                        if (address.type_of_address == "Shipping") {
-                                            listAddress.add(
-                                                CreateCustomerRequestModel.Customer.Addresses(
-                                                    address.id,
-                                                    binding.edtStreet.text.toString().trim(),
-                                                    binding.edtSuite.text.toString().trim(),
-                                                    binding.edtCity.text.toString().trim(),
-                                                    binding.edtState.text.toString().trim(),
-                                                    address.country,
-                                                    binding.edtZip.text.toString().trim(),
-                                                    address.type_of_address,
-                                                    0.0,
-                                                    0.0,
-                                                    "false",
-                                                )
+                        if (selectedCustomer != null) {
+                            // to update existing data in selected customer
+                            if ((selectedCustomer?.addresses?.size ?: 0) > 0) {
+                                selectedCustomer?.addresses?.forEach { address ->
+                                    if (address.type_of_address == "Shipping") {
+                                        listAddress.add(
+                                            CreateCustomerRequestModel.Customer.Addresses(
+                                                address.id,
+                                                binding.edtStreet.text.toString().trim(),
+                                                binding.edtSuite.text.toString().trim(),
+                                                binding.edtCity.text.toString().trim(),
+                                                binding.edtState.text.toString().trim(),
+                                                address.country,
+                                                binding.edtZip.text.toString().trim(),
+                                                address.type_of_address,
+                                                0.0,
+                                                0.0,
+                                                "false",
                                             )
-                                        } else {
-                                            listAddress.add(
-                                                CreateCustomerRequestModel.Customer.Addresses(
-                                                    address.id,
-                                                    address.address1,
-                                                    address.address2,
-                                                    address.city,
-                                                    address.state,
-                                                    address.country,
-                                                    address.postcode,
-                                                    address.type_of_address,
-                                                    0.0,
-                                                    0.0,
-                                                    "false"
-                                                )
-                                            )
-                                        }
-                                    }
-                                } else {
-                                    listAddress.add(
-                                        CreateCustomerRequestModel.Customer.Addresses(
-                                            null,
-                                            binding.edtStreet.text.toString(),
-                                            binding.edtSuite.text.toString(),
-                                            binding.edtCity.text.toString(),
-                                            binding.edtState.text.toString(),
-                                            "United States",
-                                            binding.edtZip.text.toString(),
-                                            "Shipping",
-                                            0.0,
-                                            0.0,
-                                            "false"
                                         )
-                                    )
+                                    } else {
+                                        listAddress.add(
+                                            CreateCustomerRequestModel.Customer.Addresses(
+                                                address.id,
+                                                address.address1,
+                                                address.address2,
+                                                address.city,
+                                                address.state,
+                                                address.country,
+                                                address.postcode,
+                                                address.type_of_address,
+                                                0.0,
+                                                0.0,
+                                                "false"
+                                            )
+                                        )
+                                    }
                                 }
                             } else {
-                                // to add new data for new customer
                                 listAddress.add(
                                     CreateCustomerRequestModel.Customer.Addresses(
                                         null,
@@ -427,10 +414,28 @@ class PhoneOrderFragment : Fragment() {
                                     )
                                 )
                             }
+                        } else {
+                            // to add new data for new customer
+                            listAddress.add(
+                                CreateCustomerRequestModel.Customer.Addresses(
+                                    null,
+                                    binding.edtStreet.text.toString(),
+                                    binding.edtSuite.text.toString(),
+                                    binding.edtCity.text.toString(),
+                                    binding.edtState.text.toString(),
+                                    "United States",
+                                    binding.edtZip.text.toString(),
+                                    "Shipping",
+                                    0.0,
+                                    0.0,
+                                    "false"
+                                )
+                            )
                         }
-
-                        data?.addresses_attributes = listAddress
                     }
+
+                    data?.addresses_attributes = listAddress
+                }
 
                 if (customerID == null) {
                     viewModel.createCustomer(addCustomerData)
@@ -440,6 +445,18 @@ class PhoneOrderFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun resetAndMoveToDashboard() {
+        prefProvider!!.setValueInt(Constants.CAT_ID_SELECTED, 0)
+        prefProvider!!.setValue(Constants.REDIRECT_FROM, "")
+        prefProvider!!.setValue(Constants.ORDER_TYPE, "")
+        prefProvider!!.setValue(Constants.ORDER_TYPE_NAME, "")
+        prefProvider!!.setValueboolean(Constants.LOYALTY_ADDED, false)
+
+
+        findNavController().navigate(R.id.action_phoneOrderFragment_to_dashboardCategoryBoldPOS)
+
     }
 
     private fun redirectToMain(customer: TbCustomer) {
@@ -477,7 +494,7 @@ class PhoneOrderFragment : Fragment() {
 
 
         viewModel.dataCustomer.observe(viewLifecycleOwner) { event ->
-            event.getContentIfNotHandled()?.let {customer ->
+            event.getContentIfNotHandled()?.let { customer ->
                 redirectToMain(customer)
             }
         }
