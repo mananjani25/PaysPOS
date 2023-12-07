@@ -181,7 +181,6 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:layout_marginEnd="@dimen/_5sdp"
                 android:layout_toStartOf="@+id/imgSearch"
                 android:background="?attr/selectableItemBackground"
                 android:contentDescription="@string/search"
@@ -189,6 +188,16 @@
                 android:src="@drawable/ic_sync"
                 android:visibility="visible"
                 app:tint="@color/txtColor" />
+
+            <ProgressBar
+                android:id="@+id/syncProgressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="15.00dp"
+                android:layout_marginHorizontal="0.00dp"
+                android:background="?attr/selectableItemBackground"
+                android:visibility="gone"
+                />
 
             <TextView
                 android:id="@+id/txtTransaction"

@@ -19,6 +19,7 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.animation.AlphaAnimation
 import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.*
@@ -85,7 +86,9 @@ import com.android.pos.utils.callback.ItemClickListner
 import com.android.pos.utils.callback.ItemListner
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.gone
+import com.android.pos.utils.extensions.hide
 import com.android.pos.utils.extensions.runOnUiThread
+import com.android.pos.utils.extensions.show
 import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.printer.PrinterClass
 import com.android.pos.utils.scanner.helpers.ScannerAppEngine
@@ -227,6 +230,25 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         }
     }
 
+
+
+    private fun autoSyncObserver(){
+        val rotateAnimation = AnimationUtils.loadAnimation(requireContext(), R.anim.rotate_animation)
+        viewModel.autoSyncEnabled.observe(viewLifecycleOwner){
+            binding.layoutHeader.imgSync.visibility = if(it) {
+                View.VISIBLE
+            }else{
+                View.GONE
+            }
+
+            if(it){
+                binding.layoutHeader.syncProgressBar.visibility = View.GONE
+            }else {
+                binding.layoutHeader.syncProgressBar.visibility = View.VISIBLE
+            }
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -240,6 +262,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         //prefProvider.setValue(Constants.OPEN_ORDER_ITEMS, "")
 
         addFragmentReplaceObserver()
+        autoSyncObserver()
         /* if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
              viewModel.clearGiftCardCart()
          }*/ // putting method in onviewcreated due to UI glitch issue
@@ -1045,7 +1068,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             loadCategoryFragment(CategoryFragment(this, binding.layoutHeader.edtSearch))
         }
 
-        binding.layoutHeader.imgSync?.setOnClickListener {
+        binding.layoutHeader.imgSync.setOnClickListener {
+            viewModel.autoSyncEnabled.value = false
             prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
             viewModel.syncInventoryModule(false)
         }
