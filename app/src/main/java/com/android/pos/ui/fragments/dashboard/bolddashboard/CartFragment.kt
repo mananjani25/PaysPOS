@@ -75,7 +75,10 @@ import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.ui.fragments.payment.PaymentViewModel
-import com.android.pos.utils.*
+import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.LogUtil
+import com.android.pos.utils.MethodUtils
+import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.DineInOrderCallBack
 import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.callback.ItemClickListner
@@ -90,6 +93,7 @@ import com.android.pos.utils.extensions.isVisible
 import com.android.pos.utils.extensions.runOnUiThread
 import com.android.pos.utils.extensions.setOnSingleClickListener
 import com.android.pos.utils.extensions.visible
+import com.android.pos.utils.getCustomerDisplay
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -1170,16 +1174,20 @@ class CartFragment(
 
                         if (it.isEmpty()) {
                             // Flag is used to update cart if last item from the cart will be deleted
-                            if (this@CartFragment::prefProvider.isInitialized && prefProvider.getValueboolean(
-                                    IS_LAST_ITEM_DELETE,
-                                    false
-                                )
-                            ) {
-                                Log.d("02nov23", "updateCart: LAST ITEM DELETED TRUE")
-                                prefProvider.setValueboolean(
-                                    IS_LAST_ITEM_DELETE,
-                                    false
-                                ) // reset flag after updating cart
+                            try {
+                                if (this@CartFragment::prefProvider.isInitialized && prefProvider.getValueboolean(
+                                        IS_LAST_ITEM_DELETE,
+                                        false
+                                    )
+                                ) {
+                                    Log.d("02nov23", "updateCart: LAST ITEM DELETED TRUE")
+                                    prefProvider.setValueboolean(
+                                        IS_LAST_ITEM_DELETE,
+                                        false
+                                    ) // reset flag after updating cart
+                                }
+                            } catch (e: Exception) {
+                                e.printStackTrace()
                             }
                         } else {
                             val currentTimeMillis = System.currentTimeMillis()
@@ -1416,7 +1424,7 @@ class CartFragment(
                                 }
 
                                 runOnUiThread {
-                                    Log.e("FRAGMENT RESTARTED","Fragment car line 1419")
+                                    Log.e("FRAGMENT RESTARTED", "Fragment car line 1419")
 
 
                                     if (viewModel.cartFragmentRestarted) {
@@ -1450,7 +1458,7 @@ class CartFragment(
 //                                        }
                                     } else {
 
-                                        Log.e("FRAGMENT RESTARTED","CART FRAGMENT NOT RESTARTED")
+                                        Log.e("FRAGMENT RESTARTED", "CART FRAGMENT NOT RESTARTED")
                                         cartItemsAdapter.submitList(filterItems)
 
                                     }
@@ -1719,13 +1727,13 @@ class CartFragment(
                         binding.txtLoyaltyPoints.text =
                             "${viewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
 
-                            if (viewModel.redeemLoyaltyInfo.needToApplyLoyalty) {
-                                binding.txtLoyaltyBalance.text =
-                                    "${viewModel.redeemLoyaltyInfo.remainingLoyaltyPoints}"
-                            } else {
-                                binding.txtLoyaltyBalance.text =
-                                    "${viewModel.selectedCustomer?.final_reward}"
-                            }
+                        if (viewModel.redeemLoyaltyInfo.needToApplyLoyalty) {
+                            binding.txtLoyaltyBalance.text =
+                                "${viewModel.redeemLoyaltyInfo.remainingLoyaltyPoints}"
+                        } else {
+                            binding.txtLoyaltyBalance.text =
+                                "${viewModel.selectedCustomer?.final_reward}"
+                        }
                         /*binding.txtLoyaltyBalance.text =
                             "${viewModel.selectedCustomer?.final_reward}"*/
                         binding.checkloylaty.isChecked =
@@ -2661,8 +2669,8 @@ class CartFragment(
                             if (!prefProvider.getValueboolean(Constants.NO_NEED_TO_PRINT, false)) {
                                 //print
                                 Log.d(TAG, "checkUpdation calling submit -> printing ")
-                                if(!viewModelPayment.orderCreateCallSent)
-                                request?.let { it1 -> viewModelPayment.submit(it1) }
+                                if (!viewModelPayment.orderCreateCallSent)
+                                    request?.let { it1 -> viewModelPayment.submit(it1) }
                             } else {
                                 //no print
                                 Log.d(TAG, "checkUpdation not printing ")
