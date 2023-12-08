@@ -7,8 +7,62 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.android.pos.data.dao.*
-import com.android.pos.data.entities.*
+import com.android.pos.data.dao.BusinessDetailsDao
+import com.android.pos.data.dao.CancelOrderReasonsDao
+import com.android.pos.data.dao.CartDao
+import com.android.pos.data.dao.CashDiscountsDao
+import com.android.pos.data.dao.CategoryDao
+import com.android.pos.data.dao.CountryListDao
+import com.android.pos.data.dao.CustomerDao
+import com.android.pos.data.dao.CustomerSettingsDao
+import com.android.pos.data.dao.DBItemDao
+import com.android.pos.data.dao.DiscountDao
+import com.android.pos.data.dao.EODReportDao
+import com.android.pos.data.dao.EmployeeDao
+import com.android.pos.data.dao.ItemModifierSetsDao
+import com.android.pos.data.dao.KitchenSettingsDao
+import com.android.pos.data.dao.LoyaltyProgramsDao
+import com.android.pos.data.dao.ModifierSetDao
+import com.android.pos.data.dao.ModuleDao
+import com.android.pos.data.dao.NotesDao
+import com.android.pos.data.dao.OptionSetDao
+import com.android.pos.data.dao.OrderTypeDao
+import com.android.pos.data.dao.PAXDao
+import com.android.pos.data.dao.PrinterDao
+import com.android.pos.data.dao.PrinterQueueDao
+import com.android.pos.data.dao.ServiceChargeDao
+import com.android.pos.data.dao.SplitListDao
+import com.android.pos.data.dao.TaxDao
+import com.android.pos.data.dao.TeamRoleDao
+import com.android.pos.data.dao.TerminalsDao
+import com.android.pos.data.dao.TimeZonesDao
+import com.android.pos.data.dao.TipsDao
+import com.android.pos.data.dao.WastageReasonsDao
+import com.android.pos.data.dao.cardReaderDao
+import com.android.pos.data.entities.CartModel
+import com.android.pos.data.entities.CashDiscountModel
+import com.android.pos.data.entities.DineInCartModel
+import com.android.pos.data.entities.Employee
+import com.android.pos.data.entities.ItemModifierSets
+import com.android.pos.data.entities.LoyaltyProgramsModel
+import com.android.pos.data.entities.ModifierSet
+import com.android.pos.data.entities.ModulePermission
+import com.android.pos.data.entities.OptionSet
+import com.android.pos.data.entities.PAXData
+import com.android.pos.data.entities.TaxData
+import com.android.pos.data.entities.TbBusinessDetails
+import com.android.pos.data.entities.TbCardReader
+import com.android.pos.data.entities.TbCartItem
+import com.android.pos.data.entities.TbCategory
+import com.android.pos.data.entities.TbCountryList
+import com.android.pos.data.entities.TbCustomer
+import com.android.pos.data.entities.TbDiscount
+import com.android.pos.data.entities.TbItem
+import com.android.pos.data.entities.TbOrderType
+import com.android.pos.data.entities.TbServiceCharge
+import com.android.pos.data.entities.TbTimeZones
+import com.android.pos.data.entities.TeamRole
+import com.android.pos.data.entities.TypeConvertersQueueDineIn
 import com.android.pos.data.model.CharacterModel
 import com.android.pos.data.model.PrinterQueueModel
 import com.android.pos.data.model.ShiftRportConfiguration
@@ -277,9 +331,19 @@ abstract class AppDatabase : RoomDatabase() {
 
         }
 
-        private val MIGRATION_12_13: Migration = object : Migration(12, 13) {
+        private val MIGRATION_12_13: Migration = object : Migration(11, 12) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 try {
+
+                    database.execSQL("UPDATE TABLE TbItem SET COLUMN cost DOUBLE DEFAULT 0.0 NOT NULL")
+                    database.execSQL("ALTER TABLE TbItem ADD COLUMN `priceType` TEXT")
+                    database.execSQL("ALTER TABLE TbItem ADD COLUMN `kitchenName` TEXT")
+                    database.execSQL("ALTER TABLE TbItem ADD COLUMN `productCode` TEXT")
+                    database.execSQL("ALTER TABLE TbItem ADD COLUMN `modifierGroupIds` TEXT")
+                    database.execSQL("ALTER TABLE TbItem ADD COLUMN `option_set_ids` TEXT")
+                    database.execSQL("ALTER TABLE TbItem ADD COLUMN isTax boolean DEFAULT 0")
+                    database.execSQL("ALTER TABLE TbItem ADD COLUMN isDiscountDefault boolean DEFAULT 0")
+
                     database.execSQL(
                         "CREATE TABLE IF NOT EXISTS `TbCartItem` " +
                                 "(`cartItemId` INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -338,6 +402,13 @@ abstract class AppDatabase : RoomDatabase() {
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
+                try {
+                    database.execSQL("ALTER TABLE PrinterQueue ADD COLUMN deliveryType TEXT DEFAULT '' NOT NULL")
+                    database.execSQL("ALTER TABLE TbOrderType ADD COLUMN isDefault INTEGER DEFAULT 0 NOT NULL")
+
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
             }
         }
 
@@ -345,7 +416,7 @@ abstract class AppDatabase : RoomDatabase() {
             Room.databaseBuilder(appContext, AppDatabase::class.java, DATABASE_NAME)
                 .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7
                     , MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_12_13
-                )
+                ).fallbackToDestructiveMigration()
                 .build()
     }
 
