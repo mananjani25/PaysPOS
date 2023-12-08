@@ -129,7 +129,8 @@ class PosRepository @Inject constructor(
         appDatabase.cancelOrderReasonDao().addAllCancelOrderReasonsSuspend(cancelOrderReason)
     }
 
-    fun getKitchenPrinters() = performGetOperationDatabase { appDatabase.printerDao().kitchenPrintList }
+    fun getKitchenPrinters() =
+        performGetOperationDatabase { appDatabase.printerDao().kitchenPrintList }
 
     suspend fun getKitchenPrintersList() = appDatabase.printerDao().getKitchenPrinterList()
 
@@ -302,20 +303,19 @@ class PosRepository @Inject constructor(
                         originalImgUrl = category.originalImgUrl
                     }
                     categoryModelList.add(model)
-                    Log.d("TAG", "getAllCategoryList: response of API : "+Gson().toJson(model))
-                    if (category.name == Constants.GIFT_CARD){
+                    Log.d("TAG", "getAllCategoryList: response of API : " + Gson().toJson(model))
+                    if (category.name == Constants.GIFT_CARD) {
                         if (category.sort == 1) {
-                            prefProvider.setValueboolean(Constants.GIFT_CARD_AT_FIRST,true)
-                        }
-                        else {
-                            prefProvider.setValueboolean(Constants.GIFT_CARD_AT_FIRST,false)
+                            prefProvider.setValueboolean(Constants.GIFT_CARD_AT_FIRST, true)
+                        } else {
+                            prefProvider.setValueboolean(Constants.GIFT_CARD_AT_FIRST, false)
                         }
                     }
-                    if (category.name == Constants.GIFT_CARD){
-                        prefProvider.setValueInt(Constants.GIFT_CARD_SORT,category.sort)
+                    if (category.name == Constants.GIFT_CARD) {
+                        prefProvider.setValueInt(Constants.GIFT_CARD_SORT, category.sort)
                     }
-                    if (category.name == Constants.DEFAULT_CATEGORY){
-                        prefProvider.setValueInt(Constants.DEFAULT_CATEGORY_SORT,category.sort)
+                    if (category.name == Constants.DEFAULT_CATEGORY) {
+                        prefProvider.setValueInt(Constants.DEFAULT_CATEGORY_SORT, category.sort)
                     }
                 }
                 appDatabase.categoryDao().addAll(categoryModelList)
@@ -442,6 +442,10 @@ class PosRepository @Inject constructor(
 
     suspend fun deleteTeamRoleFromDb() {
         appDatabase.teamRoleDao().delete()
+    }
+
+    fun orderTypeByName(orderTypeName: String):Int {
+        return appDatabase.orderTypeDao().orderTypeByName(orderTypeName)
     }
 
     suspend fun deleteOrderTypeFromDb() {
@@ -699,7 +703,8 @@ class PosRepository @Inject constructor(
     suspend fun createCategory(category: TbCategory) =
         appDatabase.categoryDao().add(category)
 
-    suspend fun updateSorting(name: String,sort:Int) = appDatabase.categoryDao().updateSorting(name,sort)
+    suspend fun updateSorting(name: String, sort: Int) =
+        appDatabase.categoryDao().updateSorting(name, sort)
 
     suspend fun updateItemCategory(
         catId: Int,
@@ -739,8 +744,11 @@ class PosRepository @Inject constructor(
         return appDatabase.cartDao().allItemFlow(orderType, employee_Id)
     }
 
-    fun getAllCartItems(orderType: String, employee_Id: Int) = appDatabase.cartDao().getCartItems(orderType, employee_Id)
-    fun getDineInCartItems(guestIndexForDineIn:Int) = appDatabase.cartDao().getDineInCartItems(guestIndexForDineIn)
+    fun getAllCartItems(orderType: String, employee_Id: Int) =
+        appDatabase.cartDao().getCartItems(orderType, employee_Id)
+
+    fun getDineInCartItems(guestIndexForDineIn: Int) =
+        appDatabase.cartDao().getDineInCartItems(guestIndexForDineIn)
 
     fun getCartDineInList(employee_Id: Int): LiveData<List<DineInCartModel>> {
         return appDatabase.cartDao().allItemDineIn(DINE_IN, employee_Id)
@@ -763,17 +771,17 @@ class PosRepository @Inject constructor(
         return appDatabase.categoryDao().manualCategoryId
     }
 
-     fun addItemCart(cartModel: CartModel) {
+    fun addItemCart(cartModel: CartModel) {
         synchronized(this) {
-          //  appDatabase.beginTransaction()
+            //  appDatabase.beginTransaction()
             appDatabase.cartDao().addSuspended(cartModel)
-           // appDatabase.endTransaction()
+            // appDatabase.endTransaction()
         }
 
     }
 
-    fun deleteCartModel(cartModel: CartModel){
-        synchronized(this){
+    fun deleteCartModel(cartModel: CartModel) {
+        synchronized(this) {
             appDatabase.cartDao().deleteCartModel(cartModel)
         }
     }
@@ -787,6 +795,7 @@ class PosRepository @Inject constructor(
     fun observeCartModel(): LiveData<List<CartModel>> {
         return appDatabase.cartDao().observeCartModel()
     }
+
     fun getCartModels(): List<CartModel> {
         return appDatabase.cartDao().getCartModels()
     }
@@ -809,13 +818,13 @@ class PosRepository @Inject constructor(
         Log.d("InsertTime", "Time taken to insert: $timeTaken ms")
     }
 
-    suspend fun deleteItemFromCartItems(tbCartItem: TbCartItem){
+    suspend fun deleteItemFromCartItems(tbCartItem: TbCartItem) {
         appDatabase.cartDao().deleteItemFromCartItems(tbCartItem)
     }
 
-    suspend fun removeItemFromCart(itemId: Int , guestIndexForDineIn: Int) {
+    suspend fun removeItemFromCart(itemId: Int, guestIndexForDineIn: Int) {
         val startTime = System.currentTimeMillis()
-        appDatabase.cartDao().removeCartItem(itemId , guestIndexForDineIn )
+        appDatabase.cartDao().removeCartItem(itemId, guestIndexForDineIn)
         // Calculate the time taken
         val endTime = System.currentTimeMillis()
         val timeTaken = endTime - startTime
@@ -1358,8 +1367,7 @@ class PosRepository @Inject constructor(
     }
 
 
-
-    suspend fun updateModifierJSON(modId: Int?, modifiersJson:String) {
+    suspend fun updateModifierJSON(modId: Int?, modifiersJson: String) {
         appDatabase.modifierSetDao().updateModifierJSON(modId!!, modifiersJson)
     }
 }

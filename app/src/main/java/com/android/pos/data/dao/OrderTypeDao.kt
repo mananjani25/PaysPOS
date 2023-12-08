@@ -26,6 +26,10 @@ interface OrderTypeDao {
     @Query("SELECT * from TbOrderType where TbOrderType.id  = :id LIMIT 1")
     fun tipsById(id: Int?): TbOrderType
 
+
+    @Query("SELECT id from TbOrderType where TbOrderType.orderType  = :orderTypeName LIMIT 1")
+    fun orderTypeByName(orderTypeName: String?): Int
+
     @Query("DELETE FROM TbOrderType")
     suspend fun delete()
 
