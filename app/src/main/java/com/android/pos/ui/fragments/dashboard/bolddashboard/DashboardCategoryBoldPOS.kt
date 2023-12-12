@@ -84,11 +84,10 @@ import com.android.pos.utils.*
 import com.android.pos.utils.callback.DineInOrderCallBack
 import com.android.pos.utils.callback.ItemClickListner
 import com.android.pos.utils.callback.ItemListner
+import com.android.pos.utils.callback.SyncDataCallback
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.gone
-import com.android.pos.utils.extensions.hide
 import com.android.pos.utils.extensions.runOnUiThread
-import com.android.pos.utils.extensions.show
 import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.printer.PrinterClass
 import com.android.pos.utils.scanner.helpers.ScannerAppEngine
@@ -117,7 +116,8 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
-    ScannerAppEngine.IScannerAppEngineDevEventsDelegate, ICallback, DineInOrderCallBack {
+    ScannerAppEngine.IScannerAppEngineDevEventsDelegate, ICallback, DineInOrderCallBack,
+    SyncDataCallback {
     private var mBluetoothAdapter: BluetoothAdapter? = null
     private val mHandler = Handler(Looper.myLooper()!!)
     private lateinit var presentation: CustomDisplay
@@ -161,6 +161,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
     companion object {
         private lateinit var binding: FragmentDashboardCategoryBoldPosBinding
+        var syncDataCallback: SyncDataCallback? = null
         fun newInstance() = DashboardCategoryBoldPOS()
     }
 
@@ -254,6 +255,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        syncDataCallback = this
         Binding()// putting method in onviewcreated due to UI glitch issue
         checkCashDrawerObserver() // putting method in onviewcreated due to UI glitch issue
         SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
@@ -922,6 +924,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         if (prefProvider.getValueboolean(Constants.IS_SYNC_MARKUP, false)) {
             viewModel.markupInventory()
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        syncDataCallback = null
     }
 
     private fun loadCategoryFragment(fragment: Fragment) {
@@ -4422,6 +4429,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         } catch (e: IOException) {
             e.printStackTrace()
         }
+    }
+
+    override fun syncNotification() {
+        Log.e("GetSYNC","GETSYNCNOTIFICATION:  ")
+        viewModel.syncInventoryModule(false)
     }
 
 }
