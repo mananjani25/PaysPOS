@@ -23,6 +23,7 @@ import com.android.pos.data.entities.CashDiscountModel
 import com.android.pos.data.entities.TaxData
 import com.android.pos.data.entities.TbCartItem
 import com.android.pos.data.entities.TbCustomer
+import com.android.pos.data.entities.TbItem
 import com.android.pos.data.entities.TbOrderType
 import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.data.model.DineInModel
@@ -1158,6 +1159,7 @@ class CartFragment(
                             }
 
                         } else {
+                            viewModel.cartModel = taxBifurcationCalculationUpdate(it[0])
                             updateCartFooter(viewModel.currentCartItems)
                         }
                     }
@@ -1617,6 +1619,7 @@ class CartFragment(
                 binding.txtTotal,
                 requireContext()
             )
+
             viewModel.cartModel?.taxlistDynamic?.toCollection(arrayListOf())
                 ?.let { it1 -> setTaxBifurcationData(it1) }
 
@@ -2987,6 +2990,76 @@ class CartFragment(
         lifecycleScope.launch {
             viewModel.increaseOnGoingOrderCounter()
         }
+    }
+
+    private fun taxBifurcationCalculationUpdate(
+        cartModel: CartModel
+    ): CartModel {
+        cartModel.items?.forEach { item ->
+
+            item.taxes?.forEachIndexed { indextax, itemtype ->
+                if (itemtype.isActive && !itemtype.isDeleted) {
+
+                    if (itemtype.taxType != "Percentage") {
+                        var modifierPrice: Double = 0.0
+                        val price =
+                            (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
+
+                        item.modifiers.forEach {
+                            modifierPrice += (it.price * it.itemQuantity)
+                        }
+
+                        val totalPrice = price + modifierPrice
+                        itemtype.subTotalAmount = itemtype.subTotalAmount?.plus(totalPrice)
+                    }
+
+                    var ttaxPrice = getTotalTaxBirfurcationNew(item, itemtype)
+                    Log.e("checkTotalTax", "TaxPrice 2: ${ttaxPrice}")
+                    itemtype.totalTaxTypePrice = ttaxPrice
+                    cartModel.taxlistDynamic = listOf(itemtype)
+                }
+
+
+            }
+        }
+
+        return cartModel
+    }
+
+    private fun getTotalTaxBirfurcationNew(
+        item: TbItem, itemtype: TaxData
+    ): Double {
+        var totaltaxtemp: Double = 0.0
+        var modifierPrice = 0.0
+        val price = (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
+
+        item.modifiers.forEach {
+            modifierPrice += (it.price * it.itemQuantity)
+        }
+
+        val totalPrice = price + modifierPrice /*- (discountPrice * item.itemQuantity)*/
+
+
+        totaltaxtemp += if (itemtype.taxType == "Percentage") {
+            if (totalPrice < 0.0) {
+
+                String.format("%.2f", 0.00).toDouble()
+            } else {
+                val itemTaxPrice = (itemtype.rate * totalPrice) / 100
+                Log.e("itemTaxPrice", "" + itemTaxPrice)
+                itemTaxPrice
+            }
+
+        } else {
+            Log.d("yash", "taxCalculation: " + itemtype.taxType)
+            if (totalPrice <= 0.0) {
+                String.format("%.2f", 0.00).toDouble()
+            } else {
+                String.format("%.2f", itemtype.rate * item.itemQuantity).toDouble()
+            }
+
+        }
+        return totaltaxtemp
     }
 }
 
