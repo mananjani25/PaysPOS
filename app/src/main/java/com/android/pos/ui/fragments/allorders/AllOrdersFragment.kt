@@ -1,22 +1,17 @@
 package com.android.pos.ui.fragments.allorders
 
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.databinding.FragmentAllOrdersBinding
 import com.android.pos.ui.adapter.AllOrdersTabsAdapter
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
-import com.android.pos.utils.LogUtil
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
@@ -37,6 +32,17 @@ class AllOrdersFragment : Fragment() {
         binding = FragmentAllOrdersBinding.inflate(layoutInflater)
         configureToolbar()
         setupTabs()
+        val onBackPressedCallback: OnBackPressedCallback =
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    findNavController().navigate(R.id.action_allOrder_to_dashboarCategorynew)
+                }
+
+            }
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            onBackPressedCallback
+        )
         return binding.root
     }
 

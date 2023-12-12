@@ -160,6 +160,7 @@
         <action
             android:id="@+id/action_allOrder_to_dashboarCategorynew"
             app:destination="@id/dashboardCategoryBoldPOS"
+            app:popUpTo="@id/dashboardCategoryBoldPOS"
             app:enterAnim="@anim/nav_default_enter_anim" />
         <action
             android:id="@+id/action_allOrders_to_addOnlneTime"
