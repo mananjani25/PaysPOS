@@ -1717,6 +1717,7 @@
             app:destination="@id/addCustomerToGiftCard"
             app:enterAnim="@anim/nav_default_enter_anim" />
         <action
+            app:popUpTo="@id/allOrdersFragment"
             android:id="@+id/action_paymentBoldPosFragment_to_allOrdersFragment"
             app:destination="@id/allOrdersFragment" />
     </fragment>
