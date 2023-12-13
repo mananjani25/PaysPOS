@@ -158,7 +158,7 @@
                             <androidx.appcompat.widget.AppCompatEditText
                                 android:id="@+id/edit_loyaltyAmount"
                                 style="@style/CustomFontSemiBold"
-                                android:layout_width="wrap_content"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:background="@null"
                                 android:hint="0.0"
