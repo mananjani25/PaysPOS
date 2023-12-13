@@ -258,6 +258,7 @@ class MenuFragment : DialogFragment() {
         }
 
         binding.linearOrders.setOnClickListener {
+            viewModel.deleteCart()
             findNavController().navigate(R.id.action_menuFragment_to_allOrders)
         }
         binding.linearTeam.setOnClickListener {

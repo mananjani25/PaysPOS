@@ -203,6 +203,7 @@
                                             style="@style/CustomFontSemiBold"
                                             android:layout_width="match_parent"
                                             android:layout_height="wrap_content"
+                                            android:digits="@string/disable_emoji_string"
                                             android:background="@null"
                                             android:hint="0.0"
                                             android:imeOptions="actionDone"
