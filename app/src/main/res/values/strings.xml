@@ -1,14 +1,14 @@
 <resources>
-    <string name="app_name">SNACK POS</string>
+    <string name="app_name">PAYS POS</string>
     <string name="PREF_BARCODE_SCANNER">BarcodeScannerPrefs</string>
-    <string name="tv_pos">SNACK POS</string>
+    <string name="tv_pos">PAYS POS</string>
     <string name="tv_Info">Enterprise Cloud Point of Sale</string>
     <string name="tv_hint_email">Email Address <font color='#E90C0C'>*</font></string>
     <string name="tv_hint_email_">Email Address</string>
     <string name="tv_hint_password">Password <font color='#E90C0C'>*</font></string>
     <string name="tv_login">Login</string>
     <string name="tv_info_provider">If you forgot password, please <font color='#00A3E0'>contact</font> your sales provider</string>
-    <string name="tv_pos_2021">&#169; SNACK POS 2023</string>
+    <string name="tv_pos_2021">&#169; PAYS POS 2023</string>
     <string name="save">Save</string>
     <string name="category_name">Category Name <font color='#E90C0C'>*</font></string>
     <string name="assign_item_to_category">Assign Item to category</string>
@@ -799,7 +799,7 @@
     <string name="cash_log">Cash Log</string>
     <string name="customers">Customers</string>
     <string name="support">Support</string>
-    <string name="bold_pos">SNACK POS</string>
+    <string name="bold_pos">PAYS POS</string>
     <string name="blockchain_point_of_sale">Blockchain Point of Sale</string>
     <string name="qty">Qty</string>
     <string name="each">Each</string>

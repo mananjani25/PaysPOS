@@ -342,7 +342,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun itemsByCat(id: Int): kotlinx.coroutines.flow.Flow<PagingData<TbItem>> = Pager(
         config = PagingConfig(
-            pageSize = 40, enablePlaceholders = false, initialLoadSize = 40
+            pageSize = 12, enablePlaceholders = false, initialLoadSize = 12
         )
     ) {
         appDatabase.itemDao().getItemListByCategory(id)

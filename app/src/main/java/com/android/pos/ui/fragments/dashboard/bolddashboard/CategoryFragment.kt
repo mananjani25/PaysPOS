@@ -81,6 +81,8 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
         observeShowProgress()
         binding = FragmentCategoryBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
+
+        binding.rvItemList.itemAnimator=null
         return binding.root
     }
 
