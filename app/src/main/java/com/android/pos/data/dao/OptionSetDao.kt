@@ -54,4 +54,8 @@ interface OptionSetDao {
     @Query("DELETE FROM OptionSet")
     suspend fun delete()
 
+
+    @Query("UPDATE OptionSet SET options = :optionsJSON WHERE OptionSet.id = :optId")
+    suspend fun updateOptionsJSON(optId: Int, optionsJSON: String)
+
 }

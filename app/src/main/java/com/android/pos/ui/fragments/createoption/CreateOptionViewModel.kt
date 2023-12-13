@@ -6,7 +6,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.R
+import com.android.pos.data.entities.Modifier
 import com.android.pos.data.entities.Option
+import com.android.pos.data.entities.OptionSet
 import com.android.pos.data.model.requestModel.CreateOptionRequestModel
 import com.android.pos.data.model.responseModel.GetOptionSetResponse
 import com.android.pos.data.remote.Constants
@@ -15,7 +17,10 @@ import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
+import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
@@ -87,6 +92,8 @@ class CreateOptionViewModel @Inject constructor(
                                 resource.data?.let {
 
                                     _data.value = Event(it)
+                                    updateOptionsJSON(optionSetId!!,optionSets.optionsAttributes!!)
+
                                     posRepository.addOptionSetsDatabase(it.data)
                                 }
                             } else {
@@ -110,6 +117,13 @@ class CreateOptionViewModel @Inject constructor(
         }
 
     }
+
+    private fun updateOptionsJSON(modId: Int, modifierList: List<Option>) {
+        CoroutineScope(Dispatchers.IO).launch {
+            posRepository.updateOptionsJSON(modId, Gson().toJson(modifierList))
+        }
+    }
+
 
     fun setModifiers(modifierList: ArrayList<Option>) {
         this.list = modifierList

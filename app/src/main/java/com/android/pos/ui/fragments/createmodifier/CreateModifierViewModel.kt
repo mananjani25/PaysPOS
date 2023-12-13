@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.R
 import com.android.pos.data.entities.Modifier
+import com.android.pos.data.entities.Option
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.requestModel.CreateModifierRequest
 import com.android.pos.data.model.requestModel.CreateModifierRequestModel
