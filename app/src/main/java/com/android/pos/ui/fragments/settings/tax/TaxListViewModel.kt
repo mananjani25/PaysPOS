@@ -1,5 +1,6 @@
 package com.android.pos.ui.fragments.settings.tax
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -90,6 +91,7 @@ class TaxListViewModel @Inject constructor(
                     resource.data.let {
                         if (it?.status == 200) {
                             resource.data?.let { baseResponse ->
+                                Log.e("checkTax","checkTaxActive ${taxDataItem.isActive}")
                                 taxServiceChargeRepository.taxActiveDatabase(
                                     taxDataItem.id,
                                     taxDataItem.isActive
