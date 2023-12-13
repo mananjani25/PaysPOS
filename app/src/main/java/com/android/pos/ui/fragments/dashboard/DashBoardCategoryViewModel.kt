@@ -3643,6 +3643,9 @@ class DashBoardCategoryViewModel @Inject constructor(
             locationId = prefProvider.getValueInt(Constants.LOCATION_ID, -1)
             orderTypeId = prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)
             orderType = prefProvider.getValue(Constants.ORDER_TYPE, "").toString()
+            if (!orderType.equals(Constants.PHONE_ORDER, ignoreCase = true)) {
+                deliveryType = ""
+            }
             orderTypeName = prefProvider.getValue(Constants.ORDER_TYPE_NAME, "").toString()
             isMaual = isManualSales
             serviceCharge = serviceChargesList
@@ -3661,6 +3664,10 @@ class DashBoardCategoryViewModel @Inject constructor(
             locationId = prefProvider.getValueInt(Constants.LOCATION_ID, -1)
             orderTypeId = prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)
             orderType = prefProvider.getValue(Constants.ORDER_TYPE, "").toString()
+            if (!orderType.equals(Constants.PHONE_ORDER, ignoreCase = true)
+            ) {
+                deliveryType=""
+            }
             orderTypeName = prefProvider.getValue(Constants.ORDER_TYPE_NAME, "").toString()
             isMaual = isManualSales
             serviceCharge = serviceChargesList
