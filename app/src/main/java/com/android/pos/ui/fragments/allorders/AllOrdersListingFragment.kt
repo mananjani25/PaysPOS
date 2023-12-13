@@ -1168,9 +1168,9 @@ class AllOrdersListingFragment(
             Constants.PRINT_UNPAID -> {
                 isPrintCustomer = true
 //               This is only a fix from android side, the DeliveryType should come empty from server side when the order is OpenOrder
-                if (order.orderType.equals("OpenOrder", true)) {
-                    order.orderType = ""
-                }
+//                if (order.orderType.equals("OpenOrder", true)) {
+//                    order.orderType = ""
+//                }
                 getCustomerPrinters(order, status)
             }
 
@@ -2731,7 +2731,7 @@ class AllOrdersListingFragment(
 
 
             if (receiptModel?.orderType?.lowercase() == Constants.PHONE_ORDER.lowercase()
-                || receiptModel?.orderType?.lowercase() == Constants.OPEN_ORDER.lowercase()
+//                || receiptModel?.orderType?.lowercase() == Constants.OPEN_ORDER.lowercase()
             ) {
 
                 PrintSunmiUtils.deliveryType(receiptModel?.deliveryType?.trim())
@@ -5515,7 +5515,7 @@ class AllOrdersListingFragment(
 
 
             if (receiptModel?.orderType?.lowercase() == Constants.PHONE_ORDER.lowercase()
-                || receiptModel?.orderType?.lowercase() == Constants.OPEN_ORDER.lowercase()
+               // || receiptModel?.orderType?.lowercase() == Constants.OPEN_ORDER.lowercase()
             ) {
                 PrintSunmiUtils.headerText(receiptModel?.deliveryType)
 

@@ -327,12 +327,22 @@ class CartFragment(
                         R.id.action_dashboardCategoryBoldPOS_to_changeOrderTypeDialog,
                     )
                 }
-            } else {
-                binding.orderTypeDisplay.text =
-                    getString(R.string.current_order) + ": " + prefProvider.getValue(
-                        ORDER_TYPE_NAME,
-                        ""
-                    )
+                } else {
+                runOnUiThread(object : Runnable{
+                    override fun run() {
+                        binding.orderTypeDisplay.text =
+                            getString(R.string.current_order) + ": " + prefProvider.getValue(
+                                ORDER_TYPE_NAME,
+                                ""
+                            )
+
+                    }
+                })
+//                binding.orderTypeDisplay.text =
+//                    getString(R.string.current_order) + ": " + prefProvider.getValue(
+//                        ORDER_TYPE_NAME,
+//                        ""
+//                    )
             }
         }
     }
@@ -2923,7 +2933,17 @@ class CartFragment(
 
         Log.e(TAG, "checkOrderType  ${model?.orderType}")
 
-        prefProvider.setValue(DELIVERY_TYPE, PICK_UP)
+      //  prefProvider.setValue(DELIVERY_TYPE, PICK_UP)
+        try{
+            if (model!!.orderType.equals(Constants.PHONE_ORDER, ignoreCase = true)){
+                prefProvider.setValue(DELIVERY_TYPE, "")
+            }else{
+                prefProvider.setValue(DELIVERY_TYPE, PICK_UP)
+            }
+        }catch (e:Exception)
+        {
+            prefProvider.setValue(DELIVERY_TYPE, "")
+        }
 
         prefProvider.setValue(Constants.REDIRECT_FROM, "")
 
