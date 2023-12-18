@@ -878,6 +878,8 @@ class CartFragment(
                 if (binding.relativeLoylatyPoints.isVisible()) {
                     binding.liinearInfoLayout.layoutParams.height =
                         resources.getDimension(R.dimen._70sdp).toInt()
+
+
                 } else {
                     binding.liinearInfoLayout.layoutParams.height =
                         resources.getDimension(R.dimen._60sdp).toInt()

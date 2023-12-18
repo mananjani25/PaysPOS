@@ -4625,7 +4625,9 @@ class DashBoardCategoryViewModel @Inject constructor(
         Log.e("ItemModSize","CheckModSize: ${item.modifiers.size}")
         item.modifiers.forEach {
             Log.e("ItemMod", "itemQuantity:  ${it.itemQuantity} andMODQU  ${it.modifier_quantity}")
-            modifierPrice += (it.price * it.modifier_quantity)
+            var modQty = it.modifier_quantity * item.itemQuantity
+            Log.e("ItemModQty","modQty:  ${modQty}")
+            modifierPrice += (it.price * modQty)
         }
 
         val totalPrice = price + modifierPrice /*- (discountPrice * item.itemQuantity)*/
@@ -4650,6 +4652,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             }
 
         }
+        Log.e(TAG,"checkTotalRet ${totaltaxtemp}")
         return totaltaxtemp
     }
 
@@ -4726,6 +4729,10 @@ class DashBoardCategoryViewModel @Inject constructor(
                         }
                         if (type == ADD || type == UPDATE) {
                             if (found <= cartModel.taxlistDynamic?.size!! - 1) {
+                                Log.e("CheckPassing","checkSubT: ${cartModel.taxlistDynamic?.get(found)?.totalTaxTypePrice}")
+                                Log.e("CheckPassing","checkTaxBifur:  ${getTotalTaxBirfurcation(
+                                    item, itemtype, type
+                                )}")
                                 cartModel.taxlistDynamic?.get(found)?.totalTaxTypePrice =
                                     cartModel.taxlistDynamic!![found].totalTaxTypePrice.plus(
                                         getTotalTaxBirfurcation(
@@ -4782,7 +4789,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                         item.modifiers.forEach {
                             it.modifier_quantity = it.modifier_quantity * item.itemQuantity
-                            modifierPrice += (it.price * it.itemQuantity)
+                            modifierPrice += (it.price * it.modifier_quantity)
                         }
 
                         val totalPrice = price + modifierPrice
@@ -4875,6 +4882,10 @@ class DashBoardCategoryViewModel @Inject constructor(
                         }
                         if (type == ADD || type == UPDATE) {
                             if (found <= cartModel.taxlistDynamic?.size!! - 1) {
+                                Log.e("CheckPassing","method: ${getTotalTaxBirfurcationNew(
+                                    item, itemtype, type
+                                )}")
+                                Log.e("CheckPassing","amount: ${cartModel.taxlistDynamic?.get(found)?.totalTaxTypePrice}")
                                 cartModel.taxlistDynamic?.get(found)?.totalTaxTypePrice =
                                     cartModel.taxlistDynamic!![found].totalTaxTypePrice.plus(
                                         getTotalTaxBirfurcationNew(
@@ -4960,6 +4971,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             if (tax.isActive && !tax.isDeleted) {
 
 
+                Log.e("TodayCheck","itemQuan ${item.itemQuantity}  quantity: ${item.quantity}")
                 var modifierPrice = 0.0
                 val price =
                     (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
