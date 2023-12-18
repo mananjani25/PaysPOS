@@ -379,6 +379,11 @@ class DashBoardCategoryViewModel @Inject constructor(
         return posRepository.getAllCartItems(orderType, employee_Id)
     }
 
+
+    suspend fun orderTypeByName(orderTypeName: String): Int {
+        return posRepository.orderTypeByName(orderTypeName)
+    }
+
     fun getDineInCartItems(guestIndexForDineIn: Int): List<TbCartItem> {
         return posRepository.getDineInCartItems(guestIndexForDineIn)
     }

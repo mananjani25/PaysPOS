@@ -16,6 +16,7 @@ import com.android.pos.R
 import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.TbCartItem
 import com.android.pos.data.entities.TbCustomer
+import com.android.pos.data.entities.TbOrderType
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentAddCustomerToGiftCardBinding
 import com.android.pos.di.PrefProvider
@@ -28,6 +29,10 @@ import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.callback.PaginationScrollListener
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -160,7 +165,12 @@ class AddCustomerToGiftCardFragment : Fragment(), ItemCallback {
             Constants.RECEIPT_CUSTOMER_NAME,
             customer.first_name + " " + customer.last_name
         )
-
+        var orderTypeIdFromDb: Int = 0
+        synchronized(this) {
+            CoroutineScope(Dispatchers.IO).launch {
+                orderTypeIdFromDb = dashboardViewModel.orderTypeByName(Constants.TAKEOUT)
+            }
+        }
         customer.id?.let { prefProvider.setValueInt(Constants.CUSTOMER_ID, it) }
 
         prefProvider.saveCustomerData(customer)
@@ -190,7 +200,7 @@ class AddCustomerToGiftCardFragment : Fragment(), ItemCallback {
             prefProvider.getValue(Constants.GIFT_CARD_PURCHASE_AMOUNT, "0.0").toDouble()
         tbItem.price = totalPrice
         tbItem.employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1)
-        tbItem.orderTypeId = 0
+        tbItem.orderTypeId = orderTypeIdFromDb
         tbItem.orderType = Constants.GIFT_CARD
         tbItem.orderTypeName = Constants.GIFT_CARD
 
@@ -198,9 +208,10 @@ class AddCustomerToGiftCardFragment : Fragment(), ItemCallback {
             employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1)
             terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
             isOpenOrder = false
-            orderTypeId = 0
+            orderTypeId = orderTypeIdFromDb
             orderType = Constants.GIFT_CARD
             orderTypeName = Constants.GIFT_CARD
+            locationId = prefProvider.getLocationId()
         }
 
         dashboardViewModel.addCart(cm)
@@ -210,7 +221,7 @@ class AddCustomerToGiftCardFragment : Fragment(), ItemCallback {
         bundle.putBoolean("update", true)
         bundle.putDouble("totalPrice", totalPrice)
         bundle.putDouble("finalprice", totalPrice)
-        bundle.putDouble("cashDiscountSurcharge",0.0)
+        bundle.putDouble("cashDiscountSurcharge", 0.0)
         bundle.putDouble("subTotalPrice", totalPrice)
         bundle.putDouble("totalTax", 0.0)
         bundle.putDouble("totalDiscount", 0.0)
@@ -277,17 +288,20 @@ class AddCustomerToGiftCardFragment : Fragment(), ItemCallback {
         selectedPosition = pos
         val customer = adapter.getItem(selectedPosition)
 
-        if(customer.email.isNullOrEmpty() && customer.phones.isEmpty()){
+        if (customer.email.isNullOrEmpty() && customer.phones.isEmpty()) {
             AlertUtils.showCustomAlertWithListenerWithOKCancelUpdated(
                 requireContext(),
-                getString(R.string.lbl_please_add_phone_or_email),"Edit",
+                getString(R.string.lbl_please_add_phone_or_email), "Edit",
             )
             { _, _ ->
                 prefProvider.setValue(Constants.ORDER_TYPE, Constants.GIFT_CARD)
                 prefProvider.setValue(Constants.ORDER_TYPE_NAME, Constants.GIFT_CARD_NAME)
                 prefProvider.setValueboolean(Constants.IS_ADD_VALUE_IN_GIFT_CARD, false)
                 val bundle: Bundle = bundleOf("isEdit" to true, "dataModel" to customer)
-                findNavController().navigate(R.id.action_addCustomerToGiftCard_to_addEditCustomer, bundle)
+                findNavController().navigate(
+                    R.id.action_addCustomerToGiftCard_to_addEditCustomer,
+                    bundle
+                )
             }
         } else {
             moveToCheckout()
