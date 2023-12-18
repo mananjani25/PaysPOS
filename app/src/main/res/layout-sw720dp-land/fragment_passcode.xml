@@ -89,11 +89,10 @@
 
 
                     <androidx.appcompat.widget.AppCompatImageView
-                        android:layout_width="@dimen/_120sdp"
-                        android:layout_height="wrap_content"
+                        android:layout_width="@dimen/_50sdp"
+                        android:layout_height="@dimen/_50sdp"
                         android:maxHeight="@dimen/_50sdp"
-                        android:layout_marginBottom="@dimen/_3sdp"
-                        android:src="@drawable/snacklogo_new" />
+                        android:src="@mipmap/pays_icon" />
 
 
                     <TextView
