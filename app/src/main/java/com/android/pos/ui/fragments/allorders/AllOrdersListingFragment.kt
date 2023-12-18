@@ -89,6 +89,9 @@ import com.sunmi.externalprinterlibrary.api.ConnectCallback
 import com.sunmi.externalprinterlibrary.api.SunmiPrinter
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -341,12 +344,15 @@ class AllOrdersListingFragment(
             "Pending", "InProgress" -> {
                 "Unpaid"
             }
+
             "Completed" -> {
                 "Paid"
             }
+
             "Rejected" -> {
                 "Cancelled"
             }
+
             else -> {
                 ""
             }
@@ -1015,7 +1021,7 @@ class AllOrdersListingFragment(
 
                 if (findNavController().currentDestination?.id == R.id.allOrdersFragment) {
 
-                   // dashboardViewModel.fromAllOrderFragmentUpdate = true
+                    // dashboardViewModel.fromAllOrderFragmentUpdate = true
 
                     findNavController().navigate(
                         R.id.action_allOrder_to_dashboardCategoryBoldPOS, bundle
@@ -1168,9 +1174,9 @@ class AllOrdersListingFragment(
             Constants.PRINT_UNPAID -> {
                 isPrintCustomer = true
 //               This is only a fix from android side, the DeliveryType should come empty from server side when the order is OpenOrder
-                if (order.orderType.equals("OpenOrder", true)) {
-                    order.orderType = ""
-                }
+//                if (order.orderType.equals("OpenOrder", true)) {
+//                    order.orderType = ""
+//                }
                 getCustomerPrinters(order, status)
             }
 
@@ -2731,7 +2737,7 @@ class AllOrdersListingFragment(
 
 
             if (receiptModel?.orderType?.lowercase() == Constants.PHONE_ORDER.lowercase()
-                || receiptModel?.orderType?.lowercase() == Constants.OPEN_ORDER.lowercase()
+//                || receiptModel?.orderType?.lowercase() == Constants.OPEN_ORDER.lowercase()
             ) {
 
                 PrintSunmiUtils.deliveryType(receiptModel?.deliveryType?.trim())
@@ -3711,7 +3717,9 @@ class AllOrdersListingFragment(
                 Status.SUCCESS -> {
                     ProgressUtils.dismissProgressDialog()
 
+
                     if (isPrint) {
+
                         isPrint = false
                         it.data?.forEach {
                             if (it.status && checkItemsforPrinterOnlineOrder(
@@ -3779,7 +3787,11 @@ class AllOrdersListingFragment(
                         override fun onConnect() {
                             println("onConnect")
 
-                            generateKitchenReceiptSunmi(data, type, orderData)
+                            Log.d("tracking printers", "In IF")
+                            CoroutineScope(Dispatchers.Main).launch {
+
+                                initKitchenPrinter(data, type, orderData)
+                            }
                         }
 
                         override fun onDisconnect() {
@@ -3788,6 +3800,7 @@ class AllOrdersListingFragment(
 
                     })
             } else {
+                Log.d("tracking printers", "In Else")
                 generateKitchenReceiptSunmi(data, type, orderData)
             }
 
@@ -5491,13 +5504,14 @@ class AllOrdersListingFragment(
                 if (customerSettingModel.showVenueAddress) prefProvider.getValue(
                     Constants.BUSINESS_ADDRESS,
                     ""
-                ) else "",prefProvider.getValue(
-                    Constants.BUSINESS_PHONE_NO,
-                    "")
-               /* if (customerSettingModel.showVenuePhone) prefProvider.getValue(
+                ) else "", prefProvider.getValue(
                     Constants.BUSINESS_PHONE_NO,
                     ""
-                ) else ""*/
+                )
+                /* if (customerSettingModel.showVenuePhone) prefProvider.getValue(
+                     Constants.BUSINESS_PHONE_NO,
+                     ""
+                 ) else ""*/
             )
             if (customerSettingModel.showWebsiteAddress) {
                 PrintSunmiUtils.venueWebsiteInner(
@@ -5515,7 +5529,7 @@ class AllOrdersListingFragment(
 
 
             if (receiptModel?.orderType?.lowercase() == Constants.PHONE_ORDER.lowercase()
-                || receiptModel?.orderType?.lowercase() == Constants.OPEN_ORDER.lowercase()
+               // || receiptModel?.orderType?.lowercase() == Constants.OPEN_ORDER.lowercase()
             ) {
                 PrintSunmiUtils.headerText(receiptModel?.deliveryType)
 

@@ -323,6 +323,13 @@ class PaymentBoldPosFragment : Fragment() {
 
     private fun onBackPress(){
         Log.d(TAG, "onViewCreated: " + prefProvider.getValueboolean(SPLIT_ENABLE, false))
+
+        viewModel.setTipAmount(0.0)
+
+        prefProvider.setValueboolean(Constants.TIP_ADDED, false)
+        prefProvider.setValue(Constants.TIP_ADDED_AMOUNT, "0")
+        prefProvider.setValueInt(Constants.TIP_ADDED_ID, 0)
+
         if (prefProvider.getValueboolean(Constants.SPLIT_ENABLE, false)) {
             AlertUtils.showCustomAlert(requireContext(), "Please complete all payment.")
         } else if (prefProvider.getValueboolean(IS_PAX_PAYMENT_FAILED, false)) {

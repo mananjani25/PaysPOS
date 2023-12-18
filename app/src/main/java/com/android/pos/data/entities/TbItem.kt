@@ -67,7 +67,7 @@ class TbItem : Parcelable {
     var reorder: Boolean = false
     var manualSaleId: String = UUID.randomUUID().toString()
     var isDeleted: Boolean = false
-        var headerPositionDinein = 0
+    var headerPositionDinein = 0
     var itemOriginalModifiersList: List<Modifier>? = arrayListOf()
 //    @SerializedName("price_without_markup")
 //    var price_without_markup = 0.0

@@ -15,6 +15,7 @@ import com.android.pos.R
 import com.android.pos.data.entities.TaxData
 import com.android.pos.databinding.FragmentTaxesBinding
 import com.android.pos.ui.adapter.TaxListAdapter
+import com.android.pos.ui.fragments.dashboard.bolddashboard.DashboardCategoryBoldPOS
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.ItemCallback
@@ -115,6 +116,7 @@ class TaxesList : Fragment(), ItemCallback {
     private fun notifyAdapter() {
         viewModel.notifydata.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
+                DashboardCategoryBoldPOS.syncDataCallback?.syncNotification()
                 taxListadapter.notifyDataSetChanged()
             }
         }

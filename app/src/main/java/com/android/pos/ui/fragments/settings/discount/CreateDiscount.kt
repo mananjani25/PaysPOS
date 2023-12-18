@@ -59,7 +59,15 @@ class CreateDiscount : Fragment() {
             discountData = arguments?.getParcelable("discountObject")!!
 
             viewModel.setDiscountData(discountData)
-            binding.edtDiscount?.setText(String.format("%.2f", discountData.percentage))
+
+            val discountText = String.format("%.2f", discountData.percentage)
+            val discount =
+                if (discountText.toString().startsWith("0"))
+                    discountText.substring(1, discountText.length)
+                else
+                    discountText
+
+            binding.edtDiscount?.setText(discount)
 
             if (discountData.discountType == getString(R.string.disc_percentage)) {
                 binding.swtDiscountType.isChecked = true
@@ -80,7 +88,7 @@ class CreateDiscount : Fragment() {
 
         setupSnackbar()
         observeShowProgress()
-        addTextChangeListner()
+        //addTextChangeListner()
         navigate()
 
         binding.edtDiscount.filters = arrayOf(DecimalDigitsCountFilter(2));
@@ -91,30 +99,40 @@ class CreateDiscount : Fragment() {
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-//                try {
-//                    Log.e("Text Listener", "Text Changed in onCreateView()")
-//                    var amount = s.toString()
-//                    val inputValue = amount.toDouble()
-//                    if (viewModel.discountTypeViewModel == getString(R.string.disc_percentage)) {
-//                        if (inputValue != null && inputValue in 0.0..0.99) {
-//
-//                            if (s?.length!! > 1 && s.startsWith("0"))
-//                                binding.edtDiscount.setText("0.")
-//                        } else {
-//                            if (amount.toInt() > 100) {
-//                                binding.edtDiscount!!.setText("100")
-//                                binding.edtDiscount.setSelection(binding.edtDiscount.length())
-//                            }
-//                        }
-//                    }
-//
-//                } catch (e: Exception) {
-//                    e.printStackTrace()
-//                }
+
             }
 
             override fun afterTextChanged(s: Editable?) {
+                try {
+                    val temp_rate = s.toString()
 
+                    if (temp_rate.isNotEmpty()) {
+
+                        val inputValue = s.toString().toDoubleOrNull()
+
+                        if (inputValue != null && inputValue in 0.0..0.99) {
+                            if (s?.length!! == 1 && s.startsWith("0")) {
+                                binding.edtDiscount.setText(".")
+                                binding.edtDiscount.setSelection(binding.edtDiscount.length())
+                            }
+                        } else
+                            if (binding.swtDiscountType.isChecked)
+                                if (temp_rate.toFloat() > 100) {
+                                    AlertUtils.showCustomAlertWithListenerWithOK(
+                                        requireContext(),
+                                        "Please enter percentage less than or equal to 100"
+                                    ) { _, _ ->
+                                        binding.edtDiscount.setText("")
+                                    }
+                                }
+                    }
+                    Log.e("Text", "No error")
+                } catch (e: Exception) {
+                    Log.e("Text Exception", e.printStackTrace().toString())
+                }
+
+
+                Log.e("Text Changed", s.toString())
             }
 
         })
@@ -128,51 +146,6 @@ class CreateDiscount : Fragment() {
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
 
         return binding.root
-    }
-
-    private fun addTextChangeListner() {
-        binding.edtDiscount.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-
-            }
-
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                try {
-
-                    Log.e("Text Listener", "Text Changed in addTextChangeListener() - $p0")
-
-                    if (binding.edtDiscount.text?.toString()?.isNotEmpty() == true) {
-
-                        val inputValue = p0.toString().toDoubleOrNull()
-                        if (inputValue != null && inputValue in 0.0..0.99) {
-
-                            if (p0?.length!! == 1 && p0.startsWith("0")) {
-                                binding.edtDiscount.setText(".")
-                                binding.edtDiscount.setSelection(binding.edtDiscount.length())
-                            }
-
-
-                        }else{
-                            if (viewModel.discountTypeViewModel.equals(
-                                    "Percentage",
-                                    true
-                                ) && binding.edtDiscount.text.toString().toDouble() > 100.00
-                            ) {
-
-                                binding.edtDiscount.setText("100")
-                                binding.edtDiscount.setSelection(binding.edtDiscount.length())
-                            }
-                        }
-                    }
-                } catch (_: Exception) {
-                }
-            }
-
-            override fun afterTextChanged(p0: Editable?) {
-
-            }
-
-        })
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -191,7 +164,7 @@ class CreateDiscount : Fragment() {
             var percentage = binding.edtDiscount.text.toString()
             var percentage_double = 0.0
 
-            if (percentage.equals(".")) {
+            if (percentage.equals(".") || percentage.isEmpty()) {
                 AlertUtils.showCustomAlertWithListenerWithOK(
                     requireContext(),
                     "Please enter valid Discount Rate"
@@ -200,9 +173,16 @@ class CreateDiscount : Fragment() {
                 }
             } else {
                 if (percentage.isNotEmpty()) {
-                    percentage_double = MethodUtils.roundOffAmountDouble(percentage.toDouble())
+                    try {
+                        percentage_double = MethodUtils.roundOffAmountDouble(percentage.toDouble())
+                        viewModel.submit(percentage_double)
+                    } catch (e: Exception) {
+                        AlertUtils.showCustomAlertWithListenerWithOK(
+                            requireContext(), "Please Enter Valid Value") {_,_->
+                            binding.edtDiscount.setText("")
+                        }
+                    }
                 }
-                viewModel.submit(percentage_double)
             }
         }
     }

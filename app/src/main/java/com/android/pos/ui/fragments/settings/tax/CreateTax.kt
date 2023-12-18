@@ -51,6 +51,8 @@ class CreateTax : Fragment() {
     private lateinit var taxData: TaxData
     private lateinit var taxDataTmp: TaxData
 
+    private val TAG = "CreateTax"
+
     @set:Inject
     internal var prefProvider: PrefProvider? = null
 
@@ -321,6 +323,8 @@ class CreateTax : Fragment() {
                     AlertUtils.showCustomAlertWithListenerWithOK(
                         it, createTaxResponse.message
                     ) { _, _ ->
+
+                        Log.e(TAG,"checkDeviceToken:  ${prefProvider?.getValue("device_token", "")}")
                         if (prefProvider?.getValue("device_token", "")?.trim()?.isEmpty() == true) {
                             val intent = Intent()
                             intent.action = Constants.SYNC_SETTING_NOTIFICATION

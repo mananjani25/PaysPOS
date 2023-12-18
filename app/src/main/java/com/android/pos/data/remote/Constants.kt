@@ -21,7 +21,6 @@ object Constants {
     const val END_DATE = "end_date"
 
 
-
     val IS_ORDER_LAST_PAYMENT = "is_order_last_payment"
     const val ARG_PARAM1 = "param1"
     const val ARG_PARAM2 = "param2"
@@ -212,8 +211,8 @@ object Constants {
     const val DELETE_QUEUE_ORDER_PHASE3 = "printer_queues/destroy_v2?order_id="
     const val UPDATE_PRITNER_QUEUE_TRACK = "update_printer_queue_track"
 
-    const val PRINTER_QUEUE_CONNECTION_URL_SNACKPOS = "wss://snackhq.com/cable"
-//    const val PRINTER_QUEUE_CONNECTION_URL_SNACKPOS = "wss://hugepos.com/cable"
+    // const val PRINTER_QUEUE_CONNECTION_URL_SNACKPOS = "wss://snackhq.com/cable"
+    const val PRINTER_QUEUE_CONNECTION_URL_SNACKPOS = "wss://hugepos.com/cable"
 
     const val INCREASE_ONGOING_ORDER_COUNTER = "locations/increase_ongoing_order_counter"
     const val DECREASE_ONGOING_ORDER_COUNTER = "locations/decrease_ongoing_order_counter"
@@ -371,7 +370,7 @@ object Constants {
 
 
     const val UPDATE_TIP = "orders/{id}/update_tip"
-    const val UPDATE_TIP_WITH_SIGNATURE="payments/update_tip_and_signature"
+    const val UPDATE_TIP_WITH_SIGNATURE = "payments/update_tip_and_signature"
     const val FIRE_ITEM_TO_KITCHEN = "orders/{id}/update_fire_status_of_items"
     const val PAY_BY_GUEST = "payments/pay_by_guest"
 
@@ -416,7 +415,8 @@ object Constants {
     const val TIME_DETAILS = "time_details"
 
     const val CUSTOMER_SIGN_REQUIRED_ON_CD = "customer_sign_required_on_cd"
-    const val SHOW_CASH_CREDIT_PRICE_ON_CUSTOMER_DISPLAY = "show_cash_credit_price_on_customer_display"
+    const val SHOW_CASH_CREDIT_PRICE_ON_CUSTOMER_DISPLAY =
+        "show_cash_credit_price_on_customer_display"
 
     const val ALL_ORDER_TAB_POS = 0
     const val OPEN_ORDER_TAB_POS = 1
@@ -786,7 +786,7 @@ object Constants {
     const val OPEN_ORDER_DIRECT_PAY = "open_order_direct_pay"
     const val DEFAULT_ORDER = "Take Out"
 
-    const val IS_FROM_ALL_ORDER="IS_FROM_ALL_ORDER"
+    const val IS_FROM_ALL_ORDER = "IS_FROM_ALL_ORDER"
 
     const val GIFT_CARD_TYPE = "gift_card_type"
     const val GIFT_CARD_PURCHASE_AMOUNT = "gift_card_purchase_amount"
@@ -806,12 +806,12 @@ object Constants {
     const val SURCHARGE_TEXT = "Surcharge"
     const val IS_PAX_PAYMENT_FAILED = "isPaxPaymentFailed"
 
-    fun createCloudPrinter(ipAddress:String,portNo:Int):CloudPrinter{
-        return CloudPrinterBuilder.buildPrinter(ipAddress,portNo)
+    fun createCloudPrinter(ipAddress: String, portNo: Int): CloudPrinter {
+        return CloudPrinterBuilder.buildPrinter(ipAddress, portNo)
     }
 
-    fun createCloudPrinterWithName(name:String,ipAddress:String,portNo:Int):CloudPrinter{
-        return CloudPrinterBuilder.buildPrinter(name,ipAddress,portNo)
+    fun createCloudPrinterWithName(name: String, ipAddress: String, portNo: Int): CloudPrinter {
+        return CloudPrinterBuilder.buildPrinter(name, ipAddress, portNo)
     }
 
 }

@@ -22,7 +22,9 @@ import com.android.pos.data.model.responseModel.GetKitchenReceiptSettingsRespons
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.CHECK_QUEUE_CANCEL
+import com.android.pos.data.remote.Constants.SYNC_NOTIFICATION
 import com.android.pos.ui.activities.MainActivity
+import com.android.pos.ui.fragments.dashboard.bolddashboard.DashboardCategoryBoldPOS
 import com.android.pos.utils.addDoubleDotLineForSunmiQueue
 import com.android.pos.utils.printGuestByItemForSunmiQueue
 import com.epson.epos2.ConnectionListener
@@ -117,12 +119,20 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
 
         // Here are have one more channel implemented which is used for sync data. so it is help to update all settings and printers data
 
+
+            if (isInternetAvailable()) {
+                connectActionCableSYNCSETTINGS()
+            } else {
+                sendNotification("Please check your Network Connectivity.")
+            }
+
             locationId = inputData.getInt("location_id", 0)
             baseUrl = inputData.getString("base_url").toString()
             isPrinterQueueEnable = inputData.getBoolean(Constants.IS_PRINTER_QUEUE_ENABLE, false)
             isCancelWork = inputData.getBoolean("is_cancel_work", false)
 
             Log.d("isPrinterQueueEnable", "isPrinterQueueEnable = $isPrinterQueueEnable")
+
 
             Log.e(
                 TAG, "CheckQueueCancel  ${
@@ -152,11 +162,6 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                workerDisconnect()
             }
 
-            if (isInternetAvailable()) {
-                connectActionCableSYNCSETTINGS()
-            } else {
-                sendNotification("Please check your Network Connectivity.")
-            }
 
 
         } catch (e: Exception) {
@@ -932,11 +937,11 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
 
 
                         cloudPrinter.printText(
-                            "  " + if (mod.modifierQuantity == 1) {
+                            /*"  " + if (mod.modifierQuantity == 1) {
                                 "   "
                             } else {
                                 "" + mod.modifierQuantity + "x "
-                            } + mod.name
+                            }*/ "   "+mod.modifierQuantity.toString() + "x " + mod.name
                         )
 
 
@@ -1185,6 +1190,10 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
 
     fun connectActionCableSYNCSETTINGS() {
         // 1. Setup
+        var requestURL =
+            baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3
+
+        Log.e("PrinterRefreshWorker", "requestURL = $requestURL")
 
         val uri = URI(Constants.PRINTER_QUEUE_CONNECTION_URL_SNACKPOS)
         consumer2 = ActionCable.createConsumer(uri)
@@ -1264,6 +1273,19 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                     }
 
                 } else {
+
+                    if (it.asJsonObject.has("message")) {
+
+                        sendNotification(it.asJsonObject.get("message").asString)
+                    }
+                }
+            }
+            if(it.asJsonObject.has(SYNC_NOTIFICATION)){
+                val sync_data = it.asJsonObject.get(Constants.SYNC_NOTIFICATION)
+
+                if (sync_data.toString() == "true") {
+                    DashboardCategoryBoldPOS.syncDataCallback?.syncNotification()
+                }else {
 
                     if (it.asJsonObject.has("message")) {
 

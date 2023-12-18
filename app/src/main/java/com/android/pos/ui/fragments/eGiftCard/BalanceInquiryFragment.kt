@@ -93,7 +93,7 @@ class BalanceInquiryFragment : Fragment() {
             if (inputGiftCardNumber.isNotEmpty() && inputGiftCardNumber.length == 8) {
                 giftCardViewModel.giftCardCheckBalance(GiftCardCheckBalanceRequest(name = inputGiftCardNumber))
             } else {
-                AlertUtils.showCustomAlert(requireContext(), "Please enter 8-digit gift card number")
+                AlertUtils.showCustomAlert(requireContext(), "Please enter 8-digit gift card number.")
                 return@setOnClickListener
             }
 

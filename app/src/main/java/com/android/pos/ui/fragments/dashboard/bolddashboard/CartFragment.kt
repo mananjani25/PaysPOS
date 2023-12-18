@@ -23,6 +23,7 @@ import com.android.pos.data.entities.CashDiscountModel
 import com.android.pos.data.entities.TaxData
 import com.android.pos.data.entities.TbCartItem
 import com.android.pos.data.entities.TbCustomer
+import com.android.pos.data.entities.TbItem
 import com.android.pos.data.entities.TbOrderType
 import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.data.model.DineInModel
@@ -75,7 +76,10 @@ import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.android.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.android.pos.ui.fragments.payment.PaymentViewModel
-import com.android.pos.utils.*
+import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.LogUtil
+import com.android.pos.utils.MethodUtils
+import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.DineInOrderCallBack
 import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.callback.ItemClickListner
@@ -90,6 +94,7 @@ import com.android.pos.utils.extensions.isVisible
 import com.android.pos.utils.extensions.runOnUiThread
 import com.android.pos.utils.extensions.setOnSingleClickListener
 import com.android.pos.utils.extensions.visible
+import com.android.pos.utils.getCustomerDisplay
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -323,11 +328,21 @@ class CartFragment(
                     )
                 }
             } else {
-                binding.orderTypeDisplay.text =
-                    getString(R.string.current_order) + ": " + prefProvider.getValue(
-                        ORDER_TYPE_NAME,
-                        ""
-                    )
+                runOnUiThread(object : Runnable {
+                    override fun run() {
+                        binding.orderTypeDisplay.text =
+                            getString(R.string.current_order) + ": " + prefProvider.getValue(
+                                ORDER_TYPE_NAME,
+                                ""
+                            )
+
+                    }
+                })
+//                binding.orderTypeDisplay.text =
+//                    getString(R.string.current_order) + ": " + prefProvider.getValue(
+//                        ORDER_TYPE_NAME,
+//                        ""
+//                    )
             }
         }
     }
@@ -863,6 +878,8 @@ class CartFragment(
                 if (binding.relativeLoylatyPoints.isVisible()) {
                     binding.liinearInfoLayout.layoutParams.height =
                         resources.getDimension(R.dimen._70sdp).toInt()
+
+
                 } else {
                     binding.liinearInfoLayout.layoutParams.height =
                         resources.getDimension(R.dimen._60sdp).toInt()
@@ -946,9 +963,10 @@ class CartFragment(
                     binding.rvCartDineIn.gone()
                     binding.rvCartList.visible()
 
+
+
                     it.toCollection(arrayListOf())
                         .let { it1 -> cartItemsAdapter.submitList(it1) }
-
 
                     if (viewModel.cartModel?.taxlistDynamic?.isNotEmpty() == true) {
                         Log.d(TAG, "addObserver: " + viewModel.cartModel?.taxlistDynamic?.size)
@@ -1153,6 +1171,7 @@ class CartFragment(
                             }
 
                         } else {
+                            viewModel.cartModel = taxBifurcationCalculationUpdate(it[0])
                             updateCartFooter(viewModel.currentCartItems)
                         }
                     }
@@ -1169,16 +1188,20 @@ class CartFragment(
 
                         if (it.isEmpty()) {
                             // Flag is used to update cart if last item from the cart will be deleted
-                            if (this@CartFragment::prefProvider.isInitialized && prefProvider.getValueboolean(
-                                    IS_LAST_ITEM_DELETE,
-                                    false
-                                )
-                            ) {
-                                Log.d("02nov23", "updateCart: LAST ITEM DELETED TRUE")
-                                prefProvider.setValueboolean(
-                                    IS_LAST_ITEM_DELETE,
-                                    false
-                                ) // reset flag after updating cart
+                            try {
+                                if (this@CartFragment::prefProvider.isInitialized && prefProvider.getValueboolean(
+                                        IS_LAST_ITEM_DELETE,
+                                        false
+                                    )
+                                ) {
+                                    Log.d("02nov23", "updateCart: LAST ITEM DELETED TRUE")
+                                    prefProvider.setValueboolean(
+                                        IS_LAST_ITEM_DELETE,
+                                        false
+                                    ) // reset flag after updating cart
+                                }
+                            } catch (e: Exception) {
+                                e.printStackTrace()
                             }
                         } else {
                             val currentTimeMillis = System.currentTimeMillis()
@@ -1415,7 +1438,47 @@ class CartFragment(
                                 }
 
                                 runOnUiThread {
-                                    cartItemsAdapter.submitList(filterItems)
+                                    Log.e("FRAGMENT RESTARTED", "Fragment car line 1419")
+
+
+                                    if (viewModel.cartFragmentRestarted) {
+
+                                        viewModel.fragmentNeedToBeUpdated.value = true
+                                        viewModel.cartFragmentRestarted = false
+
+//                                        if (filterItems.contains(viewModel.lastSavedlocalDataItem)) {
+//                                            Log.e("FRAGMENT RESTARTED","CART Already Having data there")
+//                                        } else {
+//                                            val newList = filterItems
+//                                            newList.add(viewModel.lastSavedlocalDataItem)
+//                                            viewModel.lastSavedlocalDataItem = TbCartItem()
+//
+//
+//                                            filterItems.forEach {
+//                                                Log.e("FRAGMENT RESTARTED","FILTER ${it.id} ${it.name} ${it.itemQuantity}")
+//                                            }
+//
+//                                            newList.forEach {
+//                                                Log.e("FRAGMENT RESTARTED","NEW LIST ${it.id} ${it.name} ${it.itemQuantity}")
+//                                            }
+//
+//
+//                                            filterItems.forEach {
+//                                                Log.e("FRAGMENT RESTARTED","UPDATED FILTER ${it.id} ${it.name} ${it.itemQuantity}")
+//                                            }
+//
+//                                            cartItemsAdapter.submitList(newList)
+//                                            viewModel.cartFragmentRestarted = false
+//                                        }
+                                    } else {
+
+                                        Log.e("FRAGMENT RESTARTED", "CART FRAGMENT NOT RESTARTED")
+                                        cartItemsAdapter.submitList(filterItems)
+
+                                    }
+
+
+
                                     binding.rvCartList.postDelayed({
                                         if (cartItemsAdapter.currentList.isNotEmpty()) {
                                             binding.rvCartList.smoothScrollToPosition(
@@ -1568,6 +1631,7 @@ class CartFragment(
                 binding.txtTotal,
                 requireContext()
             )
+
             viewModel.cartModel?.taxlistDynamic?.toCollection(arrayListOf())
                 ?.let { it1 -> setTaxBifurcationData(it1) }
 
@@ -1678,13 +1742,13 @@ class CartFragment(
                         binding.txtLoyaltyPoints.text =
                             "${viewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
 
-                            if (viewModel.redeemLoyaltyInfo.needToApplyLoyalty) {
-                                binding.txtLoyaltyBalance.text =
-                                    "${viewModel.redeemLoyaltyInfo.remainingLoyaltyPoints}"
-                            } else {
-                                binding.txtLoyaltyBalance.text =
-                                    "${viewModel.selectedCustomer?.final_reward}"
-                            }
+                        if (viewModel.redeemLoyaltyInfo.needToApplyLoyalty) {
+                            binding.txtLoyaltyBalance.text =
+                                "${viewModel.redeemLoyaltyInfo.remainingLoyaltyPoints}"
+                        } else {
+                            binding.txtLoyaltyBalance.text =
+                                "${viewModel.selectedCustomer?.final_reward}"
+                        }
                         /*binding.txtLoyaltyBalance.text =
                             "${viewModel.selectedCustomer?.final_reward}"*/
                         binding.checkloylaty.isChecked =
@@ -2620,8 +2684,8 @@ class CartFragment(
                             if (!prefProvider.getValueboolean(Constants.NO_NEED_TO_PRINT, false)) {
                                 //print
                                 Log.d(TAG, "checkUpdation calling submit -> printing ")
-                                if(!viewModelPayment.orderCreateCallSent)
-                                request?.let { it1 -> viewModelPayment.submit(it1) }
+                                if (!viewModelPayment.orderCreateCallSent)
+                                    request?.let { it1 -> viewModelPayment.submit(it1) }
                             } else {
                                 //no print
                                 Log.d(TAG, "checkUpdation not printing ")
@@ -2871,7 +2935,16 @@ class CartFragment(
 
         Log.e(TAG, "checkOrderType  ${model?.orderType}")
 
-        prefProvider.setValue(DELIVERY_TYPE, PICK_UP)
+        //  prefProvider.setValue(DELIVERY_TYPE, PICK_UP)
+        try {
+            if (model!!.orderType.equals(Constants.PHONE_ORDER, ignoreCase = true)) {
+                prefProvider.setValue(DELIVERY_TYPE, "")
+            } else {
+                prefProvider.setValue(DELIVERY_TYPE, PICK_UP)
+            }
+        } catch (e: Exception) {
+            prefProvider.setValue(DELIVERY_TYPE, "")
+        }
 
         prefProvider.setValue(Constants.REDIRECT_FROM, "")
 
@@ -2938,6 +3011,76 @@ class CartFragment(
         lifecycleScope.launch {
             viewModel.increaseOnGoingOrderCounter()
         }
+    }
+
+    private fun taxBifurcationCalculationUpdate(
+        cartModel: CartModel
+    ): CartModel {
+        cartModel.items?.forEach { item ->
+
+            item.taxes?.forEachIndexed { indextax, itemtype ->
+                if (itemtype.isActive && !itemtype.isDeleted) {
+
+                    if (itemtype.taxType != "Percentage") {
+                        var modifierPrice: Double = 0.0
+                        val price =
+                            (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
+
+                        item.modifiers.forEach {
+                            modifierPrice += (it.price * it.itemQuantity)
+                        }
+
+                        val totalPrice = price + modifierPrice
+                        itemtype.subTotalAmount = itemtype.subTotalAmount?.plus(totalPrice)
+                    }
+
+                    var ttaxPrice = getTotalTaxBirfurcationNew(item, itemtype)
+                    Log.e("checkTotalTax", "TaxPrice 2: ${ttaxPrice}")
+                    itemtype.totalTaxTypePrice = ttaxPrice
+                    cartModel.taxlistDynamic = listOf(itemtype)
+                }
+
+
+            }
+        }
+
+        return cartModel
+    }
+
+    private fun getTotalTaxBirfurcationNew(
+        item: TbItem, itemtype: TaxData
+    ): Double {
+        var totaltaxtemp: Double = 0.0
+        var modifierPrice = 0.0
+        val price = (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
+
+        item.modifiers.forEach {
+            modifierPrice += (it.price * it.itemQuantity)
+        }
+
+        val totalPrice = price + modifierPrice /*- (discountPrice * item.itemQuantity)*/
+
+
+        totaltaxtemp += if (itemtype.taxType == "Percentage") {
+            if (totalPrice < 0.0) {
+
+                String.format("%.2f", 0.00).toDouble()
+            } else {
+                val itemTaxPrice = (itemtype.rate * totalPrice) / 100
+                Log.e("itemTaxPrice", "" + itemTaxPrice)
+                itemTaxPrice
+            }
+
+        } else {
+            Log.d("yash", "taxCalculation: " + itemtype.taxType)
+            if (totalPrice <= 0.0) {
+                String.format("%.2f", 0.00).toDouble()
+            } else {
+                String.format("%.2f", itemtype.rate * item.itemQuantity).toDouble()
+            }
+
+        }
+        return totaltaxtemp
     }
 }
 
