@@ -34,7 +34,7 @@
                     android:layout_width="@dimen/_100sdp"
                     android:layout_height="@dimen/_50sdp"
                     android:layout_marginTop="@dimen/_10sdp"
-                    android:src="@mipmap/pays_icon" />
+                    android:src="@mipmap/ic_launcher" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontMediumStyle"
