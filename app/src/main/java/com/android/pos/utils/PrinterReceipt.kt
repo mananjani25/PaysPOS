@@ -4458,11 +4458,11 @@ fun addOrderItemsInner(
                 val modifierObj = obj.orderItemModifiers.get(j)
 
                 val modifier = padLineCustomerItem(
-                    if (modifierObj.modifierQuantity == 1) {
+                    /*if (modifierObj.modifierQuantity == 1) {
                         "     "
                     } else {
                         "   " + modifierObj.modifierQuantity.toString() + "x"
-                    } + "  " + getItemNameToShow(modifierObj.name),
+                    }*/"   " + modifierObj.modifierQuantity.toString() + "x" + "  " + getItemNameToShow(modifierObj.name),
                     getModifierItemPriceToShow(modifierObj.price, modifierObj.quantity),
                     if (font == Constants.LARGE) {
                         22
@@ -4667,13 +4667,17 @@ fun addOrderItemsTransactionInner(
             for (j in 0 until obj.orderItemModifiers.size) {
                 val modifierObj = obj.orderItemModifiers.get(j)
 
-                var part1 = if (modifierObj.modifier_quantity == 1) {
+             /*   var part1 = if (modifierObj.modifier_quantity == 1) {
                     "       " + getItemNameToShow(modifierObj.name)
                 } else {
                     "   " + modifierObj.modifier_quantity.toString() + "x" + "  " + getItemNameToShow(
                         modifierObj.name
                     )
-                }
+                }*/
+
+                var part1 = "   " + modifierObj.modifier_quantity.toString() + "x" + "  " + getItemNameToShow(
+                    modifierObj.name
+                )
 
 
                 val modifier = padLineCustomerItem(
