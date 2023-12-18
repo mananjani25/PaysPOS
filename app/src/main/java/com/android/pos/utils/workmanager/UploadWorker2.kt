@@ -937,11 +937,11 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
 
 
                         cloudPrinter.printText(
-                            "  " + if (mod.modifierQuantity == 1) {
+                            /*"  " + if (mod.modifierQuantity == 1) {
                                 "   "
                             } else {
                                 "" + mod.modifierQuantity + "x "
-                            } + mod.name
+                            }*/ "   "+mod.modifierQuantity.toString() + "x " + mod.name
                         )
 
 

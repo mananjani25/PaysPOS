@@ -327,8 +327,8 @@ class CartFragment(
                         R.id.action_dashboardCategoryBoldPOS_to_changeOrderTypeDialog,
                     )
                 }
-                } else {
-                runOnUiThread(object : Runnable{
+            } else {
+                runOnUiThread(object : Runnable {
                     override fun run() {
                         binding.orderTypeDisplay.text =
                             getString(R.string.current_order) + ": " + prefProvider.getValue(
@@ -2933,15 +2933,14 @@ class CartFragment(
 
         Log.e(TAG, "checkOrderType  ${model?.orderType}")
 
-      //  prefProvider.setValue(DELIVERY_TYPE, PICK_UP)
-        try{
-            if (model!!.orderType.equals(Constants.PHONE_ORDER, ignoreCase = true)){
+        //  prefProvider.setValue(DELIVERY_TYPE, PICK_UP)
+        try {
+            if (model!!.orderType.equals(Constants.PHONE_ORDER, ignoreCase = true)) {
                 prefProvider.setValue(DELIVERY_TYPE, "")
-            }else{
+            } else {
                 prefProvider.setValue(DELIVERY_TYPE, PICK_UP)
             }
-        }catch (e:Exception)
-        {
+        } catch (e: Exception) {
             prefProvider.setValue(DELIVERY_TYPE, "")
         }
 

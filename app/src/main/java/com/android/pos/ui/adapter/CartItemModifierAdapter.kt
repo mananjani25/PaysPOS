@@ -25,7 +25,7 @@ class CartItemModifierAdapter :
                     binding.txtName.text = "${item.modifier_quantity}x   ${item.name}"
                 }
             }else{
-                binding.txtName.text = "       ${item.name}"
+                binding.txtName.text = "${item.modifier_quantity}x   ${item.name}"
             }
         }
 
