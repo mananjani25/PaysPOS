@@ -220,15 +220,15 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             }
         }
 
-        viewModel.doesItemContainsModifiers.observe(viewLifecycleOwner){
-            if(it){
-                viewModel.doesItemContainsModifiers.value = false
-                childFragmentManager.beginTransaction()
-                    .replace(binding.frameLayoutCart.id, createCartForLoadCartFragment())
-                    .addToBackStack(null)
-                    .commit()
-            }
-        }
+//        viewModel.doesItemContainsModifiers.observe(viewLifecycleOwner){
+//            if(it){
+//                viewModel.doesItemContainsModifiers.value = false
+//                childFragmentManager.beginTransaction()
+//                    .replace(binding.frameLayoutCart.id, createCartForLoadCartFragment())
+//                    .addToBackStack(null)
+//                    .commit()
+//            }
+    //      }
     }
 
 
