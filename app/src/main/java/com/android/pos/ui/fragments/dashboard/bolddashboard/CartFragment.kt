@@ -1217,7 +1217,7 @@ class CartFragment(
                             if (currentTimeMillis >= previousClickTimeMillis + DELAY_MILLIS) {
                                 previousClickTimeMillis = currentTimeMillis
                             } else {
-
+                                return@launch
                             }
                         }
 
