@@ -214,6 +214,7 @@ class CartFragment(
             //presentation.show()
         }
 
+
         checkOrderType()
 
         if (arguments?.getBundle("updateBundle") != null) {
