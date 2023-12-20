@@ -92,7 +92,7 @@ class CreateOptionViewModel @Inject constructor(
                                 resource.data?.let {
 
                                     _data.value = Event(it)
-                                    updateOptionsJSON(optionSetId!!,optionSets.optionsAttributes!!)
+                                    optionSetId?.let { it1 -> updateOptionsJSON(it1,optionSets.optionsAttributes!!) }
 
                                     posRepository.addOptionSetsDatabase(it.data)
                                 }

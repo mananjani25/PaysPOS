@@ -104,7 +104,7 @@ class CreateModifierViewModel @Inject constructor(
 
                                     isUpdated = true
                                     _data.value = Event(it.message)
-                                    updateModifiersJSON(modifierSetId!!,modifierSets.modifierSet.modifiersAttributes)
+                                    modifierSetId?.let { it1 -> updateModifiersJSON(it1,modifierSets.modifierSet.modifiersAttributes) }
                                     updateModifierDataInItem(it.data.modifierSet)
                                     posRepository.addModifierSets(it.data.modifierSet)
                                 }
