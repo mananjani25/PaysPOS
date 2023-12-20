@@ -6,7 +6,26 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.db.IDataManager
-import com.android.pos.data.entities.*
+import com.android.pos.data.entities.CartModel
+import com.android.pos.data.entities.CashDiscountModel
+import com.android.pos.data.entities.DineInCartModel
+import com.android.pos.data.entities.Employee
+import com.android.pos.data.entities.ItemModifierSets
+import com.android.pos.data.entities.LoyaltyProgramsModel
+import com.android.pos.data.entities.ModifierSet
+import com.android.pos.data.entities.OptionSet
+import com.android.pos.data.entities.PAXData
+import com.android.pos.data.entities.TaxData
+import com.android.pos.data.entities.TbBusinessDetails
+import com.android.pos.data.entities.TbCardReader
+import com.android.pos.data.entities.TbCartItem
+import com.android.pos.data.entities.TbCategory
+import com.android.pos.data.entities.TbCountryList
+import com.android.pos.data.entities.TbCustomer
+import com.android.pos.data.entities.TbItem
+import com.android.pos.data.entities.TbOrderType
+import com.android.pos.data.entities.TbTimeZones
+import com.android.pos.data.entities.TeamRole
 import com.android.pos.data.model.PrinterQueueModel
 import com.android.pos.data.model.ShiftRportConfiguration
 import com.android.pos.data.model.SplitDetailListModel
@@ -54,10 +73,8 @@ import com.android.pos.utils.performGetOperation
 import com.android.pos.utils.performGetOperationDatabase
 import com.android.pos.utils.performGetOperationNew
 import com.android.pos.utils.statusUtils.Resource
-import kotlinx.coroutines.Dispatchers
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
@@ -781,6 +798,9 @@ class PosRepository @Inject constructor(
     fun updateCartModel(cartModel: CartModel) {
         synchronized(this) {
             appDatabase.cartDao().updateCartModel(cartModel)
+            cartModel.taxlistDynamic?.toCollection(arrayListOf())
+                ?.let {Log.e("POSRepo","check Inside Update")
+                    appDatabase.cartDao().updateTaxBif(it) }
         }
     }
 

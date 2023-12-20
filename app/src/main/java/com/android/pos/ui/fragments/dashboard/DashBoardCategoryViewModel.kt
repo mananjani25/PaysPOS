@@ -5125,7 +5125,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                 val price = (item.price * item.itemQuantity) - (item.discountPrice)
 
                 item.modifiers.forEach {
-                    modifierPrice += (it.price * it.itemQuantity)
+                    var modQty = item.itemQuantity * it.modifier_quantity
+                    modifierPrice += (it.price * modQty)
                 }
 
                 val totalPrice = price + modifierPrice /*- (discountPrice * item.itemQuantity)*/

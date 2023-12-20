@@ -871,6 +871,7 @@ class CartFragment(
             }
             binding.imgDropdown.setImageResource(R.drawable.ic_arrow_drop_down)
             binding.imgDropdown.visible()
+            Log.e(TAG,"checkListBeforeUpdate  ${Gson().toJson(taxlistData)}")
             taxBirfurcationAdapter.setList(taxlistData)
             binding.relativeDynamicTax.gone()
         } else {
@@ -1172,6 +1173,7 @@ class CartFragment(
 
                         } else {
                             viewModel.cartModel = taxBifurcationCalculationUpdate(it[0])
+                            Log.e(TAG,"CheckCartFragTax 12: ${Gson().toJson(it[0].taxlistDynamic)}")
                             updateCartFooter(viewModel.currentCartItems)
                         }
                     }
@@ -1632,6 +1634,7 @@ class CartFragment(
                 requireContext()
             )
 
+            Log.e(TAG,"CheckCartFragTax ${Gson().toJson(viewModel.cartModel?.taxlistDynamic)}")
             viewModel.cartModel?.taxlistDynamic?.toCollection(arrayListOf())
                 ?.let { it1 -> setTaxBifurcationData(it1) }
 
@@ -3028,7 +3031,8 @@ class CartFragment(
                             (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
 
                         item.modifiers.forEach {
-                            modifierPrice += (it.price * it.itemQuantity)
+                            var modQty = it.modifier_quantity * item.itemQuantity
+                            modifierPrice += (it.price * modQty)
                         }
 
                         val totalPrice = price + modifierPrice
@@ -3056,7 +3060,8 @@ class CartFragment(
         val price = (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
 
         item.modifiers.forEach {
-            modifierPrice += (it.price * it.itemQuantity)
+            var modQty = it.modifier_quantity * item.itemQuantity
+            modifierPrice += (it.price * modQty)
         }
 
         val totalPrice = price + modifierPrice /*- (discountPrice * item.itemQuantity)*/

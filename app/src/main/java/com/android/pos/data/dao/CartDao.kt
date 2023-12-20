@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.DineInCartModel
+import com.android.pos.data.entities.TaxData
 import com.android.pos.data.entities.TbCartItem
 import kotlinx.coroutines.flow.Flow
 
@@ -51,6 +52,9 @@ interface CartDao {
 
      @Update
      fun updateCartModel(cartModel: CartModel)
+
+     @Query("UPDATE CartModel SET taxlistDynamic = :list")
+     fun updateTaxBif(list:ArrayList<TaxData>)
 
      @Query("select * from CartModel LIMIT 1")
      suspend fun getCurrentCartModel(): List<CartModel>
