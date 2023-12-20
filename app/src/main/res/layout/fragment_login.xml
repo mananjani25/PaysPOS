@@ -30,7 +30,7 @@
                 android:layout_width="@dimen/_80sdp"
                 android:layout_marginTop="@dimen/_10sdp"
                 android:layout_height="@dimen/_25sdp"
-                android:src="@drawable/snacklogo_new" />
+                android:src="@mipmap/ic_launcher" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontMediumStyle"

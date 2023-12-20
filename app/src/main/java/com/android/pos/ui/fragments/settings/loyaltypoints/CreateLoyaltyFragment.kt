@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.InputFilter
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -120,13 +121,16 @@ class CreateLoyaltyFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         onCLick()
-        binding.editLoyaltyAmount?.addTextChangedListener(object : TextWatcher {
+        binding.editLoyaltyAmount.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
 
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 try {
+
+                    Log.e("Tracking Service Charge","Changed "+s.toString())
+
                     var amount = s.toString()
                     if(viewModel.loyaltyPointType == getString(R.string.percentage_symbol)){
                         if (amount.toInt() > 100) {

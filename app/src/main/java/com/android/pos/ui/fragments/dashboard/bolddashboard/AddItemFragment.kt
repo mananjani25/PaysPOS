@@ -241,253 +241,258 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
             }
         }
 
-        binding.txtDone.setOnClickListener {
-            if (binding.edttxtQuantity.text.isNullOrEmpty()) {
-                binding.edttxtQuantity.setText("1")
-            }
-            MethodUtils.hideSoftKeyboard(requireActivity())
-            item.itemQuantity = qty
-            prefProvider.setValueInt(Constants.CAT_ID_SELECTED, item.categoryId)
-            var isPriceNull = true
+        binding.txtDone.setOnClickListener(object:View.OnClickListener{
+            override fun onClick(p0: View?) {
 
-            if (prefProvider.getValue(ORDER_TYPE, "") == Constants.OPEN_ORDER) {
+                if (binding.edttxtQuantity.text.isNullOrEmpty()) {
+                    binding.edttxtQuantity.setText("1")
+                }
+                MethodUtils.hideSoftKeyboard(requireActivity())
+                item.itemQuantity = qty
+                prefProvider.setValueInt(Constants.CAT_ID_SELECTED, item.categoryId)
+                var isPriceNull = true
 
-                if (cartModelsList.isEmpty()) {
-                    val model = CartModel()
-                    model.employeeID =
-                        prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
-                    model.terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
-                    model.orderType = prefProvider.getValue(ORDER_TYPE, "")
-                    model.locationId = prefProvider.getValueInt(Constants.LOCATION_ID, 1)
-                    model.serviceCharge = serviceChargesList
-                    viewModel.ordertypelist.forEach {
-                        if (it.orderType == Constants.OPEN_ORDER) {
-                            model.orderTypeId = it.id
+                if (prefProvider.getValue(ORDER_TYPE, "") == Constants.OPEN_ORDER) {
+
+                    if (cartModelsList.isEmpty()) {
+                        val model = CartModel()
+                        model.employeeID =
+                            prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+                        model.terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
+                        model.orderType = prefProvider.getValue(ORDER_TYPE, "")
+                        model.locationId = prefProvider.getValueInt(Constants.LOCATION_ID, 1)
+                        model.serviceCharge = serviceChargesList
+                        viewModel.ordertypelist.forEach {
+                            if (it.orderType == Constants.OPEN_ORDER) {
+                                model.orderTypeId = it.id
+                            }
                         }
+                        cartModelsList.add(model)
                     }
-                    cartModelsList.add(model)
+
+                } else {
+                    viewModel.createCart(cartModelsList)
                 }
 
-            } else {
-                viewModel.createCart(cartModelsList)
-            }
 
 
+                if (item.modifier_set_ids.isNotEmpty() && itemModifiersAdapter != null) {
+                    if (minMaxValidationCheck(itemModifiersAdapter)) {
 
-            if (item.modifier_set_ids.isNotEmpty() && itemModifiersAdapter != null) {
-                if (minMaxValidationCheck(itemModifiersAdapter)) {
-
-                    val modifiers = itemModifiersAdapter?.getSelectedModifiers() ?: arrayListOf()
-                    if (isUpdateItem && originalModifiersList.isNotEmpty()) {
-                        var updatedModifiersList: ArrayList<Modifier> = arrayListOf()
-                        updatedModifiersList.addAll(modifiers)
-                        try {
-                            // get removed modifiers from list
-                            for (originalMod in originalModifiersList) {
-                                var removedModifier: Modifier?
-                                removedModifier =
-                                    modifiers.find { updatedMod -> originalMod.id == updatedMod.id }
-                                if (removedModifier == null) {
-                                    originalMod.apply {
-                                        _destroy = true
-                                        isChecked = false
-                                    }
-                                    if (!updatedModifiersList.contains(originalMod)) {
-                                        updatedModifiersList.add(originalMod)
+                        val modifiers = itemModifiersAdapter?.getSelectedModifiers() ?: arrayListOf()
+                        if (isUpdateItem && originalModifiersList.isNotEmpty()) {
+                            var updatedModifiersList: ArrayList<Modifier> = arrayListOf()
+                            updatedModifiersList.addAll(modifiers)
+                            try {
+                                // get removed modifiers from list
+                                for (originalMod in originalModifiersList) {
+                                    var removedModifier: Modifier?
+                                    removedModifier =
+                                        modifiers.find { updatedMod -> originalMod.id == updatedMod.id }
+                                    if (removedModifier == null) {
+                                        originalMod.apply {
+                                            _destroy = true
+                                            isChecked = false
+                                        }
+                                        if (!updatedModifiersList.contains(originalMod)) {
+                                            updatedModifiersList.add(originalMod)
+                                        }
                                     }
                                 }
+                            } catch (e: Exception) {
+                                e.printStackTrace()
                             }
-                        } catch (e: Exception) {
-                            e.printStackTrace()
+                            modifiers.clear()
+                            modifiers.addAll(updatedModifiersList)
                         }
-                        modifiers.clear()
-                        modifiers.addAll(updatedModifiersList)
-                    }
 
-                    if (modifiers.isNotEmpty()) {
-                        modifiers.forEach {
-                            if (item.modifiers.isNotEmpty()) {
-                                item.modifiers.forEach { it1 ->
-                                    if (it.id == it1.id) {
-                                        // it1.itemQuantity = it.itemQuantity
-                                        it.orderModifierId = it1.orderModifierId
+                        if (modifiers.isNotEmpty()) {
+                            modifiers.forEach {
+                                if (item.modifiers.isNotEmpty()) {
+                                    item.modifiers.forEach { it1 ->
+                                        if (it.id == it1.id) {
+                                            // it1.itemQuantity = it.itemQuantity
+                                            it.orderModifierId = it1.orderModifierId
 
+                                        }
+                                        it.itemQuantity = qty
                                     }
+                                } else {
                                     it.itemQuantity = qty
                                 }
-                            } else {
-                                it.itemQuantity = qty
                             }
+                            item.modifiers = modifiers
+
+
+                        } else {
+                            item.modifiers = arrayListOf()
                         }
-                        item.modifiers = modifiers
-
-
                     } else {
-                        item.modifiers = arrayListOf()
-                    }
-                } else {
-                    AlertUtils.showCustomAlert(
-                        binding.root.context,
-                        binding.root.context.getString(R.string.you_can_add)
-                    )
-                    viewModel.doesItemContainsModifiers.value = false
-                    return@setOnClickListener
-                }
-
-            }
-
-            val variationList = ArrayList<VariationsAttribute>()
-            if (item.variationsAttributes.isNotEmpty()) {
-                if (variationAdapter.variationList.isNotEmpty()) {
-                    val variation = variationAdapter.getItem()
-                    variationList.add(variation)
-                    item.name = item.name.substringBefore(" (") + " (" + variation.name + ")"
-                    item.price = variation.price ?: 0.0
-                    if (item.price == 0.0 && variation.priceType == "Variable") {
-                        AlertUtils.showCustomAlertWithListenerWithOK(
-                            requireContext(), "Please enter amount"
-                        ) { _, _ ->
-
-                        }
+                        AlertUtils.showCustomAlert(
+                            binding.root.context,
+                            binding.root.context.getString(R.string.you_can_add)
+                        )
                         viewModel.doesItemContainsModifiers.value = false
-                        return@setOnClickListener
+                        return
                     }
-                    item.variationsAttributes = variationList
-                } else {
-                    viewModel.doesItemContainsModifiers.value = true
-                    return@setOnClickListener
+
                 }
 
-            }
+                val variationList = ArrayList<VariationsAttribute>()
+                if (item.variationsAttributes.isNotEmpty()) {
+                    if (variationAdapter.variationList.isNotEmpty()) {
+                        val variation = variationAdapter.getItem()
+                        variationList.add(variation)
+                        item.name = item.name.substringBefore(" (") + " (" + variation.name + ")"
+                        item.price = variation.price ?: 0.0
+                        if (item.price == 0.0 && variation.priceType == "Variable") {
+                            AlertUtils.showCustomAlertWithListenerWithOK(
+                                requireContext(), "Please enter amount"
+                            ) { _, _ ->
+
+                            }
+                            viewModel.doesItemContainsModifiers.value = false
+                            return
+                        }
+                        item.variationsAttributes = variationList
+                    } else {
+                        viewModel.doesItemContainsModifiers.value = true
+                        return
+                    }
+
+                }
 
 
-            if (isUpdateItem) {
-                if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
-                    item.guestIndexForDineIn = viewModel.dineInHeaderPosition
-                    val dineInList = cartModelsList[0].dineInList
-                    dineInList?.get(0)?.headerPosition = viewModel.dineInSelectedItemHeaderPos
-                    dineInList?.get(0)?.selectedPosition = viewModel.dineInSelectedItemHeaderPos
-                    LogUtil.logE(TAG, "getItem  ${Gson().toJson(item)}")
-                    cartModelsList[0].taxlistDynamic = arrayListOf()
-                    /*cartList[0].dineInList?.forEach { dineInModel ->
-                        dineInModel.items.forEach { items ->
-                            items.taxes?.forEach { taxData ->
+                if (isUpdateItem) {
+                    if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
+                        item.guestIndexForDineIn = viewModel.dineInHeaderPosition
+                        val dineInList = cartModelsList[0].dineInList
+                        dineInList?.get(0)?.headerPosition = viewModel.dineInSelectedItemHeaderPos
+                        dineInList?.get(0)?.selectedPosition = viewModel.dineInSelectedItemHeaderPos
+                        LogUtil.logE(TAG, "getItem  ${Gson().toJson(item)}")
+                        cartModelsList[0].taxlistDynamic = arrayListOf()
+                        /*cartList[0].dineInList?.forEach { dineInModel ->
+                            dineInModel.items.forEach { items ->
+                                items.taxes?.forEach { taxData ->
+                                    taxData.subTotalAmount = 0.0
+                                    taxData.totalTaxTypePrice = 0.0
+                                }
+                            }
+                        }*/
+                        viewModel.currentCartItems.forEach {
+                            it.taxes?.forEach { taxData ->
                                 taxData.subTotalAmount = 0.0
                                 taxData.totalTaxTypePrice = 0.0
                             }
                         }
-                    }*/
-                    viewModel.currentCartItems.forEach {
-                        it.taxes?.forEach { taxData ->
-                            taxData.subTotalAmount = 0.0
-                            taxData.totalTaxTypePrice = 0.0
-                        }
-                    }
 
-                    Log.e(TAG, "dineInListWhenUpdate:  ${Gson().toJson(cartModelsList)}")
-                    /*viewModel.newCartLogicModifier(
-                        cartList,
-                        item,
-                        Constants.UPDATE,
-                        false,
-                        dineInList ?: arrayListOf()
-                    )*/
-                    Log.d(TAG, "398 dineintest currentCartItems: " + viewModel.currentCartItems)
-                    Log.d(TAG, "dineintest item: " + item)
-                    Log.d(TAG, "dineintest dineInList: " + dineInList)
-                    viewModel.updateDineInCart(
-                        viewModel.currentCartItems,
-                        item,
-                        Constants.UPDATE,
-                        false,
-                        dineInList ?: arrayListOf()
-                    )
-                } else {
-                    item.guestIndexForDineIn = null
-                    cartModelsList[0].taxlistDynamic = arrayListOf()
-                    viewModel.currentCartItems.forEach { items ->
-                        items.taxes?.forEach { taxData ->
-                            taxData.subTotalAmount = 0.0
-                            taxData.totalTaxTypePrice = 0.0
-                        }
-                    }
-
-
-                    if (checkVar()) {
-
-                        LogUtil.logE("NewItem", "ItemSame ${Gson().toJson(item)}")
-                        viewModel.updateCart(
-                            viewModel.currentCartItems,
-                            item,
-                            Constants.UPDATE,
-                            false,
-                            position = itemPosition
-                        )
-                        viewModel.doesItemContainsModifiers.value = true
-
-                    } else {
-
-                        LogUtil.logE("NewItem", "ItemSameNot")
-                        item.orderItemId = null
-                        viewModel.updateCart(
-                            viewModel.currentCartItems,
-                            item,
-                            Constants.UPDATE,
-                            false,
-                            position = itemPosition
-                        )
-                        viewModel.doesItemContainsModifiers.value = true
-                    }
-
-
-                }
-            } else {
-                if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
-                    item.guestIndexForDineIn = viewModel.dineInHeaderPosition
-                    if (prefProvider.getValueboolean(DINE_IN_UPDATE, false)) {
-                        item.isEdited = true
-                    }
-                    val dineInList = cartModelsList[0].dineInList
-                    Log.e(TAG, "checkCartIsEmpty  ${cartModelsList.size}")
-                    LogUtil.logE(TAG, "dineInList:  ${Gson().toJson(dineInList)}")
-                    if (dineInList?.isNotEmpty() == true && dineInList != null) {
-                        dineInList[0].selectedPosition = viewModel.dineInHeaderPosition
+                        Log.e(TAG, "dineInListWhenUpdate:  ${Gson().toJson(cartModelsList)}")
                         /*viewModel.newCartLogicModifier(
-                            cartModelsList,
+                            cartList,
                             item,
-                            Constants.ADD,
+                            Constants.UPDATE,
                             false,
-                            dineInList
+                            dineInList ?: arrayListOf()
                         )*/
-
-                        Log.d(TAG, "448 dineintest currentCartItems: " + viewModel.currentCartItems)
+                        Log.d(TAG, "398 dineintest currentCartItems: " + viewModel.currentCartItems)
                         Log.d(TAG, "dineintest item: " + item)
                         Log.d(TAG, "dineintest dineInList: " + dineInList)
                         viewModel.updateDineInCart(
                             viewModel.currentCartItems,
                             item,
-                            Constants.ADD,
+                            Constants.UPDATE,
                             false,
-                            dineInList
+                            dineInList ?: arrayListOf()
                         )
+                    } else {
+                        item.guestIndexForDineIn = null
+                        cartModelsList[0].taxlistDynamic = arrayListOf()
+                        viewModel.currentCartItems.forEach { items ->
+                            items.taxes?.forEach { taxData ->
+                                taxData.subTotalAmount = 0.0
+                                taxData.totalTaxTypePrice = 0.0
+                            }
+                        }
+
+
+                        if (checkVar()) {
+
+                            LogUtil.logE("NewItem", "ItemSame ${Gson().toJson(item)}")
+                            viewModel.updateCart(
+                                viewModel.currentCartItems,
+                                item,
+                                Constants.UPDATE,
+                                false,
+                                position = itemPosition
+                            )
+                            viewModel.doesItemContainsModifiers.value = true
+
+                        } else {
+
+                            LogUtil.logE("NewItem", "ItemSameNot")
+                            item.orderItemId = null
+                            viewModel.updateCart(
+                                viewModel.currentCartItems,
+                                item,
+                                Constants.UPDATE,
+                                false,
+                                position = itemPosition
+                            )
+                            viewModel.doesItemContainsModifiers.value = true
+                        }
+
+
                     }
                 } else {
-                    item.guestIndexForDineIn = null
+                    if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
+                        item.guestIndexForDineIn = viewModel.dineInHeaderPosition
+                        if (prefProvider.getValueboolean(DINE_IN_UPDATE, false)) {
+                            item.isEdited = true
+                        }
+                        val dineInList = cartModelsList[0].dineInList
+                        Log.e(TAG, "checkCartIsEmpty  ${cartModelsList.size}")
+                        LogUtil.logE(TAG, "dineInList:  ${Gson().toJson(dineInList)}")
+                        if (dineInList?.isNotEmpty() == true && dineInList != null) {
+                            dineInList[0].selectedPosition = viewModel.dineInHeaderPosition
+                            /*viewModel.newCartLogicModifier(
+                                cartModelsList,
+                                item,
+                                Constants.ADD,
+                                false,
+                                dineInList
+                            )*/
 
-                    Log.e("cshffasf", "checkElsee")
-                    //val tbItem = TbCartItem().convertToCartItem(item, item)
-                    viewModel.updateCart(viewModel.currentCartItems, item, Constants.ADD, false)
-                    viewModel.doesItemContainsModifiers.value = true
+                            Log.d(TAG, "448 dineintest currentCartItems: " + viewModel.currentCartItems)
+                            Log.d(TAG, "dineintest item: " + item)
+                            Log.d(TAG, "dineintest dineInList: " + dineInList)
+                            viewModel.updateDineInCart(
+                                viewModel.currentCartItems,
+                                item,
+                                Constants.ADD,
+                                false,
+                                dineInList
+                            )
+                        }
+                    } else {
+                        item.guestIndexForDineIn = null
+
+                        Log.e("cshffasf", "checkElsee")
+                        //val tbItem = TbCartItem().convertToCartItem(item, item)
+                        viewModel.updateCart(viewModel.currentCartItems, item, Constants.ADD, false)
+                        viewModel.doesItemContainsModifiers.value = true
+                    }
                 }
+
+                requireActivity().supportFragmentManager.popBackStackImmediate(
+                    AddItemFragment.javaClass.getName(),
+                    FragmentManager.POP_BACK_STACK_INCLUSIVE
+                )
+                //listner.onCancelItemSelected()
+
+
             }
+        })
 
-            requireActivity().supportFragmentManager.popBackStackImmediate(
-                AddItemFragment.javaClass.getName(),
-                FragmentManager.POP_BACK_STACK_INCLUSIVE
-            )
-            //listner.onCancelItemSelected()
-
-        }
 
         binding.txtAddDiscount.setOnClickListener {
             var totalItemswithQuantity = 0

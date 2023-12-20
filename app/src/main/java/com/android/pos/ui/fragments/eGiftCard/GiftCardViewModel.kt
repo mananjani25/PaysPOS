@@ -41,10 +41,12 @@ class GiftCardViewModel @Inject constructor(
     val giftCardData: LiveData<Event<SellGiftCardResponseModel?>> = _giftCardData
 
     private val _addValueInGiftCardData = MutableLiveData<Event<SellGiftCardResponseModel?>>()
-    val addValueInGiftCardData: LiveData<Event<SellGiftCardResponseModel?>> = _addValueInGiftCardData
+    val addValueInGiftCardData: LiveData<Event<SellGiftCardResponseModel?>> =
+        _addValueInGiftCardData
 
     private val _giftCardCheckBalanceData = MutableLiveData<Event<GiftCardCheckBalanceResponse?>>()
-    val giftCardCheckBalanceData: LiveData<Event<GiftCardCheckBalanceResponse?>> = _giftCardCheckBalanceData
+    val giftCardCheckBalanceData: LiveData<Event<GiftCardCheckBalanceResponse?>> =
+        _giftCardCheckBalanceData
 
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
@@ -62,7 +64,8 @@ class GiftCardViewModel @Inject constructor(
 
     fun createSellGiftCardRequestUsingCash(): SellGiftCardRequestModel {
 
-        val giftCardPurchaseAmount = prefProvider.getValue(Constants.GIFT_CARD_PURCHASE_AMOUNT, "0.0")
+        val giftCardPurchaseAmount =
+            prefProvider.getValue(Constants.GIFT_CARD_PURCHASE_AMOUNT, "0.0")
 
         val paymentAttributes =
             com.android.pos.data.model.requestModel.giftCard.request.PaymentAttributes(
@@ -88,15 +91,15 @@ class GiftCardViewModel @Inject constructor(
             customer_id = prefProvider.getValueInt(Constants.CUSTOMER_ID, 0),
             location_id = prefProvider.getValueInt(Constants.LOCATION_ID, 1),
             password = "",
-            payment_attributes = paymentAttributes
-        )
+            payment_attributes = paymentAttributes)
 
         return SellGiftCardRequestModel(gift_card = giftCard)
     }
 
     fun createSellGiftCardRequestUsingCard(): SellGiftCardRequestModel {
 
-        val giftCardPurchaseAmount = prefProvider.getValue(Constants.GIFT_CARD_PURCHASE_AMOUNT, "0.0")
+        val giftCardPurchaseAmount =
+            prefProvider.getValue(Constants.GIFT_CARD_PURCHASE_AMOUNT, "0.0")
         var paymentAttributes: com.android.pos.data.model.requestModel.giftCard.request.PaymentAttributes? =
             null
 
@@ -257,7 +260,8 @@ class GiftCardViewModel @Inject constructor(
 
     fun createAddValueInGiftCardRequestUsingCash(): GiftCardAddValueRequest {
 
-        val giftCardPurchaseAmount = prefProvider.getValue(Constants.GIFT_CARD_PURCHASE_AMOUNT, "0.0")
+        val giftCardPurchaseAmount =
+            prefProvider.getValue(Constants.GIFT_CARD_PURCHASE_AMOUNT, "0.0")
         val giftCardNumber = prefProvider.getValue(Constants.GIFT_CARD_NUMBER, "")
 
         val paymentAttributes =
@@ -287,17 +291,21 @@ class GiftCardViewModel @Inject constructor(
             payment_attributes = paymentAttributes
         )
 
-        return GiftCardAddValueRequest(gift_card = giftCard, gift_card_amount_tab = giftCardAmountTab)
+        return GiftCardAddValueRequest(
+            gift_card = giftCard,
+            gift_card_amount_tab = giftCardAmountTab
+        )
     }
 
     fun createAddValueInGiftCardRequestUsingCard(): GiftCardAddValueRequest {
 
-        val giftCardPurchaseAmount = prefProvider.getValue(Constants.GIFT_CARD_PURCHASE_AMOUNT, "0.0")
+        val giftCardPurchaseAmount =
+            prefProvider.getValue(Constants.GIFT_CARD_PURCHASE_AMOUNT, "0.0")
         val giftCardNumber = prefProvider.getValue(Constants.GIFT_CARD_NUMBER, "")
 
         var paymentAttributes: GiftCardAddValueRequest.GiftCardAmountTab.PaymentAttributes? = null
 
-        if(magensaResponse != null){
+        if (magensaResponse != null) {
             val model = Gson().fromJson(
                 magensaResponse,
                 PaymentResponse.PaymentResponseItem::class.java
@@ -366,7 +374,6 @@ class GiftCardViewModel @Inject constructor(
         }
 
 
-
         val giftCard = GiftCardAddValueRequest.GiftCard(
             gift_card_type = "Digital",//Physical
             name = giftCardNumber,
@@ -377,11 +384,17 @@ class GiftCardViewModel @Inject constructor(
             payment_attributes = paymentAttributes
         )
 
-        return GiftCardAddValueRequest(gift_card = giftCard, gift_card_amount_tab = giftCardAmountTab)
+        return GiftCardAddValueRequest(
+            gift_card = giftCard,
+            gift_card_amount_tab = giftCardAmountTab
+        )
     }
 
     // Add money in existing gift card
-    fun addValueInGiftCard(isCashPaymentType: Boolean, giftCardAddValueRequest: GiftCardAddValueRequest) {
+    fun addValueInGiftCard(
+        isCashPaymentType: Boolean,
+        giftCardAddValueRequest: GiftCardAddValueRequest
+    ) {
 
         if (isCashPaymentType) {
             _showProgressCash.value = Event(true)

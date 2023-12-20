@@ -1,6 +1,8 @@
 package com.android.pos.ui.fragments.dashboard.bolddashboard
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.text.style.ForegroundColorSpan
@@ -99,7 +101,13 @@ import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.toCollection
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import okhttp3.internal.notify
+import okhttp3.internal.notifyAll
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.json.JSONArray
@@ -327,8 +335,8 @@ class CartFragment(
                         R.id.action_dashboardCategoryBoldPOS_to_changeOrderTypeDialog,
                     )
                 }
-                } else {
-                runOnUiThread(object : Runnable{
+            } else {
+                runOnUiThread(object : Runnable {
                     override fun run() {
                         binding.orderTypeDisplay.text =
                             getString(R.string.current_order) + ": " + prefProvider.getValue(
@@ -1186,7 +1194,7 @@ class CartFragment(
                     Log.d("BRUNO", "addObserver: CALLED")
                     Log.d("19OCT", "addObserver: CCI 1 = ${Gson().toJson(it)}")
                     viewModel.setCurrentCartItems(it)
-                    CoroutineScope(Dispatchers.IO).launch {
+                    CoroutineScope(Dispatchers.Main).launch {
 
                         if (it.isEmpty()) {
                             // Flag is used to update cart if last item from the cart will be deleted
@@ -1211,7 +1219,7 @@ class CartFragment(
                             if (currentTimeMillis >= previousClickTimeMillis + DELAY_MILLIS) {
                                 previousClickTimeMillis = currentTimeMillis
                             } else {
-                                return@launch
+                             //   return@launch
                             }
                         }
 
@@ -1445,41 +1453,16 @@ class CartFragment(
 
                                     if (viewModel.cartFragmentRestarted) {
 
-                                        viewModel.fragmentNeedToBeUpdated.value = true
-                                        viewModel.cartFragmentRestarted = false
-
-//                                        if (filterItems.contains(viewModel.lastSavedlocalDataItem)) {
-//                                            Log.e("FRAGMENT RESTARTED","CART Already Having data there")
-//                                        } else {
-//                                            val newList = filterItems
-//                                            newList.add(viewModel.lastSavedlocalDataItem)
-//                                            viewModel.lastSavedlocalDataItem = TbCartItem()
-//
-//
-//                                            filterItems.forEach {
-//                                                Log.e("FRAGMENT RESTARTED","FILTER ${it.id} ${it.name} ${it.itemQuantity}")
-//                                            }
-//
-//                                            newList.forEach {
-//                                                Log.e("FRAGMENT RESTARTED","NEW LIST ${it.id} ${it.name} ${it.itemQuantity}")
-//                                            }
-//
-//
-//                                            filterItems.forEach {
-//                                                Log.e("FRAGMENT RESTARTED","UPDATED FILTER ${it.id} ${it.name} ${it.itemQuantity}")
-//                                            }
-//
-//                                            cartItemsAdapter.submitList(newList)
-//                                            viewModel.cartFragmentRestarted = false
-//                                        }
+                                      //  viewModel.fragmentNeedToBeUpdated.value = true
+                                        //viewModel.cartFragmentRestarted = false
                                     } else {
 
                                         Log.e("FRAGMENT RESTARTED", "CART FRAGMENT NOT RESTARTED")
-                                        cartItemsAdapter.submitList(filterItems)
+
 
                                     }
 
-
+                                    cartItemsAdapter.submitList(filterItems)
 
                                     binding.rvCartList.postDelayed({
                                         if (cartItemsAdapter.currentList.isNotEmpty()) {
@@ -2938,15 +2921,14 @@ class CartFragment(
 
         Log.e(TAG, "checkOrderType  ${model?.orderType}")
 
-      //  prefProvider.setValue(DELIVERY_TYPE, PICK_UP)
-        try{
-            if (model!!.orderType.equals(Constants.PHONE_ORDER, ignoreCase = true)){
+        //  prefProvider.setValue(DELIVERY_TYPE, PICK_UP)
+        try {
+            if (model!!.orderType.equals(Constants.PHONE_ORDER, ignoreCase = true)) {
                 prefProvider.setValue(DELIVERY_TYPE, "")
-            }else{
+            } else {
                 prefProvider.setValue(DELIVERY_TYPE, PICK_UP)
             }
-        }catch (e:Exception)
-        {
+        } catch (e: Exception) {
             prefProvider.setValue(DELIVERY_TYPE, "")
         }
 
@@ -3089,6 +3071,3 @@ class CartFragment(
         return totaltaxtemp
     }
 }
-
-
-

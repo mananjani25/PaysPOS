@@ -164,7 +164,7 @@ class CreateDiscount : Fragment() {
             var percentage = binding.edtDiscount.text.toString()
             var percentage_double = 0.0
 
-            if (percentage.equals(".")) {
+            if (percentage.equals(".") || percentage.isEmpty()) {
                 AlertUtils.showCustomAlertWithListenerWithOK(
                     requireContext(),
                     "Please enter valid Discount Rate"

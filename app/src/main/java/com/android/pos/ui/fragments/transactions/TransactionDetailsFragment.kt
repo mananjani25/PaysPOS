@@ -5340,12 +5340,17 @@ class TransactionDetailsFragment : Fragment() {
 
                 PrintSunmiUtils.normalTextTest(tranType)
 
-                PrintSunmiUtils.cardDetailsInner(
-                    paymentDetailsResponse.data.card_name,
-                    /*paymentDetailsResponse.data.card_type ?: ""*/MethodUtils.getCardType(paymentDetailsResponse.data.ext_data),
-                    paymentDetailsResponse.data.card_number, customerSettingModel.fonts
-                )
+                try{
 
+                    PrintSunmiUtils.cardDetailsInner(
+                        paymentDetailsResponse.data.card_name,
+                        /*paymentDetailsResponse.data.card_type ?: ""*/MethodUtils.getCardType(paymentDetailsResponse.data.ext_data),
+                        paymentDetailsResponse.data.card_number, customerSettingModel.fonts
+                    )
+
+                }catch (e:Exception){
+
+                }
 
             } else {
 

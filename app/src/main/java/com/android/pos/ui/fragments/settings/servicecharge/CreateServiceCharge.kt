@@ -3,6 +3,7 @@ package com.android.pos.ui.fragments.settings.servicecharge
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -69,7 +70,7 @@ class CreateServiceCharge : Fragment() {
             binding.swtEnableCharge.isChecked = serviceChargeData.isEnabled
 
             viewModel.isEditData(isEdit, serviceChargeData.id, isfrom)
-        }else{
+        } else {
             viewModel.isEditData(false, -1, isfrom)
         }
 
@@ -85,28 +86,34 @@ class CreateServiceCharge : Fragment() {
             }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
 
-        binding.editPercentage.filters = arrayOf(DecimalDigitsCountFilter(2));
-        binding.editPercentage?.addTextChangedListener(object : TextWatcher {
+        //binding.editPercentage.filters = arrayOf(DecimalDigitsCountFilter(2))
+
+        binding.editPercentage.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
 
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-
+                Log.e("Text Changed", "Service tax" + s.toString())
             }
 
             override fun afterTextChanged(s: Editable?) {
-                if (s.toString().isNotEmpty()) {
-                    if (s.toString().toDouble() > 100) {
-                        binding.editPercentage?.setText("100")
-                        binding.editPercentage.setSelection(binding.editPercentage.length())
+                try {
+                    if (s.toString().isNotEmpty()) {
+                        if (s.toString().toDouble() > 100) {
+                            binding.editPercentage?.setText("100")
+                            binding.editPercentage.setSelection(binding.editPercentage.length())
+                        }
                     }
+                } catch (_: Exception) {
                 }
             }
 
         })
         binding.header.txtSave.setOnClickListener {
             var subPer = "0.0"
+
+            try{
             if (binding.editPercentage.text?.isNotEmpty() == true) {
                 subPer = binding.editPercentage?.text.toString().split(" ")[0]
             }
@@ -130,6 +137,13 @@ class CreateServiceCharge : Fragment() {
             }
             MethodUtils.hideKeyboard(requireActivity())
             viewModel.submit()
+        }catch (_:Exception){
+
+
+            AlertUtils.showCustomAlertWithListenerWithOK(requireContext(),"Please input valid value"){_,_->
+                binding.editPercentage.setText("")
+            }
+        }
         }
 
         return binding.root
