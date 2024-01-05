@@ -55,7 +55,6 @@ import com.android.pos.data.remote.Constants.IS_MASTER_TERMINAL
 import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.remote.Constants.PRINTER_QUEUE_BACKGROUND
-import com.android.pos.data.remote.Constants.SYNC_SETTING_TIME_STAMP
 import com.android.pos.data.remote.Constants.UNIQUE_ID
 import com.android.pos.data.remote.Constants.checkUploadWorker
 import com.android.pos.data.repositories.UserRepository
@@ -377,7 +376,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             }
 
 
-            if (prefProvider?.getValue(SYNC_SETTING_TIME_STAMP, "")?.isEmpty() == true) {
+            if (prefProvider?.getValueboolean(Constants.IS_FIRST_TIME_LOGIN,false) == true) {
                 val data = Data.Builder()
                     //.putString("kitchenPrinterList", Gson().toJson(kitchenPrinterList))
                     // .put("kitchenSettingData", Gson().toJson(kitchenSettingModel))
@@ -403,7 +402,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 try {
 
                     workManager.enqueueUniqueWork(
-                        Constants.PRINTER_QUEUE_BACKGROUND, ExistingWorkPolicy.REPLACE,
+                        Constants.PRINTER_QUEUE_BACKGROUND, ExistingWorkPolicy.KEEP,
                         uploadWorkRequest
                     )
 
@@ -1397,10 +1396,11 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 IS_PRINTER_QUEUE_ENABLE, false
             ) == true
         ) {
-            Handler(Looper.getMainLooper()).postDelayed(Runnable {
+            lifecycleScope.launch {
+                delay(2500)
                 connectActionCable()
 
-            }, 2500)
+            }
 
 
         }

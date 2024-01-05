@@ -193,6 +193,7 @@ object Constants {
     const val EMPLOYEES_TIMESHEET_DETAILS = "employees/timesheet_details"
     const val ORDER_ID = "orderID"
     const val PRINT_DATA_DINE_IN = "print_data_dine_in"
+    const val IS_FIRST_TIME_LOGIN = "is_first_time_login"
     const val DINE_IN_SUBTOTAL = "dine_in_subtotal"
     const val DINE_IN_TAX = "dine_in_tax"
     const val DINE_IN_DISCOUNT = "dine_in_discount"

@@ -6608,6 +6608,14 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                                 }
 
+
+                                if (prefProvider.getValue(SYNC_SETTING_TIME_STAMP,"").isEmpty()){
+                                    prefProvider.setValueboolean(Constants.IS_FIRST_TIME_LOGIN,true)
+                                }
+                                else{
+                                    prefProvider.setValueboolean(Constants.IS_FIRST_TIME_LOGIN,false)
+                                }
+
                                 prefProvider.setValueboolean(
                                     IS_PRINTER_QUEUE_ENABLE,
                                     it.settingData.data.isPrinterQueueEnable
