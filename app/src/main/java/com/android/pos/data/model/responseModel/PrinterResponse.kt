@@ -1,6 +1,7 @@
 package com.android.pos.data.model.responseModel
 
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
@@ -19,7 +20,9 @@ data class PrinterResponse(
 
     ) {
 
-        @Entity(tableName = "TbCustomerPrint")
+        @Entity(tableName = "TbCustomerPrint",indices = [
+            Index( value = ["macAddress","ipAddress"], unique = true)
+        ])
         data class CustomerReceiptPrinters(
             @PrimaryKey
             @SerializedName("id") var id: Int,

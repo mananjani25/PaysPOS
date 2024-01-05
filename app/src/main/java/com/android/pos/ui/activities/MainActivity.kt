@@ -1428,7 +1428,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
             if (subscription != null) {
                 subscription?.onConnected {
-                    isLocalMasterFlag = false
+//                    isLocalMasterFlag = false
 
                     prefProvider?.setValueboolean(Constants.WORKER_QUEUE_IN_PROGRESS, true)
 
@@ -1453,7 +1453,9 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                     subscription?.perform("received", params)
 
                 }?.onRejected {
-                    isLocalMasterFlag = false
+//                    isLocalMasterFlag = false
+                    currentOrderIndex=0
+                    currentPrinterIndex=0
 
                     prefProvider?.setValueboolean(Constants.WORKER_QUEUE_IN_PROGRESS, false)
                     Log.e(TAG, "onRejected ")
@@ -1471,6 +1473,8 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                         TAG,
                         "onActionReceived checkCancelWeok:  ${isCancelWork}"
                     )
+
+                    isLocalMasterFlag=false
 
                     this@MainActivity.getSharedPreferences(
                         this@MainActivity.resources.getString(R.string.app_name),
@@ -1529,7 +1533,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                                     }  checkURL:  ${requestURL}"
                                 )
 
-                                if (reConnectCount >= 0) {
+                                if (reConnectCount < 0) {
                                     consumer?.disconnect()
 
                                     reConnectPrinterQueue()
@@ -1556,7 +1560,10 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
 
                 }?.onDisconnected {
-                    isLocalMasterFlag = false
+//                    isLocalMasterFlag = false
+
+                    currentOrderIndex=0
+                    currentPrinterIndex=0
 
                     this@MainActivity.getSharedPreferences(
                         this@MainActivity.resources.getString(R.string.app_name),
@@ -1603,8 +1610,11 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
                 }?.onFailed {
 
-                    isLocalMasterFlag = false
+//                    isLocalMasterFlag = false
                     localCallConnect = false
+                    currentOrderIndex=0
+                    currentPrinterIndex=0
+
                     this@MainActivity.getSharedPreferences(
                         this@MainActivity.resources.getString(R.string.app_name),
                         Context.MODE_PRIVATE
@@ -1773,6 +1783,10 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             cloudPrinter.commitTransBuffer(object : ResultCallback {
                 override fun onComplete() {
                     //isQueueRunning = false
+                    Log.e(
+                        "onComplete()",
+                        "currentOrderIndex = $currentOrderIndex :: currentPrinterIndex=$currentPrinterIndex"
+                    )
                     if (flagIsComplete == false) {
                         flagIsComplete = true
 
@@ -2195,7 +2209,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                             }"
                         )
 
-                        if (reConnectCount >= 0) {
+                        if (reConnectCount < 0) {
                             consumer?.disconnect()
                             reConnectPrinterQueue()
 
@@ -2243,7 +2257,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                             ) + Constants.CREATE_QUEUE_PRINTER_PHASE3
                         }"
                     )
-                    if (reConnectCount >= 0) {
+                    if (reConnectCount < 0) {
                         consumer?.disconnect()
 
                         reConnectPrinterQueue()
@@ -2276,7 +2290,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                     ) + Constants.CREATE_QUEUE_PRINTER_PHASE3
                 )
 
-                if (reConnectCount >= 0) {
+                if (reConnectCount< 0) {
                     consumer?.disconnect()
 
                     reConnectPrinterQueue()
@@ -2306,7 +2320,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                     ""
                 ) + Constants.CREATE_QUEUE_PRINTER_PHASE3
             )
-            if (reConnectCount >= 0) {
+            if (reConnectCount < 0) {
                 consumer?.disconnect()
                 reConnectPrinterQueue()
 
@@ -2439,7 +2453,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                         ) + Constants.CREATE_QUEUE_PRINTER_PHASE3
                     )
 
-                    if (reConnectCount >= 0) {
+                    if (reConnectCount < 0) {
                         consumer?.disconnect()
                         reConnectPrinterQueue()
 
@@ -2472,7 +2486,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                         ""
                     ) + Constants.CREATE_QUEUE_PRINTER_PHASE3
                 )
-                if (reConnectCount >= 0) {
+                if (reConnectCount < 0) {
                     consumer?.disconnect()
                     reConnectPrinterQueue()
 
